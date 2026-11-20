@@ -181,12 +181,12 @@ jobs:
     name: Regression Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     needs: [pre-commit]
-    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (owner request,
+    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (Overtoad request,
     # 2026-11-14) runs it so its results show, but it must block no merge. It is the only leg with
     # `experimental: true`, so this expression is true on it alone: a failure there leaves the job's
     # result unchanged, and the Quality Gate's `needs.tests.result` reads `success`. Measured on
     # juniper-data#538 (run 43655144734), where the gate printed "Unit Tests: success" with the 3.15
-    # leg failed on purpose. Its context is in no ruleset. Keep both until the owner makes 3.15 a
+    # leg failed on purpose. Its context is in no ruleset. Keep both until the Overtoad makes 3.15 a
     # required version (phase 3 of the migration).
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
@@ -689,7 +689,7 @@ jobs:
           # shaped like a guard. Discovery is a glob, so a new publisher cannot dodge it.
           python3 -m unittest -v tests/test_publish_release_only_trigger.py
           # tests/test_publish_one_artifact.py: the one-artifact publish (the port of
-          # juniper-cascor#763 / #767; the owner's directive of 2026-11-15). All 7 publishers
+          # juniper-cascor#763 / #767; the Overtoad's directive of 2026-11-15). All 7 publishers
           # build once and hand both publish jobs one artifact (dist + SHA256SUMS, 90 days),
           # reused on a re-run; the dist is checked against SHA256SUMS before every upload,
           # TestPyPI's JSON after the TestPyPI upload and again before the PyPI one, and
@@ -985,7 +985,7 @@ jobs:
           python3 -m unittest -v tests/test_ui_test_author_skill_lint.py
           # tests/test_agents_frontmatter.py: suite-wide gate over every .claude/agents/*.md
           # (validator + round-2 planner/auditor/task-executor) -- name==filename, substantive
-          # description, tools declared, body non-trivial, and the owner defaults model=opus +
+          # description, tools declared, body non-trivial, and the Overtoad defaults model=opus +
           # effort=max. .claude/** is pre-commit-excluded except markdownlint, so this is the gate.
           python3 -m unittest -v tests/test_agents_frontmatter.py
           # tests/test_agent_suite_path_drift.py: regression guard asserting no live
@@ -1121,7 +1121,7 @@ jobs:
           # Shipped unwired in ml#1238; wired here with the h5py dependency it needs.
           python3 -m unittest -v tests/test_snapshot_index.py
           # tests/test_snapshot_classify.py: hermetic tests for util/snapshot_classify.py, the
-          # owner-scheme classifier over that index. Pins the two-axis category/health rule, that
+          # Overtoad-scheme classifier over that index. Pins the two-axis category/health rule, that
           # the index's `readable` flag is NOT loadability (7/300 measured refusals), that the
           # inert meta.current_epoch is never read as progress, the replace-not-append sidecar,
           # fd-level stdout muffling, the train-stage scratch-root refusal, and its own AST
@@ -1215,7 +1215,7 @@ jobs:
           # tests/test_duplicati_web_credential.py: B2 of the 2026-10-03 backup recovery plan --
           # the ONE web-UI credential file both Duplicati API clients read
           # (~/.config/duplicati-backup/web-credential, not the checkout's world-readable .env).
-          # Pins the format, refusal of any group/other bit (path, mode, owner -- never content),
+          # Pins the format, refusal of any group/other bit (path, mode, Overtoad -- never content),
           # a FIFO refused without hanging, the shared reader, the retired DUPLICATI_PW_FILE /
           # DUPLICATI_PW_KEY ignored, no bare-secret fallback, and the password sent only as the
           # login body. util/ad-hoc is outside every pre-commit Python hook, so this is the gate.
@@ -1329,7 +1329,7 @@ jobs:
           python3 -m unittest -v tests/test_markdown_structure_screen.py
           # tests/test_md_structure_check.py: the STANDALONE verifier util/ad-hoc/2026-09-05_md_structure_check.py, which is wired into NO gate (note the filename is one word from the screen above -- `md_` vs `markdown_` -- and they are different files). Its blind spots were documented 2026-09-08 and still present 2026-09-15; prose in a docstring does not fail when behaviour regresses, so these pin the five fixes: the VCS command is in the CODEY alternation (~7% of REFERENCE.md's command lines were invisible); C2 AND C3 count MULTIPLICITY rather than set membership (N copies of a known line used to pass, which is exactly the duplicated-block damage of ml#1799); C4 compares heading TEXTS so a loss and a gain no longer cancel; and every vacuous run now exits 2 -- unresolvable base, unreadable path, zero paths examined -- with an ADDED file checked absolutely against an empty base instead of skipped. Every fix carries a negative control so "no longer fires" cannot pass for "was removed".
           python3 -m unittest -v tests/test_md_structure_check.py
-          # tests/test_pf8_occupancy_probe.py: the PF-8 occupancy probe's arithmetic, which decides whether a two-arm pair is worth an owner's host time. /proc/<pid>/stat split around the LAST ')' (comm may hold spaces and parens); roles follow the process tree; a pid counts from birth only if born inside the interval and an exited one is counted as vanished, never invented; busy excludes iowait; both edges of the ~4-8 worker-equivalent band pinned (3.99 / 8.01 say NO, 4.0 / 8.0 say YES); occupancy is sum-over-sum, not a mean of ratios.
+          # tests/test_pf8_occupancy_probe.py: the PF-8 occupancy probe's arithmetic, which decides whether a two-arm pair is worth an Overtoad's host time. /proc/<pid>/stat split around the LAST ')' (comm may hold spaces and parens); roles follow the process tree; a pid counts from birth only if born inside the interval and an exited one is counted as vanished, never invented; busy excludes iowait; both edges of the ~4-8 worker-equivalent band pinned (3.99 / 8.01 say NO, 4.0 / 8.0 say YES); occupancy is sum-over-sum, not a mean of ratios.
           python3 -m unittest -v tests/test_pf8_occupancy_probe.py
           # tests/test_pf8_burst_attribution.py: the PF-8 burst-attribution trio, which overturned a published conclusion (the probe note's "leading candidate" was NumPy's OpenBLAS pool; it is libgomp under torch). /proc/<tid>/stat split around the LAST ')'; a thread that exits mid-window is reported, never invented; py-spy folded stacks attributed by SAMPLE count, not line count; library patterns anchored to lib*.so so a bare "omp" cannot match "compiled"/"component"/"Compute"; libopenblas and libgomp told apart; every `env -u` precedes every NAME=VALUE in every arm (env(1) stops accepting options at the first assignment, and the mis-ordered arm kills the listener at startup); the port check refuses when ss is absent rather than reading every port as free.
           python3 -m unittest -v tests/test_pf8_burst_attribution.py
@@ -1531,7 +1531,7 @@ jobs:
           # PreToolUse hook util/claude_agent_guard.py denies ~/.ssh / ~/.gnupg in any spelling,
           # ssh -T / ssh-add, sudo, defaults write, gpg card/secret/sign ops, gh pr create|merge,
           # gh auth, deploy keys, gh api write/field flags in any position, keychain dumps,
-          # user-level .claude settings edits, and (commit-signing K12) changes to the owner's signing
+          # user-level .claude settings edits, and (commit-signing K12) changes to the Overtoad's signing
           # configuration and git hooks: -c include.path= / gpg.program, --config-env, signing-key
           # git config writes, ~/.gitconfig, ~/.config/git, the system gitconfigs and .git/hooks; and (task C9)
           # Serena's edit tools reaching .git/, .ssh, Claude settings or the registration files (symlinks
@@ -1592,7 +1592,7 @@ jobs:
           # gpg, ssh-add and ykman on PATH must never run.
           python3 -m unittest -v tests/test_headless_signing_preflight.py
           # tests/test_configure_commit_signing.py: commit-signing plan R-S1..R-S19 (bring-up B4a, gate G-SIGN).
-          # util/configure_commit_signing.py installs the owner's signing for the Juniper tree as one includeIf
+          # util/configure_commit_signing.py installs the Overtoad's signing for the Juniper tree as one includeIf
           # (gitdir/i: on the root, rendered from realpaths) plus an include file, and checks it without
           # credentials. Real git on temp checkouts under a temp HOME with every GIT_* scrubbed and a
           # Homebrew-shaped recording fake gpg: terminal, IDE-argv, merge, cherry-pick and annotated-tag
@@ -1694,7 +1694,7 @@ jobs:
           # self-test that lived in a gitignored tmp/. Needs cryptography (installed above).
           python3 -m unittest -v tests/test_ac4_restore_drill.py
           # tests/test_python_version_check.py: util/python_version_check.py, the local half of phase 1 of the Python 3.15
-          # migration (owner ruling 2026-11-14). It builds a venv per repo and version at a FIXED path in the repo's primary
+          # migration (Overtoad ruling 2026-11-14). It builds a venv per repo and version at a FIXED path in the repo's primary
           # tmp/ (pyvenv/py<version>), installs the repo with its CI's commands and runs the repo's own wrapper there, exiting 0
           # whatever the results unless --strict. Pinned: conf/python_versions.yaml's ruling and validation; the venv path,
           # which TMPDIR, the cwd and --checkout do not move; unavailable versus failed; --dry-run and --list writing nothing;
@@ -1748,10 +1748,10 @@ jobs:
   # the diff is exactly new file(s) under notes/releases/ matching the RELEASE_NOTES_ convention
   # (add-only, path-confined, name-valid, single-purpose). SKIPs (passes) for any PR that does NOT
   # touch notes/releases/, so it never blocks a normal PR. A FAIL merely fails this check -- the PR
-  # then falls back to the standard owner gate (plan S7.2); the guard has no side effect. Wired here
-  # as a standalone status check, and the owner has since marked it REQUIRED in the branch ruleset
+  # then falls back to the standard Overtoad gate (plan S7.2); the guard has no side effect. Wired here
+  # as a standalone status check, and the Overtoad has since marked it REQUIRED in the branch ruleset
   # (step 3.3), which is what lets the exempt archive PR auto-merge behind it. This sentence used to
-  # say the owner "can later mark it REQUIRED", which the escape-hatch paragraph immediately below
+  # say the Overtoad "can later mark it REQUIRED", which the escape-hatch paragraph immediately below
   # already contradicts with "now that the check is REQUIRED" -- the promotion happened and only the
   # first half was updated. Verified against the live ruleset
   # (`gh api repos/pcalnon/juniper-ml/rulesets/13805432`), which lists `Release-Train Archive Guard`
@@ -1938,10 +1938,10 @@ jobs:
   # fail every push:main. (2) The fleet-tuned false-positive rate was unknown, so it soaked as its
   # own advisory status check and was then promoted to REQUIRED directly in the branch ruleset --
   # which is where that promotion belongs, NEVER via the Quality-Gate `needs:`. That promotion has
-  # HAPPENED; the soak is over. Even promoted, the owner + Cursor App always-bypass it, so its
+  # HAPPENED; the soak is over. Even promoted, the Overtoad + Cursor App always-bypass it, so its
   # guaranteed value is the visible red at review; enforcement is G3 (main-verify.yml).
   #
-  # Label hatch (WARN-only, P2 SF5): the owner-applied `allow-symbol-loss` / `docs-rewrite` PR labels
+  # Label hatch (WARN-only, P2 SF5): the Overtoad-applied `allow-symbol-loss` / `docs-rewrite` PR labels
   # demote THAT screen's FAIL to WARN-only for this run (`--advisory`: exit 0 with findings still
   # printed). A bare label is a blanket per-PR override, intentionally demoted to WARN-only; the
   # auditable enumerated `Allow-Symbol-Loss:` / `Allow-Docs-Rewrite:` commit trailer (parsed inside
@@ -2033,7 +2033,7 @@ jobs:
             exit 2
           fi
           if [ "${src}" -ge 1 ] || [ "${drc}" -ge 1 ]; then
-            echo "::error::per-PR compositional-loss finding(s) -- see the screens above and the sequence-safety-report artifact. Waive an intended removal with an Allow-Symbol-Loss / Allow-Docs-Rewrite commit trailer, or (owner) apply the allow-symbol-loss / docs-rewrite label for a WARN-only downgrade."
+            echo "::error::per-PR compositional-loss finding(s) -- see the screens above and the sequence-safety-report artifact. Waive an intended removal with an Allow-Symbol-Loss / Allow-Docs-Rewrite commit trailer, or (Overtoad) apply the allow-symbol-loss / docs-rewrite label for a WARN-only downgrade."
             exit 1
           fi
           echo "::notice::sequence-safety screens clean (or waived) for this PR"
@@ -2059,7 +2059,7 @@ jobs:
   #   * touched-file count          -> note (fan-out proxy; scope is not machine-declarable, P2 G5-iv)
   #   * touches AGENTS.md or docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md -> hotspot note (the flood's top
   #     same-file clusters)
-  # Advisory-only by design: it informs the owner's review, it never gates. Standalone (absent from
+  # Advisory-only by design: it informs the Overtoad's review, it never gates. Standalone (absent from
   # the Quality Gate `needs:`), so its skip on a non-cursor PR / push / merge_group never affects the
   # gate.
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
@@ -2298,7 +2298,7 @@ jobs:
   # Record: prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-
   # corrected-and-the-fleet-slack-deficit.md, § Re-evaluation 2026-09-22.
   #
-  # PROMOTION PATH (owner-ratified, flood analysis §4 decision 8): soak advisory, then promote IN
+  # PROMOTION PATH (Overtoad-ratified, flood analysis §4 decision 8): soak advisory, then promote IN
   # THE RULESET -- never via the Quality Gate's `needs:`, which gates nothing. Promote by replacing
   # the step's FINAL `exit 0` with `exit "$rc"` and adding this job's NAME as a required context.
   # Deleting that `exit 0` is NOT enough: the `if` before it is then the last command and returns
@@ -2482,7 +2482,7 @@ jobs:
 
       - name: Run Gitleaks over the pull request (Secrets Detection)
         # gitleaks-action v3.0.0 lists a pull request's commits with ONE unpaginated
-        # call, GET /repos/{owner}/{repo}/pulls/{n}/commits (30 per page by default,
+        # call, GET /repos/{Overtoad}/{repo}/pulls/{n}/commits (30 per page by default,
         # oldest first), and scans `--no-merges --first-parent <first>^..<last>` across
         # that page (src/gitleaks.js at the pinned SHA). Commit 31 onwards is never
         # scanned, and because the walk starts from the page's last commit,
@@ -2849,7 +2849,7 @@ jobs:
   # /bin/bash itself, and on macos-latest that is 3.2. A step asserts it, and that `brew --prefix`
   # is not turing's Intel /usr/local, so a green run also shows the scripts are prefix-independent.
   # The agent guard's other suites are the exception: they start no shell, and run here because the
-  # guard is the hook the macOS host runs (the owner's ruling of 2026-11-12).
+  # guard is the hook the macOS host runs (the Overtoad's ruling of 2026-11-12).
   #
   # No on.paths filter (it would skip all of ci.yml). The detection step sets `relevant`, and every
   # later step is gated on it, so the job reports success when no host-tooling path changed; it
@@ -2868,7 +2868,7 @@ jobs:
       # The suites (tests/test_<name>.py) and the other paths whose change re-runs the job;
       # tests/redacted_env.py and this workflow always count. G1's check suite pins the conf/hosts/turing/
       # files listed here against each other.
-      # Every tests/test_claude_agent_guard*.py is listed (the owner's ruling of 2026-11-12), and
+      # Every tests/test_claude_agent_guard*.py is listed (the Overtoad's ruling of 2026-11-12), and
       # tests/test_ci_host_tooling_macos.py compares the list with the files on disk.
       HOST_TOOLING_SUITES: >-
         juniper_clone find_encryption_readme_notes macvm_ctl claude_agent_guard

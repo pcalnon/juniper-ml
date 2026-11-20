@@ -43,7 +43,7 @@ The status is recorded in the ledger (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E
     re-enables the lane during its successor's flight";
   - item 8 dropped "F-038's browser-level test gap".
 - Items 2–8 are otherwise unchanged. Phase 8 adds one data point to item 2: on the fix leg a CLIENTSIDE
-  click took 1.4–2.4 s to apply. It also adds one owner question: the metrics replay drives no chart.
+  click took 1.4–2.4 s to apply. It also adds one Overtoad question: the metrics replay drives no chart.
 - **Key context, updated.**
   - Subagents were available again on 2026-09-23.
   - The two verify legs were `:8055` (canopy#670 head `c0530279`) and `:8056` (parent `2f973ca2`); both
@@ -96,7 +96,7 @@ led by F-CANOPY-054 and the latency root cause behind F-053.
 6. **Source-derived, unobserved**: canopy#613's guard vs the apply clamp; CAN-015's replay-player loop.
 7. **F-CANOPY-049**, and #674's follow-ups: the same swallow-and-forget pattern in
    juniper-service-core's and canopy's own WS managers.
-8. M-CANDIDATES-10/-11 (now re-drivable), the M-DATASET-17..26 owner question, and the M-TOPOLOGY-16
+8. M-CANDIDATES-10/-11 (now re-drivable), the M-DATASET-17..26 Overtoad question, and the M-TOPOLOGY-16
    fade half.
 
 ## Key context

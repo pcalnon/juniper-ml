@@ -101,7 +101,7 @@ branch. Land it before starting anything else.
 
 ## Remaining work, in severity order
 
-1. **Key escrow (§0)** — root/owner decision. Highest consequence.
+1. **Key escrow (§0)** — root/Overtoad decision. Highest consequence.
 
 2. **Server-brain DB — and it is not the DB the last handoff named.** Two different databases live
    in root-only `/usr/lib/duplicati/data/` (`drwx------ root root`), and they have opposite loss

@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-15
 Status:      ad-hoc -- investigation (Python 3.15 migration arc, phase 2: what is left)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-11-15_py315_informational_green_legs.py (the report step whose annotations this reads)
 
 Why this exists

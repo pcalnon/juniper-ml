@@ -4,11 +4,11 @@ You are an independent ADVERSARIAL REVIEWER of an uncommitted record revision of
 - Repository: juniper-ml, worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humble-humming-flask`. It is read-only to you; run your commands from there.
 - The edit: `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, v1.15.15 to v1.15.16 (about 2,300 lines, 365 KB). It is uncommitted, so `git diff -- notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` shows it. The writer is `util/ad-hoc/2026-11-15_consolidated_plan_v1_15_16_r_obs_sc_2_followups.py`.
 - The revision records the "R-OBS-SC-2 follow-ups" from 2026-11-09 to 2026-11-15:
-  - owner rulings: round 1 of 2026-11-09, the seven of 2026-11-13, and three of 2026-11-14;
+  - Overtoad rulings: round 1 of 2026-11-09, the seven of 2026-11-13, and three of 2026-11-14;
   - five PRs, plus juniper-data#537;
   - juniper-ml 0.11.5;
   - register row APD-ECO-016;
-  - juniper-cascor 0.14.0 and juniper-canopy 0.10.0, cut but waiting at the owner's `pypi` gates;
+  - juniper-cascor 0.14.0 and juniper-canopy 0.10.0, cut but waiting at the Overtoad's `pypi` gates;
   - the 0.4.3 design start prompt;
   - 13 findings;
   - what stays open.
@@ -22,15 +22,15 @@ You are an independent ADVERSARIAL REVIEWER of an uncommitted record revision of
    - A1's open limbs: the data-client and cascor F-S10 fixes, P6 OD-2, and canopy#685 call (a);
    - who may pull the juniper-canopy primary (O13);
    - whether a fix-forward is owed for juniper-cascor 0.12.0;
-   - the trio's environment upgrade, an owner action;
+   - the trio's environment upgrade, an Overtoad action;
    - the stack restart, on the condition of ruling 6 of 2026-11-13;
-   - the second edit of the parent `Juniper/AGENTS.md` once both releases are on PyPI, which needs the owner's word first;
+   - the second edit of the parent `Juniper/AGENTS.md` once both releases are on PyPI, which needs the Overtoad's word first;
    - juniper-deploy's image pins, which come after the gates;
-   - worktree housekeeping, which needs the owner's word worktree by worktree.
+   - worktree housekeeping, which needs the Overtoad's word worktree by worktree.
 3. **Overclaims and underclaims.** Look for:
    - anything said to be shipped, published, pinned, running or fixed that is only cut, waiting or merged;
    - rulings stretched beyond their text, e.g. ruling 6 (the restart condition) and ruling 7 (O13 extended to the juniper-ml primary only).
-   Quote each ruling's text from `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py 218ff61e --full`.
+   Quote each ruling's text from `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py 218ff61e --full`.
 4. **The author's eight judgment calls.** Give a recommendation, with a reason, for each:
    1. a new §5 release ID, R-ML-TOOLS-2, for juniper-ml 0.11.5 (it also appears in §9, order item 6 and the Status bullet), or describe 0.11.5 without an ID;
    2. the 2026-11-13 rulings numbered 1-7, with round 1's written "round 1's ruling N";
@@ -45,7 +45,7 @@ You are an independent ADVERSARIAL REVIEWER of an uncommitted record revision of
    2. Both published images were pulled by digest and run with no network. Each installs juniper-observability 0.4.2 and juniper-service-core 0.7.2 on Python 3.14.10 (`util/ad-hoc/2026-11-15_probe_published_images_cascor_0_14_0_canopy_0_10_0.py`). The image indexes are cascor `sha256:6b3e64bd…` and canopy `sha256:d9a966ff…`; each revision label is its Release commit.
    3. juniper-cascor's publish run has no shared build job, so its PyPI files differ from TestPyPI's by hash, though every member is identical (measured on 0.13.0; `util/ad-hoc/2026-11-15_verify_cascor_0_14_0_canopy_0_10_0_published.py`). canopy shares one build, and its hashes match.
    4. juniper-deploy still pins `juniper-recurrence:0.8.0` while 0.8.1 is published, so its `scripts/verify_published_images.py --fail-on-stale` exits 1 on that pin.
-   5. `owner_answers.py` prints "answered None" for answers whose later copy has no timestamp.
+   5. `Overtoad_answers.py` prints "answered None" for answers whose later copy has no timestamp.
 6. **Outside-reader test.** Read the new §5 note "R-OBS-SC-2's follow-ups, 2026-11-09 to 2026-11-15" and the new Status bullet as someone who has not followed the arc. Name each sentence that cannot be understood without a handoff, and each term used before it is defined.
 
 ## Severity

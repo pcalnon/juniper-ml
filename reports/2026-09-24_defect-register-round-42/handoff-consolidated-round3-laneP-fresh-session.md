@@ -73,7 +73,7 @@
 - **L6. There is no limit on waiting for [24f8d8] to open the PR.**
   - Quote, L45: "If it will open the PR, let it, and wait for the PR."
   - Add: "Send the message with `notify_when_idle: true`. If [24f8d8] goes idle or exits and the PR does not exist, ask it once more, then treat it as silent (next bullet)."
-- **L7. The archiver prints the owner's email in its own REFUSE line.**
+- **L7. The archiver prints the Overtoad's email in its own REFUSE line.**
   - Quote, L128: "Characterize a match without printing it".
   - The archiver prints `REFUSE <name>: credential-shaped text (<patterns>)` built from `p.pattern`. For the email check, the pattern is the escaped address itself.
   - Add: "The archiver's REFUSE line prints the pattern that matched, and for the email check that pattern is the address. Pipe the run through `sed 's/credential-shaped text (.*)/credential-shaped text (withheld)/'`, and never paste a raw REFUSE line anywhere."
@@ -93,7 +93,7 @@
 - **N11.** Length: the Goal (L21-L86) is 1,480 words, up from r2's 1,337, against a target of about 1,200. The whole file is 11,703 words, up from 10,195.
 - **N12.** r2-P N6 still stands, and is harmless. With the attribution lines appended, `Allow-Symbol-Loss: const:SESSIONS` is in the last paragraph only if written in the same block as they are. The screen scans every line and treats a lost `const` as advisory, so either placement passes.
 - **N13.** The frozen copies that the archived reports cite by line number exist only on tmpfs: `hc{1,2,3}/…_frozen.md` and `handoff_session_r{1,2,3}_frozen.md`. Say so in Appendix G, or ship them.
-- **N14.** Appendix B's [R] rows for `APD-DATA-055`, `APD-ML-008` and the next data release state no question; the register rows (L1302, L1305) supply one. The register (L1626-L1629) also marks `APD-DATA-054` and `APD-ML-007` "awaiting an owner ruling", and no handoff mentions either. Say whether they have already been asked.
+- **N14.** Appendix B's [R] rows for `APD-DATA-055`, `APD-ML-008` and the next data release state no question; the register rows (L1302, L1305) supply one. The register (L1626-L1629) also marks `APD-DATA-054` and `APD-ML-007` "awaiting an Overtoad ruling", and no handoff mentions either. Say whether they have already been asked.
 
 ## Per-step table
 
@@ -103,7 +103,7 @@
 | First action 2 | EXECUTABLE | The three branches are clear, and the subagent probe works. The wait has no limit (L6), and `ls` prints local time (N2). `ListAgents` could not be checked from a subagent. |
 | First action 3 | EXECUTABLE | Document 2's Step 0 (its L23-L28) messages [24f8d8] and then its successor. L48 reconciles which document governs. |
 | First action 4 | EXECUTABLE | About 11 questions. A few [R] rows need their question written out (N14). |
-| First action 5 | EXECUTABLE | The opener's dry run works from another directory with absolute body paths (L1). CodeQL is gated on the owner by design. |
+| First action 5 | EXECUTABLE | The opener's dry run works from another directory with absolute body paths (L1). CodeQL is gated on the Overtoad by design. |
 | In flight, finishing the lanes (L70, L192) | AMBIGUOUS | Nothing preserves the probes (M1). The archiving step has no trigger, no completeness check and no guard against [24f8d8] still writing (M2). |
 | Work 1 | EXECUTABLE | The branch is `94ce8b1f`, 2 ahead and 1 behind data `main`. The waiver is in `94ce8b1f`'s message (its line 65). Both repos squash with `COMMIT_MESSAGES`. The draft is structured as stated. The only gap is a round 2 that returns corrections without refuting (L5). |
 | Work 2 | EXECUTABLE | The 5 harnesses, the serve script and the `cascor688-v688` probes are on #2097's branch. |

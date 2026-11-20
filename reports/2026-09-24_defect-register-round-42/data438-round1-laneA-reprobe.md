@@ -68,7 +68,7 @@
 - **Evidence:** I fetched `rfc9110.txt` from rfc-editor.org (sha256 `21c1cdce…7232a`). Neither "possibly different" nor "same content" occurs in it.
   - §8.8.1 defines a weak validator as metadata that "might not change for every change to the representation data".
   - The sentence that actually supports `W/` here is: "a validator is weak if it is shared by two or more representations of a given resource at the same time, unless those representations have identical representation data."
-  - `docs/api/JUNIPER_DATA_API.md:970-971` attributes the phrase to the owner ruling instead, which is fine.
+  - `docs/api/JUNIPER_DATA_API.md:970-971` attributes the phrase to the Overtoad ruling instead, which is fine.
 - **Fix:** quote that sentence in both places.
 
 **F4 — NIT — The equivalence sweeps cannot see a long list with a whitespace-only element.**
@@ -94,7 +94,7 @@
 **F8 — NIT (outside #438's own change) — The next release's notes would not be flagged breaking.**
 - Head's `[Unreleased]` renders "Breaking changes: NO" with #437's `generator_version` 6.0.0 inside it. That bump changes every `equities_seq` dataset_id; 0.15.0 flagged the analogous 4.0.0 bump "BREAKING (contract)".
 - The PR body's renderer counts ("Added 1, Fixed 5") predate `28fced18`. It is now Added 1, Changed 1, Fixed 5.
-- **Fix:** an owner ruling on #437's marker, and refresh the PR body.
+- **Fix:** an Overtoad ruling on #437's marker, and refresh the PR body.
 
 ## Could each instrument have answered differently?
 - **Race, cross-process and live probes:** each gave opposite results on main and head.

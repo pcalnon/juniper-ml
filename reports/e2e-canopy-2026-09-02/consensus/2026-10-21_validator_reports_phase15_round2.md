@@ -19,7 +19,7 @@ There are five MAJOR defects:
 1. The phase explains why F-CANOPY-028's race was not re-created by saying the renderer holds the click's writer. The phase's own request bodies and the dash renderer contradict that. The stated "click times" are the driver's decision times, not the clicks.
 2. Item 31b's new sentence in canopy's manual is wrong for three of the four patch targets.
 3. The handoff leaves out ledger items 18 to 21, which include two of the four open P1s.
-4. Item 33's owner action does not do what it says.
+4. Item 33's Overtoad action does not do what it says.
 5. Item 27 is described as clicking through the Live Switch modal, and its drive never does that. So nobody owns F-CANOPY-069's gated-modal click-through.
 
 Each of the five changes an action or an item. Under the procedure's termination rule, round 3 is therefore required.
@@ -156,7 +156,7 @@ DISAGREE (MAJOR 2).
   - 80 / 63 / 1 / 2 / 14 with no P0 line.
   - Open P1s are F-CANOPY-064, -065, F-CASCOR-001 and -002; open P2s number 10.
   - `--open-only | grep -c '^OPEN   P1 '` gives 4.
-- **Item 33.** Scoping it as the owner's is right: it changes host environments on turing and needs an erratum in the turing plan. Its recipe is wrong (MAJOR 4).
+- **Item 33.** Scoping it as the Overtoad's is right: it changes host environments on turing and needs an erratum in the turing plan. Its recipe is wrong (MAJOR 4).
 - **"Still owed" against Phase 14's list.** Items 25, 27, 28, 29 and 26's second step are carried. "Items 31 and 32 are DONE" overstates item 31 (MAJORs 1 and 2).
 - **Round 1's "changed one action's parameter."** That is the right call. An action changed, and §4 of the procedure requires a second round after any correction anyway. The item-27 change, though, comes from no round-1 report (MINOR 7).
 
@@ -181,7 +181,7 @@ Everything else is present:
 
 - landing the PR
 - items 27, 25, 28, 29, 33 and 26's second step
-- the canopy release (owner, P4)
+- the canopy release (Overtoad, P4)
 - the cleanup of trees, worktree and local commits
 - the parent's items 5 and 7, and O1–O17
 
@@ -313,11 +313,11 @@ The FIXED disposition is unaffected by this defect.
   Items 18 and 20 cover two of the four open P1s.
 - **Where they stand.** All four are owed: Phase 10 `:10830-10858`; Phase 13 re-states 18 and 20 at `:12577-12581`; Phase 15 says "Phase 14's list stands".
 - **Why no handoff carries them.** The parent's item 5 predates them, and neither the Phase 14 handoff, this handoff, the parent pointer nor the INDEX row carries them.
-- **Handoff `:95`.** Insert before "9. Then the parent's items 5 and 7, and the owner batch O1–O17.":
+- **Handoff `:95`.** Insert before "9. Then the parent's items 5 and 7, and the Overtoad batch O1–O17.":
   - "**Ledger items 18–21** (canopy code; Phase 10's list, re-stated by Phase 13): 18 F-CANOPY-064 (P1) and -067 (first decide -067's rating on unfixed `main` with the recurrence leg up and a canopy restart on an idle cascor; never the trio), 19 F-CANOPY-060 and -063 with item 16's fixture sweep, 20 F-CANOPY-065 (P1 on O17's first limb), 21 F-CANOPY-066 with the selection arc's A1-iii. Canopy PRs, verified on a leg."
 - **Goal statement and INDEX row.** Add "items 18–21 (canopy fixes for F-CANOPY-064/-065/-067/-060/-063/-066)" to both "Next" lists.
 
-### MAJOR 4: item 33's owner action does not do what it says
+### MAJOR 4: item 33's Overtoad action does not do what it says
 
 **What is wrong**
 
@@ -336,7 +336,7 @@ The FIXED disposition is unaffected by this defect.
   - Replace with: "Owner: re-sync the E2 tree to canopy `main` (`fbf01dff` or later; at `571743db` its floor is already met by 3.3.0), then `pip install -e <tree>` with the E2 venv's interpreter (`~/.local/state/juniper/turing-e2/venvs/JuniperCanopy1`, a system-site venv over the conda env, holds the editable canopy); pip takes the newest dash 4.x (4.4.1 today) with `comm` and `janus`. Or rebuild the conda env from a copy of the corrected `conf/conda_environment.yaml` re-specified for osx-64 as juniper-ml#2282 did (the file is a linux-64 `conda create --file` export with `=pypi_0` lines);"
 - **Handoff `:82-85`.** Make the same change.
 
-### MAJOR 5: item 27 never clicks through the Live Switch modal, so F-CANOPY-069's gated click-through has no owner
+### MAJOR 5: item 27 never clicks through the Live Switch modal, so F-CANOPY-069's gated click-through has no Overtoad
 
 **What is wrong**
 

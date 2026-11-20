@@ -138,7 +138,7 @@ Here, one health probe per 80 MB create takes 0.74-0.80 s. The same probe on `d1
 
 ## Owner ruling needed (lane A's F8 in `data438-round1-laneA-reprobe.md`, not acted on)
 
-#437's `equities_seq` generator bump to 6.0.0 sits in `[Unreleased] ### Changed` with no breaking marker. The bump changes every `equities_seq` `dataset_id`, so the next release's notes would render "Breaking changes: NO". 0.15.0 flagged the analogous 4.0.0 bump "BREAKING (contract)". Whether #437's entry takes the marker is the owner's call.
+#437's `equities_seq` generator bump to 6.0.0 sits in `[Unreleased] ### Changed` with no breaking marker. The bump changes every `equities_seq` `dataset_id`, so the next release's notes would render "Breaking changes: NO". 0.15.0 flagged the analogous 4.0.0 bump "BREAKING (contract)". Whether #437's entry takes the marker is the Overtoad's call.
 
 **Refreshed renderer counts.** juniper-ml's `util/release_train/notes_render.py`, unchanged since juniper-ml `df21367d`, renders this branch's `[Unreleased]` as **Added 1, Changed 1, Fixed 6; breaking: NO**.
 

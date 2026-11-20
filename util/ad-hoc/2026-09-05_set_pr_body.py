@@ -17,7 +17,7 @@ a GraphQL error about deprecated Projects (classic):
 
     GraphQL: Projects (classic) is being deprecated ... (repository.pullRequest.projectCards)
 
-The edit never applies. The REST endpoint `PATCH /repos/{owner}/{repo}/pulls/{n}`
+The edit never applies. The REST endpoint `PATCH /repos/{Overtoad}/{repo}/pulls/{n}`
 is unaffected because it does not touch the projects field at all.
 
 Usage

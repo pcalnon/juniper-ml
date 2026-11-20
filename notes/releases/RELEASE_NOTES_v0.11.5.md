@@ -7,7 +7,7 @@
 
 ---
 
-This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-package ships no code: its `[tools]` extra now floors `juniper-observability>=0.4.2`, the security patch that scrubs Sentry transactions, parsed cookies and four more credential headers, and `juniper-service-core>=0.7.2,<0.8.0`, so upgrading an environment through `juniper-ml[tools]` or `juniper-ml[all]` also upgrades an older release of either. juniper-observability 0.4.2 is rated Medium in its own notes, and so is this release; juniper-service-core 0.7.2 is a plain patch. 0.4.2 does not close every path to Sentry: its notes list what stays open for 0.4.3, query strings and Sentry Logs among them. `[servers]` and `[recurrence]` are unchanged: the newest juniper-canopy, juniper-cascor, juniper-data and juniper-recurrence releases still accept juniper-observability 0.4.1 and juniper-service-core 0.7.1, and each is to raise its own floors in its next release (owner ruling 2026-11-09).
+This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-package ships no code: its `[tools]` extra now floors `juniper-observability>=0.4.2`, the security patch that scrubs Sentry transactions, parsed cookies and four more credential headers, and `juniper-service-core>=0.7.2,<0.8.0`, so upgrading an environment through `juniper-ml[tools]` or `juniper-ml[all]` also upgrades an older release of either. juniper-observability 0.4.2 is rated Medium in its own notes, and so is this release; juniper-service-core 0.7.2 is a plain patch. 0.4.2 does not close every path to Sentry: its notes list what stays open for 0.4.3, query strings and Sentry Logs among them. `[servers]` and `[recurrence]` are unchanged: the newest juniper-canopy, juniper-cascor, juniper-data and juniper-recurrence releases still accept juniper-observability 0.4.1 and juniper-service-core 0.7.1, and each is to raise its own floors in its next release (Overtoad ruling 2026-11-09).
 
 ---
 
@@ -26,7 +26,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
 
 ### Security
 
-- **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (owner ruling
+- **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (Overtoad ruling
   2026-11-09).** They were `>=0.4.1` and `>=0.7.1,<0.8.0`. By default pip upgrades a dependency only when the
   installed one no longer satisfies its range, so `pip install -U juniper-ml[tools]` left an environment that held
   0.4.1 and 0.7.1 on them.
@@ -49,7 +49,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
 
 ### Added
 
-- **The repo `tmp/` convention: no file is written under `/tmp`** (owner directive, 2026-10-26;
+- **The repo `tmp/` convention: no file is written under `/tmp`** (Overtoad directive, 2026-10-26;
   `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`, new). On the Linux host `/tmp` is a
   tmpfs that `systemd-tmpfiles-clean` ages daily (`q /tmp 1777 root root 10d`). It emptied the isolated E2E stack's
   pid files and venv three times in a week, leaving seven live servers killable by the orphan reaper.
@@ -87,7 +87,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
     exact versions. It also has the timeline, the blast radius, the rejected hypotheses, the
     unconfirmed actor, and the vetting against the kubeadm install.
   - `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md` is the
-    owner's root procedure: no reboot, legacy snap k8s services disabled first (decision D-1), three
+    Overtoad's root procedure: no reboot, legacy snap k8s services disabled first (decision D-1), three
     `mount` commands with systemd's options, then validation.
   - `util/host_api_filesystems_check.py` (new) judges `/proc/self/mountinfo` against systemd's
     API-filesystem table and AppArmor's interface. Tests: `tests/test_host_api_filesystems_check.py`,
@@ -98,7 +98,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
     both mutation logs. The investigation scripts are kept in `util/ad-hoc/2026-11-07_*`.
   - Finding 17 of `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`
     carries an erratum: "repaired without a reboot" was incomplete.
-- **Regression tests carried from 28 Cursor fleet drafts (the flood-4 consolidation, owner ruling 2026-11-06), each
+- **Regression tests carried from 28 Cursor fleet drafts (the flood-4 consolidation, Overtoad ruling 2026-11-06), each
   mutation-checked against the code it pins.** In `juniper-service-core/tests/`: the failed-auth tracker drops the
   oldest of its 10,000 source IPs (#2419); an exhausted rate-limit window admits again at its boundary (#2427); a
   worker connection burst refills only up to its cap (#2430); a stuck worker's scores become a duplicate (#2436);
@@ -149,7 +149,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
   disposed of: six carriers (juniper-data#518 and #519, juniper-canopy#797 and #802, juniper-ml#2517 and #2519)
   merged, and all 68 census drafts assigned to them closed, 67 of them carried. It also records each carrier's 2 to
   6 independent validation rounds, the defects found on `main`, the per-PR disposition (§5), the process traps, and
-  the owner's rulings 1–7 of 2026-11-08: round 2 takes 48 drafts; the launcher's effort default becomes `max`, and
+  the Overtoad's rulings 1–7 of 2026-11-08: round 2 takes 48 drafts; the launcher's effort default becomes `max`, and
   an explicit `auto` will send no `--effort` flag; three of the four open defect rows in §4 get their own fixes
   now; and juniper-ml#2271's one setting moved to user settings, with its branch deleted. Later rulings decide that
   the agent guard's brace cap is to fail closed, that the gitleaks fix is to be ported to the seven other
@@ -190,9 +190,9 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
     key-to-card and Docker Hub secret procedures, the SOPS guide (the new age key goes beside the old one), the
     isolated-stack checklist, the release-train runbook, `docs/REFERENCE.md`, the developer cheatsheet and the
     Template Agent's standing rule.
-- **The owner's 2026-10-26 rulings on `tmp/`**, quoted in section 1 of
+- **The Overtoad's 2026-10-26 rulings on `tmp/`**, quoted in section 1 of
   `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`: the doc-link checker and local Docker
-  builds ignore `tmp/`; pytest does not; a counting script chooses its scope deliberately (the owner's revision, later
+  builds ignore `tmp/`; pytest does not; a counting script chooses its scope deliberately (the Overtoad's revision, later
   the same day); full-tree repo copies and log copies may live there; and a work arc's `tmp/` file is kept until four
   conjunctive conditions hold (that doc's section 6).
   - `--exclude tmp` reaches the remaining doc-link checker invocations: two more cheatsheet rows, `docs/REFERENCE.md`'s
@@ -202,10 +202,10 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
     the three `conftest.py` files, so nothing changed; `testpaths` keeps a bare `pytest` in `tests/`.
   - Docker: juniper-ml has no build context (no Dockerfile, Containerfile, compose file or `.dockerignore`, the
     sub-packages included).
-  - The owner's revised search ruling: a script that counts matches with `grep` or `find` searches the repo with its
+  - The Overtoad's revised search ruling: a script that counts matches with `grep` or `find` searches the repo with its
     `tmp/` excluded, or `tmp/` alone, and both only for a stated edge case; existing counting scripts are to be
     modified to make that choice explicit, not left to `.gitignore` or a tool's defaults. The convention doc's new
-    section 11 documents the juniper-ml counting sites still owed that change (ten rows, twelve files), as the owner
+    section 11 documents the juniper-ml counting sites still owed that change (ten rows, twelve files), as the Overtoad
     asked; none of them is modified here. The ten sibling repos report theirs in their own PRs.
   - `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` (0.3.0) makes the choice: by default the repo with `tmp/` excluded by
     the explicit root-anchored glob `!tmp/**` (not by ripgrep's `.gitignore` handling), and with `--tmp-only` the
@@ -214,7 +214,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
     supersede (26390 -> 27404 of 28000 chars). The convention doc gains them in sections 1, 4.7, 4.8 (new), 6, 9, 10
     and 11 (new), and the Template Agent's standing rules gain `repo_tmp_rulings`.
 - **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
-  session turns on remote control (owner rulings, 2026-11-06).** In `scripts/wake_the_claude.bash` (now 1.1.0), `-v`
+  session turns on remote control (Overtoad rulings, 2026-11-06).** In `scripts/wake_the_claude.bash` (now 1.1.0), `-v`
   joins `-V`, `--version` and `--claude-version`, as `claude -v` does; it printed the script's own version, which
   `--script-version` alone now prints. `claudey` (`scripts/claude_interactive.bash`, now 0.2.0) runs `wake_the_claude.bash
   --version` for all four, so they print Claude Code's version too; `-v` and `--version` printed claudey's,
@@ -244,7 +244,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
   included, and scratch copies of notes kept there failed it. It reads `.txt` as well as markdown, so even
   captured logs there can fail it. On 2026-11-08 the primary checkout failed with 2,424 broken-link lines,
   every one under `tmp/`. With `--exclude tmp` it passes: 2,365 files scanned, every link valid. This
-  implements the 2026-10-26 owner ruling for the
+  implements the 2026-10-26 Overtoad ruling for the
   hook only. The hunk is byte-identical to juniper-ml#2360's, which has since merged (2026-11-12 UTC) and carries
   the CI and documented invocations. `--exclude` matches a whole path component, so only directories named
   exactly `tmp` are skipped; no tracked file lives in one.
@@ -253,7 +253,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
   without the flag it fails; a broken link in `notes/` or in `tmp-archive/` still fails.
 - **`juniper-service-core`: a `resume_ok` on `/ws/training` now means the client missed nothing up to the moment
   its socket goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
-  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix now" by the owner on
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix now" by the Overtoad on
   2026-11-08. A broadcast made with no socket active is now sequenced and buffered. One that lands while the
   replay is being sent reaches the client before its socket goes live, through the new keyword-only
   `promote_to_active(..., replayed_through=...)`. A resume that cannot stay continuous after `resume_ok` is closed
@@ -268,7 +268,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
   - juniper-cascor's own copies of the manager and handler carry both defects and are not changed. Details are in
     `juniper-service-core/CHANGELOG.md`.
 - **The yamaguchi securityfs incident: remediated, recorded, and two defects in its validator fixed.**
-  The owner ran the remount runbook on 2026-11-08, and the three filesystems have been mounted since
+  The Overtoad ran the remount runbook on 2026-11-08, and the three filesystems have been mounted since
   08:28:29Z. The validator passes, all seven juniper containers run confined by `docker-default`, and
   juniper-deploy's suite has no failures (409 passed, where 17 had failed). The record is §14 of
   `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md`.
@@ -286,7 +286,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
     conclusion stands.
   - **Runbook step 1** sets `J`, stops when the scripts are missing, and runs the probe only after a
     good capture. Step 4 names a fallback baseline.
-  - The evidence, from the owner's terminal output to the after-probe, is in
+  - The evidence, from the Overtoad's terminal output to the after-probe, is in
     `reports/2026-11-07_yamaguchi-securityfs-unmount/`.
 - **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>` from a shallow
   checkout, and refuses a history that a shallow checkout cannot show.**
@@ -313,14 +313,14 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
     - a BEHIND branch is fixed by a rebase: GitHub's update-branch is the fix.
 - **The agent guard expands brace sequences as bash does, fails closed on a brace expansion past its cap, and denies
   the git and GnuPG prefixes that sign (`util/claude_agent_guard.py` 1.3.0).**
-  - **Brace cap: "Fail closed"** (owner ruling, 2026-11-08). The guard expands at most `MAX_BRACE_ALTERNATIVES` (64)
+  - **Brace cap: "Fail closed"** (Overtoad ruling, 2026-11-08). The guard expands at most `MAX_BRACE_ALTERNATIVES` (64)
     alternatives. A word that needed more was judged on its first 64, so a `.ssh` or `.gnupg` spelled in alternative
     65 passed the credential check. Such a word now raises `MalformedInput` and the hook exits 2, for a Bash word, a
     range, a product of groups, a Glob or Grep pattern and a Serena include glob alike. A list is counted part by
     part, so at most one part past the cap is taken in (a nested part adds at most 64 words), and a range is sized
     arithmetically, so `{1..1000000}` is refused without being expanded. `for i in {1..100}` is refused too;
     `$(seq 1 100)` is not.
-  - **Brace sequences** (owner ruling "Carry in ml-code", 2026-11-09). bash 4 and later expand `{x..y..incr}`, which
+  - **Brace sequences** (Overtoad ruling "Carry in ml-code", 2026-11-09). bash 4 and later expand `{x..y..incr}`, which
     the guard left as written, so `cat ~/.{r..t..1}sh/config` read `~/.ssh/config` and passed the credential check;
     `{s..s..1}udo` and `gpg{2..2..1}` hid `sudo` and `gpg2` the same way. The guard now follows bash 5.3's brace code
     for sequences and the lists around them: a step of either sign, a step of 0, a step past the range, `+` signs, zero
@@ -348,10 +348,10 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
       the text after a group opens nothing);
     - bash steps over the body of a `$(...)` and of backticks, which the scan reads as text.
   - **Known open bypasses.** Three spellings are known to reach `~/.ssh` or `~/.gnupg` and pass, on `main` as
-    well, and they stay open: `cat ~/.ss{h,b\}c}/config` (the escape gap: the owner has ruled that a quote- and
+    well, and they stay open: `cat ~/.ss{h,b\}c}/config` (the escape gap: the Overtoad has ruled that a quote- and
     escape-aware expansion follows in its own PR); and, behind an `X/..` hop, an unbalanced `{` inside a command
     substitution in a brace list (`~/X/../.ss{h,$(:{)}/config`) and an empty substitution or parameter spliced into
-    the name (`~/X/../.ss$(:)h/config`). The owner has ruled that the same PR fixes those two. The guard's docstring lists all
+    the name (`~/X/../.ss$(:)h/config`). The Overtoad has ruled that the same PR fixes those two. The guard's docstring lists all
     three (gap 12), and `util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_pins_vs_bash.py` shows that each still passes.
   - **GnuPG** (juniper-ml#2493): a long option counts from two letters, not four. GnuPG 2.4.8 runs `--cl` as
     clear-sign, `--ls` as lsign-key and `--det` as detach-sign, and rejects every one-letter prefix of a denied
@@ -365,10 +365,10 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
   - Every git and GnuPG claim was re-derived on this host's git 2.53.0 and GnuPG 2.4.8, with a recording
     `gpg.program` stub for git and an empty GnuPG homedir with no agent for gpg, so no keyring, agent or smartcard
     was reachable: `util/ad-hoc/2026-11-08_flood4r2_ml_code_git_gpg_probe.py`.
-  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` to install it.
+  - The Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` to install it.
 - **The launchers: `max` is the effort default again, `auto` sends no `--effort`, and two prompt-file holes are
   closed.**
-  - **Effort** (owner ruling, 2026-11-08). juniper-ml#2396 had made `scripts/wake_the_claude.bash`'s
+  - **Effort** (Overtoad ruling, 2026-11-08). juniper-ml#2396 had made `scripts/wake_the_claude.bash`'s
     `EFFORT_DEFAULT` `auto`, which Claude Code answers with "Unknown --effort value 'auto'" and ignores.
     `--effort 0` now sends `--effort max`, and `--effort auto` (any alias, any case) sends no `--effort` flag, so
     Claude Code uses its own default. `scripts/claude_interactive.bash` already defaulted to `max` and forwards
@@ -398,7 +398,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
 - **`juniper-service-core`: a `fit` that returns while the run is paused settles `COMPLETED` instead
   of wedging the lifecycle, and the training thread settles only a run it still owns** (the
   "paused-fit wedge" in §4 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`;
-  owner ruling "Fix now", 2026-11-08). The training thread called `mark_completed()`, which refuses
+  Overtoad ruling "Fix now", 2026-11-08). The training thread called `mark_completed()`, which refuses
   `PAUSED`, and ignored the refusal. The machine stayed `PAUSED` with no thread behind it; after a
   resume it read `STARTED`, and every start with data was a 409 until a stop or reset. The thread now
   releases the pause before it records the completion, and the state machine is unchanged. Every
@@ -406,7 +406,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
   that outlives a following start no longer completes or fails the newer run when it ends. The overlap
   itself remains: that `fit` still runs to its end, and its events still reach the shared sink. The
   pause release on a paused completion or failure also wakes such a `fit` if it is waiting at the
-  shared pause gate, and a start is then accepted beside it. The owner has ruled that this race gets
+  shared pause gate, and a start is then accepted beside it. The Overtoad has ruled that this race gets
   its own fix, in its own PR (§8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`); that fix is the
   stop-then-start entry below, with which such a start is refused while the stopped `fit` still runs.
@@ -420,7 +420,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
   - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the juniper-service-core
     release after 0.7.2.
 - **`juniper-service-core`: a `/ws/training` socket whose broadcast send fails or times out is closed 1011
-  instead of being left open on a stream nothing is sent to** (owner ruling 11 in §8 of
+  instead of being left open on a stream nothing is sent to** (Overtoad ruling 11 in §8 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`). `broadcast` dropped such a socket
   from the fan-out without closing it, so the client kept answering heartbeats, was never told it was missing
   frames, and held a socket that its released per-IP slot no longer counted. It is now closed **1011**
@@ -444,7 +444,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
 - **`juniper-service-core`: a start sent while a stopped run's `fit` is still running is refused, so that
   `fit` sees its stop** (the stop-then-start race; §8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, "Fix all four now", which names
-  the defect and no mechanism). The owner's ruling of 2026-11-12 accepts the refusal (that record's next
+  the defect and no mechanism). The Overtoad's ruling of 2026-11-12 accepts the refusal (that record's next
   update adds it to its §8). A stop is seen at `fit`'s next event, and `start_training` cleared it, so a
   start sent before then cancelled the stop: the stopped run's `fit` ran on beside the new run, on the same
   model, its events landed in the new run's monitor, and the pause releases juniper-ml#2531 added woke it if
@@ -462,7 +462,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.5. The meta-packa
     accepted while the stopped `fit` runs, and that `fit`'s thread then settles over the loaded state.
   - Pinned by `juniper-service-core/tests/test_lifecycle_stop_then_start.py` (13 tests; 11 fail without the
     refusal, 2 are controls). Five tests of `test_lifecycle_paused_fit_return.py` now clear the stop before
-    their start, rebuilding the interleaving the refusal prevents, and still pin the ownership guard.
+    their start, rebuilding the interleaving the refusal prevents, and still pin the Overtoadship guard.
     `util/ad-hoc/2026-11-09_flood4r2_n2_mutation_check.py` runs twelve mutants of `manager.py`, each killed;
     `util/ad-hoc/2026-11-09_flood4r2_n2_race_probe.py` reproduces the race on a tree without the fix,
     `util/ad-hoc/2026-11-09_flood4r2_n2_release_census.py` reads every release tag's `start_training`, and

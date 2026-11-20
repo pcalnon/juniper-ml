@@ -5,8 +5,8 @@
 # Sub-Project: ad-hoc tooling
 # Author:     Paul Calnon
 # Created:    2026-08-29
-# Status:     ad-hoc — owner decision 2026-08-29 (note §8.19): "narrow bind only"
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status:     ad-hoc — Overtoad decision 2026-08-29 (note §8.19): "narrow bind only"
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md (§2, §8.19)
 #
 # Usage:

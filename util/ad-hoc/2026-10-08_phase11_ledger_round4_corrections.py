@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-08
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Round 4's correction pass on the ledger's Phase 11, the evidence README and round 3's rederive script.
 
@@ -43,7 +43,7 @@ ROUND4_RECORD = """
     `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 4`. A second run of the CodeQL pass,
     `--round r4`, fixed the 7 alerts the prescreen predicted on them.
 - **Verdicts.** Both returned SOUND-WITH-FIXES. Both found that the reach left out F-CANOPY-012, which changes an
-  action (the reach put to the owner, and item 26), so §4 of
+  action (the reach put to the Overtoad, and item 26), so §4 of
   `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 5.
 - **What round 4 changed:**
   - the reach. F-CANOPY-012 is within reach of the first limb through the CAN-015g/h note, which records h-5, the
@@ -95,8 +95,8 @@ SUBS = [
     ),
     # --- the Rating's lead: the second limb as the first's exception (R4B F1, R4A F2) ---
     (
-        "  second limb of the owner's question; its first limb, from Phase 10's Consensus record, decides F-CANOPY-065.\n",
-        "  second limb of the owner's question: whether its first, Phase 10's question, which decides F-CANOPY-065, extends\n"
+        "  second limb of the Overtoad's question; its first limb, from Phase 10's Consensus record, decides F-CANOPY-065.\n",
+        "  second limb of the Overtoad's question: whether its first, Phase 10's question, which decides F-CANOPY-065, extends\n"
         "  to such a description.\n",
     ),
     # --- Instruments: the lead, the stamp's attribution, T-mode (R4B F3, F4a; R4A F5) ---
@@ -125,12 +125,12 @@ SUBS = [
     ),
     # --- Unresolved: Phase 10's wording, and the second limb as its exception (R4B F1, R4A F2) ---
     (
-        "- **Unresolved, for the owner:** Phase 10's question, whether a shipped CHANGELOG's or a design plan's promise\n"
+        "- **Unresolved, for the Overtoad:** Phase 10's question, whether a shipped CHANGELOG's or a design plan's promise\n"
         "  of something a user sees counts as documented under plan §6.3, which decides F-CANOPY-065's rating; and, since\n"
         "  round 2 (Lane 11-R2B), a second limb, whether a CHANGELOG's description of an internal mechanism counts as\n"
         "  documented behaviour, which decides F-CANOPY-068's. Since round 3 (Lanes 11-R3A and 11-R3B), the first limb\n"
         "  is known to reach further than F-CANOPY-065 (Matrix effect and counts; item 26).",
-        "- **Unresolved, for the owner:** Phase 10's question, whether a shipped CHANGELOG or design-plan promise counts as\n"
+        "- **Unresolved, for the Overtoad:** Phase 10's question, whether a shipped CHANGELOG or design-plan promise counts as\n"
         "  documented under plan §6.3, which decides F-CANOPY-065's rating; and, since round 2 (Lane 11-R2B), a second\n"
         "  limb: if it does, whether that extends to a CHANGELOG's description of an internal mechanism, which decides\n"
         "  F-CANOPY-068's. Since rounds 3 and 4, the first limb is known to reach further than F-CANOPY-065 (Matrix effect\n"
@@ -208,13 +208,13 @@ SUBS = [
     ),
     # --- item 26: the manual first, and F-CANOPY-012 and -013 in the start list (R4A F1, R4B F2) ---
     (
-        "26. **The reach of the owner's §6.3 ruling.** Once the owner rules, check each open finding not yet rated on a\n"
+        "26. **The reach of the Overtoad's §6.3 ruling.** Once the Overtoad rules, check each open finding not yet rated on a\n"
         "    CHANGELOG or a design plan for a promise, of a kind the ruling counts, of the behaviour it breaks. Start with\n"
         "    F-CANOPY-057 and F-CANOPY-018 (Matrix effect and counts), and re-rate what the ruling reaches. Whatever the\n"
         "    ruling, the CAN-015g/h design note's \"every CAN-015g item has merged to `main`\" needs a dated correction:\n"
         "    g-3 never reached cascor `main` (F-CANOPY-057's History).\n",
-        "26. **The reach of the owner's §6.3 ruling, and canopy's manual.** First, without waiting for the ruling, check\n"
-        "    F-CANOPY-012 against canopy's manual (Matrix effect and counts). Once the owner rules, check each open finding\n"
+        "26. **The reach of the Overtoad's §6.3 ruling, and canopy's manual.** First, without waiting for the ruling, check\n"
+        "    F-CANOPY-012 against canopy's manual (Matrix effect and counts). Once the Overtoad rules, check each open finding\n"
         "    not yet rated on a CHANGELOG or a design plan for a promise, of a kind the ruling counts, of the behaviour it\n"
         "    breaks. Start with F-CANOPY-057, F-CANOPY-018, F-CANOPY-012 and F-CANOPY-013, and re-rate what the ruling\n"
         "    reaches. Whatever the ruling, the CAN-015g/h design note's \"every CAN-015g item has merged to `main`\" needs a\n"

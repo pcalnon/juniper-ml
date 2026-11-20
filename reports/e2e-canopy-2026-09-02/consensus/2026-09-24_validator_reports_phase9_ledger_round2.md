@@ -10,7 +10,7 @@ Round 2 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 
 **VERDICT: SOUND-WITH-FIXES.** Almost every number, SHA, timestamp and line citation in Phase 9 re-derives exactly from its primary artifact. Two MAJOR defects need fixing before this lands:
 
-- **The merge record leaves out what actually released the merge.** CI failed on `5e52debb`, and the owner's account re-ran it at 01:22:32Z; the merge followed at 01:38:02Z.
+- **The merge record leaves out what actually released the merge.** CI failed on `5e52debb`, and the Overtoad's account re-ran it at 01:22:32Z; the merge followed at 01:38:02Z.
 - **F-CANOPY-056's claims about the player's session view only hold for sessions built by hand.** With cascor's real `/replay` payload, `render_session` raises `KeyError: 0`.
 
 Nineteen MINOR findings follow, several of which change an action or possibly a disposition: the open P1 count may go from 5 to 6, and there may be a new finding. Under procedure §4 the corrections need another round.
@@ -199,7 +199,7 @@ Canopy line numbers are at `e9053227` and cascor line numbers at `0e016a7c` unle
 | 9133 | "Owed as one canopy follow-up PR" | branch `fix/idle-cuts-round3-wording` already at 15bd8135 (04:19:25Z) before the freeze | MISMATCH in context (F7) | reflog |
 | 9134–41 | lines :75, :120, :127, :138, :193, ws :28, :113-115 at 4b4cfb16; docs claims | all confirmed; USER_MANUAL.md:764, REPLAY_V2_FAQ.md:253, CHANGELOG.md:158, panel :579 | MATCH | git |
 | 9145–48 | idle-trio applies rule; ~7.5 s | the applies count discriminated in the F-055 census | MISMATCH (F21) / MATCH | census JSONs |
-| 9150–55 | owner question on the pass; seven "served" local-only commits | re-run omitted; all 422; cf6fb1dc and 7a4a2e33 never served; list incomplete | incomplete / MISMATCH (F1, F16) | gh |
+| 9150–55 | Overtoad question on the pass; seven "served" local-only commits | re-run omitted; all 422; cf6fb1dc and 7a4a2e33 never served; list incomplete | incomplete / MISMATCH (F1, F16) | gh |
 
 ### Still owed: can a fresh session act on each item from the text alone?
 - **0 — PARTLY.** Missing how to stand up "a leg serving `main`" (command, port, backend) and "a leg where the old code fails".
@@ -208,11 +208,11 @@ Canopy line numbers are at `e9053227` and cascor line numbers at `0e016a7c` unle
 - **4 — PARTLY.** No file and no decision criterion.
 - **5 — ACTIONABLE.**
 - **6 — NOT ACTIONABLE.** It points at the wrong #674.
-- **7, 8 and 9 — PARTLY.** Only pointers or row IDs; "the owner's question" is undefined here.
+- **7, 8 and 9 — PARTLY.** Only pointers or row IDs; "the Overtoad's question" is undefined here.
 - **10, 11 and 12 — ACTIONABLE** via Phase 8.
-- **13 — PARTLY.** Missing the existing branch and its state, the stale phrases, an owner for the instrument gaps, and the PR-edit method (`gh api -X PATCH`, since `gh pr edit` is broken on gh 2.46.0).
+- **13 — PARTLY.** Missing the existing branch and its state, the stale phrases, an Overtoad for the instrument gaps, and the PR-edit method (`gh api -X PATCH`, since `gh pr edit` is broken on gh 2.46.0).
 - **14 — ACTIONABLE**, but see F21.
-- **15 — ACTIONABLE** for the owner questions; the push bullet names no ref and omits SHAs.
+- **15 — ACTIONABLE** for the Overtoad questions; the push bullet names no ref and omits SHAs.
 - **Pointer inconsistency:** items 3, 4, 6, 7, 8 and 9 carry no "(Phase 8 item N)" back-reference.
 
 ## FINDINGS
@@ -272,7 +272,7 @@ Canopy line numbers are at `e9053227` and cascor line numbers at `0e016a7c` unle
 
 8. **MINOR: F-057's P2 contradicts the §6.3 rule that made F-056 P1.**
    - Evidence: USER_MANUAL.md:764 and REPLAY_V2_FAQ.md:253 promise the weight stream at `e9053227`, and the correction has not merged. The section itself concedes the rule "argues P1".
-   - Fix: rate it P1 until the correction merges (open P1s go 5 → 6), or put the question to the owner in item 15.
+   - Fix: rate it P1 until the correction merges (open P1s go 5 → 6), or put the question to the Overtoad in item 15.
    - Changes a number / disposition / action? Possibly both disposition and count.
 
 9. **MINOR: "§4: the round changed no disposition" misstates the termination status.**
@@ -394,7 +394,7 @@ Canopy line numbers are at `e9053227` and cascor line numbers at `0e016a7c` unle
 - **Untested or unknown:** whether the f058 census's clamp-Store simulation fires the gate (it has never run), and who owned the pytest processes at 19:40:52Z.
 - **A table row with no source.** The archived `cascade_sim.py` lacks a "5–9 s → 22.5 s" row that Lane B's report tabulates, so that table came from a version that was not archived. The ledger does not cite the row.
 
-**SECRETS/PII:** No environment variables, tokens, credentials or owner email were printed or sent. Every `gh` call selected fields with `--jq`, and `autoMergeRequest.authorEmail` was never fetched. One commit-message diff was email-redacted. One output showed the `noreply@anthropic.com` co-author trailer, which is not the owner's address. Transcript and reflog scans printed only ids, timestamps, command strings, numbers and one prompt length. Network access was read-only `gh` GETs plus one PyPI JSON GET. No repository was written to; scratch stayed under `…/scratchpad/r2f.xB7Gf1/`.
+**SECRETS/PII:** No environment variables, tokens, credentials or Overtoad email were printed or sent. Every `gh` call selected fields with `--jq`, and `autoMergeRequest.authorEmail` was never fetched. One commit-message diff was email-redacted. One output showed the `noreply@anthropic.com` co-author trailer, which is not the Overtoad's address. Transcript and reflog scans printed only ids, timestamps, command strings, numbers and one prompt length. Network access was read-only `gh` GETs plus one PyPI JSON GET. No repository was written to; scratch stayed under `…/scratchpad/r2f.xB7Gf1/`.
 
 ---
 
@@ -465,7 +465,7 @@ Paths used below:
   - That command was launched in the background at 20:39:42Z as `…/2026-09-22_shepherd_automerge.bash 2058 60 180`. The script's only write is `PUT …/pulls/${PR}/update-branch` (script :70).
   - ml#2058 received update-branch `cdb0a18b` at **21:43:55Z**. So a Claude session's process acted on GitHub inside the window the ledger calls free of tool calls.
   - Background launches with no completion notice can't be excluded this way. Examples: `1f771cb0` at 20:09:37Z, "Watch CI for PR 2057"; `e6c1cb6d` at 21:21:04Z, "Wait until #2060 merges or goes BEHIND".
-  - For the owner question: a signed content commit `4c496443` (login pcalnon) landed on ml#2058 at 21:45:22Z, before the pass began.
+  - For the Overtoad question: a signed content commit `4c496443` (login pcalnon) landed on ml#2058 at 21:45:22Z, before the pass began.
 - The conclusion for #676 probably holds: the shepherd exited at 21:53:09Z and only touches #2058. But the stated basis cannot see this class of process.
 - **Fix:** replace the two sentences, and cite a check of background launches and their completion notices.
 - **Changes a disposition** (the support for the exclusion at LEDGER:9069) **and an action:** yes.

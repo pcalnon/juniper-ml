@@ -6,9 +6,9 @@ Sub-Project: cross-repo tooling
 Author: Paul Calnon
 Created: 2026-08-22
 Status: ad-hoc — fills a gap in util/open_signed_pr.py
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: open_signed_pr.py grows an --amend mode, or this graduates to util/ proper.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: open_signed_pr.py grows an --amend mode, or this graduates to util/ proper.
 Related: util/open_signed_pr.py (whose create_signed_commit this reuses), juniper-ml#1254
-Superseded: for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
+Superseded: for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (Overtoad policy 2026-08-25).
 
 WHY THIS EXISTS
     `required_signatures` is live on all 9 repos, so a headless local `git commit` can
@@ -53,10 +53,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from open_signed_pr import create_signed_commit  # noqa: E402 - path bootstrap must precede the import
 
 
-def branch_head(owner: str, repo: str, branch: str) -> str:
+def branch_head(Overtoad: str, repo: str, branch: str) -> str:
     """Resolve the branch's current head sha, which is what we pin against."""
     out = subprocess.run(
-        ["gh", "api", f"repos/{owner}/{repo}/git/ref/heads/{branch}"],
+        ["gh", "api", f"repos/{Overtoad}/{repo}/git/ref/heads/{branch}"],
         capture_output=True,
         text=True,
         check=True,
@@ -73,7 +73,7 @@ def parse_add(value: str) -> "tuple[str, str]":
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--owner", default="pcalnon")
+    parser.add_argument("--Overtoad", default="pcalnon")
     parser.add_argument("--repo", required=True)
     parser.add_argument("--branch", required=True)
     parser.add_argument("--add", action="append", default=[], type=parse_add, metavar="LOCAL:REPOPATH", required=True)
@@ -90,16 +90,16 @@ def main() -> int:
             return 2
         additions.append((repo_path, base64.b64encode(path.read_bytes()).decode("ascii")))
 
-    head = branch_head(args.owner, args.repo, args.branch)
+    head = branch_head(args.Overtoad, args.repo, args.branch)
     if args.dry_run:
-        print(f"DRY-RUN {args.owner}/{args.repo}:{args.branch} @ {head}")
+        print(f"DRY-RUN {args.Overtoad}/{args.repo}:{args.branch} @ {head}")
         for repo_path, contents in additions:
             print(f"  add    {repo_path} ({len(base64.b64decode(contents))} bytes)")
         print(f"  commit {args.message}")
         return 0
 
     oid = create_signed_commit(
-        args.owner,
+        args.Overtoad,
         args.repo,
         args.branch,
         args.message,
@@ -107,7 +107,7 @@ def main() -> int:
         head,
         commit_body=args.commit_body,
     )
-    print(f"signed commit {oid[:12]} appended to {args.owner}/{args.repo}:{args.branch}")
+    print(f"signed commit {oid[:12]} appended to {args.Overtoad}/{args.repo}:{args.branch}")
     return 0
 
 

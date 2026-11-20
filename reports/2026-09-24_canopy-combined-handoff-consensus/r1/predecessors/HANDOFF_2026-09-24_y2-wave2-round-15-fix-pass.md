@@ -2,7 +2,7 @@
 
 - **Date**: 2026-09-24. Written by session `idempotent-jumping-sparkle` (the canopy arc's handoffs call it "peer session `canopy`"), after a context compaction. This is a mid-work handoff, not the arc's closing one.
 - **Start the new session in the juniper-ml worktree** `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/idempotent-jumping-sparkle`. The session tools hard-code it.
-- **Merge approval** (user, this arc): ONLY this session's four PRs (2b, 2a, 2c, addendum), plus the closing PR. No deploys, images, PyPI or GitHub Releases. The juniper-recurrence release is owner-gated. Never merge other sessions' PRs.
+- **Merge approval** (user, this arc): ONLY this session's four PRs (2b, 2a, 2c, addendum), plus the closing PR. No deploys, images, PyPI or GitHub Releases. The juniper-recurrence release is Overtoad-gated. Never merge other sessions' PRs.
 
 ## Goal statement
 
@@ -11,7 +11,7 @@ Continue the user's request, verbatim: "evaluate the current state of the junipe
 Short names:
 - `S` = `reports/2026-09-23_y2-wave2-consensus/session-state/` in the juniper-ml worktree. It is the persistent copy of the old scratchpad (`/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/798c2868-351c-4d37-9737-a13a7c2c41bc/scratchpad/`, tmpfs) and has the same layout, so pass it as the freeze tool's `--scratch`.
 - `…PERSISTENCE-DESIGN.md` = `notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`; "wave N" is its §11.4 step N.
-- `…queue-drained.md` = `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-owner-rulings-open.md` (juniper-ml#2058), the arc's **live work list**. It carries this session's claims on Y2 waves 2/3 and X10 forward to 2026-09-29T00:00Z.
+- `…queue-drained.md` = `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-Overtoad-rulings-open.md` (juniper-ml#2058), the arc's **live work list**. It carries this session's claims on Y2 waves 2/3 and X10 forward to 2026-09-29T00:00Z.
 
 **Completed:**
 - **Four PRs are prepared, unopened, in three worktrees:**
@@ -101,7 +101,7 @@ Short names:
 - Add harness rows for X10, X18–X21 and the gated starts.
 
 **The addendum, from `S/r15_reports/R15C.md`:**
-- **M1:** re-point the live work list to `…queue-drained.md`, in v13 lines 7, 9, 39–40 and 155, the merge-approval sentence, and X11, which is `…queue-drained.md`'s owner ruling 2. Also:
+- **M1:** re-point the live work list to `…queue-drained.md`, in v13 lines 7, 9, 39–40 and 155, the merge-approval sentence, and X11, which is `…queue-drained.md`'s Overtoad ruling 2. Also:
   - row 1: §12.4's A-N2 loop ran; 7 of 8 seeds pass, and `equities`' Start is refused;
   - "Since the pins" bullets for canopy#674 (19:47:32Z), canopy#675 (20:06Z) and juniper-ml#2058 (21:53:07Z);
   - raise the splice tool's `SINCE_NOW_FLOOR` to the latest merge named;

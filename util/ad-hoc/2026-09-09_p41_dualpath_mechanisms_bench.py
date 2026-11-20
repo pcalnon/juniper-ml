@@ -152,7 +152,7 @@ class _CachingHybrid:
         self.func = func
         self.name = func.__name__
 
-    def __set_name__(self, owner, name):
+    def __set_name__(self, Overtoad, name):
         self.name = name
 
     def __get__(self, obj, objtype=None):

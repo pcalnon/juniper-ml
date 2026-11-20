@@ -1,4 +1,4 @@
-# Thread Handoff — the four owner decisions are shipped; the residue is larger than the predecessor recorded
+# Thread Handoff — the four Overtoad decisions are shipped; the residue is larger than the predecessor recorded
 
 - **Date**: 2026-09-22
 - **Arc**: juniper-canopy model/dataset selection reachability (the "Recurrence cannot be selected" defect)
@@ -27,7 +27,7 @@ constraint; `A-N10` is canopy#368's `nn_model` mirror. **Always write the prefix
 
 ## Goal statement
 
-Continue the juniper-canopy selection-reachability arc. **All four owner decisions taken on
+Continue the juniper-canopy selection-reachability arc. **All four Overtoad decisions taken on
 2026-09-21/22 are shipped and verified on `main`.** What remains is not the predecessor's list
 re-sorted: it is a mix of *accepted-but-unbuilt* deliverables, *record repairs this session's own
 PRs created*, and *cross-repo work claimed by a peer*.
@@ -92,7 +92,7 @@ dataset axis is whatever the mount seeded.
 > symbol, never by line.
 
 **2. `⊥`-at-mount (`OQ-N2` / decision `D-N13`) — RESTORED. The predecessor's item 2, dropped from this document's first draft.**
-This is **owner-ACCEPTED work that is blocked, not closed**
+This is **Overtoad-ACCEPTED work that is blocked, not closed**
 (`…SELECTION-REACHABILITY-DESIGN.md:389-405`, OQ-N2 *"ACCEPTED, with a prerequisite (N10)"*;
 `D-N13` at `:92`). Re-verified open on `main` today: `dashboard_manager.py:1400` seeds
 `value=DEFAULT_DATASET_TYPE`, `:6085` does the same for `restart-ds-type`, and
@@ -160,7 +160,7 @@ only `G7` anywhere in canopy `src/` is a header comment
 
 **4. `Y2` — model persistence for recurrence. Waves 2 and 3.**
 **Design of record: [`notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`](../../../notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md)**
-(juniper-ml#1949, #1950). §11 carries the owner rulings — a **bind mount** mirroring cascor (not a
+(juniper-ml#1949, #1950). §11 carries the Overtoad rulings — a **bind mount** mirroring cascor (not a
 named volume), no-deletion inherited from §6.4, and a third service status `"restored"` with
 `restored_from`. §11.4 fixes the order: recurrence service → juniper-deploy bind mount → canopy wiring.
 
@@ -170,7 +170,7 @@ named volume), no-deletion inherited from §6.4, and a third service status `"re
 - **But it is not released.** Still under `[Unreleased]`; no release since
   `juniper-recurrence-v0.5.0` (2026-09-10); juniper-deploy still pins
   `ghcr.io/pcalnon/juniper-recurrence:0.5.0`. **The published image has no snapshot routes.**
-  Cutting that release is **owner-gated**; the peer has explicitly declined to.
+  Cutting that release is **Overtoad-gated**; the peer has explicitly declined to.
 - **Waves 2 and 3 were never opened** — no branch or PR in juniper-deploy or canopy, and
   `recurrence_service_adapter.py` still has only `train` and `training_status`. Peer session
   `canopy` is doing both now.
@@ -283,7 +283,7 @@ tokens at `dashboard_manager.py:7041-7051` and the missing `Failed` branch at `:
 **VR-5's primary rejection (the D5 allocation of correctness) stands** — only the compounding
 argument is stale.
 
-### D. Awaiting others / owner-gated
+### D. Awaiting others / Overtoad-gated
 
 **9. juniper-data#409** — OPEN, zero comments. **juniper-data#411** — OPEN since 2026-09-21T18:45Z,
 zero comments: *"hf_store / kaggle_store emit the retired `*_full` contract below the decision-11
@@ -406,7 +406,7 @@ preserved, and the in-code rationale ("never seed the field with a value its own
 defensible, so **this may be deliberate — but it was never ruled under OQ-6**, and the ratification
 in `…MODEL-DATASET-SELECTION-DESIGN.md` §5.6.1 does not mention it. After #652 the sidebar rarely
 hands the modal a stranded value, but an availability change **between the gate firing and the modal
-opening** still can. **Needs an owner ruling: does model-primary-by-clearing bind this site too?**
+opening** still can. **Needs an Overtoad ruling: does model-primary-by-clearing bind this site too?**
 
 **23. Two live defects in this session's own merged PRs — FIXED in canopy#656 (see § Validation record).**
 Both were found by the peer, both reproduced here before fixing:
@@ -589,7 +589,7 @@ three sites (route flag fires 1 test, the `⊥` guard 4, the consumer translatio
 end-to-end one).
 
 `X11` (first paint passes no backend) is deliberately **not** a separate item: it overlaps item 3
-(`Y3`) and the design phases the two together, so it belongs to item 3's owner.
+(`Y3`) and the design phases the two together, so it belongs to item 3's Overtoad.
 
 ### Round 3 — the correction pass needed a correction pass
 

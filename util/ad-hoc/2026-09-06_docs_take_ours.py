@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-06
 Status: ad-hoc -- migration (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-06_docs_conflict_resolve.py`, which refuses these on purpose
 
 `2026-09-06_docs_conflict_resolve.py` refuses a hunk whose theirs-side carries a code fence,

@@ -1,4 +1,4 @@
-# HANDOFF — decision 11 round 3: juniper-ml 0.10.0 cut, every stale record closed, two owner actions outstanding
+# HANDOFF — decision 11 round 3: juniper-ml 0.10.0 cut, every stale record closed, two Overtoad actions outstanding
 
 **Date**: 2026-09-23 · **Session**: <https://claude.ai/code/session_01HgnyH3xEAWeNh1HvZAgbDL>
 **Worktree**: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cryptic-juggling-truffle`
@@ -10,17 +10,17 @@
 ## THE GOAL — paste this into the new thread
 
 > **Continue the decision-11 release arc: land three open PRs, and finish the two items blocked on
-> the owner.**
+> the Overtoad.**
 >
 > **Completed so far**
 >
 > - **juniper-ml 0.10.0 is CUT.** The Release `v0.10.0` tag is at `288de462`, and the ceremony reached
->   `PENDING_PYPI_APPROVAL`. `[servers]` now floors `juniper-data>=0.15.0` (ml#2033, owner-ruled:
+>   `PENDING_PYPI_APPROVAL`. `[servers]` now floors `juniper-data>=0.15.0` (ml#2033, Overtoad-ruled:
 >   raise + release). TestPyPI serves 0.10.0; **PyPI returned 404 at handoff, because the deploy is
 >   waiting at the `pypi` gate for Paul**: <https://github.com/pcalnon/juniper-ml/actions/runs/35879664979>.
 > - The 0.10.0 notes describe everything the tag carries. #2049 closed `[Unreleased]` whole into
 >   `[0.10.0]` and re-homed **four #2002 bullets that sat under the RELEASED `[0.9.0]`**.
-> - **R-7 (recurrence#178), owner-ruled cross-repo dispatch: both halves merged.** The receiver is
+> - **R-7 (recurrence#178), Overtoad-ruled cross-repo dispatch: both halves merged.** The receiver is
 >   juniper-recurrence#181; the sender is juniper-data#426 (`notify-consumers.yml`). **The
 >   end-to-end run 403'd**: `CROSS_REPO_DISPATCH_TOKEN` can't reach juniper-recurrence.
 > - R-2, R-3 and R-4 are applied or in PR (§A). R-6 is written as a new §11.7 of
@@ -112,7 +112,7 @@
 | §2 item 3 marker normalisation | Fixed, plus two defects the handoff didn't name: heading qualifiers dropped from Release bodies, and `0.3.2` matching `0.3.21`. | ml#2051 (open) |
 | C-1 data#411 | Closed by data#422 (another session). Unreleased. | `hf_store.py:103`, `:186` on main |
 | C-2 cascor#668 | Closed by cascor#672 (another session). Unreleased. | `juniper_cascor/__init__.py:12` |
-| C-3 canopy#559 | Closed by canopy#663 (advisory check, owner-ruled). Unreleased. | `cc3588a8` |
+| C-3 canopy#559 | Closed by canopy#663 (advisory check, Overtoad-ruled). Unreleased. | `cc3588a8` |
 | C-4 Decision 12 | Has a v1 spec that round 1 rated unsound; zero code. The markdown hits were enumerated: 7 files, worktrees excluded. | data#423, `…PARTITION-PROVENANCE-SPEC.md` |
 | C-5 model-core cap | Unchanged, as deliberately decided. | `pyproject.toml` |
 | "7 UNRELEASED_CHANGES" | Now **6**: the worker released 0.6.1. Counts: cascor 15, canopy 10, cascor-model 7, recurrence 7, observability 2, service-core 1. | unscoped `detect.py`, 2026-09-23 |

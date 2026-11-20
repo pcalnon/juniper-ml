@@ -1,7 +1,7 @@
-# HANDOFF 2026-10-03 — CI-budget arc (CONSOLIDATED): ml#2035 merged before round 6 reported (round 6 was killed by a session limit); round 6 is a post-merge follow-up, and five owner decisions plus two non-owner items stay open
+# HANDOFF 2026-10-03 — CI-budget arc (CONSOLIDATED): ml#2035 merged before round 6 reported (round 6 was killed by a session limit); round 6 is a post-merge follow-up, and five Overtoad decisions plus two non-Overtoad items stay open
 
 - **Consolidated sources**:
-  - `HANDOFF_2026-09-24_ci-budget-arc-consensus-round-6-and-merge-ml2035.md`. Self-declared **Validation: none** ("The owner asked for a token-minimal handoff without a validation round").
+  - `HANDOFF_2026-09-24_ci-budget-arc-consensus-round-6-and-merge-ml2035.md`. Self-declared **Validation: none** ("The Overtoad asked for a token-minimal handoff without a validation round").
   - Carried by reference, as the arc's document of record: `HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md` (below: "the 09-09 handoff"). Validated by consensus rounds 1-5 per `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`; round 5 changed a NUMBER, so its corrections are **not** independently validated (round 6 never ran).
 - **Supersedes**: `HANDOFF_2026-09-24_ci-budget-arc-consensus-round-6-and-merge-ml2035.md`. The 09-09 handoff stays the document of record (it is where round 6 must be recorded); it is not superseded.
 - **Live probe**: 2026-10-03 08:35-08:55 UTC, juniper-ml `origin/main` at `afb02801`.
@@ -16,9 +16,9 @@ prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument
 prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_ci-budget-arc-consolidated.md.
 
 Completed so far:
-- ml#2017 merged 2026-09-23 01:17 UTC (7b226ca0): re-evaluation, three budget raises (owner
+- ml#2017 merged 2026-09-23 01:17 UTC (7b226ca0): re-evaluation, three budget raises (Overtoad
   ruled SHIP), the reprobe script. [VERIFIED 2026-10-03: gh pr view]
-- ml#2035 MERGED 2026-09-23 20:08 UTC as c2bcb96c, through the owner's auto-merge armed 13:23Z,
+- ml#2035 MERGED 2026-09-23 20:08 UTC as c2bcb96c, through the Overtoad's auto-merge armed 13:23Z,
   after a merge-from-main commit 114fbc3d (head). It carries consensus rounds 3-5 and their fixes.
   The squash body holds all five commit messages, including a66a1b86's corrections of 3222064b's
   "held 14" and bdd60b20's "verbatim". 114fbc3d touched none of the PR's files.
@@ -60,7 +60,7 @@ Remaining work (ordered):
    "Added for round N" list. Optionally PATCH ml#2035's merged description, whose line 40 still
    reads "[ ] consensus round 6 ... in progress" [VERIFIED 2026-10-03: gh pr view --json body].
    New branch: util/open_signed_pr.py. Agent-doable.
-4. MERGE the follow-up -- OWNER-GATED (approval in your session). The owner's sweeper may merge
+4. MERGE the follow-up -- OWNER-GATED (approval in your session). The Overtoad's sweeper may merge
    it unseen: validate the pushed branch BEFORE opening the PR.
 5. OWNER DECISIONS 1-5 of the 09-09 handoff's first §1 block -- OWNER-GATED; surface them.
    (1) SLACK_WEBHOOK_URL on the eight siblings [VERIFIED 2026-10-03 for canopy, cascor
@@ -99,13 +99,13 @@ HANDOFF_2026-10-03_ci-budget-arc-consolidated.md (merge mechanics, sandbox, chec
 
 ## Dependencies on other paths
 
-- **P10** (`HANDOFF_2026-10-03_ci-tools-reevaluation-consolidated.md`): no shared work item. Both share the merge mechanics: the owner's sweeper ("Mine: fix forward", 2026-09-24), strict rulesets, signed commits only.
+- **P10** (`HANDOFF_2026-10-03_ci-tools-reevaluation-consolidated.md`): no shared work item. Both share the merge mechanics: the Overtoad's sweeper ("Mine: fix forward", 2026-09-24), strict rulesets, signed commits only.
 - **P6** (perf lane; its source `HANDOFF_2026-09-22_structure-screen-was-blind-to-its-founding-incident-and-five-open-items-in-run-suite.md`): ADJACENT, not dependent. P6 works the REQUIRED gate's engine `util/ad-hoc/2026-09-05_markdown_structure_check.py` / `util/markdown_structure_delta.py`; NON-OWNER 1 here is the ADVISORY soak's engine `util/ad-hoc/2026-09-05_md_structure_check.py`. Pairs that differ by one word — do not edit the wrong one.
 - **P1** (backup arc) `[ALSO P1]`: the 09-09 handoff flags `notes/backup_tests_pre-and-post_reboot.md` (a shell script with a `.md` name and no `JUNIPER_<date>_` prefix) as the backup arc's, design `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`. Still on main [VERIFIED 2026-10-03: git ls-tree]. Not this arc's to fix.
 
 ## Context the remaining work needs
 
-**Owner rulings (quoted from the 09-09 handoff)**: "THE THREE RAISES ARE RULED: the owner approved shipping them on 2026-09-22, over a recorded dissent." OWNER 4: "Ruled OUT on 2026-09-15." The SHIP
+**Owner rulings (quoted from the 09-09 handoff)**: "THE THREE RAISES ARE RULED: the Overtoad approved shipping them on 2026-09-22, over a recorded dissent." OWNER 4: "Ruled OUT on 2026-09-15." The SHIP
 ruling "covers the three raises only" — it does not settle OWNER 2. Both sides of OWNER 2 (HOLD / SHIP and the counter to each) are written out above `REPO_TIMEOUTS` in `util/safe_merge.py` and in the
 09-09 handoff's §1 block; options there: keep raises and decide only the at-ceiling case; size on queue-free span; size on uncontended heads; raise the ceiling (risk above ~3600 s, the worker lease);
 keep the auto-merge net armed on a timeout refusal. [NOT RE-PROBED — 09-09 handoff, validated rounds 1-5]
@@ -139,8 +139,8 @@ NOT-ARMED on an unarmed PR. Never run `safe_merge --execute` on a PR the shepher
 message is built from COMMIT messages, not the PR body, so a correction to a commit-message claim needs a new commit message [UNVERIFIED — from
 `HANDOFF_2026-09-24_ci-budget-arc-consensus-round-6-and-merge-ml2035.md`, which was not validated]. `gh pr edit` is broken on gh 2.46; use `gh api -X PATCH repos/pcalnon/juniper-ml/pulls/<N> -F body=@<file>`, starting from the live body.
 
-**The sweeper** [UNVERIFIED — from `HANDOFF_2026-09-24_ci-tools-reevaluation-all-nine-prs-merged-and-the-banner-still-says-three-are-open.md`, which was not validated]: owner ruling
-2026-09-24, quoted, "Mine: fix forward". It readies, arms and merges open PRs as `pcalnon` with the default squash body. The ruling post-dates ml#2035's arming: an owner-armed auto-merge (enabled
+**The sweeper** [UNVERIFIED — from `HANDOFF_2026-09-24_ci-tools-reevaluation-all-nine-prs-merged-and-the-banner-still-says-three-are-open.md`, which was not validated]: Overtoad ruling
+2026-09-24, quoted, "Mine: fix forward". It readies, arms and merges open PRs as `pcalnon` with the default squash body. The ruling post-dates ml#2035's arming: an Overtoad-armed auto-merge (enabled
 2026-09-23 13:23Z, consistent with the sweeper) merged ml#2035 before round 6 reported. Validate the pushed branch before opening the PR.
 
 **Measurement traps and tool pairs**: the 09-09 handoff's §1 "MEASUREMENT TRAPS THIS RE-EVALUATION PAID FOR" (v2 `filter=latest` inflation; dropping heads lowers max; a run LIST shows the latest
@@ -168,7 +168,7 @@ ls -d ~/.claude/projects/*/36979dd7*                 # exactly one tree + one .j
 
 | Item | Source | Disposition | Evidence |
 | --- | --- | --- | --- |
-| Remaining 4: merge ml#2035 (owner approval, safe_merge / shepherd) | 09-24 handoff | **DONE** — merged by the owner's armed auto-merge before the handoff was written | `gh pr view 2035`: MERGED 2026-09-23 20:08Z, `c2bcb96c`; autoMerge enabled 13:23Z by pcalnon |
+| Remaining 4: merge ml#2035 (Overtoad approval, safe_merge / shepherd) | 09-24 handoff | **DONE** — merged by the Overtoad's armed auto-merge before the handoff was written | `gh pr view 2035`: MERGED 2026-09-23 20:08Z, `c2bcb96c`; autoMerge enabled 13:23Z by pcalnon |
 | "CI GREEN on bf60a716, merge state BEHIND, no main commit touched the PR's files" | 09-24 handoff | **MOOT** — merged; head became `114fbc3d` (merge from main), which changed none of the PR's files | `git diff --stat bf60a716 114fbc3d` empty for those paths |
 | SendMessage-resume of the killed round-6 agent | 09-24 handoff | **MOOT** — its session 36979dd7 has ended | transcript tree moved to the unsuffixed project dir |
 | Squash-message correctness (a66a1b86 corrects earlier commit-message claims) | 09-24 handoff | **DONE** — the squash body includes all five commit messages | ml#2035 `autoMergeRequest.commitBody` |
@@ -182,7 +182,7 @@ ls -d ~/.claude/projects/*/36979dd7*                 # exactly one tree + one .j
 - juniper-ml `origin/main` at `afb02801`; no open juniper-ml PRs [VERIFIED 2026-10-03].
 - PR branch `fix/ci-budget-arc-2026-09-23-round-3-follow-up`: merged as ml#2035; not needed further.
 - Worktree `.claude/worktrees/ancient-yawning-biscuit` still exists, branch `worktree-ancient-yawning-biscuit` at `18d3d5e3` — an **UNSIGNED local-only commit: never push it** [VERIFIED 2026-10-03:
-  `git worktree list`]. Its working tree holds ml#2017/ml#2035 content uncommitted (all merged), the stale `round2-laneA/r2a_spans.py` that predates the owner's CodeQL fix `6f17aea5` (never upload
-  it), the untracked `round5-fix/compare_to_ref.py <ref> <paths...>` helper (compares local files, including untracked ones, to any ref), and the round-6 scratch above. Removal needs the owner's
+  `git worktree list`]. Its working tree holds ml#2017/ml#2035 content uncommitted (all merged), the stale `round2-laneA/r2a_spans.py` that predates the Overtoad's CodeQL fix `6f17aea5` (never upload
+  it), the untracked `round5-fix/compare_to_ref.py <ref> <paths...>` helper (compares local files, including untracked ones, to any ref), and the round-6 scratch above. Removal needs the Overtoad's
   cleanup signal and the cleanup procedure (`worktree remove` deletes ignored files).
 - Tracked lane scripts under `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/` on main: `laneA2/{span_all_attempts,queue_share}.py`, `laneB2/span_decompose.py`, `round2-laneA/{r2a_spans,r2a_common}.py`, `round3-fix/{check_first_pass_window,check_soak_in_flight}.py`, `round4-fix/archive_round_reports.py` [VERIFIED 2026-10-03: git ls-tree].

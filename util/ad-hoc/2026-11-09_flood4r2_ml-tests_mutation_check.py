@@ -21,7 +21,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: auto-memory reference_mutation_check_stale_pyc_and_piped_exit.md; BRIEF_COMMON_R2 rule 12
 """
 

@@ -35,24 +35,24 @@ Aliases, each a filename suffix: `…fold-in-pending.md` = `prompts/thread-hando
 | P1-08 | Run narrow round N+1 on the frozen fold-in delta (8 host-run artifacts + prose) | `…RECOVERY-PLAN.md` §6.2 L241 ("Round N+1 only if round N refutes"), §6.7 | Round N refuted (BLOCKER) [VERIFIED: `A.md`/`B.md`/`C.md`]; 8 artifacts changed after freeze [VERIFIED: manifest]; **not carried** | BLOCKED-ON P1-05..07 | P1-05..P1-07 | juniper-ml | M | SAFETY |
 | P1-09 | Secret-scan, then archive Phase B reports verbatim into a `notes/` round record; first reconcile `C.md`/`pr2114.md` with lane originals | `…fold-in-pending.md` L14; `handoff_validation.md` DEFECT-5 | Untracked, this worktree only [VERIFIED: ls]; both files rewritten 10-04 14:26 CDT — whether restored UNVERIFIED; originals on tmpfs [NOT RE-PROBED — host] | STARTABLE | P1-08 | juniper-ml | S | DATA-INTEGRITY |
 | P1-10 | Open Phase B PR from current main via `open_signed_pr.py` (rebuild ci.yml, REFERENCE.md, AGENTS.md, CHANGELOG from origin/main); merge — lifts the STOP | `…fold-in-pending.md` item 4 | No PR [VERIFIED: search]; `wip/backup-phase-a` local-only (branches API 404), 10 behind main [VERIFIED]; main moved on those 4 files [VERIFIED: diff] | BLOCKED-ON P1-08, P1-09; merge OWNER-ACTION (explicit OK advised) | P1-03 | juniper-ml | M | UNBLOCKER |
-| P1-11 | B9: gitleaks content rule + pre-commit hook in own PR; owner enables `secret_scanning_non_provider_patterns` | `…RECOVERY-PLAN.md` B9; `…fold-in-pending.md` item 4 | Not started: `.gitleaks.toml` last changed ml#1999; no PR [VERIFIED] | STARTABLE (setting: OWNER-ACTION) | — | juniper-ml | S | SAFETY |
+| P1-11 | B9: gitleaks content rule + pre-commit hook in own PR; Overtoad enables `secret_scanning_non_provider_patterns` | `…RECOVERY-PLAN.md` B9; `…fold-in-pending.md` item 4 | Not started: `.gitleaks.toml` last changed ml#1999; no PR [VERIFIED] | STARTABLE (setting: OWNER-ACTION) | — | juniper-ml | S | SAFETY |
 | P1-12 | B11: no-print history key-candidate extractor (0600 output, count only) | `…RECOVERY-PLAN.md` B11; `B.md` DEFECT-5 | Absent on main and worktree [VERIFIED: ls] | BLOCKED-ON P1-14 step-5 count ≠ 0 (or build speculatively) | P1-14 | juniper-ml | S | SAFETY |
 | P1-13 | Triage the six backup fleet drafts: finish/supersede #2129; fix #2124/#2127 CI; land #2119/#2128 docs only after P1-01/02 | brief; `…fold-in-pending.md` item 1 | All OPEN drafts. #2119/#2121/#2128 green 22/22; #2124 red (mypy, bandit B106); #2127 red (black, bandit B105) [VERIFIED 2026-10-04] | OWNER-DECISION (fleet merges); CI fixes STARTABLE | P1-01 | juniper-ml | S | HYGIENE |
 | P1-14 | Owner Phase C: P0.5a items 1, 7, 5 (S-7 rm, S-4 chmod 0600, escrow copy-out + sha compare); `apt install sqlite3`; count-only history probe; `data/` listing; sink checklist (purge nothing) | `…RECOVERY-PLAN.md` §6.3 steps 1–7 | None run at 2026-10-03 08:43Z [NOT RE-PROBED — host state; documents only] | OWNER-ACTION (host) | — | host | S (~20 min) | SAFETY |
 | P1-15 | Owner: install tier 2; OK run FIRST with BOTH sticks mounted, then SKIPPED, then class-1 drill — first backup since 09-18 | `…RECOVERY-PLAN.md` §6.3 step 8; `pr2114.md` BLOCKER-1 | Unblocked: ml#2114 merged 2026-10-03T19:27Z; installer prints both-sticks/OK-first in both modes (main :198–217) [VERIFIED]; install [NOT RE-PROBED — host] | OWNER-ACTION (host) | — | host | S (+hours unattended) | SAFETY |
 | P1-16 | Owner: rule O-10; `disable --now` the T0 snapshot timer before P1-10 merges and the primary syncs | `…RECOVERY-PLAN.md` §6.3 step 9, O-10 | Phase B re-points SRC to the empty server's DB (worktree `yamaguchi_server_db_snapshot.py:61` vs main `:52`) [VERIFIED]; root runs the primary's copy [NOT RE-PROBED — host] | OWNER-DECISION → OWNER-ACTION | before P1-10 merge | host | S | DATA-INTEGRITY |
-| P1-17 | Owner: rotate the TestPyPI token captured in a 09-21 transcript | `…RECOVERY-PLAN.md` O-11/I-31 | No rotation recorded [VERIFIED: grep notes/; P4 handoff 0 hits] [NOT RE-PROBED — owner credential] | OWNER-ACTION (secrets) | — | PyPI | S | SAFETY |
+| P1-17 | Owner: rotate the TestPyPI token captured in a 09-21 transcript | `…RECOVERY-PLAN.md` O-11/I-31 | No rotation recorded [VERIFIED: grep notes/; P4 handoff 0 hits] [NOT RE-PROBED — Overtoad credential] | OWNER-ACTION (secrets) | — | PyPI | S | SAFETY |
 | P1-18 | Owner Phase D: P0 per `…RECOVERY-PLAN.md` §6.4 steps 0–14 (rehearsal, A0, DBPath, credstore key + escrow, non-empty-TargetURL guard, AC-1/2/3/4/6/12/13) | `…RECOVERY-PLAN.md` §6.4 | HELD: STOP on main (`…INTEGRATED-DESIGN.md` L6, L1733) [VERIFIED] | BLOCKED-ON P1-10, P1-03, P1-14; O-1/2/7/13/14 | P1-10, P1-03, P1-14 | host | L | SAFETY |
 | P1-19 | Phase E in design order: P1 (S-4 delete-forever, Dropbox audit), P2 (AC-5/7/9/12), §10.2 D-2 rotation, T3, P4 cleanup + user-lane removal PR | `…RECOVERY-PLAN.md` §6.5 | HELD [VERIFIED] | BLOCKED-ON P1-18 (+O-9, D-5) | P1-18 | host, juniper-ml | L | SAFETY |
 | P1-20 | Apply Appendix C items 1–10 to their targets (README target is a host path) | `…INTEGRATED-DESIGN.md` L2817; `…arc-consolidated.md` item 10 | "None of items 1–10 has been applied" [VERIFIED main] | STARTABLE (README: OWNER-ACTION) | — | juniper-ml, host | S | HYGIENE |
 | P1-21 | Disposition each D-12a inherited item (sdc4 probe, sdc2 grow, cloud reporting, records_sync, 7-repo drift tests, run_script_after, first_backup gate, YAM §8.21.5, sops escrow run) | `…INTEGRATED-DESIGN.md` note D-12a; `B.md` DEFECT-5 | "Carried today" on main [VERIFIED] | OWNER-DECISION (D-12) | — | juniper-ml, host | M | HYGIENE |
 | P1-22 | Correct auto-memory ("Phase A/B landed; STOP cleared", "#2114/#2115 unmerged", "installer 1.1.0"); shrink MEMORY.md | discovered; `…arc-consolidated.md` item 10 | [VERIFIED 2026-10-04: project file L182 heading; MEMORY.md index line; MEMORY.md 25,189 B vs 20 KB] | STARTABLE | — | memory | S | SAFETY |
-| P1-23 | Clean up superseded worktrees on owner signal (salamander, buzzing-painting-meteor, atomic-sauteeing-truffle, agent-ac10a004…, agent-ae6bdb20…) | `…arc-consolidated.md` Git state | All still registered [VERIFIED] | OWNER-DECISION | P1-10 (for cached-swinging-summit) | juniper-ml | S | HYGIENE |
+| P1-23 | Clean up superseded worktrees on Overtoad signal (salamander, buzzing-painting-meteor, atomic-sauteeing-truffle, agent-ac10a004…, agent-ae6bdb20…) | `…arc-consolidated.md` Git state | All still registered [VERIFIED] | OWNER-DECISION | P1-10 (for cached-swinging-summit) | juniper-ml | S | HYGIENE |
 | P1-24 | Rename, move or retire `notes/backup_tests_pre-and-post_reboot.md` (shell script, non-conforming name; pipes escrow sheet to `lpr`) | `HANDOFF_2026-10-03_ci-budget-arc-consolidated.md` L104 | On main since #1969 [VERIFIED] | OWNER-DECISION | — | juniper-ml | S | HYGIENE |
 | P1-25 | Fix `pr2115.md` nits: `--base` override (N-2); `_unquote` sentence for P0 step 9 (N-5); watchdog usage exit 2 vs UNDETERMINED 2 | `pr2115.md` NIT, D-1 | Not carried; main unchanged [VERIFIED] | STARTABLE | P1-01 | juniper-ml | S | HYGIENE |
 | P1-26 | Owner rules tier-2 scheduler semantics: pass only the mounted set, or keep the both-sticks rule; log absolute entries as unsupported (both are tagged blocks) | `pr2114.md` BLOCKER-1 (last para), DEFECT-2 | Main scheduler header :11 unchanged; both-sticks documented [VERIFIED] | OWNER-DECISION | — | juniper-ml | S | DATA-INTEGRITY |
 
-**Session vs owner**:
+**Session vs Overtoad**:
 
 - **Sessions may do**: P1-01..P1-13, P1-20 (repo part), P1-22 and P1-25, all repository-only.
 - **Owner only**: P1-14..P1-19, the fleet merges, the worktree signal, the repository setting and every host action. Tier 1 stays down until P1-18.
@@ -64,9 +64,9 @@ Aliases, each a filename suffix: `…fold-in-pending.md` = `prompts/thread-hando
 | O-1 | 09-22 `.env` rewrite (64-char key, `_OLD`) | Treat both as superseded; random credstore key; retire any escrow entry calling it "the key" | P1-18 step 9 | `…RECOVERY-PLAN.md` §6.6 |
 | O-2 | Recovery path | **A0**; A2 only if the 09-18 fileset is unreadable, then with the B10 helper | P1-18 step 7 | same |
 | O-3 | Release phrase: "Read-only steps may run" vs "only reads" | Confirm; no widening needed | nothing in P0 | same |
-| O-4 | Paused branch | RESOLVED de facto: owner merged ml#2113 [VERIFIED] | — | same |
+| O-4 | Paused branch | RESOLVED de facto: Overtoad merged ml#2113 [VERIFIED] | — | same |
 | O-5 | D-3, D-5, D-7, D-10, D-11, D-12, D-13 | §10 table's recommendations | D-5 → T3 (P1-19); D-12 → P1-21 | `…INTEGRATED-DESIGN.md` §10 |
-| O-6 | Merge approval for the fix-forward and Phase B | Granted 10-03 per `…fold-in-pending.md` [UNVERIFIED — transcript only]; P1-10 lifts the owner's own STOP, so confirm explicitly | P1-03, P1-10 | `…fold-in-pending.md` L9 |
+| O-6 | Merge approval for the fix-forward and Phase B | Granted 10-03 per `…fold-in-pending.md` [UNVERIFIED — transcript only]; P1-10 lifts the Overtoad's own STOP, so confirm explicitly | P1-03, P1-10 | `…fold-in-pending.md` L9 |
 | O-7 | P0.5b's fate (STOP exit condition) | Needed on Procedure A only | P1-10, P1-18 | `…RECOVERY-PLAN.md` §6.6 |
 | O-8 | D-1 flag's durable home | Repository `DAEMON_OPTS` (B1, in worktree) | P1-10 | same |
 | O-9 | S-3c: 811 frozen volumes + 10 old dlists | Re-encrypt as a second §10.2 pass | P1-19 | same |
@@ -75,19 +75,19 @@ Aliases, each a filename suffix: `…fold-in-pending.md` = `prompts/thread-hando
 | O-12 | `.env` mode | `0640 root:duplicati` at `/etc/duplicati/env` (B8, in worktree) | P1-10 | same |
 | O-13 | S-8 `additional-report-url` | Clear it; record the JWT retired | P1-18 step 11 (AC-3) | same |
 | O-14 | `--aes-version` pin | 2 until §10.2, then 3 | P1-18 step 11 | same |
-| N-1 | Restore the watchdog's durable record now | P1-02 (lane's recommendation), or owner deploys with an explicit id (a P2 step, which the STOP holds) | P1-02 | `pr2115.md` D-1 |
-| N-2 | Tier-2 scheduler semantics | Lane: "owner decision; do not make it here" | P1-26 | `pr2114.md` |
+| N-1 | Restore the watchdog's durable record now | P1-02 (lane's recommendation), or Overtoad deploys with an explicit id (a P2 step, which the STOP holds) | P1-02 | `pr2115.md` D-1 |
+| N-2 | Tier-2 scheduler semantics | Lane: "Overtoad decision; do not make it here" | P1-26 | `pr2114.md` |
 | N-3 | Credential reader `O_NOFOLLOW` + uid check | Optional two-line hardening | P1-25 | `pr2115.md` N-1 |
 | N-4 | Six fleet drafts on the backup clients | No source recommendation; land after the arc's fix-forward | P1-13 | brief |
 | N-5 | Cleanup signal for five worktrees | — | P1-23 | `…arc-consolidated.md` |
-| N-6 | `notes/backup_tests_pre-and-post_reboot.md` | P9 says it is P1's to resolve, and it is the owner's file | P1-24 | P9 handoff L104 |
+| N-6 | `notes/backup_tests_pre-and-post_reboot.md` | P9 says it is P1's to resolve, and it is the Overtoad's file | P1-24 | P9 handoff L104 |
 
 ## 3. Cross-path dependencies
 
 - **P1 → P4**: P1-17's TestPyPI token is a release-path credential. `HANDOFF_2026-10-03_release-and-distribution-consolidated.md` never mentions it [VERIFIED: grep]. Rotating it touches no workflow, because CI publishes by OIDC.
 - **P1 ↔ P2**: canopy docs drafts #2122/#2125 and backup drafts #2119/#2128 bump the same `docs/REFERENCE.md`, cheatsheet, overview and QUICK_START version headers in a coordinated sequence (#2128 body). P1-10's shared-file edits must rebase on whichever lands first.
 - **P9 → P1**: P9 handed over P1-24. P9 is also soft-coupled through `ci.yml`, where P1-10, #2121, #2124 and #2127 each add suites.
-- **P8/All → P1**: the rounds P1-03 and P1-08 share the account's usage windows, so launch them when no arc is mid-round. MEMORY.md is shared (P1-22), and the owner's sweeper arms drafts (P1-13).
+- **P8/All → P1**: the rounds P1-03 and P1-08 share the account's usage windows, so launch them when no arc is mid-round. MEMORY.md is shared (P1-22), and the Overtoad's sweeper arms drafts (P1-13).
 - **P1 → others**: none hard.
 
 ## 4. Hazards
@@ -103,7 +103,7 @@ Aliases, each a filename suffix: `…fold-in-pending.md` = `prompts/thread-hando
    - Release limit 2: no transcript is purged until every round, Phase B's included, is archived on main.
    - Nothing under `/mnt/Backups/Ubuntu/` moves.
 7. **The sweeper can merge docs that go stale.** #2128 calls the pre-fix `export` "the live contract", and #2119 says the watchdog id has "no default". Either goes stale if merged before or after P1-01/P1-02 without an update.
-8. **Memory says "STOP cleared".** A session that trusts it could start Phase D under the owner's STOP (P1-22).
+8. **Memory says "STOP cleared".** A session that trusts it could start Phase D under the Overtoad's STOP (P1-22).
 9. **The two handoffs disagree on the merge tool.** `…fold-in-pending.md` says `safe_merge.py --execute`; `…arc-consolidated.md` says safe_merge loses this lane. Per memory, use native auto-merge only after safe_merge refuses.
 
 ## 5. Discrepancies
@@ -136,7 +136,7 @@ Aliases, each a filename suffix: `…fold-in-pending.md` = `prompts/thread-hando
 - **R9**: memory (P1-22).
 - **R10**: P9's notes file (P1-24).
 - **R11**: `pr2115.md` nits (P1-25).
-- **R12**: `pr2114.md` owner calls (P1-26).
+- **R12**: `pr2114.md` Overtoad calls (P1-26).
 - **R13**: the T0 SRC re-point combined with a primary sync (P1-16).
 - **R14**: the watchdog is likely dark now (P1-02).
 
@@ -170,12 +170,12 @@ Aliases, each a filename suffix: `…fold-in-pending.md` = `prompts/thread-hando
 3. **Session**:
    - First protect the Phase B worktree's only copy (hazard 1).
    - Then P1-05/06/07, then P1-08, then P1-09.
-   - Then P1-10, merged on the owner's explicit OK. That lifts the STOP and opens P1-18.
+   - Then P1-10, merged on the Overtoad's explicit OK. That lifts the STOP and opens P1-18.
 
 ## 8. What this report cannot support
 
 - Any host fact: the service state, tier status, whether Phase C ran, the watchdog's output, the sticks' mounts, the timer, and the state of S-4/S-7. All of these come from `…RECOVERY-PLAN.md`, measured 2026-10-03 08:43Z.
-- What the owner's 10-03 approval covers. That rests on a transcript only.
+- What the Overtoad's 10-03 approval covers. That rests on a transcript only.
 - The Phase B worktree's `git status`. The shim refused git there, so that state comes from `ls` and manifest hashes only.
 - Line-level state of the worktree's prose beyond the greps cited.
 - Whether `C.md`/`pr2114.md` were restored to the lane originals.

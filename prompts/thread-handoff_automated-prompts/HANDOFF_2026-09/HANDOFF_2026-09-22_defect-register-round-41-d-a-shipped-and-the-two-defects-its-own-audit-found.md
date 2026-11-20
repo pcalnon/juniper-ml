@@ -35,8 +35,8 @@ closed, one filed open, one filed already-fixed.
 | **D-A** (`APD-DATA-052`) | **SHIPPED + CLOSED** (§1) |
 | D-B … D-G (juniper-data) | **OPEN**, untouched. Round 39 §0 is still the map. D-B…D-D share `juniper_data/api/routes/datasets.py` — sequence them. |
 | C-A … C-C (three clients) | **OPEN**, untouched. C-A and C-B collide on 38 `def` lines. |
-| X-A (`APD-CASCOR-008`) | **OPEN and still NOT cleanly actionable** — round 40 §4 stands verbatim; an owner decision on the unreachable-at-startup case is owed before code. X-B collides with it. |
-| **`APD-ECO-008`** | **NEW, OPEN, and needs an owner decision** (§2). Filed this round. |
+| X-A (`APD-CASCOR-008`) | **OPEN and still NOT cleanly actionable** — round 40 §4 stands verbatim; an Overtoad decision on the unreachable-at-startup case is owed before code. X-B collides with it. |
+| **`APD-ECO-008`** | **NEW, OPEN, and needs an Overtoad decision** (§2). Filed this round. |
 | **`APD-DATA-053`** | **NEW, filed already-FIXED** (§2). |
 | Round 39 §0.4's two no-row items | **STILL no register row.** Not re-probed this round. |
 
@@ -92,7 +92,7 @@ inherited: `juniper-canopy/src/security.py:74` is still
 structural check and **no guard can reference canopy even in principle**. Widening the tuple
 asserts all six existing guards against a repo they were never written for. **Fixing the line
 alone is the cheapest option and it leaves the class open**; the row says so and parks on an
-owner decision.
+Overtoad decision.
 
 The `:53` divergence is recorded as **probably not an auth bypass** (its only caller maps `""` to
 `None`, disabling auth; `enforce_auth_posture` fails the boot when `require_auth` is set) and
@@ -212,7 +212,7 @@ docstrings; juniper-ml's own always-loaded docs carried six more. It also found
 `juniper-data/AGENTS.md:377` — the `docs/REFERENCE.md` *copy* of that env-var row had been fixed
 and the *original* missed. All corrected.
 
-**Eleven attacks did not land** and are recorded as survivals: the owner-ruling quote, canopy#605,
+**Eleven attacks did not land** and are recorded as survivals: the Overtoad-ruling quote, canopy#605,
 the non-vacuity harness (Lane B re-ran it independently, exit 0, line-for-line match), the ruff
 figures, the memory-budget headroom, and #417's completeness and content-preservation.
 
@@ -287,7 +287,7 @@ juniper-ml worktree `fluffy-crunching-wadler`
 — *not* `main`; a worktree cannot share a branch with the primary checkout. **Verify with
 `git status --short` rather than trusting this paragraph.**
 
-Worktrees created this arc and **deliberately not removed** (cleanup needs the owner's explicit
+Worktrees created this arc and **deliberately not removed** (cleanup needs the Overtoad's explicit
 signal, and `git worktree remove` deletes ignored files):
 
 - `juniper-data--feature--tri-state-allow-truncation--20260922-0753--e8db3ba6`
@@ -303,4 +303,4 @@ author adding a hazard there must ratchet something out first.
 
 `MEMORY.md` was **23.5 KB against a 20 KB target** at round 40 and is being edited concurrently by
 other sessions (memory `reference_memory_md_concurrent_edits`). Compaction is by **retiring
-entries, never stripping hooks**, and the owner has not delegated which to retire.
+entries, never stripping hooks**, and the Overtoad has not delegated which to retire.

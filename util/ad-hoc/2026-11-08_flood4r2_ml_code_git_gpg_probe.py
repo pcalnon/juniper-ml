@@ -7,12 +7,12 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4 round 2, ml-code carrier: #2485 (rewritten), #2493, #2502, #2508.
 
 Usage: python3 -I 2026-11-08_flood4r2_ml_code_git_gpg_probe.py <out dir>
 
-Hazard design (the owner's keyring, agent and YubiKey are never reachable):
+Hazard design (the Overtoad's keyring, agent and YubiKey are never reachable):
 - git runs with HOME, XDG_CONFIG_HOME and GIT_CONFIG_GLOBAL in a throwaway directory under <out dir>,
   GIT_CONFIG_NOSYSTEM=1, every inherited GIT_* variable dropped, and gpg.program set to a STUB that
   records its argv and exits 1. A signing request is therefore observed as "the stub was called";

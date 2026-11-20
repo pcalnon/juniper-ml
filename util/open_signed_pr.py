@@ -34,7 +34,7 @@ Usage
         --message "ci(lockfile): sign the regen commit" \\
         --title "ci(lockfile): sign the regen commit" \\
         --body-file /local/path/body.md \\
-        [--delete path/to/remove] [--base main] [--owner pcalnon] [--dry-run]
+        [--delete path/to/remove] [--base main] [--Overtoad pcalnon] [--dry-run]
 
 ``--add`` is repeatable (LOCAL_PATH:REPO_PATH) and ``--delete`` is repeatable
 (REPO_PATH); together they express a file move. At least one of the two is
@@ -80,30 +80,30 @@ def gh(args: list, check: bool = True) -> str:
     return proc.stdout
 
 
-def resolve_base_sha(owner: str, repo: str, base: str) -> str:
-    out = gh(["api", f"repos/{owner}/{repo}/git/ref/heads/{base}", "--jq", ".object.sha"])
+def resolve_base_sha(Overtoad: str, repo: str, base: str) -> str:
+    out = gh(["api", f"repos/{Overtoad}/{repo}/git/ref/heads/{base}", "--jq", ".object.sha"])
     sha = out.strip()
     if not sha:
-        raise GhError(f"could not resolve {owner}/{repo}@{base}")
+        raise GhError(f"could not resolve {Overtoad}/{repo}@{base}")
     return sha
 
 
-def branch_exists(owner: str, repo: str, branch: str) -> bool:
+def branch_exists(Overtoad: str, repo: str, branch: str) -> bool:
     proc = subprocess.run(
-        ["gh", "api", f"repos/{owner}/{repo}/git/ref/heads/{branch}"],
+        ["gh", "api", f"repos/{Overtoad}/{repo}/git/ref/heads/{branch}"],
         capture_output=True,
         text=True,
     )
     return proc.returncode == 0
 
 
-def create_branch(owner: str, repo: str, branch: str, sha: str) -> None:
+def create_branch(Overtoad: str, repo: str, branch: str, sha: str) -> None:
     # Explicit ref= is mandatory (the ml#770 R7 lesson: an omitted/empty ref
     # must never be deferred to the live API).
     gh(
         [
             "api",
-            f"repos/{owner}/{repo}/git/refs",
+            f"repos/{Overtoad}/{repo}/git/refs",
             "-X",
             "POST",
             "-f",
@@ -114,7 +114,7 @@ def create_branch(owner: str, repo: str, branch: str, sha: str) -> None:
     )
 
 
-def create_signed_commit(owner: str, repo: str, branch: str, message: str, additions: list, expected_head_oid: str, deletions: "list | None" = None, commit_body: "str | None" = None) -> str:
+def create_signed_commit(Overtoad: str, repo: str, branch: str, message: str, additions: list, expected_head_oid: str, deletions: "list | None" = None, commit_body: "str | None" = None) -> str:
     """Land ``additions`` (and any ``deletions``) as ONE GitHub-signed commit on ``branch``.
 
     Mirrors util/release_train/propose.py::create_signed_commit -- the whole
@@ -141,7 +141,7 @@ def create_signed_commit(owner: str, repo: str, branch: str, message: str, addit
         "query": CREATE_COMMIT_MUTATION,
         "variables": {
             "input": {
-                "branch": {"repositoryNameWithOwner": f"{owner}/{repo}", "branchName": branch},
+                "branch": {"repositoryNameWithOwner": f"{Overtoad}/{repo}", "branchName": branch},
                 "message": ({"headline": message, "body": commit_body} if commit_body else {"headline": message}),
                 "expectedHeadOid": expected_head_oid,
                 "fileChanges": file_changes,
@@ -172,9 +172,9 @@ def create_signed_commit(owner: str, repo: str, branch: str, message: str, addit
     return commit["oid"]
 
 
-def find_open_pr(owner: str, repo: str, branch: str) -> str:
+def find_open_pr(Overtoad: str, repo: str, branch: str) -> str:
     out = gh(
-        ["pr", "list", "--repo", f"{owner}/{repo}", "--head", branch, "--state", "open", "--json", "url", "--jq", ".[0].url"],
+        ["pr", "list", "--repo", f"{Overtoad}/{repo}", "--head", branch, "--state", "open", "--json", "url", "--jq", ".[0].url"],
         check=False,
     )
     return out.strip()
@@ -189,7 +189,7 @@ def parse_add(spec: str) -> tuple:
 
 def main(argv: list) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", required=True)
     ap.add_argument("--base", default="main")
     ap.add_argument("--branch", required=True)
@@ -246,14 +246,14 @@ def main(argv: list) -> int:
         print(f"ERROR: cannot read --body-file {args.body_file}: {exc}", file=sys.stderr)
         return 2
 
-    slug = f"{args.owner}/{args.repo}"
+    slug = f"{args.Overtoad}/{args.repo}"
     try:
-        existing = find_open_pr(args.owner, args.repo, args.branch)
+        existing = find_open_pr(args.Overtoad, args.repo, args.branch)
         if existing:
             print(f"DUP-GUARD: an open PR already exists for {slug}:{args.branch} -> {existing}")
             return 1
 
-        base_sha = resolve_base_sha(args.owner, args.repo, args.base)
+        base_sha = resolve_base_sha(args.Overtoad, args.repo, args.base)
 
         if args.dry_run:
             print(f"DRY-RUN {slug}")
@@ -272,13 +272,13 @@ def main(argv: list) -> int:
             print("  (nothing written)")
             return 0
 
-        if branch_exists(args.owner, args.repo, args.branch):
+        if branch_exists(args.Overtoad, args.repo, args.branch):
             print(f"REFUSED: branch {args.branch} already exists on {slug}; delete it or pick another name.")
             return 1
-        create_branch(args.owner, args.repo, args.branch, base_sha)
+        create_branch(args.Overtoad, args.repo, args.branch, base_sha)
 
         oid = create_signed_commit(
-            args.owner, args.repo, args.branch, args.message, additions, base_sha, args.delete, commit_body
+            args.Overtoad, args.repo, args.branch, args.message, additions, base_sha, args.delete, commit_body
         )
         print(f"signed commit {oid[:12]} on {slug}:{args.branch}")
 

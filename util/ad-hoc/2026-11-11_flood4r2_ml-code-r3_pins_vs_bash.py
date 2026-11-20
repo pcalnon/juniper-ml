@@ -7,9 +7,9 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3: validator pins and the open-bypass list)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tests/test_claude_agent_guard_brace_cap.py (SEQUENCE_CASES, REFUSED_SEQUENCES, SEQUENCE_DENIES); validator
-         findings ml-code-port-lens F2 (five pin rows), F3 and F4 (two bypasses already on main) and F5; owner
+         findings ml-code-port-lens F2 (five pin rows), F3 and F4 (two bypasses already on main) and F5; Overtoad
          ruling 18 (the escape gap); the validator's bypass probe, whose bash harness this keeps.
 
 Usage:

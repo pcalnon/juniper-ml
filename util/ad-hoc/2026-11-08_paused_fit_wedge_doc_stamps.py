@@ -9,7 +9,7 @@ Version:     0.1.0
 License:     MIT License
 Created:     2026-11-08
 Status:      ad-hoc -- one-off rebase aid
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     the "paused-fit wedge", §4 of notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md
 
 The fix bumps the header and footer stamps of ``docs/REFERENCE.md``,

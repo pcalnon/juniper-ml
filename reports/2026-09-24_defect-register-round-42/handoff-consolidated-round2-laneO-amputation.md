@@ -106,11 +106,11 @@ None.
 - **D3 L73:** its tracked register, primer and `docs/REFERENCE.md` edits were "equal to main's current content" at 11:10Z. #2088 has since changed all three on `main`.
 - **Add after L464:** "- `juniper-ml/.claude/worktrees/hazy-beaming-map` (session `8f86dec2`, ended): document 3's worktree. Its 16 `util/ad-hoc/2026-09-24_*` scripts are on `main`. Its tracked M's are pre-#2088 copies of `main`'s files, not unshipped work. It is a cleanup candidate under this gate."
 
-**L9. The owner of the notify-consumers 403 has handed off.** This is state from before 02:10Z that C2 does not reflect, like R1-O L1 was for #2096.
+**L9. The Overtoad of the notify-consumers 403 has handed off.** This is state from before 02:10Z that C2 does not reflect, like R1-O L1 was for #2096.
 - **C2 L147:** "…"containers [2703c8]", which owns the 0.16.0 notify-consumers 403". C2 L284 says "The containers session owns it."
 - juniper-ml#2100 opened at 01:39:45Z. It is OPEN, and its body says "Do not merge yet".
-- It carries `HANDOFF_2026-09-24_data-0-16-0-on-pypi-and-pinned-the-stack-generates-equities-wave-4-waits-on-the-token.md`, whose header reads "session `containers [2703c8]`". Its item 2: "`CROSS_REPO_DISPATCH_TOKEN` cannot dispatch to juniper-recurrence … every data release fails the same way until the owner fixes the token … A replay needs the owner's approval each time."
-- **Change L147 and L284 to:** "…handed off at about 01:40Z in juniper-ml#2100 (that handoff's item 2 carries the 403): route it to that handoff's successor. The next data release (Appendix B) will fail the same way until the owner fixes the token."
+- It carries `HANDOFF_2026-09-24_data-0-16-0-on-pypi-and-pinned-the-stack-generates-equities-wave-4-waits-on-the-token.md`, whose header reads "session `containers [2703c8]`". Its item 2: "`CROSS_REPO_DISPATCH_TOKEN` cannot dispatch to juniper-recurrence … every data release fails the same way until the Overtoad fixes the token … A replay needs the Overtoad's approval each time."
+- **Change L147 and L284 to:** "…handed off at about 01:40Z in juniper-ml#2100 (that handoff's item 2 carries the 403): route it to that handoff's successor. The next data release (Appendix B) will fail the same way until the Overtoad fixes the token."
 
 ### NIT
 - **N1.** ECO-014 lost D2 L78's "API bodies", which became "a 409 body" (C2 L206). S L17-18 lists three bodies: `main.py:3712/:3714` (the 409), `recurrence_backend.py:219→:287`, and the adapter's `{"error": str(e)}`.
@@ -167,7 +167,7 @@ The choice goes against [24f8d8]'s own 20:37Z plan ("my closes PR … waits on t
 | F9 anchor (D1 `:57-58`; D2 `:58`) | `:57-58` | Yes |
 | Recurrence lock path | D2's full path, `:70/:74` | Yes: verified `==0.4.0` and `==0.7.0` there |
 | Canopy F5 (D1: no `_ENCODING_PROBES`; D2: `NON_ASCII :172` only against "key1") | D2 | Yes |
-| Who asks the owner (D1 and D2 overlap on the stray branches) | Tags: [F] for the canopy items, [R] for the CodeQL blocks including #2097's | Yes; D1 had Lane R surface #2097's block |
+| Who asks the Overtoad (D1 and D2 overlap on the stray branches) | Tags: [F] for the canopy items, [R] for the CodeQL blocks including #2097's | Yes; D1 had Lane R surface #2097's block |
 | When the closes PR opens | Early | Yes, with L3's fix |
 | #690 lanes (D2: "on each commit") | "on the merged result, covering each commit's change" | Yes, now that it has merged |
 

@@ -33,7 +33,7 @@ what changed. The ledger of record is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E
   `util/ad-hoc/2026-10-04_replay_redrive_stack.bash`, `util/ad-hoc/2026-10-04_replay_redrive.py`. The stack is down
   (ports 8214/8063 have no listener); the trio was never touched.
 
-**Remaining work, ordered** (item numbers are the parent handoff's; OG = owner-gated, AG = agent-doable):
+**Remaining work, ordered** (item numbers are the parent handoff's; OG = Overtoad-gated, AG = agent-doable):
 
 2. **AG — Phase 10 ledger PR** (parent § Context A2): F-CANOPY-060, F-061/062 as FIXED-BY canopy#685, the "Nothing was
    loaded…" copy divergence, O2–O5 and O9; archive predecessor A (branch `dd4413e5`). Re-probe every `[VERIFIED 2026-10-03]`
@@ -47,7 +47,7 @@ what changed. The ledger of record is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E
 
 Also open, not in the parent's queue: **F-CANOPY-057** (replay weight stream) needs a cascor change first.
 
-Lanes B and C, and the owner batch O1–O16, are unchanged — see the parent.
+Lanes B and C, and the Overtoad batch O1–O16, are unchanged — see the parent.
 
 **Merge approval**: this session had it for its own PRs. **It is not carried** — ask before the first merge.
 

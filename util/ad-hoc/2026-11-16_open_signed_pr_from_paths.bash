@@ -6,8 +6,8 @@
 # Sub-Project: ad-hoc tooling
 # Author:     Paul Calnon
 # Created:    2026-11-16
-# Status:     ad-hoc -- one-off (cascor-model required check, owner ruling 2026-11-16)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status:     ad-hoc -- one-off (cascor-model required check, Overtoad ruling 2026-11-16)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/ad-hoc/2026-11-15_py315_open_signed_pr_from_paths.bash (the same wrapper with its branch fixed to
 #             ci/python-3-15-informational); util/open_signed_pr.py. The tool uploads WHOLE files: fetch the target
 #             repo and check its main has not moved under the paths first.

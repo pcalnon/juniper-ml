@@ -44,8 +44,8 @@ Paths below are relative to `/home/pcalnon/Development/python/Juniper/juniper-ml
 - **Fix:** date the sentence and name both proposals.
 
 **6. MINOR — the ruling's record is never named**
-- "(round 1, ruling 3, "Row + fix all three")" (L1329) and "The owner ruled the same day" (L1260) name no document.
-- The ruling is recorded verbatim in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-four-ruled-four-open.md`, § "Round 1: the owner's rulings", item 3. The `APD-ECO-015` precedent names its record.
+- "(round 1, ruling 3, "Row + fix all three")" (L1329) and "The Overtoad ruled the same day" (L1260) name no document.
+- The ruling is recorded verbatim in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-four-ruled-four-open.md`, § "Round 1: the Overtoad's rulings", item 3. The `APD-ECO-015` precedent names its record.
 - **Fix:** name that file and section in both places.
 
 **7. MINOR — `APD-ML-008` row (L1325)**

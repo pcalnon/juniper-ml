@@ -38,7 +38,7 @@ against the better instrument; my first DB-only reading was the weaker one. RPO 
 | # | B2 claim | my re-derivation | verdict |
 |---|---|---|---|
 | **R3** | B3's unspecified "content diff" is wrong on ~191 of 192 landed branches | `git branch --merged origin/main` = **192**. On `ceiling-look` (fully merged): `git diff --quiet origin/main ceiling-look` → **exit 1** ("not landed", wrong); `git diff --quiet origin/main...ceiling-look` → **exit 0** (correct). | **CONFIRMED** |
-| **R7** | §7.1's sole stated cost is a category error | `conf/memory_budget.json` contains **0** occurrences of "worktree"; top-level keys are `_README`, `files`. It caps character counts on always-loaded files. It counts no worktrees. The diverging-`AGENTS.md` effect is real but per-LIVE-SESSION and borne by the owner — it is not a cost of the stale pile. | **CONFIRMED** |
+| **R7** | §7.1's sole stated cost is a category error | `conf/memory_budget.json` contains **0** occurrences of "worktree"; top-level keys are `_README`, `files`. It caps character counts on always-loaded files. It counts no worktrees. The diverging-`AGENTS.md` effect is real but per-LIVE-SESSION and borne by the Overtoad — it is not a cost of the stale pile. | **CONFIRMED** |
 | **R9** | The §1.2 motivating incident was RECOVERED, not lost | `/home/pcalnon/Development/python/Juniper/juniper-ml/reports/e2e/_recovered/20260827-28_arc_worktree_leg_logs/` holds **exactly 7 `*_system.log` files, 2.2 MB**, dated 2026-08-30 04:19. | **CONFIRMED** |
 
 **Correction to B2 on R9/R10's repo:** B2 looked in `juniper-canopy/notes/` and reported the
@@ -67,10 +67,10 @@ exactly the instrument-answers-an-adjacent-question class the document's §8.1 e
 the eighth member of that family; R3 (two-dot vs three-dot) is the ninth, and B2's
 `branch -vv | grep '\['` is the tenth. All three are inside the document that states the rule.
 
-**The reversal that matters for the owner's original proposal.** My first draft said checks
+**The reversal that matters for the Overtoad's original proposal.** My first draft said checks
 4/5/7 were "aimed at the wrong operation". R2 shows the sanctioned vehicle performs worktree
 removal, `branch -D` and `push origin --delete` as ONE composite operation. So those checks were
-aimed at the operation the tooling actually performs — the owner's instinct was better than my
+aimed at the operation the tooling actually performs — the Overtoad's instinct was better than my
 first analysis credited, and the correct move is to gate the composite, not to descope them.
 
 **Check 6 should be RETAINED, re-scoped** (B2 R5). Given R2, `push origin --delete` destroys a

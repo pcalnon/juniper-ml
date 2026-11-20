@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- investigation (canopy E2E arc, Phase 9: the round-3 follow-up to canopy#676)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy branch fix/idle-cuts-round3-wording; reports/e2e-canopy-2026-09-02/consensus/
          2026-09-24_validator_reports_phase9_canopy_followup.md (Lanes C and C2)
 

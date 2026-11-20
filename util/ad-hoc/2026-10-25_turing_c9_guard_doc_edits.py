@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-25
 Status: ad-hoc — landing helper (turing bring-up task C9)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18.2, task C9);
          util/claude_agent_guard.py; tests/test_claude_agent_guard.py;
          util/ad-hoc/2026-10-20_k12_guard_doc_edits.py (the K12 counterpart, whose shape this follows)
@@ -84,7 +84,7 @@ CHANGELOG_ENTRY = (
     "  registration either, and a registered server runs a command the guard never sees.\n"
     "  - `util/claude_agent_guard.py` 1.2.0 adds three rules:\n"
     "    - `MCP-EDIT-PATH` judges Serena v1.7.0's 19 edit tools. A path argument, resolved against the project roots literally\n"
-    "      and through `realpath`, may not reach `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the owner's git\n"
+    "      and through `realpath`, may not reach `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the Overtoad's git\n"
     "      configuration, `~/.claude.json` or a `.mcp.json`. `replace_in_files`' include glob and `repl` are judged too, and\n"
     "      Serena's `execute_shell_command` gets the Bash rules.\n"
     "    - `MCP-REGISTER-BASH` denies `mcp add`, `add-json` and `add-from-claude-desktop` after any command word, `--mcp-config`,\n"
@@ -98,7 +98,7 @@ CHANGELOG_ENTRY = (
     "    (8 denied), every Serena edit tool, 32 path cases, 20 `replace_in_files` cases and 7 shell cases. The self-test runs\n"
     "    50 checks.\n"
     f"  - `{MUTATION}` kills @MUTANTS@ mutants, each by its own pin test.\n"
-    "  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install it.\n"
+    "  - The Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install it.\n"
 )
 CHANGELOG_MARKER = "**The agent guard covers Serena's edit tools and MCP registration (task C9)**"
 

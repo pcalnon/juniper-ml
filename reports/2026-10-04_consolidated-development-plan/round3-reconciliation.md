@@ -21,16 +21,16 @@
 | The preflight's scope and overrides | A (R3A-04), B (R3B-09) | `util/experiment_stack.bash` and `util/isolated_stack.bash` on `main` | `run_env_preflight` is called from `recurrence_up()` only (experiment_stack L815–832; isolated_stack L434–438, and only with `--with-recurrence`). The overrides are `JUNIPER_EXP_SKIP_ENV_PREFLIGHT` and `JUNIPER_E2E_SKIP_ENV_PREFLIGHT`. **Confirmed** |
 | Fleet drafts that touch §8's serialized files | B (R3B-09) | `gh api repos/pcalnon/juniper-ml/pulls/{2147,2149}/files` | ml#2147 edits `util/experiments/run_experiment.py` and `run_suite.py`; ml#2149 edits `util/experiment_stack.bash`, `util/isolated_stack.bash` and `util/recurrence_env_preflight.bash`. Both also edit `ci.yml`, `CHANGELOG.md` and `docs/REFERENCE.md`. Both are open `cursor[bot]` drafts. **Confirmed** |
 | Which commit brought which P12 IDs | A (R3A-07) | The commit history of `…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` on `main`, and each commit's added lines | `bba22f4a` (ml#2130) added F-P8, W5.8 and W5.9. `a0a120d5` (ml#2151, 22:31:33Z) added F-S10 and W1.14. **Confirmed, and refines R3A-07**: the plan's v1.2 credited all five to ml#2130 |
-| The P12 handoff's owner order | A (R3A-08) | `…equities-p0-executed-go-verdict-p1-next.md` L32 and L34 | L32: the dates; R6; R2, R3, R7, R8; "R1 optional"; W5.8, W5.9 and W1.14. R5 follows the W5.1 review in item 3 (L34). DC-0.6, O8, O12 and P4-Q6 are not named. **Confirmed** |
+| The P12 handoff's Overtoad order | A (R3A-08) | `…equities-p0-executed-go-verdict-p1-next.md` L32 and L34 | L32: the dates; R6; R2, R3, R7, R8; "R1 optional"; W5.8, W5.9 and W1.14. R5 follows the W5.1 review in item 3 (L34). DC-0.6, O8, O12 and P4-Q6 are not named. **Confirmed** |
 
 ## Dispositions
 
 | Finding | Sev | Disposition | Applied in v1.3.0 |
 | --- | --- | --- | --- |
-| R3A-01 A "patch" recurrence release would be cut from `main` as 0.6.0, P12's version | MAJOR | Accepted (with R3B-04) | §5: the R-RECURRENCE-SEC row is replaced by "F-S10's release vehicle", an owner ruling at §6 A1 between (a) 0.5.1 from the `juniper-recurrence-v0.5.0` tag, an exception to the clean-`origin/main` rule, and (b) the P12-chain release. §5 recommended order item 3; §9 row; XC-P12 action 2 |
+| R3A-01 A "patch" recurrence release would be cut from `main` as 0.6.0, P12's version | MAJOR | Accepted (with R3B-04) | §5: the R-RECURRENCE-SEC row is replaced by "F-S10's release vehicle", an Overtoad ruling at §6 A1 between (a) 0.5.1 from the `juniper-recurrence-v0.5.0` tag, an exception to the clean-`origin/main` rule, and (b) the P12-chain release. §5 recommended order item 3; §9 row; XC-P12 action 2 |
 | R3A-02 Phase 1 stalled behind R5 | MAJOR | Accepted | §4 Wave 2 P12 row ("M0 · Phase 1 → M1 · in parallel: the review → R5 → W5.4"); §2 P12 row; XC-P12 action 3; §7.1 item 11; §9 R5 row |
 | R3A-03 F-S10 reaches three routes | MINOR | Accepted (with R3B-05) | Overview; S0.11 tests `map_data_error` itself and all three routes; §8 recurrence row |
-| R3A-04 The preflight refuses recurrence legs only | MINOR | Accepted (with R3B-09) | §7.2: scoped to `recurrence_up()`; both override variables named; owner OK required |
+| R3A-04 The preflight refuses recurrence legs only | MINOR | Accepted (with R3B-09) | §7.2: scoped to `recurrence_up()`; both override variables named; Overtoad OK required |
 | R3A-05 canopy#701 is `dirty` | MINOR | Accepted | XC-FLEET: "Fix: rebase onto `main`, resolving `CHANGELOG.md` (or close)" |
 | R3A-06 "Padded" is the wrong condition | NIT | Accepted | "An env-var key with leading whitespace or a line break" in the Overview, S0.11, XC-CRED, §12's risk row and its "cannot support" list, and Appendix B row 10 |
 | R3A-07 ml#2151 brought F-S10 and W1.14 | NIT | Accepted, refined | Documents table; §10 P12; Appendix A P12 (ml#2130 brought F-P8, W5.8, W5.9; ml#2151 brought F-S10, W1.14) |
@@ -38,7 +38,7 @@
 | R3A-09 ml#2151 merged inside round 2's freeze | NIT | Accepted | Validation record, round 2 |
 | R3B-01 The pre-push scan misses B9's class, and the tool could load the scanned directory's config | BLOCKER | Accepted (re-derived) | The probe tool's `--scan-dir` now always passes an explicit config (defaults plus the interim B9-class rule). XC-PRESERVE method; §9 "Every public push" is permanent, with no lapse; a new §9 edge puts the scan before P1-09 and P1-10; §12 risk row; H-17 |
 | R3B-02 Row k is transcripts | MAJOR | Accepted | XC-PRESERVE method: P1-09 archives the lane reports' final text, extracted from the transcripts; the transcripts never enter a repository (H-21) |
-| R3B-03 XC-LEAKS is unordered, and data's cron would publish the links | MAJOR | Accepted (re-derived) | XC-LEAKS work table in order: the history scan (defaults plus B9, `--redact`, report to an owner-only `0600` path) → owner rotation → config PRs with B9 required, data's last, which turns off the summary and artifact for `schedule` → owner settings. Step 1 names its config source and says `--scan-dir` cannot scan history. New §9 edge |
+| R3B-03 XC-LEAKS is unordered, and data's cron would publish the links | MAJOR | Accepted (re-derived) | XC-LEAKS work table in order: the history scan (defaults plus B9, `--redact`, report to an Overtoad-only `0600` path) → Overtoad rotation → config PRs with B9 required, data's last, which turns off the summary and artifact for `schedule` → Overtoad settings. Step 1 names its config source and says `--scan-dir` cannot scan history. New §9 edge |
 | R3B-04 R-RECURRENCE-SEC is the P12 chain by definition | MAJOR | Accepted (with R3A-01) | As R3A-01 |
 | R3B-05 The text is the data client's; cascor relays it; H-22 lapses early | MAJOR | Accepted (re-derived) | Overview; XC-P12 action 2 (the data-client source fix covers cascor once it runs the patched client; cascor's loader is unstripped); §6 A1; S0.11; §5 vehicle row; §7.1 item 3; §8 cascor and data-client rows; H-22 (every relay, bodies and logs, until the **running** services carry the fix); the metric now counts 3 leak paths; XC-CRED; §12 |
 | R3B-06 Owner rulings with no slot | MAJOR | Accepted | Wave 0 sitting: step 1 rules A1, all of A2, A5's O13, A6 and A7; steps 2–7 are A3; step 8 rules A4, the rest of A5 and A8. A session drafts A6's set before the sitting. §6 Group A header; A5's note on O13 |
@@ -51,7 +51,7 @@
 
 ## Unresolved dissent
 
-None. R3A-01 and R3B-04 proposed the same two options, and the plan leaves the choice to the owner.
+None. R3A-01 and R3B-04 proposed the same two options, and the plan leaves the choice to the Overtoad.
 
 ## What this reconciliation cannot support
 

@@ -31,7 +31,7 @@ Completed so far (verified on main by CONTENT, not by a sha stamp):
   accounting), fence walk rewritten to CommonMark, symlink aliases deduped AND named.
 - NOT in the predecessor at all: notes/legacy/CASCOR_DEMO_TRAINING_ERROR_PLAN.md:1046 had
   two documents welded onto one line, leaving a ```python fence open across 161 lines and
-  ten H2s. It sat INSIDE the set an owner was asked to ratify as benign.
+  ten H2s. It sat INSIDE the set an Overtoad was asked to ratify as benign.
 - Item 6c: REOPENED by ml#1881 (branched before ml#1880, reverted three of its six sites
   nine hours later). Restored with current numbers.
 - Item 6e: was ONE missing suite in the handoff, THREE in ml#1883; it was 49. The list
@@ -193,11 +193,11 @@ by asking whether each reported atom is still present as a raw line.
 
 ## 5. Decisions made — do not re-litigate
 
-- **Item 5 (record the ratification) is DISSOLVED, not deferred.** The owner ruled "fix live
+- **Item 5 (record the ratification) is DISSOLVED, not deferred.** The Overtoad ruled "fix live
   `notes/` only, ratify the rest" without knowing the ratified set held real defects. It held
   five, including 161 swallowed lines in `notes/legacy/CASCOR_DEMO_TRAINING_ERROR_PLAN.md`.
   They are repaired rather than recorded. The only thing left to accept is 17 findings in 2
-  files that are provably screen artifacts. **Open question put to the owner in #1886's body,
+  files that are provably screen artifacts. **Open question put to the Overtoad in #1886's body,
   unanswered at handoff:** whether that residue should still be written down as a standing
   note. It needs no action to stay correct.
 - **The jinja2 fence is fixed by lengthening the WRAPPER**, resolving the predecessor's

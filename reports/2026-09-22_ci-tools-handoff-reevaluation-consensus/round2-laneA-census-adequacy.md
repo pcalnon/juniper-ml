@@ -3,7 +3,7 @@
 
 **Entry point:** instrument adequacy: its own instrument, then mutations of the census.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T20:41:46Z to 2026-09-22T21:09:05Z, read-only. Agent `agent-a2e258a1c14e72162`.
 
@@ -28,7 +28,7 @@ OUTPUT (final message only is returned): numbered findings — claim tested, ver
 
 ## Final report
 
-**Overall verdict: ADEQUATE WITH FIXES.** Today's job works: it exits 1 on remote main with the correct 18 stale lines and exits 0 once the six PRs merge. But it can report clean while stale drift exists (findings 1, 3–6), and its `--self-test` doesn't cover the verdict code that produces every stale line it reports (finding 2). Fix 1 and 2 before a successor treats it as THE verification command. Failing that, the handoff (`HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`) has to say that exit 0 means "every judged line equals `--expect`". It does not mean "no stale range exists", and it does not mean "the pins admit the latest release".
+**Overall verdict: ADEQUATE WITH FIXES.** Today's job works: it exits 1 on remote main with the correct 18 stale lines and exits 0 once the six PRs merge. But it can report clean while stale drift exists (findings 1, 3–6), and its `--self-test` doesn't cover the verdict code that produces every stale line it reports (finding 2). Fix 1 and 2 before a successor treats it as THE verification command. Failing that, the handoff (`HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`) has to say that exit 0 means "every judged line equals `--expect`". It does not mean "no stale range exists", and it does not mean "the pins admit the latest release".
 
 **Changed:** nothing in any repo or the worktree. The script is byte-identical to PR #2020's head 50430e02 (sha256 e7ffe451…). Everything I built is in `…/scratchpad/lanes/r2b/`.
 

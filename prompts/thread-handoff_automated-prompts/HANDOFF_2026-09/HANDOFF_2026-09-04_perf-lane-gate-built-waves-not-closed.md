@@ -75,7 +75,7 @@ unless stated otherwise.**
    mention none of `make_baseline` / `compare_baseline` / `read_run_metrics` / `baselines/`
    (the only "Q-8"-looking hits are `OQ-8`, an unrelated design question). PRs #1691/#1696/#1678/#1680
    are peer P4 work already in flight — coordinate, do not duplicate.
-3. **Free — two owner decisions.** **2.5**: PF-4's comparison semantics, given a stored baseline is
+3. **Free — two Overtoad decisions.** **2.5**: PF-4's comparison semantics, given a stored baseline is
    by construction a different run and inherits the drift floor. **0.5**: `xor-staged.yaml`'s
    undocumented `max_epochs: 200` / no `output_epochs`, parked in
    `PENDING_EPOCH_SPLIT_DECISIONS` in `tests/test_experiment_config_schemas.py` — deliberately not
@@ -84,7 +84,7 @@ unless stated otherwise.**
    **whether the run tier ever gates CI.** Item 1.4 deliberately leaves `run_suite`'s exit code
    untouched by a verdict *pending that decision* — a test is named for it.
 4. **Free — item 0.1 is the reason Wave 0 is not closed**: the P2 plan's own §6 acceptance still
-   reads `- [ ] **Reviewed — owner**`.
+   reads `- [ ] **Reviewed — Overtoad**`.
 5. **~S, host time — item 3.3**, the cheapest measurement left and unblocked by 3.1: launch a
    recurrence run with `--grafana-bridge` and confirm timings appear under
    `environment="host-experiment"`. Zero recurrence series have ever been observed there.
@@ -290,7 +290,7 @@ of the tail re-probe
 - **F-P4-7** (why the noise-free spiral is harder), **E-C's 0.10/0.20 rows at cap 128**,
   **W-12/Q-7** (csv_import corpus), **F-P1-2** (Grafana render), **G-16's refusal half now
   untestable in `JuniperData`**.
-- **The owner's standing rider on the withdrawn 0.5% threshold** — *"come back and verify after this
+- **The Overtoad's standing rider on the withdrawn 0.5% threshold** — *"come back and verify after this
   gate goes live"* (§7 of the loaded-and-bridged results) — is neither honoured nor retired. Speed
   is now structurally ungated, so it is arguably moot; decide and record which.
 
@@ -319,12 +319,12 @@ instruments.
 
 ### 7.1 Follow-on session, 2026-09-05 — decisions taken and shipped
 
-Four PRs, all owner-approved. **Two are corrections TO THIS DOCUMENT** (§9's numeric findings), and
+Four PRs, all Overtoad-approved. **Two are corrections TO THIS DOCUMENT** (§9's numeric findings), and
 two close gaps §9 was right about.
 
 | PR | decision | changed |
 |---|---|---|
-| **ml#1758** | The P4 operator surface was **stale, not missing** — item 2 above has it backwards. It described the pre-`ml#1743` comparator: six closed defects listed as open, a closed asymmetry, exit 1 called "uninterpretable". Rewritten; CI-wiring prohibition **kept and re-grounded** on the owner decision (P1 §6). | `docs/REFERENCE.md`, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, `docs/DOCUMENTATION_OVERVIEW.md`, `docs/QUICK_START.md` |
+| **ml#1758** | The P4 operator surface was **stale, not missing** — item 2 above has it backwards. It described the pre-`ml#1743` comparator: six closed defects listed as open, a closed asymmetry, exit 1 called "uninterpretable". Rewritten; CI-wiring prohibition **kept and re-grounded** on the Overtoad decision (P1 §6). | `docs/REFERENCE.md`, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, `docs/DOCUMENTATION_OVERVIEW.md`, `docs/QUICK_START.md` |
 | **ml#1762** | Same staleness in the design record; the "invariance follows from the iteration cap" mechanism **withdrawn** (every PF-1 run terminates `early_stopped`, so none is cap-bound). | `notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`, `notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md` |
 | **ml#1765** | **DECISION: pin the drift-band normalization; do NOT change the 13–20.5% string.** §9's "15.0–20.5%" is refuted (see the struck bullet in §2) — and so is **C4** (see §9). Both struck in place with the arithmetic inline; the normalization pinned next to the numbers. | `notes/JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md`, this file |
 | **ml#1767** | **DECISION: ship the `metric_contract` correction.** All three gate tools still called `step_count` "deterministic and contention-immune" with **no branch condition** — and `make_baseline.py:254` writes that into `metric_contract` in **every `baseline.json`**, so each blessed baseline shipped a claim its own comparator will not rely on. | `util/experiments/make_baseline.py`, `util/experiments/compare_baseline.py`, `util/experiments/read_run_metrics.py` |
@@ -342,7 +342,7 @@ detectable by reading §9 — only by re-running its arithmetic against the six 
 
 Deliberate, so a dropped item stays distinguishable from an out-of-scope one: the backup/Duplicati
 arc, the canopy E2E arc, the defect register, P5 fleet rollout, the soak arc, and
-juniper-service-core work all have other owners and moved independently.
+juniper-service-core work all have other Overtoads and moved independently.
 
 ---
 

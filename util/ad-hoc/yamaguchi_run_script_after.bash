@@ -7,7 +7,7 @@
 # Author: Paul Calnon
 # Created: 2026-08-25
 # Status: ad-hoc — wip (DRAFT; not deployed; Paul picks the alerting architecture)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md (§8),
 #          util/ad-hoc/yamaguchi_watchdog.py (candidate B -- the one that also catches "never ran")
 #

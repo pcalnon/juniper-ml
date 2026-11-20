@@ -3,7 +3,7 @@
 **Project:** Juniper (ecosystem-wide)
 **Author:** Paul Calnon
 **Date:** 2026-09-05
-**Status:** ACCEPTED — decisions ratified by the owner 2026-09-05. **Waves 1 and 2 complete**
+**Status:** ACCEPTED — decisions ratified by the Overtoad 2026-09-05. **Waves 1 and 2 complete**
 (all five repos carry `publish-image.yml`). **ALL FIVE release images are published** —
 `juniper-cascor:0.11.0`, `juniper-data:0.14.0`, `juniper-recurrence:0.5.0`,
 `juniper-canopy:0.8.0` (cut 2026-09-12, also item 1's first publish — package came up
@@ -16,15 +16,15 @@ publish run 35033610624 all three jobs green; censused from the pulled image:
 **State at 2026-09-25 00:50Z** (this refresh):
 
 - **juniper-data v0.16.0 is cut, published and pinned.** Its image is on GHCR, PyPI serves it
-  since 18:35Z (the owner approved the deploy), and juniper-deploy pins it (juniper-deploy#230,
+  since 18:35Z (the Overtoad approved the deploy), and juniper-deploy pins it (juniper-deploy#230,
   merged 18:58:50Z). See §5.2, the 0.16.0 paragraph. **The release's consumer notification
   failed**: the dispatch to juniper-recurrence got `403`, a token-permission gap that is the
-  owner's to fix. The owner approved a replay, and recurrence's bench then **passed against
+  Overtoad's to fix. The Overtoad approved a replay, and recurrence's bench then **passed against
   0.16.0** (§5.2).
 - **The stack can now generate `equities`, `mnist` and `arc_agi`.** 0.16.0 is the first data image
   with the equities dependencies. But `juniper-data` sat only on `internal: true` networks, so every
   request that fetches at run time failed: equities with a `400`, mnist and arc_agi with a `500`.
-  The owner ruled on 2026-09-24 for a dedicated egress network.
+  The Overtoad ruled on 2026-09-24 for a dedicated egress network.
   - Compose: juniper-deploy#231 (`data-egress`), proven in the stack (201, against 400 before it).
   - Helm: juniper-deploy#232, a TCP 443 rule, verified as rendered.
   - Validation refuted two of their claims and found gaps in their guards. #233 fixes those, and
@@ -46,7 +46,7 @@ publish run 35033610624 all three jobs green; censused from the pulled image:
   repository (the release-train registry's, plus juniper-deploy) has a `dockerhub` environment.
   And its detectors fire on synthetic violations. `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` §6
   gives the command.
-- **Wave 4 still waits on the owner's token.**
+- **Wave 4 still waits on the Overtoad's token.**
 
 **WAVE 3 IS COMPLETE (2026-09-17).** All three of its items shipped, and
 `juniper-deploy/docker-compose.yml` now carries **ten** Juniper `image:` lines, every one a
@@ -58,7 +58,7 @@ published registry ref and none a local build-output tag:
 | D-1 integration check | juniper-deploy#217 | `Published Image Refs` CI job + `scripts/verify_published_images.py`, 6 negative controls |
 | `Dockerfile.test` runner | juniper-deploy#219, #220, #221 | `ghcr.io/pcalnon/juniper-deploy-test:0.3.0`, published by Release `v0.3.0` |
 
-The **Pi-pull gate was WAIVED by the owner 2026-09-15** — see §5.1, which also settles a
+The **Pi-pull gate was WAIVED by the Overtoad 2026-09-15** — see §5.1, which also settles a
 contradiction the archived chain had left open.
 
 **Two defects were found by RUNNING the artifacts, not reading them**, and neither would have
@@ -90,7 +90,7 @@ convention the bundled redis subchart also honours, and setting it rewrites redi
 > right; do not register a non-PyPI repo to work around it.
 **Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on the five `DOCKERHUB_TOKEN`
 secrets. Those are now **environment** secrets in a tag-restricted `dockerhub` environment, not
-repository secrets. The owner ruled this on 2026-09-22 (§3 of
+repository secrets. The Overtoad ruled this on 2026-09-22 (§3 of
 `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`). State refresh of **2026-09-22** (the newest is the 2026-09-24 block above) — the §5 wave table's Wave 1 and Wave 2 rows had
 gone stale against this Status line and are now correct. The deploy pins drifted three times after
 Wave 3 closed, and all three drifts are closed: canopy by juniper-deploy#225, data by #227, and the
@@ -304,7 +304,7 @@ to discover that is on a Pi.
 | Wave | Repo | Status |
 | --- | --- | --- |
 | 1 (pilot) | juniper-cascor-worker | **COMPLETE.** `publish-image.yml` landed as worker#172; the CUDA-contamination fix as worker#175. Image `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0` published 2026-09-15 (run `35033610624`, three jobs green), censused CPU-only from the pulled artifact |
-| — | *verify: pull and run on a Pi node* | **WAIVED as a Wave 3 gate, owner, 2026-09-15 (§5.1).** Re-filed as the gate on **first Pi deployment** and on **OQ-3**, which is what it actually tests. Target: the **newest** worker release, `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1` when last updated (§5.1); `0.6.0` was the first **post-#179** image. Do **not** use `dispatch-9890a23`; it predates the torch 2.12.0 → 2.14.0 bump |
+| — | *verify: pull and run on a Pi node* | **WAIVED as a Wave 3 gate, Overtoad, 2026-09-15 (§5.1).** Re-filed as the gate on **first Pi deployment** and on **OQ-3**, which is what it actually tests. Target: the **newest** worker release, `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1` when last updated (§5.1); `0.6.0` was the first **post-#179** image. Do **not** use `dispatch-9890a23`; it predates the torch 2.12.0 → 2.14.0 bump |
 | 2 | juniper-cascor | **COMPLETE** — cascor#634; `juniper-cascor:0.11.0` published 2026-09-09 |
 | 2 | juniper-canopy | **COMPLETE** — canopy#603; `juniper-canopy:0.8.0` published 2026-09-12, item 1's first publish (package came up **public**, proven by an anonymous pull). **Superseded by `0.8.1`** 2026-09-18 — see the pin-drift note below |
 | 2 | juniper-data | **COMPLETE** — data#385; `juniper-data:0.14.0` published 2026-09-09 |
@@ -363,7 +363,7 @@ working, and local development does not require a registry round-trip.
 > service set from `docker compose config --format json` and pairs `image:` with `build:`, so it
 > follows the pin instead of breaking on it.
 
-### 5.1 The Pi-pull gate — WAIVED for Wave 3, owner, 2026-09-15
+### 5.1 The Pi-pull gate — WAIVED for Wave 3, Overtoad, 2026-09-15
 
 **The contradiction, and which reading governed.** The archived chain disagreed with itself about
 what the Pi pull gated, and the disagreement was inside a single document:
@@ -470,8 +470,8 @@ correct — only comparing the two *inside the artifact* reveals it. Fixed in
 juniper-cascor-worker#192 by deriving from installed metadata, and **shipped in v0.6.1**. That
 release was cut 2026-09-22 at 23:03Z from juniper-cascor-worker#194 (merged `38f39cb8`).
 **Verified on the published artifact:** `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, pulled and
-run, prints `0.6.1 0.6.1`. The owner then approved the PyPI deploy, and PyPI has served 0.6.1
-since 2026-09-23 00:37Z; its wheel reads `__version__` from metadata. On the owner's instruction,
+run, prints `0.6.1 0.6.1`. The Overtoad then approved the PyPI deploy, and PyPI has served 0.6.1
+since 2026-09-23 00:37Z; its wheel reads `__version__` from metadata. On the Overtoad's instruction,
 GitHub's "Latest" badge was moved to v0.6.1. The 0.6.0 artifacts still report `0.4.0` and always
 will, because a published artifact is never rebuilt. The 0.6.0 **wheel** is affected too: its
 `__init__.py` hard-codes `__version__ = "0.4.0"`. juniper-deploy still pinned `0.6.0` at that
@@ -524,11 +524,11 @@ exactly that generator (`juniper_recurrence/data.py:1`: "juniper-data-client →
 NPZ"). The image builds, starts and imports cleanly, so every existing check passes. It still
 cannot do one of its jobs. The finding predates 0.15.0. Adding `--extra equities` to the image
 lock adds yfinance, and in the stack it means outbound calls to Yahoo and SEC, so it was put to
-the owner rather than made as a lockfile edit. A class-2 instrument could catch this class by
+the Overtoad rather than made as a lockfile edit. A class-2 instrument could catch this class by
 importing each generator's availability flag inside the image, which is cheaper than serving a
 request.
 
-**RULED 2026-09-22 (owner): the image includes equities.** juniper-data#421 merged 2026-09-23 at
+**RULED 2026-09-22 (Overtoad): the image includes equities.** juniper-data#421 merged 2026-09-23 at
 00:56Z (`68c3cd7c`). It compiles the lock with `--extra equities`: 12 packages added, no existing
 pin moved. On an image built from that tree, `GET /v1/generators` answers `available: true` for
 both generators; the published 0.15.0 image, probed the same way, answers `false`.
@@ -562,18 +562,18 @@ once, and the delay mattered:
   `## [0.16.0] - 2026-09-23` heading, above the real one. The ceremony renders the **first**
   match, so a cut from `main` would have published only #428's bullets and dropped the five the
   release was bumped for.
-- **Two owner rulings, given in two sessions, then conflicted.** At 07:45Z: pin the cut to
+- **Two Overtoad rulings, given in two sessions, then conflicted.** At 07:45Z: pin the cut to
   `7125e161`, using `util/release_train/ceremony.py --target-sha` (new, juniper-ml#2071), and move
   the three PRs to `[Unreleased]`. At 08:03Z, on data#435: fold all three into `[0.16.0]`. That
   one reasoned that the ceremony could not pin a commit, which #2071 was about to change. **Put
-  back to the owner, the fold governed**, with the cut pinned to data#435's merge commit
+  back to the Overtoad, the fold governed**, with the cut pinned to data#435's merge commit
   `39d1cab2`, so nothing merged later rides along.
 
 The ceremony cut the Release at 08:52Z. The tag points at `39d1cab2`, and v0.16.0 carries the
-Latest badge (juniper-ml#2055). The notes are byte-identical to the preview the owner approved: the
+Latest badge (juniper-ml#2055). The notes are byte-identical to the preview the Overtoad approved: the
 five bumped entries plus #428's, #434's and #431's. The archive,
 `notes/releases/RELEASE_NOTES_juniper-data_v0.16.0.md`, landed with juniper-ml#2076 (merged 09:16Z,
-`602094e3`). TestPyPI succeeded. **PyPI serves 0.16.0 since 2026-09-24 18:35Z**: the owner
+`602094e3`). TestPyPI succeeded. **PyPI serves 0.16.0 since 2026-09-24 18:35Z**: the Overtoad
 approved the deploy, run 35977786108's `Publish to PyPI` job succeeded, and
 `https://pypi.org/pypi/juniper-data/0.16.0/json` lists the wheel (18:35:40Z) and the sdist
 (18:35:42Z).
@@ -586,9 +586,9 @@ conclusion is `failure`. The release itself is fine. But juniper-recurrence's
 `ci-recurrence-bench.yml`, which the dispatch triggers to test the bench against the **exact**
 released version (recurrence#178), never ran for 0.16.0. Two follow-ups:
 
-- **The owner's:** fix the token's access. It is a secret, so no agent touches it. Until it is
+- **The Overtoad's:** fix the token's access. It is a secret, so no agent touches it. Until it is
   fixed, every data release's notify job fails the same way.
-- **Replayed 2026-09-24 19:13Z, on the owner's approval.** The replay was one `repository_dispatch`
+- **Replayed 2026-09-24 19:13Z, on the Overtoad's approval.** The replay was one `repository_dispatch`
   with the notify job's exact payload (`version 0.16.0`, `sha 39d1cab2`), sent with the session's
   own credentials. Bench run 36046705575 passed on Python 3.12, 3.13 and 3.14: 36 passed, 1 skipped.
   It installed **juniper-data 0.16.0** over the `0.15.0` that recurrence's `[bench]` pin resolves,
@@ -665,7 +665,7 @@ The 2026-09-22 ruling was framed as "in the stack it means outbound calls to Yah
 The stack's isolation makes those calls impossible. So the ruling's purpose, juniper-recurrence
 training on `equities_seq` in the stack, is not met by the image change alone.
 
-**RULED 2026-09-24 (owner): a dedicated egress network**, chosen over pre-seeding the cache on a
+**RULED 2026-09-24 (Overtoad): a dedicated egress network**, chosen over pre-seeding the cache on a
 volume, an allow-listed proxy, or accepting the gap. The same ruling covers the Helm chart. It
 shipped in four juniper-deploy PRs. The last two fix forward what an independent validation round
 refuted in the first two.
@@ -697,7 +697,7 @@ refuted in the first two.
   - **IPv4 only.** IPv6-only clusters stay blocked. On a dual-stack pod the SEC fetch (a 30 s
     `urlopen`) can wait out its timeout on a dropped IPv6 attempt.
 - **#233** (merged 23:43:02Z, `713e8a93`) fixes both PRs forward.
-  - **The data pod sets `automountServiceAccountToken: false`** (owner ruling 2026-09-24): a
+  - **The data pod sets `automountServiceAccountToken: false`** (Overtoad ruling 2026-09-24): a
     reachable API server finds no token. juniper-data never calls the Kubernetes API.
   - **Helm tests.** #232's tests pinned the rule's wording, and eight strictly broader rules passed
     them: an `endPort`, a peerless 443 rule, an all-ports rule, `::/0`, two `/1` halves, a named
@@ -853,13 +853,13 @@ image lacked, not a version, and only a request or an availability probe finds t
   Until those exist the second login+push cannot be added, and adding it early would fail
   every release. Scope the token to **Read & Write**, not Admin.
 
-  **Scope RULED 2026-09-22: an environment secret, not a repository secret.** The owner chose
+  **Scope RULED 2026-09-22: an environment secret, not a repository secret.** The Overtoad chose
   Option B of §3 of `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
   In each repository the secrets live in a `dockerhub` environment restricted to release tags,
   with no reviewer and no wait timer. A repository secret would be readable by every workflow on
   every ref. Registration steps are in that procedure's §5.2B. The username need not be a secret:
   step 3a there recommends an environment **variable**, which can be read back. Wave 4 must read
-  it from whichever context the owner chose, `vars.` or `secrets.`. **The ruling constrains the
+  it from whichever context the Overtoad chose, `vars.` or `secrets.`. **The ruling constrains the
   workflow change.** `publish-image.yml`'s `build` job also runs on pull requests and dispatches,
   and its `merge` job also runs on `push=true` dispatches. A tags-only environment named
   unconditionally on either job therefore rejects those runs. Wave 4 must name the environment

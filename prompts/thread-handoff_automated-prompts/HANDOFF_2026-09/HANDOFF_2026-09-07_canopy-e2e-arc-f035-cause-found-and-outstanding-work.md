@@ -362,7 +362,7 @@ state.
 | block | rows | real state, per the ledger |
 |---|---|---|
 | `M-METRICS-11..16, -18` | 7 | Replay transport. Controls *do* reveal at `COMPLETED`, but `metrics-panel-replay-position` stays `0 / 0` so `max_index=0` clamps every transition. **`M-METRICS-13` is the discriminator to re-drive first** — data-independent, and it failed with zero wire output across 196 responses. Whether this is a third face of F-CANOPY-027 or its own defect is **not established and no finding is filed**. Drivable today on the `COMPLETED` fixture. |
-| `M-DATASET-17..26` | 10 | Sequence (3-D) controls. **Not a defect** (owner decision 4): `equities`/`equities_seq` read `available:false` because the data leg lacked the optional extra. Recipe: bring the stack up with `JUNIPER_E2E_DATA_EXTRAS=api,equities`. The remaining half is an **unanswered owner question** — should the live 3-D arm drive `/api/stage_dataset`, or be re-scoped to the demo lane? The both-arms answer **needs new matrix rows**, so the 298 denominator is expected to grow. |
+| `M-DATASET-17..26` | 10 | Sequence (3-D) controls. **Not a defect** (Overtoad decision 4): `equities`/`equities_seq` read `available:false` because the data leg lacked the optional extra. Recipe: bring the stack up with `JUNIPER_E2E_DATA_EXTRAS=api,equities`. The remaining half is an **unanswered Overtoad question** — should the live 3-D arm drive `/api/stage_dataset`, or be re-scoped to the demo lane? The both-arms answer **needs new matrix rows**, so the 298 denominator is expected to grow. |
 | `M-CANDIDATES-10/-11` | 2 | Dead-click `DEAD-EXPECTED`. The test is **ready in the driver** (`util/ad-hoc/e2e_f027_redrive.py --step cardsprobe`) and was waiting on F-CANOPY-036's fix — **which shipped as canopy#536**. One command; also unblocks the `M-CANDIDATES-09` FAIL. |
 | `M-SNAPSHOTS-20/-21`, `C2.10-03`, `M-DATASET-03`, `M-METRICS-27`, `M-EVOLUTION-07`, `M-BOUNDARIES-07` | 6 | Assorted; `C2.10-03` and `M-SNAPSHOTS-20/-21` are named in the ledger's "still owed". `M-SNAPSHOTS-20/-21` are `DEAD-EXPECTED` rows scored `BLOCKED`, meaning the terminal `DEAD-CONFIRMED` was never earned. |
 
@@ -404,7 +404,7 @@ drops optimizer state).
 **not** a finding:
 
 - **`F-CANOPY-036`** — candidate pool history never accumulates in the live lane. **Its fix already
-  shipped** as **canopy#536** (server-side accumulation, on the owner's decision). The entry is OPEN
+  shipped** as **canopy#536** (server-side accumulation, on the Overtoad's decision). The entry is OPEN
   only because the **live verification is owed: a run with the Candidate Metrics tab open.** That same
   run discharges `M-CANDIDATES-09/-10/-11` via `util/ad-hoc/e2e_f027_redrive.py --step cardsprobe`.
   **Do not run it concurrently with Phase 2 of

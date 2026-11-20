@@ -543,7 +543,7 @@ Strongest form, on evidence:
 - **Holding is not neutral.** While held, `recurrence` sits `status="live"`, `model_is_trainable` returns
   True, the sidebar advertises it, and the model service is deployed and wired
   (`docker-compose.yml:635,768`) — an entire shipped service is unreachable from its only UI.
-- Rework has no owner, no plan, and no date. The round produced none.
+- Rework has no Overtoad, no plan, and no date. The round produced none.
 
 ### 6c. What the artifacts actually support
 

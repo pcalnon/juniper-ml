@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-11-11
 # Status:     ad-hoc — recovery (Phase D sitting, step 14, and the acceptance window after it)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/ad-hoc/yamaguchi_acceptance_probe.py; util/systemd/yamaguchi-acceptance-probe.{service,timer};
 #             notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (section 9);
 #             util/ad-hoc/yamaguchi_watchdog_deploy.bash (the pattern this follows, with one difference below);

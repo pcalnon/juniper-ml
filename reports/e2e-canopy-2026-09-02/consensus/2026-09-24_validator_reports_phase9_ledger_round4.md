@@ -26,7 +26,7 @@ TABLE
 | 1h | Placeholder shown at :112, controls hidden at :113 | `replay_player_panel.py:112` shows the idle view, :113 hides the active one. The placeholder text is at :154 and Stop at :230-236. | MATCH | source |
 | 2a | `4c496443` (on ml#2058): committed 21:45:22Z by "Paul Calnon", not web-flow, valid PGP, 2 min before the pass's first ready | Committer "Paul Calnon" at 2026-09-23T21:45:22Z, login `pcalnon`, verified/`valid`, PGP, `wasSignedByGitHub:false`. The associated PR is ml#2058. ml#2059 was readied at 21:47:22Z, exactly 2 min later. | MATCH | commits API + GraphQL |
 | 2b | `c666403b` (on ml#2045): 23:47:30Z, same properties | Same properties and the same key. It was pushed at 23:47:35Z; the disarm and re-arm were at 23:48:47Z and 23:48:52Z. | MATCH | activity API |
-| 2c | Basis for "needs a touch of the owner's hardware key" | `util/push_signed_commit.py:15-16` says so. It is a statement, not a measurement. | MATCH (basis), reach limited | Finding 4 |
+| 2c | Basis for "needs a touch of the Overtoad's hardware key" | `util/push_signed_commit.py:15-16` says so. It is a statement, not a measurement. | MATCH (basis), reach limited | Finding 4 |
 | 2d | No Claude Code tool call at those times | Zero tool calls in any transcript between 21:41:02Z and 01:40Z. | MATCH | own scan |
 | 2e | "a rebase force-push to ml#2045 at 00:00:39Z" (:8757; the ledger marks it not re-derived) | The activity API records a plain `push`, not a force push, at 00:00:38Z (`c666403b`→`b0223f18`). The compare API shows a fast-forward: 29 ahead, 0 behind. | MISMATCH | Finding 3 |
 | 3a | `pcalnon` armed ml#2032, ml#2045 and data#428 at 13:23:19Z, 13:26:23Z and 13:29:27Z | All three are `auto_squash_enabled` by `pcalnon` at those times. | MATCH | timelines |
@@ -47,7 +47,7 @@ FINDINGS
    - **Evidence:** I swept all nine repos' timelines for 13:00–13:45Z. There were at least 9 `pcalnon` arms with no arming command in any transcript, 13:17:53Z–13:32:10Z: canopy#660 13:17:53, canopy#670 13:18:44, ml#2032 13:23:19, ml#2035 13:23:48, ml#2038 13:24:33, ml#2041 13:25:23, ml#2045 13:26:23, data#428 13:29:27, cascor#678 13:32:10. The other arms in that window follow a background `safe_merge` launch by about 4 s.
    - The handoff (`…four-prs-armed-by-an-unseen-actor…md`, lines 104-106), which the ledger itself cites, lists four of them: canopy#660, ml#2032, data#428 and cascor#678. It does not list ml#2045. Its line 104 reads "An unseen actor arms every open PR".
    - **Fix:** state the full set and span at :8759-8762 and in item 15 (:9444-9445), and cite the handoff's list.
-   - **Changes a NUMBER:** yes (3 → at least 9). It also changes the evidence for the owner question. Disposition: no.
+   - **Changes a NUMBER:** yes (3 → at least 9). It also changes the evidence for the Overtoad question. Disposition: no.
 
 2. **MINOR.** Ledger (`…E2E-VALIDATION-EVIDENCE.md`) :8760-8761 and :9302: "no logged command names any of them between 13:15Z and 13:35Z".
    - **Evidence:** false as worded for ml#2032. Session `bc31e993` named it four times between 13:18:39Z and 13:19:23Z, including the PATCH that produced the 13:19:24Z retitle. Its 13:18:23Z call names data#428 only through a `main428` scratch path.
@@ -56,10 +56,10 @@ FINDINGS
 
 3. **MINOR.** Ledger (`…E2E-VALIDATION-EVIDENCE.md`) :8757: "a rebase force-push to ml#2045 at 00:00:39Z".
    - **Evidence:** the activity API shows a plain `push` at 00:00:38Z, a fast-forward from `c666403b`. It added 29 new commits, all signed by "Paul Calnon" with the same key between 23:57:24Z and 00:00:07Z. 27 of them re-create main's commits under new hashes (for example `b653557b` against main's `8e058951`).
-   - **Fix:** describe it as a fast-forward push of a re-created history. This is more signed activity inside the quiet window, so it should join the owner-question evidence.
+   - **Fix:** describe it as a fast-forward push of a re-created history. This is more signed activity inside the quiet window, so it should join the Overtoad-question evidence.
    - Changes a number, disposition or action: no.
 
-4. **MINOR.** Ledger (`…E2E-VALIDATION-EVIDENCE.md`) :8755-8756: "a locally signed commit needs a touch of the owner's hardware key".
+4. **MINOR.** Ledger (`…E2E-VALIDATION-EVIDENCE.md`) :8755-8756: "a locally signed commit needs a touch of the Overtoad's hardware key".
    - **Evidence:** five of those 29 signatures are stamped 23:58:57Z. A touch per signature at that rate is not humanly possible, so one touch evidently covers a burst of signatures. A signature therefore shows the key was used around that time, not a touch at that exact second. The basis is `util/push_signed_commit.py:15-16`, which asserts this rather than measuring it.
    - **Fix:** qualify the sentence accordingly.
    - Changes a number, disposition or action: no.
@@ -106,7 +106,7 @@ SECRETS/PII: One slip. A local `git show 800c20bb -- <file>` printed a commit au
 
 *agent `a3f787556e2d5cce3` · round 1 · last-assistant-text (not resumed) · 15539 chars*
 
-**VERDICT: SOUND-WITH-FIXES.** The core of the pass holds. The replay is exact, the counts reproduce, the REPLAYING lock-in and the Reset escape check out in source, and #184, the UTC dates, the line numbers and `800c20bb` are all right. One new owner-evidence claim is false, though, and it sits on the "re-derived" list. Several new statements are incomplete or contradicted elsewhere in the same commit. Findings 1–8 each change an action, and finding 1 also changes numbers, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` calls for a round 5.
+**VERDICT: SOUND-WITH-FIXES.** The core of the pass holds. The replay is exact, the counts reproduce, the REPLAYING lock-in and the Reset escape check out in source, and #184, the UTC dates, the line numbers and `800c20bb` are all right. One new Overtoad-evidence claim is false, though, and it sits on the "re-derived" list. Several new statements are incomplete or contradicted elsewhere in the same commit. Findings 1–8 each change an action, and finding 1 also changes numbers, so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` calls for a round 5.
 
 ## FINDINGS
 
@@ -146,7 +146,7 @@ Paths: `…EVIDENCE.md` is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATI
   - So F-014 also stranded cascor in REPLAYING. Phase 1 ended that session with a direct API `stop` (`:4195-4196`).
   - The lock-in therefore does not distinguish the two findings; only the missing session view does. Item 15 (`:9448-9450`) carries the same framing.
 - **Fix:** Describe F-014 accurately, and state in the rating question that F-014 shared the lock-in.
-- **Changes a disposition:** possibly (the owner's P0/P1 ruling). **Action:** yes.
+- **Changes a disposition:** possibly (the Overtoad's P0/P1 ruling). **Action:** yes.
 
 **3. MINOR: the same commit contradicts the new Reset escape.**
 - **Quoted:**

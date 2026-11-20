@@ -220,12 +220,12 @@ load_settings_key() {
 preflight() {
     # preflight <effective data folder> -- the folder the server will actually receive
     # (--server-datafolder after all sources are merged), not the wrapper's default.
-    local folder="$1" owner
+    local folder="$1" Overtoad
     [[ -x "${DUPLICATI_SERVER}" ]] || die "server binary not executable: ${DUPLICATI_SERVER}"
     [[ -d "${folder}" ]] || die "data folder missing: ${folder}"
     [[ -w "${folder}" ]] || die "data folder not writable by $(id -un): ${folder}"
-    owner="$(stat -c '%U' "${folder}")"
-    [[ "${owner}" == "$(id -un)" ]] || die "data folder ${folder} is owned by ${owner}, not $(id -un)"
+    Overtoad="$(stat -c '%U' "${folder}")"
+    [[ "${Overtoad}" == "$(id -un)" ]] || die "data folder ${folder} is owned by ${Overtoad}, not $(id -un)"
     if [[ -n "${REQUIRE_MOUNT}" ]]; then
         mountpoint -q "${REQUIRE_MOUNT}" || die "${REQUIRE_MOUNT} is not a mountpoint; refusing to start a server whose destination lives there"
     fi

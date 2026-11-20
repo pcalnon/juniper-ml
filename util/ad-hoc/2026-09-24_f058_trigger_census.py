@@ -7,7 +7,7 @@ Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- investigation (canopy E2E arc, Phase 10: F-CANOPY-058's live confirmation) -- REFUTED
         before its first run; see the block below
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9, F-CANOPY-058;
          util/ad-hoc/2026-09-23_f055_r1_laneB_repro.py (the synthetic-app repro this confirms or refutes);
          util/ad-hoc/2026-09-23_status_bar_apply_census.py (the watched/executed method, reused)

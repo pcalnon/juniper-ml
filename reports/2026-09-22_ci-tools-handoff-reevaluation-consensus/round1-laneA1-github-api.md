@@ -3,7 +3,7 @@
 
 **Entry point:** the GitHub API only.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T19:54:39Z to 2026-09-22T20:16:59Z, read-only. Agent `agent-ab67cf757891b6f8f`.
 
@@ -18,7 +18,7 @@ You are Lane A1 (measurement re-creation) in an independent-agent consensus revi
 READ-ONLY RULES (hard): do not edit, create or delete any file in any repo; do not commit, push, comment on, merge, close or approve anything; do not approve deployments. The session is worktree-isolated: do NOT run `git` against any repo other than the juniper-ml worktree below (the harness refuses it). Use `gh`, `curl`, `python3`, `cat`, `grep`. Put any downloads under /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/97c72736-b353-43fe-9e6f-efaa8cf3be0c/scratchpad/lanes/a1/ (create it). The harness refuses shell loops over variables that touch `gh`/git; write one plain command per repo, or put GraphQL in a file and use `gh api graphql -F query=@file`.
 
 THE ARTIFACT: in the juniper-ml worktree /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl read
-`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`, specifically the new header lines (`**Successor**`, `**Status**`) and the section `## Status banner (added 2026-09-22 ...)` down to `## Handoff goal`, plus four short in-place notes marked 2026-09-22 further down (run `git diff` in that worktree to see exactly what was added; the tree is frozen for this review). The `__VALIDATION_RECORD__` placeholder is intentional. Also read the two in-place SHA corrections in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md` (see `git diff`).
+`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`, specifically the new header lines (`**Successor**`, `**Status**`) and the section `## Status banner (added 2026-09-22 ...)` down to `## Handoff goal`, plus four short in-place notes marked 2026-09-22 further down (run `git diff` in that worktree to see exactly what was added; the tree is frozen for this review). The `__VALIDATION_RECORD__` placeholder is intentional. Also read the two in-place SHA corrections in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md` (see `git diff`).
 
 YOUR JOB:
 1. For EVERY factual claim in the banner's table and its "Corrections to this document" section that GitHub can answer — PR numbers and their merge state/merge commit SHAs/merge dates (e.g. canopy#619 a5cbdcd1, cascor#645 63a29e87, cascor#646 merge 43785fe0 vs head b374f285, ml#1909 4f566d37, deploy#215/216/217/219/220/221/225/226, worker#192/#193, data#420, canopy#649/#585, ml#2007/#2009), the claim "Every merge SHA in that section matches the PR's mergeCommit.oid (22 PRs re-read)" (re-read the ORIGINAL "What shipped" section's SHAs and check each one yourself), run IDs (34579752944, 34461928708, 34588125830 + job 103226938997, 35604787525), release dates (canopy v0.8.0/v0.8.1, worker v0.6.0, deploy v0.3.0), the `dockerhub` environments (existence in the five image repos juniper-cascor / juniper-data / juniper-canopy / juniper-cascor-worker / juniper-recurrence, created_at, tag policies, zero secrets), absence of DOCKERHUB_* repo secrets, cascor-client lockfile-update.yml total runs = 0, the two client repos having no requirements.lock at main, signed commit d7b5ea1f on cascor#664, the "eight ceiling PRs merged 2026-09-11 between 01:32 and 01:52 UTC" date claim, the X7 test facts (`test_initialize_sync_does_not_block_the_loop`, STALL_SECONDS, unchanged since canopy#585; canopy#649 touched a sibling test) — re-derive it and report CONFIRMED / REFUTED / PARTIAL / UNTRACEABLE with the command and an output excerpt.
@@ -29,7 +29,7 @@ OUTPUT (your final message is the only thing returned): a numbered findings list
 
 ## Final report
 
-**Lane A1 findings for `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` (the banner) and `HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md` (the successor)**
+**Lane A1 findings for `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` (the banner) and `HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md` (the successor)**
 
 Every value below was re-derived from `gh api`, GraphQL, anonymous GHCR `tags/list`, PyPI JSON, or a local `ls`/`ping`. Nothing is taken from either document's prose.
 

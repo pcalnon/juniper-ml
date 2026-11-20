@@ -35,12 +35,12 @@ The code fixes work. The rewritten C2 rule does not do what it says: it cannot s
 
 ### MINOR
 
-**m1: OWNER DECISION 2 (handoff lines 94–115; the `util/safe_merge.py` dissent at lines 248–265).** Every premise re-derived true (`r4b_owner2_premises.py`):
+**m1: OWNER DECISION 2 (handoff lines 94–115; the `util/safe_merge.py` dissent at lines 248–265).** Every premise re-derived true (`r4b_Overtoad2_premises.py`):
 - Pinned budgets have been raised 7 times and never lowered; on 09-22, 3 were raised and 6 stood.
 - The default went 1800 → 900 (`c3cf3951`) and then → 2400 (`27d3fc15`).
 - ml and recurrence were raised in `3cab4783` (#1851), the same commit that wrote the "do NOT raise" paragraph.
 - In run 34293438446 the span starts at 00:05:45, and `Build and Validate Package` waited 12.0 minutes after that. So the within-span claim holds.
-- Four budgets sit at 3300, and all four statements of the owner's ruling limit it to the three raises.
+- Four budgets sit at 3300, and all four statements of the Overtoad's ruling limit it to the three raises.
 
 Two imprecisions remain:
 - "Both past lowerings went stale within a day" is too strong. The 09-08 lowering pinned two budgets; recurrence's went stale in a day, but deploy's 700 held for 14 days.
@@ -101,7 +101,7 @@ Round 4 changes a NUMBER / DISPOSITION / ACTION: yes -- ACTION (NON-OWNER 1's C2
 **Created**, all untracked, under `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round4-laneB/`:
 - `r4b_c2_rule_sim.py`
 - `r4b_soak_all_in_flight.py`
-- `r4b_owner2_premises.py`
+- `r4b_Overtoad2_premises.py`
 - `r4b_merge_state_checks.py`
 - `wait_for_checks.py` (a fake waiter)
 - `fakebin/gh` (a fake `gh`)

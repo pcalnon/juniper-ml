@@ -1,4 +1,4 @@
-# HANDOFF 2026-08-26 — defect register: 59 fixed / 37 open; juniper-data's actionables are exhausted — what is left is owner questions, design work, and one large-but-mechanical cascor row
+# HANDOFF 2026-08-26 — defect register: 59 fixed / 37 open; juniper-data's actionables are exhausted — what is left is Overtoad questions, design work, and one large-but-mechanical cascor row
 
 **The standing mandate is unchanged: keep closing entries in the ecosystem defect register**
 (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`, ml#1092), one small reviewable PR
@@ -15,7 +15,7 @@ validation results are in §8.
 below): the T6 constraint is **cleared** — the campaign it guarded completed 08:57:44Z on 2026-08-26
 (23/23 cells, rc=0, cascor pin `67d7ea3` held) and its session announced completion by name — and the
 liveness check it prescribed could never have fired (§9). Its §3.2 items 1–2 are **consumed** (closed
-this session); items 3–5 are turned into the owner questions in §3.2 here, word for word, so they can
+this session); items 3–5 are turned into the Overtoad questions in §3.2 here, word for word, so they can
 be put to Paul without re-deriving them. Its §5.3 "two register fix-ups" are **done** (ml#1392) and a
 third the validators found (the header date) went with them. Its §5 traps stand; §5 below adds this
 round's. All dates UTC; clock times UTC unless marked CDT (UTC-5).
@@ -28,14 +28,14 @@ register.
 ## 0. Remaining work — the complete list, in order
 
 Everything the arc still owes, so nothing has to be re-derived from the sections below (which carry the
-detail). "Successor" = the next thread; "Paul" = an owner decision.
+detail). "Successor" = the next thread; "Paul" = an Overtoad decision.
 
 1. **Successor, first — validate this document's correction pass (§8).** Round 2 never reported.
 2. **Successor — one small register fix-up PR** (`chore(register): wording fix-ups from the round-27
    validators`): (a) the §4.8 note calls `APD-CCLIENT-012` "retired" — it is **FIXED (cclient#137)**;
    only `APD-CCLIENT-003` is retired under the namespace rule; say "…the removal-date half of
    `APD-CCLIENT-012`, whose `auto_pong` deprecation still lacks a removal date"; (b) add a §4.3 note
-   recording that `APD-CASCOR-005` is parked as an owner decision (today that routing exists only in
+   recording that `APD-CASCOR-005` is parked as an Overtoad decision (today that routing exists only in
    this handoff lineage — §3.1); (c) optional: the -005/-024/-016 rows' stale anchors (`security.py:26`,
    `app.py:91`/`:97-99`, `datasets.py:693-704` → live `:29`, `:95`/`:103`, `:836-864`) — the arc's
    convention is leave-and-note, and §3.2 carries the live lines, so this is cosmetic.
@@ -144,7 +144,7 @@ Expected: `96 rows | 59 fixed | 37 open`.
 
 ## 2. What this session closed
 
-Two register entries, two close cycles (rounds 27.1–27.2, one register PR each). The owner granted
+Two register entries, two close cycles (rounds 27.1–27.2, one register PR each). The Overtoad granted
 merge approval for every PR in this session's arc at the start ("merge approval granted for all PRs
 in this session and work arc"), so each PR was self-merged once its required contexts read green — fix
 PR via `util/safe_merge.py --execute` and verified with `gh pr view --json state,mergeCommit`, register
@@ -160,13 +160,13 @@ checkable offline.
 **Milestones and shape:**
 
 - **juniper-data's actionables are exhausted.** Its 16 open rows are the 11 the register itself now
-  routes to the REST-redesign decision (§4.1 note, ml#1392), `-005`+`-024` (one owner question, §3.2),
+  routes to the REST-redesign decision (§4.1 note, ml#1392), `-005`+`-024` (one Overtoad question, §3.2),
   and `-016`/`-018`/`-019` (design-shaped).
 - **ml#1392 also carried the register fix-ups the round-26 validators found**: the §2 Status block's
   "remaining 58 are `C`/`R`/`M`/`E`" sentence is now **count-free** ("every remaining open row is …" —
   a count there went stale on every close); the header `Last Updated` was refreshed (it had read
   2026-08-20 through the thirty register-touching commits after ml#1201 set it, up to ml#1377 —
-  23 of them `chore(register)` closes); and the two owner routings that had lived only in the
+  23 of them `chore(register)` closes); and the two Overtoad routings that had lived only in the
   handoff chain are recorded in the register — the juniper-data REST group as a §4.1 note, `APD-ECO-004`
   ↔ `APD-RCLIENT-004` as §4.6 + §4.8 notes (with the `ECO-007` ↔ `CCLIENT-012` reciprocal pointer).
 - **Every close was measure-first**: -023's "changes the ids once" claim rests on a grep of every
@@ -187,7 +187,7 @@ checkable offline.
 ## 3. What is left — 37 open; nothing is both cheap and unblocked
 
 (Three rows *are* cheap in isolation — `APD-DATA-033`, one missing `Settings` knob; `APD-SVCCORE-012`
-and `-013`, docstring/naming — but the first sits inside the owner-routed `-026`–`-033` range and the
+and `-013`, docstring/naming — but the first sits inside the Overtoad-routed `-026`–`-033` range and the
 other two are latent-module rows the §4.2 preamble says not to treat as live.)
 
 Re-derived by the §1 script; per-repo splits re-derived the same way.
@@ -197,25 +197,25 @@ Re-derived by the §1 script; per-repo splits re-derived the same way.
 | `juniper-data` | 16 | 11 in the REST-redesign group **now recorded in the register's §4.1 note** (`-026`–`-033`, `-008`, `-017`, `-022`); `-005` + `-024` coupled (§3.2 question A); `-016` (streaming materialises — seven `DatasetStore` backends), `-018`/`-019` (async-job / pagination design) |
 | Cross-client `APD-ECO-*` | 7 | decision-shaped; `-001` unlocks `CCLIENT-001`; `-004` owns the `RCLIENT-004` proposal (§3.2 question B — now in the register); `-007` owns `CCLIENT-012`'s removal date (reciprocal pointer now in §4.8) |
 | `juniper-service-core` | 7 | **all latent** (`.websocket.*` / `workers/`, no consumer) — still do not fix as live |
-| `juniper-cascor` | 2 | `-003` (`response_model` on 46 of 47 routes — large but mechanical, §3.2 item 1); `-005` **owner decision** (primer self-contradiction, unchanged) |
+| `juniper-cascor` | 2 | `-003` (`response_model` on 46 of 47 routes — large but mechanical, §3.2 item 1); `-005` **Overtoad decision** (primer self-contradiction, unchanged) |
 | `juniper-cascor-client` | 2 | `-001` (blocked on `APD-ECO-001`), `-008` (envelope sniffing — design-shaped) |
-| `juniper-recurrence-client` | 2 | `-004` (proposal, §3.2 question B), `-005` (three-name identity — owner-flavored, Low conf) |
+| `juniper-recurrence-client` | 2 | `-004` (proposal, §3.2 question B), `-005` (three-name identity — Overtoad-flavored, Low conf) |
 | `juniper-ml` | 1 | `-001` — primer-flagged as judgement; the register's own note says do not action before the release-train question |
 | `juniper-data-client` | 0 | swept |
 | `juniper-observability` | 0 | swept (4/4 FIXED) |
 
 ### 3.1 Parked on Paul's decisions — unchanged; four of five now recorded in the register
 
-The juniper-data REST group (eleven rows — the §4.1 note says "Treat the eleven as one owner decision;
+The juniper-data REST group (eleven rows — the §4.1 note says "Treat the eleven as one Overtoad decision;
 do not action any of them unilaterally"); `APD-ECO-001` → `APD-CCLIENT-001` (one decision, not two
-tasks — `CCLIENT-001`'s §5.1 row says "blocked on `APD-ECO-001`'s owner decision"); `APD-ECO-007`
+tasks — `CCLIENT-001`'s §5.1 row says "blocked on `APD-ECO-001`'s Overtoad decision"); `APD-ECO-007`
 (owns `CCLIENT-012`'s removal date — §4.4 marker + §4.8 note); `APD-ECO-004` ↔ `APD-RCLIENT-004`
 (question B below — §4.6 + §4.8 notes). Cite the register's notes for those four, not the handoff
 chain. **`APD-CASCOR-005` is parked by this handoff lineage only** — the register's §3 entry says
 "unify the three and decide deliberately" and §6 lists it as a judgement call, but nothing there routes
-it to the owner; keep carrying it here (or add a §4.3 note in the next register PR).
+it to the Overtoad; keep carrying it here (or add a §4.3 note in the next register PR).
 
-### 3.2 Most actionable next, in order — and the owner questions, verbatim
+### 3.2 Most actionable next, in order — and the Overtoad questions, verbatim
 
 1. **`APD-CASCOR-003`** (M, High) — 46 of 47 cascor routes declare no `response_model` (only
    `health.py:130`); same mechanical shape as -023 but larger, and cascor wraps responses in a
@@ -250,7 +250,7 @@ it to the owner; keep carrying it here (or add a §4.3 note in the next register
    `pythonpath = ["."]` imports the worktree, not the editable install — §5.6).
 3. **Owner questions — put these to Paul as written; do not action either unilaterally.** Whichever
    way he answers, a register touch on the rows is owed (a §4.1 / §4.6 note in the style of the
-   routing notes — the register has no owner-decision marker, only prose notes).
+   routing notes — the register has no Overtoad-decision marker, only prose notes).
    - **Question A (`APD-DATA-005` + `-024`, one decision):** `api_key_header` (`api/security.py:29`)
      is defined and referenced nowhere, so the OpenAPI document has no `securitySchemes`; but
      `openapi_url` is `None` whenever any API key is configured (`api/app.py:95`, `:103`), so a
@@ -409,7 +409,7 @@ run `pip install -e . --force-reinstall --no-deps` from the primary checkout.
   (`zipfile.is_zipfile`, `np.load`, `.npz` members) — otherwise the fix is a different wrong header.
 - **Count-free sentences in living documents.** "The remaining N are …" went stale within a day of
   being written; "every remaining open row is …" cannot.
-- **Record owner routings in the artifact of record, not the handoff chain.** Two routings survived
+- **Record Overtoad routings in the artifact of record, not the handoff chain.** Two routings survived
   four handoffs only by being re-typed each time; they are now §4 notes and the handoff cites them.
 - **Validate the marker's format, not the check's prose** (§9).
 
@@ -439,7 +439,7 @@ in progress at archive time (§0 item 9).
 confirmed, 3 refuted (ml#1393 "published" → OPEN; the open-PR snapshot; "twelve" → thirty commits), 3
 shifted (data#294 flipping the memory budget to BLOCKING; in-flight cleanup state; seven untrimmed
 §4.1 rows), 3 unverifiable (chat-only facts). Register-consistency: 29 confirmed, 5 refuted, all
-minor ("none of it cheap"; CASCOR-005 not owner-routed in the register; the §5.1-row "ends with the lane
+minor ("none of it cheap"; CASCOR-005 not Overtoad-routed in the register; the §5.1-row "ends with the lane
 count" wording; the commit count; the PR snapshot) — plus one wording defect in the register itself
 (§0 item 2a). Amputation/executability: **1 critical** (§1 had said the cascor primary was "no longer
 frozen" while a canopy E2E stack was live on it — rewritten into the standing rule + tells now in

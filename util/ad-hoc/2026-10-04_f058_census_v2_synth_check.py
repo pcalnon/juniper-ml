@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-04
-# Status      : ad-hoc — instrument check; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — instrument check; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Known-answer check of the census v2 shim on the synthetic app, both ways, BEFORE any live run.
 

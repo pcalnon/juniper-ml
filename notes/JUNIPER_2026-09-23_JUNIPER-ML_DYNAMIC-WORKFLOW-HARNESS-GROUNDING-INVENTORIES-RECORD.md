@@ -179,7 +179,7 @@ The mapping from `required_fields` to slots is a convention only. The drift test
 
 **The `data/` layer** (every file is `version: 1`):
 - `standing_rules.yaml`:
-  - which actions the owner approves (`:5-7`);
+  - which actions the Overtoad approves (`:5-7`);
   - `worktree_root: /home/pcalnon/Development/python/Juniper/worktrees` (`:9`);
   - the dup-guard (`:11`);
   - rules such as one PR per work unit, no merge without a PR, and worktree cleanup only on merge (`:13-18`).
@@ -249,7 +249,7 @@ Files: `W/util/prompt_discovery/{cli.py, repo_context.py, test_status.py, file_p
 
 **The chain.** Generate → validate → emit is documented and implemented, but as an LLM procedure inside the Skill, not as code:
 1. `/template-agent` runs `cli.py`, and optionally the overlay.
-2. It asks the owner clarifying questions, then selects a template from `match_signals`.
+2. It asks the Overtoad clarifying questions, then selects a template from `match_signals`.
 3. It fills a copy of the template.
 4. It calls `Agent(prompt-validator)` with the draft, RUBRIC, the bundle and `<target>`.
 5. It runs at most 3 fix rounds, then writes to `prompts/generated/`.
@@ -341,8 +341,8 @@ Files: `W/util/fleet_triage/predict_merge.py`, `W/.claude/agents/fleet-superviso
   - **Per-PR**: pr, verdict, mergeable, behind_main, the failing gate / lost symbols / deleted docs, and the true delta, citing the script's JSON;
   - **Cluster map**;
   - **Ordered merge plan**, with "re-run `predict_merge.py --pr <next>`" after each merge;
-  - **DUP-CLOSE candidates**, only under the two-key rule (content overlap plus owner confirmation, `:86-95`).
-- It has no `Agent` tool, so fixes are "delegated to a task-executor" by the owner, not by the agent (`:120-122`).
+  - **DUP-CLOSE candidates**, only under the two-key rule (content overlap plus Overtoad confirmation, `:86-95`).
+- It has no `Agent` tool, so fixes are "delegated to a task-executor" by the Overtoad, not by the agent (`:120-122`).
 - **Drift:** the agent says `strict_required_status_checks_policy` is false (`:13`), but `predict_merge.py:19-24` says it is true on all nine repos.
 
 ### 7. Tests that pin the harness
@@ -629,7 +629,7 @@ Defects, all still present (V3 :129-137, :955-958):
 Documented in `REFERENCE.md` § Utility Script Reference, :3279-3308.
 
 - **Flags** (:1141-1170):
-  - `--pr` (required), `--repo`, `--owner`
+  - `--pr` (required), `--repo`, `--Overtoad`
   - `--merge-method`, default squash; `rebase` exits 2
   - `--timeout`, default is the repo's entry in `REPO_TIMEOUTS`, capped at `TIMEOUT_CEILING` = 3300 (:391-409)
   - `--execute`; **without it the run is a dry-run**
@@ -652,7 +652,7 @@ Documented in `REFERENCE.md` § Utility Script Reference, :3279-3308.
 
 Documented at `REFERENCE.md:3317-3328`.
 
-- **Flags:** `--pr`, `--repo`, `--owner`, `--anchor required|observed`, `--fail-fast`, `--timeout`, `--interval` (default 20), `--json`, `--verbose` (:534-562).
+- **Flags:** `--pr`, `--repo`, `--Overtoad`, `--anchor required|observed`, `--fail-fast`, `--timeout`, `--interval` (default 20), `--json`, `--verbose` (:534-562).
 - **Default timeout:** the repo's `safe_merge` budget, read when it runs. It falls back to 1800 s only if that table can't be read (:101-103, :472-502). The budget line goes to stderr.
 - **Exit codes:** 0 green, 1 failed, 2 timeout, 3 hard error. It also **exits 0 for a PR that is already MERGED or CLOSED** (:505, :403-417), which `REFERENCE.md` doesn't mention. Read `status` from `--json` instead.
 
@@ -779,7 +779,7 @@ I've covered all six areas. Everything below was read at worktree HEAD `25b78f55
 | `concurrency/` | 4 |
 | `documentation/` | 3 |
 
-**Naming convention** (`$R/notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`, status "Ratified (owner decision 2026-07-04)", :7):
+**Naming convention** (`$R/notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`, status "Ratified (Overtoad decision 2026-07-04)", :7):
 - **Format (:14-23):** `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<CONTENTS-DESCRIPTION-PHRASE>.md`. Underscores separate only the four fields; the phrase is UPPER-KEBAB.
 - **Date:** the creation date, or the date of a substantive re-issue (:30).
 - **REPO (:31):** one of ML, CANOPY, RECURRENCE, CASCOR, CASCOR-CLIENT, CASCOR-WORKER, DATA, DATA-CLIENT, DEPLOY, ECOSYSTEM.
@@ -871,7 +871,7 @@ Rarer: SETTLED, RESOLVED, REJECTED, DECIDED (3 each); ADOPTED, DISCHARGED, ACCEP
 5. A header `**Supersedes**:` line in the successor.
 
 **Status drift is common:**
-- `$R/notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:9` still says "DRAFT — AWAITING OWNER APPROVAL". The evidence doc `...E2E-VALIDATION-EVIDENCE.md:8` records "approved by owner 2026-08-09", and its own :7 says "PHASE 1 IN PROGRESS" although it was edited through 2026-09-12 (#1916).
+- `$R/notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:9` still says "DRAFT — AWAITING OWNER APPROVAL". The evidence doc `...E2E-VALIDATION-EVIDENCE.md:8` records "approved by Overtoad 2026-08-09", and its own :7 says "PHASE 1 IN PROGRESS" although it was edited through 2026-09-12 (#1916).
 - `...AGENT-SUITE-CONVENIENCE-UTILITIES-DESIGN.md:8` says "Draft — ratify-ready", but P1–P5 all shipped on 2026-06-25 (ml#551, #556–#559).
 
 ---
@@ -882,9 +882,9 @@ Rarer: SETTLED, RESOLVED, REJECTED, DECIDED (3 each); ADOPTED, DISCHARGED, ACCEP
 
 | Phrase | notes/ | prompts/ |
 |---|---|---|
-| "owner decision" (any case) | 211 lines / 77 files | 205 / 88 |
+| "Overtoad decision" (any case) | 211 lines / 77 files | 205 / 88 |
 | `RULED` | 186 / 39 | 98 / 35 |
-| "owner ruling" | 15 / 9 | 15 / 11 |
+| "Overtoad ruling" | 15 / 9 | 15 / 11 |
 | "Open decisions" | 17 / 10 | 4 / 3 |
 | `OPEN DECISION` | 29 / 15 | 4 / 3 |
 | "blocked on" | 116 / 57 | 64 / 45 |
@@ -895,7 +895,7 @@ Rarer: SETTLED, RESOLVED, REJECTED, DECIDED (3 each); ADOPTED, DISCHARGED, ACCEP
 Decision IDs are local to each document: D1, D-1, #1, "Decision A", "Decision 11", OQ-1, S-1, Q-8, N-1. There is no global decision registry; cross-references name the document, e.g. "plan §3's D-1 and D-2" in the partition design at :390.
 
 **Example ledgers and how they move from open to ruled:**
-1. **Logging roadmap** (`$R/notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`). §13 at :602-612 is a table `| # | decision | why it cannot be defaulted |`. §13.1 at :614-616 says "Ruled by the owner 2026-09-09 unless noted. This subsection is the canonical record." Transitions:
+1. **Logging roadmap** (`$R/notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`). §13 at :602-612 is a table `| # | decision | why it cannot be defaulted |`. §13.1 at :614-616 says "Ruled by the Overtoad 2026-09-09 unless noted. This subsection is the canonical record." Transitions:
    - :618 "RESOLVED 2026-09-22 — measured 16.70 %, so P2 RUNS", with the original pre-authorisation kept at :642.
    - :665 "RULED 2026-09-10 — A2-bind".
    - :677 superseded framing kept for the record.
@@ -912,7 +912,7 @@ Decision IDs are local to each document: D1, D-1, #1, "Decision A", "Decision 11
 5. **Backup design** §10 (`...BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md:2132-2149`): `| ID | Decision | Recommendation |` for D-1..D-14, flagged "**Rule before P0**", "**Re-decide**" or "**New**". Notes D-12a to D-14a follow at :2151-2158.
 
 Other forms:
-- The first Cursor-flood analysis records the owner's answers inline: "- Answer: i concur with recommendation." (`...CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md:699, :707, :716`) and "- Answer: this question will require additional research, planning, and discussion" (:730).
+- The first Cursor-flood analysis records the Overtoad's answers inline: "- Answer: i concur with recommendation." (`...CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md:699, :707, :716`) and "- Answer: this question will require additional research, planning, and discussion" (:730).
 - The partition design uses section headings for decisions (`...TRAIN-EVAL-TEST-PARTITION-DESIGN.md`): "Owner decisions — SETTLED 2026-08-29" (:363), "Still open — carried forward" (:373), "Decision 11 — ... Ruled 2026-09-02" (:856), "Decision 9 REVERSED" (:956), "Decision 10 COLLAPSED" (:972).
 - Rulings record the chosen and the rejected options. The defect register explains why at :323-326: "a ruling that records only its outcome is indistinguishable later from a drift".
 
@@ -920,7 +920,7 @@ Other forms:
 - The perf-lane P2 plan work table `| # | Item | Repo | Size | Depends on |` (:139) puts the status at the front of the Item cell: DONE 12, ANSWERED 2, SHIPPED 1, EXECUTED 1, DECIDED 1, PARTIALLY DISCHARGED 1, and "**BLOCKED 2026-09-10 — ... INERT**" (:336).
 - The container-registry plan (:53, :273): "blocked on the five `DOCKERHUB_TOKEN` secrets".
 - The logging roadmap (:574): "Gated on P5. Retained so the deferral is a recorded decision."
-- Handoffs use sections like "### Still owner-gated — do NOT start these unprompted" (`HANDOFF_2026-09-17_container-registry...:122`).
+- Handoffs use sections like "### Still Overtoad-gated — do NOT start these unprompted" (`HANDOFF_2026-09-17_container-registry...:122`).
 
 **Defect register** (`$R/notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`; 1,557 lines; "Living register"; Last Updated 2026-09-22):
 - **IDs** are `APD-<REPO>-<NNN>`. Retired IDs are never reused; a split becomes `-001a` / `-001b` (:25-29).
@@ -946,11 +946,11 @@ Other forms:
 | 3 | `HANDOFF_2026-09-22_perf-lane-d2-binds-d6-discharged-and-two-host-advantaged-tests.md` | Perf lane: `runtime:` block binds, D6's premise false. This is HEAD #2013. |
 | 4 | `HANDOFF_2026-09-22_logging-arc-phase-1-complete-gate-opens-p2-and-p04-is-the-real-next-step.md` | Logging: Phase 1 complete; the gate opened P2; P0.4 is next. |
 | 5 | `HANDOFF_2026-09-22_defect-register-round-41-d-a-shipped-and-the-two-defects-its-own-audit-found.md` | Register round 41. |
-| 6 | `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md` | Canopy selection: four owner decisions shipped. Supersedes #14 (:6). |
+| 6 | `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md` | Canopy selection: four Overtoad decisions shipped. Supersedes #14 (:6). |
 | 7 | `HANDOFF_2026-09-21_defect-register-round-40-x-c-and-m-a-shipped-and-d-a-grounded.md` | Register round 40. |
 | 8 | `HANDOFF_2026-09-21_backup-redesign-round-1-validated-reconciliation-pending.md` | Backup redesign: consensus round 1; §8 must not be executed. |
 | 9 | `HANDOFF_2026-09-17_logging-arc-phase-1-four-of-five-shipped-and-p14-is-an-option-d-decision.md` | Marked "SUPERSEDED 2026-09-22" at :18. |
-| 10 | `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md` | "RE-EVALUATED 2026-09-21" at :6. |
+| 10 | `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md` | "RE-EVALUATED 2026-09-21" at :6. |
 | 11 | `HANDOFF_2026-09-15_defect-register-round-39-thirty-rulings-taken-eight-implemented-and-the-arc-sequenced.md` | Round 39; 10,091 words. |
 | 12 | `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md` | Header :5-6 "**Successor**", "SUPERSEDED / CONSUMED 2026-09-17". |
 | 13 | `HANDOFF_2026-09-12_decision-11-release-train-complete-nine-on-pypi.md` | :3-4 re-evaluation "OVERTURNS ... the arc is DONE"; §8 at :179 "the arc is NOT done". |
@@ -986,8 +986,8 @@ In the last 10 days the leaders are `CONTAINER-REGISTRY-PUBLISHING-PLAN` (10), `
 | **Canopy selection reachability** | `JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md` (plus DEADLOCK proposals and validation, and the recurrence `MODEL-PERSISTENCE-DESIGN`, which "Closes: Y2") | `HANDOFF_2026-09-22_canopy-selection-four-decisions-...` |
 | **Cursor fleet** | `JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-2-DISPOSITION-ANALYSIS.md` ("Active — the flood is still running"); round 1 in `...07-28_...CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md` | `HANDOFF_2026-09-11_cursor-fleet-round-2-closed-...`, succeeded by `HANDOFF_2026-09-22_structure-screen-...` |
 | **Decision 11 / partition + release train** | `JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md` §9.5 (:856); `...08-30_...PARTITION-IMPLEMENTATION-PLAN.md` ("LARGELY DISCHARGED") | `HANDOFF_2026-09-12_decision-11-...`; §8 "NOT done". |
-| **CI budget** | `JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md` ("RECORD of a completed arc"; §7 :274-291 lists what is still the owner's) | `HANDOFF_2026-09-09_ci-budget-...`, "RE-EVALUATED 2026-09-22" (:12). |
-| **Container registry** | `JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md` ("ACCEPTED"; Wave 4 blocked); `...2026-09-22_...DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` ("READY TO EXECUTE — owner action") | `HANDOFF_2026-09-22_ten-prs-landed-...` |
+| **CI budget** | `JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md` ("RECORD of a completed arc"; §7 :274-291 lists what is still the Overtoad's) | `HANDOFF_2026-09-09_ci-budget-...`, "RE-EVALUATED 2026-09-22" (:12). |
+| **Container registry** | `JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md` ("ACCEPTED"; Wave 4 blocked); `...2026-09-22_...DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` ("READY TO EXECUTE — Overtoad action") | `HANDOFF_2026-09-22_ten-prs-landed-...` |
 | **Defect register** | `JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` | Round 41 (09-22) |
 | **Soak / shared session memory** | `JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`, `...09-17_...SOAK-TEN-OWNER-DECISIONS-RULED.md` (§3 open items), `...08-18_...SHARED-SESSION-MEMORY-PLAN.md` | `HANDOFF_2026-09-09_soak-arc-evidence-recovered-...`; its §6 was superseded by the 09-17 ruling. |
 | **Worktree cleanup v3** | `JUNIPER_2026-09-12_JUNIPER-ML_WORKTREE-CLEANUP-PROTOCOL-V3-DESIGN.md` ("DESIGN, revision 2"; rev 1 rejected by consensus) | none newer |
@@ -1031,15 +1031,15 @@ There are zero hits in `notes/` for `Workflow tool`, `workflow(`, `ultracode`, `
 
 | Doc (`$R/notes/`) | Status | What it proposed, and did it ship |
 |---|---|---|
-| `JUNIPER_2026-09-02_JUNIPER-ML_SOAK-SESSION-ROLE-AUTOMATION-ANALYSIS.md` | "Analysis — one recommendation is an owner decision, nothing implemented" (:6) | Splits soak sessions into six roles (:25-32): Subject (never automate), Orchestrator (done in ml#1561, `util/soak_run_probe.py`), Scorer (candidate), Interpreter, Registry author, Analyst (never). A keyword scorer is refuted (:69-143). An automated scorer must be a separate headless session, calibrated blind against a 36-row answer key (:145-185). Review fixed a leak of coverage data into the scorer packet and added a stopping rule (:232-244). Recommendation (:281-288): "Automate nothing further right now". **No scorer was built.** |
+| `JUNIPER_2026-09-02_JUNIPER-ML_SOAK-SESSION-ROLE-AUTOMATION-ANALYSIS.md` | "Analysis — one recommendation is an Overtoad decision, nothing implemented" (:6) | Splits soak sessions into six roles (:25-32): Subject (never automate), Orchestrator (done in ml#1561, `util/soak_run_probe.py`), Scorer (candidate), Interpreter, Registry author, Analyst (never). A keyword scorer is refuted (:69-143). An automated scorer must be a separate headless session, calibrated blind against a 36-row answer key (:145-185). Review fixed a leak of coverage data into the scorer packet and added a stopping rule (:232-244). Recommendation (:281-288): "Automate nothing further right now". **No scorer was built.** |
 | `JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md` | No header Status; Version 0.7.1, Last Updated 2026-08-31 | Adopt proposals C (dedup/prune) and D (ratchet); reject B; reject A's thesis (:39-43). Phases P0–P5 (:126-131). **Shipped:** P0–P4 DONE (:492-640), P5 "CUT COMPLETE" across 8 repos (:218-220), and the gate `conf/memory_budget.json` + `util/memory_budget_check.py`. Key rule at :536-539: "detail may be demoted to the corpus; STATUS may not." |
 | `JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md` | "COMPLETE (soak) / OPEN (ladder)", verdict INCONCLUSIVE (:5-7) | §20 (:1070-1120): local headless `claude -p` is the only usable fresh-session instrument. Subagents, cloud routines and `CronCreate` all failed (table :1093-1098). **Shipped:** `util/soak_run_probe.py` and `$R/util/systemd/juniper-soak-probe.{service,timer,path}` (timer 03/09/15/21:23; the path unit watches `MEMORY.md`). Policy since then: D1 "Named probe only, on request — no default or timer campaign" (SOAK-TEN :35). |
 | `JUNIPER_2026-09-03_JUNIPER-ML_SOAK-TRIGGER-DESIGN-CONVERSATION.md` | "Blue-sky ... nothing here is a decision" (:6) | Treats triggers as a sampling strategy (timer / event / retrospective scoring). Not shipped as policy. |
 | `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` | "Adopted 2026-08-30" (:5) | Multi-agent verification: Lane A (re-measure from different starting points) and Lane B (argue against the conclusion) (:34-73); a sizing matrix of uncertainty × criticality (:77-98); iteration rules (:102-119); the reconciler's job (:123-136); a minimum record (:157-168). **In active use** (backup design §11, soak role analysis §6a, handoff consensus records). |
 | `JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md` | "RATIFIED — round-1 build authorized" (:9) | **Shipped:** `$R/.claude/agents/{planner,auditor,task-executor,prompt-validator,fleet-supervisor,mock-seam-auditor}.md`, skills `template-agent` / `service-smoke` / `ui-test-author`, and `prompts/agent_templates/` with its manifest and RUBRIC. Follow-ons: `...06-25_...AGENT-SUITE-CONVENIENCE-UTILITIES-DESIGN.md` (header says Draft; actually shipped) and `...06-27_...CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md` ("AWAITING OWNER APPROVAL"). |
 | `JUNIPER_2026-03-12_JUNIPER-ML_PROMPT-ANALYSIS-AND-AUTOMATION-PLAN.md` | "Draft" | A taxonomy of prompt types. Later realized as `prompts/prompt_templates/` and `agent_templates/`. |
-| Cursor fleet: `...07-28_...CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`; `...07-30_...CURSOR-DASHBOARD-CONFIG-REQUESTS.md`; `...09-05_...CURSOR-FLOOD-2-DISPOSITION-ANALYSIS.md`; `...09-06_...DOCS-FLEET-CONSOLIDATION-ROUND-2-RESIDUE.md` | Round 1 "Complete — ... three validated guardrail proposals awaiting owner decisions" (:6); dashboard pack "Owner action pack — dashboard-only" (:6); round 2 "Active" (:5); docs residue "Evidence record" (§6 closed 2026-09-11) | The fleet is 5 Cursor automations whose configuration is dashboard-only (flood-2 :33-40). Merging one PR at a time degrades (:184-211); open items are at :249-281. **Shipped:** `.claude/agents/fleet-supervisor.md` with `util/fleet_triage/predict_merge.py`; Sequence Safety (now a required check); the advisory Fleet PR Lint job (`ci.yml:1388-1402`). |
-| `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARENT-AGENTS-GOVERNANCE-AND-WORKTREE-SETTINGS-ASYMMETRY.md` | "Analysis — owner decisions required, nothing implemented" (:5) | Plan §5 rows 8–9: the unversioned parent `Juniper/AGENTS.md`, and worktree sessions running without the main checkout's local settings. |
+| Cursor fleet: `...07-28_...CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`; `...07-30_...CURSOR-DASHBOARD-CONFIG-REQUESTS.md`; `...09-05_...CURSOR-FLOOD-2-DISPOSITION-ANALYSIS.md`; `...09-06_...DOCS-FLEET-CONSOLIDATION-ROUND-2-RESIDUE.md` | Round 1 "Complete — ... three validated guardrail proposals awaiting Overtoad decisions" (:6); dashboard pack "Owner action pack — dashboard-only" (:6); round 2 "Active" (:5); docs residue "Evidence record" (§6 closed 2026-09-11) | The fleet is 5 Cursor automations whose configuration is dashboard-only (flood-2 :33-40). Merging one PR at a time degrades (:184-211); open items are at :249-281. **Shipped:** `.claude/agents/fleet-supervisor.md` with `util/fleet_triage/predict_merge.py`; Sequence Safety (now a required check); the advisory Fleet PR Lint job (`ci.yml:1388-1402`). |
+| `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARENT-AGENTS-GOVERNANCE-AND-WORKTREE-SETTINGS-ASYMMETRY.md` | "Analysis — Overtoad decisions required, nothing implemented" (:5) | Plan §5 rows 8–9: the unversioned parent `Juniper/AGENTS.md`, and worktree sessions running without the main checkout's local settings. |
 | `JUNIPER_2026-09-12_JUNIPER-ML_WORKTREE-CLEANUP-PROTOCOL-V3-DESIGN.md` | "DESIGN, revision 2"; "Supersedes (on ratification)" (:6-11) | Multi-worktree cleanup policy; revision 1 was rejected by 4 reviewers. Not ratified. |
 
 ---
@@ -1063,7 +1063,7 @@ There are zero hits in `notes/` for `Workflow tool`, `workflow(`, `ultracode`, `
 | Documentation Links (`juniper-check-doc-links`) | **Yes.** Scans the whole repo, excluding dirs named templates, history, legacy, pull_requests, releases, analysis, fixes, development, plus `CHANGELOG.md`; `--cross-repo skip`. | `ci.yml:1564-1579`; `.pre-commit-config.yaml:251-278` |
 | Markdown structure delta (required step in the docs job) | **Yes.** A newly added file must be clean from zero: balanced fences, no H2 inside a bare or unclosed fence, tables with a separator row. | `ci.yml:1595-1605`; `$R/util/markdown_structure_delta.py:67-80` |
 | Markdown structure C1–C4 | Advisory only. C4 flags deleted or renamed headings. | `ci.yml:1607-1640` |
-| Sequence Safety docs screen (required in the ruleset) | **Yes, on edits.** Covers `AGENTS.md`, `docs/**/*.md` and `notes/**/*.md`. Fails on a deleted heading (a same-hunk retitle only warns) and on 5+ consecutive deleted lines with nothing added. Waiver: an `Allow-Docs-Rewrite: <path>` commit trailer, or the owner's `docs-rewrite` label (warn-only). | `ci.yml:1357-1373`; `$R/juniper-ci-tools/juniper_ci_tools/docs_additions_check.py:21-40, :56, :62-66` |
+| Sequence Safety docs screen (required in the ruleset) | **Yes, on edits.** Covers `AGENTS.md`, `docs/**/*.md` and `notes/**/*.md`. Fails on a deleted heading (a same-hunk retitle only warns) and on 5+ consecutive deleted lines with nothing added. Waiver: an `Allow-Docs-Rewrite: <path>` commit trailer, or the Overtoad's `docs-rewrite` label (warn-only). | `ci.yml:1357-1373`; `$R/juniper-ci-tools/juniper_ci_tools/docs_additions_check.py:21-40, :56, :62-66` |
 | Handoff-reference test | **Yes**, for top-level notes that name a handoff file. | `tests/test_thread_handoff_archive.py:48-59` |
 | Naming convention | **No gate.** | 3 tracked files violate it |
 | Requirements source citations | Indirect. `id_assignments.yaml` cites notes paths and line ranges; CI only runs fixture tests of the checker, not a live check. | `util/requirements_drift_check.py`; `ci.yml:384-388` |
@@ -1102,7 +1102,7 @@ Items marked **[gated]** fail CI; the rest are convention only.
 15. **Name every document referenced or changed, by filename,** in summaries, PR bodies and handoffs. Source: `AGENTS.md:272-275`.
 16. **Supporting scripts go under `util/` or `util/ad-hoc/`**, never `/tmp`. Source: `AGENTS.md:277-290`.
 17. **Pointers belong in `docs/REFERENCE.md`, not `AGENTS.md`**; growth in `AGENTS.md` (and so `CLAUDE.md`) is capped at 38,000 characters with the no-worsening rule **[gated]**. Source: `conf/memory_budget.json:27-36`; `ci.yml:1195-1235`.
-18. **Land it by PR:** one PR per work unit, the owner merges, include a `## Requirements` JR-ID section where relevant. Source: `standing_rules.yaml:5-17`; `AGENTS.md:296-315`.
+18. **Land it by PR:** one PR per work unit, the Overtoad merges, include a `## Requirements` JR-ID section where relevant. Source: `standing_rules.yaml:5-17`; `AGENTS.md:296-315`.
 
 **Key files** (absolute):
 - `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/structured-inventing-fairy/notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`

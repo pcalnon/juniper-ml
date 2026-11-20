@@ -8,7 +8,7 @@
 - **Plans of record**:
   - `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, v1.4.8 at this checkout. Task and decision ids A\*, B\*, C8, D2, D11 and H3 are this file's.
   - `notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, v1.1.0. Ids K\*, S\* and T\* are this file's. It wins over the first file on B3-B5 (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` §19).
-- **Guard**: `util/claude_agent_guard.py` 1.2.0 (`__version__` at :176), installed by the owner as a PreToolUse hook on 2026-10-26. That date comes from the launch prompt. The §16.2 "C8 item 4" row of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` (:849) still says "install pending"; H3's own record brings the install into that plan.
+- **Guard**: `util/claude_agent_guard.py` 1.2.0 (`__version__` at :176), installed by the Overtoad as a PreToolUse hook on 2026-10-26. That date comes from the launch prompt. The §16.2 "C8 item 4" row of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` (:849) still says "install pending"; H3's own record brings the install into that plan.
 - **Labels**:
   - **verified**: measured, and as designed.
   - **verified failing**: measured, and not as designed.
@@ -53,7 +53,7 @@ The condition messages, verbatim:
   - `pinentry` (pass): "/usr/local/bin/pinentry-mac reports flavor 'mac' (pinentry-program in /Users/pcalnon/.gnupg/gpg-agent.conf)"
   - `agent-socket` (pass): "/Users/pcalnon/.gnupg/S.gpg-agent is a socket"
   - `external-cache` (pass): "no-allow-external-cache is set in /Users/pcalnon/.gnupg/gpg-agent.conf"
-  - `integration` (fail): "no I-SIGN record: T1-T5 verified (signing plan K10, which widens B5) is not recorded in expected.yaml". Its remediation: "after B2 and B3, the owner runs the I-SIGN matrix (K10); K11 records it as G-SIGN.integration".
+  - `integration` (fail): "no I-SIGN record: T1-T5 verified (signing plan K10, which widens B5) is not recorded in expected.yaml". Its remediation: "after B2 and B3, the Overtoad runs the I-SIGN matrix (K10); K11 records it as G-SIGN.integration".
 
 The statuses and messages are the same as in the symptom's 00:23:29Z run. Nothing changed in the hour between the two runs.
 
@@ -117,7 +117,7 @@ The statuses and messages are the same as in the symptom's 00:23:29Z run. Nothin
    ```
 
    - So the juniper-k8s origin offers ssh's seven default identity files, never `~/.ssh/id_ed25519_github_juniper-k8s`. The origin's `git@` sets the user to `git`.
-   - With `identitiesonly no`, ssh also offers the agent's keys. In this agent session the agent is gpg-agent's: `printf 'SSH_AUTH_SOCK=%s\n' "$SSH_AUTH_SOCK"` printed `SSH_AUTH_SOCK=/Users/pcalnon/.gnupg/S.gpg-agent.ssh`. This run did not measure an owner terminal's value.
+   - With `identitiesonly no`, ssh also offers the agent's keys. In this agent session the agent is gpg-agent's: `printf 'SSH_AUTH_SOCK=%s\n' "$SSH_AUTH_SOCK"` printed `SSH_AUTH_SOCK=/Users/pcalnon/.gnupg/S.gpg-agent.ssh`. This run did not measure an Overtoad terminal's value.
    - Two things are not verifiable by an agent (§4): which default files exist, and which keys turing's `sshcontrol` enables.
 4. **Verified: what the `https://` origin (juniper-recurrence) gets instead.**
    - No URL rewrite sends it back through the alias: `git config --show-scope --show-origin --get-regexp '^url\.'` exited 1, so there is none at system or global scope. This run did not read the sibling checkout's local scope.
@@ -135,7 +135,7 @@ The statuses and messages are the same as in the symptom's 00:23:29Z run. Nothin
 
 ### 2.3 Signing (step 2)
 
-1. **Verified: the owner's signing configuration is complete and pinned.**
+1. **Verified: the Overtoad's signing configuration is complete and pinned.**
    - `python3 util/configure_commit_signing.py --check --json` exited 0 with `"summary": "OK -- all 16 checks passed"` and `"expected": {"signing_key": "B5619F58FDA4D94E2D73D8BABA18D1A733B1831A!", ...}`.
    - Its `include` check: "/Users/pcalnon/.config/git/juniper-signing.gitconfig holds only the signing keys; [includeIf "gitdir/i:~/Development/python/Juniper/"] in /Users/pcalnon/.gitconfig includes it".
    - All 10 `repo:*` checks pass. `repo:juniper-ml` reads "signs with B5619F58FDA4D94E2D73D8BABA18D1A733B1831A! through /usr/local/bin/gpg (signing key from /Users/pcalnon/.config/git/juniper-signing.gitconfig)", and `repo:juniper-k8s` and `repo:juniper-recurrence` read the same.
@@ -161,7 +161,7 @@ The statuses and messages are the same as in the symptom's 00:23:29Z run. Nothin
    ```
 
    - The one failure is D11 item 1 at work. `git config --show-scope --show-origin --get-all commit.gpgsign` printed `global	file:/Users/pcalnon/.config/git/juniper-signing.gitconfig	true`, then `command	command line:	false`.
-   - K9 runs this preflight from a real owner terminal, where it must exit 0 (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` :483).
+   - K9 runs this preflight from a real Overtoad terminal, where it must exit 0 (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` :483).
    - G-SIGN reads only the preflight's pinentry, agent-socket and external-cache lines (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` :986).
 4. **Verified: this branch carries no unsigned commit.** `git log -5 --format='%h %G? %GK'`:
 
@@ -175,7 +175,7 @@ The statuses and messages are the same as in the symptom's 00:23:29Z run. Nothin
 
    - All five read `E` and none reads `N`. `E` means turing's keyring lacks the signing key, here B5690EEEBB952194, the GitHub web-flow key that B2 imports (:401).
    - `git rev-list --count origin/main..HEAD` printed `0`, so the branch adds no local commit. The local `origin/main` ref, `dd6fdb85b56917623c213cd00908e167160a6679`, is 3 commits ahead of HEAD.
-5. **Verified failing: K6 (B2) is open, so the owner's public key is not in turing's keyring.**
+5. **Verified failing: K6 (B2) is open, so the Overtoad's public key is not in turing's keyring.**
    - `git log -1 --format='%h %G? %GK %cI %s' be9f1319` printed `be9f1319 E BA18D1A733B1831A 2026-08-09T15:37:24-05:00 test yubi 2`.
    - K6's acceptance is "`be9f1319` shows `G`" (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` :481).
 6. **Verified: the commit email matches the key's.** `git config --show-scope --show-origin --get-all user.email` printed `global	file:/Users/pcalnon/.gitconfig	paul.calnon@gmail.com`. GitHub lists that address as verified on the signing key (§2.4).
@@ -221,7 +221,7 @@ The statuses and messages are the same as in the symptom's 00:23:29Z run. Nothin
    | juniper-ml | 143887186 | juniper deploy key | false | true | 2026-02-25T07:16:30Z | 2026-10-25T08:19:09Z | SHA256:ypx0gJKHUGsDCcC+b8XvPfq5D0yDXpy8/SB9AFc7ok4 |
    | juniper-ml | 144170492 | Juniper ML Deploy Key - Turing | false | true | 2026-02-28T02:54:59Z | 2026-10-21T05:05:43Z | SHA256:R0j17n7DBJGG+q415OoDObZdbmgc3+xY4P7wJ/8MvV4 |
 
-   - Each repo has at least one write-enabled key. Which of them, if any, is the key in turing's file is the owner's A2 comparison; titles are not evidence of that.
+   - Each repo has at least one write-enabled key. Which of them, if any, is the key in turing's file is the Overtoad's A2 comparison; titles are not evidence of that.
    - Two timestamps fit the account in §4.1 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` (a one-off `ssh -i` clone, then a bypassing origin): the juniper-k8s key's `last_used` of 2026-10-13T23:14:50Z, and the `null` on the recurrence "-Turing" key. They do not prove that account, because the API does not say which host used a key.
    - None of the six is the ssh form of the GPG key GitHub holds. No listed ed25519 point equals that of 084FA27B796DABC4 or of any of its subkeys, F6D949CF7D344E31 included.
    - No title is D2's fixed title, `Deploy Key - Turing` (`notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` :241).
@@ -233,7 +233,7 @@ The statuses and messages are the same as in the symptom's 00:23:29Z run. Nothin
    - juniper-recurrence's two rulesets are `juniper-no-direct-push` (21019073) and `juniper-recurrent-rules` (20634527), both `active`.
    - For juniper-k8s, `gh api repos/pcalnon/juniper-k8s/rulesets` and `gh api repos/pcalnon/juniper-k8s/rules/branches/main` both return HTTP 403: "Upgrade to GitHub Pro or make this repository public to enable this feature.".
    - `gh api repos/pcalnon/juniper-k8s --jq '{full_name, private, visibility, default_branch}'` returned `"private":true,"visibility":"private"`.
-   - So juniper-k8s has no ruleset and no `required_signatures`. That answers the juniper-k8s ruleset line in §14.1 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, whose §1 item 2 says "juniper-k8s is unverified", without an owner run.
+   - So juniper-k8s has no ruleset and no `required_signatures`. That answers the juniper-k8s ruleset line in §14.1 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, whose §1 item 2 says "juniper-k8s is unverified", without an Overtoad run.
 6. **Verified: no ruleset applies to a K10 probe branch.**
    - `gh api repos/pcalnon/juniper-ml/rules/branches/probe/signing-2026-10-27 --jq '[.[] | {type, ruleset_id}]'` returned `[]`.
    - So no ruleset stands in the way of pushing and deleting `probe/signing-<date>` (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` §10.2).
@@ -257,13 +257,13 @@ The statuses and messages are the same as in the symptom's 00:23:29Z run. Nothin
 | Deploy key missing or read-only on GitHub | out for presence and write access; the key-to-file match is not verifiable by an agent | §2.4 item 4: each repo lists at least one key with `read_only: false` and `enabled: true`. The fingerprint comparison with the local `.pub` is A2 |
 | Unpinned or missing signing key, curses pinentry, unsigned commit, key GitHub lacks | out: not transport causes | G-ALIAS reads no signing state |
 
-### 3.2 G-SIGN `integration`: no known cause fits; the owner-run I-SIGN record does not exist yet
+### 3.2 G-SIGN `integration`: no known cause fits; the Overtoad-run I-SIGN record does not exist yet
 
 **Root cause (verified): none of the five known causes fits.**
 
-- The condition fails because the record it reads is null. `conf/hosts/turing/expected.yaml:45` holds `integration: null   # signing plan K10 (owner), recorded by K11`.
+- The condition fails because the record it reads is null. `conf/hosts/turing/expected.yaml:45` holds `integration: null   # signing plan K10 (Overtoad), recorded by K11`.
 - `util/host_state_check.py:659-667` fails a null record with exactly the symptom's message.
-- That is the designed state until the owner runs K10 (B5 widened to the I-SIGN matrix) and an agent records the result (K11).
+- That is the designed state until the Overtoad runs K10 (B5 widened to the I-SIGN matrix) and an agent records the result (K11).
 
 K10 has not run because its chain is still open:
 
@@ -272,7 +272,7 @@ K10 has not run because its chain is still open:
 - **K8 and K7 (= B3): not verifiable by an agent**, because they involve the card and its touch policy.
   - K8 also waits on the S11 and S12 rulings.
   - A search of `notes/` and `prompts/thread-handoff_automated-prompts/` finds no record of either ruling outside the signing plan itself.
-- **K9: runs only from an owner terminal.** In this session the preflight fails `commit-gpgsign` by design (D11).
+- **K9: runs only from an Overtoad terminal.** In this session the preflight fails `commit-gpgsign` by design (D11).
 - **A3 (at least juniper-ml's rows): not verifiable by an agent.**
   - juniper-ml's own origin is in alias form (§2.2 item 1), and GitHub lists two write-enabled juniper-ml keys (§2.4 item 4).
   - So G-ALIAS's failure on juniper-k8s and juniper-recurrence does not hold up juniper-ml's A3 rows.
@@ -286,13 +286,13 @@ K10 has not run because its chain is still open:
 | Signing key GitHub lacks, or expired | out | `users/pcalnon/gpg_keys` lists signing subkey BA18D1A733B1831A. Its computed fingerprint, B5619F58FDA4D94E2D73D8BABA18D1A733B1831A, equals the configured key. It expires 2028-08-05 and has `revoked: false`. `paul.calnon@gmail.com` is verified there and equals `user.email` |
 | Deploy key missing or read-only | out | Not a signing cause. juniper-ml has write-enabled keys (§2.4 item 4) |
 
-The G-SIGN failure is a missing owner-run record, not a configuration defect. Its next blocker is K13.
+The G-SIGN failure is a missing Overtoad-run record, not a configuration defect. Its next blocker is K13.
 
 ## 4. What could not be verified, and why
 
 | Item | Why an agent cannot verify it | Owner step (§6) |
 |---|---|---|
-| Which GitHub deploy key each local key file holds, for all 10 repos | Reading `~/.ssh/*.pub` falls under the CRED-PATH rules, and the agent file makes a fingerprint comparison an owner step | A2 |
+| Which GitHub deploy key each local key file holds, for all 10 repos | Reading `~/.ssh/*.pub` falls under the CRED-PATH rules, and the agent file makes a fingerprint comparison an Overtoad step | A2 |
 | Whether ssh, `git ls-remote` and `git push --dry-run` authenticate, per repo | `ssh -T`, and any ssh connection to a GitHub host, falls under SSH-PROBE; a fetch or push opens one | A3 (G-AUTH) |
 | turing's `sshcontrol`, and which default `~/.ssh/id_*` files exist (what the juniper-k8s bypass offers) | CRED-PATH. §4.1 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` records "turing has no usable default file" (2026-10-15); this run did not re-measure it | the §4.1 `sshcontrol` line |
 | The osxkeychain token for juniper-recurrence's HTTPS URL | KEYCHAIN-DUMP. The question is moot once A1 moves the repo to SSH (D2) | none (A1) |
@@ -308,19 +308,19 @@ The G-SIGN failure is a missing owner-run record, not a configuration defect. It
 - **Denial, verbatim**:
 
 ```text
-PreToolUse:Bash hook error: juniper-agent-guard denied this Bash call. Rule GH-API-WRITE: gh api with a write or field flag (-X / --method, -f / -F / --field / --raw-field, --input, a method-override header), or a gh alias that could hide one (matched: gh api -X). Agents use gh api for read-only GETs only; drop the flag (a plain gh api call is a GET). This also blocks a read-only gh api graphql -f query=..., which D11 accepts. This action is OWNER-run under D11 of notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md: do not retry it or look for a way around the guard; ask the owner to run it in their own terminal.
+PreToolUse:Bash hook error: juniper-agent-guard denied this Bash call. Rule GH-API-WRITE: gh api with a write or field flag (-X / --method, -f / -F / --field / --raw-field, --input, a method-override header), or a gh alias that could hide one (matched: gh api -X). Agents use gh api for read-only GETs only; drop the flag (a plain gh api call is a GET). This also blocks a read-only gh api graphql -f query=..., which D11 accepts. This action is OWNER-run under D11 of notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md: do not retry it or look for a way around the guard; ask the Overtoad to run it in their own terminal.
 ```
 
 - The text matches this checkout's 1.2.0 source: rule `GH-API-WRITE` at `util/claude_agent_guard.py:210`, and the denial format at :1963.
 - The call was **not retried**, and no other write-capable `gh` form was attempted.
-- It implies no owner command. `POST /markdown` only renders the text it is sent, so the test needs no follow-up.
+- It implies no Overtoad command. `POST /markdown` only renders the text it is sent, so the test needs no follow-up.
 - **Other refusals in this run**: the C8 guard denied nothing else. The session's worktree-isolation guard, which is not the C8 guard and gave no rule id, refused one compound command: four read-only `git config --get-all` reads (`user.email`, `user.signingkey`, `gpg.program`, `commit.gpgsign`) and one `printf` of `SSH_AUTH_SOCK`. Its message said the command "names git in a form too complex to verify that it stays inside the worktree" and asked for plain, separate commands.
   - Three of those then ran as separate commands: the `user.email` and `commit.gpgsign` reads, and the `printf`.
   - The `user.signingkey` and `gpg.program` reads were not repeated, because `--check` already reports both values.
 
 ## 6. OWNER command list
 
-Run every line in a real owner terminal, never as `! <cmd>` (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` §13). The order is transport first (A1, A2, A3), then the signing chain in that file's §13 order.
+Run every line in a real Overtoad terminal, never as `! <cmd>` (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` §13). The order is transport first (A1, A2, A3), then the signing chain in that file's §13 order.
 
 These items are left out because they are already done or answered:
 
@@ -382,7 +382,7 @@ grep -v '^#' ~/.gnupg/sshcontrol; gpg -K --with-keygrip
 gh auth status
 
 # ===== Signing: G-SIGN.integration, in the signing plan's §13 order. No YubiKey goes into turing until K13 is done. =====
-# C8 and K12 need no step: guard 1.2.0 was installed by the owner on 2026-10-26.
+# C8 and K12 need no step: guard 1.2.0 was installed by the Overtoad on 2026-10-26.
 
 # K13 -- IDE agent approvals (S7). First, by hand:
 #        - VS Code: delete "/.*/", "xargs" and the fragment keys from chat.tools.terminal.autoApprove.
@@ -422,7 +422,7 @@ KEYS=$(gpg --with-colons --with-subkey-fingerprints --fingerprint 084FA27B796DAB
 case "$FPR" in 06DBAC384131E0380D89923F084FA27B796DABC4|B5619F58FDA4D94E2D73D8BABA18D1A733B1831A) ;; *) FPR=no-match ;; esac
 printf '%s\n' "$KEYS" | grep -q "^fpr:::::::::$FPR:" \
   && printf '%s\n' "$KEYS" | grep -q '^fpr:::::::::06DBAC384131E0380D89923F084FA27B796DABC4:' \
-  && echo '06DBAC384131E0380D89923F084FA27B796DABC4:6:' | gpg --import-ownertrust \
+  && echo '06DBAC384131E0380D89923F084FA27B796DABC4:6:' | gpg --import-Overtoadtrust \
   || echo 'STOP: the fingerprints disagree. Trust was NOT set.'
 # K6 -- import GitHub's web-flow key with no trust, so main's squash commits read U instead of E. Pass: the key is imported.
 curl -fsSL https://github.com/web-flow.gpg | gpg --import

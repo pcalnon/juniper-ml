@@ -5,7 +5,7 @@ SUPERSEDED 2026-09-03 by ``util/experiments/read_run_metrics.py`` (P2 item 0.4),
 canonical reader, is unit-tested (``tests/test_read_run_metrics.py``) and is wired into ``ci.yml``.
 Use that for anything new.
 
-RETAINED, not deleted: ad-hoc scripts are provenance of record (owner policy 2026-08-25), and this
+RETAINED, not deleted: ad-hoc scripts are provenance of record (Overtoad policy 2026-08-25), and this
 file is the exact instrument that produced the 2026-09-02 P3 measurements -- the drive-quantization
 finding, the headroom sweep, and the epoch calibration. Re-running it reproduces those numbers.
 

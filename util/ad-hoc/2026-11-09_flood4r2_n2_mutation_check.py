@@ -9,7 +9,7 @@ Version:     0.1.0
 License:     MIT License
 Created:     2026-11-09
 Status:      ad-hoc -- one-off verification
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     §8, ruling 11 of notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md
              (juniper-service-core's stop-then-start race);
              juniper-service-core/tests/test_lifecycle_stop_then_start.py; adapted from
@@ -27,7 +27,7 @@ An unmutated copy runs first and must PASS; every mutant must FAIL, with every t
 ``killers`` among the failures. Twelve mutants: the fix reverted; the refusal removed; each half of
 its condition dropped; the refusal made to depend on the machine reading ``STOPPED``; the check
 moved before the lock is taken, after the dataset write, or after the stop is cleared; and four
-mutants of the ownership guard and result recording that juniper-ml#2531 added.
+mutants of the Overtoadship guard and result recording that juniper-ml#2531 added.
 
 Each copy is removed once its run is over, and so is the run's pytest ``--basetemp``, which is put
 beside the copy; the run's ``pytest.log`` stays in ``--scratch``. Left in a checkout's ``tmp/``, a
@@ -116,9 +116,9 @@ MUTANTS = [
     Mutant("refusal-after-the-stop-is-cleared", ((_REFUSAL, ""), (_CLEAR, _CLEAR + _REFUSAL)), RACE_TESTS, "the refusal comes before the stop is cleared"),
     Mutant("refusal-only-when-STOPPED", ((_CONDITION, _CONDITION.replace("self._stop_event.is_set():", "self._stop_event.is_set() and self.state_machine.is_stopped():")),), AFTER_A_LOAD, "the refusal does not depend on the machine's status: after a stop, a snapshot load leaves RESUME_READY, INVESTIGATING or REPLAYING with the stopped fit still running"),
     Mutant("check-before-the-lock", ((_PREVIOUS + _REFUSAL, ""), (_START_LOCK, _CHECK_BEFORE_THE_LOCK + _START_LOCK)), (UNDER_THE_LOCK,), "the refusal is decided under the manager lock: a stop that lands while the start waits for the lock is seen"),
-    Mutant("completion-without-the-ownership-guard", ((_SETTLE_GUARD, "                if not self._stop_event.is_set():\n"),), (STALE_RETURN_RUNNING, STALE_RETURN), "kept: the ownership guard on a completion, still pinned by the adapted tests"),
-    Mutant("failure-without-the-ownership-guard", ((_FAILURE_GUARD, _FAILURE_GUARD.replace("if self._thread is threading.current_thread():", "if self._thread is not None:")),), (STALE_RAISE,), "kept: the ownership guard on a failure"),
-    Mutant("interrupt-without-the-ownership-guard", ((_INTERRUPT_GUARD, _INTERRUPT_GUARD.replace("if self._thread is threading.current_thread():", "if self._thread is not None:")),), (STALE_INTERRUPT,), "kept: the ownership guard on an interrupt"),
+    Mutant("completion-without-the-Overtoadship-guard", ((_SETTLE_GUARD, "                if not self._stop_event.is_set():\n"),), (STALE_RETURN_RUNNING, STALE_RETURN), "kept: the Overtoadship guard on a completion, still pinned by the adapted tests"),
+    Mutant("failure-without-the-Overtoadship-guard", ((_FAILURE_GUARD, _FAILURE_GUARD.replace("if self._thread is threading.current_thread():", "if self._thread is not None:")),), (STALE_RAISE,), "kept: the Overtoadship guard on a failure"),
+    Mutant("interrupt-without-the-Overtoadship-guard", ((_INTERRUPT_GUARD, _INTERRUPT_GUARD.replace("if self._thread is threading.current_thread():", "if self._thread is not None:")),), (STALE_INTERRUPT,), "kept: the Overtoadship guard on an interrupt"),
     Mutant("result-recorded-outside-the-guard", ((_RESULT_UNDER_THE_GUARD, "                self._last_result = result\n"),), (RESULT,), "kept: only the settle that completes a run records its result"),
 ]
 

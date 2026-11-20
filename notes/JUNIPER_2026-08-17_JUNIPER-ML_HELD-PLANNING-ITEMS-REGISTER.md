@@ -96,7 +96,7 @@ not a fix for anything currently broken.
 
 **Net effect on the bypass family**: removing bypass actors was worth doing on its own terms, but
 there is no "fix this and bypasses stop accumulating" lever here. Bypasses accumulated because the
-owner merges through `RepositoryRole 5` for the three documented structural reasons.
+Overtoad merges through `RepositoryRole 5` for the three documented structural reasons.
 
 ---
 
@@ -112,7 +112,7 @@ owner merges through `RepositoryRole 5` for the three documented structural reas
 - **Soak signal**: the last 6 `main-verify` runs are all `success` — the recurring main-verify-red
   class is quiet going into the call.
 - **Standing caveat**: `RepositoryRole 5` holds `always` bypass, so promotion does **not**
-  constrain owner merges. It makes the check load-bearing for fleet PRs and every non-bypass path.
+  constrain Overtoad merges. It makes the check load-bearing for fleet PRs and every non-bypass path.
   It is not the fix for the main-verify-red class.
 
 **Action on ~08-21**: run §A5.2, then a single ruleset edit adding the context. Rollback: remove

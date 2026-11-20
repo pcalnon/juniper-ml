@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-13
 Status: ad-hoc -- one-off (the juniper-ml 0.11.5 cut)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-10_fill_security_notes_placeholders.py (the filler this drives);
          util/ad-hoc/2026-11-13_juniper_ml_0_11_5_cut_cochanges.py (the same cut's co-changes);
          notes/releases/RELEASE_NOTES_v0.11.1.md (the last ``[tools]`` security-floor release, whose header this follows);
@@ -24,7 +24,7 @@ Each text was checked on 2026-11-13: the rating, the class and what stays open a
 own notes; the ``[servers]`` and ``[recurrence]`` sentence against PyPI's ``requires_dist`` for juniper-canopy 0.9.0,
 juniper-cascor 0.13.0, juniper-data 0.17.1 and juniper-recurrence 0.8.1, the newest release of each (juniper-data's
 floors on the two carry ``extra == "api"``, and juniper-recurrence's on juniper-observability
-``extra == "observability"``); the consumers' floors against the owner's ruling of
+``extra == "observability"``); the consumers' floors against the Overtoad's ruling of
 2026-11-09 ("In release PRs"), which the CHANGELOG's Security entry records.
 
 Usage
@@ -57,7 +57,7 @@ INTRO = (
     "either. juniper-observability 0.4.2 is rated Medium in its own notes, and so is this release; juniper-service-core 0.7.2 is a plain patch. 0.4.2 does "
     "not close every path to Sentry: its notes list what stays open for 0.4.3, query strings and Sentry Logs among them. `[servers]` and `[recurrence]` "
     "are unchanged: the newest juniper-canopy, juniper-cascor, juniper-data and juniper-recurrence releases still accept juniper-observability 0.4.1 and "
-    "juniper-service-core 0.7.1, and each is to raise its own floors in its next release (owner ruling 2026-11-09)."
+    "juniper-service-core 0.7.1, and each is to raise its own floors in its next release (Overtoad ruling 2026-11-09)."
 )
 
 

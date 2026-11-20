@@ -1,6 +1,6 @@
 <!-- Archived verbatim 2026-09-24 from subagent aac2e54444043de31 of session 2fba4397 (final message). -->
 
-VERDICT: PASS WITH CORRECTIONS. No HIGH or MEDIUM finding. The round-2 changes hold up against primary sources, including the new sweeper-merge bullet, Appendix J and the opener, whose `--dry-run` exited 0 with the stated 22 files. There are 7 LOW and 9 NIT findings. The most important LOW: the document misdescribes one of the opener's refusals, and it names "containers [2703c8]" as live and as the owner of the 403 when that session had already handed off in juniper-ml#2100. Two things have moved since 02:10Z.
+VERDICT: PASS WITH CORRECTIONS. No HIGH or MEDIUM finding. The round-2 changes hold up against primary sources, including the new sweeper-merge bullet, Appendix J and the opener, whose `--dry-run` exited 0 with the stated 22 files. There are 7 LOW and 9 NIT findings. The most important LOW: the document misdescribes one of the opener's refusals, and it names "containers [2703c8]" as live and as the Overtoad of the 403 when that session had already handed off in juniper-ml#2100. Two things have moved since 02:10Z.
 
 All "L<n>" references are to the frozen snapshot `hc2/consolidated_r2_frozen.md` (sha256 `79c0abb4b7dbdf15…`, checked; byte-identical to the untracked file in `fizzy-hugging-dream`). Other documents are named in full:
 - **document 1:** `HANDOFF_2026-09-24_defect-register-round-42-ml2088-merged-data-fixforward-refuted-and-fixing-closes-pr-owed.md` (= `hc2/doc1_r2_frozen.md`, sha256 `17ef7db5…`)
@@ -204,7 +204,7 @@ None.
 | L212: the quotes exist | document 2 lines 134 and 136 | CONFIRMED |
 | L212: "Both drop a validation gate" | document 2 line 136 | REFUTED (L-4) |
 | L219: remedy key; `str_as_bool` | `manager.py:245`, `:232` at `0fbb447a` | CONFIRMED |
-| L221: `owner-rulings-verbatim.md` exists | reports directory | CONFIRMED |
+| L221: `Overtoad-rulings-verbatim.md` exists | reports directory | CONFIRMED |
 | L225: "4001 close" in `b9484fef` | commit message | CONFIRMED (N-6) |
 | L226: ledger path | `origin/main` | CONFIRMED |
 | L231: `:4766` before #690; `:4841` after | `manager.py` at `b9484fef`, `78e99414`, `0fbb447a` | CONFIRMED |

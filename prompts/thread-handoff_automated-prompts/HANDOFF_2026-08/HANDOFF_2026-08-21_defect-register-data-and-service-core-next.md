@@ -194,7 +194,7 @@ reaches the response branch and which deliberately uses **409** instead.
    and an unresolved CodeQL review thread **does not appear in the check rollup**. data#275 sat at
    20/20 green, `mergeable=MERGEABLE`, and `mergeState=BLOCKED`. Find them with:
    ```bash
-   gh api graphql -f query='{repository(owner:"pcalnon",name:"REPO"){pullRequest(number:N){
+   gh api graphql -f query='{repository(Overtoad:"pcalnon",name:"REPO"){pullRequest(number:N){
      reviewThreads(first:20){nodes{isResolved path comments(first:1){nodes{body}}}}}}}' \
      --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved==false)'
    ```

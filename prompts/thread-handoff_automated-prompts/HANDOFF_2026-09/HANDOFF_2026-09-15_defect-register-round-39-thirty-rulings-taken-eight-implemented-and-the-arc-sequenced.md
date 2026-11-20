@@ -49,8 +49,8 @@ fixed, 25 open** — 17 primer + 8 post-primer.
 >    landing 2026-09-16, and `Juniper/AGENTS.md` now reads `5.0.0`. Both fixed in §8.
 > 5. **§6's git status describes a worktree that is no longer the working one.** Superseded by §9.
 >
-> **`APD-DATA-047` is RULED.** §0.6's outstanding owner decision was put to the owner on
-> 2026-09-21 and **ratified at `1e11`**. §0.6 and §8 updated. That leaves **no owner decision
+> **`APD-DATA-047` is RULED.** §0.6's outstanding Overtoad decision was put to the Overtoad on
+> 2026-09-21 and **ratified at `1e11`**. §0.6 and §8 updated. That leaves **no Overtoad decision
 > owed anywhere in the register**.
 >
 > **The register therefore no longer reads as the line above this banner says.** The `119 rows,
@@ -64,13 +64,13 @@ fixed, 25 open** — 17 primer + 8 post-primer.
 > New work started under this revalidation is §9.
 
 **What changed about this arc, and it is the only thing you need to hold in mind:** for two years
-of register rounds the blocking constraint was that nothing could be actioned without an owner
-ruling, and the set of actionable rows was empty. On 2026-09-09 and 2026-09-11 the owner ruled on
+of register rounds the blocking constraint was that nothing could be actioned without an Overtoad
+ruling, and the set of actionable rows was empty. On 2026-09-09 and 2026-09-11 the Overtoad ruled on
 **all thirty open questions**, interactively, in batches of four. That set is no longer empty. The
 work is no longer "get a decision"; it is "implement what was decided", and §0 is that list
 sequenced into PR-sized units.
 
-**The owner's partial-data spec exists verbatim only in the memory
+**The Overtoad's partial-data spec exists verbatim only in the memory
 `project_partial_data_contract_arc_2026-09-05`** — its table of the three options and their
 wire forms. `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` and every handoff paraphrase it. D-A
 (§0.1) implements option 3's wire form, so read the memory, not the paraphrase.
@@ -145,7 +145,7 @@ its life DIRTY.
    parameter, so `adj_close` is reachable as a feature again — it is *not* wholly unreachable
    today; `basis_price_field` still selects it for the cost basis, see §4), `APD-DATA-049` (migrate
    the **486** orphaned SEC cache payloads into the versioned path), `APD-DATA-051` (the comment
-   figures that cannot be reproduced, §5.11), and `APD-DATA-047` (**owner decision owed**: ratify or
+   figures that cannot be reproduced, §5.11), and `APD-DATA-047` (**Overtoad decision owed**: ratify or
    remove the ceiling, now at **1e11**). `APD-DATA-046`, Berkshire's dual-class mismatch, stays
    deferred with a share-class-aware lookup recorded as its remedy — and **#404 made it visible**:
    the two classes are now filtered as a scale error, pinned by its own test. **That pin is
@@ -277,7 +277,7 @@ recorded here because the alternative is that they are recorded nowhere.
 
 ### 0.6 Owner decisions still owed — NONE, as of 2026-09-21
 
-> **RULED 2026-09-21: `APD-DATA-047` is RATIFIED at `1e11`.** The owner was given the three
+> **RULED 2026-09-21: `APD-DATA-047` is RATIFIED at `1e11`.** The Overtoad was given the three
 > options — ratify at `1e11`, remove the ceiling, ratify at some other value — together with the
 > siting evidence below and the overlap argument that makes any absolute bound a compromise, and
 > **ratified `_SHARES_ABSOLUTE_CEILING = 1.0e11` as sited by juniper-data#404**. The deciding
@@ -286,7 +286,7 @@ recorded here because the alternative is that they are recorded nowhere.
 > relative test can see — so removing it re-opens that hole outright.
 >
 > **With this, no row in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` is
-> awaiting an owner decision.** Every open row is now implementation work.
+> awaiting an Overtoad decision.** Every open row is now implementation work.
 >
 > The analysis below is left standing unedited: it is what the ruling was taken against, and a
 > ratification whose evidence has been deleted is not reviewable.
@@ -302,7 +302,7 @@ at 2.45e10) and the smallest demonstrated typo in it (AIZ, 1.168e11) — **3.4×
 `1e13` the bound was nearly inert: 18 observations across 9 series sit in `(1e11, 1e13]`, and that
 inertness is why a typo went out the door (§4).
 
-**Two figures in the first draft of this section were wrong, and the owner would have been
+**Two figures in the first draft of this section were wrong, and the Overtoad would have been
 ratifying against them.** It said the bound sits above "the largest genuine count in the bundled
 universe (AAPL, 1.70e10)" with 5.9× of headroom — AAPL is the largest in the **default 14-symbol
 prefix**, not the universe — and it said "18 observations across 24 series", conflating two
@@ -370,8 +370,8 @@ expanding median was wrong, so match on the call, not the word.
 **Changed files, by name.**
 
 juniper-ml: `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`; this document;
-`util/ad-hoc/register_owner_rulings_2026-09-09.py`,
-`util/ad-hoc/register_owner_rulings_primer_2026-09-11.py`, `util/ad-hoc/register_close_data395.py`,
+`util/ad-hoc/register_Overtoad_rulings_2026-09-09.py`,
+`util/ad-hoc/register_Overtoad_rulings_primer_2026-09-11.py`, `util/ad-hoc/register_close_data395.py`,
 `util/ad-hoc/register_file_047_to_049.py`, `util/ad-hoc/register_round39_head_typo.py`,
 `util/ad-hoc/register_round39_park_sentences.py`,
 `util/ad-hoc/register_file_data_052_truncation_optout.py`,
@@ -425,7 +425,7 @@ The first entry is the one that matters. The rest are smaller and were caught be
 |---|---|---|
 | **This session's own fix, as first written, had a WORSE failure than the one it repaired** | **Refuted by round-2 validation, before merge** | Judging each point against the median of the values already ACCEPTED is **absorbing**: if a series' first value is a typo the ceiling cannot reach, the accepted set is that typo alone, every genuine value is >100× away, and nothing is ever accepted again — the whole real series is deleted and the typo is what ships. Measured on a real payload shape: **0 of 20 genuine counts survived**. The shipped basis is now the **lower median of prior SEEN values**; see §5.2. |
 | juniper-data#395 fixed the share-count outlier filter | **It shipped a REGRESSION, and delivered it** | `pandas.Series.expanding().median()` at position *i* **includes** position *i*, so an outlier dominates the median that judges it and can never be rejected — and no `min_periods` value repairs that, because the problem is membership, not sample size. AIZ's typo sits at position 1 and EOG's at position 0; both were delivered, at 116,799,796,000 against a truth of 117,926,517 (990×) and 251,931,774,000 against 587,723,622 (428×). Found by round-1 lane B1, re-derived against the shipped module and the real cache, fixed in juniper-data#404 as `APD-DATA-050`. |
-| The `adj_close` ruling "leaves it requestable" | **False when the option was put to the owner; and the row that recorded that was itself too broad** | `EquitiesParams` has no feature-column parameter, so the ruling as implemented removes it as a FEATURE column — filed as `APD-DATA-048`. But `adj_close` is not wholly unreachable: `EquitiesParams.basis_price_field` is a `Literal["close", "adj_close"]` and still selects it as the price the cost basis is struck at. `APD-DATA-048` in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` said "nothing can select it into a dataset"; corrected 2026-09-15. |
+| The `adj_close` ruling "leaves it requestable" | **False when the option was put to the Overtoad; and the row that recorded that was itself too broad** | `EquitiesParams` has no feature-column parameter, so the ruling as implemented removes it as a FEATURE column — filed as `APD-DATA-048`. But `adj_close` is not wholly unreachable: `EquitiesParams.basis_price_field` is a `Literal["close", "adj_close"]` and still selects it as the price the cost basis is struck at. `APD-DATA-048` in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` said "nothing can select it into a dataset"; corrected 2026-09-15. |
 | Staleness is a per-row property | **Wrong, and caught by a fixture** | A per-row test flags the tail of every gap, and an annual filer produces a 365-day gap by definition. The ruling was taken on per-SERIES evidence. Implemented per series. |
 | The staleness annotation names the issuer | **Wrong cause** | Ford, Nike, Hershey and Regeneron are all flagged over a window ending today and all four file a share count on every 10-Q. What stopped is this cache's extraction of the `dei` concept, not the company. The note now says *available*, not *filed*. juniper-data#404. |
 | The causal median needs no other instrument | **Wrong** | It silently drops typo detection for early points. A ceiling was added — not ruled, filed as `APD-DATA-047`. #404 then had to re-site it from `1e13` to `1e11` because at `1e13` it was nearly inert. |
@@ -526,8 +526,8 @@ GitHub's API, and only GraphQL `createCommitOnBranch` signs; `PUT /contents` doe
 - **Verify a merge in two steps**: `gh pr view <N> --json state,mergedAt,mergeCommit` **and**
   that the content is on `main`. A MERGED badge is not ancestry, and `util/safe_merge.py`
   prints the *head* SHA, not the squash commit.
-- **Merge approval**: headless merges are gated on the owner's explicit approval, per memory
-  `feedback_headless_merge_approval_policy`; deploys are the owner's, per
+- **Merge approval**: headless merges are gated on the Overtoad's explicit approval, per memory
+  `feedback_headless_merge_approval_policy`; deploys are the Overtoad's, per
   `feedback_deploy_approvals_paul_manages`. A session-wide grant covers only the PRs of the
   arc it was given for.
 
@@ -617,7 +617,7 @@ against `origin/main`, never `HEAD`. **Primary checkouts drift**: a lane that re
 today" out of a checkout reads whatever that checkout last fetched. Read
 `git show origin/main:<path>`.
 
-Worktrees created this arc and **deliberately not removed** (cleanup needs the owner's explicit
+Worktrees created this arc and **deliberately not removed** (cleanup needs the Overtoad's explicit
 signal, and `git worktree remove` deletes ignored files): the three round-38 PR worktrees, plus
 `juniper-cascor--fix--mirror-shortfall-constants-all--20260909-1600--3de89b11`,
 `juniper-cascor--fix--partial-data-follow-ups--20260909-1536--3de89b11`,
@@ -658,7 +658,7 @@ cosmetic:
   juniper-data#404 merged. Twice in two rounds the load-bearing finding came from *running* the
   code against real data, not from reading it.
 - **Lane A (receipts) found two wrong numbers in the ceiling's siting**, both of which had
-  reached the shipped code comment, the CHANGELOG and the register row the owner is being asked
+  reached the shipped code comment, the CHANGELOG and the register row the Overtoad is being asked
   to ratify (§0.6).
 - **Lane B2 (amputation / executability / naming) found ten traps dropped from the predecessor**,
   including the byte-mirror obligation that X-A will hit (§0.3), and that this document never
@@ -680,7 +680,7 @@ which were not recovered.
 
 ## 8. Session-close checklist
 
-- [x] Thirty owner rulings taken and recorded in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` (§3)
+- [x] Thirty Overtoad rulings taken and recorded in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` (§3)
 - [x] juniper-data#395 — six equities rulings + `generator_version` 4.0.0 — MERGED
 - [x] juniper-data#404 — the regression #395 shipped — `generator_version` 5.0.0 — MERGED
       2026-09-16, squash `1bbb6976`, verified by content on `main` and not by the badge (§4)
@@ -698,7 +698,7 @@ which were not recovered.
 - [x] **X-C** (`APD-CASCOR-005`) — **SHIPPED and CLOSED 2026-09-21**: juniper-cascor#659 +
       juniper-ml#1974 merged and verified by content on `main`; row closed (five touches);
       register `119 | 96 fixed | 23 open`. **Bounded** — canopy's fourth copy is NOT fixed. §9.8
-- [x] `APD-DATA-047` — **RATIFIED at `1e11` by the owner, 2026-09-21** (§0.6). No owner decision
+- [x] `APD-DATA-047` — **RATIFIED at `1e11` by the Overtoad, 2026-09-21** (§0.6). No Overtoad decision
       is owed anywhere in the register now.
 - [x] This document validated — two rounds, three lanes each, both recorded in §7; neither
       passed on the first pass and both changed shipped code
@@ -806,11 +806,11 @@ were both byte-identical to `origin/main` before editing, checked with
 `git diff --stat origin/main -- <path>`; §6's standing instruction to diff against `origin/main`
 rather than `HEAD` still applies and is why that check was run.
 
-New worktree created and **not** removed (cleanup needs the owner's explicit signal, and
+New worktree created and **not** removed (cleanup needs the Overtoad's explicit signal, and
 `git worktree remove` deletes ignored files):
 `juniper-cascor--fix--nonshortcircuit-key-compare--20260921-0846--c6c848f2`.
 
-### 9.6 `APD-DATA-047` closed as RATIFIED — the register's last owner decision
+### 9.6 `APD-DATA-047` closed as RATIFIED — the register's last Overtoad decision
 
 Applied by `util/ad-hoc/2026-09-21_register_close_data047_ratified.py`, which asserts each anchor
 appears **exactly once** and refuses rather than patching a near-miss.
@@ -818,7 +818,7 @@ appears **exactly once** and refuses rather than patching a near-miss.
 **Four touches, not five** — the protocol ("Closing a row — the five touches") is explicit that a
 row with no §3 detail entry takes four, and `APD-DATA-047` has none. §4 table row, §5.1
 verification row, §2 status paragraph (the enumeration *and* both counts), header date. A fifth
-edit was made that is **not** a touch: §4.9's rulings bullet still read "owner decision owed", and
+edit was made that is **not** a touch: §4.9's rulings bullet still read "Overtoad decision owed", and
 the protocol's whole-file `grep -n 'APD-<ID>'` sweep requires every hit be read and reconciled.
 
 **Result, and it is the check that matters** (§5.14 — the crosscheck is what catches a partial
@@ -835,7 +835,7 @@ close, and the other four touches will not reveal one):
 `tests/test_thread_handoff_archive.py` and `tests/test_service_fork_drift.py`.
 
 **What the close does and does not assert.** It records that a number nobody had chosen now has
-an owner. It does **not** assert `1e11` is optimal — the owner was shown that the two populations
+an Overtoad. It does **not** assert `1e11` is optimal — the Overtoad was shown that the two populations
 overlap across any absolute bound, so this is a judgement, not a calculation — and it does not
 extend past the 486-payload cache the bound was sited against. A future symbol with a genuine
 count above `1e11`, or a typo below it, reopens the question. Both rejected options and the
@@ -939,7 +939,7 @@ FIXED — the "register disagrees with itself while every count-based check stil
 and **neither is reachable by any instrument in the repo**:
 
 - **§4.3's routing note, broken by the closing script itself.** The marker was anchored on a
-  phrase in the MIDDLE of the paragraph, so the note still *opened* with "This row is an **owner
+  phrase in the MIDDLE of the paragraph, so the note still *opened* with "This row is an **Overtoad
   decision, not a task**" as present fact, and the marker then read "The routing below was
   correct" while pointing at text *above* it. A reader scanning for status would have stopped at
   the stale first sentence. **Writing the correction is not the same as placing it where the

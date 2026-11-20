@@ -1,8 +1,8 @@
 # HANDOFF 2026-10-03 — ci-tools re-evaluation (CONSOLIDATED): every PR merged and blob-verified, the banner edit is still owed, and four of five startable items have closed
 
 - **Consolidated sources**:
-  - `HANDOFF_2026-09-24_ci-tools-reevaluation-all-nine-prs-merged-and-the-banner-still-says-three-are-open.md`. Self-declared **Validation: "none for this handoff, by the owner's instruction"**.
-  - Carried by reference: the status banner of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` (below: "the 09-11 banner"), which passed five consensus rounds (its § "Validation record for this banner"; lane reports in `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`).
+  - `HANDOFF_2026-09-24_ci-tools-reevaluation-all-nine-prs-merged-and-the-banner-still-says-three-are-open.md`. Self-declared **Validation: "none for this handoff, by the Overtoad's instruction"**.
+  - Carried by reference: the status banner of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` (below: "the 09-11 banner"), which passed five consensus rounds (its § "Validation record for this banner"; lane reports in `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`).
 - **Supersedes**: `HANDOFF_2026-09-24_ci-tools-reevaluation-all-nine-prs-merged-and-the-banner-still-says-three-are-open.md`. The 09-11 banner is the arc's artifact and is the file to edit, not superseded.
 - **Live probe**: 2026-10-03 08:35-08:55 UTC; juniper-ml `origin/main` at `afb02801`.
 - **Sibling path**: P9, `HANDOFF_2026-10-03_ci-budget-arc-consolidated.md` — no shared remaining work.
@@ -14,7 +14,7 @@
 Continue the ci-tools re-evaluation arc in juniper-ml. This consolidated handoff is
 prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_ci-tools-reevaluation-consolidated.md.
 The arc's artifact is the status banner of
-prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md.
+prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md.
 
 Completed so far:
 - juniper-ml#2020 merged b6580529 (2026-09-23): the banner + validation record, the pin census
@@ -71,7 +71,7 @@ Remaining work (ordered):
    numbers VERIFIED 2026-10-03 by grep]
 2. MERGE that PR -- OWNER-GATED (approval in your session). The sweeper may merge it unseen;
    validate the pushed branch before opening the PR.
-3. STARTABLE, not owner-gated:
+3. STARTABLE, not Overtoad-gated:
    a. Diagnose X7 (canopy#661) before changing any bound -- OPEN, 0 comments, untouched since
       2026-09-23 06:06Z. [VERIFIED 2026-10-03: gh issue view] [ALSO P2]
    b. 6f watch (recurrence#182) -- OPEN, and LIKELY UNBLOCKED: starlette 1.7.0 is on PyPI and
@@ -98,14 +98,14 @@ Remaining work (ordered):
 
 - **P4** (`HANDOFF_2026-10-03_release-and-distribution-consolidated.md`, release & distribution / container-registry rollout): owns Wave 4 (step 3 of §5.2B of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` — all five
   `dockerhub` environments still hold **0** secrets [VERIFIED 2026-10-03: `gh api …/environments/dockerhub/secrets`]), the Pi pull, OQ-2/OQ-3/OQ-4 (§6 of
-  `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`) and the data-release cadence. The 09-11 banner's note c and its owner-gated list describe these; edit the banner's
+  `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`) and the data-release cadence. The 09-11 banner's note c and its Overtoad-gated list describe these; edit the banner's
   wording only, do not act on them here.
 - **P2** (canopy): X7 / canopy#661 `[ALSO P2]` — carried only by this path's source; no P2 source names canopy#661 [VERIFIED 2026-10-03: grep of the 09-2x handoffs]. Coordinate if P2 touches `src/tests/regression/test_x7_sites_outside_main_gate.py`.
 - **P9** (`HANDOFF_2026-10-03_ci-budget-arc-consolidated.md`): no shared item; shared merge mechanics and sweeper ruling.
 
 ## Context the remaining work needs
 
-**Owner ruling (quoted, 2026-09-24)**: the PR sweeper is the owner's — "Mine: fix forward". It readies, arms and merges open PRs as `pcalnon` with the DEFAULT squash body. Do not fight it; validate a pushed branch before opening its PR. Memory: `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`. [UNVERIFIED — from the 09-24 handoff, which was not validated; consistent with ml#2035's auto-merge enabled by pcalnon, VERIFIED 2026-10-03]
+**Owner ruling (quoted, 2026-09-24)**: the PR sweeper is the Overtoad's — "Mine: fix forward". It readies, arms and merges open PRs as `pcalnon` with the DEFAULT squash body. Do not fight it; validate a pushed branch before opening its PR. Memory: `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`. [UNVERIFIED — from the 09-24 handoff, which was not validated; consistent with ml#2035's auto-merge enabled by pcalnon, VERIFIED 2026-10-03]
 
 **Merge mechanics** [UNVERIFIED — from `HANDOFF_2026-09-24_ci-tools-reevaluation-all-nine-prs-merged-and-the-banner-still-says-three-are-open.md`, which was not validated]: juniper-ml's ruleset is `strict` — an armed PR that goes BEHIND waits forever; fix with `gh api -X PUT repos/pcalnon/<repo>/pulls/<n>/update-branch`, one PR at a
 time. Commits must be signed: `util/open_signed_pr.py` (new PR), `util/push_signed_commit.py` (append; promoted by ml#2036). `gh pr edit` broken on gh 2.46 (use `gh api -X PATCH`); gh 2.46 has no `gh
@@ -123,7 +123,7 @@ Memory: `reference_canopy_x7_timing_tests_flake_on_ci_runners.md`.
 
 **6f background** (09-11 banner note d): recurrence#154's `filterwarnings` entry silences anyio's deprecated `anyio.abc.BlockingPortal` alias, which starlette 1.6.0's `testclient` evaluated at module import; recurrence's pyproject comment (`juniper-recurrence/juniper-recurrence/pyproject.toml` :171-182 on main) says to remove the ignore once "the resolved starlette no longer imports the alias" [VERIFIED 2026-10-03: gh api contents].
 
-**MEMORY.md** is at its ~25,000-char load limit; owner target 20 KB overrides the hook's 17.1 KB (`feedback_memory_index_target_is_20kb.md`); never strip a hook.
+**MEMORY.md** is at its ~25,000-char load limit; Overtoad target 20 KB overrides the hook's 17.1 KB (`feedback_memory_index_target_is_20kb.md`); never strip a hook.
 
 **The P4 tip's banner was stale on three facts** (worker 0.6.1 on PyPI, data#421 merged, deploy#227 merged) — the 09-24 handoff says the containers session owns that file and was told. P4's consolidation carries it.
 
@@ -132,8 +132,8 @@ Memory: `reference_canopy_x7_timing_tests_flake_on_ci_runners.md`.
 ```bash
 cd /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/<your-worktree>
 git fetch -q origin
-git log --oneline -2 origin/main -- prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md   # b6580529 on top => banner edit still owed
-grep -n 'In flight when this was written\|, open)\|is open as juniper-deploy#229\|juniper-cascor#673: open\|Once juniper-ml#2020' prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md
+git log --oneline -2 origin/main -- prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md   # b6580529 on top => banner edit still owed
+grep -n 'In flight when this was written\|, open)\|is open as juniper-deploy#229\|juniper-cascor#673: open\|Once juniper-ml#2020' prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md
 python3 util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py --self-test   # 103 passed, 0 failed
 python3 util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py      # 42 of 42 killed
 python3 util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py              # exit 0, 54 live, two AMBIGUOUS (REFERENCE.md:3029, test_ci_tools_drift.py:461)
@@ -154,14 +154,14 @@ curl -s https://pypi.org/pypi/starlette/json | python3 -c "import json,sys; prin
 | Startable: the deploy repin to worker 0.6.1 (deploy#229) | 09-11 banner | **DONE** — merged `d589dd95` | `gh pr view 229 -R pcalnon/juniper-deploy` |
 | Owner-gated: Wave 4 step 3, the Pi pull, OQ-2 / OQ-4, the conditional-shape throwaway repo | 09-24 handoff, 09-11 banner | **MOVED TO P4** — not this arc's; dockerhub env secrets still 0 | 5 × `gh api …/environments/dockerhub/secrets` = 0. P4 carries Wave 4; the throwaway-repo test (if the conditional shape is chosen) lives in `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` §7 (~line 175) and is not named in P4's doc |
 | Census "exits 0 once #2020 and #673 merge" | 09-11 banner | **CONFIRMED** 2026-10-03 | census run above |
-| Memory edits listed as completed (new reference file, rollout memory bullets, X7 pointer, MEMORY.md pointer) | 09-24 handoff | **DONE** (outside git); the reference file was since rewritten by another session with the owner's ruling | memory dir |
+| Memory edits listed as completed (new reference file, rollout memory bullets, X7 pointer, MEMORY.md pointer) | 09-24 handoff | **DONE** (outside git); the reference file was since rewritten by another session with the Overtoad's ruling | memory dir |
 | The 09-24 handoff's own PR | 09-24 handoff | **MERGED** ml#2092 `449321c9` 2026-09-25 | `gh pr view 2092` |
 | "The tip's banner is stale on three facts" | 09-24 handoff | **P4's** — that session owns the file | — |
 
 ## Git state
 
 - juniper-ml `origin/main` `afb02801`; no open juniper-ml PRs [VERIFIED 2026-10-03].
-- Worktree `.claude/worktrees/jolly-wibbling-pearl`, branch `worktree-jolly-wibbling-pearl` at `d0582a21`, still exists [VERIFIED 2026-10-03: `git worktree list`]. Per the 09-24 handoff it holds only uncommitted copies of ml#2020's files (all merged in `b6580529`) [UNVERIFIED — from the 09-24 handoff]. Removal needs the owner's signal.
+- Worktree `.claude/worktrees/jolly-wibbling-pearl`, branch `worktree-jolly-wibbling-pearl` at `d0582a21`, still exists [VERIFIED 2026-10-03: `git worktree list`]. Per the 09-24 handoff it holds only uncommitted copies of ml#2020's files (all merged in `b6580529`) [UNVERIFIED — from the 09-24 handoff]. Removal needs the Overtoad's signal.
 - The 09-11 banner's note g worktree set (30 sibling worktrees under `Juniper/worktrees/` plus `.claude/worktrees/luminous-inventing-crystal` and `.claude/worktrees/tender-splashing-wigderson`, the
   first holding untracked files) still exists in part: both session worktrees and at least `worktrees/juniper-cascor-worker--docs--handoff-word-count--20260830-2339--44358bf0` [VERIFIED 2026-10-03:
-  `git worktree list`, `ls -d`]. Cleanup is owner-signalled; `worktree remove` deletes ignored files silently.
+  `git worktree list`, `ls -d`]. Cleanup is Overtoad-signalled; `worktree remove` deletes ignored files silently.

@@ -8,7 +8,7 @@ Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- investigation (verification for the Python 3.15 informational-leg PRs, juniper-cascor#759 and
         juniper-cascor-worker#228)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-14_py315_informational_juniper-cascor.py and ..._juniper-cascor-worker.py (the edits
          whose leg names this checked); util/ad-hoc/2026-11-15_py315_compare_legs.bash (its caller)
 

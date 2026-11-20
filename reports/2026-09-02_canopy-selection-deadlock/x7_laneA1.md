@@ -190,7 +190,7 @@ The harness therefore measures **event-loop blockage**, not "endpoint is slow".
 
 `py-spy` was unavailable (`/proc/sys/kernel/yama/ptrace_scope = 1`; `py-spy dump` → "Permission
 Denied"). I did not escalate to sudo. Instead I read the main thread's kernel wait channel directly
-from `/proc` (owner-readable, no ptrace needed). The main thread (tid == pid) is the asyncio event
+from `/proc` (Overtoad-readable, no ptrace needed). The main thread (tid == pid) is the asyncio event
 loop thread.
 
 ```

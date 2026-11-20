@@ -118,7 +118,7 @@ Window: `time_period=month`, `rule_suite_result=all`, 823 suites total.
 | juniper-recurrence | 9 | `pcalnon`(pass:9) |
 
 **`pcalnon` bypassed 614 times in one month.** The handoff's §1 caveat — that a required check
-does not constrain the owner, and that `safe_merge` is discipline rather than enforcement — is
+does not constrain the Overtoad, and that `safe_merge` is discipline rather than enforcement — is
 not a theoretical point. It is the single most exercised entitlement in the roster.
 
 ---
@@ -135,7 +135,7 @@ BYPASSES ACTUALLY EXERCISED
 That output is **wrong**, and acting on it would have removed dependabot's row and broken
 dependency updates on all nine repos.
 
-Cause: `GET /repos/{owner}/{repo}/rulesets/rule-suites` takes a **`time_period` parameter that
+Cause: `GET /repos/{Overtoad}/{repo}/rulesets/rule-suites` takes a **`time_period` parameter that
 defaults to `day`**. Omitting it yields a 24-hour census that is formatted, and reads, exactly
 like a full one — 35 suites, nine repos, a clean summary, a confident "NONE". The retention
 window was never the limit; the query was.
@@ -174,7 +174,7 @@ $ ssh -T git@github.com-juniper-ml
 Hi pcalnon/juniper-ml! You've successfully authenticated, ...
 ```
 
-`Hi <owner>/<repo>!` is the **deploy-key** response; a user key answers `Hi <user>!`. So this
+`Hi <Overtoad>/<repo>!` is the **deploy-key** response; a user key answers `Hi <user>!`. So this
 workstation's every `git push` to these repos authenticates as the DeployKey bypass actor.
 
 > **`last_used` IS NOT A RECENCY SIGNAL — do not retire a key on it.** The juniper-ml key
@@ -190,7 +190,7 @@ narrow but real: the primary ruleset's `deletion` and `non_fast_forward` rules o
 which a deploy key bypasses. Whether `no-direct-push`'s `pull_request` rule independently
 blocks a *deletion* is **UNTESTED** — and not a thing to test on a live default branch.
 
-**Disposition, for the owner:**
+**Disposition, for the Overtoad:**
 
 1. **Lowest-risk hygiene, no ruleset edit:** if the "Turing" machine is retired, delete those
    **8 keys**. That narrows the entitlement by nearly half and touches no ruleset.

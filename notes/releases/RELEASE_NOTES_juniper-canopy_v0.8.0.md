@@ -147,7 +147,7 @@
   0.6.0, old enough to predate `equities_seq`.
 - **The partial-data contract's three-way prompt — the last unbuilt piece of the contract.** When a
   Start is refused because juniper-data could not produce the staged dataset in full (cascor leaves
-  the staged config in place for exactly this retry), a modal now puts the owner's three options to
+  the staged config in place for exactly this retry), a modal now puts the Overtoad's three options to
   the operator and requires an affirmative choice: **accept** the broken rows and continue, **drop**
   them and continue, or **fail** the load — which cancels the staged change and deselects the
   dataset (`⊥`) so Start and Apply stay gated until another is chosen. Accept and drop re-stage

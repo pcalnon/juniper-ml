@@ -50,7 +50,7 @@ This is a security-bearing release of `juniper-observability` v0.4.2. `configure
   (2026-11-08) and is not in the round-42 register. juniper-data neither sets nor reads a cookie,
   but a client's cookies reached its events whenever `send_pii` was on.
 - **Four more headers are scrubbed: `Proxy-Authorization`, `Sec-WebSocket-Protocol`,
-  `X-CSRF-Token` and `X-XSRF-Token`** (owner ruling, 2026-11-08). `Sec-WebSocket-Protocol` carries
+  `X-CSRF-Token` and `X-XSRF-Token`** (Overtoad ruling, 2026-11-08). `Sec-WebSocket-Protocol` carries
   juniper-canopy's WebSocket key (`bearer, <key>`) when its opt-in `ws_auth_enabled` is on. It and
   the two CSRF tokens are on neither of the SDK's own lists, so they reached Sentry in every error
   event and transaction, under either `send_pii` value (measured on sentry-sdk 2.35.0 and 2.74.0).

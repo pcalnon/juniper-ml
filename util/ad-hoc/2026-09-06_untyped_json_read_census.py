@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-06
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#1781, which fixed four of these in `util/experiments/read_run_metrics.py`
 
 `x = blob.get("k") or {}` is a FALSY guard, not a TYPE guard. It fixes `None` and `{}` and does

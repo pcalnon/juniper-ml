@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md (Phase 8, F-CANOPY-055's fix
          direction: "plus a Live Switch allow-arm drive on a leg whose training may be started"; F-CANOPY-025's
          closure block, run 20260825T041134Z); util/ad-hoc/2026-09-23_status_bar_apply_census.py

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Lane A helper: fetch files at a pinned ref from GitHub (read-only GET via `gh api`).
 
-usage: ghshow.py <owner/repo> <ref> <out_root> <path> [<path> ...]
+usage: ghshow.py <Overtoad/repo> <ref> <out_root> <path> [<path> ...]
 Writes <out_root>/<path> (directories created). Uses the raw media type so large files are returned whole.
 """
 import pathlib

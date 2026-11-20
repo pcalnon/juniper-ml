@@ -28,14 +28,14 @@ Documents of record, all changed or created this session:
 
 Continue the **juniper-ml performance lane**. This session:
 
-- got the owner's rulings on all four `Not decided:` clauses;
+- got the Overtoad's rulings on all four `Not decided:` clauses;
 - paid D1's epoch-count debt (verdict **CLEAR**) and shipped the flip;
 - minted PF-1's successor baseline;
 - re-shaped PF-3 and passed D3's one-cell check;
 - built PF-2 axis 2;
 - shipped D6's advisory gate.
 
-The owner rulings, recorded in §5 of the rulings, are final. Do **not** re-ask them:
+The Overtoad rulings, recorded in §5 of the rulings, are final. Do **not** re-ask them:
 
 - **D2**: `runtime.blas_threads` / `num_processes` / `eval_metrics_enabled` are ratified as-is,
   with no second knob.
@@ -56,7 +56,7 @@ The owner rulings, recorded in §5 of the rulings, are final. Do **not** re-ask 
      (×1.01). It is overhead-dominated.
    - **Training compute (`step_sum`) grows only ×1.31** over the 23× range, with log-log slopes
      of −0.15 to 0.31 between neighbours.
-   - **No knee, so the owner's in-process follow-up does NOT fire** (the rulings §5, D4).
+   - **No knee, so the Overtoad's in-process follow-up does NOT fire** (the rulings §5, D4).
    - This holds at `spiral-smoke`'s budgets only (2 hidden units, `output_epochs` 50, and a
      budget-bound `step_count` of 8). A larger-budget workload is a different question.
    - **Recorded in this handoff's own PR**, cut after ml#2047 merged: the PF-2 re-spec §3
@@ -82,7 +82,7 @@ The owner rulings, recorded in §5 of the rulings, are final. Do **not** re-ask 
    `gh api repos/pcalnon/juniper-cascor/check-runs/<id>/annotations`, or
    `grep -F '##[warning]D6 advisory - epochs_completed drift'` over job logs. The count decides
    whether it blocks, and that decision is the OWNER's.
-7. **Hand the juniper-data defect to the defect-register owner.** It is not filed. When requested
+7. **Hand the juniper-data defect to the defect-register Overtoad.** It is not filed. When requested
    `n_points_per_spiral` × 1.7 (additive val+test sizing) exceeds `MAX_POINTS`, generation raises
    a pydantic `ValidationError`. The field check passed, so the API returns a generic **400
    "Invalid request parameters"** with the cause logged only at DEBUG. The PF-2 re-spec's second
@@ -114,7 +114,7 @@ The owner rulings, recorded in §5 of the rulings, are final. Do **not** re-ask 
 |---|---|---|
 | 1 | cut one new PF-1 baseline | **DONE**: `pf1-2026-09-23-blas2`, capped, cascor `0d2d826`, `step_count` 1770 in 5/5, speed sd 3.1%. It PASSes on a load-16 run and REFUSEs against `-04b` on `thread_budget`, as designed |
 | 2 | PF-3 re-shape + D3 one-cell | **DONE**: 14-cell triangle (np > pool dropped; np=1 kept as the sequential control; np extended to 8/16). D3 PASSED on c001: `CASCOR_NUM_PROCESSES` "2", and the log shows `Training 2 candidates with 2 processes` |
-| 3 | D4 axis 2 to the owner | **RULED** "10k now, in-process later"; **BUILT**, with the ceiling at 5,882; **RUN**: no knee, so the in-process follow-up does not fire |
+| 3 | D4 axis 2 to the Overtoad | **RULED** "10k now, in-process later"; **BUILT**, with the ceiling at 5,882; **RUN**: no knee, so the in-process follow-up does not fire |
 | 4 | commit or retire the 09-17 D6 work | **COMMITTED** (ml#2031) minus one unused import (CodeQL). The worktree was NOT locked |
 | 5 | micro timing cut | **NOT DONE**: work list item 4 |
 | 6 | cascor thread-pin defect | **RULED and SHIPPED**: the process default, cap 2, opt-out `0`/`off`/`none` (cascor#683) |
@@ -147,7 +147,7 @@ The owner rulings, recorded in §5 of the rulings, are final. Do **not** re-ask 
   writing to `sys.__stdout__` does NOT get past pytest's capture, and the job log drops the
   annotation title.
 - **Owner-menu lesson**: my first D1 menu described the process default as new work. It already
-  existed, with the opposite default. Memory: `feedback_ground_owner_menus_in_the_code`.
+  existed, with the opposite default. Memory: `feedback_ground_Overtoad_menus_in_the_code`.
 
 ## 4. Verification commands
 

@@ -2,7 +2,7 @@
 
 # cascor#686 validation: 653bc3f (PR commit) and 8f28272 (PR commit merged with main)
 
-**Verdict:** #686 does what it claims at both SHAs. The owner's ruling holds on every entry path, and all eight findings from the earlier validation are resolved or explicitly left. It still cannot merge: once main (with #685) is merged in, a required lint check fails, and neither PR fails it alone.
+**Verdict:** #686 does what it claims at both SHAs. The Overtoad's ruling holds on every entry path, and all eight findings from the earlier validation are resolved or explicitly left. It still cannot merge: once main (with #685) is merged in, a required lint check fails, and neither PR fails it alone.
 
 **State:** #686 is **not merged**, so there is no squash tree or merge SHA to check. It is OPEN at head `8f28272`, squash auto-merge was armed at 09:09:26Z, and GitHub reports it BLOCKED. Main is `d922010` (#685).
 

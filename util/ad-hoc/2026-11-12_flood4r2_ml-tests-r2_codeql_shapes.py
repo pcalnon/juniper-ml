@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier, round 2 of its build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: the ml-propose validation's scanner of 2026-11-11, copied here with its logic unchanged (it was written
          in a validator's scratch directory and is in no checkout); util/ad-hoc/2026-10-05_codeql_python_prescreen.py
 

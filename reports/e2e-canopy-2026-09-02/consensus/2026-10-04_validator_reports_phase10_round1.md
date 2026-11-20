@@ -151,7 +151,7 @@ Abbreviations: `WT` = the worktree. `R` = `WT/reports/2026-09-23_canopy-a-n2-gen
 - The history is slimmed, so it cannot show how many step rows cascor labels `output`.
 - My reproduction scripts exist only in `S`. Copy them to `util/ad-hoc/` if they should be kept.
 
-**SECRETS/PII:** I printed no environment variables, tokens or credential files. The `gh api` GETs were filtered to sha and date, and no email field was requested. One slip: `git show --stat 0737d573` printed the commit's Author line, which contains the owner's email, into my local tool output. It is not repeated here and was not sent anywhere. Driving the real relay also started canopy's control-stream supervisor, which tried and failed to connect to 127.0.0.1:9; no Juniper port was touched. Nothing was written to any repo: the worktree status is unchanged, and the canopy and cascor log files that changed during the lane contain no entries from my runs.
+**SECRETS/PII:** I printed no environment variables, tokens or credential files. The `gh api` GETs were filtered to sha and date, and no email field was requested. One slip: `git show --stat 0737d573` printed the commit's Author line, which contains the Overtoad's email, into my local tool output. It is not repeated here and was not sent anywhere. Driving the real relay also started canopy's control-stream supervisor, which tried and failed to connect to 127.0.0.1:9; no Juniper port was touched. Nothing was written to any repo: the worktree status is unchanged, and the canopy and cascor log files that changed during the lane contain no entries from my runs.
 
 ---
 
@@ -223,7 +223,7 @@ Abbreviations: **Ledger** = `JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EV
 **WHAT YOU COULD NOT CHECK**
 - No live drive was possible (read-only brief). The empty chart during a run and the mid-pass tile reading come from source plus executed code. Every archived capture was taken after its run finished.
 - The `phase` labels on cascor's step rows 1..N-1 are source-derived; I did not read the event order in model-core's `CascorModel.fit`, and the archives are slimmed. My probe's row count and its final `output` row do match A-N2.
-- Whether a CHANGELOG or design-plan promise counts as "documented" under plan §6.3 is for the reconciler or the owner to decide.
+- Whether a CHANGELOG or design-plan promise counts as "documented" under plan §6.3 is for the reconciler or the Overtoad to decide.
 - The 2026-08-10 capture is cropped below about 90% of the chart.
 - One lead, outside scope and not driven: the clientside `extendTraces` path (`metrics_panel.py:1015-1143`) reads flat `e.loss` and `e.accuracy`, while the relay delivers nested rows (`ws_dash_bridge.js:249`). In service mode it therefore appends nothing.
 - I did not run the Ledger's F-060 or O3 instruments, and made no GitHub calls.

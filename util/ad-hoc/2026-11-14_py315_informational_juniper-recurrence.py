@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
 Status: ad-hoc -- migration (phase 1 of the ecosystem's Python 3.15 migration), juniper-recurrence rollout
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-14_py315_informational_edits.py (the juniper-data pilot this is modelled on; the
          design was measured on juniper-data#538, run 43655144734); tmp/py315/ROLLOUT_BRIEF.md (the rollout brief);
          tmp/py315-informational-2026-11-14/survey-ci-2026-11-14.md and survey-local-2026-11-14.md (the surveys,
@@ -14,7 +14,7 @@ Related: util/ad-hoc/2026-11-14_py315_informational_edits.py (the juniper-data p
 
 Why this exists
 ---------------
-The owner's request of 2026-11-14: add Python 3.15 to the tested versions in CI, with the 3.15 checks reporting
+The Overtoad's request of 2026-11-14: add Python 3.15 to the tested versions in CI, with the 3.15 checks reporting
 results but blocking no commit, merge or deployment. Every edit below is an exact-substring replacement that must
 match exactly once, so the set can be re-applied onto a moved ``origin/main`` from a fresh worktree (re-run, never
 re-type) and a drifted base fails loudly instead of being half-edited.
@@ -27,7 +27,7 @@ never added to a ruleset.
 juniper-recurrence has four such matrices, the ``test`` job of each per-package lane: ``ci-recurrence-app.yml``,
 ``ci-recurrence-client.yml``, ``ci-recurrence-model.yml`` (``Test (Python ...)``) and ``ci-recurrence-bench.yml``
 (``Bench smoke (Python ...)``). Each job name already interpolates ``matrix.python-version``, so GitHub posts it
-verbatim and no existing context name changes. Left alone on purpose: ``ci-pre-commit.yml`` (the owner ruled no
+verbatim and no existing context name changes. Left alone on purpose: ``ci-pre-commit.yml`` (the Overtoad ruled no
 3.15 pre-commit in phase 1), the model lane's single-version ``test-torch`` job and its comments, every other
 single-version job, ``requires-python``, the classifiers, the ruff / mypy targets and the Dockerfile base.
 
@@ -86,13 +86,13 @@ APP_TEST_NEW = """\
     runs-on: ubuntu-latest
     needs: [changes]
     if: needs.changes.outputs.app == 'true'
-    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (owner request,
+    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (Overtoad request,
     # 2026-11-14) runs it so its results show, but it must block no merge. It is the only leg with
     # `experimental: true`, so this expression is true on it alone: a failure there leaves the job's
     # result, which `App required checks` reads as `needs.test.result`, unchanged, and `build` and
     # `docker` still run. Measured on juniper-data#538 (run 43655144734): with its 3.15 leg failed on
     # purpose, that repo's gate read the job's result as success and every job that needed it ran.
-    # `Test (Python 3.15)` is in no ruleset. Keep both until the owner makes 3.15 a required version
+    # `Test (Python 3.15)` is in no ruleset. Keep both until the Overtoad makes 3.15 a required version
     # (phase 3 of the migration).
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
@@ -125,13 +125,13 @@ CLIENT_TEST_NEW = """\
     runs-on: ubuntu-latest
     needs: [changes]
     if: needs.changes.outputs.client == 'true'
-    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (owner request,
+    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (Overtoad request,
     # 2026-11-14) runs it so its results show, but it must block no merge. It is the only leg with
     # `experimental: true`, so this expression is true on it alone: a failure there leaves the job's
     # result, which `Client required checks` reads as `needs.test.result`, unchanged, and `build`
     # still runs. Measured on juniper-data#538 (run 43655144734): with its 3.15 leg failed on purpose,
     # that repo's gate read the job's result as success and every job that needed it ran.
-    # `Test (Python 3.15)` is in no ruleset. Keep both until the owner makes 3.15 a required version
+    # `Test (Python 3.15)` is in no ruleset. Keep both until the Overtoad makes 3.15 a required version
     # (phase 3 of the migration).
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
@@ -164,13 +164,13 @@ MODEL_TEST_NEW = """\
     runs-on: ubuntu-latest
     needs: [changes]
     if: needs.changes.outputs.model == 'true'
-    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (owner request,
+    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (Overtoad request,
     # 2026-11-14) runs it so its results show, but it must block no merge. It is the only leg with
     # `experimental: true`, so this expression is true on it alone: a failure there leaves the job's
     # result, which `Model required checks` reads as `needs.test.result`, unchanged, and `build`
     # still runs. Measured on juniper-data#538 (run 43655144734): with its 3.15 leg failed on purpose,
     # that repo's gate read the job's result as success and every job that needed it ran.
-    # `Test (Python 3.15)` is in no ruleset. Keep both until the owner makes 3.15 a required version
+    # `Test (Python 3.15)` is in no ruleset. Keep both until the Overtoad makes 3.15 a required version
     # (phase 3 of the migration).
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
@@ -203,14 +203,14 @@ BENCH_TEST_NEW = """\
     runs-on: ubuntu-latest
     needs: [changes]
     if: needs.changes.outputs.bench == 'true'
-    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (owner request,
+    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (Overtoad request,
     # 2026-11-14) runs it so its results show, but it must block no merge. It is the only leg with
     # `experimental: true`, so this expression is true on it alone: a failure there leaves the job's
     # result, which `Bench required checks` reads as `needs.test.result`, unchanged. The expression
     # does not depend on the event, so on a `juniper-data-published` dispatch a red 3.15 leg leaves
     # the run's conclusion unchanged too. Measured on juniper-data#538 (run 43655144734): with its 3.15
     # leg failed on purpose, that repo's gate read the job's result as success and every job that
-    # needed it ran. `Bench smoke (Python 3.15)` is in no ruleset. Keep both until the owner makes
+    # needed it ran. `Bench smoke (Python 3.15)` is in no ruleset. Keep both until the Overtoad makes
     # 3.15 a required version (phase 3 of the migration).
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
@@ -252,7 +252,7 @@ CHANGELOG_NEW = """\
 ### Added
 
 - **CI runs every lane's tests on Python 3.15 as well, as an informational leg that blocks nothing** (repo-wide,
-  recorded here as the bench is). Phase 1 of the ecosystem's Python 3.15 migration (the owner's request of
+  recorded here as the bench is). Phase 1 of the ecosystem's Python 3.15 migration (the Overtoad's request of
   2026-11-14): 3.15 results are reported, and no merge, commit or deployment waits on them.
   - The `test` jobs of `ci-recurrence-app.yml`, `ci-recurrence-model.yml` and `ci-recurrence-client.yml` gain
     `Test (Python 3.15)`, and `ci-recurrence-bench.yml`'s gains `Bench smoke (Python 3.15)`: an `include` entry

@@ -2,7 +2,7 @@
 
 # Phase 13 ledger validation, round 1 — validator reports (verbatim)
 
-Round 1 of the consensus review of the canopy E2E ledger's Phase 13 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md), on the frozen local commit 566cb72a (the Phase 13 draft, juniper-ml worktree federated-stargazing-blanket, branch docs/canopy-e2e-phase13, base main ad6013f4). Three lanes, briefed separately with different entry points (reports/e2e-canopy-2026-09-02/drafts/lane13{A,B,C}_phase13_ledger_brief.md): Lane 13-A rated the twenty open findings from canopy's manual first and re-derived every fact; Lane 13-B was adversarial on the five re-ratings, the ten not reached, the owner's question, the counts and item 30; Lane 13-C replayed the apply pass and checked the seven files against each other, the ledger, the repo's tests and GitHub. Each report is the lane's final message, archived verbatim; the orchestrator's dispositions are in the ledger's Phase 13 consensus record.
+Round 1 of the consensus review of the canopy E2E ledger's Phase 13 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md), on the frozen local commit 566cb72a (the Phase 13 draft, juniper-ml worktree federated-stargazing-blanket, branch docs/canopy-e2e-phase13, base main ad6013f4). Three lanes, briefed separately with different entry points (reports/e2e-canopy-2026-09-02/drafts/lane13{A,B,C}_phase13_ledger_brief.md): Lane 13-A rated the twenty open findings from canopy's manual first and re-derived every fact; Lane 13-B was adversarial on the five re-ratings, the ten not reached, the Overtoad's question, the counts and item 30; Lane 13-C replayed the apply pass and checked the seven files against each other, the ledger, the repo's tests and GitHub. Each report is the lane's final message, archived verbatim; the orchestrator's dispositions are in the ledger's Phase 13 consensus record.
 
 ## Lane 13-A (manual-first re-derivation)
 
@@ -76,7 +76,7 @@ My P1 set equals the ledger's nine. Term scan: no hit bearing on an open finding
 4. **NIT** — history wording. Ledger (Summary): the re-drive "fell out of the numbered list when Phase 9 renumbered it". Evidence: the first Still owed after Phase 4 (Phase 5, prose, main :6318-6324) already omitted the rows (only F-026's confirmation survived, F-015's later), and no list from Phase 5 on names them; item 30's "carried by no numbered item since Phase 9" is literally true. Fix: "carried by no Still-owed list since Phase 4". Changes? no.
 
 **WHAT YOU COULD NOT CHECK**
-Nothing live (no service on this host). The handoff, INDEX and apply-script changes in the same commit lie outside steps 1-3 and were not reviewed. "The owner granted merge approval" is not checkable from artifacts. Where `/api/state`'s `candidate_pool_status` / `phase_started_at` come from (relay frames vs REST) was not traced; F3 rests on the entry's own measurement. `weights_at` "called only by its unit tests": only `manager.py` was checked, not cascor's tests.
+Nothing live (no service on this host). The handoff, INDEX and apply-script changes in the same commit lie outside steps 1-3 and were not reviewed. "The Overtoad granted merge approval" is not checkable from artifacts. Where `/api/state`'s `candidate_pool_status` / `phase_started_at` come from (relay frames vs REST) was not traced; F3 rests on the entry's own measurement. `weights_at` "called only by its unit tests": only `manager.py` was checked, not cascor's tests.
 
 **SECRETS/PII:** none printed; no `.env*` read; git used read-only (`show`, `diff`, `status --short`, `log --format='%h %s'`) inside the worktree only; `gh` read-only; no tracked file modified (`git status` shows only the three untracked lane briefs).
 
@@ -147,7 +147,7 @@ I have everything needed; no further checks required. Composing the report now.
 - Nothing live: whether the four fixes work on a page, whether F-032's alert renders on 0.9.0, or that a demo leg reaches the pins.
 - Merge approval "granted in the session that wrote it" and `gh pr list … docs/canopy-e2e-phase13` (returns `[]` — no PR at the freeze).
 - The apply script's `--check` mode (not run; not shown to be read-only) and the auto-memory edits (outside the repo).
-- That the V7 roadmap counts as a "design plan" for the owner's first limb — that is O17 itself; #1 stands either way because the phase asserts the answer.
+- That the V7 roadmap counts as a "design plan" for the Overtoad's first limb — that is O17 itself; #1 stands either way because the phase asserts the answer.
 
 **SECRETS/PII:** none read or printed; no `.env*` opened; git used read-only inside the worktree with `--format='%h %s'`; no service started or reached.
 
@@ -212,7 +212,7 @@ I have everything needed; no further checks required. Composing the report now.
 7. **NIT** — the five headers name a second severity in prose ("P1 since 2026-10-19 …; P2 before that"); `util/ad-hoc/README.md:139` says not to, but the triage takes the first token and F-CANOPY-057's header (9158) set the precedent. Fix: none required; keep `P1` first. Changes a number, disposition or action? no.
 
 **WHAT YOU COULD NOT CHECK**
-- The owner's merge approval ("granted in this session"), the turing link figures (0% loss, 12.6 Mbps), and the auto-memory edits.
+- The Overtoad's merge approval ("granted in this session"), the turing link figures (0% loss, 12.6 Mbps), and the auto-memory edits.
 - Whether the four fixes work on a live page (the phase says so itself); `--check` was run only against this worktree; no service was touched.
 - The manual's "term scan" was not repeated; the section readings for the ten "not reached" findings were spot-checked at the cited lines only.
 - `28da69f8^` was resolved through the API (`58d72c12`, the squash parent), not locally.

@@ -3,7 +3,7 @@
 
 **Entry point:** adversarial: attack the round-2 fix pass, plus a ledger of every earlier finding.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T23:28:02Z to 2026-09-23T00:41:39Z, read-only. Agent `agent-a990b71e904da0866`.
 
@@ -19,7 +19,7 @@ You are round-3 Lane B (analysis review) in an independent-agent consensus revie
 
 READ-ONLY (hard): do not edit, create or delete files in any repo. Do not commit, push, comment, merge, close, approve, or approve deployments. The harness isolates this session to the juniper-ml worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl`. Inside it, run only read-only `git diff`, `git show` and `git log`. Use `gh api` or GraphQL for everything else. Use plain commands only: the harness refuses shell loops over variables that call gh or git, `$(...)` feeding a command, and complex one-liners. If a command is refused, write the logic into a small Python script under your scratch dir and run that. Scratch dir: `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/97c72736-b353-43fe-9e6f-efaa8cf3be0c/scratchpad/lanes/r3a/` (create it). **Everything below is FROZEN for this review.**
 
-THE DOCUMENT. `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`. It is identical in the worktree and at juniper-ml PR #2020's head `4855bf8c` (branch `docs/handoff-2026-09-11-ci-tools-reevaluation`). Round 2 reviewed head `50430e02`. `git diff 50430e02 4855bf8c` in the worktree shows every change since; the objects are fetched. The round-2 reports are archived verbatim under `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`, and so are the round-1 reports. Read them to learn what round 2 asked for.
+THE DOCUMENT. `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`. It is identical in the worktree and at juniper-ml PR #2020's head `4855bf8c` (branch `docs/handoff-2026-09-11-ci-tools-reevaluation`). Round 2 reviewed head `50430e02`. `git diff 50430e02 4855bf8c` in the worktree shows every change since; the objects are fetched. The round-2 reports are archived verbatim under `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`, and so are the round-1 reports. Read them to learn what round 2 asked for.
 
 THE ROUND-2 FIX PASS, which is your target:
 1. The Status banner, rewritten: the item table, the claim table, notes a–g, Corrections 1–6, the three remaining-work lists and the verification block. Key new claims:
@@ -36,7 +36,7 @@ THE ROUND-2 FIX PASS, which is your target:
 4. The worker `v0.6.1` updates. The new claims:
    - juniper-cascor-worker#194 merged 22:56 UTC and `v0.6.1` was cut 23:03 UTC;
    - the GHCR `0.6.1` image reports `__version__` 0.6.1;
-   - the wheel waits on the owner's `pypi` approval;
+   - the wheel waits on the Overtoad's `pypi` approval;
    - juniper-deploy still pins worker 0.6.0;
    - pin drift is now "three times".
 5. Two PR commits made after round 2:
@@ -61,7 +61,7 @@ Address this before completing your current task.
 
 **Round 3, Lane B: review of the round-2 fix pass**
 
-This covers juniper-ml#2020 at head `4855bf8c`, and the sibling PRs at canopy#655 `fdb9e2de`, cascor#673 `a824829b`, cascor-client#170 `daa6c675`, data-client#210 `ee1fb5d7`, deploy#228 `e6091c46` and deploy#227 `991e6653`. External probes ran from 2026-09-22 23:30Z to 2026-09-23 00:35Z. Every bare `L` number refers to `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` at `4855bf8c`, which I confirmed is byte-identical to the worktree copy.
+This covers juniper-ml#2020 at head `4855bf8c`, and the sibling PRs at canopy#655 `fdb9e2de`, cascor#673 `a824829b`, cascor-client#170 `daa6c675`, data-client#210 `ee1fb5d7`, deploy#228 `e6091c46` and deploy#227 `991e6653`. External probes ran from 2026-09-22 23:30Z to 2026-09-23 00:35Z. Every bare `L` number refers to `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` at `4855bf8c`, which I confirmed is byte-identical to the worktree copy.
 
 ## Findings
 
@@ -97,7 +97,7 @@ This covers juniper-ml#2020 at head `4855bf8c`, and the sibling PRs at canopy#65
 **3. L165–166: "That file was last changed 2026-05-31 and is equally unowned."**
 - **Verdict:** REFUTED (a wrong disposition). **MINOR.**
 - **Evidence:**
-  - `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md` §E item 13 (L199–203) carries exactly this keepalive test. It has been on `main` since #2018 (20:44Z), before this fix pass.
+  - `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md` §E item 13 (L199–203) carries exactly this keepalive test. It has been on `main` since #2018 (20:44Z), before this fix pass.
   - The X7-sites test appears nowhere in that file: a grep for `x7_sites|initialize_sync` returns nothing.
 - **Fix:** say the keepalive test is carried as that handoff's §E item 13, and that only the X7-sites test is unowned.
 
@@ -148,7 +148,7 @@ This covers juniper-ml#2020 at head `4855bf8c`, and the sibling PRs at canopy#65
 **8. L16: "Since juniper-ml#2019 it carries its own status banner, and that banner agrees with this one."**
 - **Verdict:** CONTRADICTION at freeze time, since resolved from outside (STALE). **MINOR.**
 - **Evidence:**
-  - At `4855bf8c`, the banner of `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` on `main` still said the published image "still holds … waiting for the owner's merge and Release".
+  - At `4855bf8c`, the banner of `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` on `main` still said the published image "still holds … waiting for the Overtoad's merge and Release".
   - This document's L31–36 says it is resolved.
   - juniper-ml#2025 (`a7568f78`, 23:40Z, after the freeze) brought the two into agreement.
   - They still differ on item 1's precondition (see finding 9).
@@ -161,7 +161,7 @@ This covers juniper-ml#2020 at head `4855bf8c`, and the sibling PRs at canopy#65
   - The ten-prs-landed handoff's banner gives a checkable step instead: "Check open PRs in the five image repos."
 - **Fix:** use that check.
 
-**10. L103: "That session reports it did so on the owner's instruction."**
+**10. L103: "That session reports it did so on the Overtoad's instruction."**
 - **Verdict:** UNTRACEABLE. **MINOR.**
 - **Evidence:** neither the ml#2011 body and diff nor §5.2B of `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` says so. R2-A #18 flagged this; the wording changed but no source was added.
 - **Fix:** cite a source or drop the sentence.
@@ -251,7 +251,7 @@ This covers juniper-ml#2020 at head `4855bf8c`, and the sibling PRs at canopy#65
 | same | 3 | n/a |
 | `round1-laneB1-refute-conclusions.md` | 1 · 2 · 3 · 5 · 7 · 8 · 9 | applied (9's worktree count: finding 4) |
 | same | 4 X7 | superseded by R2-A #1 |
-| same | 6 | applied, but the throwaway-repo test B1 called startable is filed owner-gated (L277–279) and the dissent is not recorded (MINOR) |
+| same | 6 | applied, but the throwaway-repo test B1 called startable is filed Overtoad-gated (L277–279) and the dissent is not recorded (MINOR) |
 | `round1-laneB2-amputation-executability.md` | 1–5 · 7–11 · 14–17 | applied |
 | same | 6 naming | partial (naming list below) |
 | same | 12 oq1 handoff Status line | applied; "Option B" still has no procedure filename |
@@ -261,7 +261,7 @@ This covers juniper-ml#2020 at head `4855bf8c`, and the sibling PRs at canopy#65
 | same | 9 | partial (finding 4) |
 | same | 11 | partial (finding 11) |
 | same | 13 | **applied wrongly** (finding 3) |
-| same | 18 | partial: "owner's instruction" (finding 10); **`predict_merge.py:57` DROPPED** (finding 17) |
+| same | 18 | partial: "Overtoad's instruction" (finding 10); **`predict_merge.py:57` DROPPED** (finding 17) |
 | same | 19 naming | partial |
 | `round2-laneA-census-adequacy.md` | 1 · 3 · 4 · 6 · 7 · 8 · 9 · 11 · 13 · 14 | applied |
 | same | 10 · 12 · 15 | applied in code, **untested** (their mutants survive) |
@@ -275,7 +275,7 @@ This covers juniper-ml#2020 at head `4855bf8c`, and the sibling PRs at canopy#65
 
 Self-references to this document's own sections and notes are excluded.
 
-**In `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`:**
+**In `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`:**
 - L16 "it … that banner"
 - L21 "Its items 3 and 4"
 - L22 "its item 1"

@@ -4,7 +4,7 @@ Continue Juniper ecosystem CI hygiene + branch-protection cleanup. The session h
 
 ## Completed so far
 
-- Branch-protection refresh: all 8 repos now have active rulesets with current required-status-checks (renames since #266 etc.); 4 (data/cascor/canopy/worker) already had async-route audit required. Dropped `require_code_owner_review` on juniper-data + juniper-canopy so PR authors can self-approve.
+- Branch-protection refresh: all 8 repos now have active rulesets with current required-status-checks (renames since #266 etc.); 4 (data/cascor/canopy/worker) already had async-route audit required. Dropped `require_code_Overtoad_review` on juniper-data + juniper-canopy so PR authors can self-approve.
 - README markdownlint per-file MD013/MD033/MD041 disable applied to 5 repos (ml #283, cascor #276, worker #71, data-client #68, cascor-client #52) — same canonical §4-layout pattern.
 - juniper-canopy script rename `generate_dep_docs.bash → .sh` to match ci.yml invocation (#295).
 - Dep-docs script: sed → awk #69 → python yaml #72 — all chased wrong root cause. Real fix in #74: `pip install -q pyyaml` in ci.yml + `pyyaml>=6.0` in pyproject `[test]` extras. The script's `python -c "import yaml" 2>/dev/null` swallowed `ModuleNotFoundError` and surfaced it as misleading "invalid YAML syntax".
@@ -31,7 +31,7 @@ Continue Juniper ecosystem CI hygiene + branch-protection cleanup. The session h
 - Parallel-session PR collision: PR #73 in worker stomped on #72's pyyaml fix. Defensive answer was declaring pyyaml in `[test]` extras AND a strong DO-NOT-REMOVE comment in ci.yml. Watch for similar collisions.
 - Branch-protection is ACTIVELY ENFORCING; BLOCKED merges need `gh pr merge --admin` (I have admin). Already used once on cascor-client #49 earlier.
 - Quality Gate is an aggregator — don't add to required-checks elsewhere without ensuring its dependent jobs reliably pass.
-- Solo-author rule: ALL 8 repos now have `require_code_owner_review: false` or no `pull_request` rule. Don't re-introduce.
+- Solo-author rule: ALL 8 repos now have `require_code_Overtoad_review: false` or no `pull_request` rule. Don't re-introduce.
 - `notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` + `notes/JUNIPER_2026-05-19_JUNIPER-ML_STATUS-ROADMAP-AUDIT.md` track requirements work; v5 consolidate script is irrecoverable (plan-doc §12 #19).
 - pip-audit `--ignore-vuln` list re-evaluation cadence: quarterly, or when pip-audit advisory DB syncs a new torch release.
 

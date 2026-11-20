@@ -23,7 +23,7 @@
 #
 # The original design also checked the card and made a test signature (--card-timeout).
 # Under plan D11 an agent never touches the YubiKey, so those checks are not implemented
-# here; they stay owner-run (plan tasks B3 and B5).
+# here; they stay Overtoad-run (plan tasks B3 and B5).
 #
 # Usage:
 #   bash util/headless_signing_preflight.bash [--repo DIR] [--require-signed-head] [--timeout SECONDS]
@@ -77,11 +77,11 @@ GIT_CONFIG_COUNT with GIT_CONFIG_KEY_n=commit.gpgsign and GIT_CONFIG_VALUE_n=fal
 their environment. git applies that over every config file, so such a session cannot
 sign. The preflight reports "signing disabled by construction (D11)" and FAILS (exit 1).
 That is the expected result in an agent session, which lands commits through
-util/open_signed_pr.py. Run the preflight from an owner terminal to judge the host.
+util/open_signed_pr.py. Run the preflight from an Overtoad terminal to judge the host.
 
 Owner-run, not implemented here (plan D11): the card checks of the original design,
 --card-timeout (a card is present, its signature slot holds the signing subkey, and a
-test signature succeeds). They need the YubiKey and its PIN, so they stay with the owner
+test signature succeeds). They need the YubiKey and its PIN, so they stay with the Overtoad
 (plan tasks B3 and B5). Passing --card-timeout exits 2.
 
   --repo DIR             check this repository's config and HEAD (default: the current directory)
@@ -136,7 +136,7 @@ while [[ $# -gt 0 ]]; do
             shift 2
             ;;
         --card-timeout | --card-timeout=*)
-            die_usage "--card-timeout is not implemented: card and PIN checks are owner-run (plan D11; tasks B3 and B5)"
+            die_usage "--card-timeout is not implemented: card and PIN checks are Overtoad-run (plan D11; tasks B3 and B5)"
             ;;
         -*)
             die_usage "unknown option: $1"
@@ -435,7 +435,7 @@ check_head_signature() {
     report "$status" head-signature "$detail"
 }
 
-echo "headless signing preflight: non-credential checks only (card and PIN checks are owner-run; see --help)"
+echo "headless signing preflight: non-credential checks only (card and PIN checks are Overtoad-run; see --help)"
 echo "repo       ${TOPLEVEL:-$REPO}"
 echo "gnupghome  ${HOMEDIR} (from ${HOMEDIR_FROM})"
 echo

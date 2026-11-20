@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3: the linear brace scan)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: validator finding ml-code-port-lens F1 (the scan was quadratic); util/claude_agent_guard.py
          (_brace_closes, _brace_words, BRACE_SCAN_BUDGET); the round-2 guard, saved by the caller (round 2's
          carrier worktree holds it; tests/test_claude_agent_guard_brace_cap.py carries the same scan as an oracle,

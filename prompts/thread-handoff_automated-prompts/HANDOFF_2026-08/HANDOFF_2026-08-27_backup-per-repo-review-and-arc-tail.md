@@ -2,7 +2,7 @@
 
 > **Continue the backup / snapshot-lifecycle arc.** `util/juniper-backup.bash` was rewritten to
 > produce one encrypted tarball **per application repo** with per-repo exclude lists, and shipped as
-> **ml#1427 (MERGED `99df9bf0`, 2026-08-28)** — which is now `origin/main`. The owner reported two
+> **ml#1427 (MERGED `99df9bf0`, 2026-08-28)** — which is now `origin/main`. The Overtoad reported two
 > symptoms: the backup is very slow, and archives are enormously larger than their sources
 > (`juniper-data` ~33 MB excluding `data/` → **>75 GB** on the drive).
 >
@@ -302,8 +302,8 @@ its "PIPELINE VERIFIED" claim in the lifecycle design §6.4.2 is stale.
 After fixing B2/B4, update the drill to mirror the final flags and re-run it, then correct
 `notes/JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_SNAPSHOT-LIFECYCLE-MANAGEMENT-DESIGN.md` §6.4.2.
 
-**This also gates the owner's class-2 drill:** decrypting a current archive with
-`gpg -d | tar -xzf -` fails (B2). Give the owner the corrected one-liner, or fix B2 first.
+**This also gates the Overtoad's class-2 drill:** decrypting a current archive with
+`gpg -d | tar -xzf -` fails (B2). Give the Overtoad the corrected one-liner, or fix B2 first.
 
 ---
 
@@ -364,7 +364,7 @@ several times an hour.
 
 ---
 
-## 7. Also still owed (owner)
+## 7. Also still owed (Overtoad)
 
 - **Class-2 restore drill** — YubiKey-decrypt one real archive. Cheap now (`--source <small dir>`
   gives a real archive in seconds) **but blocked by B2** until the format/extension mismatch is fixed.

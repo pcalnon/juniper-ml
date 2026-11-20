@@ -75,7 +75,7 @@ class KubectlSkewBoundaryTest(unittest.TestCase):
         ahead = _kubectl("1", "38")
         self.assertEqual(ahead.status, "fail")
         self.assertIn("2 minors ahead of the cluster's 1.36 (allowed: 1)", ahead.message)
-        self.assertTrue(ahead.remediation.startswith("task D3 (owner) first:"), ahead.remediation)
+        self.assertTrue(ahead.remediation.startswith("task D3 (Overtoad) first:"), ahead.remediation)
         behind = _kubectl("1", "34")
         self.assertEqual(behind.status, "fail")
         self.assertIn("2 minors behind the cluster's 1.36 (allowed: 1)", behind.message)

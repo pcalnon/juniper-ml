@@ -5,7 +5,7 @@ Given a package + version + the CHANGELOG ``[Unreleased]`` bullets, render a wel
 release-notes DRAFT from ``notes/templates/TEMPLATE_RELEASE_NOTES.md`` (or the security
 template when the ``[Unreleased]`` block carries a ``Security`` category, plan S10.1 /
 Q-SEVERITY). The draft is what the standard-gated proposal PR (``propose.py``, plan S5.4)
-shows the owner; it is **not** archived to ``notes/releases/`` here -- archival is the later
+shows the Overtoad; it is **not** archived to ``notes/releases/`` here -- archival is the later
 exempt ceremony step (plan S7/S10.2). The central archive filename convention is surfaced
 (``archive_name`` / ``archive_relpath``) so the proposal body can name the eventual home.
 
@@ -18,7 +18,7 @@ pre-commit-lint-gated, so ``tests/test_release_train_propose.py`` IS the gate (t
 The renderer is deliberately conservative: it fills the metadata block, an Overview, a
 Release Summary, and the Keep-a-Changelog change groups sourced from the CHANGELOG, then
 lists the remaining template sections as a to-complete scaffold. It never invents test
-counts, coverage numbers, or issue IDs -- those are owner-authored during review.
+counts, coverage numbers, or issue IDs -- those are Overtoad-authored during review.
 
 Project: juniper-ml
 Sub-Project: automated PyPI release-train
@@ -471,7 +471,7 @@ def _render_security(pypi_name: str, version: str, bump: str, date: str, section
 # (e.g. ``[design](notes/FOO.md)`` in juniper-canopy). Archived verbatim into
 # juniper-ml's central ``notes/releases/`` those targets 404 (the canopy v0.6.0
 # archive shipped two such links). When the caller supplies ``link_base`` —
-# ``https://github.com/<owner>/<repo>/blob/<ref>`` — every inline markdown link
+# ``https://github.com/<Overtoad>/<repo>/blob/<ref>`` — every inline markdown link
 # whose target is relative (no URL scheme, not an in-page ``#`` anchor, not
 # protocol-relative ``//``) is rewritten onto that base. Absolute http(s)/
 # mailto links, bare anchors, and reference-style definitions are untouched.
@@ -493,7 +493,7 @@ def rewrite_relative_links(text: str, link_base: str) -> str:
     """Rewrite relative inline-link targets in ``text`` onto ``link_base``.
 
     ``link_base`` should be an absolute URL prefix without a trailing slash
-    (``https://github.com/<owner>/<repo>/blob/<ref>``). ``./``-prefixed targets
+    (``https://github.com/<Overtoad>/<repo>/blob/<ref>``). ``./``-prefixed targets
     are normalized; in-page anchors on the target are preserved."""
     base = link_base.rstrip("/")
 
@@ -571,7 +571,7 @@ def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--security", action="store_true", help="force the security template (else auto-detected from a Security category)")
     p.add_argument("--repo-root", default=None, help="juniper-ml checkout root for template lookup (default: three parents up)")
     p.add_argument("--print-archive-name", action="store_true", help="print only the central archive relpath and exit")
-    p.add_argument("--link-base", default=None, metavar="URL", help="absolute URL prefix (https://github.com/<owner>/<repo>/blob/<ref>) to rewrite relative CHANGELOG links onto (central-archive correctness; default: no rewrite)")
+    p.add_argument("--link-base", default=None, metavar="URL", help="absolute URL prefix (https://github.com/<Overtoad>/<repo>/blob/<ref>) to rewrite relative CHANGELOG links onto (central-archive correctness; default: no rewrite)")
     p.add_argument("--changelog-url", default=None, metavar="URL", help="absolute URL of the package's OWN CHANGELOG.md for the Links section (default: the legacy relative ../../CHANGELOG.md, which resolves to juniper-ml's ROOT changelog)")
     p.add_argument("--final", action="store_true", help="render a body destined to be PUBLISHED: drop the trailing 'complete or delete these template sections' comment, which is stale once a Release is cut from it")
     return p.parse_args(argv)

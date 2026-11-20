@@ -6,15 +6,15 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
 Status: ad-hoc -- migration (phase 1 of the ecosystem's Python 3.15 migration)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-14_python-3-15-informational-checks-phase-1-surveyed.md
-         (the arc's handoff, which holds the owner's request and the design question this settles);
+         (the arc's handoff, which holds the Overtoad's request and the design question this settles);
          tmp/py315-informational-2026-11-14/survey-ci-2026-11-14.md and survey-local-2026-11-14.md (the surveys
          that list every file and line touched here)
 
 Why this exists
 ---------------
-The owner's request of 2026-11-14: add Python 3.15 to the tested versions in CI and in local test infrastructure,
+The Overtoad's request of 2026-11-14: add Python 3.15 to the tested versions in CI and in local test infrastructure,
 with the 3.15 checks reporting results but blocking no commit, merge or deployment. Every edit below is an
 exact-substring replacement that must match exactly once, so the set can be re-applied onto a moved ``origin/main``
 from a fresh worktree (re-run, never re-type) and a drifted base fails loudly instead of being half-edited.
@@ -77,14 +77,14 @@ DATA_CI_COMMENT_NEW = """\
     # 2026-10-29). The leg catches platform divergence: cross-platform rss_mb sampling, POSIX-only
     # assumptions, and BSD tools (macOS `base64` has no `-w0`; juniper-data#467 and #498 both met it).
     #
-    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (owner request,
+    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (Overtoad request,
     # 2026-11-14) runs it so its results show, but it must block no merge. It is the only leg with
     # ``experimental: true``, so this expression is true on it alone: a failure there leaves the
     # job's result, which the Quality Gate reads as `needs.unit-tests.result`, unchanged, and the jobs
     # that `needs: [unit-tests]` still run. Measured on juniper-data#538 (run 43655144734): with the
     # 3.15 leg failed on purpose, the gate printed "Unit Tests: success" and build, integration-tests,
     # dependency-docs and docker-build ran. Its context is not in the ruleset. Keep both until the
-    # owner makes 3.15 a required version (phase 3 of the migration).
+    # Overtoad makes 3.15 a required version (phase 3 of the migration).
     continue-on-error: ${{ matrix.experimental == true }}
 """
 
@@ -187,7 +187,7 @@ DATA_CHANGELOG_NEW = """\
 ### Added
 
 - **CI runs the unit tests on Python 3.15 as well, as an informational leg that blocks nothing.** Phase 1 of the
-  ecosystem's Python 3.15 migration (the owner's request of 2026-11-14): 3.15 results are reported, and no merge,
+  ecosystem's Python 3.15 migration (the Overtoad's request of 2026-11-14): 3.15 results are reported, and no merge,
   commit or deployment waits on them.
   - `unit-tests` gains `Unit Tests + Coverage (Python 3.15 on ubuntu-latest)`, an `include` entry with
     `experimental: true`. The job's existing `continue-on-error: ${{ matrix.experimental == true }}` applies to that
@@ -301,12 +301,12 @@ ML_TESTS_NEW = """\
     name: Regression Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     needs: [pre-commit]
-    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (owner request,
+    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (Overtoad request,
     # 2026-11-14) runs it so its results show, but it must block no merge. It is the only leg with
     # `experimental: true`, so this expression is true on it alone: a failure there leaves the job's
     # result unchanged, and the Quality Gate's `needs.tests.result` reads `success`. Measured on
     # juniper-data#538 (run 43655144734), where the gate printed "Unit Tests: success" with the 3.15
-    # leg failed on purpose. Its context is in no ruleset. Keep both until the owner makes 3.15 a
+    # leg failed on purpose. Its context is in no ruleset. Keep both until the Overtoad makes 3.15 a
     # required version (phase 3 of the migration).
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
@@ -370,14 +370,14 @@ ML_CHANGELOG_NEW = """\
 ### Added
 
 - **CI runs the regression tests and every sub-package's tests on Python 3.15 as well, as informational legs that
-  block nothing.** Phase 1 of the ecosystem's Python 3.15 migration (the owner's request of 2026-11-14): 3.15
+  block nothing.** Phase 1 of the ecosystem's Python 3.15 migration (the Overtoad's request of 2026-11-14): 3.15
   results are reported, and no merge, commit or deployment waits on them.
   - `ci.yml`'s `Regression Tests` and the `test` job of all six `ci-<pkg>.yml` workflows gain an `include` entry,
     Python `"3.15"` with `experimental: true`, and the job-level `continue-on-error: ${{ matrix.experimental == true }}`,
     which is true on that leg alone. A red 3.15 leg leaves the job's result, and so the Quality Gate's
     `needs.tests.result`, at `success`; no ruleset requires the new contexts. Measured on juniper-data#538 (run
     43655144734): with the 3.15 leg failed on purpose, the gate printed `Unit Tests: success` and passed.
-  - Pre-commit stays on 3.12-3.14 (the owner's ruling the same day), and `requires-python`, the classifiers and the
+  - Pre-commit stays on 3.12-3.14 (the Overtoad's ruling the same day), and `requires-python`, the classifiers and the
     tool targets are unchanged: 3.15 is tested, not yet supported.
   - `util/ad-hoc/2026-11-14_py315_informational_edits.py` applies this change and juniper-data#538's as exact,
     re-runnable replacements. `docs/REFERENCE.md` § Shared-Package CI Workflows says so.
@@ -388,7 +388,7 @@ ML_CHANGELOG_NEW = """\
 # goes directly after 0.6.69, i.e. directly before that 0.6.22 row.
 ML_REF_HISTORY_OLD = "\n| 0.6.22  | 2026-09-04 | X7 off-loop census"
 ML_REF_HISTORY_NEW = (
-    "\n| 0.6.70  | 2026-11-15 | Python 3.15 informational CI legs (phase 1 of the 3.15 migration, owner request"
+    "\n| 0.6.70  | 2026-11-15 | Python 3.15 informational CI legs (phase 1 of the 3.15 migration, Overtoad request"
     " 2026-11-14): `ci.yml`'s `Regression Tests` and the six `ci-<pkg>.yml` test matrices each run a 3.15 leg under"
     " `continue-on-error: ${{ matrix.experimental == true }}`, which reports and blocks nothing (§ Shared-Package CI Workflows) |"
     "\n| 0.6.22  | 2026-09-04 | X7 off-loop census"

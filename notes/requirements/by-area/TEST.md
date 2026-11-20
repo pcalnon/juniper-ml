@@ -8,7 +8,7 @@
 
 **By priority**: P0=6 | P1=59 | P2=60 | P3=8
 
-**By owner**: can=44 | ml=43 | cas=19 | dat=13 | ccl=5 | cwk=3 | rec=3 | dep=2 | dcl=1
+**By Overtoad**: can=44 | ml=43 | cas=19 | dat=13 | ccl=5 | cwk=3 | rec=3 | dep=2 | dcl=1
 
 ---
 
@@ -548,7 +548,7 @@ permissions. Add contents:read for artifact access.
 
 **Notes**:
 
-[v2 ARCH→TEST re-bucket] [v3 xrepo fuzzy merge: owners=ccl,cwk,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
+[v2 ARCH→TEST re-bucket] [v3 xrepo fuzzy merge: Overtoads=ccl,cwk,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
 
 ### JR-ML-TEST-014 — Make sentry-sdk a hard runtime dependency and remove importorskip guards in tests.
 

@@ -5,7 +5,7 @@
 **Predecessor**: [`HANDOFF_2026-08-25_memory-governance-and-p5-fleet-rollout.md`](HANDOFF_2026-08-25_memory-governance-and-p5-fleet-rollout.md)
 
 Every figure below was re-probed in this session, not inherited. **Nothing was merged by this
-session and nothing is promoted** — merges are the owner's per-PR call.
+session and nothing is promoted** — merges are the Overtoad's per-PR call.
 
 ---
 
@@ -15,7 +15,7 @@ Continue the **shared-session-memory** arc in `juniper-ml`, P5 fleet rollout. Au
 plan §P5 in [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
 (its `NOT STARTED` banner is fixed by **ml#1376, pending merge** — until then the banner lies);
 tracker **ml#1326** (retitled IN PROGRESS; its comments are the live per-repo ledger); the
-predecessor handoff for mechanism facts and owner decisions, none of which changed.
+predecessor handoff for mechanism facts and Overtoad decisions, none of which changed.
 
 **Run the dup-guard BEFORE any work** (see *Key context*): two sessions ran this handoff at once
 today and duplicated each other for 20 minutes.

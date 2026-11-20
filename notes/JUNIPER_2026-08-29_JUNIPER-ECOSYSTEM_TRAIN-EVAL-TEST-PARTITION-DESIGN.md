@@ -59,7 +59,7 @@ The fix is to finish the partition design, not to pick an arm.
 
 **Decision**: adopt a three-way `train` / `validation` / `test` split as the ecosystem data
 contract, with `validation` consumed in-loop and `test` touched exactly once after training
-completes. §6 records the options and the owner's decisions; §7 the consequences; §9 the decision
+completes. §6 records the options and the Overtoad's decisions; §7 the consequences; §9 the decision
 table; **§10 settles the naming, and it is not `eval`** — see there before writing any code.
 
 ---
@@ -331,7 +331,7 @@ situation went unnoticed.
   will now do so against a partition it does not report, and the CLI gains early stopping it never
   had (§9 decision 5). The T6 re-baseline, the P3 thresholds and the attribution corpora were all
   measured under the old semantics and none of them are wrong — they answer a different question.
-- **Pre-change results: re-measure, and keep the originals annotated** (owner decision 4). Preference
+- **Pre-change results: re-measure, and keep the originals annotated** (Overtoad decision 4). Preference
   is a genuine re-measurement rather than a paper annotation; the old numbers are retained with an
   annotation recording which semantics produced them, so nothing is silently discarded and nothing is
   silently compared across the boundary.
@@ -340,7 +340,7 @@ situation went unnoticed.
   should be blocked by provenance, not by convention.
 - **Snapshot metadata** carrying metrics should record which partition each metric came from, so a
   future reader can tell a selected-on number from a held-out one without reading this document.
-- **The CLI gains early stopping** (owner decision 5), which changes CLI results — a CLI run that
+- **The CLI gains early stopping** (Overtoad decision 5), which changes CLI results — a CLI run that
   previously trained to budget may now stop earlier. This is the intended fix for the tier
   asymmetry, but it *is* a behavioural change to the arm that was previously unbiased-but-
   unregularised, and it should be measured, not assumed benign.
@@ -483,7 +483,7 @@ already records.
 `gaussian` were read from source, not measured. The mechanism-A/B isolations (Q6/Q7) are
 generator-independent and hold regardless. The other 14 generators were not classified.
 
-#### 9.3.2 P-1b ADOPTED — owner ruling 2026-09-01, and the hazard it introduces
+#### 9.3.2 P-1b ADOPTED — Overtoad ruling 2026-09-01, and the hazard it introduces
 
 **Decision 9: P-1b.** Each partition is drawn from its own named seed substream. Prefix stability is
 abandoned as unobtainable (§9.3.1); the corpus is not preserved, and decision 4's re-measure carries
@@ -669,7 +669,7 @@ membership per run, validated under
 [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md).
 
 **The review did not choose between them. It refuted the premise both rest on.** The recommendation
-is to build neither and to revisit decisions 9 and 10. That recommendation is the owner's to accept
+is to build neither and to revisit decisions 9 and 10. That recommendation is the Overtoad's to accept
 or reject; nothing here is settled.
 
 ### 9.4.1 The two proposals
@@ -761,7 +761,7 @@ fix it either.**
   distinct feature vectors, **5 of 8** partitionings violate "zero exact duplicates across
   partitions". G-a would delete valid records — biasing the sample — or refuse to assemble.
 
-"G-b fails on X, therefore G-a" is invalid when G-a also fails on X. **Decision 10 stands as an owner
+"G-b fails on X, therefore G-a" is invalid when G-a also fails on X. **Decision 10 stands as an Overtoad
 ruling, but the reasoning §9.3.4 gave for it is void**, and G-a is non-terminating on the case that
 motivated it. It needs re-deciding on different grounds, or withdrawing.
 
@@ -826,7 +826,7 @@ abstraction — every duplicate measured anywhere in this arc came from a seed-i
 
 **Termination**: round 1 changed the disposition entirely, so under procedure §4 a round 2 is owed
 and has **not** been run. This section is therefore round-1 output, and §9.4.7 is a recommendation
-awaiting both the owner's ruling and that second round.
+awaiting both the Overtoad's ruling and that second round.
 
 ### 9.4.9 Corrections to earlier sections of this document
 
@@ -859,7 +859,7 @@ Ruled 2026-09-02. **Generators emit `train` / `val` / `test` directly**, each pa
 that is correct for its own data type, accompanied by queryable metadata. The `*_full` family is
 removed from the NPZ contract.
 
-The rationale of record, in the owner's framing: `X_full` is a **dataset-context-invariant structure
+The rationale of record, in the Overtoad's framing: `X_full` is a **dataset-context-invariant structure
 imposed on a heterogeneous set of generators**, and it becomes less tractable as datasets are added.
 Baking a per-generator roll-up algorithm into each generator would be complexity bought for a
 structure no requirement depends on. Removing it lets each generator solve the only problem that
@@ -1071,7 +1071,7 @@ partitioning one.
 ### 9.6.6 What closes, and what this does not cover
 
 **Closed by this section**: the P-1a/P-1b question; the guard question; per-run class membership as a
-*partitioning* concern; and the §9.4.7 recommendation, which the owner has now ruled on.
+*partitioning* concern; and the §9.4.7 recommendation, which the Overtoad has now ruled on.
 
 **Not covered**:
 

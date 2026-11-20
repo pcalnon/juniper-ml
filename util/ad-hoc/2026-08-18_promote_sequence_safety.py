@@ -15,7 +15,7 @@ written; this is that helper, scoped to the one edit it is needed for.
 Why a script and not ``gh`` by hand
 -----------------------------------
 The repository-ruleset update endpoint is a **full replacement**
-(``PUT /repos/{owner}/{repo}/rulesets/{id}``) -- there is no additive sub-resource for a
+(``PUT /repos/{Overtoad}/{repo}/rulesets/{id}``) -- there is no additive sub-resource for a
 single context.  A hand-built payload that drops a rule silently makes ``main`` unmergeable
 with **nothing going red**, which is the documented failure mode for this whole class of
 change.  So every write here is:

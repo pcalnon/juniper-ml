@@ -9,10 +9,10 @@
 
 ## Goal
 
-Continue the arc from plan v1.7.15. **This session** (turing session 9) picked up the predecessor handoff's remaining work, and the owner granted merge approval at its start. All three agent items of that handoff are done.
+Continue the arc from plan v1.7.15. **This session** (turing session 9) picked up the predecessor handoff's remaining work, and the Overtoad granted merge approval at its start. All three agent items of that handoff are done.
 
 - **Item 1, the publish, is done.**
-  - The owner approved the `pypi` gate. In `publish.yml` run 39577119562, "Publish to PyPI" ran 21:08:22Z–21:08:55Z and passed.
+  - The Overtoad approved the `pypi` gate. In `publish.yml` run 39577119562, "Publish to PyPI" ran 21:08:22Z–21:08:55Z and passed.
   - `https://pypi.org/pypi/juniper-ml/0.11.0/json` serves the wheel (21:08:50Z) and the sdist (21:08:52Z). Their `requires_dist` carries `juniper-recurrence<0.9.0,>=0.8.0`, `juniper-recurrence-model<0.7.0,>=0.6.0`, `juniper-data>=0.17.0` and `juniper-canopy>=0.9.0`.
   - The project-level JSON (`/pypi/juniper-ml/json`) still read 0.10.0 at 21:10Z and read 0.11.0 minutes later. That was CDN lag.
   - Release `v0.11.0` is the repo's latest, and the archive PR juniper-ml#2307 merged as `3a0bea06`.
@@ -69,7 +69,7 @@ Continue the arc from plan v1.7.15. **This session** (turing session 9) picked u
   This PR's update re-ran CI once.
 - **After a publish, check the version endpoint first.** `https://pypi.org/pypi/<pkg>/<version>/json` confirms it at once, while `/pypi/<pkg>/json` can lag by minutes.
 - Everything else is as in the predecessor:
-  - the `pypi` gate is the owner's;
+  - the `pypi` gate is the Overtoad's;
   - write one plain command per call under the worktree guard (a `$VAR` path in `sed` is refused; spell the path out);
   - build every whole-file upload from a fresh `origin/main` copy.
 

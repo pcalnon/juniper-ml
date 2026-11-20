@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-30
 Status: ad-hoc — investigation (suite strength evidence for E-H3's wording follow-up)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (erratum E-H3 of §18.3; tasks
          D3 and D4 and decision D7; gates G-TOOLS and G-MEM of §9.3); util/host_state_check.py;
          tests/test_host_state_check.py; reports/2026-10-27_turing-bringup/2026-10-27T0135Z_macos-host-sme.md (its
@@ -45,7 +45,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 ENGINE = REPO / "util" / "ad-hoc" / "2026-10-20_turing_g1_mutation_check.py"
 
-FIX_NEW = 'fix = f"task D3 (owner) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl {cluster}.x, which needs re-planning under the D6 ruling (erratum E-D6)"'
+FIX_NEW = 'fix = f"task D3 (Overtoad) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl {cluster}.x, which needs re-planning under the D6 ruling (erratum E-D6)"'
 FIX_OLD = 'fix = f"task D4: kubectl {cluster}.x; it needs re-planning under the D6 ruling (erratum E-D6)"'
 MISSING = 'return Condition("kubectl", "fail", "kubectl not found", fix)'
 MEM_FAIL = 'f"free + speculative + inactive {avail} MiB < {need} MiB required {detail}"'

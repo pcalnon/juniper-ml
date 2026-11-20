@@ -7,7 +7,7 @@
   which was written before E2 finished.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.1. This session's
   record, task status and errata are in its §18; §19 is the "code signing" session's. Task IDs below refer to the plan.
-- **Standing approval:** the owner granted merge approval for the work arc, merging only after green. It does not cover
+- **Standing approval:** the Overtoad granted merge approval for the work arc, merging only after green. It does not cover
   the `pypi` deployment gate.
 
 ## Landed (squash-merged to `main` after green)
@@ -41,7 +41,7 @@ All three envs were created with `MAMBA_SSL_VERIFY=true` and validated against t
   `reports/2026-10-20_turing-e2-envs/JuniperCanopy1.openblas-hang.txt`.
 - **E-REQ.** canopy's 2 failures assume `requests` refuses a header value with a trailing LF, which it does from 2.33.1.
   The spec keeps the Linux env's 2.32.5, and canopy floors `requests>=2.28.0`. Not a turing defect.
-- **juniper-canopy follow-ups (owner's call, not filed):** raise the `requests` floor to 2.33.1, and stop the tests that
+- **juniper-canopy follow-ups (Overtoad's call, not filed):** raise the `requests` floor to 2.33.1, and stop the tests that
   leave demo mode's `_training_loop` thread running.
 - `validate_envs.py` gained `--env KEY=VALUE` for experiments; the summary JSON and lane logs record any override.
 
@@ -54,7 +54,7 @@ All three envs were created with `MAMBA_SSL_VERIFY=true` and validated against t
 5. **JuniperPython's stray `PYTHONPATH`:** `conda env config vars unset PYTHONPATH -n JuniperPython`. mamba also warns that it cannot parse that env's `conda-meta/state`.
 6. **The network:** the open-security radio, roaming or `en7` (F2), and A6.
 7. **F3 node mode:** quit the desktop apps and Docker Desktop, with no VM running, then say so.
-8. **Commit signing (from §19):** K5 is applied, so the owner's own commits under `~/Development/python/Juniper/` fail closed until B2/B3. Do not insert a YubiKey into turing until the guard is installed with K12's rules (step 2) and K13, the IDE agent approvals, is done.
+8. **Commit signing (from §19):** K5 is applied, so the Overtoad's own commits under `~/Development/python/Juniper/` fail closed until B2/B3. Do not insert a YubiKey into turing until the guard is installed with K12's rules (step 2) and K13, the IDE agent approvals, is done.
 9. **The rest of Owner block 1:** C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
 
 ## Agent next
@@ -67,14 +67,14 @@ All three envs were created with `MAMBA_SSL_VERIFY=true` and validated against t
    - Scripts check paths and modes only and never read key contents.
    - It is a suite-adding PR, so build its AGENTS.md count and CHANGELOG entry from main as it stands when it lands (E-LAND-3).
 2. **G4 promotion:** after 10 consecutive green runs of `host-tooling-macos`, add it to `required-checks.needs` and flip `test_the_job_is_advisory`.
-3. **F3 node mode**, after owner step 7. Then **the Session 3 group:** H2, H4, H5, and E5, which needs A6. D2-upg and D4 still need re-planning under the D6 ruling.
+3. **F3 node mode**, after Overtoad step 7. Then **the Session 3 group:** H2, H4, H5, and E5, which needs A6. D2-upg and D4 still need re-planning under the D6 ruling.
 4. **Post-merge check (E-LAND-2):** after the E2 record PR merges, `python3 -I util/ad-hoc/2026-10-20_turing_e2_record.py --dry-run` on `main` should report every edit `present`. Run it again after the next PR that touches the plan.
 
 ## Verify the starting state
 
 ```bash
 git fetch origin && git log -3 --oneline origin/main
-gh search prs --owner pcalnon --state open --json repository,number,title
+gh search prs --Overtoad pcalnon --state open --json repository,number,title
 python3 util/home_path_literal_check.py                         # PASS (G5)
 python3 util/git_remote_alias_check.py                          # exit 1 until A1
 /usr/local/miniforge3/condabin/conda env list                   # JuniperCascor1, JuniperData, JuniperCanopy1

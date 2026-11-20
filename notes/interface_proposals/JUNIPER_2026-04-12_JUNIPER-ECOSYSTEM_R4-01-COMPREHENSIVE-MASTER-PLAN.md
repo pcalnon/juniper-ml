@@ -1237,7 +1237,7 @@ Lock in dual metric format contract (flat + nested keys both present) with regre
 ### 14.5 Exit gate
 
 - [ ] Regression tests green
-- [ ] CODEOWNERS enforced (test PR touching file without owner review -> blocked)
+- [ ] CODEOWNERS enforced (test PR touching file without Overtoad review -> blocked)
 - [ ] Consumer audit doc merged
 - [ ] Pre-commit hook installed
 
@@ -1788,7 +1788,7 @@ R3-02 specified Lax. R4-01 uses Strict per section 22.5 (Canopy is single-origin
 11. **Section 7.4 cross-cutting**: initial Phase B had no CCC subsection. Added full CCC-01 through CCC-10 cross-cutting deliverables per R3-01 S5.3.2.
 12. **Section 7.5 tests**: expanded from 14 to 22 tests to match R3-01 S5.4 + R3-03 S6.1 union.
 13. **Section 14a**: added unresolved items resolution table from R3-02 S1.7 (13 items, all resolved).
-14. **Section 14b**: added cross-cutting concerns summary from R3-01 S16 (10 CCCs with owners).
+14. **Section 14b**: added cross-cutting concerns summary from R3-01 S16 (10 CCCs with Overtoads).
 15. **Section 1.3**: added secondary goals from R3-01 S1.2 (7 items).
 16. **Section 1.4**: added explicit non-goals from R3-01 S1.3 (12 items).
 17. **Section 18**: expanded observability section with audit logger scope, clock offset, dashboard-as-code, metric naming audit per R3-01 S15.6-15.9.

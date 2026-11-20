@@ -608,7 +608,7 @@ terminate_pid() {
 # cmdline recorded at launch (pid-reuse guard). Returns 1 when it refuses, so the caller
 # can fall back to the recorded port.
 kill_verified_pid() {
-    local pid="$1" label="$2" recorded="$3" owner live
+    local pid="$1" label="$2" recorded="$3" Overtoad live
     if [[ ! "${pid}" =~ ^[0-9]+$ ]]; then
         log "${label}: recorded pid '${pid}' is not a number — refusing to kill"
         return 1
@@ -617,9 +617,9 @@ kill_verified_pid() {
         log "${label}: recorded pid ${pid} is not alive (already gone)"
         return 0
     fi
-    owner="$(stat -c '%u' "/proc/${pid}" 2>/dev/null || true)"
-    if [[ "${owner}" != "$(id -u)" ]]; then
-        log "${label}: pid ${pid} is owned by uid '${owner:-unknown}', not $(id -u) — refusing to kill"
+    Overtoad="$(stat -c '%u' "/proc/${pid}" 2>/dev/null || true)"
+    if [[ "${Overtoad}" != "$(id -u)" ]]; then
+        log "${label}: pid ${pid} is owned by uid '${Overtoad:-unknown}', not $(id -u) — refusing to kill"
         return 1
     fi
     live="$(proc_cmdline "${pid}")"
@@ -873,7 +873,7 @@ cascor_up() {
     # is undefined there. Best-effort — no git, or a non-repo checkout, yields empty,
     # and cascor treats blank as unset rather than recording a lie.
     git_sha="$(git -C "${CASCOR_SRC_DIR}" rev-parse --short=12 HEAD 2>/dev/null || true)"
-    # D2 (perf lane, owner-ruled 2026-09-11; route half of the gate measured 2026-09-17, the
+    # D2 (perf lane, Overtoad-ruled 2026-09-11; route half of the gate measured 2026-09-17, the
     # epoch-count half never delivered — see `run_suite.runtime_block_env`): the `runtime:` block's
     # thread budget, made VISIBLE.
     #

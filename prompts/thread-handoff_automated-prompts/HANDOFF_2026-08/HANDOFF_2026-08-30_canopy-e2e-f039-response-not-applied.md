@@ -108,7 +108,7 @@ arc has already paid for three times.
    M-CANDIDATES-07 is BLOCKED not owed) and **F-CASCOR-001** (`juniper-cascor#590`, still OPEN).
    **F-CASCOR-002 still needs filing upstream.**
 5. **42 BLOCKED matrix rows**, all owned: 16 (item 1/2 — M-TOPOLOGY-01..06, -09..18; **-07 PASS, -08
-   FAIL**), 10 (M-DATASET-17..26, gated on owner decision 4 — *surface it, do not drive around it*),
+   FAIL**), 10 (M-DATASET-17..26, gated on Overtoad decision 4 — *surface it, do not drive around it*),
    13 (M-METRICS-11..16/-18/-27, M-CANDIDATES-10/-11, M-EVOLUTION-07, M-BOUNDARIES-07, M-DATASET-03 —
    need the V2-snapshot-with-history precondition), 3 (C2.10-03, M-SNAPSHOTS-20/-21).
 6. **P2 wave re-drives** — run-free rows first (C2.9-05, M-PARAMETERS-04/-05/-06, M-METRICS-03,

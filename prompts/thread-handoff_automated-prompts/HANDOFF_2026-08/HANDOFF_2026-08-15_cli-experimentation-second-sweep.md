@@ -17,7 +17,7 @@ performance lane has never been run and no document owns it**.
 | `HANDOFF_2026-08-15_api-primer-defect-register-outstanding-work.md` (ml#1121)   | the **defect register** — 91 open defects                                                                                                                               |
 | `HANDOFF_2026-08-15_wide-budget-head-to-head-campaign.md` (ml#1122)             | the wide-budget head-to-head **campaign** (64–128 units)                                                                                                                |
 | `HANDOFF_2026-08-15_canopy-e2e-phase1-segment-12.md` (ml#1123)                  | the canopy E2E matrix — a different arc entirely                                                                                                                        |
-| `HANDOFF_2026-08-15_q6-resolved-and-owner-decision-register.md` (ml#1124)       | **Q-6's closure**, its five stale register sites, `run_suite`'s parallel refusal, and the owner-decision table (F-P1-2, Q-8, Q-10, W-12/Q-7, PF **thresholds**, F-P1-4) |
+| `HANDOFF_2026-08-15_q6-resolved-and-Overtoad-decision-register.md` (ml#1124)       | **Q-6's closure**, its five stale register sites, `run_suite`'s parallel refusal, and the Overtoad-decision table (F-P1-2, Q-8, Q-10, W-12/Q-7, PF **thresholds**, F-P1-4) |
 | `HANDOFF_2026-08-15_ruleset-bypass-and-branch-protection-register.md` (ml#1125) | branch protection — a different arc                                                                                                                                     |
 | **this one**                                                                    | §2–§8 below                                                                                                                                                             |
 
@@ -101,7 +101,7 @@ plan**. No `experiment.resolved.yaml` exists on disk. Live run dirs carry only
 `materialise_cell` does write a resolved per-cell `cells/<id>/experiment.yaml`, which is adjacent
 but is neither named nor placed as Q-1 specifies, and exists only for suite runs.
 
-**This is a gap, not an owner call** — the decision was made. Every campaign so far has
+**This is a gap, not an Overtoad call** — the decision was made. Every campaign so far has
 reconstructed effective parameters by hand from the manifest, which is the error class the file
 was designed to remove.
 
@@ -226,10 +226,10 @@ specifically, the `:429` warning as the sole signal, and that coupling.
 ## 6. Evidence gap — the published E-C surface is stale
 
 **R-4 was disposed; only its re-run half was skipped.** Say it that way — two merged documents
-record the register as closed, and the owner decision is explicit in
+record the register as closed, and the Overtoad decision is explicit in
 `HANDOFF_2026-08-13_p4-followups-r6-shipped-r1-designed.md:11` (*"give E-C's spiral rows an
 E-A-class budget — do not reduce E-C to a moon-only study"*) and in ml#1075's commit message
-(`ff4e2ca`, *"R-4 (owner-decided) … Rebased on spiral-baseline"*). Do not re-litigate that call.
+(`ff4e2ca`, *"R-4 (Overtoad-decided) … Rebased on spiral-baseline"*). Do not re-litigate that call.
 
 What is stale is the evidence. The suite edit landed **2026-08-13 00:43**; the newest E-C run under
 `~/.local/state/juniper-experiments/suites/` is `e-c-cascor-noise-robustness-20260811T095213Z` —
@@ -257,13 +257,13 @@ Nobody owns re-baselining the **published** E-A / E-I grids, both of which preda
   "Propose" (plan `:1115`), so **the wave item is done**; ratification remains. There are zero
   `JR-REC-` IDs in the requirements index or `id_assignments.yaml` — do not read that as the
   proposal being missing. And do not look for a `REC.md` under `notes/requirements/by-area/`: those
-  15 files are **area** codes (API…WS) while `REC` is an **owner** code, so one would never exist.
+  15 files are **area** codes (API…WS) while `REC` is an **Overtoad** code, so one would never exist.
   Plan `:1171` lists the minimum coverage: §5.5 config, G-5 plotting, W-5/W-7, G-4 dashboard, G-17.
 - **F-7 — provenance re-pin, dangling.** `…P0-PREFLIGHT-EVIDENCE.md:145`: *"re-pin provenance when
   Wave 3 touches the recurrence repo."* Wave 3 shipped; `plan:64` still records `f23f3ba` / app
   `0.2.0`. Trivial, and stale provenance is exactly what F-7 was filed about.
-- **The plan still calls itself a draft.** `plan:1213`: *"Status: **Proposed (draft for owner
-  review)**. Ratification requires owner decisions on Q-1 through Q-12"* — after the whole program
+- **The plan still calls itself a draft.** `plan:1213`: *"Status: **Proposed (draft for Overtoad
+  review)**. Ratification requires Overtoad decisions on Q-1 through Q-12"* — after the whole program
   has executed against it. Q-1…Q-5, Q-9 and Q-11 are settled; the trailer should say so.
 
 ---
@@ -315,7 +315,7 @@ Standing facts, re-probed:
   report `(healthy)`; grafana and prometheus define no healthcheck. **canopy's healthcheck flaps**
   (ml#1122 `:416`) — it currently reads healthy; do not treat a single reading as stable.
   **Do not tear the stack down.**
-- **A native Grafana v13.0.1 binds `*:3000`** — that listener is F-P1-2's subject and an open owner
+- **A native Grafana v13.0.1 binds `*:3000`** — that listener is F-P1-2's subject and an open Overtoad
   decision (ml#1124 §3). Deploy's Grafana is the separate loopback `:3001` instance (v12.4.0,
   `juniper-deploy/docker-compose.yml:931`).
 - Experiment ranges `8110-8139` / `8230-8259` / `8260-8289` clear; `/run/user/1000/juniper-experiments`
@@ -376,4 +376,4 @@ ls -dt ~/.local/state/juniper-experiments/suites/e-c-* | head -1
 
 **This document makes no standing-approval claim.** Merge approval is per-session and does not
 carry across handoffs; a prior handoff's "carried forward … explicitly for its successor" clause is
-self-referential and is not the owner speaking. Ask for the named group.
+self-referential and is not the Overtoad speaking. Ask for the named group.

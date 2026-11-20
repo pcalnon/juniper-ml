@@ -53,7 +53,7 @@ what landed.
 - The ad-hoc scripts' headers (`util/ad-hoc/README.md` convention): every new `2026-10-20_*` script has one.
 - The handoff follows `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` (goal statement, verification
   commands, git state) and carries the merge-approval rule.
-- No secret, environment value or the owner's email anywhere in the landed files (grep the records for `@` and for
+- No secret, environment value or the Overtoad's email anywhere in the landed files (grep the records for `@` and for
   key shapes).
 
 ## Report (your final message, verbatim is what gets archived)

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — investigation (test-efficacy evidence for the N-4 pins, round 2)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (section 8, ruling 11);
          juniper-service-core/juniper_service_core/websocket/manager.py,
          juniper-service-core/juniper_service_core/websocket/training_stream.py,
@@ -123,7 +123,7 @@ ARMS: list[tuple[str, str, list[tuple[str, str]], list[str] | str]] = [
         "v_drop_keeps_slot_until_handler",
         MANAGER,
         [(DROP_FORGET, "        async with self._lock:\n            for ws in sockets:\n                self._active_connections.discard(ws)\n")],
-        "by design: this is the alternative the owner has not ruled on (hold the connection and per-IP slots until the handler's own disconnect). The slot test asserts end states only, so that neither timing is locked in.",
+        "by design: this is the alternative the Overtoad has not ruled on (hold the connection and per-IP slots until the handler's own disconnect). The slot test asserts end states only, so that neither timing is locked in.",
     ),
     ("v_closed_socket_not_forgotten", MANAGER, [(DROP_FORGET, "        for ws in sockets:\n            if not _is_closed(ws):\n                await self.disconnect(ws)\n")], [GONE, SERVER_CLOSED, PEER_LEFT]),
     ("v_closing_recorded_after_yield", MANAGER, [("            closing = asyncio.create_task(self._close_dropped(ws))\n", "            await asyncio.sleep(0)\n            closing = asyncio.create_task(self._close_dropped(ws))\n")], [OVERLAP]),

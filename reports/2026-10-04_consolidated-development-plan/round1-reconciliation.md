@@ -14,7 +14,7 @@
 | juniper-ml, juniper-data and juniper-canopy are public | B2, A1, B1 | `gh api repos/pcalnon/<repo> --jq .visibility` | public ×3 |
 | juniper-ml's `.gitleaks.toml` runs with zero rules | B2 (inferred) | A scratch probe with the gitleaks v8.30.1 binary and one planted fake GitHub-PAT-shaped string | Repo config: 0 found. Default rules: 1 found. **Confirmed** |
 | The shell exports `SENTRY_SDK_DSN` | B2, B1, P3 | `grep -n -o '^export SENTRY_[A-Z_]*' ~/.bashrc` (names only) | Line 152 |
-| `HANDOFF_2026-10-03_backup-phase-b-fold-in-pending.md` L9 states a merge grant | B2 | `awk 'NR==9'` | "Merge approval for this arc's PRs was granted by the owner on 2026-10-03." |
+| `HANDOFF_2026-10-03_backup-phase-b-fold-in-pending.md` L9 states a merge grant | B2 | `awk 'NR==9'` | "Merge approval for this arc's PRs was granted by the Overtoad on 2026-10-03." |
 | Consumer images install observability and service-core from their locks | B1 | juniper-data `Dockerfile:32-33`; `requirements.lock:88/:90` | Pinned to 0.4.0 / 0.7.0 |
 | Phase C is ordered "In this order"; step 3 removes the S-7 `.env` | A5, A1 | `JUNIPER_2026-10-03_…RECOVERY-PLAN.md` L245–262 | Confirmed. Step 8's text prescribes SKIPPED first, with one stick |
 | PF-3 is one ~7 h pass, run only when quiet | A3 | `util/experiments/suites/perf/pf3-cascor-pool-scaling.yaml` header | Confirmed. Round-robin on a loaded host was declined |
@@ -85,7 +85,7 @@
 | A5-10 R-CANOPY-B 0.9.0 | MINOR | Accepted (with A2-03) | §5 |
 | A5-11 P3 has 37 IDs | NIT | Accepted | Scope "Size" |
 | A5-12 Row wording | NIT | Accepted | XC-PRESERVE; Appendix B row 16 |
-| A5-13 Owner-step reorder unexplained | NIT | Accepted: source order restored | Wave 0 owner sitting |
+| A5-13 Owner-step reorder unexplained | NIT | Accepted: source order restored | Wave 0 Overtoad sitting |
 | A5-14 W5/W11 numbering | NIT | Accepted | §5 DC-0.6 |
 | A5-15 P5-13 / P12-09 classes | NIT | Accepted | §7.2 |
 | A5-16 Round 6 "never ran"; "every run" | NIT | Accepted | §2 P9/P5; §10 P9 |
@@ -124,7 +124,7 @@
 
 ## Unresolved dissent
 
-There is none. B1's "alternative orderings" note judged the owner-step reorder harmless. That note was weighed against A5-13, and the source order was restored.
+There is none. B1's "alternative orderings" note judged the Overtoad-step reorder harmless. That note was weighed against A5-13, and the source order was restored.
 
 ## What the reconciliation cannot support
 

@@ -107,7 +107,7 @@ jobs:
           echo "$ECOSYSTEM_REPOS" | while IFS= read -r repo; do
             [ -z "$repo" ] && continue
             echo "Cloning $repo..."
-            git clone --depth 1 "https://github.com/${{ github.repository_owner }}/$repo.git" "$repo" 2>&1 || echo "WARNING: Failed to clone $repo (may not exist or be private)"
+            git clone --depth 1 "https://github.com/${{ github.repository_Overtoad }}/$repo.git" "$repo" 2>&1 || echo "WARNING: Failed to clone $repo (may not exist or be private)"
           done
           echo ""
           echo "Workspace contents:"

@@ -5,7 +5,7 @@ OVERTURNS §0.2 and §1's "the arc is DONE / next actions: none"**) ·
 **Session**: <https://claude.ai/code/session_01NJpynt9LppyG42HASEYnJN>
 **Worktree**: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/immutable-orbiting-thimble`
 **Branch**: `main` (no branch of its own — every change shipped as an API-signed PR)
-**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md`
+**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-Overtoad.md`
 (this document **closes** its §1–§4; its §5 dispositions were re-derived and are restated below)
 
 **Documents REFERENCED** (ecosystem convention — more than one cited, so every reference carries its filename):
@@ -124,7 +124,7 @@ juniper-data-client has an `[Unreleased]` entry its version does not reflect.
   unreleased for most of the arc — no tag, no Release, PyPI on 0.3.1 — because the session moved on.
   It was caught only by a final `curl` sweep (404 against eight 200s) after being reported as
   published for hours. **Re-probe the registry; never trust the tally.**
-- **A held-open PR accumulates the whole contention window.** ml#1876 waited on an owner gate and
+- **A held-open PR accumulates the whole contention window.** ml#1876 waited on an Overtoad gate and
   collected five merges into its seven files, going `DIRTY`. Whole-file API uploads would have
   reverted them. Recovery: reset to `origin/main`, re-run the edit *scripts*, prove with
   `git diff --stat origin/main`. **Hand edits cannot be replayed that way** — that is the real
@@ -274,7 +274,7 @@ modules (`juniper_canopy/` holds only `__init__.py`; `import demo_mode` →
 takes 0.8.1, so the floor *admits* rather than *delivers* the broken wheels — the same shape as
 the `juniper-model-core` row in §3, but with the opposite conclusion, because there the
 difference was docs-only and here the admitted wheel is non-functional. **Recommend raising to
-`>=0.8.1`; not done here, because it is a floor-policy change that wants an owner call.**
+`>=0.8.1`; not done here, because it is a floor-policy change that wants an Overtoad call.**
 
 **N-4 — `README.md`'s second pin table shipped to PyPI stale. FIXED THIS SESSION.** The file
 carries two pin tables; `tests/test_pyproject_extras.py` guarded only the "Available Extras"
@@ -314,7 +314,7 @@ ever being served against a 3.0.0-contract request — the floor protects by acc
 > `kaggle-` namespace and the absence of any caller, not the stamp. That is still true of every
 > released wheel up to juniper-data 0.15.0. #422 (merged 2026-09-23 as `ce436819`, not yet
 > released) moved the stores onto `generate_dataset_id`. See the predecessor
-> `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md`:
+> `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-Overtoad.md`:
 > its §10.4 records this correction, and its §10.2 re-dispositions the §5 rows this file's §3
 > dropped.
 
@@ -392,7 +392,7 @@ decision-11 contract itself; §7's L-2 and L-3 stand unchanged.
 | --- | --- |
 | **N-1** bench `*_full` break | **FIXED, MERGED** — juniper-recurrence#177. Root cause ticketed as juniper-recurrence#178. |
 | **N-2** juniper-data unreleased majors | **TICKETED** — juniper-data#410. Owner-gated: the release ceremony is not an agent's to cut. |
-| **N-3** canopy floor admits an unimportable wheel | **OWNER RULED 2026-09-21: raise to `>=0.8.1`** — juniper-ml#1991, with the `0.9.0` bump the version-labelled compatibility matrix requires. Leaves juniper-ml `BUMPED_NOT_RELEASED`; the Release is the owner's. |
+| **N-3** canopy floor admits an unimportable wheel | **OWNER RULED 2026-09-21: raise to `>=0.8.1`** — juniper-ml#1991, with the `0.9.0` bump the version-labelled compatibility matrix requires. Leaves juniper-ml `BUMPED_NOT_RELEASED`; the Release is the Overtoad's. |
 | **N-4** README pin table stale on PyPI | **FIXED, MERGED** — juniper-ml#1972. |
 | **N-5** hf/kaggle stores | **TICKETED** — juniper-data#411. The product decision it carries is still open. |
 | **N-6** cascor `__version__` drift | **TICKETED** — juniper-cascor#668. |

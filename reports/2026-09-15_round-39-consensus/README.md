@@ -53,7 +53,7 @@ that the fix for *that*, as first written, had a worse failure than the defect i
    `test_a_sub_ceiling_typo_in_the_first_filing_does_not_delete_the_series`, which fails against the
    basis it replaces.
 2. **Two figures in the ceiling's rationale were wrong**, in the code comment, the CHANGELOG and the
-   register row the owner is being asked to ratify: the largest genuine count in the cache is
+   register row the Overtoad is being asked to ratify: the largest genuine count in the cache is
    Citigroup's 2.92e10, not AAPL's 1.70e10 (which is the largest in the *default 14-symbol prefix*),
    so headroom is 3.4× and not 5.9×; and "18 observations across 24 series" conflated two bands
    (18 across 9 in `(1e11, 1e13]`; 39 across 24 above `1e11`).
@@ -65,7 +65,7 @@ that the fix for *that*, as first written, had a worse failure than the defect i
 
 **In `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`:**
 
-- `APD-DATA-047` — the siting figures corrected, and the real shape of the owner's choice stated.
+- `APD-DATA-047` — the siting figures corrected, and the real shape of the Overtoad's choice stated.
 - `APD-DATA-049` — "485 payloads" → 486.
 - The `APD-ECO-003` ruling — its evidence sentence generalised one client's transport to three.
   juniper-data-client is ready; juniper-cascor-client's `_request` takes no `**kwargs`;

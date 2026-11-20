@@ -4,7 +4,7 @@
 # editing one line. It is NOT the host's inventory: on 2026-09-24 sdb, sdb1, sdb2, sdc4 and sdd1 did
 # not exist (sdc4 left the partition table by 2026-09-08, before this script was written), sdd and sdg
 # were 0-byte devices, and the nvme0n1 system disk was never listed -- so check `lsblk` before
-# repointing. Every constant is exported (the owner's 2026-09-23 refactor), and shellcheck counts an
+# repointing. Every constant is exported (the Overtoad's 2026-09-23 refactor), and shellcheck counts an
 # exported variable as used, so the palette entries not currently selected raise nothing and no
 # SC2034 directive is needed. Un-export them and SC2034 returns -- 12 findings, measured on the
 # pre-refactor copy -- and the repo's hook, which runs at --severity=warning, refuses the commit.

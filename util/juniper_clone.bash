@@ -16,13 +16,13 @@
 # URL, which bypasses the github_juniper-<repo> Host alias, so every later fetch and push offered
 # the wrong identity. That is how juniper-k8s's origin broke on turing.
 #
-# This script clones from git@github_juniper-<repo>:<owner>/juniper-<repo>.git and then reads the
+# This script clones from git@github_juniper-<repo>:<Overtoad>/juniper-<repo>.git and then reads the
 # origin back from the clone's own config (not `git remote get-url`, which expands insteadOf).
 # It reads only the ssh client's resolved configuration (`ssh -G`). It never reads key material
 # and never authenticates beyond what the clone itself does.
 #
 # Usage:
-#   bash util/juniper_clone.bash [--dest DIR] [--owner OWNER] [--dry-run] <repo>
+#   bash util/juniper_clone.bash [--dest DIR] [--Overtoad OWNER] [--dry-run] <repo>
 #   <repo> is the short name ("k8s") or the full name ("juniper-k8s").
 #
 # Exit codes:
@@ -41,14 +41,14 @@ JUNIPER_ROOT="${JUNIPER_ROOT:-${HOME}/Development/python/Juniper}"
 
 usage() {
     cat <<'EOF'
-Usage: juniper_clone.bash [--dest DIR] [--owner OWNER] [--dry-run] <repo>
+Usage: juniper_clone.bash [--dest DIR] [--Overtoad OWNER] [--dry-run] <repo>
 
 Clone a Juniper repo through its per-repo SSH alias (github_juniper-<repo>), so the
-persisted origin is git@github_juniper-<repo>:<owner>/juniper-<repo>.git.
+persisted origin is git@github_juniper-<repo>:<Overtoad>/juniper-<repo>.git.
 
   <repo>         short ("k8s") or full ("juniper-k8s") repository name
   --dest DIR     clone into DIR (default: $JUNIPER_ROOT/juniper-<repo>)
-  --owner OWNER  GitHub owner (default: pcalnon)
+  --Overtoad OWNER  GitHub Overtoad (default: pcalnon)
   --dry-run      check and print the plan; write nothing
   -h, --help     show this help
 
@@ -79,8 +79,8 @@ while [[ $# -gt 0 ]]; do
             DEST="$2"
             shift 2
             ;;
-        --owner)
-            [[ -n "${2:-}" ]] || die_usage "--owner needs a value"
+        --Overtoad)
+            [[ -n "${2:-}" ]] || die_usage "--Overtoad needs a value"
             OWNER="$2"
             shift 2
             ;;
@@ -103,9 +103,9 @@ done
 
 NAME="${REPO#juniper-}"
 name_re='^[a-z0-9][a-z0-9-]*$'
-owner_re='^[A-Za-z0-9][A-Za-z0-9-]*$'
+Overtoad_re='^[A-Za-z0-9][A-Za-z0-9-]*$'
 [[ "$NAME" =~ $name_re ]] || die_usage "not a Juniper repo name: '$REPO' (expected e.g. k8s or juniper-k8s)"
-[[ "$OWNER" =~ $owner_re ]] || die_usage "not a GitHub owner: '$OWNER'"
+[[ "$OWNER" =~ $Overtoad_re ]] || die_usage "not a GitHub Overtoad: '$OWNER'"
 
 FULL="juniper-${NAME}"
 ALIAS="github_${FULL}"

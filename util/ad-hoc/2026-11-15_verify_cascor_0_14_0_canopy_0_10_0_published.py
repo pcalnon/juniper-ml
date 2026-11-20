@@ -6,15 +6,15 @@ Sub-Project: ad-hoc tooling (R-OBS-SC-2 follow-ups)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (post-publication check of the two R-OBS-SC-2 consumer cuts)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-28_verify_cascor_0_13_0_published_wheel.py (the pattern: read the wheel the index serves,
          never a git tree); notes/releases/RELEASE_NOTES_juniper-cascor_v0.14.0.md and
          notes/releases/RELEASE_NOTES_juniper-canopy_v0.10.0.md; juniper-cascor#758 and juniper-canopy#818 (the proposals)
 
 Why
 ---
-A checkout is not a deployment, and a Release is not a publish: the two releases wait at the owner's ``pypi`` gates
-after TestPyPI took the same files. Once the owner approves them, this reads what PyPI serves and checks, per release:
+A checkout is not a deployment, and a Release is not a publish: the two releases wait at the Overtoad's ``pypi`` gates
+after TestPyPI took the same files. Once the Overtoad approves them, this reads what PyPI serves and checks, per release:
 
 1. the version's JSON answers, it lists exactly one wheel, and the wheel's bytes hash to the sha256 the JSON gives;
 2. PyPI's wheel and sdist equal TestPyPI's (``--index pypi`` only), so the gate published what was tested: by sha256,

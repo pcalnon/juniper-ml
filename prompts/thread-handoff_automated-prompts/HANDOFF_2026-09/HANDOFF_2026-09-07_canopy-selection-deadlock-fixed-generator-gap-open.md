@@ -16,7 +16,7 @@
 Continue the juniper-canopy selection-reachability arc. `(recurrence, equities_seq)` is now
 **selectable** — merged and observed in a browser. It is **not trainable**: staging that pair fails
 on both branches, and Start is not gated on whether the selected model is the one that will actually
-run. Close those, then the generator gap (§12), which the owner ruled equally critical.
+run. Close those, then the generator gap (§12), which the Overtoad ruled equally critical.
 
 **Completed — seven canopy PRs, all merged:** `#592` X1 model-state *label*; `#593` **the fix**
 (`clearable=True`, the `⊥` cut vertex, Start gated on both axes, guards on all three `⊥`-commit
@@ -40,7 +40,7 @@ Plus `ml#1803`/`#1804` (merged) and `ml#1809` (**open when written — confirm i
    cascor's `Literal` (`juniper-cascor/src/api/models/training.py:235`) has `equities` but **no
    `equities_seq`** → 502. The other branch needs `RecurrenceBackend.stage_dataset`, which needs a
    staging endpoint on juniper-recurrence first. **Both are cross-repo and neither is filed.**
-3. **§12, iteration 2 — the generator gap.** The owner's stated primary goal. **Read §12 in full**;
+3. **§12, iteration 2 — the generator gap.** The Overtoad's stated primary goal. **Read §12 in full**;
    its prerequisites are summarised below but not reproduced.
 4. **§4.10 dataset-axis hydration + G7** — a real unshipped deliverable, not a dead PR. The shipped
    code names it: `dashboard_manager.py:3110` says *"Seeding that value honestly is model/dataset
@@ -49,7 +49,7 @@ Plus `ml#1803`/`#1804` (merged) and `ml#1809` (**open when written — confirm i
    `demo_backend.py:131` — refutation R2), and `_init_params_from_backend_handler` is the natural
    host. G7 has **no test**. N10 says the ordering is non-negotiable: hydration lands *before*
    `⊥`-at-mount.
-5. **`⊥`-at-mount (OQ-N2)** — owner-ACCEPTED, still undeliverable. See "Do not re-litigate".
+5. **`⊥`-at-mount (OQ-N2)** — Overtoad-ACCEPTED, still undeliverable. See "Do not re-litigate".
 6. **X10 / X11** — backend identity is health-blind (`RecurrenceBackend.initialize()` returns `True`
    unconditionally, so `main.py`'s 502 is unreachable); first paint always reads "Active: CasCor"
    because `_initial_model_summary` passes no `backend`.
@@ -251,5 +251,5 @@ bash util/isolated_stack.bash --up --with-recurrence   # ...and --down after
   of writing. Every other change is in a merged or open PR.
 - **The canopy shared checkout is at `f8fb4a2`, behind `origin/main` (`de253e9`).** Pull it before
   bringing up a stack (see the trap above).
-- **Merge approval** was granted by the owner for all PRs in this arc; it does **not** extend to a
+- **Merge approval** was granted by the Overtoad for all PRs in this arc; it does **not** extend to a
   new arc, and it never extended to deploys or PyPI gates.

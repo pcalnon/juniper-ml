@@ -34,16 +34,16 @@ This is a security-bearing patch release of `juniper-ml` v0.11.2. The meta-packa
 
 ### Added
 
-- **Tier 3: the monthly full set to the offline drive, as a scheduled lane** (owner ruling D-5, 2026-10-25, on §7.9
+- **Tier 3: the monthly full set to the offline drive, as a scheduled lane** (Overtoad ruling D-5, 2026-10-25, on §7.9
   and §8 P3 step 3 of `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`).
   - **The units** (new): `util/systemd/juniper-backup-full.{timer,path,service}` and
     `util/systemd/juniper-backup-full-failure.service`. The service runs tier 2's scheduler and runner with the lane's
     own environment: state directory `~/.local/state/juniper-backup-full`, drive
-    `dee46823-4119-4914-ac15-08194ee27d81` ("Ext WD Passport, Blackbox Part 1" in the owner's `/etc/fstab`, mounted at
+    `dee46823-4119-4914-ac15-08194ee27d81` ("Ext WD Passport, Blackbox Part 1" in the Overtoad's `/etc/fstab`, mounted at
     `/run/media/<user>/<UUID>`), directory `Juniper/Backups`, a 30-day period and a 45-day staleness limit. Its
     `--label full --repos "…"` names the ten application repos, `juniper-legacy` and the parent-level
     `notes prompts util backups`, and the scheduler hands both to the runner unchanged. The timer fires monthly and
-    the path unit on connection. The owner's fstab deprecates `/mnt/JuniperArchive`, so the path that §7.9 of
+    the path unit on connection. The Overtoad's fstab deprecates `/mnt/JuniperArchive`, so the path that §7.9 of
     `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` proposed
     is superseded, and that section gains a dated as-built note. Retention stays manual: nothing prunes.
   - **`JUNIPER_BACKUP_DIR` may be a path.** `util/juniper-backup.bash` 1.1.0 accepts a relative path of
@@ -83,13 +83,13 @@ This is a security-bearing patch release of `juniper-ml` v0.11.2. The meta-packa
 ### Changed
 
 - **G-SEC's firewall condition follows C2's block-all form** (turing bring-up task C2, the §18.2 C2 row of
-  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-25).
-  The owner chose to block all incoming connections while nothing inbound is needed, over per-app inbound
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; Overtoad ruling 2026-10-25).
+  The Overtoad chose to block all incoming connections while nothing inbound is needed, over per-app inbound
   denies (RR-11 of `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md`).
   The condition passed at `State = 1`, and its fix still said "allowing signed software".
   - `util/host_state_probe.bash` also captures `socketfilterfw --getblockall` (`blockall` in the security section).
   - `util/host_state_check.py` passes the firewall only when it is on and `--getblockall` reports block all. It
-    accepts both block-all sentences in the binary's strings, since turning block all on needs the owner's sudo.
+    accepts both block-all sentences in the binary's strings, since turning block all on needs the Overtoad's sudo.
     An unknown or undefined state, or a probe without the capture, cannot be judged (exit 2 under `--check`),
     unless the firewall is off, which fails anyway. The fix names only the missing `socketfilterfw` steps.
     Stealth mode stays reported, not gated, as G1 designed it.
@@ -99,7 +99,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.2. The meta-packa
   - `conf/hosts/turing/expected.yaml`'s G-SEC comment follows. turing still fails the condition: its firewall is
     off (`State = 0`), as it was on 2026-10-15.
 - **H4's Serena entry turns Serena's usage report off** (turing bring-up, erratum E-H6 of
-  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-25).
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; Overtoad ruling 2026-10-25).
   Serena v1.7.0 sends the OS, the dashboard flag, the version, the backend and the context name to
   `oraios-software.de` at every start unless `SERENA_USAGE_REPORTING` is exactly `false`
   (`src/serena/agent.py:724-737` at `949a27ef`; SER-E1 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md`).
@@ -135,7 +135,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.2. The meta-packa
 
 ### Security
 
-- **`juniper-secret-assignment` fires on a QUOTED value that contains spaces** (owner-approved 2026-10-25; a
+- **`juniper-secret-assignment` fires on a QUOTED value that contains spaces** (Overtoad-approved 2026-10-25; a
   follow-up to the backup recovery B9 rule of juniper-ml#2203). A value opened by `"` or `'` right after the `=`
   stopped at its first space, so a quoted diceware phrase left only its first word, which is under the
   12-character minimum, and never fired.
@@ -174,7 +174,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.2. The meta-packa
     cascor 0.12.0. The data floor keeps `[servers]` level with the image juniper-deploy#258 pins.
   - The extras tables in `README.md` (both), `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with
     the pins. The `0.11.x` row of `docs/REFERENCE.md`'s compatibility matrix moves with the release that carries
-    this, which is the owner's cut. Applied by `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py`, which asserts each site's exact text and requires exactly
+    this, which is the Overtoad's cut. Applied by `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py`, which asserts each site's exact text and requires exactly
     one match apiece.
   - **Pre-flighted against real PyPI** on 2026-10-25 with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`, which resolves Linux x86_64 wheels and
     installs nothing. `[servers]` resolves in 61 packages and `[all]` in 95, on Python 3.12, 3.13 and 3.14, with
@@ -186,7 +186,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.2. The meta-packa
   registration either, and a registered server runs a command the guard never sees.
   - `util/claude_agent_guard.py` 1.2.0 adds three rules:
     - `MCP-EDIT-PATH` judges Serena v1.7.0's 19 edit tools. A path argument, resolved against the project roots literally
-      and through `realpath`, may not reach `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the owner's git
+      and through `realpath`, may not reach `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the Overtoad's git
       configuration, `~/.claude.json` or a `.mcp.json`. `replace_in_files`' include glob and `repl` are judged too, and
       Serena's `execute_shell_command` gets the Bash rules.
     - `MCP-REGISTER-BASH` denies `mcp add`, `add-json` and `add-from-claude-desktop` after any command word, `--mcp-config`,
@@ -200,7 +200,7 @@ This is a security-bearing patch release of `juniper-ml` v0.11.2. The meta-packa
     (8 denied), every Serena edit tool, 32 path cases, 20 `replace_in_files` cases and 7 shell cases. The self-test runs
     50 checks.
   - `util/ad-hoc/2026-10-25_turing_c9_guard_mutation_check.py` kills 26 of 26 mutants, each by its own pin test.
-  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install it.
+  - The Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install it.
 
 ---
 

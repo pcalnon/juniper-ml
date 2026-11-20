@@ -18,7 +18,7 @@ SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 # Define Script Constants for Claude Code interaction
 ########################################################################################################################################################################################################
 DEFAULT_PROMPT="Hello World, Claude!"
-# A bare --worktree and --remote-control, as claudey sends by default (owner ruling, 2026-11-06)
+# A bare --worktree and --remote-control, as claudey sends by default (Overtoad ruling, 2026-11-06)
 CLAUDE_ARGS=(--id --worktree --remote-control --effort high --prompt "${DEFAULT_PROMPT}")
 
 

@@ -40,12 +40,12 @@ Gate keys: S=STARTABLE, OD=OWNER-DECISION, OA=OWNER-ACTION, B=BLOCKED-ON. "detec
 | P4-02 | Append deploy#236 to memory `project_container_registry_rollout_2026-09-08.md` (no index line) | RD item 1 | [VERIFIED 2026-10-04: `grep -c '#236'` = 0] | S | — | memory | S | HYGIENE |
 | P4-03 | Optional: one scope-bounded lane judging deploy#236 against its stated scope | RD item 1; DH Remaining 4 | [VERIFIED 2026-10-04: no such report exists] | S | P8 (usage window) | juniper-deploy | S | HYGIENE |
 | P4-04 | Correct PTP §10 2026-09-23 update: data#422 is RELEASED (in v0.16.0), not "not yet released" | PTP §10 L549-551 | [CHANGED SINCE HANDOFF: compare `ce436819...v0.16.0` = ahead 6/behind 0; data `[0.16.0]` records the #411 store conformance] | S | — | juniper-ml | S | DATA-INTEGRITY (record) |
-| P4-05 | Ask owner to confirm the PAT also got **Actions: Read** (#431 confirm step) | RD item 2; #178 comment 09-23; P5H L98-101 | [UNVERIFIED — PAT scope not inspectable; recurrence is public, so the green "Confirm the consumer started a run" step proves nothing about it] | OA | — | juniper-data | S | HYGIENE |
+| P4-05 | Ask Overtoad to confirm the PAT also got **Actions: Read** (#431 confirm step) | RD item 2; #178 comment 09-23; P5H L98-101 | [UNVERIFIED — PAT scope not inspectable; recurrence is public, so the green "Confirm the consumer started a run" step proves nothing about it] | OA | — | juniper-data | S | HYGIENE |
 | P4-06 | On next data release, verify publish.yml's own `Notify consumer repos` job + recurrence bench run both green | P5H L118 bar | [VERIFIED 2026-10-04: #178 closed on workflow_dispatch run 37114403856 (success) + bench 37114410788 (success); publish.yml:77-85 calls the same reusable workflow/secret; release path unexercised since widening] | B P4-12 | P4-12 | data, recurrence | S | UNBLOCKER |
-| P4-07 | Wave 4 credential: owner runs RP §2, §5.2B-3a, §4, §5.2B-3, §6; reports 4 facts (login ok, 3a form, Docker ID, expiry) | RD item 3; RP header | [VERIFIED 2026-10-04: `environments/dockerhub/secrets` = [] in all 5 repos; variables [] in data/cascor/recurrence; data policies `tag:juniper-*-v*`,`tag:v*`; data publish-image.yml 0 `DOCKERHUB_`/`docker.io`] | OA (secrets) | — | 5 image repos | M | UNBLOCKER |
+| P4-07 | Wave 4 credential: Overtoad runs RP §2, §5.2B-3a, §4, §5.2B-3, §6; reports 4 facts (login ok, 3a form, Docker ID, expiry) | RD item 3; RP header | [VERIFIED 2026-10-04: `environments/dockerhub/secrets` = [] in all 5 repos; variables [] in data/cascor/recurrence; data policies `tag:juniper-*-v*`,`tag:v*`; data publish-image.yml 0 `DOCKERHUB_`/`docker.io`] | OA (secrets) | — | 5 image repos | M | UNBLOCKER |
 | P4-08 | Record CI-token expiry in RP §10 by PR | RD 3(a) | [VERIFIED 2026-10-04: §10 row "not set yet"] | B P4-07 | P4-07 | juniper-ml | S | HYGIENE |
 | P4-09 | Names-only credential check on 5 repos (RP §5.1/§6; boolean-only username check); run drift gate locally (`JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`) | RD 3(b); DH gap | [NOT RE-PROBED — nothing registered yet] | B P4-07 | P4-07 | 5 repos | S | SAFETY |
-| P4-10 | Pick Wave 4 shape (RP §3/§7: release-only job vs conditional env), then edit 5 `publish-image.yml`; release-tag job `if:`; no credential as build-arg | RD 3(c); RP §7, §10 | [VERIFIED 2026-10-04: not started] | B P4-07, P4-09 + owner go-ahead | P4-07, P4-09 | 5 repos | M | USER-FACING |
+| P4-10 | Pick Wave 4 shape (RP §3/§7: release-only job vs conditional env), then edit 5 `publish-image.yml`; release-tag job `if:`; no credential as build-arg | RD 3(c); RP §7, §10 | [VERIFIED 2026-10-04: not started] | B P4-07, P4-09 + Overtoad go-ahead | P4-07, P4-09 | 5 repos | M | USER-FACING |
 | P4-11 | Pi nodes `docker login` with a separate read-only token (expiry into RP §10) | RP §9-§10 | [NOT RE-PROBED — deployment work] | OA (host) | P4-07; P11-03 | hosts | S | SAFETY |
 | P4-12 | Cut next juniper-data release (X8 #437, #436, #438, #440); pre-cut: drift check vs v0.16.0 archive, clean origin/main worktree, `--target-sha`, tag-window check | RD item 5; R42 L65, L326 | [VERIFIED 2026-10-04: PyPI 0.16.0; main 9 ahead of v0.16.0 (CHANGED: was 7; +#444, #445 CI); 4 commits / 7 .py files in `juniper_data/`; no open data PR] | OA (cut) + B P3 item 1 | P4-13; P3 item 1 (+ data F-PR) | juniper-data | M | USER-FACING |
 | P4-13 | Decide whether X8's `[Unreleased]` entry carries a breaking marker (renderer computes NO; `dataset_id` changes) | R42 L320 | [VERIFIED 2026-10-04: entry under `### Changed`, no Breaking/BREAKING marker; it says "nothing breaks"] | OD | — | juniper-data | S | DATA-INTEGRITY |
@@ -58,13 +58,13 @@ Gate keys: S=STARTABLE, OD=OWNER-DECISION, OA=OWNER-ACTION, B=BLOCKED-ON. "detec
 | P4-20 | juniper-ml meta release (LAST per RTP §13) carrying P4-14 floor, P4-18 caps, P4-21 fix | RTP §13; EQ target 0.11.0 | [VERIFIED 2026-10-04: PyPI 0.10.0; 72 commits since v0.10.0, 0 pyproject changes] | OA + B | P4-14, P4-18, P4-21 | juniper-ml | S | UNBLOCKER |
 | P4-21 | ml#2062 `[servers]` installs no client: options (a)/(b) need a release, (c) docs only | RD item 4 | [VERIFIED 2026-10-04: OPEN, 0 comments, upd 09-23; README.md:124; test_pyproject_extras.py:149-152 pins bare form] | OD | — | juniper-ml | S | USER-FACING |
 | P4-22 | ml#2065: keep one `__main__` block, last, in six test files (109 hidden methods) | RD item 8 | [VERIFIED 2026-10-04: OPEN] | S | — | juniper-ml | S | HYGIENE |
-| P4-23 | Clean up worktrees wiggly-imagining-pine, cryptic-juggling-truffle, serene-swinging-beacon; `wip/{adhoc-scripts,ceremony-latest-flag,ceremony-run-data-0160,ceremony-target-sha,dockerhub-drift-gate}`; fluffy-sniffing-mochi + wip/records-0924 **ask owner** | RD item 9 (`…WORKTREE-CLEANUP-PROCEDURE-V2.md`) | [VERIFIED 2026-10-04: all present, no process; branch files on main; run-data-0160 = a main commit] [NOT RE-PROBED: cryptic's staged files] | S; fluffy OD | — | ml | S | HYGIENE |
+| P4-23 | Clean up worktrees wiggly-imagining-pine, cryptic-juggling-truffle, serene-swinging-beacon; `wip/{adhoc-scripts,ceremony-latest-flag,ceremony-run-data-0160,ceremony-target-sha,dockerhub-drift-gate}`; fluffy-sniffing-mochi + wip/records-0924 **ask Overtoad** | RD item 9 (`…WORKTREE-CLEANUP-PROCEDURE-V2.md`) | [VERIFIED 2026-10-04: all present, no process; branch files on main; run-data-0160 = a main commit] [NOT RE-PROBED: cryptic's staged files] | S; fluffy OD | — | ml | S | HYGIENE |
 | P4-24 | OQ-2: `:X.Y.Z-cuda` variant for cascor/worker? release or on-demand? | PP §6 | [VERIFIED 2026-10-04: unruled] | OD | — | cascor, worker | — | RESEARCH |
 | P4-25 | OQ-3: Pi RAM for a torch worker (gated by P4-27) | PP §6, §5.1 | [VERIFIED 2026-10-04: unruled] | OD | P4-27 | — | — | RESEARCH |
 | P4-26 | OQ-4: versioned stack manifest from juniper-deploy? | PP §6 | [VERIFIED 2026-10-04: unruled] | OD | — | deploy | — | HYGIENE |
 | P4-27 | Pi pull: anonymous GHCR pull + run of newest worker (0.6.1) on 64-bit Pi OS; owed before any Pi runs a Juniper image | PP §5.1; RD Wave 4 | [VERIFIED 2026-10-04: worker 0.6.1 still newest] ["turing down 09-22": UNVERIFIED — from DH] [CORRECTED 2026-10-19 (X6 of …TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md): turing is an amd64 Intel Mac in active use, not a Pi, so it cannot run this pull; ".222" is a stale address] | OA (host) | P11-03 | hosts | S | UNBLOCKER |
 | P4-28 | Should `juniper-deploy-test` publish to Docker Hub? | RP §10 | [VERIFIED 2026-10-04: open] | OD | P4-10 | deploy | S | HYGIENE |
-| P4-29 | Put to owner: juniper-data fetch failure → 502/503 instead of `400 Invalid request parameters` | PP §5.2 L740 | [VERIFIED: "Still open, not ruled"] ["not yet put": UNVERIFIED — from DH] | OD | — | juniper-data | S | USER-FACING |
+| P4-29 | Put to Overtoad: juniper-data fetch failure → 502/503 instead of `400 Invalid request parameters` | PP §5.2 L740 | [VERIFIED: "Still open, not ruled"] ["not yet put": UNVERIFIED — from DH] | OD | — | juniper-data | S | USER-FACING |
 | P4-30 | data#409 equities defaults (overlaps EQ F-P1/R1) `[ALSO P5]` | RD item 7 | [VERIFIED 2026-10-04: OPEN, upd 09-21] | OD | — | data | — | USER-FACING |
 | P4-31 | cascor#582 tier parity `[ALSO P5]` | RD item 7 | [VERIFIED 2026-10-04: OPEN, upd 08-29] | OD | — | cascor | — | DATA-INTEGRITY |
 | P4-32 | Decision 12 / data#423 `[ALSO P5]` | RD item 7 | [VERIFIED 2026-10-04: OPEN, upd 09-23] | OD | P5 | data | — | DATA-INTEGRITY |
@@ -83,7 +83,7 @@ Gate keys: S=STARTABLE, OD=OWNER-DECISION, OA=OWNER-ACTION, B=BLOCKED-ON. "detec
 | P4-45 | No wheel check covers canopy#663; re-run wheel-contract probe after releases | RD gaps | [VERIFIED: #663 on canopy main, unreleased] | B P4-15 | P4-15 | ml | S | HYGIENE |
 | P4-46 | MEMORY.md at its load limit — for Paul | RD gaps | [VERIFIED 2026-10-04: `wc -m` = 24,993 of ~25,000] | OD | — | memory | — | HYGIENE |
 | P11-01 | Decide whether to add juniper-k8s to parent `Juniper/CLAUDE.md` (unversioned) | K8 goal | [VERIFIED 2026-10-04: table lists 9 repos, no juniper-k8s] | OD | — | parent dir | S | HYGIENE |
-| P11-02 | Clean up worktree `zany-juggling-goblet` (5af9d722) | K8 Git state (not carried) | [VERIFIED 2026-10-04: present; remote `docs/k8s-primer*` refs [] ; no process] | S (owner-asked) | — | juniper-ml | S | HYGIENE |
+| P11-02 | Clean up worktree `zany-juggling-goblet` (5af9d722) | K8 Git state (not carried) | [VERIFIED 2026-10-04: present; remote `docs/k8s-primer*` refs [] ; no process] | S (Overtoad-asked) | — | juniper-ml | S | HYGIENE |
 | P11-03 | juniper-k8s Pi cluster go-live will consume P4 images; needs P4-27 and (docker.io) P4-11 | K8 Deps | [VERIFIED 2026-10-04: k8s PRs #4-#7 (Pi inventory, kernel, kubelet/container scripts) merged 09-27..10-01; private] | track | P4-27, P4-11 | juniper-k8s | — | UNBLOCKER |
 
 P11 closure: [VERIFIED 2026-10-04: ml#2101 merged 2026-09-25T02:17:24Z `b82d12d7`; #2098 merged 01:47:48Z; #2104 merged 2026-09-26T10:20:36Z `4b5227e3`; no primer reference in juniper-ml outside the two k8s handoffs]. K8S's hardware/currency "leads" stay [UNVERIFIED — from K8S]; superseded by the validated primer in juniper-k8s. Closed items not re-listed: token widening (DONE; recurrence#178 CLOSED 2026-10-03T10:16:15Z).
@@ -92,7 +92,7 @@ P11 closure: [VERIFIED 2026-10-04: ml#2101 merged 2026-09-25T02:17:24Z `b82d12d7
 
 "since" = commits on `main` after the tag (compare API); "ship" = commits touching `ship_paths` / in-scope `.py` files (detect's unit).
 
-| package | PyPI | latest tag / Release | changes on main since | blocking items | owner-gated? |
+| package | PyPI | latest tag / Release | changes on main since | blocking items | Overtoad-gated? |
 |---|---|---|---|---|---|
 | juniper-data | 0.16.0 (09-24) | v0.16.0 @`39d1cab2` (09-24) | 9 commits; 4 ship / 7 files | P3 item 1; P4-13 | yes |
 | juniper-canopy | 0.8.1 (09-18) | v0.8.1 (09-18) | 58; 42 ship (incl. tests) / 23 files + deps | soft P3 item 2 | yes |
@@ -112,7 +112,7 @@ No PyPI upload or GitHub Release in any repo after 2026-09-24 [VERIFIED 2026-10-
 |---|---|---|---|---|
 | D-1 | ml#2062 `[servers]` | (a) servers' own client extras — "smallest change"; (b) add `[clients]`; (c) docs only | P4-20 content | ml#2062 body |
 | D-2 | Next data release: cut once P3 item 1 validates? version? X8 breaking marker? | none stated; EQ targets 0.17.0 | P4-12, P4-13 | R42 L320, L326 |
-| D-3 | obs/sc releases: (1) owner prepares and cuts both, or (2) agent opens bump+notes PRs at owner-named versions; who opens cap/lock/floor PRs | verbatim options, no pick | P4-17 | R42 L230 |
+| D-3 | obs/sc releases: (1) Overtoad prepares and cuts both, or (2) agent opens bump+notes PRs at Overtoad-named versions; who opens cap/lock/floor PRs | verbatim options, no pick | P4-17 | R42 L230 |
 | D-4/5/6 | When to cut canopy, cascor, recurrence (versions; recurrence R8 "Breaking" in 0.6.0) | EQ R8 recommends 0.6.0 with "Breaking" | P4-15/16/18 | RD item 5; EQ R8 |
 | D-7 | Release cascor-model? | — | P4-19 | detect output only |
 | D-8 | Wave 4 inputs: Docker ID, public default privacy, `DOCKERHUB_USERNAME` variable vs secret | variable recommended | P4-07..10 | RP §2, §5.2B-3a |
@@ -131,11 +131,11 @@ No PyPI upload or GitHub Release in any repo after 2026-09-24 [VERIFIED 2026-10-
 | P4-12 | P3 item 1 (data fix-forward, branch `fix/conditional-requests-round4-followups` @`94ce8b1f`, no PR [VERIFIED 2026-10-04]), then P3 item 4 data F-PR (F3, F5) | must merge + validate first |
 | P4-17 | P3 item 4 juniper-ml F-PR (F2, F6, F9, F10; sc F3, F5) | validate before asking D-3 |
 | P4-15 / P4-16 | P3 item 2 (canopy#685, cascor#690 unvalidated) | soft |
-| P5 spec v3 item 1(a); P5 owner "release cuts" | P4-12, P4-16 (#672), P4-15 (#663) | data release before W6 → block moves to ≥0.18.0 |
+| P5 spec v3 item 1(a); P5 Overtoad "release cuts" | P4-12, P4-16 (#672), P4-15 (#663) | data release before W6 → block moves to ≥0.18.0 |
 | P5 W10 | P4-18 (recurrence release carrying W4's data-client cap) → P4-20 | hard |
 | P2 C3; P2 Lane B tail | P4-12 (X8); P4-18 after 2a; P4-15 after wave 3; deploy pin bumps; ml `[recurrence]` cap | hard |
 | P6, P7 | P4-16 (BLAS-2 default needs a release-notes line; logging on PyPI); P7 content rides any obs release | soft |
-| EQ (no path owner yet) W1.11/W1.13, M1 2026-11-21 (owner to confirm) | P4-12, P4-14, P4-15, P4-18, P4-20 | publication order data-client 0.6.0 → model 0.4.0 → recurrence 0.6.0 → canopy 0.9.0 |
+| EQ (no path Overtoad yet) W1.11/W1.13, M1 2026-11-21 (Overtoad to confirm) | P4-12, P4-14, P4-15, P4-18, P4-20 | publication order data-client 0.6.0 → model 0.4.0 → recurrence 0.6.0 → canopy 0.9.0 |
 | P11-03 (juniper-k8s) | P4-27, P4-11 | Pi go-live |
 | P4-03 | P8 | usage windows |
 | P1, P9, P10 | — | none found |
@@ -143,7 +143,7 @@ No PyPI upload or GitHub Release in any repo after 2026-09-24 [VERIFIED 2026-10-
 ## 4. Hazards
 
 - A release cut under an open PR silently merges its CHANGELOG entries into the released heading; P3's data/cascor F-PRs and Cursor drafts #698-#701 edit the same files. Use `--target-sha` (0.16.0 nearly shipped a duplicate heading).
-- `ceremony.py --execute` arms the archive PR's auto-merge before cutting: owner approves both in-session; never approve a `pypi` gate; never handle a token.
+- `ceremony.py --execute` arms the archive PR's auto-merge before cutting: Overtoad approves both in-session; never approve a `pypi` gate; never handle a token.
 - Cap before bump: obs `<0.5.0` (×2), sc `<0.8.0` (×5), ml `[recurrence]` `<0.6.0`/`<0.4.0`, data-client `<0.6.0` (canopy:192, recurrence:54) → cap PRs land before the Release, lock/floor PRs after PyPI.
 - Wave 4: never name `dockerhub` unconditionally on build/merge (rejects PR/dispatch runs); build-args are public in SLSA provenance.
 - A Release mints wheel and image together; image-only fixes (P4-34/35) need a release the train will not propose.
@@ -172,10 +172,10 @@ No PyPI upload or GitHub Release in any repo after 2026-09-24 [VERIFIED 2026-10-
 
 - **Urgency**: SAFETY: P4-17. Running services can hand Sentry a real API key until it ships, and it is gated on P3 item 4. USER-FACING: P4-12 (X8). The equities path is refused against published images, and EQ M1 needs 0.17.0. Canopy/cascor carry live-verified P0/P1 and security fixes.
 - **Leverage**: P4-12 unblocks P5, P2 C3, EQ W1.11 and P4-14/20. P4-18 unblocks P5 W10 and P2 Lane B. Bundling P4-21's fix, the P4-14 floor and the P4-18 caps into one juniper-ml release saves a cycle.
-- **Cost**: each cut is S–M of agent time plus owner gates. Wave 4 is owner-blocked.
+- **Cost**: each cut is S–M of agent time plus Overtoad gates. Wave 4 is Overtoad-blocked.
 - **Next actions**:
   1. P4-01 + P4-04 (one validated juniper-ml records PR) and P4-02, all startable now.
-  2. Hand the owner one release-decision packet: D-1, D-2/P4-13, D-3, D-4/5/6, D-13. Use the queue in §1b, in this order: obs/sc → cascor → data → canopy → recurrence → juniper-ml last.
+  2. Hand the Overtoad one release-decision packet: D-1, D-2/P4-13, D-3, D-4/5/6, D-13. Use the queue in §1b, in this order: obs/sc → cascor → data → canopy → recurrence → juniper-ml last.
   3. With P3, drive P3 item 1 → P4-12 → P4-06 and P4-14.
 
 ## 8. What this report cannot support
@@ -184,4 +184,4 @@ No PyPI upload or GitHub Release in any repo after 2026-09-24 [VERIFIED 2026-10-
 - I did not probe GHCR (the gh token lacks `read:packages`, and I avoided the registry token exchange). "No new images" is inferred from there being no new Releases.
 - The PAT's scope cannot be inspected. I could not read the staged files in other worktrees, or juniper-k8s's contents.
 - I inferred that data#422 is in the 0.16.0 wheel from tag containment, not from reading the wheel.
-- Rulings made after 10-03 in other sessions are invisible to me. EQ's milestone dates are "owner to confirm".
+- Rulings made after 10-03 in other sessions are invisible to me. EQ's milestone dates are "Overtoad to confirm".

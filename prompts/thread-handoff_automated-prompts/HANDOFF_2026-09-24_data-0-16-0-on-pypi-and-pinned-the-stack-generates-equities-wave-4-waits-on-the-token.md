@@ -11,7 +11,7 @@ Read it from `main`.
 (`…cut-at-one-commit-….md` below), **SUPERSEDED** by this file. It is history only; do not act on
 its items. Its live items are carried below, not by reference.
 **Times are UTC.** Live state was last probed at 2026-09-25 01:40Z. **Updated without a validation round, at the
-owner's request** (the arc was paused for this handoff); round 4 was not run.
+Overtoad's request** (the arc was paused for this handoff); round 4 was not run.
 
 ## Handoff goal — paste from the next line down to the line `— END OF GOAL —`
 
@@ -27,14 +27,14 @@ below names its document:
 
 ### Rules that bind you
 
-- **Every merge YOU perform needs the owner's explicit approval, naming that PR or group, in YOUR
+- **Every merge YOU perform needs the Overtoad's explicit approval, naming that PR or group, in YOUR
   session.** An earlier session's approval does not carry over. `gh pr merge --auto` on a MERGEABLE
   PR merges it on the spot, and an `update-branch` on an armed PR completes its merge.
 - **Merge with** `python3 util/safe_merge.py --repo <repo> --pr <n> --merge-method squash --execute`,
   and read its `MERGED` line, never its exit status: it exits 0 when it refuses. Under a `strict`
   ruleset, and only once the merge is approved, a `BEHIND` PR needs
   `gh api -X PUT repos/pcalnon/<repo>/pulls/<n>/update-branch`, one PR at a time.
-- **The PR sweeper is the owner's.** It readies and arms open PRs as `pcalnon`, and the ruling was
+- **The PR sweeper is the Overtoad's.** It readies and arms open PRs as `pcalnon`, and the ruling was
   "Mine: fix forward". **Do not draft or disarm a PR to hold it.** To validate before a merge,
   validate before the PR exists:
   1. Create the branch with `gh api -X POST repos/pcalnon/<repo>/git/refs -f ref=refs/heads/<branch> -f sha=<main sha>`.
@@ -54,34 +54,34 @@ below names its document:
     resolved that way keeps the counts and still reverts `main`.
   - If `main` already carries your fix, close your PR.
 - **Never handle a token.** Run no `gh secret set` or `gh variable set` for Docker Hub or
-  `CROSS_REPO_DISPATCH_TOKEN`. If a token appears in chat, do not repeat or use it. Tell the owner
+  `CROSS_REPO_DISPATCH_TOKEN`. If a token appears in chat, do not repeat or use it. Tell the Overtoad
   it is exposed and must be deleted at its issuer first; for Docker Hub that is
   `…REGISTRATION-PROCEDURE.md` §8.
 - **Never approve a `pypi` environment gate.** Run `util/release_train/ceremony.py --execute` only
-  after the owner approves, in your session, both the cut and the auto-merge of the archive PR it
+  after the Overtoad approves, in your session, both the cut and the auto-merge of the archive PR it
   opens. The tool arms that merge before it cuts.
 - **If a later ruling from another session rests on a premise your session is changing, ask the
-  owner. Do not pick one.** This happened with 0.16.0's notes (`…PUBLISHING-PLAN.md` §5.2).
+  Overtoad. Do not pick one.** This happened with 0.16.0's notes (`…PUBLISHING-PLAN.md` §5.2).
 - Re-probe every claim, this file's included. Scripts go in `util/ad-hoc/`, never `/tmp`.
 - **The memory index is full.**
   `~/.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml/memory/MEMORY.md` sits
   near its ~25,000-**character** load limit (`wc -m`, not `wc -c`), and later lines silently drop.
   **Add no index line;** link a new memory from an indexed one with `[[name]]`. No live memory is
-  retired to make room (owner, 2026-09-21).
+  retired to make room (Overtoad, 2026-09-21).
 
-### Owner gates — tell the owner; you run none of them
+### Owner gates — tell the Overtoad; you run none of them
 
-1. **Wave 4's credential.** The owner runs `…REGISTRATION-PROCEDURE.md` §2, §5.2B step 3a, §4, §5.2B
+1. **Wave 4's credential.** The Overtoad runs `…REGISTRATION-PROCEDURE.md` §2, §5.2B step 3a, §4, §5.2B
    step 3 and §6, in that order. The document's header lists the steps, and those sections hold the
-   commands. The owner then tells you four things:
+   commands. The Overtoad then tells you four things:
    - that the `…REGISTRATION-PROCEDURE.md` §4 login succeeded;
    - which form `…REGISTRATION-PROCEDURE.md` §5.2B step 3a used;
    - the Docker ID;
    - the token's expiry date.
 2. **`CROSS_REPO_DISPATCH_TOKEN` cannot dispatch to juniper-recurrence.** 0.16.0's
    `Notify consumer repos` job got `403 Resource not accessible by personal access token`, and
-   every data release fails the same way until the owner fixes the token.
-   - A replay needs the owner's approval each time. It is one
+   every data release fails the same way until the Overtoad fixes the token.
+   - A replay needs the Overtoad's approval each time. It is one
      `gh api -X POST repos/pcalnon/juniper-recurrence/dispatches --input <file>`, with
      `{"event_type":"juniper-data-published","client_payload":{"source":"juniper-data","version":"<X.Y.Z>","sha":"<tag sha>"}}`.
    - Then confirm that a `juniper-data-published` run started (`…PUBLISHING-PLAN.md` §5.2).
@@ -89,12 +89,12 @@ below names its document:
    - OQ-2, OQ-3 and OQ-4 (`…PUBLISHING-PLAN.md` §6);
    - the Pi pull (`…PUBLISHING-PLAN.md` §5.1);
    - whether `juniper-deploy-test` goes to Docker Hub (`…REGISTRATION-PROCEDURE.md` §10);
-   - not yet put to the owner: should juniper-data answer a fetch failure with `502`/`503` instead
+   - not yet put to the Overtoad: should juniper-data answer a fetch failure with `502`/`503` instead
      of `400 Invalid request parameters` (`…PUBLISHING-PLAN.md` §5.2)?
 
 ### Remaining — yours once its condition holds
 
-1. **When the owner reports the four Wave 4 facts**: record the token's expiry in
+1. **When the Overtoad reports the four Wave 4 facts**: record the token's expiry in
    `…REGISTRATION-PROCEDURE.md` §10, by PR.
 2. **The Wave 4 workflow change, only when BOTH hold.**
    - **(a) The credential checks out.** Run plain `gh api` calls on each of the five repositories
@@ -103,8 +103,8 @@ below names its document:
      - **Names only.** Every listing call carries `--jq '[.secrets[].name]'` or
        `--jq '[.variables[].name]'`, because a bare GET of a variables endpoint prints values.
      - `environments/dockerhub/secrets` lists `DOCKERHUB_TOKEN`, plus `DOCKERHUB_USERNAME` if the
-       owner chose a secret, and nothing else.
-     - `environments/dockerhub/variables` lists `DOCKERHUB_USERNAME` if the owner chose a variable,
+       Overtoad chose a secret, and nothing else.
+     - `environments/dockerhub/variables` lists `DOCKERHUB_USERNAME` if the Overtoad chose a variable,
        and nothing else.
      - `actions/secrets` and `actions/variables` list no `DOCKERHUB_*`.
      - `environments/dockerhub/deployment-branch-policies`, with
@@ -112,19 +112,19 @@ below names its document:
        `tag:v*`.
      - **A variable's value is checked only as a boolean:**
        `--jq '.variables[] | select(.name=="DOCKERHUB_USERNAME") | (.value=="<Docker ID>")'`. Never
-       print it. `false` means only a mismatch; the owner looks with `…REGISTRATION-PROCEDURE.md` §6.
-   - **(b)** The owner has told you, in your session, that the `…REGISTRATION-PROCEDURE.md` §4 login
+       print it. `false` means only a mismatch; the Overtoad looks with `…REGISTRATION-PROCEDURE.md` §6.
+   - **(b)** The Overtoad has told you, in your session, that the `…REGISTRATION-PROCEDURE.md` §4 login
      succeeded.
    - **Then:**
      - **Never name `dockerhub` unconditionally on the existing `build` or `merge` job.** A tags-only
        environment rejects their PR and dispatch runs.
      - Pick a shape from `…REGISTRATION-PROCEDURE.md` §3 and §7, and read the username from the
-       context the owner chose (`vars.` or `secrets.`).
+       context the Overtoad chose (`vars.` or `secrets.`).
      - Give each new job its release-tag guard as a job-level `if:`: `'v'`, or
        `'juniper-recurrence-v'` in recurrence.
      - **Never pass the credential as a `--build-arg`.** Build-arg values are published in public
        SLSA provenance.
-     - Ask the owner before editing the five `publish-image.yml` files.
+     - Ask the Overtoad before editing the five `publish-image.yml` files.
 3. **Known gaps**, below the goal, each with a *fix* or *track* verdict. None is time-bound.
 4. **Finish this arc's records (no condition).** The archiving PR, from juniper-ml branch
    `docs/handoff-data-0-16-0-egress-guards-fail-closed`, is open and **unmerged**. Before it merges,
@@ -134,7 +134,7 @@ below names its document:
      juniper-deploy#236.
    - Optionally, one scope-bounded reconciliation lane that judges #236 against its stated scope.
 
-   Merging it needs the owner's approval naming it, in your session. Also append #236 to memory
+   Merging it needs the Overtoad's approval naming it, in your session. Also append #236 to memory
    `project_container_registry_rollout_2026-09-08.md`; that is outside the repository.
 
 ### Key context
@@ -143,10 +143,10 @@ below names its document:
   juniper-deploy#230. The replayed notification's bench passed against it (run 36046705575), though
   recurrence still caps `<0.16.0`.
 - **X8 (juniper-data#437) is NOT in 0.16.0.** It ships in the next data release. The parent
-  `Juniper/AGENTS.md` Data Contract was corrected with the owner's approval; it is unversioned and
+  `Juniper/AGENTS.md` Data Contract was corrected with the Overtoad's approval; it is unversioned and
   has no PR.
 - **The stack generates equities, mnist and arc_agi now**; each answered `201` in the stack. The
-  owner ruled for a dedicated egress network.
+  Overtoad ruled for a dedicated egress network.
   - juniper-deploy#231 adds compose `data-egress`.
   - juniper-deploy#232 adds the Helm TCP 443 rule, verified as rendered only.
   - juniper-deploy#233–#236 fix forward what validation refuted. The data pod mounts no
@@ -181,7 +181,7 @@ below names its document:
     #234).
 - **`docker compose down` skips profile-only services** (juniper-data is one) unless `--profile` is
   given; `down -v` then removes nothing and prints nothing. Count leftovers afterwards. **Always
-  pass a unique `-p <project>`**: the owner's `juniper-deploy_*` volumes exist on this host, and the
+  pass a unique `-p <project>`**: the Overtoad's `juniper-deploy_*` volumes exist on this host, and the
   default project name would make `down -v` remove them.
 - **Verify the published artifact, not the merge.** Pull an image before measuring it, because
   `2>&1 | wc -l` counts pull progress. `find … | wc -l` cannot tell an absent path from an
@@ -246,7 +246,7 @@ gh api repos/pcalnon/juniper-data/environments/dockerhub/secrets --jq '[.secrets
 
 **Outside git**:
 
-- **The parent `Juniper/AGENTS.md` Data Contract**, edited twice with the owner's approval:
+- **The parent `Juniper/AGENTS.md` Data Contract**, edited twice with the Overtoad's approval:
   - X8 is not in 0.16.0;
   - `arc_agi` is at `4.0.0` from 0.16.0;
   - the guard's allow-list names `arc_agi`;
@@ -317,7 +317,7 @@ with their own read-only token, and nodes that share an account share its 200 pu
 of that applies to the GHCR pull.
 
 > **Correction, 2026-10-19 (erratum X6 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).**
-> `turing` was not down, and it was never a Pi-pull candidate. It is the owner's 15-inch 2018 Intel
+> `turing` was not down, and it was never a Pi-pull candidate. It is the Overtoad's 15-inch 2018 Intel
 > MacBook Pro (x86_64, macOS), a development laptop in active use away from yamaguchi
 > (`notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_BYPASS-CANDIDATE-DETERMINATION.md:174`), so it cannot
 > meet the pull's 64-bit Pi OS precondition. `192.168.50.222` comes from
@@ -347,13 +347,13 @@ of that applies to the GHCR pull.
 **Lane B's four majors were each re-derived before acting, and all four held.**
 
 - **M1.** The Helm rule "cannot reach cluster-internal services" is false where the API server or
-  the pod/service ranges are public, and the data pod carried a service-account token. The owner
+  the pod/service ranges are public, and the data pod carried a service-account token. The Overtoad
   ruled: correct the claim and set `automountServiceAccountToken: false` (juniper-deploy#233).
 - **M2.** #232's tests pinned the rule's wording, and eight broader rules passed them. They now pin
   the effect: 15/15 mutants caught, including all eight (#233).
 - **M3.** #198's "a random key per run" is true only for a fresh cascor network, because snapshots
   restore their saved key. Pre-March snapshots carry the old public default. Filed as
-  juniper-cascor#691 on the owner's approval; the worker CHANGELOG is corrected (worker#199).
+  juniper-cascor#691 on the Overtoad's approval; the worker CHANGELOG is corrected (worker#199).
 - **M4.** #439's "no conflict raised" was wrong. `git merge-tree` conflicts, so `322135bd` resolved
   a conflict in the PR's favour. A correction comment is on #439, and the memory is rewritten.
 
@@ -362,7 +362,7 @@ egress is unrestricted, and "no way in" fails on Docker < 28. It also found that
 failed the same way (confirmed: `500` after about 23 s). Its compose probe then still passed two
 cases against #233, and #234 closed both.
 
-**Lane C's majors**: the "conflicting rulings → ask the owner" rule, the safe_merge mechanics, the
+**Lane C's majors**: the "conflicting rulings → ask the Overtoad" rule, the safe_merge mechanics, the
 Pi pull's `…REGISTRATION-PROCEDURE.md` §9 note and the predecessor's cleanup were restored, and the
 re-validation rule now names its command.
 
@@ -410,7 +410,7 @@ re-validation rule now names its command.
 - `--paginate`;
 - undefined references;
 - the stale PyPI line in deploy's CHANGELOG;
-- the restored residue (the update-branch arm, the sweeper, the `find` trap, "tell the owner");
+- the restored residue (the update-branch arm, the sweeper, the `find` trap, "tell the Overtoad");
 - the memory-file list;
 - script-comment nits;
 - the Docker firewall caveat;
@@ -428,7 +428,7 @@ ones #236 lists in *What this session did*, among them #235's own weakened polic
 
 Still open: *Remaining* item 4's edits to `…PUBLISHING-PLAN.md`.
 
-**Round 4: not run.** The owner paused the arc and asked for this update without validation.
+**Round 4: not run.** The Overtoad paused the arc and asked for this update without validation.
 
 ## Git state
 
@@ -445,7 +445,7 @@ Still open: *Remaining* item 4's edits to `…PUBLISHING-PLAN.md`.
   #2079 merged. It merged 10:08:31Z, and they still exist.
   - `wip/records-0924` is checked out in `juniper-ml/.claude/worktrees/fluffy-sniffing-mochi`, the
     predecessor session's worktree by its own handoff. Which live session, if any, still uses it
-    is not established. **Ask the owner before removing `fluffy-sniffing-mochi` or
+    is not established. **Ask the Overtoad before removing `fluffy-sniffing-mochi` or
     `wip/records-0924`.**
   - Before any cleanup, check that worktree for uncommitted and ignored files, and follow
     `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`.

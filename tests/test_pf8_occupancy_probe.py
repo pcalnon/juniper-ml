@@ -11,7 +11,7 @@ Gate for the PF-8 occupancy probe pair — ``util/ad-hoc/2026-09-10_pf8_occupanc
 and ``util/ad-hoc/2026-09-10_pf8_occupancy_analyse.py`` (perf lane P2 item 4.1 residue).
 
 ``util/ad-hoc`` sits outside every pre-commit Python hook, and the probe's output is the number
-that decides whether a two-arm PF-8 pair is worth an owner's host time, so the arithmetic that
+that decides whether a two-arm PF-8 pair is worth an Overtoad's host time, so the arithmetic that
 turns ``/proc`` jiffies into cores (read as sweep workers only by a stated assumption) is pinned
 here rather than trusted.
 
@@ -57,7 +57,7 @@ def _load(path: Path, name: str):
     spec = importlib.util.spec_from_file_location(name, path)
     mod = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
-    # A dataclass resolves its owner module through sys.modules at class-creation time, so a
+    # A dataclass resolves its Overtoad module through sys.modules at class-creation time, so a
     # path-loaded module MUST be registered first or `@dataclass` raises inside exec_module.
     sys.modules[name] = mod
     spec.loader.exec_module(mod)

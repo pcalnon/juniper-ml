@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3: the linear brace scan and its budget)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: validator finding ml-code-port-lens F1 (9.5 s for the hook on a 25.8 KB ``python3 -c`` word; the hook is
          installed with "timeout": 10 and "onFailure": "block"); the validator's own timing helper, whose six
          shapes and child-process design this keeps (2026-11-09_flood4r2_val_ml-code-port_timing.py).

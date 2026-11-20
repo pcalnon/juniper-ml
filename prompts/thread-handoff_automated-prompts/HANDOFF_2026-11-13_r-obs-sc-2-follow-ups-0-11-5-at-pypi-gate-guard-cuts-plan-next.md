@@ -1,4 +1,4 @@
-# Handoff: R-OBS-SC-2 follow-ups -- juniper-ml 0.11.5 at the owner's `pypi` gate; the guard + register PR, two consumer cuts, the 0.4.3 design prompt and plan v1.15.16 remain
+# Handoff: R-OBS-SC-2 follow-ups -- juniper-ml 0.11.5 at the Overtoad's `pypi` gate; the guard + register PR, two consumer cuts, the 0.4.3 design prompt and plan v1.15.16 remain
 
 > **Updated 2026-11-14 by session `7d425759`: juniper-ml 0.11.5 is now on PyPI.** Read "Update, 2026-11-14" (the
 > next section) first; where it and the 11-13 record below disagree, the update holds. The 11-13 record is unchanged.
@@ -18,7 +18,7 @@
 
 **How far to trust this file.** Each state fact below was read from git, `gh`, PyPI or the disk on 2026-11-13: between
 10:11Z and 10:40Z unless its line gives another time. `tmp/fsf/handoff_claims_check.py` (in the first worktree above)
-re-derives 75 of them, and all held at 10:40Z. Five of the 75, marked `[moves]`, describe state that the owner's
+re-derives 75 of them, and all held at 10:40Z. Five of the 75, marked `[moves]`, describe state that the Overtoad's
 approval or a later merge changes. `tmp/fsf/handoff_text_check.py` compared each quoted ruling with the transcript,
 and each named path with the disk. One independent fact-checker then re-derived what those two do not cover; its
 findings are applied. A time is given only where a tool printed it. What this session was told by another, and did
@@ -27,7 +27,7 @@ not re-derive, is marked "reported". Not checked by anyone but this session: tha
 ## Update, 2026-11-14 (session `7d425759`; read first)
 
 **Session** `7d425759` (`ListAgents`: `recurrence-equities-0-11-4-published-parent-agents-edited-plan-v1-15-14`, ref
-`9892ad`), worktree `.claude/worktrees/toasty-prancing-karp`. The owner opened it at 10:10:33Z with "continue work
+`9892ad`), worktree `.claude/worktrees/toasty-prancing-karp`. The Overtoad opened it at 10:10:33Z with "continue work
 arc from handoff: juniper-ml/prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-07_recurrence-equities-0-11-4-published-parent-agents-edited-plan-v1-15-14.md"
 and "merge approval granted" (per-session; it does not carry). That 11-07 file is this line's ancestor, eight
 handoffs back: a session started from it continues from this file. All times are UTC, as a tool printed them.
@@ -99,21 +99,21 @@ handoffs back: a session started from it continues from this file. All times are
   juniper-service-core 0.7.2 (09:52:45Z). The paragraph names neither 0.4.2 nor 0.7.2, so an edit that moves its
   re-probe date must add them too, not only move the 0.11.4 bullet and its `[tools]` sub-bullet. Not edited.
 
-**The owner dialog is open.** Asked 10:20:43Z, four questions with background: (1) does this session take this
+**The Overtoad dialog is open.** Asked 10:20:43Z, four questions with background: (1) does this session take this
 file's whole list; (2) edit the parent `AGENTS.md` (Recommended) or leave it; (3) cascor 0.14.0 (Recommended) or
-0.13.1; (4) canopy 0.10.0 (Recommended) or 0.9.1. At 22:10:39Z the owner chose to clarify, answered none, and asked
-for this update. The full text prints with `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py 7d425759
---full`. The owner then ruled, at 22:37:55Z: "the four open questions should be handled by the session working from
-the updated handoff." **A successor's first turn**: ask the owner what they want to clarify, then re-ask what is
+0.13.1; (4) canopy 0.10.0 (Recommended) or 0.9.1. At 22:10:39Z the Overtoad chose to clarify, answered none, and asked
+for this update. The full text prints with `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py 7d425759
+--full`. The Overtoad then ruled, at 22:37:55Z: "the four open questions should be handled by the session working from
+the updated handoff." **A successor's first turn**: ask the Overtoad what they want to clarify, then re-ask what is
 still open, one question at a time with background (ruling 3's form), together with this file's merge-approval
 request. Until the answers come, open no release PR and make no parent edit.
 
 **Corrections to the 11-13 record below**
 
 - Item 2's list of texts to update is incomplete (finding 6 above).
-- "Still open with the owner" gives A1's open limbs as the F-S10 fixes only, as the four-ruled handoff first did.
+- "Still open with the Overtoad" gives A1's open limbs as the F-S10 fixes only, as the four-ruled handoff first did.
   Plan v1.15.15 lists two more as A1's remainder: P6 OD-2 and canopy#685 call (a). They appear in its Overview bullet
-  "P12 ran ahead of the owner's rulings…" and in item 8 of Wave 0's "Owner sitting" list. No R-OBS-SC-2 handoff
+  "P12 ran ahead of the Overtoad's rulings…" and in item 8 of Wave 0's "Owner sitting" list. No R-OBS-SC-2 handoff
   records a ruling on either, so both stay open, and plan v1.15.16 must not drop them.
 - Its "Verification commands" and "Git status" describe 2026-11-13 10:39Z. `pending_deployments` now prints nothing,
   and `origin/main` has moved. Use these instead, one per call (fetch each sibling first):
@@ -121,7 +121,7 @@ request. Until the answers come, open no release PR and make no parent edit.
 ```bash
 git fetch origin && git log -1 --format='%h %s' origin/main     # 76488449 at 22:15Z; later merges are expected
 curl -s -o /dev/null -w '%{http_code}\n' https://pypi.org/pypi/juniper-ml/0.11.5/json      # 200
-python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py 7d425759 --full                  # one call; no answer ("clarify")
+python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py 7d425759 --full                  # one call; no answer ("clarify")
 sha256sum /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/toasty-prancing-karp/tests/test_service_fork_drift.py    # 98ead3169bcc1fbe... until the review is applied
 sha256sum /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/toasty-prancing-karp/tmp/s1/guard_review_round1.md    # 37508e487e0eda00...
 git -C /home/pcalnon/Development/python/Juniper/juniper-cascor rev-list --count v0.13.0..origin/main   # 27
@@ -137,7 +137,7 @@ review report, the mutation log, the reviewer's probes (`tmp/s1/review/`) and th
 and `juniper-ml/tmp/retry-after-guard-ssq1mano` until the guard PR has merged (the retention rule).
 
 **Changed by this session**: this file only (this section and the note under the title). It lands through its own
-one-file docs PR, which this session opens and merges on the owner's word (22:37:55Z: "let's merge and PR the updated
+one-file docs PR, which this session opens and merges on the Overtoad's word (22:37:55Z: "let's merge and PR the updated
 handoff"). Nothing else this session did is committed: the two guard files are copied, unchanged, for the guard PR.
 The parent `AGENTS.md` is untouched.
 
@@ -145,10 +145,10 @@ The parent `AGENTS.md` is untouched.
 
 Finish the R-OBS-SC-2 follow-ups. In order: see juniper-ml 0.11.5 through its gate and its two post-publish edits;
 open the guard and register PR for `APD-ECO-016`, which is now unblocked; prepare the juniper-cascor and
-juniper-canopy releases the owner ruled on 2026-11-13; write the start prompt for the juniper-observability 0.4.3
+juniper-canopy releases the Overtoad ruled on 2026-11-13; write the start prompt for the juniper-observability 0.4.3
 design session; and record all of it in plan v1.15.16.
 
-**First turn**: ask the owner for merge approval for a named group (the guard + register PR, the post-publish docs
+**First turn**: ask the Overtoad for merge approval for a named group (the guard + register PR, the post-publish docs
 PR, the two consumer release PRs and their archive PRs, the plan v1.15.16 PR). Approvals are per-session. This
 session's ("merge approval granted", 2026-11-13) does not carry.
 
@@ -185,8 +185,8 @@ pull or switch a primary checkout"; the juniper-canopy primary is still unruled 
 stands in for the relay tests. Nothing in it touches the rest of security step 5, which includes that the session
 records the commit the editable installs run, not pip's version (the four-ruled handoff, Q3, "New since").
 
-Round 2 is complete: nothing of it is left to ask. Each question's full text, with the background the owner read,
-prints with `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py 218ff61e --full`. Until plan v1.15.16 they are
+Round 2 is complete: nothing of it is left to ask. Each question's full text, with the background the Overtoad read,
+prints with `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py 218ff61e --full`. Until plan v1.15.16 they are
 recorded only here, in that transcript and in `tmp/fsf/WORKING_RECORD.md`.
 
 ## Completed this session
@@ -202,7 +202,7 @@ recorded only here, in that transcript and in `tmp/fsf/WORKING_RECORD.md`.
   Its body equals the notes with the security header filled by
   `util/ad-hoc/2026-11-13_juniper_ml_0_11_5_security_notes_header.py`, and holds no placeholder.
 - **Publish run 43408809021** (created 10:24:20Z): Build and Validate and Publish to TestPyPI succeeded, and Publish to
-  PyPI waits at the `pypi` gate. **The owner approves it; no session does.** The working deadline is 2026-12-13 (day
+  PyPI waits at the `pypi` gate. **The Overtoad approves it; no session does.** The working deadline is 2026-12-13 (day
   30) and the run is cancelled by 2026-12-18 (day 35).
 - **Archive PR juniper-ml#2561 merged** at 10:38:29Z as `main` `7ae846b6`. `notes/releases/RELEASE_NOTES_v0.11.5.md`
   on `main` is byte-identical to the Release body.
@@ -221,7 +221,7 @@ recorded only here, in that transcript and in `tmp/fsf/WORKING_RECORD.md`.
    - open one docs PR: `docs/QUICK_START.md` lines 85 and 102 still show the 0.11.4 sample `pip list` (precedent
      juniper-ml#2510);
    - the parent `Juniper/AGENTS.md` paragraph that names the latest juniper-ml on PyPI still says 0.11.4. That file is
-     unversioned, and the owner approves the edit, as for 0.11.4.
+     unversioned, and the Overtoad approves the edit, as for 0.11.4.
 2. **Guard and register PR, `APD-ECO-016`.** Unblocked: juniper-data#537 merged at 02:54:07Z as `3cf8867c`. Follow
    "Remaining work" item 1 of the five-PRs handoff. What it needs from here:
    - The guard (`retry-after-rounds-up`; register ids `APD-ECO-016` and `APD-SVCCORE-004`) is still uncommitted in
@@ -240,9 +240,9 @@ recorded only here, in that transcript and in `tmp/fsf/WORKING_RECORD.md`.
      test is named `test_the_helper_floors_a_zero_remainder_at_one`.
 3. **The juniper-cascor and juniper-canopy releases** (ruling 5). Not started.
    - Each is cut from its `main`. Its release PR raises `juniper-observability>=0.4.2` and
-     `juniper-service-core>=0.7.2` (round 1's ruling 1, in the four-ruled handoff). The owner approves each `pypi`
-     gate. Then juniper-deploy pins the two images, and the owner restarts the stack.
-   - Ask the owner each version first. The detector's proposal does not bind: for juniper-ml 0.11.5 it proposed
+     `juniper-service-core>=0.7.2` (round 1's ruling 1, in the four-ruled handoff). The Overtoad approves each `pypi`
+     gate. Then juniper-deploy pins the two images, and the Overtoad restarts the stack.
+   - Ask the Overtoad each version first. The detector's proposal does not bind: for juniper-ml 0.11.5 it proposed
      0.12.0, and the manifest was set to the patch by hand.
    - Section 11.7 of `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` is the procedure
      (`--cross-repo`, `--target-sha`, the tag-window and released-section checks). The four-ruled handoff's "Traps"
@@ -263,21 +263,21 @@ recorded only here, in that transcript and in `tmp/fsf/WORKING_RECORD.md`.
    - 0.11.5: juniper-ml#2555, #2558, Release `v0.11.5`, run 43408809021, #2561 (`7ae846b6`);
    - `APD-ECO-016`, once filed;
    - the eight findings listed under item 3 of the five-PRs handoff. Before recording its fifth (the WebSocket
-     `retry_after` reading 0.0) as open, read flood-4's owner answer of 2026-11-12 23:34:04Z in session `f2b4e7c3`
+     `retry_after` reading 0.0) as open, read flood-4's Overtoad answer of 2026-11-12 23:34:04Z in session `f2b4e7c3`
      ("WebSocket gaps beside N-4, Lifecycle races beside N-2, Match cascor's resume answers");
    - new this session: juniper-ml#2360's merge misfiled CHANGELOG entries in two ways (one bullet under a released
      heading; five entries under the wrong category), and `util/ad-hoc/2026-09-23_released_section_drift.py` sees only
      the first kind.
-6. **Housekeeping.** Removing a worktree needs the owner's word, worktree by worktree.
+6. **Housekeeping.** Removing a worktree needs the Overtoad's word, worktree by worktree.
    - `Juniper/worktrees/juniper-data--fix--rate-limit-retry-after-round-up--20261111-1855--399eeffb` was never opened.
    - `.claude/worktrees/logical-percolating-sparkle` and `.claude/worktrees/foamy-squishing-floyd` hold the `tmp/`
      evidence named at the top.
    - The juniper-cascor and juniper-canopy primaries each keep the local branches `fix/fastapi-telemetry-opt-out` and
      `fix/rate-limit-retry-after-round-up`, left by the removed worktrees.
 
-**Still open with the owner, and not asked this session**: who may pull the juniper-canopy primary (O13; the
+**Still open with the Overtoad, and not asked this session**: who may pull the juniper-canopy primary (O13; the
 four-ruled handoff, Q4, "New since"); whether a fix-forward is owed for juniper-cascor 0.12.0; A1's open limbs (the
-data-client and cascor F-S10 fixes); and the trio's environment upgrade, an owner action
+data-client and cascor F-S10 fixes); and the trio's environment upgrade, an Overtoad action
 (`JuniperData` and `JuniperCanopy1` hold juniper-observability 0.4.0 and juniper-service-core 0.5.0, read from their
 dist-info on 2026-11-13).
 
@@ -286,8 +286,8 @@ dist-info on 2026-11-13).
 - **The five-PRs handoff's "Key context" still holds in full**: bases move often, and its two upload tools guard
   against it; a mutation check writes over the real source file; the `Verify AGENTS.md Last Updated` date check.
 - **Blank the six Sentry DSN variables for every test run**: `util/ad-hoc/2026-11-12_run_with_blank_sentry_dsns.py`.
-- **An owner dialog blocks the session until it is answered.** One held this session from 02:41:20Z to 10:10:51Z
-  while two peer sessions waited on a message from it. Before asking the owner anything, give each waiting peer
+- **An Overtoad dialog blocks the session until it is answered.** One held this session from 02:41:20Z to 10:10:51Z
+  while two peer sessions waited on a message from it. Before asking the Overtoad anything, give each waiting peer
   a condition it can check without you.
 - **`origin/*` refs are shared by every worktree of the repository**, so another session's fetch moves your
   `origin/main`. Read `git rev-parse origin/main` immediately before a whole-file upload.
@@ -305,10 +305,10 @@ dist-info on 2026-11-13).
 git fetch origin
 git log -1 --format='%h %s' origin/main                 # 7ae846b6 at 10:39Z; later merges are expected
 gh api repos/pcalnon/juniper-ml/releases/tags/v0.11.5 --jq '[.target_commitish, .published_at] | @tsv'
-gh api repos/pcalnon/juniper-ml/actions/runs/43408809021/pending_deployments --jq '.[].environment.name'   # pypi, until the owner approves
+gh api repos/pcalnon/juniper-ml/actions/runs/43408809021/pending_deployments --jq '.[].environment.name'   # pypi, until the Overtoad approves
 gh pr view 2561 --repo pcalnon/juniper-ml --json state,mergedAt               # MERGED, 2026-11-13T10:38:29Z
 python3 util/ad-hoc/2026-11-13_juniper_ml_0_11_5_cut_cochanges.py --check     # exit 0; eleven lines "already at target"
-python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py 218ff61e           # five calls; the seven rulings
+python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py 218ff61e           # five calls; the seven rulings
 sha256sum /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/logical-percolating-sparkle/tests/test_service_fork_drift.py   # 98ead3169bcc1fbe...
 gh pr view 537 --repo pcalnon/juniper-data --json state,mergedAt,mergeCommit
 git show origin/main:notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md | command grep -c 'APD-ECO-016'   # 0 until filed
@@ -321,7 +321,7 @@ later merge adds an entry under `[Unreleased]`, it refuses (exit 2) by design, w
 
 - Worktree `.claude/worktrees/foamy-squishing-floyd`, branch `worktree-foamy-squishing-floyd`, at `7ae846b6`, which
   was `origin/main`. No tracked change apart from this file, and nothing staged. This file lands through its own PR,
-  which the owner merges.
+  which the Overtoad merges.
 - Open PRs of this arc: this file's only.
 - juniper-ml#2548 (the backup arc's) is open and is not this arc's.
 

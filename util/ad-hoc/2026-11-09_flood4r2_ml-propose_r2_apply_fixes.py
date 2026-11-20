@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (the Cursor flood-4 round-2 "ml-propose" carrier, second build after validation)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: juniper-ml#2507; owner ruling "Carry + extend propose.py"; the claims-lens and code-lens findings
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: juniper-ml#2507; Overtoad ruling "Carry + extend propose.py"; the claims-lens and code-lens findings
          (tmp/flood4r2-val/ml-propose-{claims,code}-lens/findings.json in the orchestrator's worktree);
          tmp/flood4r2/ml-propose/r2/dispositions.json in the carrier's worktree (what each row answers)
 
@@ -405,7 +405,7 @@ edit(
     REFERENCE,
     r'''Header 0.6.63 and footer 0.6.62 reconciled. |''',
     r'''Header 0.6.63 and footer 0.6.62 reconciled. |
-| 0.6.65  | 2026-11-09 | Release-train step 5b-v (owner ruling on juniper-ml#2507, "Carry + extend propose.py"): `propose.py` renders the four Ecosystem Compatibility release sites (the **Version** cell, the "declares" sentence, the current-series row, the `[recurrence]` clause) from `pyproject.toml`. The propose suite gains `ReferenceCompatHelperTest` and `BuildProposalReferenceCompatTest`; the Test Suite Reference and `propose.py` entries describe the step, its `REVIEW` notes and the floor-raise obligation `ReferenceCompatibilityMatrixTest` creates. |''',
+| 0.6.65  | 2026-11-09 | Release-train step 5b-v (Overtoad ruling on juniper-ml#2507, "Carry + extend propose.py"): `propose.py` renders the four Ecosystem Compatibility release sites (the **Version** cell, the "declares" sentence, the current-series row, the `[recurrence]` clause) from `pyproject.toml`. The propose suite gains `ReferenceCompatHelperTest` and `BuildProposalReferenceCompatTest`; the Test Suite Reference and `propose.py` entries describe the step, its `REVIEW` notes and the floor-raise obligation `ReferenceCompatibilityMatrixTest` creates. |''',
 )
 
 # ── CHANGELOG.md ─────────────────────────────────────────────────────────────
@@ -414,7 +414,7 @@ edit(
     "claims F1 F2 F3 F4 F5 F8 F9 F15; code F1 F3 F4 F5",
     CHANGELOG,
     r'''- **The release-train proposal rewrites the four `docs/REFERENCE.md` sites that name the meta-package's release
-  (owner ruling on juniper-ml#2507: "Carry + extend propose.py").** #2507's tests pin the Package Overview Version
+  (Overtoad ruling on juniper-ml#2507: "Carry + extend propose.py").** #2507's tests pin the Package Overview Version
   cell, the "`juniper-ml` X.Y.Z declares the following pins" sentence, the Ecosystem Compatibility matrix's
   current-series row and the `[recurrence]` "sets them to" clause to `pyproject.toml`.
   `util/release_train/propose.py` edited none of them, and every cut from 0.11.0 to 0.11.4 wrote them with a
@@ -438,7 +438,7 @@ edit(
     `tests/test_release_train_propose.py` gains 29 tests (156 to 185), and all 26 mutants of the new code are
     killed. `docs/REFERENCE.md` describes the step.''',
     r'''- **The release-train proposal rewrites the four `docs/REFERENCE.md` sites that name the meta-package's release
-  (owner ruling on juniper-ml#2507: "Carry + extend propose.py").** `ReferenceCompatibilityMatrixTest` (added by
+  (Overtoad ruling on juniper-ml#2507: "Carry + extend propose.py").** `ReferenceCompatibilityMatrixTest` (added by
   juniper-ml#2507's tests, carried in the round-2 tests carrier) pins the Package Overview Version cell, the
   "`juniper-ml` X.Y.Z declares the following pins" sentence, the Ecosystem Compatibility matrix's current-series
   row and the `[recurrence]` "sets them to" clause to `pyproject.toml`. `util/release_train/propose.py` edited

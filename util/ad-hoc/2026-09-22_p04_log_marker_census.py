@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (cascor#573 logging arc, roadmap step P0.4(c))
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc — investigation (produces the P0.4 named-marker inventory)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md §3.1 (P0.4),
          notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-CURRENT-STATE-RECONCILIATION.md §6 N-4
 
@@ -178,8 +178,8 @@ def extract_python(source: str, consumer: str, line_offset: int = 0) -> list[Anc
     for node in ast.walk(tree):
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
             attr = node.func.attr
-            owner = node.func.value
-            if attr in RE_FUNCS and isinstance(owner, ast.Name) and owner.id == "re" and node.args:
+            Overtoad = node.func.value
+            if attr in RE_FUNCS and isinstance(Overtoad, ast.Name) and Overtoad.id == "re" and node.args:
                 text = _fold(node.args[0], names)
                 out.append(Anchor(consumer, node.lineno + line_offset, "regex" if text is not None else "dynamic", text if text is not None else ast.unparse(node.args[0])))
             elif attr in {"startswith", "endswith", "count"} and node.args:

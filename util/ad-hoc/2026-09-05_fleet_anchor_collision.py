@@ -106,15 +106,15 @@ def main(argv=None) -> int:
     per_pr = {pr: pr_added_headings(repo, pr) for pr in args.pr}
 
     # slug -> {file: [prs]}
-    slug_owners: dict = collections.defaultdict(lambda: collections.defaultdict(list))
+    slug_Overtoads: dict = collections.defaultdict(lambda: collections.defaultdict(list))
     for pr, files in per_pr.items():
         for path, heads in files.items():
             for _lvl, _txt, slug in heads:
-                slug_owners[slug][path].append(pr)
+                slug_Overtoads[slug][path].append(pr)
 
     print("=== PR-vs-PR anchor collisions ===")
     found = False
-    for slug, byfile in sorted(slug_owners.items()):
+    for slug, byfile in sorted(slug_Overtoads.items()):
         for path, prs in byfile.items():
             if len(set(prs)) > 1:
                 found = True
@@ -125,7 +125,7 @@ def main(argv=None) -> int:
     print("\n=== collisions with headings already on main ===")
     found = False
     cache: dict = {}
-    for slug, byfile in sorted(slug_owners.items()):
+    for slug, byfile in sorted(slug_Overtoads.items()):
         for path, prs in byfile.items():
             if path not in cache:
                 cache[path] = main_headings(repo, path)
@@ -159,7 +159,7 @@ def main(argv=None) -> int:
             if path not in cache:
                 cache[path] = main_headings(repo, path)
             ok = "RESOLVES" if cache[path].get(anchor) else "MISSING"
-            flag = " <-- a PR also adds this slug" if anchor in slug_owners else ""
+            flag = " <-- a PR also adds this slug" if anchor in slug_Overtoads else ""
             print(f"    [{ok}] {t}{flag}")
     return 0
 

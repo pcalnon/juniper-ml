@@ -24,14 +24,14 @@ A bare §N means this document — EXCEPT register-anatomy terms ("the §2 Statu
 2. **Successor — confirm ml#1420 merged** (`gh pr view 1420 --repo pcalnon/juniper-ml --json
    state,mergeCommit`). It was armed with auto-merge and all checks green at write time; if it
    reads `BEHIND`, apply `gh api repos/pcalnon/juniper-ml/pulls/1420/update-branch -X PUT`.
-3. **Paul — an owner decision this session surfaced and did not take**: cascor and service-core
+3. **Paul — an Overtoad decision this session surfaced and did not take**: cascor and service-core
    carry juniper-data's `APD-DATA-024` `EXEMPT_PATHS` trap (§3.3). It is **latent**, recorded as a
    §4.3 register note, and deliberately **not filed as new `APD-` IDs** because the register's 96
    is a fixed identity. *Should it become `APD-CASCOR-007 †` / `APD-SVCCORE-018 †`, or stay a note?*
 4. **Paul — the parked decisions, unchanged** (§3.1): the eleven-row juniper-data REST group;
    `APD-ECO-001` → `APD-CCLIENT-001`; `APD-ECO-007` (owns `CCLIENT-012`'s removal date);
    `APD-ECO-004` ↔ `APD-RCLIENT-004` (**deferred 2026-08-26, recorded in §4.6** — a deferral, not a
-   rejection); `APD-CASCOR-005` (now owner-routed **in the register**, §4.3); `APD-RCLIENT-005`;
+   rejection); `APD-CASCOR-005` (now Overtoad-routed **in the register**, §4.3); `APD-RCLIENT-005`;
    `APD-ML-001` (release-train question first).
 5. **Successor — the remaining actionable work is design-shaped**, and there is no longer a cheap
    unblocked row (§3.2): `APD-DATA-016` (streaming across seven `DatasetStore` backends),
@@ -163,13 +163,13 @@ Re-derived by the §1 script.
 
 | Repository | Open | Note |
 |---|---:|---|
-| `juniper-data` | 14 | the 11-row REST group (`-026`–`-033`, `-008`, `-017`, `-022`) is **owner-routed in the register** (§4.1 note); `-016`, `-018`, `-019` are design-shaped |
+| `juniper-data` | 14 | the 11-row REST group (`-026`–`-033`, `-008`, `-017`, `-022`) is **Overtoad-routed in the register** (§4.1 note); `-016`, `-018`, `-019` are design-shaped |
 | `juniper-service-core` | 7 | **all latent** (`.websocket.*` / `workers/`, no consumer) — re-verified 2026-08-26 |
 | `APD-ECO-*` | 6 | decision-shaped; `-004`'s shape proposal **deferred, recorded §4.6** |
 | `juniper-recurrence-client` | 2 | `-004` (deferred with `ECO-004`), `-005` (three-name identity, Low conf) |
 | `juniper-cascor-client` | 2 | `-001` (blocked on `APD-ECO-001`), `-008` (envelope sniffing — design-shaped) |
 | `juniper-ml` | 1 | `-001` — do not action before the release-train question |
-| `juniper-cascor` | 1 | `-005` **owner decision**, now routed *in the register* |
+| `juniper-cascor` | 1 | `-005` **Overtoad decision**, now routed *in the register* |
 | `juniper-data-client`, `juniper-observability` | 0 | swept |
 
 ### 3.1 Parked on Paul — all now recorded in the register, not the handoff chain

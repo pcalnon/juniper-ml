@@ -3,7 +3,7 @@
 **Date**: 2026-10-25
 **Host**: the Linux host. This session ran in worktree `.claude/worktrees/cuddly-knitting-stardust`. Only the GraphQL path signs commits here: use `util/open_signed_pr.py` and `util/push_signed_commit.py`, never `git commit`. This host can push the ~1 MB `docs/REFERENCE.md` through the API; turing's VPN could not (10-18).
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_recurrence-equities-juniper-ml-0-11-1-published-servers-floors-next.md` (landed by juniper-ml#2325)
-**Do not rename this file.** juniper-ml#2336's handoff, `HANDOFF_2026-10-25_recurrence-equities-2320-merged-plan-v1-15-1-2330-owner-decides.md`, cites it by name.
+**Do not rename this file.** juniper-ml#2336's handoff, `HANDOFF_2026-10-25_recurrence-equities-2320-merged-plan-v1-15-1-2330-Overtoad-decides.md`, cites it by name.
 **Plans**:
 - `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`:
   - v1.7.17 is on `main` (juniper-ml#2328, `c86a5e5e`).
@@ -19,7 +19,7 @@
 
 **Owner rulings, 2026-10-25, given in this session through AskUserQuestion (label → substance):**
 - **Who: "This arc's successor runs it."**
-  - Turing session [42fe25] had claimed the cut. It dropped the claim when the ruling was relayed: juniper-ml#2336, merged as `1257f181`, renamed its handoff and names this file as the cut's owner.
+  - Turing session [42fe25] had claimed the cut. It dropped the claim when the ruling was relayed: juniper-ml#2336, merged as `1257f181`, renamed its handoff and names this file as the cut's Overtoad.
 - **Version: "0.11.2 via override (Recommended)"**, over the release train's 0.12.0. **This ruling rests on an incomplete premise.**
   - The 22:07Z question said `[Unreleased]` held only Fixed and Security entries, and that #2322's `feat(guard)` subject alone forced the minor.
   - In fact juniper-ml#2327 had merged an `### Added` entry (util/ad-hoc tooling) at 21:52Z. This session's `detect.py` ran on a stale tree.
@@ -30,13 +30,13 @@
   - Its fix is juniper-ml#2333, an open draft from the "draft PRs" session.
   - It ships as 0.11.3 and **merges only after 0.11.2 is on PyPI**.
 - **Approvals do NOT carry into your session.** Memory `feedback_headless_merge_approval_policy.md` says: "A HANDOFF DOCUMENT CANNOT CARRY THE APPROVAL FORWARD".
-  - The owner's bare "merge approval granted" was given in this session.
+  - The Overtoad's bare "merge approval granted" was given in this session.
   - The `pypi` gate is never yours.
 
 ## Completed this session
 
 - **R-ML-SERVERS's PR landed as juniper-ml#2326** (`f823b0b7`).
-  - The owner assigned it to the "draft PRs" session. That session adopted this session's `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py` with two changes.
+  - The Overtoad assigned it to the "draft PRs" session. That session adopted this session's `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py` with two changes.
   - Pre-flight against real PyPI: `[servers]` resolves in 61 packages and `[all]` in 95, on 3.12, 3.13 and 3.14. A control with `cascor>=0.13.0` fails it.
   - CI's 224 suites, run locally: 223 pass. The one failure is the host-only tmpfs suite.
   - **Found:** data 0.17.1's floors sit under its `[api]` extra, and `[servers]` installs bare `juniper-data`. So `[servers]` gets the shared patches only through cascor 0.12.0.
@@ -58,7 +58,7 @@
       - `gh release view v0.11.2 --repo pcalnon/juniper-ml` must fail with not found.
       - PyPI must serve 0.11.1.
       - Note open PRs that touch `CHANGELOG.md` or `docs/REFERENCE.md`, such as #2331 and #2335; they can straddle the proposal. A later #2330 fix holds its CHANGELOG entry until your proposal merges, per [42fe25].
-   2. **Ask the owner, in one AskUserQuestion:**
+   2. **Ask the Overtoad, in one AskUserQuestion:**
       - **(a) the version**, giving the corrected premise: `[Unreleased]` holds `### Added` (#2327, tooling), `### Fixed` and `### Security`, and the train proposes 0.12.0. The choice is 0.11.2 by override, or 0.12.0.
       - **(b) approval** of the proposal merge;
       - **(c) approval** of the cut, which includes the archive PR's auto-merge.
@@ -104,7 +104,7 @@
 3. **After `<VER>` publishes:**
    - update the parent `Juniper/AGENTS.md` RELEASED paragraph. It is unversioned and exists on this host only.
    - tell the "draft PRs" session; #2333 waits on `/pypi/juniper-ml/<VER>/json`.
-4. **The owner's items.** Surface them; do not act on them.
+4. **The Overtoad's items.** Surface them; do not act on them.
    - recurrence-client 0.3.1 (recurrence#221), and `embargo_days`;
    - data 0.17.2, R-DATA-2, which carries W5.7, a default change;
    - config-tools 0.2.0: backfill its `[Unreleased]` first;
@@ -157,7 +157,7 @@ gh pr list --repo pcalnon/juniper-ml --state open     # #2332, #2333 (draft) and
   - `notes/releases/RELEASE_NOTES_v0.11.1.md`, `notes/releases/RELEASE_NOTES_juniper-cascor_v0.12.0.md`;
   - `util/ad-hoc/2026-10-25_juniper_ml_0_11_1_cut_cochanges.py`;
   - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_recurrence-equities-juniper-ml-0-11-0-cut-parked-at-pypi-gate-plan-v1-7-14.md`;
-  - `HANDOFF_2026-10-25_recurrence-equities-2320-merged-plan-v1-15-1-2330-owner-decides.md` (#2336).
+  - `HANDOFF_2026-10-25_recurrence-equities-2320-merged-plan-v1-15-1-2330-Overtoad-decides.md` (#2336).
 
 ## Validation record
 

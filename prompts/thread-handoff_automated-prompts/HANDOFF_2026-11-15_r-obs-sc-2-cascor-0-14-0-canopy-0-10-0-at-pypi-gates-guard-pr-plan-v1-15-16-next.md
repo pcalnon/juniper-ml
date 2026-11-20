@@ -1,16 +1,16 @@
-# Handoff: R-OBS-SC-2 follow-ups -- juniper-cascor 0.14.0 and juniper-canopy 0.10.0 wait at the owner's `pypi` gates; the guard PR (#2576) is merged; deploy pins, the parent paragraph and plan v1.15.16 remain
+# Handoff: R-OBS-SC-2 follow-ups -- juniper-cascor 0.14.0 and juniper-canopy 0.10.0 wait at the Overtoad's `pypi` gates; the guard PR (#2576) is merged; deploy pins, the parent paragraph and plan v1.15.16 remain
 
 **Written**: 2026-11-15 ~02:10Z by session `1b4fec84` (`ListAgents`: `r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next`, ref `55486c`), worktree `.claude/worktrees/buzzing-growing-whale`.
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next.md`
-(with its "Update, 2026-11-14" section, juniper-ml#2565). Its owner rulings 1-7 of 2026-11-13, its traps and its "Still open with the owner" list
+(with its "Update, 2026-11-14" section, juniper-ml#2565). Its Overtoad rulings 1-7 of 2026-11-13, its traps and its "Still open with the Overtoad" list
 still hold; this file does not repeat them.
 **Working record**: `tmp/s2/WORKING_RECORD.md` in this worktree (gitignored; keep until plan v1.15.16 merges, with all of `tmp/s2/`).
 
-Every state fact was read from `gh`, PyPI or the disk between 2026-11-14 22:53Z and 2026-11-15 02:06Z. `[moves]` marks state that the owner's approval or an armed merge changes.
+Every state fact was read from `gh`, PyPI or the disk between 2026-11-14 22:53Z and 2026-11-15 02:06Z. `[moves]` marks state that the Overtoad's approval or an armed merge changes.
 
-## Owner rulings this session (label verbatim; answer times from the transcript, `util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py 1b4fec84`)
+## Owner rulings this session (label verbatim; answer times from the transcript, `util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py 1b4fec84`)
 
-The owner opened the session with "continue work arc from handoff: …HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next.md" and "merge approval granted" (per-session; it does not carry). That instruction answered the 11-14 update's first open question (arc scope). Its "clarify" turned out to be the owner's request for that update (22:12:40Z), after which they said "the four open questions should be handled by the session working from the updated handoff" (22:37:55Z).
+The Overtoad opened the session with "continue work arc from handoff: …HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next.md" and "merge approval granted" (per-session; it does not carry). That instruction answered the 11-14 update's first open question (arc scope). Its "clarify" turned out to be the Overtoad's request for that update (22:12:40Z), after which they said "the four open questions should be handled by the session working from the updated handoff" (22:37:55Z).
 
 1. **Parent docs** (22:59:11Z): "Edit it (Recommended)".
 2. **cascor version** (23:36:54Z): "0.14.0 (Recommended)".
@@ -40,8 +40,8 @@ The owner opened the session with "continue work arc from handoff: …HANDOFF_20
 
 | Item | State |
 | --- | --- |
-| cascor publish run 43663237489 | Publish to TestPyPI success; **Publish to PyPI waiting at `pypi`** (owner) |
-| canopy publish run 43664277663 | Build and Validate and Publish to TestPyPI success; **waiting at `pypi`** (owner) |
+| cascor publish run 43663237489 | Publish to TestPyPI success; **Publish to PyPI waiting at `pypi`** (Overtoad) |
+| canopy publish run 43664277663 | Build and Validate and Publish to TestPyPI success; **waiting at `pypi`** (Overtoad) |
 | image runs | cascor 43663237432, canopy 43664277607 (in progress at 01:4xZ) |
 | juniper-ml#2568 (QUICK_START + four cut tools + start prompt) | MERGED 2026-11-15T02:15:25Z as `7ce8d365`. Its first run failed only G5 (a `/home/pcalnon` literal), fixed by its third commit |
 | juniper-ml#2570 (cascor archive) | OPEN, auto-merge armed. It goes BEHIND whenever `main` moves (the strict ruleset), so it was updated again at ~02:53Z. If it is still open, run `gh api -X PUT repos/pcalnon/juniper-ml/pulls/2570/update-branch` again |
@@ -51,13 +51,13 @@ The owner opened the session with "continue work arc from handoff: …HANDOFF_20
 
 ## Remaining work
 
-1. **First turn**: ask the owner for merge approval for a named group: the juniper-deploy pin PR, the plan v1.15.16 PR and this file's PR. Before asking, read the table above again and finish any merge that is still armed.
-2. **After the owner approves both gates**:
+1. **First turn**: ask the Overtoad for merge approval for a named group: the juniper-deploy pin PR, the plan v1.15.16 PR and this file's PR. Before asking, read the table above again and finish any merge that is still armed.
+2. **After the Overtoad approves both gates**:
    - Verify from the registry: `/pypi/juniper-cascor/0.14.0/json` and `/pypi/juniper-canopy/0.10.0/json` answer 200, and each wheel's sha256 equals TestPyPI's. The pattern is `util/ad-hoc/2026-10-28_verify_cascor_0_13_0_published_wheel.py`.
    - Check that both image runs finished, and GHCR's tag lists.
    - Then the juniper-deploy PR that pins both images (precedent juniper-deploy#266 for cascor 0.13.0).
-   - The stack restart is the owner's, on ruling 6's condition: the owner upgrades the three environments (`JuniperData` and `JuniperCanopy1` hold observability 0.4.0 and service-core 0.5.0), and a session re-runs the probe in each and records it.
-3. **The parent `Juniper/AGENTS.md` again, owner's word first.** Its new bullet says "juniper-cascor's and juniper-canopy's next releases raise theirs". Once both are on PyPI, that sentence and the cascor/canopy bullets need the new versions.
+   - The stack restart is the Overtoad's, on ruling 6's condition: the Overtoad upgrades the three environments (`JuniperData` and `JuniperCanopy1` hold observability 0.4.0 and service-core 0.5.0), and a session re-runs the probe in each and records it.
+3. **The parent `Juniper/AGENTS.md` again, Overtoad's word first.** Its new bullet says "juniper-cascor's and juniper-canopy's next releases raise theirs". Once both are on PyPI, that sentence and the cascor/canopy bullets need the new versions.
 4. **Plan v1.15.16** (v1, still 1.15.15; method in item 3 of the five-PRs handoff; v2 is a draft). Record:
    - the 11-13 handoff's item 5 list;
    - this session's three rulings;
@@ -70,7 +70,7 @@ The owner opened the session with "continue work arc from handoff: …HANDOFF_20
    - "ruling 17" names two different flood-4 items in cascor's and canopy's CHANGELOGs, and the flood-4 record's §8 lists rulings 1-14 only;
    - #2576's PR body lists three plan passages it makes stale (v1 "with no register row" and one more; v2 "has no APD-ECO-016"), two stale passages it leaves, and a proposed tripwire for a future canopy `FailedAuthThrottle`.
 6. **Archive the reviews.** The round-1 guard review is in `.claude/worktrees/toasty-prancing-karp/tmp/s1/guard_review_round1.md` (sha256 `37508e48…`). The notes reviews and the round-2 guard review exist only in this session's transcript (`1b4fec84`). Archive them, as plan v1.15.16 decides, before any worktree holding evidence is removed.
-7. **Housekeeping, worktree by worktree, on the owner's word**:
+7. **Housekeeping, worktree by worktree, on the Overtoad's word**:
    - from the 11-13 file: logical-percolating-sparkle, foamy-squishing-floyd, the never-opened juniper-data worktree, and the cascor and canopy primaries' two local branches;
    - toasty-prancing-karp, `juniper-ml/tmp/retry-after-guard-ssq1mano`;
    - the executor's `agent-a4c8d9de35bfc0d67` (its `tmp/eco016/`), and this worktree.
@@ -99,7 +99,7 @@ sha256sum /home/pcalnon/Development/python/Juniper/AGENTS.md   # f3f69b34… unl
 
 ## Git status (2026-11-15 ~02:06Z)
 
-This worktree's branch `worktree-buzzing-growing-whale` is at `a949d504`, behind `origin/main`. The `docs/QUICK_START.md` edit and the four `util/ad-hoc/2026-11-1[45]_*` scripts are uncommitted here; they are what #2568 carries. Nothing is staged. This file lands through its own PR, which the owner merges.
+This worktree's branch `worktree-buzzing-growing-whale` is at `a949d504`, behind `origin/main`. The `docs/QUICK_START.md` edit and the four `util/ad-hoc/2026-11-1[45]_*` scripts are uncommitted here; they are what #2568 carries. Nothing is staged. This file lands through its own PR, which the Overtoad merges.
 
 ## Documents referenced / changed
 

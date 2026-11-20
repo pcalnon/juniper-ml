@@ -14,7 +14,7 @@
 # passphrase". Decrypting an actual volume tests the thing we care about.
 #
 # Does not modify the archive. NOTE: it DOES write decrypted plaintext to a
-# mktemp file (owner-only) for the duration of the check, because PIPESTATUS is
+# mktemp file (Overtoad-only) for the duration of the check, because PIPESTATUS is
 # not observable after a command substitution under `set -u`. A trap removes it
 # on any exit path, including interrupt.
 #

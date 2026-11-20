@@ -96,7 +96,7 @@ With the drift removed, the "unregularised linear readout on a rank-deficient un
 
 **Evidence**: `routers/crossval.py:72` cuts folds over `split="full"`; `20-matrix-datasets.json` → `n_train_partition 1346 / n_val 176 / n_test 176`, folds `eval_first_idx` 283/566/849/1132/1415 with `n_eval 283` (B.5, B.8): fold 3's eval holds 69 `val` rows; **fold 4's eval holds 107 `val` rows and all 176 `test` rows** (dates 2020-11-13 → 2021-12-29; the `test` partition is 2021-04-21 → 2021-12-29). Fold 4 is the worst fold in every sane cell (−0.26 / −0.28) and contributes a fifth of the aggregate. Consequences the note omits: the "sane number", the R5 band and the W1.1(a) bundle choice were all selected on a population that includes `test`, so W5.3's "`test` is touched once" (plan line 490) is already void for this artifact; and W5.2 will exclude `test` from the pool (plan line 490), so the population the band will govern is not the one it was measured on. Re-measured on train+val only (B.9): `rff/1.0` −0.101, `rff/gcv` −0.006, service defaults −17,365 — class unchanged.
 
-**What must change**: §2.5 and §4 must state that fold 4 is the `test` partition plus `val`; §3.4 should carry the train+val numbers alongside; W5.3's owner should know the promise is already broken for every full-view CV run.
+**What must change**: §2.5 and §4 must state that fold 4 is the `test` partition plus `val`; §3.4 should carry the train+val numbers alongside; W5.3's Overtoad should know the promise is already broken for every full-view CV run.
 
 ### F8 — MINOR — Embargo 2 against a 64-step look-back: every fold's first eval window shares 61 of 64 days with the last train window
 

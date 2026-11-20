@@ -1,4 +1,4 @@
-# HANDOFF 2026-08-10 — release-train closeout: ruleset rollout, signing gap, remaining owner decisions
+# HANDOFF 2026-08-10 — release-train closeout: ruleset rollout, signing gap, remaining Overtoad decisions
 
 Continue the Juniper release-train / branch-protection arc. Standing policy: headless merges only on
 Paul's explicit per-PR/group approval; guardrails (checks RAN+green, no union resolutions, defective

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-05
 Status: ad-hoc — regression suite for an interim gate
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (XC-PRESERVE method);
          reports/2026-10-04_consolidated-development-plan/round4-*.md .. round13-*.md (where each case came from)
 
@@ -278,7 +278,7 @@ def text_cases():
     # that v6 reported (R9B1-11)
     c.append(("path-after-cd", {"a.sh": f"cd /x; {P}_FILE{EQ}/run/credentials/juniper/{p}\nEnvironment{EQ}{P}_FILE{EQ}/run/credentials/juniper/{p}\n"}, 0, None))
     api = "JUNIPER_DATA_" + "API_KEY"
-    c.append(("env-table-description", {"a.md": f"| {api} | set-by-the-owner |\n"}, 0, None))
+    c.append(("env-table-description", {"a.md": f"| {api} | set-by-the-Overtoad |\n"}, 0, None))
     c.append(("env-label-prose", {"a.md": "- `JUNIPER_CASCOR_" + "TOKEN`: assignments, labels and table rows\n"}, 0, None))
     c.append(("field-default-none", {"a.py": f"{p}: str | None {EQ} Field(default{EQ}None)\n"}, 0, None))
     c.append(("format-placeholder", {"a.py": 'print(f"' + P + EQ + '{value}")\n'}, 0, None))
@@ -717,7 +717,7 @@ def contract_check(base: Path, workdir: Path):
         # round 10: values below a name that has trailing text, or several lines down
         "k8s-comment.yaml": f"env:\n  - name: {api}  # rotated\n    value: \"{v['comment']}\"\n",
         "label-qualifier.md": "**Pass" + "phrase** (tier 2):\n\n" + v["qualifier"] + "\n",
-        "k8s-gap.yaml": f"env:\n  - name: {api}\n    # rotated by the owner\n    # see the runbook\n    value: \"{v['gap']}\"\n",
+        "k8s-gap.yaml": f"env:\n  - name: {api}\n    # rotated by the Overtoad\n    # see the runbook\n    value: \"{v['gap']}\"\n",
         "name-value-gap.json": '{"Name": "--pass' + 'phrase",\n "Filter": "",\n "Argument": "",\n "Value": "' + v["namevalue"] + '"}\n',
         "argv-comment.py": 'cmd = [\n    "duplicati-aes' + 'crypt",  # the tool\n    "d",\n    "' + v["argv"] + '",\n]\n',
         "blank-names.md": ("**Pass" + " phrase:** " + v["two"] + "\n\n| Settings" + " encryption" + " key | " + v["three"]

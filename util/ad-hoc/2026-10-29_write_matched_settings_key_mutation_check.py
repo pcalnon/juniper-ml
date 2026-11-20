@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-29
 Status: ad-hoc — investigation (Phase D round-1 fold-in: the mutants lane B found surviving)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tests/test_write_matched_settings_key.py; Phase D's design, round 1 (lane B, B-3 and its mutation table),
          and rounds 2 to 4 (lanes R2-A, R3 and R4), which added mutants
 
@@ -39,7 +39,7 @@ COPY = (
 # (name, old text -- must occur exactly once in the tool, new text)
 MUTANTS = (
     ("drop O_EXCL", "os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW", "os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW"),
-    ("drop the parent-owner check", "if st.st_uid != os.geteuid():", "if False:"),
+    ("drop the parent-Overtoad check", "if st.st_uid != os.geteuid():", "if False:"),
     ("drop the gate read-back comparison", "if key is None or sha(key) != target:", "if key is None:"),
     ("drop the bash read-back comparison", "    if got != target:\n", "    if False:\n"),
     ("keep a partial file on a write failure", "        os.unlink(name, dir_fd=dfd)\n", "        pass\n"),

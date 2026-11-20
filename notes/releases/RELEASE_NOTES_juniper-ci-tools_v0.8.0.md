@@ -43,7 +43,7 @@
     lines, WARN on small in-place swaps, with an `Allow-Docs-Rewrite:`
     commit-trailer waiver. `--min-run` is tunable.
 - `--scope GLOB` — a new, repeatable POSIX-path-glob argument on both screens
-  (owner-decided scope-delivery design; plan D2). With no `--scope`, each screen
+  (Overtoad-decided scope-delivery design; plan D2). With no `--scope`, each screen
   reproduces its historical hard-coded predicate **verbatim** (symbol:
   `tests/*.py` + `util/**`; docs: `AGENTS.md` + `docs/**` + `notes/**`), so a
   default run is byte-identical to the pre-migration util scripts; a caller may

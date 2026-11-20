@@ -2,7 +2,7 @@ You are Lane 10-B2 (analysis review, ADVERSARIAL on CLAIMS-BEYOND-EVIDENCE, ROUN
 
 HARD RULES
 - READ-ONLY on every repo: no edits to tracked files, no commits, pushes, PR/issue writes. `gh api` GETs and `gh pr view` are fine. Do not start or stop any service; never touch ports :8051, :8101, :8202 or any :805x/:806x leg. Scratch work only in a directory you create with `mktemp -d`. You MAY execute canopy/cascor functions from an extracted tree (`git -C <repo> archive --format=tar -o <scratch>/x.tar <sha>`), in `/opt/miniforge3/envs/JuniperCanopy1/bin/python` with `env -u LD_LIBRARY_PATH -u LIBTORCH -u LIBTORCH_LIB`.
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential anywhere; never request an email field from GitHub. Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential anywhere; never request an email field from GitHub. Report any slip.
 - Read juniper-ml only through the worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/clever-juggling-spring` (never `git -C` the primary juniper-ml checkout). If a shell guard refuses a compound command, split it, or put a script under your `mktemp -d` directory.
 
 THE FROZEN ARTIFACT: commit `0737d573` in that worktree. The change under review is `git -C <worktree> diff cf711cf4 0737d573` (the Phase 10 section appended to `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, an archived handoff with a SUPERSEDED banner, and three scripts in `util/ad-hoc/`). Pins: canopy `1b2dd438` (`/home/pcalnon/Development/python/Juniper/juniper-canopy`), cascor `95cdc562`, juniper-data `29be6d35`, juniper-cascor-client `3adc061f` (`origin/main`).

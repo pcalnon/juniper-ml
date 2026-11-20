@@ -385,7 +385,7 @@ def main() -> int:
                 except ValueError:
                     return
                 # The poll writer's output is exactly ``<store>.data``. The WS-append
-                # co-owner declares ``allow_duplicate``, which Dash suffixes -- so an
+                # co-Overtoad declares ``allow_duplicate``, which Dash suffixes -- so an
                 # exact match selects the poll writer and records the other separately.
                 if not isinstance(out, str) or not out.startswith(METRICS_STORE):
                     return
@@ -467,7 +467,7 @@ def main() -> int:
     res["invocations"] = invocations
     _classify(invocations, trace)
 
-    # Scored on the POLL writer only -- the F-035 subject. The WS-append co-owner is
+    # Scored on the POLL writer only -- the F-035 subject. The WS-append co-Overtoad is
     # counted in `kinds` and excluded here; it is a different callback identity.
     writes = [iv for iv in invocations if iv["kind"] == "write" and iv["writer"] == "poll"]
     pre_control = [iv for iv in writes if not res.get("control", {}).get("ran")

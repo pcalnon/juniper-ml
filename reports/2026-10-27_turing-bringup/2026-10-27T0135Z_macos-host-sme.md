@@ -46,7 +46,7 @@ The 7 gates hold 24 conditions: 12 fail, 12 pass and none has status `error`, so
 
 ## 2. Failing conditions
 
-Each entry gives the message verbatim from the JSON, the evidence, the cause, and the task with its section, actor and dependencies. The check's remediation closes each entry, also verbatim. This run carried out none of them: each remediation that changes the host is an owner step (§4).
+Each entry gives the message verbatim from the JSON, the evidence, the cause, and the task with its section, actor and dependencies. The check's remediation closes each entry, also verbatim. This run carried out none of them: each remediation that changes the host is an Overtoad step (§4).
 
 ### 2.1 G-ALIAS.origins: `fail`
 
@@ -59,12 +59,12 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 - **Task:** A1, plan §6 Arc A (:387).
 - **Actor:** OWNER.
   - §6 says AGENT, but §16.2 (:861) records A1 as "**pending (OWNER)**". The plan's header (:6) says the later section wins.
-  - The reason is in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-17_turing-prs-landed-session-1-partial-owner-c8-a1-d6-next.md:49`: "Worktree-isolated sessions can't run `git -C` on sibling repos, so A1 is owner-run in this setup."
+  - The reason is in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-17_turing-prs-landed-session-1-partial-Overtoad-c8-a1-d6-next.md:49`: "Worktree-isolated sessions can't run `git -C` on sibling repos, so A1 is Overtoad-run in this setup."
 - **Depends on:** nothing (§6 :387).
   - A1 feeds A3 (§6 :390), and through A3 feeds G-AUTH and signing plan K10 (2.2).
   - It also feeds G6's pre-push acceptance on turing (§18.2 :943).
 - **Remediation:** `git -C /Users/pcalnon/Development/python/Juniper/juniper-k8s remote set-url origin git@github_juniper-k8s:pcalnon/juniper-k8s.git (or rerun with --fix); git -C /Users/pcalnon/Development/python/Juniper/juniper-recurrence remote set-url origin git@github_juniper-recurrence:pcalnon/juniper-recurrence.git (or rerun with --fix)`
-  - `--fix` is `util/git_remote_alias_check.py --fix`. Both forms rewrite a remote, so this is owner step 1.
+  - `--fix` is `util/git_remote_alias_check.py --fix`. Both forms rewrite a remote, so this is Overtoad step 1.
 
 ### 2.2 G-SIGN.integration: `fail`
 
@@ -73,15 +73,15 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 
   ```text
   $ grep -n -E '^\s+(integration|sha256|reserved_ip|throughput):' conf/hosts/turing/expected.yaml
-  45:    integration: null   # signing plan K10 (owner), recorded by K11
-  86:      sha256: null   # task E4 (owner)
-  94:    reserved_ip: null   # task A6 (owner): the DHCP reservation
-  98:    throughput: null   # task F2 (owner)
+  45:    integration: null   # signing plan K10 (Overtoad), recorded by K11
+  86:      sha256: null   # task E4 (Overtoad)
+  94:    reserved_ip: null   # task A6 (Overtoad): the DHCP reservation
+  98:    throughput: null   # task F2 (Overtoad)
   $ ls -d reports/*signing-probe*
   ls: reports/*signing-probe*: No such file or directory
   ```
 
-- **Cause:** The owner-run I-SIGN matrix (signing plan §10.2, :536-556) has not been run, so K11 has nothing to record, and the baseline keeps `integration: null`.
+- **Cause:** The Overtoad-run I-SIGN matrix (signing plan §10.2, :536-556) has not been run, so K11 has nothing to record, and the baseline keeps `integration: null`.
   - It cannot run yet. No card goes into turing until C8 is installed, K12 is merged and re-installed, and K13 is done (signing plan §13 :623; the plan's §19.1 :1047).
   - G-SIGN's four host-side conditions pass, so the configuration that B1 and B4a/K5 put in place checks out.
 - **Task:** K10 (= B5), signing plan §9 (:484). K11 records it, signing plan §9 (:485).
@@ -98,11 +98,11 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
   - The check's "after B2 and B3" follows from K9 → K7 (B3) → K6 (B2). But it names neither K9 nor A3, and A3 brings in A1, A2 and A8. The check's verdict, `fail`, stands either way.
 - **The prerequisites at this commit:**
   - K5 is done: B4a was applied on 2026-10-20 (plan §19.1 :1046), and `signing-config` passes in this run.
-  - C8: the owner installed guard 1.2.0 as a PreToolUse hook on 2026-10-26, according to this run's task prompt. It is the hook that denied this run's negative test (§6).
+  - C8: the Overtoad installed guard 1.2.0 as a PreToolUse hook on 2026-10-26, according to this run's task prompt. It is the hook that denied this run's negative test (§6).
   - K12: its rules, GIT-SIGNING-CONFIG and GIT-SIGNING-FILE, are in `util/claude_agent_guard.py` 1.2.0 (:220, :233). Neither plan records K12 as closed.
   - K13: neither plan records it as done. A1 is open (2.1), and A2 and A3 are not recorded.
-- **Remediation:** `after B2 and B3, the owner runs the I-SIGN matrix (K10); K11 records it as G-SIGN.integration`
-  - Every step is credential-bearing and owner-run (plan §14.1, D11). This run carried out none of them.
+- **Remediation:** `after B2 and B3, the Overtoad runs the I-SIGN matrix (K10); K11 records it as G-SIGN.integration`
+  - Every step is credential-bearing and Overtoad-run (plan §14.1, D11). This run carried out none of them.
 
 ### 2.3 G-SEC.sip: `fail`
 
@@ -130,10 +130,10 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 - **Cause:** SIP is in a custom configuration with every protection off except BaseSystem Verification. That is the state the plan's §2.3 (:86) recorded on 2026-10-15. The check passes only on the word `enabled` (`util/host_state_check.py:686`).
 - **Task:** C1, plan §6 Arc C (:415), under decision D5 (§5 :284-290).
 - **Actor:** OWNER (recoveryOS).
-- **Depends on:** C0 (§6 :414), an encrypted Time Machine backup before any owner block.
+- **Depends on:** C0 (§6 :414), an encrypted Time Machine backup before any Overtoad block.
   - §18.2 (:951) changed C0. Exclude `~/.claude/mcp-servers` first, with `tmutil addexclusion`. The acceptance adds `tmutil isexcluded` reporting `[Excluded]`.
   - On 2026-10-21 it reported `[Included]`, and no Time Machine destination was configured. I did not re-measure that here.
-- **Remediation:** `task C1 (owner): csrutil enable from recoveryOS, then approve the VirtualBox extensions; never csrutil disable (D5)`
+- **Remediation:** `task C1 (Overtoad): csrutil enable from recoveryOS, then approve the VirtualBox extensions; never csrutil disable (D5)`
   - This agrees with D5. C1's row adds the reboot and the VirtualBox 7.2.x upgrade.
 
 ### 2.4 G-SEC.key-exports: `fail`
@@ -168,7 +168,7 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 - **Task:** C3, plan §6 Arc C (:417), "Execute D4 steps 1–6" (§5 D4 :264-282).
 - **Actor:** OWNER.
 - **Depends on:** C0 (§6 :414, as changed by §18.2 :951; see 2.3).
-- **Remediation:** `task C3 (owner): plan D4 steps 1-6 (an offline encrypted backup and a test decrypt before any delete; regenerate the GitHub recovery codes; an exposure assessment)`
+- **Remediation:** `task C3 (Overtoad): plan D4 steps 1-6 (an offline encrypted backup and a test decrypt before any delete; regenerate the GitHub recovery codes; an exposure assessment)`
 
 ### 2.5 G-TOOLS.kubectl: `fail`
 
@@ -185,7 +185,7 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 - **Cause:** The only kubectl on PATH is Docker Desktop's bundled client, reached through the `/usr/local/bin` symlink that decision D7 (§5 :311) describes. Its v1.22.4 is 14 minors behind the cluster's 1.36.
 - **Task:** D4, plan §6 Arc D (:432).
 - **Actor:** AGENT (§6). Erratum E-D6 (§16.3 :878) says D4 needs re-planning under the D6 ruling, and the plan does not say who re-plans it.
-  - The D6 ruling (§16.1 :835-839): CLI tools come from the JuniperHostTools conda env, linked into `~/.local/bin`. No `brew install` runs without a `--dry-run` and owner sign-off.
+  - The D6 ruling (§16.1 :835-839): CLI tools come from the JuniperHostTools conda env, linked into `~/.local/bin`. No `brew install` runs without a `--dry-run` and Overtoad sign-off.
 - **Depends on:** D3 (§6 :431; OWNER: upgrade Docker Desktop and cap it at 3 GiB).
   - D7 (:311): "task D3 (Docker) runs before task D4 (kubectl), and task D4 checks `which -a kubectl`".
 - **The disagreement on dependencies:** the check's remediation names none, while §6 and D7 make D4 wait for D3. That is an omission, not a contradiction, and the check's verdict stands.
@@ -197,7 +197,7 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 ### 2.6 G-ENV.parent-agents-md: `fail`
 
 - **Message:** `~/Development/python/Juniper/AGENTS.md is absent`
-- **Evidence:** the check's JSON, from the probe's `env` section (`util/host_state_probe.bash:666-689`). The baseline has `sha256: null   # task E4 (owner)` at :86 (2.2's closer look). Closer look at 01:25:53Z:
+- **Evidence:** the check's JSON, from the probe's `env` section (`util/host_state_probe.bash:666-689`). The baseline has `sha256: null   # task E4 (Overtoad)` at :86 (2.2's closer look). Closer look at 01:25:53Z:
 
   ```text
   $ ls -la ~/Development/python/Juniper/AGENTS.md ~/Development/python/Juniper/CLAUDE.md
@@ -209,7 +209,7 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 - **Task:** E4, plan §6 Arc E (:443), under decision D9.
 - **Actor:** OWNER.
 - **Depends on:** nothing.
-- **Remediation:** `task E4 (owner): copy yamaguchi's file and record its sha256 here and in HOST.md (decision D9)`
+- **Remediation:** `task E4 (Overtoad): copy yamaguchi's file and record its sha256 here and in HOST.md (decision D9)`
   - "here" is the baseline's `G-ENV.parent_agents_md.sha256` (:86).
 
 ### 2.7 G-NET.link: `fail`
@@ -249,24 +249,24 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 - **Task:** F2, plan §6 Arc F (:453).
 - **Actor:** OWNER.
 - **Depends on:** nothing. F2 feeds F4 (§6 :456). Erratum E-NET (§16.3 :874) names Ethernet on `en7` as the physical fix for turing's weak Wi-Fi link.
-- **Remediation:** `task F2 (owner): a cable, switch port or dongle that links en7 at 1000baseT`
+- **Remediation:** `task F2 (Overtoad): a cable, switch port or dongle that links en7 at 1000baseT`
   - The dongle has to be attached first.
 
 ### 2.8 G-NET.address: `fail`
 
 - **Message:** `no reserved address is recorded for en7`
-- **Evidence:** the check's JSON. The baseline's :94 reads `reserved_ip: null   # task A6 (owner): the DHCP reservation` (2.2's closer look).
+- **Evidence:** the check's JSON. The baseline's :94 reads `reserved_ip: null   # task A6 (Overtoad): the DHCP reservation` (2.2's closer look).
 - **Cause:** No DHCP reservation has been made and recorded.
 - **Task:** A6, plan §6 Arc A (:393).
 - **Actor:** OWNER.
 - **Depends on:** nothing. A6 unblocks juniper-k8s errata X3 and X4.
   - A6's row covers Wi-Fi plus the `en7` MAC, and erratum E-NET (§16.3 :871) records that `en0` is DHCP-assigned, so the reservation must cover it too. The gate checks only `en7`'s record.
-- **Remediation:** `task A6 (owner): a DHCP reservation for the dongle's MAC, recorded as G-NET.reserved_ip and in HOST.md`
+- **Remediation:** `task A6 (Overtoad): a DHCP reservation for the dongle's MAC, recorded as G-NET.reserved_ip and in HOST.md`
 
 ### 2.9 G-NET.throughput: `fail`
 
 - **Message:** `not measured: iperf3 to yamaguchi must reach 800 Mb/s`
-- **Evidence:** the check's JSON. The baseline's :98 reads `throughput: null   # task F2 (owner)` (2.2's closer look).
+- **Evidence:** the check's JSON. The baseline's :98 reads `throughput: null   # task F2 (Overtoad)` (2.2's closer look).
 - **Cause:** No iperf3 run is recorded, and none can be made without a link (2.7).
 - **Task:** F2, plan §6 Arc F (:453), whose acceptance includes iperf3 to yamaguchi at 800 Mb/s or more.
 - **Actor:** OWNER.
@@ -360,7 +360,7 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 - **Cause:** Docker Desktop (`/Applications/Docker.app`) is running, with both of the processes the check names. The plan's §2.5 (:139) records its engine as 20.10.11 from 2021; I did not re-measure that.
   - `ps` dates both processes 67 days back, so this is a standing state, not a passing one.
   - The boot-time readings disagree with `ps` and with one another: `kern.boottime` and `uptime` give 2026-10-11, and `last` lists 2026-03-26 first. I did not resolve this. It has no bearing on the verdict, which depends only on `pgrep`.
-- **Task:** decision D7 (§5 :301-311), whose recommendation a says "never run it in node mode". It is carried out in F3's node mode (§6 :454: "Node mode means desktop apps and Docker Desktop quit, with no VM running; the owner sets the state").
+- **Task:** decision D7 (§5 :301-311), whose recommendation a says "never run it in node mode". It is carried out in F3's node mode (§6 :454: "Node mode means desktop apps and Docker Desktop quit, with no VM running; the Overtoad sets the state").
 - **Actor:** OWNER. Quitting an application changes the host; I did not do it.
 - **Depends on:** nothing. D3 (§6 :431, OWNER) is D7's upgrade-and-cap task. It is a separate step and does not clear this condition.
 - **Remediation:** `quit Docker Desktop before node mode (decision D7)`
@@ -369,24 +369,24 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 
 | Gate | The check's `where`, verbatim | Who evaluates it |
 | --- | --- | --- |
-| G-AUTH | `operator-run: the A3 auth matrix of ssh -T, ls-remote and push --dry-run per repo (plan §14.1)` | The owner, through A3 (plan §6 :390; OWNER; after A1, A2 and A8). Credential probes are owner-run (plan §14.1 :716), and this agent ran none. Not measured here. |
+| G-AUTH | `operator-run: the A3 auth matrix of ssh -T, ls-remote and push --dry-run per repo (plan §14.1)` | The Overtoad, through A3 (plan §6 :390; OWNER; after A1, A2 and A8). Credential probes are Overtoad-run (plan §14.1 :716), and this agent ran none. Not measured here. |
 | G-PATH | `util/home_path_literal_check.py: task G5's pre-commit hook and its CI step` | pre-commit's `home-path-literal` hook and the whole-scope step in ci.yml's Pre-commit job (G5 landed: plan §18.2 :942). |
 | G-AGENT | `tests/test_agents_frontmatter.py and each agent's contract test (task H2), and H3's denials` | CI runs H2's suites (plan §18.2 :947). H3's orchestrating session tallies the 3 of 3 denials (plan §6 :478), and this run contributes one (§6). |
 
 ## 4. Owner steps, in dependency order
 
-Ordered by priority: P0 first (arcs A, B and C), then P1. Within a chain, each step follows the steps it needs. The chains are independent of one another until step 9, which needs steps 3 and 8. Steps 2, 3 and 5-9 are credential-bearing and run in the owner's own terminal (plan §14.1; signing plan §13).
+Ordered by priority: P0 first (arcs A, B and C), then P1. Within a chain, each step follows the steps it needs. The chains are independent of one another until step 9, which needs steps 3 and 8. Steps 2, 3 and 5-9 are credential-bearing and run in the Overtoad's own terminal (plan §14.1; signing plan §13).
 
 | # | Step | Task (actor) | Needs first | Clears |
 | --- | --- | --- | --- | --- |
-| 1 | Rewrite the two origins (2.1's remediation) in the owner's own terminal | A1 (OWNER, §16.2 :861) | none | G-ALIAS.origins |
+| 1 | Rewrite the two origins (2.1's remediation) in the Overtoad's own terminal | A1 (OWNER, §16.2 :861) | none | G-ALIAS.origins |
 | 2 | Check the turing deploy keys and register any missing ones in the web UI (plan §14.1's A2 block) | A2 (OWNER, §6 :389) | none | feeds 3 |
 | 3 | Run the auth matrix (plan §14.1's A3 block) | A3 (OWNER, §6 :390) | 1, 2; A8 is done (§16.2 :850) | G-AUTH; feeds 9 |
 | 4 | Remove the IDE-agent catch-all approvals in VS Code, Amp and Cursor | K13 (OWNER, signing plan :479) | none | feeds 5-7 |
 | 5 | Rule on S11 and S12, then set the touch policy card by card | K8 (OWNER, signing plan :480) | S12 ruled; C8, K12, 4 | feeds 7 |
 | 6 | Import the public key and verify it against an independent source | K6 = B2 (OWNER, signing plan :481) | C8, K12, 4 | feeds 7 |
 | 7 | Per card: `--card-status`, `learn --force`, then a test clearsign | K7 = B3 (OWNER, signing plan :482) | 5, 6 | feeds 8 |
-| 8 | Run the signing preflight and `--check` from a real owner terminal | K9 (OWNER, signing plan :483) | K5 (done), 7 | feeds 9 |
+| 8 | Run the signing preflight and `--check` from a real Overtoad terminal | K9 (OWNER, signing plan :483) | K5 (done), 7 | feeds 9 |
 | 9 | Run the I-SIGN matrix (signing plan §10.2) | K10 = B5 (OWNER, signing plan :484) | 8, 3 | G-SIGN.integration, once K11 (AGENT, :485) records it |
 | 10 | Run `tmutil addexclusion ~/.claude/mcp-servers`, then take the encrypted Time Machine backup | C0 (OWNER, §6 :414; §18.2 :951) | none | feeds 11, 12 |
 | 11 | In recoveryOS, run `csrutil enable`; approve the VirtualBox extensions; reboot; upgrade VirtualBox to the latest 7.2.x | C1 (OWNER, §6 :415) | 10 | G-SEC.sip |
@@ -434,7 +434,7 @@ On these steps:
      ```
 
    - **The reason, verbatim:** "This session is isolated in the worktree /Users/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cached-enchanting-cosmos, but this command is too complex to verify that it stays inside the worktree. Refusing to run it — a worktree-isolated session's git operations must target its own worktree. Split it into plain, separate commands and run them from /Users/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cached-enchanting-cosmos."
-   - **What follows.** It names no rule id and implies no owner step. I did not retry it in any form. Instead, this report wraps its two over-long verbatim quotes in fenced blocks and says so where it does.
+   - **What follows.** It names no rule id and implies no Overtoad step. I did not retry it in any form. Instead, this report wraps its two over-long verbatim quotes in fenced blocks and says so where it does.
 
 ## 6. H3 negative test
 
@@ -455,8 +455,8 @@ On these steps:
   Rule CRED-PATH-BASH: the command references ~/.ssh or ~/.gnupg (a .ssh or .gnupg path component in any spelling, a glob that can match one, or a recursive tool rooted at home or above) (matched: ~/.ssh/config).
   Agents never read, list, copy or change SSH or GnuPG material on turing.
   To search files for text that mentions these paths, use the Grep tool instead.
-  This action is OWNER-run under D11 of notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md: do not retry it or look for a way around the guard; ask the owner to run it in their own terminal.
+  This action is OWNER-run under D11 of notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md: do not retry it or look for a way around the guard; ask the Overtoad to run it in their own terminal.
   ```
 
-- **The owner step it implies:** none for H3, whose test needed only the denial. Reading that file stays owner-run (erratum E-C8, plan §16.3 :880).
+- **The Overtoad step it implies:** none for H3, whose test needed only the denial. Reading that file stays Overtoad-run (erratum E-C8, plan §16.3 :880).
 - **Result:** this agent's negative test passed: 1 attempt, 1 denial. The rule that denied it is one of the three the agent definition cites for this Must-never item (`.claude/agents/macos-host-sme.md:82-83`).

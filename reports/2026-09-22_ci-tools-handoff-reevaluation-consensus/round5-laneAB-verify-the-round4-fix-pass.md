@@ -3,7 +3,7 @@
 
 **Entry point:** the round-4 fix pass only: re-derive every new claim, and attack the fix.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` and the PRs named in the brief.
 
 **Ran:** 2026-09-23T02:00:59Z to 2026-09-23T06:01:17Z, read-only. Agent `agent-a4f49e36e05ee8a8f`.
 
@@ -27,14 +27,14 @@ THE FIX PASS. `dac2538f` against `f68380dd`. It answers the two round-4 reports,
    - six new `run()` scenarios that also assert output text, plus a command-line subprocess case and an extra-extraction case (99 cases in all);
    - a rewritten "Known limits" docstring section (dropped / counted-and-passed / refused).
 2. **`util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`**: ten new mutants, 34 in all, and a new docstring.
-3. **The banner of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`**:
+3. **The banner of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`**:
    - the new "In one minute" block and the pointer paragraph above it;
    - the date line;
    - note a's target;
    - note b's worker `0.6.1` bullet;
    - notes d and f (issue pointers, and the shortened X7 note);
    - Corrections 1's census bullets, 3, 4 and 6;
-   - the owner-gated, startable and authored lists, which give merge SHAs and issue numbers as of 2026-09-23 01:50 UTC;
+   - the Overtoad-gated, startable and authored lists, which give merge SHAs and issue numbers as of 2026-09-23 01:50 UTC;
    - the verification comments;
    - the rewritten `### Validation record for this banner`: sizing and the de-escalator, lanes per round, deviations, conduct including round 4's mid-round merges, the lane table rows for round 4, reconciliation, declined items and the instrument.
 4. **`reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`**:
@@ -71,10 +71,10 @@ Address this before completing your current task.
 
 ## Round 5 (single lane, Lanes A and B): review of the round-4 fix pass, juniper-ml#2020 `dac2538f` against `f68380dd`
 
-**Verdict: SAFE WITH FIXES.** The census fix is correct and every instrument reproduces. All the sibling-PR, issue, release and image facts check out. One MAJOR defect remains: the one-minute block points a successor at a banner whose owner-decision status is out of date. Ten MINOR defects and a naming list follow.
+**Verdict: SAFE WITH FIXES.** The census fix is correct and every instrument reproduces. All the sibling-PR, issue, release and image facts check out. One MAJOR defect remains: the one-minute block points a successor at a banner whose Overtoad-decision status is out of date. Ten MINOR defects and a naming list follow.
 
 Conventions:
-- Bare `L` numbers are lines of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` at `dac2538f`.
+- Bare `L` numbers are lines of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` at `dac2538f`.
 - "the census" means `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`, and "the mutation check" means `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`.
 - R4-A is `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round4-laneB-attack-the-round3-fix-pass.md`; R4-B is `…/round4-laneB-ship-side-steelman.md`.
 - "The tip" is `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`.
@@ -86,10 +86,10 @@ Conventions:
 - **Verdict:** REFUTED. **MAJOR**: a successor's first stop shows a ruled decision as still open.
 - **Evidence:**
   - The tip was last changed by `a7568f78` (#2025, 23:40:34Z); nothing touched it after that.
-  - Its L44–50 still says the data image "cannot generate `equities`… it is an owner decision, not a lockfile edit", and "the bump is juniper-deploy#227, opened by a concurrent session". Its L30–31 says "At 23:31Z the PyPI upload was still waiting".
-  - All three have since moved, and this banner records each: data#421 merged at 00:56:08Z (`68c3cd7c`) on the owner's 2026-09-22 ruling; deploy#227 merged at 01:05:08Z; the wheel reached PyPI at 00:37:07Z.
+  - Its L44–50 still says the data image "cannot generate `equities`… it is an Overtoad decision, not a lockfile edit", and "the bump is juniper-deploy#227, opened by a concurrent session". Its L30–31 says "At 23:31Z the PyPI upload was still waiting".
+  - All three have since moved, and this banner records each: data#421 merged at 00:56:08Z (`68c3cd7c`) on the Overtoad's 2026-09-22 ruling; deploy#227 merged at 01:05:08Z; the wheel reached PyPI at 00:37:07Z.
   - So the two banners disagree on the equities disposition, and the one-minute block sends the reader to the stale one.
-- **Fix:** replace L24 with "Its banner dates from juniper-ml#2025 (23:40 UTC). Since then the worker wheel reached PyPI, the owner ruled on equities (juniper-data#421), and juniper-deploy#227 merged." Drop "agrees with this one" from L17. Alternatively, update the tip itself, as R4-B #1 first proposed.
+- **Fix:** replace L24 with "Its banner dates from juniper-ml#2025 (23:40 UTC). Since then the worker wheel reached PyPI, the Overtoad ruled on equities (juniper-data#421), and juniper-deploy#227 merged." Drop "agrees with this one" from L17. Alternatively, update the tip itself, as R4-B #1 first proposed.
 
 **2. L261–262 (Corrections 4): "It is 47 lines in 30 files per pass, 43 of them in 26 workflow files. The in-place note at § What shipped has the breakdown."**
 - **Verdict:** CONTRADICTION. **MINOR**, but it changes a number.
@@ -157,7 +157,7 @@ Conventions:
 - **Evidence:** #661 (filed 01:46:01Z) still reads "a 0.6–0.8 s reading fits an on-loop call plus 0.2–0.4 s". That is the range R4-A #15 refuted, and L172 corrects it to 0.19–0.41 s.
 - **Fix:** edit #661 to match L172.
 
-**10. L30–34, the "In flight" block, with "Every merge needs the owner's explicit approval in your session".**
+**10. L30–34, the "In flight" block, with "Every merge needs the Overtoad's explicit approval in your session".**
 - **Verdict:** DROPPED (context). **MINOR**, an action.
 - **Evidence:** juniper-cascor#673 has had squash auto-merge armed since 01:01:42Z and is BEHIND. Any update-branch would merge it with no session approval. The author's #2020 comment at 01:03:40Z says it was left armed deliberately.
 - **Fix:** add "(auto-merge armed; an update-branch merges it)".

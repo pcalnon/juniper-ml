@@ -1,6 +1,6 @@
 # HANDOFF 2026-08-10 — CLI Experimentation Follow-Ups: F-P4-1 Root-Caused + Fixed; Launcher/Test Items In Flight
 
-Continue the **CLI experimentation program residual work** (successor to `HANDOFF_2026-08-09_cli-experimentation-program-wrapup.md`). The headline item — F-P4-1 — is root-caused, fixed, and live-verified this session; two PRs await owner review and three smaller items are mid-flight.
+Continue the **CLI experimentation program residual work** (successor to `HANDOFF_2026-08-09_cli-experimentation-program-wrapup.md`). The headline item — F-P4-1 — is root-caused, fixed, and live-verified this session; two PRs await Overtoad review and three smaller items are mid-flight.
 
 ## Completed this session (do not redo)
 
@@ -29,16 +29,16 @@ Continue the **CLI experimentation program residual work** (successor to `HANDOF
     - F-6 stays intact (no `$!`, liveness only — never used to kill).
     - Hermetic arms in `tests/test_experiment_stack_script.py` w/ a `pgrep` PATH stub: dead-fast-fail, slow-boot-continues, no-pattern back-compat, launch-line contract.
 3. **AGENTS.md #979 staleness correction** (small docs PR): rewrite the "Staging lock gap (open #979)" bullet as fixed-by-#979, keep the leftover-lockdir cleanup guidance.
-4. **PR shepherding**: cascor#504 + ml#1055 are owner-gated (never self-merge; headless-merge policy).
+4. **PR shepherding**: cascor#504 + ml#1055 are Overtoad-gated (never self-merge; headless-merge policy).
     - After merges: V2 worktree cleanups for `juniper-cascor--fix--f-p4-1-service-spiral-termination--20260809-1930--d8ae2f97`, the session worktree branch `fix/f-p4-1-stage-spiral-driver`, and the follow-ups worktree.
-5. **Spiral-surface re-runs (owner-scheduled)**: E-A grid + E-B/E-C spiral rows remain F-P4-1 measurements until re-run against the fixed stack; real spiral cells train minutes each (E-A full budget ≈ 18 min for 200 pts in-process; the 800-pt staged dataset is longer).
+5. **Spiral-surface re-runs (Overtoad-scheduled)**: E-A grid + E-B/E-C spiral rows remain F-P4-1 measurements until re-run against the fixed stack; real spiral cells train minutes each (E-A full budget ≈ 18 min for 200 pts in-process; the 800-pt staged dataset is longer).
     - P1.1 reference metrics describe the fallback dataset (mechanics remain valid).
-6. **cascor#505 implementation** if owner wants it (multiprocessing task-format blast radius; CASCOR-P0-005 key-name class — needs construct-level tests).
+6. **cascor#505 implementation** if Overtoad wants it (multiprocessing task-format blast radius; CASCOR-P0-005 key-name class — needs construct-level tests).
 7. **Owner items carried unchanged**: Q-6 (log-dir override retires H-7, unlocks cascor-parallel `run_suite`); F-P1-2 (`:3000` Grafana squatter; options in P3 roll-up §3); §12 PF threshold ratification + F-P1-3b profiling lane; W-12/Q-7 (`csv_import` corpus); Q-8/Q-10 (perf-baselines home; recurrence conda env); JR-REC ingest at the next requirements-snapshot refresh.
 
 ## Key context
 
-- **Hands-off flag (unchanged)**: primary `/home/pcalnon/Development/python/Juniper/juniper-ml` main is owner-diverged (`3fd46da`); never rebase/push it. Work from worktrees.
+- **Hands-off flag (unchanged)**: primary `/home/pcalnon/Development/python/Juniper/juniper-ml` main is Overtoad-diverged (`3fd46da`); never rebase/push it. Work from worktrees.
 - ml#1055's new test contract: staging POST carries `dataset_type: "spirals"` + params, start body has **no** `dataset` key, `g6_shape_check` populated.
 - ml origin/main moved past the session base (concurrent arcs; `bfdfb3b`+); both open PRs merge independently.
 - Campaign settings still apply for any re-runs: `JUNIPER_EXP_PROJECT_DIR=/home/pcalnon/Development/python/Juniper`, `JUNIPER_EXP_HEALTH_TIMEOUT=180`, study groups sequential, readout-crossing suites null non-matching train keys.
@@ -46,8 +46,8 @@ Continue the **CLI experimentation program residual work** (successor to `HANDOF
 ## Verification commands
 
 ```bash
-gh pr view 504 --repo pcalnon/juniper-cascor --json state,title -q '.state'    # OPEN until owner merges
-gh pr view 1055 --repo pcalnon/juniper-ml --json state,title -q '.state'       # OPEN until owner merges
+gh pr view 504 --repo pcalnon/juniper-cascor --json state,title -q '.state'    # OPEN until Overtoad merges
+gh pr view 1055 --repo pcalnon/juniper-ml --json state,title -q '.state'       # OPEN until Overtoad merges
 gh issue view 505 --repo pcalnon/juniper-cascor --json state -q '.state'       # OPEN
 python3 -m json.tool ~/.local/state/juniper-experiments/20260810T071512Z-b9d6/artifacts/results/metrics_final.json | head -8   # hidden_units: 3
 git -C /home/pcalnon/Development/python/Juniper/worktrees/juniper-ml--fix--exp-launcher-followups--20260810-0230--2d5ad285 status --short   # marker-race fix, uncommitted

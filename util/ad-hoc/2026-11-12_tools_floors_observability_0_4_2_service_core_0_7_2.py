@@ -6,8 +6,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling (R-OBS-SC-2 follow-ups)
 Author: Paul Calnon
 Created: 2026-11-12
-Status: ad-hoc -- one-off writer for the [tools] floor PR (owner ruling 2026-11-09, "Floor PR, then 0.11.5")
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc -- one-off writer for the [tools] floor PR (Overtoad ruling 2026-11-09, "Floor PR, then 0.11.5")
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2314 (0.11.1's floor PR, the template for the site list);
          notes/releases/RELEASE_NOTES_juniper-observability_v0.4.2.md;
          notes/releases/RELEASE_NOTES_juniper-service-core_v0.7.2.md;
@@ -170,7 +170,7 @@ EDITS: list[tuple[str, str, str]] = [
 CHANGELOG_ANCHOR = "## [Unreleased]\n\n"
 CHANGELOG_BLOCK = """### Security
 
-- **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (owner ruling
+- **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (Overtoad ruling
   2026-11-09).** They were `>=0.4.1` and `>=0.7.1,<0.8.0`. By default pip upgrades a dependency only when the
   installed one no longer satisfies its range, so `pip install -U juniper-ml[tools]` left an environment that held
   0.4.1 and 0.7.1 on them.

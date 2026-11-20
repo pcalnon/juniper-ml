@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3: are the tests non-vacuous on the new scan?)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-08_flood4r2_ml_code_swap_check.py (round 2's 36 mutants, read from that file);
          validator finding ml-code-port-lens F2 (its 22 mutants, six of which survived round 2's tests; re-anchored
          here on round 3's code); util/claude_agent_guard.py (_brace_closes, _brace_words, _brace_spend).

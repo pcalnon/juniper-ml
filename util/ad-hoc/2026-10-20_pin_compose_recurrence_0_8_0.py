@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-20
 Status: ad-hoc — one-off (the juniper-deploy pin PR for recurrence 0.8.0)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: P5 / W5.2 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md;
          util/ad-hoc/2026-10-19_pin_compose_recurrence_0_7_0.py (the 0.7.0 pin this follows, the same five files);
          util/ad-hoc/2026-10-20_raise_recurrence_floor_0_8_0.py (the juniper-ml extras raise taken with it)
@@ -20,7 +20,7 @@ pinned version. Sibling-repo git is refused in agent sessions, so this edits a s
 
 The GHCR facts (index digest, per-arch digests, the publish-image run id) are arguments rather than constants because the
 script is written before the image exists: ``publish-image.yml`` fires on ``release: published`` and its Dockerfile
-installs ``juniper-recurrence`` from PyPI, so the image follows the owner's ``pypi`` gate. Verify on GHCR first
+installs ``juniper-recurrence`` from PyPI, so the image follows the Overtoad's ``pypi`` gate. Verify on GHCR first
 (``docker buildx imagetools inspect ghcr.io/pcalnon/juniper-recurrence:0.8.0`` or the registry API) and pass what it says.
 
 Every edit asserts its exact expected text and must match exactly once; "new present once" counts as applied. The

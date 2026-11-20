@@ -1,4 +1,4 @@
-# CI-budget arc — the five owner decisions executed, and the four defects that surfaced
+# CI-budget arc — the five Overtoad decisions executed, and the four defects that surfaced
 
 **Date**: 2026-09-17
 **Repo**: juniper-ml (plus eight sibling repos for decision D)
@@ -8,7 +8,7 @@ beside it; none is transcribed from the handoff that opened the arc.
 
 Opened from
 [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)
-§3, which left ten items — four of them owner decisions.
+§3, which left ten items — four of them Overtoad decisions.
 
 ---
 
@@ -35,7 +35,7 @@ plus eight sibling-repo PRs listed in §4.
 The budget exceeds 4× its p90 (724 → 2896), so it is excluded rather than enforced. Its historic
 rationale — *"15,616 s is queue time"* — was already refuted by ml#1828 as a v1 bot-check-run
 artifact (real max 1511 s). What remained false was the closing clause of the entry in
-`util/safe_merge.py`: *"so it is left for an owner ruling."*
+`util/safe_merge.py`: *"so it is left for an Overtoad ruling."*
 
 That clause is now the ruling itself, with the pinnable window `(observed max, 4× p90]` recorded
 for whenever the repo next comes into play — and an instruction to **re-measure** rather than
@@ -84,8 +84,8 @@ made that read as fine.
 > "Does not trigger" is right in effect and incomplete as a mechanism. All 18 `GITHUB_TOKEN` PRs
 > this workflow opened (#325–#1932) ran **zero jobs** at opening, in two shapes. 5 got no
 > `pull_request` run when opened, the latest #1139 on 2026-08-17, which got runs only after the
-> owner pushed main into its branch (`5d343118`). 13 had their runs **created** and
-> parked at `action_required`: 12 of those were released by the owner re-running them, #1806 by a
+> Overtoad pushed main into its branch (`5d343118`). 13 had their runs **created** and
+> parked at `action_required`: 12 of those were released by the Overtoad re-running them, #1806 by a
 > close/reopen. The fix is verified by effect: #1970 (2026-09-21), the first weekly PR after it,
 > ran jobs in all 5 of its opening-commit `pull_request` runs on attempt 1, under
 > `juniper-release-train[bot]`. That is one week, `n = 1`.
@@ -93,7 +93,7 @@ made that read as fine.
 **No new secret was needed.** `release-train.yml` already mints a `create-github-app-token`
 (`RELEASE_TRAIN_APP_ID` = 4362741) for exactly this reason. The same pattern now gates on that
 variable, with `GITHUB_TOKEN` fallback when unset, and the token is scoped to the **current
-repository only** (both `owner` and `repositories` omitted, which the action documents as
+repository only** (both `Overtoad` and `repositories` omitted, which the action documents as
 "access will be scoped to only the current repository").
 
 ### 3.1 The fan-out probe that was wrong
@@ -197,7 +197,7 @@ other check passes, and 17 lines of shell silently become prose.
 
 **It is advisory, not required.** 33 files is a small sample and `CODEY` is an allowlist that
 could fire on prose opening with `make` or `cd`. Making a screen required on that evidence is
-precisely what produced the defect in §6.1. Promotion follows the owner-ratified path
+precisely what produced the defect in §6.1. Promotion follows the Overtoad-ratified path
 (`JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md` §4 decision 8): soak
 advisory, then promote **in the ruleset** — never via the Quality Gate's `needs:`.
 
@@ -271,7 +271,7 @@ second happened to include.
 
 ---
 
-## 7. What is still the owner's
+## 7. What is still the Overtoad's
 
 1. **`SLACK_WEBHOOK_URL` on the eight sibling repos.** The alarms are live and running, but with
    no webhook they report to the Actions tab only. This is the gap between the §4 ruling being

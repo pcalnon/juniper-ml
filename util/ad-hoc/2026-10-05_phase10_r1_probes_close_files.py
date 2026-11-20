@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-05
-# Status      : ad-hoc — one-off; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Close every file the archived Phase 10 round-1 lane probes open, so juniper-ml#2157 can merge.
 

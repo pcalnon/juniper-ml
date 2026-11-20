@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#438 fix-forward, round 2; reports/2026-09-24_defect-register-round-42/data438-fixforward-round1-laneB-refute.md (M-1)
 
 Lane B's stall_probe2.py (util/ad-hoc/2026-09-24_round42_probes/data438-fixforward-round1-laneB/) sends ONE

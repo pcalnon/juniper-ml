@@ -27,7 +27,7 @@
 
 - **`[recurrence]` now floors `juniper-recurrence>=0.8.1`** (`<0.9.0`), the release that floors
   `juniper-model-core[crossval]>=0.3.0,<0.4.0` (juniper-recurrence#229). The pin was
-  `juniper-recurrence>=0.8.0,<0.9.0`. The owner approved the raise on 2026-11-06, with a 0.11.4 cut to carry it.
+  `juniper-recurrence>=0.8.0,<0.9.0`. The Overtoad approved the raise on 2026-11-06, with a 0.11.4 cut to carry it.
   - **Why.** recurrence 0.8.0's `_folds.build_folds` passes `groups=` to `walk_forward_folds` on every
     `POST /v1/crossval`, and `groups=` first shipped in juniper-model-core 0.3.0. 0.8.0 declared
     `juniper-model-core>=0.2.0`, so an environment holding model-core 0.2.0 passed `pip check` while every
@@ -45,7 +45,7 @@
     `util/ad-hoc/2026-11-06_raise_recurrence_floor_0_8_1.py`, which asserts each site's exact text and requires
     exactly one match apiece.
 - **`claudey` starts with a worktree and remote control by default, `--remote-control` never takes a value, and in
-  `scripts/wake_the_claude.bash` `--version` is Claude Code's version and `-u` fails (owner rulings, 2026-11-04).**
+  `scripts/wake_the_claude.bash` `--version` is Claude Code's version and `-u` fails (Overtoad rulings, 2026-11-04).**
   `claude_interactive.bash` sends a bare `--worktree`, so Claude Code names the worktree unless `-w <name>` names one,
   and a bare `--remote-control`. `--no-worktree` and `--no-remote-control` turn them off, as `CLAUDE_WORKTREE=1` and
   `CLAUDE_REMOTE_CONTROL=1` do. Both had been opt-in since juniper-ml#2396. `wake_the_claude.bash` now refuses a word
@@ -55,13 +55,13 @@
   `-v` / `--script-version`. `-u` prints the usage text and exits 1, as its comment always said; after juniper-ml#2396
   it exited 0. `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`'s launcher table now describes claudey's own defaults: it
   described `default_interactive_session_claude_code.bash`'s.
-- **`agents-md-touch-up.yml` pins `actions/checkout` to a commit SHA (owner ruling 2026-11-03).** It checked out with
+- **`agents-md-touch-up.yml` pins `actions/checkout` to a commit SHA (Overtoad ruling 2026-11-03).** It checked out with
   the `v7.0.1` tag, the only tag-only `actions/checkout` in `.github/workflows/`. It now uses
   `3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1`, the commit that tag resolves to and the pin every other
   workflow here uses, so behaviour is unchanged. A census of the nine Juniper repositories' `main` on 2026-11-01 found
   249 `actions/checkout` uses, 242 pinned to that SHA; the seven tag-only ones were this workflow's copies, one per
   repository. juniper-data#503 pinned juniper-data's, and this change is one of the seven that pin the rest.
-- **The release-train ceremony's archive cap rises from 125,000 B to 1,000,000 B** (owner ruling 2026-10-26, on the
+- **The release-train ceremony's archive cap rises from 125,000 B to 1,000,000 B** (Overtoad ruling 2026-10-26, on the
   runner-side measurement that the 2026-10-18 ruling called for; a follow-up to juniper-ml#2227).
   `util/release_train/ceremony.py`'s `ARCHIVE_B64_MAX_DEFAULT` bounds a release-notes archive's base64, because the
   archive travels inside one `createCommitOnBranch` request. The old figure was measured from turing, and was that
@@ -82,7 +82,7 @@
     and the measurement.
 - **G-SEC's firewall condition reads the block-all sentence turing printed** (turing bring-up task C2; the §18.2
   C2 row and erratum E-C2-GATE of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
-  The owner applied C2's block-all form on 2026-10-26, so the on-state captures exist: `--getglobalstate` prints
+  The Overtoad applied C2's block-all form on 2026-10-26, so the on-state captures exist: `--getglobalstate` prints
   "Firewall is blocking all non-essential incoming connections. (State = 2)", `--getblockall` "Firewall is blocking
   all non-essential incoming connections." and `--getstealthmode` "Firewall stealth mode is on".
   - `util/host_state_check.py` accepts only the getter's sentence. "Firewall is set to block all non-essential
@@ -100,7 +100,7 @@
 
 - **Cascor suites carry headline columns: `aggregate.csv` and `REPORT.md` gain `train_accuracy` and `val_accuracy`, a
   finished suite gains them without re-running, and a NaN or infinite value fails every acceptance band** (register row
-  `APD-ML-002`; the owner's four rulings of 2026-10-26; juniper-ml#2369). `util/experiments/run_suite.py`'s
+  `APD-ML-002`; the Overtoad's four rulings of 2026-10-26; juniper-ml#2369). `util/experiments/run_suite.py`'s
   `_headline_metrics` read `final_accuracy` / `test_accuracy` / `val_accuracy` off the TOP of `stats["cascor"]`, where
   `stats_summary.build_stats` never wrote anything, so every cascor cell recorded `metrics: {}` (0 of 439 cascor
   registry rows on the run corpus) and a W5.4 band on those names (juniper-ml#2262) read `absent` on every cascor cell.
@@ -198,7 +198,7 @@
   from task H3's `macos-host-sme` report). Neither changes a verdict.
   - `util/host_state_check.py`'s kubectl fix said only "task D4". Docker Desktop installs its own
     `/usr/local/bin/kubectl` (decision D7), and turing's v1.22.4 client is that link, so the fix now puts the
-    owner's Docker Desktop upgrade (task D3) first, then D4, which still needs re-planning under the D6 ruling
+    Overtoad's Docker Desktop upgrade (task D3) first, then D4, which still needs re-planning under the D6 ruling
     (erratum E-D6).
   - The memory message said "free + inactive", but the figure also adds vm_stat's speculative pages, as
     `util/macvm_ctl.bash` does (88 MiB of turing's 6161 MiB on 2026-10-27). It now reads "free + speculative +

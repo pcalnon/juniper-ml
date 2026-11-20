@@ -389,11 +389,11 @@ post-R5 convention.)
 
 | ID | Question | Owner | Default if not pinned |
 |---|---|---|---|
-| **Q1 (buckets)** | What bucket boundaries? Re-use the R5.4-pre layout `(0.05, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, +inf)` or design a new layout calibrated against the production per-epoch data the R5.4 alerts will collect? | METRICS-MON owner | Re-use R5.4-pre layout for v1; revisit at first phase boundary. **Per the parent-task scope, this is out-of-scope for this design doc.** |
-| **Q2 (name)** | Final metric name: `..._seconds_per_step`, `..._per_minibatch`, or refactor existing to `..._per_epoch_seconds` + new `..._per_step_seconds`? | METRICS-MON owner | `..._seconds_per_step` (additive, breaks no existing alerts). |
-| **Q3 (throttle)** | Drop the 25-epoch throttle entirely on the per-step path, or sample (e.g. every Nth epoch)? Sampling reduces metric volume but defeats the variance-detection use case. | METRICS-MON owner | Drop entirely; rely on histogram bucketing for volume management. |
-| **Q4 (slo)** | Per-step SLI strategy at sub-track close: option α (re-point SLI 3.4) or option β (add SLI 3.4b alongside)? | juniper-deploy SLO owner | Option β for v1; revisit after one production calibration cycle. |
-| **Q5 (slim-step)** | Some candidate-unit training runs are sub-millisecond per step. Is that overhead-budget regime acceptable, or should the per-step metric be omitted on the candidate phase? (Equivalent: should the `phase=candidate` label be optional?) | METRICS-MON owner | Emit on all phases; rely on `phase` label to let operators filter. |
+| **Q1 (buckets)** | What bucket boundaries? Re-use the R5.4-pre layout `(0.05, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, +inf)` or design a new layout calibrated against the production per-epoch data the R5.4 alerts will collect? | METRICS-MON Overtoad | Re-use R5.4-pre layout for v1; revisit at first phase boundary. **Per the parent-task scope, this is out-of-scope for this design doc.** |
+| **Q2 (name)** | Final metric name: `..._seconds_per_step`, `..._per_minibatch`, or refactor existing to `..._per_epoch_seconds` + new `..._per_step_seconds`? | METRICS-MON Overtoad | `..._seconds_per_step` (additive, breaks no existing alerts). |
+| **Q3 (throttle)** | Drop the 25-epoch throttle entirely on the per-step path, or sample (e.g. every Nth epoch)? Sampling reduces metric volume but defeats the variance-detection use case. | METRICS-MON Overtoad | Drop entirely; rely on histogram bucketing for volume management. |
+| **Q4 (slo)** | Per-step SLI strategy at sub-track close: option α (re-point SLI 3.4) or option β (add SLI 3.4b alongside)? | juniper-deploy SLO Overtoad | Option β for v1; revisit after one production calibration cycle. |
+| **Q5 (slim-step)** | Some candidate-unit training runs are sub-millisecond per step. Is that overhead-budget regime acceptable, or should the per-step metric be omitted on the candidate phase? (Equivalent: should the `phase=candidate` label be optional?) | METRICS-MON Overtoad | Emit on all phases; rely on `phase` label to let operators filter. |
 | **Q6 (gating)** | Land before or after R5.5 (whatever R5.5 turns out to be)? | METRICS-MON program lead | After R5.4 closes, ordering vs R5.5 is independent. |
 
 These map 1:1 to entries in the R5.x roadmap once R5.6 enters its own entry

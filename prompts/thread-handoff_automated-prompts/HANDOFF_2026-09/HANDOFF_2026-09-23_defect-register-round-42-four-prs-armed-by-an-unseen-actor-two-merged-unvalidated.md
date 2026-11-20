@@ -1,8 +1,8 @@
-# HANDOFF 2026-09-23/24 — defect register round 42: everything merged, the owner's sweeper, fix-forward follow-ups
+# HANDOFF 2026-09-23/24 — defect register round 42: everything merged, the Overtoad's sweeper, fix-forward follow-ups
 
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_defect-register-round-41-d-a-shipped-and-the-two-defects-its-own-audit-found.md`
 **Register**: `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` (every § below is that file's unless named otherwise)
-**Merge approval**: granted by the owner for this arc's PRs. **The PR sweeper that un-drafts and arms open PRs as `pcalnon` is the OWNER's** (confirmed 2026-09-24: "Mine: fix forward"). Its merges are intended: do NOT draft or disarm to hold a PR. Validate after the merge and fix forward. Memory: `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`.
+**Merge approval**: granted by the Overtoad for this arc's PRs. **The PR sweeper that un-drafts and arms open PRs as `pcalnon` is the OWNER's** (confirmed 2026-09-24: "Mine: fix forward"). Its merges are intended: do NOT draft or disarm to hold a PR. Validate after the merge and fix forward. Memory: `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`.
 
 ## Goal
 
@@ -22,7 +22,7 @@ Continue the defect-register arc: land the three fix-forward follow-ups, then ON
 
 ### STOPPED at wrap-up (2026-09-24): two follow-ups have partial, UNVALIDATED work, and nothing was pushed
 
-The owner stopped the last three agents to close the session. None of them opened a PR or pushed a
+The Overtoad stopped the last three agents to close the session. None of them opened a PR or pushed a
 branch. Their uncommitted work is kept in place, and also saved as patches:
 
 | Follow-up | Worktree (KEEP; it holds WIP) | Patch in `reports/2026-09-24_defect-register-round-42/` | Scope still to do |
@@ -66,11 +66,11 @@ first. Their remote branches were already deleted on merge.
      - the §2 post-primer FIXED list and counts;
      - the header date.
      Then flip the now-false sentences: §2.3's "(juniper-service-core's copy of the compare is not a gate site at all)", the "…is open" parenthetical near §2's closing, and the ECO-008 entry's "service-core's `matched` loop is watched by nothing" and "not yet filed as rows". Record that `main`'s messages for `3a6dea95` and `0e016a7` are stale: the default or arm-time body.
-   - **File five rows in §4.9**, each with a park sentence in the block below the table. The recommended status for all five is *awaiting an owner ruling*. Re-verify every anchor on current `main` first.
+   - **File five rows in §4.9**, each with a park sentence in the block below the table. The recommended status for all five is *awaiting an Overtoad ruling*. Re-verify every anchor on current `main` first.
      - `APD-ECO-009`: canopy `RequestBodyLimitMiddleware` reads `Content-Length` only (`src/middleware.py`, ~`:59-74` at `48074653`). A chunked or under-declared body bypasses the cap under both parsers; CL+TE passes 64 B under h11 and gets a 400 on httptools. This is the `streaming-body-cap` / `APD-DATA-002` shape. Sev M, Conf High.
      - `APD-ECO-010`: canopy has no failed-auth throttle. That is the `pre-auth-throttle` / `APD-DATA-001` shape; siblings use `FailedAuthThrottle`. Sev M, Conf High.
      - `APD-ECO-011`: canopy's auth-OFF profile. Routes outside `/api/train/*` have no Origin check, and `/api/dataset/generate` reads JSON whatever the `Content-Type` (`src/main.py` ~`:1642`). A cross-site `text/plain` POST from any page therefore regenerates the dataset (measured 200). juniper-deploy's demo and dev canopy set no key. It was found validating ECO-008's fix: say so, and cross-reference it for the `F-CANOPY-*` ledger. Sev M, Conf High.
-     - `APD-DATA-054`: the artifact `ETag` is weak because `checksum` = sha256 of an UNCOMPRESSED key-sorted `np.savez`, while stores serve `savez_compressed`. A strong validator needs a served-bytes digest. This is the known gap the owner ruled 2026-09-23 ("option 1 now, document the gap"). Sev L, Conf High.
+     - `APD-DATA-054`: the artifact `ETag` is weak because `checksum` = sha256 of an UNCOMPRESSED key-sorted `np.savez`, while stores serve `savez_compressed`. A strong validator needs a served-bytes digest. This is the known gap the Overtoad ruled 2026-09-23 ("option 1 now, document the gap"). Sev L, Conf High.
      - `APD-DATA-055`: `DELETE /v1/datasets/{id}` does not evaluate `If-Match` (a stale tag still deletes; RFC 9110 §13.1.1), and `/batch-tags` ignores both headers. The PATCH concurrency is per host: Redis, Postgres and `CachedDatasetStore` hold only a per-process lock. It is documented by data#428, not fixed. Sev M, Conf High.
    - **Update the §2 counts.** `util/ad-hoc/register_open_set.py` must print `131 rows | 100 fixed | 31 open`, and `register_status_crosscheck.py` must AGREE.
      - "thirty filed" becomes thirty-five; "twelve are open" becomes sixteen.
@@ -80,7 +80,7 @@ first. Their remote branches were already deleted on merge.
    - Close `APD-DATA-017/-029/-032` and `APD-CASCOR-008/-013` only AFTER their follow-ups and validations land. -013 needs the mixed-provenance fix.
 4. **API primer** (`notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md`): correct its checksum premise and its `immutable` prescription. `dataset_id` hashes the REQUEST, so the artifact is not content-addressed.
 5. **Later arc items:** C-A (relaunch fresh; the killed forks cannot be resumed cross-session), C-B, C-C, D-C, D-D, D-E, D-F, D-G (048/049/051). **D-F collides with data#428** on `storage/base.py`: `update_tags(…, precondition)` and `InvalidDatasetIdError`.
-6. **`MEMORY.md` compaction:** it is at the 24.4 KB read limit. The owner's target is 20 KB; retire entries, never strip hooks (`feedback_memory_index_target_is_20kb.md`). Other sessions edit it concurrently.
+6. **`MEMORY.md` compaction:** it is at the 24.4 KB read limit. The Overtoad's target is 20 KB; retire entries, never strip hooks (`feedback_memory_index_target_is_20kb.md`). Other sessions edit it concurrently.
 
 ### Traps learned this round
 

@@ -69,7 +69,7 @@ Two lanes on round 1's corrections to the canopy E2E ledger's Phase 10, frozen a
      - At `1b2dd438`, `USER_MANUAL.md:764-766` now reads "…Today no weight sample reaches the page", and the FAQ's new status note reads "No replay weight reaches the page (F-CANOPY-057…)".
    - **Consequences:**
      - The precedent cited for F-065 no longer exists at the pins.
-     - F-057 was never rated on a CHANGELOG or design-plan promise, so the owner's ruling on that question could not move it in either direction.
+     - F-057 was never rated on a CHANGELOG or design-plan promise, so the Overtoad's ruling on that question could not move it in either direction.
      - The triage tool's 7 counts F-057.
    - **Scope:** the out-of-date rating was already in round 1's freeze. The corrections repeat it and build on it.
    - **Fix:**
@@ -149,20 +149,20 @@ Abbreviations: **L** = `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-E
    - **Narrowest replacement:** "Every page open when the burst lands, 5 s after the relay (re)connects to a cascor that still holds monitor rows. That happens on a switch back to CasCor from the LMU model (W8 step 13), on a canopy restart whose open tabs reconnect inside that window, and on a reconnect after a socket loss while cascor stays up. A cascor restart sends an empty burst." Header: "after the relay (re)connects while a page is open". Item 18 and F-064's fix direction: drive "W8 step 13 after a CasCor run, with a page open (not a cascor restart)".
    - **Changes:** the action, yes; no number or disposition.
 
-2. **MAJOR — F-CANOPY-065's precedent and the owner question misstate F-CANOPY-057, whose own P1 has lapsed.**
+2. **MAJOR — F-CANOPY-065's precedent and the Overtoad question misstate F-CANOPY-057, whose own P1 has lapsed.**
    - **Ledger text:**
      - "This ledger already treats a promise outside the manual as documented: F-CANOPY-057 is P1 on the manual and a FAQ" (L:10089-10090);
      - "If it does not, F-CANOPY-065 and F-CANOPY-057 both return to P2" (L:10220-10221);
      - "7 open P1: …F-CANOPY-057…" (L:10239).
-   - **Evidence, the basis:** F-057's P1 rests on `docs/USER_MANUAL.md:764` plus the FAQ (L:9110-9115). Plan A-2 itself counts USER_MANUAL claims as documented. So F-057 is no precedent for a promise made only outside the manual, and its rating never turned on the owner's question.
+   - **Evidence, the basis:** F-057's P1 rests on `docs/USER_MANUAL.md:764` plus the FAQ (L:9110-9115). Plan A-2 itself counts USER_MANUAL claims as documented. So F-057 is no precedent for a promise made only outside the manual, and its rating never turned on the Overtoad's question.
    - **Evidence, its own rule has retired it:** F-057 says it "returns to P2 when the canopy follow-up that corrects both files merges (branch `fix/idle-cuts-round3-wording`…); that re-rating is owed with the merge" (L:9113-9115).
      - `gh pr view 684`: branch `fix/idle-cuts-round3-wording`, MERGED 2026-09-24T11:10:28Z as `f2147403`.
      - `merge-base --is-ancestor f2147403 1b2dd438` returns true.
      - At the pin, the manual (`USER_MANUAL.md:764-766`) says "Today no weight sample reaches the page", and `REPLAY_V2_FAQ.md` opens with a status note: "No replay weight reaches the page".
      - L never records #684, and Phase 9's item 13 ("not yet pushed", L:9704-9714) is carried forward as standing (L:10245).
-   - **Evidence, inconsistency:** F-065's header, the Summary, the provenance table and the counts all state P1 without a condition, while the Consensus record leaves its only basis to the owner.
+   - **Evidence, inconsistency:** F-065's header, the Summary, the provenance table and the counts all state P1 without a condition, while the Consensus record leaves its only basis to the Overtoad.
    - **Narrowest replacement:**
-     - F-065: "P1 if a CHANGELOG or design-plan promise counts as documented under plan §6.3 (the owner's question); no manual or REFERENCE text makes this promise, so it is P2 if not." Delete the F-057 sentence.
+     - F-065: "P1 if a CHANGELOG or design-plan promise counts as documented under plan §6.3 (the Overtoad's question); no manual or REFERENCE text makes this promise, so it is P2 if not." Delete the F-057 sentence.
      - Consensus record: "…If it does not, F-CANOPY-065 returns to P2."
      - Apply F-057's owed re-rating to P2: 6 open P1, 16 open P2. Mark item 13's follow-up as merged.
    - **Changes:** yes. Open P1 goes 7→6, open P2 15→16, F-057 becomes P2, and F-065's P1 becomes conditional.

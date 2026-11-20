@@ -139,7 +139,7 @@ Thus v0.16.0 is tagged at `39d1cab`, before #437's `1afc348`; 0.16.0 does not co
 >
 > data#409 OPEN — `equities / equities_seq: at bare defaults both produce data their consumers cannot train on...`
 >
-> data#423 OPEN — `Decision 12: partition_provenance is owner-ruled... but unspecified, unimplemented and was untracked`
+> data#423 OPEN — `Decision 12: partition_provenance is Overtoad-ruled... but unspecified, unimplemented and was untracked`
 >
 > data#437 MERGED — `fix(equities_seq): declared regression, not classification, at generator 6.0.0...`
 >

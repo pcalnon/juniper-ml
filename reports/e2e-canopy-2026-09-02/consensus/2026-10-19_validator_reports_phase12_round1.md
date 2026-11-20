@@ -80,7 +80,7 @@ Nothing refutes FIXED for F-CANOPY-055, -058 or -068, or the 79/56/1/2/20 counts
 **Lane 12-B** (adversarial on the dispositions, round 1)
 **VERDICT: SOUND-WITH-FIXES**
 
-The three FIXED dispositions stand; the counts (79 / 56 / 1 / 2 / 20; 4 P1 = F-CANOPY-064, -065, F-CASCOR-001, -002; 16 P2) reproduce from `python3 -B util/ad-hoc/e2e_finding_triage.py`. The fixes below are to numbers inside the phase text, provenance labelling, one undisclosed user-visible change, and wording. No count, disposition or owner action changes.
+The three FIXED dispositions stand; the counts (79 / 56 / 1 / 2 / 20; 4 P1 = F-CANOPY-064, -065, F-CASCOR-001, -002; 16 P2) reproduce from `python3 -B util/ad-hoc/e2e_finding_triage.py`. The fixes below are to numbers inside the phase text, provenance labelling, one undisclosed user-visible change, and wording. No count, disposition or Overtoad action changes.
 
 **FINDINGS**
 

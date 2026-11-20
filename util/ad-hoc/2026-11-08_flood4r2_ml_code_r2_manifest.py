@@ -6,8 +6,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
-Status: ad-hoc — one-off (flood-4 round-2 ml-code carrier, extended under the owner ruling "Carry in ml-code")
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (flood-4 round-2 ml-code carrier, extended under the Overtoad ruling "Carry in ml-code")
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: 2026-11-08_flood4r2_ml_code_manifest.py (the builder's manifest, which this one extends);
          BRIEF_COMMON_R2 DELIVERABLES (manifest.json shape).
 

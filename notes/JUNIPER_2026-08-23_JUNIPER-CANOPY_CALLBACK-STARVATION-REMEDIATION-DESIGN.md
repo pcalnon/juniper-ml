@@ -288,7 +288,7 @@ reversible, one constant.
 
 ---
 
-## 9. Open questions for the owner
+## 9. Open questions for the Overtoad
 
 1. **Stage scope for Phase 2.** Stage 1 alone closes F-CANOPY-027 and F-CANOPY-004 if the §7.1 targets are
    met. Should Stages 2–3 land inside Phase 2, or be tracked as follow-ons so Phase 2 can close?

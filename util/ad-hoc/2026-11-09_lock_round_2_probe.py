@@ -8,13 +8,13 @@ Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Created:     2026-11-09
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 What it is, and what it is not
 ------------------------------
 The consolidated plan's Security step 4 asks each image lock PR to carry "S0.11's relay run".
 S0.11's relay tests (a planted fake data key driven through every relay) do not exist for
-juniper-data, -cascor or -canopy: A1's F-S10 rulings are open. On 2026-11-09 the owner chose this
+juniper-data, -cascor or -canopy: A1's F-S10 rulings are open. On 2026-11-09 the Overtoad chose this
 per-lock probe instead (AskUserQuestion, "Per-lock probe (Recommended)"). Each PR body says it
 is NOT S0.11's relay run.
 

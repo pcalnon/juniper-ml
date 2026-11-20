@@ -12,17 +12,17 @@ Related: conf/python_versions.yaml (the version lists and each repo's recipe);
 
 Why this exists
 ---------------
-The owner's request of 2026-11-14: add Python 3.15 to the tested versions, in the local test infrastructure
+The Overtoad's request of 2026-11-14: add Python 3.15 to the tested versions, in the local test infrastructure
 and in CI, and at this stage let its checks report results without blocking a commit, a merge or a
 deployment. CI got its informational legs in juniper-ml#2567, and each sibling repo gets its own PR. Locally
 there was no version list to extend. No repo has a tox or nox file, and every local runner (``make coverage``,
 ``util/run_coverage.bash``, canopy's ``make test``) uses whatever ``python`` is active. No conda env on the
 host carries 3.15, and ``/usr/bin/python3`` must stay 3.14: switching it to 3.15 host-wide on 2026-11-14
-broke the backup drills and the conda env links, and the owner deferred that switch.
+broke the backup drills and the conda env links, and the Overtoad deferred that switch.
 
 So, for each repo and version, this builds one venv from ``/usr/bin/python<version>``, installs the repo into
 it with its CI's install commands, and runs the repo's EXISTING wrapper with the venv first on PATH. The
-version lists and the recipes are data, in conf/python_versions.yaml. The owner's ruling: 3.12, 3.13 and 3.14
+version lists and the recipes are data, in conf/python_versions.yaml. The Overtoad's ruling: 3.12, 3.13 and 3.14
 are blocking, 3.15 is informational, and a run with no ``--python`` runs the informational versions.
 
 What one check does

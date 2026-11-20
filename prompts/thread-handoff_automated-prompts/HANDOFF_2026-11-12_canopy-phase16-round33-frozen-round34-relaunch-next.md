@@ -1,4 +1,4 @@
-# HANDOFF 2026-11-12 — P2 canopy Lane A (the Linux host): Phase 16's round 33 frozen as `4963cb52` (O13's list scope by the owner's ruling, "Date rule, stated"); round 34's two lanes, launched on it 2026-11-09 15:46Z, stopped at the account's weekly rate limit about 16:14Z without reporting; relaunch round 34, then its pass and more rounds while one changes a number, disposition or owed action, then land Phase 16, then #2360 — which moved to `684c9751` and may now merge first
+# HANDOFF 2026-11-12 — P2 canopy Lane A (the Linux host): Phase 16's round 33 frozen as `4963cb52` (O13's list scope by the Overtoad's ruling, "Date rule, stated"); round 34's two lanes, launched on it 2026-11-09 15:46Z, stopped at the account's weekly rate limit about 16:14Z without reporting; relaunch round 34, then its pass and more rounds while one changes a number, disposition or owed action, then land Phase 16, then #2360 — which moved to `684c9751` and may now merge first
 
 > **SUPERSEDED** by `HANDOFF_2026-10-25_canopy-phase16-linux-host-checks-recorded-items-35-37-next.md` (h1025), which
 > is not on `main`: it lands with Phase 16's PR, from the Linux host's local branch `docs/canopy-e2e-phase16`, and
@@ -7,7 +7,7 @@
 > 00:39:19Z (`fd6102c3`), fourteen minutes after its "about 00:25Z", so its "untracked" was overtaken at once, and
 > the branch leaves it out so that `main` and the branch share no path; this banner was put on `main` by a PR of its
 > own on 2026-11-13. Session `07e7105d-dd51-48d8-b29f-17aee98863a8` took its task from this file on 2026-11-12 at
-> 00:28:34Z and, on the owner's instruction of 08:00:11Z to update the text a round reviews before the round, writes
+> 00:28:34Z and, on the Overtoad's instruction of 08:00:11Z to update the text a round reviews before the round, writes
 > a pass before it relaunches round 34 (round 34's pre-launch pass,
 > `util/ad-hoc/2026-11-13_phase16_ledger_round34_prelaunch_corrections.py`, and its record in Phase 16's Consensus
 > record of `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, both on that branch), so this
@@ -20,11 +20,11 @@
 > `3aa722c0`, on 2026-11-10 at 20:16Z, none of which it says. And its list of the primaries' pulls leaves out
 > juniper-harcot's five pulls of its `main` alone of 2026-11-10 (12:01:07Z, 19:38:13Z, 21:28:48Z, 22:47:54Z and
 > 22:58:14Z), though it says that by the date rule every pull of `main` on 2026-11-09 and 2026-11-10 is O13's. Since
-> then: its session ended on 2026-11-12 at 00:41:31Z; the owner answered both of its questions at 01:44:24Z, #2360
+> then: its session ended on 2026-11-12 at 00:41:31Z; the Overtoad answered both of its questions at 01:44:24Z, #2360
 > first ("First; I fix it") and O13's list extended, then closed ("Extend, then close"), with round 34 to run on
 > Fable 5.2; #2360 merged at 02:18:03Z as `187e3258`, after session `07e7105d`'s `update-branch` and its one signed
 > commit, `60f59c29`, which gave those tests' fixture what it lacked and regenerated the baseline, so h1025's G-TMP
-> step owes #2360 nothing and Phase 16's PR meets gate G-TMP on `main`, where the owner ruled at 22:59:33Z that its
+> step owes #2360 nothing and Phase 16's PR meets gate G-TMP on `main`, where the Overtoad ruled at 22:59:33Z that its
 > files are listed in the baseline; the pulls it lists were probed for their actors, no session's transcript on that
 > host recording a tool call that made one, and three more batches of pulls of `main` followed on 2026-11-12, from
 > 02:00:21Z, 08:06:11Z and 11:28:40Z; `main` moved from `68f9ebcd` to `15b5d9bb` by 08:59:57Z (juniper-ml#2543 to
@@ -37,10 +37,10 @@
 Linux host (entered by `EnterWorktree` from `transient-pondering-lynx` at 2026-11-09 14:04:46Z). The session took its
 task at 14:04:31Z (its transcript's line 51) from `HANDOFF_2026-11-09_canopy-phase16-round33-reports-in-pass-next.md`
 (r33rp), wrote and froze round 33's pass (`4963cb52`, 15:19:43Z), launched round 34 (15:46Z), and wrote this at the
-owner's request after both lanes stopped. Times are UTC.
+Overtoad's request after both lanes stopped. Times are UTC.
 **Scope**: as its predecessor's: Phase 16's consensus rounds, its landing, and juniper-ml#2360.
 **Merge approval**: granted in this session's task prompt ("approval granted for merging and related PR operations",
-line 51), for Phase 16's PR and #2360. It does not carry across sessions: confirm with the owner before the first merge.
+line 51), for Phase 16's PR and #2360. It does not carry across sessions: confirm with the Overtoad before the first merge.
 
 ## Goal statement (paste as the new thread's first prompt)
 
@@ -50,8 +50,8 @@ rate limit before either lane reported), archive its reports and probes, write a
 number, disposition or owed action, and keep going while a round does; then land Phase 16 by h1025's Remaining step 1,
 then juniper-ml#2360 by its G-TMP step. FIRST read #2360's state: since round 34's launch its head moved to
 `684c9751` (`main` merged in, "Fix G-TMP pre-commit violations"), MERGEABLE, auto-merge armed, its CI queued at
-2026-11-12 00:20Z, so it may merge before Phase 16, reversing the arc's order; if it has merged, or the owner wants it
-first, h1025's landing and G-TMP step must be re-planned before anything lands (ask the owner). Start from
+2026-11-12 00:20Z, so it may merge before Phase 16, reversing the arc's order; if it has merged, or the Overtoad wants it
+first, h1025's landing and G-TMP step must be re-planned before anything lands (ask the Overtoad). Start from
 `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-12_canopy-phase16-round33-frozen-round34-relaunch-next.md`
 (untracked in worktree `.claude/worktrees/distributed-giggling-clarke`, branch `docs/canopy-e2e-phase16`; switch in
 with `EnterWorktree(path=…)`). Read it in full, then round 33's record (the last entry of Phase 16's Consensus record
@@ -67,7 +67,7 @@ forks, each fork about 0.65M tokens.
 2. **#2360 first.** Read its head, `mergeStateStatus`, checks and auto-merge (`gh pr view 2360 …`; `gh api
    repos/pcalnon/juniper-ml/actions/runs?head_sha=<head>`). h1025's G-TMP step assumes #2360 lands LAST, its baseline
    regenerated to count Phase 16's literal lines (three G-TMP docstring lines in round 33's lane `a` probes alone).
-   If #2360 lands first, Phase 16's PR meets its G-TMP gate: say so to the owner and re-plan before landing.
+   If #2360 lands first, Phase 16's PR meets its G-TMP gate: say so to the Overtoad and re-plan before landing.
 3. **Choose the relaunch route** (the lanes are subagents of session `4d06bd18`; a new session cannot resume them):
    - **Relaunch fresh (this thread).** Keep the first launch's scratch by moving `tmp/phase16-round34/lane16PR34A/`
      (837 files) and `lane16PR34B/` (66) to `tmp/phase16-round34/launch1_ratelimited/`; their transcripts stay at
@@ -76,7 +76,7 @@ forks, each fork about 0.65M tokens.
      lines, 16:14:24Z).
    - **Or resume** them from session `4d06bd18` itself (`claude --resume 4d06bd18-73ce-4aff-8a7b-01d7ba62b3a8`, then
      `SendMessage` to each agent id); the record then says each lane was resumed once, and the report archive takes
-     the resumed round (`--round 2` in `o/r34_archive_reports.py`). Only the owner can choose this route.
+     the resumed round (`--round 2` in `o/r34_archive_reports.py`). Only the Overtoad can choose this route.
 4. **Re-read and rebuild the briefs** (a fork did the first build: `tmp/phase16-round34/orch/fork_brief/`):
    - add each date after 2026-11-09 to `o/r34_facts.py`'s reflog dates (it reads 2026-11-06 to 2026-11-09) and run
      it with a new suffix; run the ask sweeps (ten keys since 2026-10-25; `""` since 2026-11-07) and
@@ -105,7 +105,7 @@ forks, each fork about 0.65M tokens.
   pass `util/ad-hoc/2026-11-09_phase16_ledger_round33_corrections.py`, 31 substitutions in 10 files (r30rp joined
   for Lane 16P-R33B's NIT 7's class); build figures `2,196 1,781 74 0`; replay 10 of 10; pre-commit over the PR's
   range through the dangling `e0fe93db` (`tmp/phase16-round33/orch/r33_toref.txt`).
-- **The owner's ruling** (2026-11-09 14:13:29Z, session `4d06bd18`'s line 421): O13 lists the pulls of `main` into a
+- **The Overtoad's ruling** (2026-11-09 14:13:29Z, session `4d06bd18`'s line 421): O13 lists the pulls of `main` into a
   primary on each date on which a trio primary was pulled, and says the juniper-ml primary's pulls of `main` of
   2026-11-03 and 2026-11-04 stay out.
 - **The final re-read (15:08:53Z)** found the juniper-ml primary back on `main` (14:19:28Z) and pulled to `a03680c8`
@@ -129,7 +129,7 @@ forks, each fork about 0.65M tokens.
   a commit on 2026-11-10 and 2026-11-11; and, from 2026-11-11 23:45:03Z, the juniper-ml primary on #2360's branch
   (`fix/repo-tmp-dir-2026-10-26`), pulled to `684c9751` (23:45:39Z; a pull of a branch, not of `main`), on `main` at
   00:00:27Z and back on the branch at 00:02:37Z. By the date rule every pull of `main` on 2026-11-09 and 2026-11-10 is
-  O13's: expect round 34's lanes to find O13 incomplete (owner question below).
+  O13's: expect round 34's lanes to find O13 incomplete (Overtoad question below).
 - **juniper-harcot** (private, new in the parent `CLAUDE.md` on 2026-11-10) was cloned under `Juniper/` at 2026-11-10
   01:12:13Z, so the reflog tools now read twelve repositories; O13's "the eleven repositories directly under
   `Juniper/`" is dated.
@@ -179,7 +179,7 @@ ss -ltnpH | grep -E ':(8051|8052|8053|8058|8059|8101|8202) '   # the four legs o
 - **Untracked (4):** `reports/e2e-canopy-2026-09-02/drafts/lane16PR34_common_brief.md`,
   `lane16PR34A_phase16_port_brief.md`, `lane16PR34B_phase16_port_brief.md`, and this file.
 - **Elsewhere:** juniper-ml `main` `68f9ebcd`; #2360 at `684c9751` (OPEN, MERGEABLE, BLOCKED, armed); the juniper-ml
-  primary on #2360's branch at `684c9751` (00:02:37Z): someone, by every sign the owner, is working on #2360 there.
+  primary on #2360's branch at `684c9751` (00:02:37Z): someone, by every sign the Overtoad, is working on #2360 there.
 
 ## Changed by this session
 

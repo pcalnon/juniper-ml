@@ -12,7 +12,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc -- investigation (T6 tail: make experiment_stack.bash worktree-safe)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-26_t6-rebaseline-complete.md;
          util/experiment_stack.bash:112 (``CASCOR_SRC_DIR``, overridable via
          ``JUNIPER_EXP_CASCOR_SRC_DIR`` since ml#1412 -- which THIS probe's result unblocked);

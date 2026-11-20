@@ -1,33 +1,33 @@
-# Handoff — turing bring-up: the owner applied C2; G-SEC's firewall condition reads the sentence turing printed; owner steps next
+# Handoff — turing bring-up: the Overtoad applied C2; G-SEC's firewall condition reads the sentence turing printed; Overtoad steps next
 
-- **Continued (2026-10-26, plan v1.4.9).** Two sessions took this handoff. "cached-enchanting-cosmos-84" (760fde) took H3. "c9-landed-h6-audited-owner-decides" (bd4cfc) applied H6 on turing once the owner resumed it, and its handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-owner.md`, is now the arc's main handoff. The other owner steps below still stand; H6's item under Agent next is done.
+- **Continued (2026-10-26, plan v1.4.9).** Two sessions took this handoff. "cached-enchanting-cosmos-84" (760fde) took H3. "c9-landed-h6-audited-Overtoad-decides" (bd4cfc) applied H6 on turing once the Overtoad resumed it, and its handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-Overtoad.md`, is now the arc's main handoff. The other Overtoad steps below still stand; H6's item under Agent next is done.
 
 - **From:** the 2026-10-26 session on turing named "modular-meandering-crayon-bf" (f5e44f; worktree `.claude/worktrees/modular-meandering-crayon`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-h4-usage-off-c2-block-all-gate-h6-deferred.md`. That handoff's author, "macos dev env setup" (9d4723), was idle, and no other session was on it.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.8.
   - §18.2 holds the C2 row, now applied.
   - §18.3 holds erratum E-C2-GATE, now with the observed on-state sentences.
-- **This file is the arc's main handoff.** It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-h4-usage-off-c2-block-all-gate-h6-deferred.md`, which now points here. That file's owner steps still stand, except C2's, which is done.
-- **Standing approval:** the owner granted merge approval for the work arc again on 2026-10-26, merging only after green. It does not cover the `pypi` deployment gate.
+- **This file is the arc's main handoff.** It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-h4-usage-off-c2-block-all-gate-h6-deferred.md`, which now points here. That file's Overtoad steps still stand, except C2's, which is done.
+- **Standing approval:** the Overtoad granted merge approval for the work arc again on 2026-10-26, merging only after green. It does not cover the `pypi` deployment gate.
 
 ## Done this session
 
 | PR | Merge | What |
 |---|---|---|
-| juniper-ml#2346 | `89f5af48` | **G-SEC's firewall condition reads the block-all sentence turing printed** (E-C2-GATE). Once the owner applied C2, `socketfilterfw --getblockall` printed "Firewall is blocking all non-essential incoming connections." It never printed "Firewall is set to block all non-essential incoming connections", which juniper-ml#2338 had taken for the getter's sentence. The binary's strings place that sentence beside "Block all DISABLED!", the shape of `--setblockall`'s confirmations. `util/host_state_check.py` now accepts only the getter's sentence, and a capture holding the setter's cannot be judged. `tests/test_host_state_check.py` pins turing's on-state captures (61 tests across the two G1 suites). `util/ad-hoc/2026-10-25_turing_c2_gate_mutation_check.py` redefines B7 (the setter's sentence accepted), adds B12 (#2338's premise) and kills 12 of 12; `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` still kills 57 of 57, C12 included |
+| juniper-ml#2346 | `89f5af48` | **G-SEC's firewall condition reads the block-all sentence turing printed** (E-C2-GATE). Once the Overtoad applied C2, `socketfilterfw --getblockall` printed "Firewall is blocking all non-essential incoming connections." It never printed "Firewall is set to block all non-essential incoming connections", which juniper-ml#2338 had taken for the getter's sentence. The binary's strings place that sentence beside "Block all DISABLED!", the shape of `--setblockall`'s confirmations. `util/host_state_check.py` now accepts only the getter's sentence, and a capture holding the setter's cannot be judged. `tests/test_host_state_check.py` pins turing's on-state captures (61 tests across the two G1 suites). `util/ad-hoc/2026-10-25_turing_c2_gate_mutation_check.py` redefines B7 (the setter's sentence accepted), adds B12 (#2338's premise) and kills 12 of 12; `util/ad-hoc/2026-10-20_turing_g1_mutation_check.py` still kills 57 of 57, C12 included |
 | this handoff's PR | — | The record: plan v1.4.8 by `util/ad-hoc/2026-10-26_turing_c2_applied_record.py`, the previous handoff's pointer, and this file |
 
-## What the owner did (2026-10-26)
+## What the Overtoad did (2026-10-26)
 
 - **C2, applied** between 08:44Z and 08:47Z: the firewall on, blocking all incoming connections, with stealth mode. On macOS 15.7.1:
   - `--getglobalstate`: "Firewall is blocking all non-essential incoming connections. (State = 2)";
   - `--getblockall`: "Firewall is blocking all non-essential incoming connections.";
   - `--getstealthmode`: "Firewall stealth mode is on";
   - `--getallowsigned`: built-in and downloaded signed software both still ENABLED. Under block all only essential services take incoming connections, so this matters again only if block all is turned off for Arc F's VM.
-- **The owner's G-SEC run** at 08:47:40Z came from the primary checkout. Its `util/host_state_check.py` predates juniper-ml#2338, so it judged the global state alone. C8's step 1 below brings the block-all gate there.
+- **The Overtoad's G-SEC run** at 08:47:40Z came from the primary checkout. Its `util/host_state_check.py` predates juniper-ml#2338, so it judged the global state alone. C8's step 1 below brings the block-all gate there.
 
 ## State (2026-10-26)
 
-- **G-SEC:** the firewall condition passes; the gate still fails on `sip` (C1) and `key-exports` (C3), both the owner's.
+- **G-SEC:** the firewall condition passes; the gate still fails on `sip` (C1) and `key-exports` (C3), both the Overtoad's.
 - **Readiness:** 0 of 7 gates pass. G-ALIAS fails on A1; G-SIGN on the I-SIGN record (K10, K11); G-SEC on C1 and C3; G-TOOLS on D4's kubectl, which E-D6 says needs re-planning; G-ENV on E4; G-NET on F2 and A6; G-MEM on node mode (F3) and a running Docker Desktop.
 - **The guard on `main` is 1.2.0; turing still runs no guard.** `~/.claude/hooks/` does not exist.
 - **The primary checkout is behind `main`.** Its `util/host_state_check.py` and `util/host_state_probe.bash` lack juniper-ml#2338.
@@ -53,11 +53,11 @@
 
 ## Agent next
 
-1. **H3**, after the owner's C8 install: each H2 agent runs one scripted task on turing against a `util/host_state_probe.bash --json` run within ±10 minutes, plus one negative test. The task prompts go through `prompt-validator`.
+1. **H3**, after the Overtoad's C8 install: each H2 agent runs one scripted task on turing against a `util/host_state_probe.bash --json` run within ±10 minutes, plus one negative test. The task prompts go through `prompt-validator`.
 2. **After B.5:** re-run `python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py`, and record B.4 and B.5 in the next plan revision.
-3. **If the owner pastes `--setblockall on`'s output:** record it in E-C2-GATE, which confirms or corrects the setter attribution.
-4. **H6, when the owner resumes it:** apply §8 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md` to every synced host, backing up both files first with the token redacted (unchanged).
-5. **F7 (AGENT, P2), if the owner wants it before F4.** It is the one AGENT task in §6 whose dependency has landed (F5a, juniper-ml#2237) with no artifact yet. A4 and B9 landed in juniper-ml#2228, though no status row records them. Installing the plist into `/Library/LaunchDaemons` needs sudo, so the install is the owner's. Points to settle when it is built (unverified design notes, not decisions):
+3. **If the Overtoad pastes `--setblockall on`'s output:** record it in E-C2-GATE, which confirms or corrects the setter attribution.
+4. **H6, when the Overtoad resumes it:** apply §8 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md` to every synced host, backing up both files first with the token redacted (unchanged).
+5. **F7 (AGENT, P2), if the Overtoad wants it before F4.** It is the one AGENT task in §6 whose dependency has landed (F5a, juniper-ml#2237) with no artifact yet. A4 and B9 landed in juniper-ml#2228, though no status row records them. Installing the plist into `/Library/LaunchDaemons` needs sudo, so the install is the Overtoad's. Points to settle when it is built (unverified design notes, not decisions):
    - `AbandonProcessGroup` true, or launchd may kill the VM's processes when `util/macvm_ctl.bash start` exits; `RunAtLoad` true, with no `KeepAlive`;
    - run a root-owned copy of `util/macvm_ctl.bash`, not the checkout's, so that a branch switch or an agent edit cannot change what runs at boot;
    - "installed disabled" means the plist is present, `launchctl disable system/local.juniper-macvm` is set, and the job is not bootstrapped. `launchctl print system/local.juniper-macvm` then likely reports no such service, so the acceptance may need `launchctl print-disabled system` instead (an erratum candidate).

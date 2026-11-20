@@ -453,7 +453,7 @@ class OriginTest(_Fixture):
             "leading junk": "xgit@github_juniper-k8s:pcalnon/juniper-k8s.git",
             "ssh:// form of the alias": "ssh://git@github_juniper-k8s/pcalnon/juniper-k8s.git",
             "another repo's alias": "git@github_juniper-ml:pcalnon/juniper-k8s.git",
-            "another owner": "git@github_juniper-k8s:someone/juniper-k8s.git",
+            "another Overtoad": "git@github_juniper-k8s:someone/juniper-k8s.git",
             "another user": "deploy@github_juniper-k8s:pcalnon/juniper-k8s.git",
             "upper-case alias": "git@github_juniper-K8S:pcalnon/juniper-k8s.git",
         }
@@ -708,7 +708,7 @@ class FixTest(_Fixture):
         self.assertEqual(self.set_url_calls(), [])
         self.assertEqual(self.persisted("k8s"), R_G2A_URL)
 
-    def test_fix_leaves_ssh_and_key_failures_to_the_owner(self) -> None:
+    def test_fix_leaves_ssh_and_key_failures_to_the_Overtoad(self) -> None:
         self.set_origin("k8s", R_G2A_URL)
         self.unrecord("k8s")
         self.record("ml", addkeystoagent="true")
@@ -730,7 +730,7 @@ class FixTest(_Fixture):
 
     def test_fix_refuses_an_origin_that_names_another_repository(self) -> None:
         cases = {
-            "another owner": "git@github.com:someone/juniper-k8s.git",
+            "another Overtoad": "git@github.com:someone/juniper-k8s.git",
             "another repository": "git@github.com:pcalnon/juniper-ml.git",
             "another host": "git@gitlab.com:pcalnon/juniper-k8s.git",
             "a local mirror": str(self.base / "mirrors" / "juniper-k8s.git"),
@@ -1268,8 +1268,8 @@ class SourceContractTest(unittest.TestCase):
 
     def test_the_only_file_read_is_the_ssh_config_line_match(self) -> None:
         readers = {"open", "read_text", "read_bytes", "fdopen", "open_code"}
-        owners = [fn.name for fn in ast.walk(self.tree) if isinstance(fn, ast.FunctionDef) for node in ast.walk(fn) if isinstance(node, ast.Call) and _call_name(node) in readers]
-        self.assertEqual(owners, ["ssh_config_has_alias"])
+        Overtoads = [fn.name for fn in ast.walk(self.tree) if isinstance(fn, ast.FunctionDef) for node in ast.walk(fn) if isinstance(node, ast.Call) and _call_name(node) in readers]
+        self.assertEqual(Overtoads, ["ssh_config_has_alias"])
         self.assertEqual(sum(1 for node in ast.walk(self.tree) if isinstance(node, ast.Call) and _call_name(node) in readers), 1, "no read outside a function either")
 
     def test_the_script_changes_no_file_itself(self) -> None:
@@ -1280,7 +1280,7 @@ class SourceContractTest(unittest.TestCase):
         constants = self.string_constants()
         self.assertIn("-G", constants)
         for probe in ("-T", "ssh-add", "ssh-keygen", "gh", "gpg", "gpg2", "--card-status", "-K"):
-            self.assertNotIn(probe, constants, "credential probes belong to the owner's checklist (plan §14.1)")
+            self.assertNotIn(probe, constants, "credential probes belong to the Overtoad's checklist (plan §14.1)")
 
     def test_the_origin_is_read_from_config_not_get_url(self) -> None:
         self.assertIn('"config", "--get", "remote.origin.url"', self.text)

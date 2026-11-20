@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (R-OBS-SC-2 follow-ups)
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc -- pre-upload freeze check for the telemetry and Retry-After fork PRs
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/open_signed_pr.py (uploads WHOLE files); the mutation checks
          util/ad-hoc/2026-11-12_fastapi_telemetry_opt_out_mutation_check.py and
          util/ad-hoc/2026-11-12_fork_retry_after_round_up_mutation_check.py (they edit a source file in place)

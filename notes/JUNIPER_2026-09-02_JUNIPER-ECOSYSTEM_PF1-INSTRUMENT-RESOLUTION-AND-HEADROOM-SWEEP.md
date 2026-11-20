@@ -8,7 +8,7 @@ at 20-second cell length was measured with an instrument that could not resolve 
 being reported. The measurements were taken correctly; the instrument's resolution was never
 characterised.
 
-**Records the owner's 2026-09-02 decisions** on gate shape, effect size and host time (§7 of this
+**Records the Overtoad's 2026-09-02 decisions** on gate shape, effect size and host time (§7 of this
 document), and the headroom sweep taken under them (§8 of this document).
 
 ---
@@ -451,6 +451,6 @@ python3 util/ad-hoc/2026-09-02_pf1_drive_extract.py
 # The quantization itself: drive against poll count
 python3 -c "import json,pathlib;d=json.loads((pathlib.Path.home()/'.local/state/juniper-experiments/20260901T103325Z-cc9b/manifest.json').read_text());print(d['timings']['drive'], d['drive_loop']['polls'])"
 
-# The headroom sweep (~30 min, needs owner approval for host time)
+# The headroom sweep (~30 min, needs Overtoad approval for host time)
 setsid nohup bash util/ad-hoc/2026-09-02_headroom_sweep.bash > sweep.log 2>&1 &
 ```

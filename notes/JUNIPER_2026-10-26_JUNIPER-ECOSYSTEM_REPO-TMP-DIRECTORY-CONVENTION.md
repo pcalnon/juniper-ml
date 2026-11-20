@@ -2,14 +2,14 @@
 
 **Project**: Juniper (ecosystem-wide)
 **Owner**: Paul Calnon
-**Status**: In force since 2026-10-26 (owner directive)
+**Status**: In force since 2026-10-26 (Overtoad directive)
 **Date**: 2026-10-26
 **Canonical copy**: this file, in juniper-ml. Each repo's `AGENTS.md` carries the short form under
 "Temporary files: `tmp/`, never `/tmp` (mandatory)".
 
 ---
 
-## 1. The rule, in the owner's words
+## 1. The rule, in the Overtoad's words
 
 > Every repo directory should have a juniper-**/tmp/ subdirectory (that is git ignored). All temp files should be
 > written to that, repo-specific, directory. Absolutely NO files should ever be written to the /tmp directory. This
@@ -19,7 +19,7 @@
 It covers every script, test, tool, service, session and agent, and `/var/tmp` as well as `/tmp`. Two things are
 out of scope (section 5): GitHub-hosted CI runners and a container's own `/tmp`.
 
-Later on 2026-10-26 the owner ruled on how tools treat `tmp/`, and on how long its files are kept (verbatim, typos
+Later on 2026-10-26 the Overtoad ruled on how tools treat `tmp/`, and on how long its files are kept (verbatim, typos
 kept):
 
 > add each repo's junipper-**/tmp/ directory to the ignore list for the doc-link checker. the tmp/ directory
@@ -38,7 +38,7 @@ kept):
 Section 4.7 applies the doc-link checker and pytest rulings, section 4.8 the Docker, search and copy rulings, and
 section 6 the retention rule.
 
-Later the same day, 2026-10-26, the owner revised the search ruling (verbatim):
+Later the same day, 2026-10-26, the Overtoad revised the search ruling (verbatim):
 
 > let's also document the issue that all counting scripts must be modified to deliberately choose either to search
 > the repo while excluding the local tmp/ directory, or to only search the local tmp/ directory, unless there is some
@@ -76,7 +76,7 @@ protection keyed on `TMPDIR` is no protection.
   are kept, which is why a ten-day-old venv survives as a skeleton of empty directories (the `data_up` comment in
   `util/isolated_stack.bash` records the 2026-09-22 instance).
 - macOS ages `/tmp` too.
-- Every `juniper-*` repo on the host has an empty `tmp/` at its root: the owner made them on 2026-10-05, and
+- Every `juniper-*` repo on the host has an empty `tmp/` at its root: the Overtoad made them on 2026-10-05, and
   juniper-slacker's on 2026-10-26. On 2026-10-26 `/tmp/` was added to every repo's `.git/info/exclude`. That file
   is LOCAL ONLY (shared by a repo's worktrees, absent from every other clone, host and CI checkout), so each repo
   also commits a root-anchored `/tmp/` line to `.gitignore`.
@@ -177,7 +177,7 @@ needs the five checks below; CI is unaffected, because a runner's `TMPDIR` is it
 2. **Tree walkers.** A tool that walks the directory tree, rather than git's tracked files, ignores `.gitignore` and
    `info/exclude`, so it scans `tmp/`. `juniper-check-doc-links` is one: with a lane's scratch under
    `<worktree>/tmp/` it scanned 1,832 markdown files and failed on 55 broken links, every one inside `tmp/`. By the
-   owner's ruling (section 1) every repo's `juniper-check-doc-links` invocation passes `--exclude tmp`. In juniper-ml
+   Overtoad's ruling (section 1) every repo's `juniper-check-doc-links` invocation passes `--exclude tmp`. In juniper-ml
    that is the pre-commit hook, `ci.yml`, both invocations in `docs-full-check.yml` (its own run and its loop over the
    consumer repos), the `AGENTS.md` commands, the developer cheatsheet, `docs/REFERENCE.md`'s Docs Full Check summary
    and juniper-doc-tools' README. The `--version` smoke steps in `ci-doc-tools.yml` and `publish-doc-tools.yml` walk
@@ -187,7 +187,7 @@ needs the five checks below; CI is unaffected, because a runner's `TMPDIR` is it
    `juniper-foo/tmp/`: without the flag the checker failed on both; with it, it scanned neither and passed. A script
    that counts matches chooses its scope deliberately instead (section 4.8). A default exclude in juniper-doc-tools
    needs a package release (section 10).
-3. **pytest recursion.** pytest's default `norecursedirs` does not list `tmp`. By the owner's ruling (section 1) no
+3. **pytest recursion.** pytest's default `norecursedirs` does not list `tmp`. By the Overtoad's ruling (section 1) no
    repo configures pytest to ignore `tmp/`: no `norecursedirs`, `--ignore` or `collect_ignore` entry names it.
    `testpaths` keeps a bare run to the test directories, and an explicit `pytest tmp/<dir>` collects what is there;
    a repo without `testpaths` collects whatever test files a lane or pytester leaves under `tmp/`. juniper-ml sets
@@ -221,13 +221,13 @@ needs the five checks below; CI is unaffected, because a runner's `TMPDIR` is it
 
 ### 4.8 Docker builds, searches and copies
 
-The owner's other rulings of section 1:
+The Overtoad's other rulings of section 1:
 
 - **A local Docker build ignores `tmp/`.** Each build context's `.dockerignore` lists `tmp/`. Its patterns match
   relative to the context root, so `tmp/` covers the repo's own `tmp/` when the context is the repo root. juniper-ml
   has no build context: measured 2026-10-26, its tree holds no Dockerfile, Containerfile, compose file or
   `.dockerignore`, the six sub-packages included, and no workflow builds an image.
-- **A counting script chooses its scope.** By the owner's revised ruling (section 1), a script that counts matches
+- **A counting script chooses its scope.** By the Overtoad's revised ruling (section 1), a script that counts matches
   with `grep` or `find`, or walks the tree in Python, searches EITHER the repo with its `tmp/` excluded OR that `tmp/`
   alone, and searches both only for a stated edge case that needs both. The choice is written into the script, not
   left to `.gitignore` or a tool's defaults, which disagree: `grep -r` and `find` include `tmp/` unless told
@@ -257,7 +257,7 @@ The owner's other rulings of section 1:
 
 Nothing ages `tmp/`. That is the point: a file there stays until someone deletes it, by hand.
 
-By the owner's rule (section 1), a file a work arc writes to its repo's `tmp/` is kept until ALL of these hold:
+By the Overtoad's rule (section 1), a file a work arc writes to its repo's `tmp/` is kept until ALL of these hold:
 
 1. it is no longer needed;
 2. no work arc uses it, its own arc included;
@@ -290,7 +290,7 @@ the prohibition is on script *source files*, not on transient data." That except
 ## 9. Per-repo status
 
 One row per repo, recorded 2026-10-26. A PR column reads "pending" until that lane's PR is open. The scope column
-quotes each PR's own title; read the PR for its file list. Each PR also carries a commit applying the owner's
+quotes each PR's own title; read the PR for its file list. Each PR also carries a commit applying the Overtoad's
 rulings of section 1.
 
 | Repo | Lane | PR (state on 2026-10-26) | Scope |
@@ -314,7 +314,7 @@ rulings of section 1.
 - **Strings that are never created**: mocked paths, assertion strings, the malicious-command fixtures in the guard
   tests, path fields inside fake backup manifests, dry-run arguments.
 - **The backup lane** (`util/juniper-backup.bash`, the Duplicati scripts and units, their tests and docs): another
-  arc owns them, and Tier 1 is down by owner order. Its `/tmp` mentions are comments and refusal fixtures, and its
+  arc owns them, and Tier 1 is down by Overtoad order. Its `/tmp` mentions are comments and refusal fixtures, and its
   `REFERENCE.md` watchdog example (`--state-dir /tmp/wd`) is listed for that arc.
 - **The undated canopy E2E drivers** in `util/ad-hoc/` (`e2e_*.py`, `e2e_*.bash`) still default to the old run dir.
   They operate the LIVE stack, which was launched under the old default, so changing their defaults now would point
@@ -322,17 +322,17 @@ rulings of section 1.
 - **The four marker-walk suites** of section 4.7 item 4 fail on a host whose `TMPDIR` is inside the Juniper tree and
   pass in CI. Each needs its code under test to accept a bound (an env var or a parameter naming the root), which
   belongs to the arc that owns the tool.
-- **juniper-doc-tools** has no default exclude for `tmp`. By the owner's ruling (section 1) callers in every repo
+- **juniper-doc-tools** has no default exclude for `tmp`. By the Overtoad's ruling (section 1) callers in every repo
   now pass `--exclude tmp`. A default exclude changes a published package, so it still waits for its own PR and
   release.
 - **The installed SessionStart hook.** `~/.claude/settings.json` on the Linux host still carries the hook without the
-  ceiling. Updating it is a configuration change the owner makes:
+  ceiling. Updating it is a configuration change the Overtoad makes:
   `python3 util/ad-hoc/2026-10-26_session_tmpdir_hook_probe.py --install`, which runs the known answers first.
 
 ## 11. Owed: counting scripts that must choose their scope
 
-By the owner's revised ruling (section 1), each site below is to be modified to choose its scope explicitly: the repo
-with its `tmp/` excluded, or `tmp/` alone. None is changed in this PR: the owner asked for the issue to be
+By the Overtoad's revised ruling (section 1), each site below is to be modified to choose its scope explicitly: the repo
+with its `tmp/` excluded, or `tmp/` alone. None is changed in this PR: the Overtoad asked for the issue to be
 documented. The list comes from a 2026-10-26 scan of every tracked `find`, recursive `grep`, ripgrep call and Python
 tree walk in `util/`, `scripts/`, `tests/`, `.claude/`, `.github/`, `conf/`, `prompts/agent_templates/` and the six
 sub-packages, keeping those whose root is a repo root or above it. Line numbers are at this PR's head.

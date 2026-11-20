@@ -39,7 +39,7 @@
 | 22 | Row 1278's ml anchors `:59` / `:285` | register | Correct at `27e1541d` and `b8b24b41`; `:68` / `:338` on `main` | STALE on `main` |
 | 23 | APD-CASCOR-013 narrowing; inline data reports null by design; fetched partial data says so (`:1285`, `:1449-1451`, `:1460-1462`) | register | cascor #678 as merged: `manager.py:2542-2557`, `:2897-2901`, `:4585` | REPRODUCED |
 | 24 | "Fetches lazily, on the first dataset request, so no startup dependency" (`:1353-1355`) | register | Faithful to the ruling text. The shipped code reads only when the resolver consults the set, and auto-start is a boot-time read (`manager.py:72-91`) | REPRODUCED (NIT) |
-| 25 | "The ruled option is itself a per-request form; the other two were not offered" (`:1368-1370`) | register | "Per-request" holds by reading. What the owner was offered exists in no file | NO ARTIFACT (options) |
+| 25 | "The ruled option is itself a per-request form; the other two were not offered" (`:1368-1370`) | register | "Per-request" holds by reading. What the Overtoad was offered exists in no file | NO ARTIFACT (options) |
 | 26 | Handoff §4 recorded a decision owed; ECO-008 was filed 2026-09-22; APD-ML-002..006 still need a decision (`:1403-1408`) | register | `HANDOFF_2026-09-21_…round-40-….md:166-171`; commit `836393cf` (#2005); `HANDOFF_2026-09-22_structure-screen-….md:122`, and no ruling for them in the register | REPRODUCED |
 | 27 | `/api/csrf` has no CSRF check and admits a request with no Origin (`:1508-1509`) | register | `48074653` `src/main.py:658-692` | REPRODUCED |
 | 28 | The posture-check skip returns before `require_auth`; the log strings (`:1517-1519`) | register | service-core `auth_posture.py:106-112`, `:114`, `:119` | REPRODUCED |
@@ -48,7 +48,7 @@
 | 31 | Auto-merge was armed at 13:17:53Z and never re-armed; `3a6dea95`'s message predates its own correction (`:1544-1548`) | register | Timeline: `auto_squash_enabled` 13:17:53Z, then commits at 13:21:15, 13:21:40 and 18:59:51, no re-arm; the message text matches | REPRODUCED |
 | 32 | "The merge did not wait for" the second validation round | register | Nothing on GitHub records the round's timing | NO ARTIFACT |
 | 33 | The CHANGELOG entry omits the key-gated routes opening; "55 pairs, 27 state-changing, 25 parameterless GETs all 401 before and 200 after" (`:1548-1551`) | register | The omission holds at `3a6dea95` (`CHANGELOG.md:376-411`). The route census gives 56 / 27 / 26 at `48074653` and `3a6dea95`: 26 × 401 before, 26 × 200 after with the lifespan running | Phenomenon REPRODUCED; counts off by one (Finding E) |
-| 34 | The owner was told "auth is off everywhere" | register | The quote appears in no file except the register | NO ARTIFACT |
+| 34 | The Overtoad was told "auth is off everywhere" | register | The quote appears in no file except the register | NO ARTIFACT |
 | 35 | A cross-site `text/plain` POST to `/api/dataset/generate` returns 200 in the auth-off profile, not introduced by #660 | register | 200, and the dataset actually changed from 200 to 40 samples, at both `48074653` and `3a6dea95` | REPRODUCED |
 | 36 | #660's blank-key WARNING fires before logging is configured, and its advice is wrong for a blank file | register | `3a6dea95` `src/security.py:297-309`; called at import (`src/main.py:528`) while `configure_logging` runs in the lifespan (`:310`) | REPRODUCED |
 | 37 | Cascor `security.py:68,72` and service-core `:73,77` (`:1580`) | register | Line numbers match | REPRODUCED |
@@ -132,7 +132,7 @@
 
 ### What this evidence cannot support
 - That the cross-repo gate passes in CI (it has not run there), or that the PyPI build of doc-tools behaves like the in-repo 0.1.2 I used.
-- Anything about the owner's words or the options put to the owner: rows 25, 32 and 34 have no artifact.
+- Anything about the Overtoad's words or the options put to the Overtoad: rows 25, 32 and 34 have no artifact.
 - Deployed canopy behaviour: a checkout is not a deployment.
 - Route totals under a different counting convention (I excluded HEAD and counted only HTTP routes).
 - The h11 / httptools header-stripping behaviour, which I did not re-measure. It underlies the unchanged "Over HTTP" reading.

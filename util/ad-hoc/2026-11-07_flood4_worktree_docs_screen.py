@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4 consolidation (canopy#791's deleted ```yaml block); adapted from
          2026-10-08_flood3_worktree_screens.py, which predates 0.9.1 and calls classify_file() without
          the fence maps, so a `#` comment inside a deleted code fence still reads as a heading there.

@@ -1,12 +1,12 @@
 # HANDOFF 2026-09-24 — data 0.16.0 cut at one commit, item 5 closed in all five repos, and Wave 4 still waits on the token
 
 **Session**: container-registry rollout. It worked all five items of the predecessor named below,
-cut juniper-data v0.16.0 after resolving two conflicting owner rulings, and put the serve-and-version
+cut juniper-data v0.16.0 after resolving two conflicting Overtoad rulings, and put the serve-and-version
 check on the publish path of all five image repos.
 **This file**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_data-0-16-0-cut-at-one-commit-item-5-closed-in-five-repos-wave-4-waits-on-the-token.md`.
 Read it from `main`.
-**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_worker-0-6-1-shipped-equities-joins-the-data-image-lock-and-wave-4-waits-on-the-owner-token.md`
-(`…waits-on-the-owner-token.md` below), **SUPERSEDED** by this file. It is history only; do not act
+**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_worker-0-6-1-shipped-equities-joins-the-data-image-lock-and-wave-4-waits-on-the-Overtoad-token.md`
+(`…waits-on-the-Overtoad-token.md` below), **SUPERSEDED** by this file. It is history only; do not act
 on its items. Its Wave 4 section is carried below, not by reference.
 **Times are UTC.** Live state was last probed at 2026-09-24 09:24Z.
 **Status: SUPERSEDED** (2026-09-24, about 20:00Z). It is history only; do not act on its items.
@@ -28,11 +28,11 @@ reference below names its document:
 
 ### Rules that bind you
 
-- **Every merge YOU perform needs the owner's explicit approval, naming that PR or group, in YOUR
+- **Every merge YOU perform needs the Overtoad's explicit approval, naming that PR or group, in YOUR
   session.** An approval given to an earlier session does not carry over. `gh pr merge --auto` on a
   MERGEABLE PR merges it on the spot, and an `update-branch` on an armed PR completes its merge.
-- **The PR sweeper is the owner's** (ruled 2026-09-24: "Mine: fix forward"). It readies and arms
-  open PRs as `pcalnon`, and its merges are the owner's own and intended. **Do not draft or disarm
+- **The PR sweeper is the Overtoad's** (ruled 2026-09-24: "Mine: fix forward"). It readies and arms
+  open PRs as `pcalnon`, and its merges are the Overtoad's own and intended. **Do not draft or disarm
   a PR to hold it.** If a change must be validated before it can merge, validate it before the PR
   exists. Create the branch with
   `gh api -X POST repos/pcalnon/<repo>/git/refs -f ref=refs/heads/<branch> -f sha=<main sha>`, and
@@ -45,61 +45,61 @@ reference below names its document:
   which blocks the merge with every check green. **Before every upload, re-probe the target repo's
   `commits/main` and diff each file**, because the helpers send whole files.
 - **Never handle the Docker Hub token.** Run no `gh secret set` or `gh variable set` for it. If the
-  token appears in chat, do not repeat it or use it. Tell the owner it is exposed and must be
+  token appears in chat, do not repeat it or use it. Tell the Overtoad it is exposed and must be
   deleted at Docker Hub first (`…REGISTRATION-PROCEDURE.md` §8), then replaced.
-- **Never approve a `pypi` environment gate.** The owner approves every deploy. Run
-  `util/release_train/ceremony.py --execute` only after the owner approves, in your session, both
+- **Never approve a `pypi` environment gate.** The Overtoad approves every deploy. Run
+  `util/release_train/ceremony.py --execute` only after the Overtoad approves, in your session, both
   the cut and the auto-merge of the juniper-ml archive PR it opens. There is no cut-only mode: the
   tool arms that auto-merge before it cuts.
 - Re-probe every claim before acting on it, this file's included. Scripts go in `util/ad-hoc/`,
-  never `/tmp`. The owner ruled on 2026-09-21 that no live memory is retired to meet the MEMORY.md
+  never `/tmp`. The Overtoad ruled on 2026-09-21 that no live memory is retired to meet the MEMORY.md
   target.
 
-### Owner gates — tell the owner; you run none of them
+### Owner gates — tell the Overtoad; you run none of them
 
 1. **PyPI for juniper-data 0.16.0.** Run 35977786108's `Publish to PyPI` job waits at the `pypi`
-   environment. After the owner approves, see Remaining item 1.
-2. **Wave 4's credential.** The owner runs `…REGISTRATION-PROCEDURE.md` §2, §5.2B step 3a, §4,
+   environment. After the Overtoad approves, see Remaining item 1.
+2. **Wave 4's credential.** The Overtoad runs `…REGISTRATION-PROCEDURE.md` §2, §5.2B step 3a, §4,
    §5.2B step 3 and §6, in that order. `…REGISTRATION-PROCEDURE.md`'s header lists the steps and
-   holds every command. Point the owner there; do not restate them. The owner then tells you four
+   holds every command. Point the Overtoad there; do not restate them. The Overtoad then tells you four
    things: that the `…REGISTRATION-PROCEDURE.md` §4 login succeeded; which form
    `…REGISTRATION-PROCEDURE.md` §5.2B step 3a used; the Docker ID; and the token's expiry date.
 3. **Who repins juniper-deploy from data 0.15.0 to 0.16.0.** Other sessions made the last two
-   repins (juniper-deploy#227, #229). Ask the owner who takes this one.
+   repins (juniper-deploy#227, #229). Ask the Overtoad who takes this one.
 4. **Still open from earlier handoffs**: OQ-2, OQ-3 and OQ-4 (`…PUBLISHING-PLAN.md` §6); the Pi
    pull (`…PUBLISHING-PLAN.md` §5.1; below the goal); and whether `juniper-deploy-test` goes to
    Docker Hub (`…REGISTRATION-PROCEDURE.md` §10).
 
 ### Remaining — yours once its condition holds
 
-1. **After the owner approves PyPI.**
+1. **After the Overtoad approves PyPI.**
    - In run 35977786108, confirm the jobs `Publish to PyPI` and `Notify consumer repos` succeeded.
      The `pypi` job is the publish verdict (juniper-data#426). `Notify consumer repos` appears in
      the run only after `pypi` finishes. Since juniper-data#431 it waits up to about two minutes
      for juniper-recurrence to start a `juniper-data-published` run. If only it failed, the release is
-     fine, but the consumer was not notified: tell the owner.
+     fine, but the consumer was not notified: tell the Overtoad.
    - Confirm `https://pypi.org/pypi/juniper-data/0.16.0/json` answers. Use the version-specific
      URL, because the aggregate one lags.
    - By PR, update `…PUBLISHING-PLAN.md` in two places: its status block (*State at 2026-09-24*:
-     *"Its PyPI deploy waits on the owner"*) and §5.2's 0.16.0 paragraph (*"PyPI waits on the
-     owner's approval"*).
-   - Ask the owner before editing the parent `Juniper/AGENTS.md` Data Contract, which is
+     *"Its PyPI deploy waits on the Overtoad"*) and §5.2's 0.16.0 paragraph (*"PyPI waits on the
+     Overtoad's approval"*).
+   - Ask the Overtoad before editing the parent `Juniper/AGENTS.md` Data Contract, which is
      unversioned and has no PR. It should say that arc_agi's `generator_version` is `4.0.0` from
      juniper-data 0.16.0 (juniper-data#430), and list 0.16.0 among the versions that moved.
-2. **The juniper-deploy repin, once the owner assigns it to you** (Owner gate 3). It covers
+2. **The juniper-deploy repin, once the Overtoad assigns it to you** (Owner gate 3). It covers
    juniper-deploy's `docker-compose.yml:164` and `:517` (the demo seed),
    `k8s/helm/juniper/values.yaml:40`, and juniper-deploy's `CHANGELOG.md`.
    `scripts/verify_published_images.py` already reports the pin as STALE. Check for an open deploy
    PR first.
-3. **When the owner reports the four Wave 4 facts**: record the token's expiry date in
+3. **When the Overtoad reports the four Wave 4 facts**: record the token's expiry date in
    `…REGISTRATION-PROCEDURE.md` §10 by PR.
 4. **The Wave 4 workflow change, only when BOTH hold.**
    - **(a)** Plain `gh api` calls, per repo, check the credential. **Names only**: every listing
      call carries `--jq '[.secrets[].name]'` or `--jq '[.variables[].name]'`, because a bare GET
      of a variables endpoint prints values.
      - `environments/dockerhub/secrets` lists `DOCKERHUB_TOKEN`, plus `DOCKERHUB_USERNAME` if the
-       owner chose a secret, and nothing else.
-     - `environments/dockerhub/variables` lists `DOCKERHUB_USERNAME` if the owner chose a
+       Overtoad chose a secret, and nothing else.
+     - `environments/dockerhub/variables` lists `DOCKERHUB_USERNAME` if the Overtoad chose a
        variable, and nothing else.
      - `actions/secrets` and `actions/variables` list no `DOCKERHUB_*`.
      - `environments/dockerhub/deployment-branch-policies`, with
@@ -107,30 +107,30 @@ reference below names its document:
        `tag:v*`.
      - For a variable, check the value only as a boolean:
        `--jq '.variables[] | select(.name=="DOCKERHUB_USERNAME") | (.value=="<Docker ID>")'`.
-       Never print it. A `false` means only that the value is not the Docker ID the owner reported.
-       Ask the owner to look with `…REGISTRATION-PROCEDURE.md` §6, which shows it to them.
-   - **(b)** The owner has told you, in your session, that the `…REGISTRATION-PROCEDURE.md` §4
+       Never print it. A `false` means only that the value is not the Docker ID the Overtoad reported.
+       Ask the Overtoad to look with `…REGISTRATION-PROCEDURE.md` §6, which shows it to them.
+   - **(b)** The Overtoad has told you, in your session, that the `…REGISTRATION-PROCEDURE.md` §4
      login succeeded.
    - Then: **never name `dockerhub` unconditionally on the existing `build` or `merge` job**,
      because both also run on pull requests or dispatches, and a tags-only environment rejects
      those runs. Pick a shape from `…REGISTRATION-PROCEDURE.md` §3 and §7. Read the username from
-     the context the owner chose (`vars.` or `secrets.`). Give each new job its repo's release-tag
+     the context the Overtoad chose (`vars.` or `secrets.`). Give each new job its repo's release-tag
      guard as a job-level `if:` (`'v'`, or `'juniper-recurrence-v'` in recurrence). **Never pass
      the credential as a `--build-arg`**: build-arg values are published in public SLSA provenance.
-     Ask the owner before editing the five `publish-image.yml` files.
+     Ask the Overtoad before editing the five `publish-image.yml` files.
 5. **Known gaps**, listed below the goal with a *fix* or *track* verdict each. None is time-bound.
 
 ### Key context
 
-- **Two owner rulings on 0.16.0 conflicted across sessions.** At 07:45Z this session was told to
+- **Two Overtoad rulings on 0.16.0 conflicted across sessions.** At 07:45Z this session was told to
   pin the cut to `7125e161` and move #428, #431 and #434 to `[Unreleased]`. At 08:03Z, on
   juniper-data#435, another session recorded "0.16.0 carries #428" and folded them in, reasoning
   that the ceremony could not pin a commit, which juniper-ml#2071 was about to change. Put back to
-  the owner, the fold governed, with the cut pinned. **If a later ruling in another session rests
-  on a premise your session is changing, ask the owner. Do not pick one.**
+  the Overtoad, the fold governed, with the cut pinned. **If a later ruling in another session rests
+  on a premise your session is changing, ask the Overtoad. Do not pick one.**
 - **An armed, CLEAN PR may still not merge.** juniper-ml#2071 sat that way;
   `python3 util/safe_merge.py --repo <repo> --pr <n> --merge-method squash --execute` merged it.
-  Read its `MERGED` line, never its exit status. juniper-ml's ruleset is `strict`: once the owner
+  Read its `MERGED` line, never its exit status. juniper-ml's ruleset is `strict`: once the Overtoad
   approves that merge in your session, a `BEHIND` PR needs
   `gh api -X PUT repos/pcalnon/<repo>/pulls/<n>/update-branch`, one PR at a time.
 - **Read *Traps* below the goal before running commands.**
@@ -157,7 +157,7 @@ gh api repos/pcalnon/juniper-data/git/ref/tags/v0.16.0 --jq .object.sha   # 39d1
 gh api repos/pcalnon/juniper-data/releases/latest --jq .tag_name          # v0.16.0
 gh run view 35977786108 --repo pcalnon/juniper-data --json jobs --jq '.jobs[] | "\(.name): \(.status) \(.conclusion)"'
 gh run view 35977785708 --repo pcalnon/juniper-data --json jobs --jq '.jobs[] | "\(.name): \(.conclusion)"'
-curl -s -o /dev/null -w '%{http_code}\n' https://pypi.org/pypi/juniper-data/0.16.0/json   # 404 until the owner approves
+curl -s -o /dev/null -w '%{http_code}\n' https://pypi.org/pypi/juniper-data/0.16.0/json   # 404 until the Overtoad approves
 
 # The 0.16.0 notes archive (merged 2026-09-24 09:16Z)
 gh pr view 2076 --repo pcalnon/juniper-ml --json state,mergedAt
@@ -183,7 +183,7 @@ gh api repos/pcalnon/juniper-deploy/contents/docker-compose.yml -H "Accept: appl
 
 | item | PR | merged | what |
 | --- | --- | --- | --- |
-| 1 | juniper-data#430 | 2026-09-23 20:02Z `90ad035e` | another session's; merged on the owner's approval. arc_agi `VERSION` 4.0.0, closing #427 and #429 |
+| 1 | juniper-data#430 | 2026-09-23 20:02Z `90ad035e` | another session's; merged on the Overtoad's approval. arc_agi `VERSION` 4.0.0, closing #427 and #429 |
 | 1 | juniper-data#433 | 2026-09-23 20:24Z `7125e161` | the 0.16.0 bump, on `release/juniper-data-v0.16.0` |
 | 1 | juniper-ml#2071 | 2026-09-24 08:51Z `b8165386` | `ceremony.py --target-sha`, and `commit_ci_verdict` |
 | 1 | Release v0.16.0 | cut 2026-09-24 08:52Z | tag at `39d1cab2` (juniper-data#435's merge), Latest |
@@ -192,13 +192,13 @@ gh api repos/pcalnon/juniper-deploy/contents/docker-compose.yml -H "Accept: appl
 | 3 | juniper-ml#2056 | 2026-09-23 20:39Z `8d187b5f` | the `dockerhub` drift gate |
 | 4 | juniper-ml#2055 | 2026-09-23 19:50Z `7fb40892` | the Latest badge per the registry's `latest:` flag; six stale badges moved by hand |
 | 5 | juniper-cascor-worker#196, juniper-recurrence#186, juniper-cascor#684, juniper-canopy#679, juniper-data#436 | 2026-09-24 01:21Z to 08:57Z | `util/check_image_serves.py` on the publish path; table in `…PUBLISHING-PLAN.md` §5.3 |
-| — | the PR archiving this file | — | this file; `…waits-on-the-owner-token.md` marked SUPERSEDED; `…PUBLISHING-PLAN.md` (status, §5 table, §5.2, new §5.3); `util/ad-hoc/2026-09-21_image_does_its_job_sweep.py` v2.0.0; new `util/ad-hoc/2026-09-23_arc_agi_dataset_id_probe.py` |
+| — | the PR archiving this file | — | this file; `…waits-on-the-Overtoad-token.md` marked SUPERSEDED; `…PUBLISHING-PLAN.md` (status, §5 table, §5.2, new §5.3); `util/ad-hoc/2026-09-21_image_does_its_job_sweep.py` v2.0.0; new `util/ad-hoc/2026-09-23_arc_agi_dataset_id_probe.py` |
 
 **GitHub settings**: the Latest badge moved on six repos under item 4, and v0.16.0 is Latest in
 juniper-data.
 
 **A rule broken, and no harm done.** This session drafted juniper-data#436 at about 08:47Z to hold
-it until the cut, and un-drafted it after the cut. That went against the owner's 2026-09-24 sweeper
+it until the cut, and un-drafted it after the cut. That went against the Overtoad's 2026-09-24 sweeper
 ruling, which this session had not read. The draft held, and the PR merged green after the cut.
 
 **Outside git (harness memory)**: `project_container_registry_rollout_2026-09-08.md` and
@@ -206,18 +206,18 @@ ruling, which this session had not read. The draft held, and the PR merged green
 
 ## How the 0.16.0 cut was decided
 
-1. juniper-data#433's bump merged at 20:24Z on 09-23, and the owner approved cutting `7125e161`
+1. juniper-data#433's bump merged at 20:24Z on 09-23, and the Overtoad approved cutting `7125e161`
    with a five-entry notes preview.
 2. Before the cut, #428, #431 and #434 merged. #428's entries in juniper-data's `CHANGELOG.md`
    straddled the bump and left a second `## [0.16.0]` heading above the real one. The ceremony
    renders the **first** match, so a cut from `main` would have published only #428's bullets.
-3. At 07:45Z the owner ruled: pin the cut to `7125e161` through a new `--target-sha`, and move the
+3. At 07:45Z the Overtoad ruled: pin the cut to `7125e161` through a new `--target-sha`, and move the
    three to `[Unreleased]`. juniper-ml#2071 added the option. Its second commit fixed the gate for
    a commit whose green push run was followed by a superseded, `cancelled` `repository_dispatch`
    run.
 4. At 08:03Z another session, on juniper-data#435, recorded "0.16.0 carries #428" and folded all
    three into `[0.16.0]`. #435 was armed at 08:04Z.
-5. Asked which ruling governed, the owner chose the fold, with the cut pinned to #435's merge
+5. Asked which ruling governed, the Overtoad chose the fold, with the cut pinned to #435's merge
    commit. The folded notes were the approved five entries byte-for-byte, plus #428's `ETag`
    feature (including a **Breaking** change: the access counters leave every metadata
    representation), #434's review round and #431's consumer-notification fix.
@@ -265,7 +265,7 @@ was reported down on 09-22. After Wave 4, pulls from docker.io follow `…REGIST
 200 pulls per 6 h. None of that applies to the GHCR pull.
 
 > **Correction, 2026-10-19 (erratum X6 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).**
-> `turing` was not down, and it was never a Pi-pull candidate. It is the owner's 15-inch 2018 Intel
+> `turing` was not down, and it was never a Pi-pull candidate. It is the Overtoad's 15-inch 2018 Intel
 > MacBook Pro (x86_64, macOS), a development laptop in active use away from yamaguchi
 > (`notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_BYPASS-CANDIDATE-DETERMINATION.md:174`), so it cannot
 > meet the pull's 64-bit Pi OS precondition. `192.168.50.222` comes from
@@ -285,10 +285,10 @@ FAIL.**
 | lane | lens | verdict |
 | --- | --- | --- |
 | A | re-probe every fact against GitHub, GHCR and PyPI, and run every verification command | FAIL: 1 critical, 3 major, 7 minor, plus moved-since items |
-| B | residue loss against `…waits-on-the-owner-token.md`, item by item; cold read as the next session and as the owner | FAIL: 2 major, 10 minor; no major residue loss |
+| B | residue loss against `…waits-on-the-Overtoad-token.md`, item by item; cold read as the next session and as the Overtoad | FAIL: 2 major, 10 minor; no major residue loss |
 
 **Both lanes converged on the top finding.** v1 told the next session to draft a PR to hold it. That
-contradicts the owner's 2026-09-24 sweeper ruling, recorded in harness memory
+contradicts the Overtoad's 2026-09-24 sweeper ruling, recorded in harness memory
 `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`. v2 fixes the following:
 
 - The sweeper rule now sits in *Rules*.
@@ -321,7 +321,7 @@ introduced. The final version fixes its six minor findings and nits:
 
 - the pre-PR validation path is now executable with the allowed tools (create the ref, push a
   signed commit, then `gh pr create`);
-- the `update-branch` trap is conditioned on the owner's approval in the session;
+- the `update-branch` trap is conditioned on the Overtoad's approval in the session;
 - juniper-cascor's `[0.11.0]` reference names its file;
 - both wordings of the plan's PyPI sentence are quoted;
 - restored residue: the ecosystem root, "no cut-only mode", why to pull before measuring, the

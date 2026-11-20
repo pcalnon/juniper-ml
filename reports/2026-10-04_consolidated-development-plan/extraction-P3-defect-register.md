@@ -46,14 +46,14 @@ Abbreviations: "consolidated" = `prompts/thread-handoff_automated-prompts/HANDOF
   - juniper-ml: `tests/test_service_fork_drift.py` L200–212, `docs/REFERENCE.md` (grep), `pyproject.toml`.
 - **Not read:**
   - document 1 (`HANDOFF_2026-09/HANDOFF_2026-09-24_defect-register-round-42-ml2088-merged-…`): the governing source's Appendix I maps every item in it, and that mapping was validated in four rounds;
-  - the other Lane F reports, the handoff-validation reports, and `owner-rulings-verbatim.md` / `owner-ruling-key-leaks-verbatim.md`, which are records only.
+  - the other Lane F reports, the handoff-validation reports, and `Overtoad-rulings-verbatim.md` / `Overtoad-ruling-key-leaks-verbatim.md`, which are records only.
 - Nothing failed to open.
 
 ## 1. Work items
 
 | ID | Item | Source | Live status | Gate | Depends on | Repo(s) | Effort | Criticality |
 |---|---|---|---|---|---|---|---|---|
-| P3-00 | Get the owner's merge grant in THIS session; ask the non-release item-10 questions in the same turn | consolidated L35, L50–51 | [NOT RE-PROBED — a grant cannot be probed; no handoff carries one] | OWNER-ACTION | — | all | S | UNBLOCKER |
+| P3-00 | Get the Overtoad's merge grant in THIS session; ask the non-release item-10 questions in the same turn | consolidated L35, L50–51 | [NOT RE-PROBED — a grant cannot be probed; no handoff carries one] | OWNER-ACTION | — | all | S | UNBLOCKER |
 | P3-01 | Run data fix-forward pre-PR round 2 (two lanes) on `94ce8b1f`: `d1c66a11..94ce8b1f` in full, `0f0f7e0e..94ce8b1f` for regressions, and the trial merge with `main` | L39–40, L133–172 | [VERIFIED 2026-10-04: ref → `94ce8b1f`, signed, waiver in body; `pulls?head=` → `[]`; compare → ahead 2 / behind 6, diverged; the only overlap with `main` is `CHANGELOG.md`; no `data438-fixforward-round2*` report; worktree HEAD on the branch, untouched since 10-01] [CHANGED SINCE HANDOFF: behind 4→6 (data#444, #445)] | STARTABLE | — | juniper-data, juniper-ml | M | DATA-INTEGRITY |
 | P3-02 | If round 2 refutes, or corrections are applied pre-PR: brief a task-executor for ONE signed commit (correct the old briefs' `--expected-head` and their DSN "unset"), then run round 3 | L174–179 | [VERIFIED 2026-10-04: `ls` → the executor transcript, the 4 tmpfs spec files and `primer-venv` still exist] | BLOCKED-ON P3-01 | P3-01 | juniper-data | M | DATA-INTEGRITY |
 | P3-03 | Open the data PR from the draft (literal title; add the round-2 report names); merge with `safe_merge`, keeping the `Allow-Symbol-Loss:` line; update-branch | L181–183 | [VERIFIED: draft on `main`; no PR] | OWNER-ACTION (merge) | P3-00, P3-01/02 | juniper-data | S | UNBLOCKER |
@@ -64,17 +64,17 @@ Abbreviations: "consolidated" = `prompts/thread-handoff_automated-prompts/HANDOF
 | P3-08 | cascor F-PR: F3 spy; F4 (`src/tests/conftest.py`, after `import sysconfig` `:37`, three DSNs = `""`); F5 pair; F7 subprocess test (waiver in a COMMIT body); F9. F4 validated pre-branch | same | [VERIFIED: conftest has no SENTRY line; `test_api_security.py:31` lacks the pair; F7 still the AST `_sentry_init_calls`; `CHANGELOG.md:594` "closes 4001"] | STARTABLE | P3-00 | juniper-cascor | M | SAFETY |
 | P3-09 | data F-PR: F3 spy marked `unit` (`TestAPIKeyAuth` `:37` is unmarked) + F5 pair; open after P3-03 merges (shared `[Unreleased]`) | L43, L173, L218 | [VERIFIED: `:34` lacks the pair; existing spy `:177-199` unmarked] | BLOCKED-ON P3-03 | P3-03 | juniper-data | S | SAFETY |
 | P3-10 | Validate #2088's delta `990ef3f9..2439d049` (two lanes, checklist L271–274); archive; fix forward before, inside, or after the closes PR | L45, L268–275 | [VERIFIED: both commits exist; #2088 head `1f116c38`; no report] | STARTABLE | — | juniper-ml | M | HYGIENE |
-| P3-11 | Open the closes PR: file APD-ECO-013/-014 and APD-CASCOR-014 OPEN; APD-DATA-055 update; the Key-leaks quote; residue (see note 1); owner answers; cite the Lane F reports | L46, L233–262 | [VERIFIED: grep for the 3 ids → 0; register last commit `5af9d722` (09-24); own parse → 136 rows / 36 not FIXED] [NOT RE-PROBED: crosscheck "AGREE" (script not run)] | STARTABLE | — | juniper-ml | M | SAFETY |
+| P3-11 | Open the closes PR: file APD-ECO-013/-014 and APD-CASCOR-014 OPEN; APD-DATA-055 update; the Key-leaks quote; residue (see note 1); Overtoad answers; cite the Lane F reports | L46, L233–262 | [VERIFIED: grep for the 3 ids → 0; register last commit `5af9d722` (09-24); own parse → 136 rows / 36 not FIXED] [NOT RE-PROBED: crosscheck "AGREE" (script not run)] | STARTABLE | — | juniper-ml | M | SAFETY |
 | P3-12 | data428 round-3 A1 F2 (8,192-byte cap parsed under `_version_lock`) and F4 (header limits): file or decline each, with a reason | L257 | [VERIFIED: register grep → 0] | STARTABLE | P3-11 | juniper-ml, juniper-data | S | HYGIENE |
 | P3-13 | Close rows only as their gates clear; validate each closing PR before it reaches a branch; refresh stale row prose | L235–239 | [VERIFIED: every gate still shut (§1b); L1297 still says #690 "open"; L788/800/803 say "PyPI still served 0.15.0"] | BLOCKED-ON P3-03, -05, -06, -07, -08, -09 | — | juniper-ml | M | HYGIENE |
 | P3-14 | Fork-drift marker: pin `encode("utf-8", "surrogatepass")` + `compare_digest(presented,`; fix comment `:205-209`; mutation-check; FORCE_LOCAL scratch-root run; update guard counts | L47, L277–290 | [VERIFIED anchors at `main`: svc-core `:88/:91`, data `:115/:118`, cascor `:84/:87`, canopy `:52/:137`, csrf `:91/:97`; marker count 0; comment present] [CHANGED: REFERENCE.md drift bullet is now L3019, not ~L2977] | BLOCKED-ON P3-11 | P3-11 | juniper-ml | M | SAFETY |
 | P3-15 | On real services: measure and file (a) the lone-surrogate 422 echo (data generic 400; cascor 400 `detail: null`) and (b) the primer toy's copy; correct primer L4742–4743 in place | L48, L292–302 | [VERIFIED: data handlers `RequestValidationError` `:187`, `ValueError` `:214`; cascor `:858/:918`; primer L4742–4743 still say no handler] [CHANGED: data lock now starlette 1.7.0 / pydantic 2.13.5] | STARTABLE | — | data, cascor, juniper-ml | M | USER-FACING |
 | P3-16 | PATCH PR bodies: ml#2080 (drop the L69 bullet; add the Corrected row), ml#2088 (L47 wording), cascor#689 (F9 "4001") | L49, L304–308 | [VERIFIED: #2080 L69 present; #2088 L47 "Extended beyond the lanes"; #689 "4001" ×2] | STARTABLE | — | juniper-ml, juniper-cascor | S | HYGIENE |
 | P3-17 | Ask D-02 / D-03 (release path; who opens the cap, lock and floor PRs) | L50, L230 | [VERIFIED: PyPI juniper-observability 0.4.0 (06-14), juniper-service-core 0.7.0 (08-31)] | BLOCKED-ON P3-07 | P3-07 | juniper-ml | S | SAFETY |
-| P3-18 | Cap PRs before the Release; owner cuts observability and service-core; then lock and floor PRs (note 2) | L223–231 | [VERIFIED 2026-10-04: every lock and cap line via the contents API] | OWNER-ACTION | P3-17, P4 | ml, data, cascor, canopy, recurrence | M | SAFETY |
+| P3-18 | Cap PRs before the Release; Overtoad cuts observability and service-core; then lock and floor PRs (note 2) | L223–231 | [VERIFIED 2026-10-04: every lock and cap line via the contents API] | OWNER-ACTION | P3-17, P4 | ml, data, cascor, canopy, recurrence | M | SAFETY |
 | P3-19 | Ask D-12 (the next data release) and D-07 (#437's breaking marker) | L320, L326 | [VERIFIED: latest is v0.16.0; `main` is 9 commits ahead (#436, #437, #438, #440 + 5 dependabot); `[Unreleased] ### Changed` carries `equities_seq` 6.0.0] [NOT RE-PROBED: renderer "breaking: NO"] | BLOCKED-ON P3-03 | P3-03, P4 | juniper-data | S | UNBLOCKER |
 | P3-20 | Hand the canopy items to P2: F-060; 061/062 FIXED-BY #685 only after P3-06; the "Nothing was loaded" copies. If no P2 session exists, record them yourself | L52, L262–265 | [VERIFIED: the ledger stops at F-CANOPY-059; `dashboard_manager.py:8410` cut list and `:8381` copy; test `:42`; cascor `manager.py` "Nothing was loaded" count 0] | STARTABLE (060, copies) / BLOCKED-ON P3-06 (061/062) | P2 item 2 | juniper-ml (ledger) | S | HYGIENE |
-| P3-21 | Fix F-CANOPY-060 (cut only at `" To accept it,"`) and refresh canopy's stale copies | L263–265 | [VERIFIED: `:8410` reads `for stop in (" To accept it,", " The resulting dataset")`] | STARTABLE (no owner) | P3-20 | juniper-canopy | S | USER-FACING |
+| P3-21 | Fix F-CANOPY-060 (cut only at `" To accept it,"`) and refresh canopy's stale copies | L263–265 | [VERIFIED: `:8410` reads `for stop in (" To accept it,", " The resulting dataset")`] | STARTABLE (no Overtoad) | P3-20 | juniper-canopy | S | USER-FACING |
 | P3-22 | Surface rulings on the nine parked rows (D-10), APD-DATA-055 `If-Match` (D-08) and APD-ML-008's remedy (D-09) | L321–323 | [VERIFIED: the park block at L1619–1637 is unchanged since `5af9d722`] | OWNER-DECISION | P3-00 | juniper-ml | S | SAFETY |
 | P3-23 | Surface the CodeQL residual (D-11); never dismiss alerts or edit probes | L324–325 | [VERIFIED: alerts 843/876 dismissed "used in tests" 09-26; `codeql.yml` has `+security-and-quality` and no paths-ignore] [NOT RE-PROBED: the 207-alert count] | OWNER-DECISION | — | juniper-ml | S | HYGIENE |
 | P3-24 | Later arc D-C (APD-DATA-030/-031/-022; RFC 9457; absorbs P3-15(a)) then D-D (-026/-027/-028/-008); sequence on `routes/datasets.py` | L328–335 | [VERIFIED: rows open] | OWNER-DECISION (timing); after P3-03 | P3-03, P5 | juniper-data | L | USER-FACING |
@@ -82,7 +82,7 @@ Abbreviations: "consolidated" = `prompts/thread-handoff_automated-prompts/HANDOF
 | P3-26 | Later arc D-G (APD-DATA-048/-049/-051, which the register calls "actionable") | L334 | [VERIFIED: open] | OWNER-DECISION (timing) | — | juniper-data | M | USER-FACING |
 | P3-27 | Later arc C-A (APD-ECO-003, relaunch fresh) then C-B (APD-ECO-004; 38 colliding `def` lines); C-C (APD-RCLIENT-004) | L336–339 | [VERIFIED: open] | OWNER-DECISION (timing) | — | data-client, cascor-client, recurrence-client | L | USER-FACING |
 | P3-28 | Round 39 §0.4's no-row items: `equities_seq` `data_quality` has no consumer in recurrence; canopy's `val_ratio` removal is recorded only in register §4.9 | L340 | [NOT RE-PROBED] | OWNER-DECISION | — | recurrence, canopy | S | HYGIENE |
-| P3-29 | Worktree and branch cleanup with the owner's go-ahead (keep the data worktree until P3-03 and the cascor shortfall worktree until P3-05) | L341, L394–412 | [VERIFIED: 11 shared + 3 session worktrees exist; canopy `pr-63`/`pr-683` = `4caf9389`; cascor `fix/shortfall-mixed-provenance-and-678-followups` = `e452a660`] [NOT RE-PROBED: dirty state; local cascor branches] | OWNER-DECISION | P3-03, P3-05 | all | S | HYGIENE |
+| P3-29 | Worktree and branch cleanup with the Overtoad's go-ahead (keep the data worktree until P3-03 and the cascor shortfall worktree until P3-05) | L341, L394–412 | [VERIFIED: 11 shared + 3 session worktrees exist; canopy `pr-63`/`pr-683` = `4caf9389`; cascor `fix/shortfall-mixed-provenance-and-678-followups` = `e452a660`] [NOT RE-PROBED: dirty state; local cascor branches] | OWNER-DECISION | P3-03, P3-05 | all | S | HYGIENE |
 | P3-30 | Keep MEMORY.md under ~25,000 characters: retire entries before adding any | L327 | [CHANGED SINCE HANDOFF: `wc -m` 24,929 → 24,993] | STARTABLE | P2 item 6 | auto-memory | S | HYGIENE |
 | P3-31 | Ask D-06 (purge the live Sentry test events) and D-05 (the stray canopy branches) | L318–319 | [VERIFIED: branches] [NOT RE-PROBED: Sentry] | OWNER-DECISION | — | canopy, Sentry | S | HYGIENE |
 | P3-32 | Record D-15: canopy's `util/ad-hoc/2026-09-23_blank_api_key_warning_mutation_check.py` has met its retire condition | L254 | [NOT RE-PROBED] | OWNER-DECISION | — | juniper-canopy | S | HYGIENE |
@@ -137,7 +137,7 @@ Abbreviations: "consolidated" = `prompts/thread-handoff_automated-prompts/HANDOF
 | ID | Question | Options; the source's recommendation | Blocks | Source |
 |---|---|---|---|---|
 | D-01 | Merge grant for this session | grant / withhold; ask at first action | every merge (P3-03…) | consolidated L35 |
-| D-02 | How are observability and service-core released? | (1) the owner prepares and cuts both; (2) an agent opens bump and notes PRs at owner-named versions, and the owner cuts. No recommendation. Ask only after P3-07 validates | P3-18; the Sentry fix reaching any service | L230 |
+| D-02 | How are observability and service-core released? | (1) the Overtoad prepares and cuts both; (2) an agent opens bump and notes PRs at Overtoad-named versions, and the Overtoad cuts. No recommendation. Ask only after P3-07 validates | P3-18; the Sentry fix reaching any service | L230 |
 | D-03 | Who opens the cap, lock and floor PRs? | none stated | P3-18 | L230 |
 | D-04 | canopy#685 calls: (a) make upstream errors type-only (`outbound_errors.py:57-61`, a 62-line file [VERIFIED]); (b) refuse a space or tab inside a key; (c) a blank `*_API_KEY_FILE` shadowing a real env var sends no key | yes/no each; none | P3-06's content | L314–317 |
 | D-05 | Delete the stray `pr-63` / `pr-683`? | yes/no; "do not delete unasked" | P3-29 | L318 |
@@ -146,8 +146,8 @@ Abbreviations: "consolidated" = `prompts/thread-handoff_automated-prompts/HANDOF
 | D-08 | APD-DATA-055's `If-Match` half | implement / document; none | closing -055 | L321 |
 | D-09 | APD-ML-008's silent-path remedy | "a variable only the drift step sets"; rulable separately | ML-008 | L322; register L1631 |
 | D-10 | The nine parked rows, asked together, one question each | ECO-009/-010/-012: fix, and does canopy become a site of `streaming-body-cap` / `pre-auth-throttle` / `cors-outside-auth`? ECO-011: an Origin check on every state-changing route, or refuse non-JSON `POST /api/dataset/generate`. DATA-054/-055/-056 and ML-007/-008: per row | those 9 rows | L323; register L1619–1634 |
-| D-11 | CodeQL residual on the probe paths | a `paths-ignore` config, or a tarball, never ruled; record who dismissed the highs only if the owner says | — | L324–325 |
-| D-12 | Cut the next juniper-data release once P3-03 merges and validates? | yes/no; the owner cuts | shipping #438, #440, the fix-forward and X8; P5 W10 | L326 |
+| D-11 | CodeQL residual on the probe paths | a `paths-ignore` config, or a tarball, never ruled; record who dismissed the highs only if the Overtoad says | — | L324–325 |
+| D-12 | Cut the next juniper-data release once P3-03 merges and validates? | yes/no; the Overtoad cuts | shipping #438, #440, the fix-forward and X8; P5 W10 | L326 |
 | D-13 | When to start the later arc items | order per round 39 §0 | P3-24…27, P3-34 | L328 |
 | D-14 | Worktree and branch cleanup | per worktree | P3-29 | L341 |
 | D-15 | Retire canopy's ad-hoc mutation script? | record only | — | L254 |
@@ -157,14 +157,14 @@ Abbreviations: "consolidated" = `prompts/thread-handoff_automated-prompts/HANDOF
 
 - **P3 → P4:**
   - P3-03 must merge and validate before the next data release (D-12, P4 item 5).
-  - P3-07 → D-02 → P4's owner-gated observability and service-core cuts; only one session cuts them.
+  - P3-07 → D-02 → P4's Overtoad-gated observability and service-core cuts; only one session cuts them.
   - The canopy release (23 SHIP), the cascor release (17) and the data release are what deliver APD-ECO-013/-014's fixes to PyPI and images.
 - **P4 → P3 (resolved):** the dispatch token was widened. Notify run 37114403856 finished `success` at 2026-10-03T09:50:35Z [VERIFIED], so the next data release's notify job is no longer blocked.
 - **P3 → P5:** P5's `routes/datasets.py` edits sequence after P3-03, as do D-B…D-D (P3-24). P5 W10 waits on the data release.
 - **P3 ↔ P2:**
   - P2 item 2 (the Phase 10 ledger PR) files F-CANOPY-060/-061/-062 and the "Nothing was loaded" item.
   - P3 sends P3-06's outcome; P2 sends back the id it assigns.
-  - P2 is named for P3-21 but has no owner.
+  - P2 is named for P3-21 but has no Overtoad.
 - **P6 ↔ P3:**
   - P6 item 4 needs D-16; those rows live in P3's register.
   - data#432 (P3-33) needs P3's id, and its fix moves PF-2 axis 2's 5,882 ceiling.
@@ -174,7 +174,7 @@ Abbreviations: "consolidated" = `prompts/thread-handoff_automated-prompts/HANDOF
 
 ## 4. Hazards
 
-- **The owner's sweeper merges green PRs.** Validate F2/F4 (P3-07/08) and any row-CLOSING register PR before it reaches a branch. Never draft or disarm a PR.
+- **The Overtoad's sweeper merges green PRs.** Validate F2/F4 (P3-07/08) and any row-CLOSING register PR before it reaches a branch. Never draft or disarm a PR.
 - **Merging:**
   - A grant never carries across sessions.
   - Merge only via `util/safe_merge.py`, and read its `MERGED` line.
@@ -228,12 +228,12 @@ Abbreviations: "consolidated" = `prompts/thread-handoff_automated-prompts/HANDOF
   - P3-07 unlocks the release question (D-02), and with it the whole delivery chain.
   - P3-01→03 unlock the next data release (P4), P5, D-B's closes and D-F/D-E.
   - P3-06 unlocks the APD-ECO-013/-014 closes and P2's ledger.
-- **Cost:** mostly M agent work (about 7 two-lane rounds). Merges and releases are owner-gated.
+- **Cost:** mostly M agent work (about 7 two-lane rounds). Merges and releases are Overtoad-gated.
 
 **Recommended next actions:**
 1. **P3-00, then P3-07 and P3-08 together:** fix F2/F10 (plus F6, F9, F3, F5) and F4, validated before either reaches a branch. That makes D-02 askable (P3-17).
 2. **P3-01:** round 2 on the data fix-forward, then P3-03 with the grant, then D-12 (P3-19).
-3. **P3-06, then P3-05:** validate canopy#685 and cascor#690. In the same owner turn, open P3-11 to file the three S rows OPEN.
+3. **P3-06, then P3-05:** validate canopy#685 and cascor#690. In the same Overtoad turn, open P3-11 to file the three S rows OPEN.
 
 ## 8. What this report cannot support
 

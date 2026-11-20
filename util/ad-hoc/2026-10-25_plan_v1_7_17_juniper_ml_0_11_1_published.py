@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-25
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.16 -> v1.7.17);
          util/ad-hoc/2026-10-24_plan_v1_7_16_save_model_snapshot.py (the revision this follows);
          notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (v1.15.0, R-ML-SERVERS in §5)
@@ -38,14 +38,14 @@ _PLAN = _REPO / "notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END
 RECORD = (
     "juniper-ml 0.11.1 is on PyPI (2026-10-25 18:03Z). It carries juniper-ml#2314's `[tools]` security floors, "
     "`juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0`: the proposal juniper-ml#2319 merged as "
-    "`d7a1908d`, the archive juniper-ml#2321 as `d64ffcec`, and the owner approved publish run 40178692483's `pypi` gate. "
+    "`d7a1908d`, the archive juniper-ml#2321 as `d64ffcec`, and the Overtoad approved publish run 40178692483's `pypi` gate. "
     "Its notes rate it Medium (CWE-201, CWE-755, CWE-770), priority High. juniper-ml#2210 closed with juniper-ml#2320 "
     "(merged as `f7a1442d`, 18:12Z): `run_suite` refuses a `per_run_timeout_seconds` the driver's worst-case budget can "
     "outrun, and the nine recurrence suites carry 4500 s. Its docs edits were re-checked on `main` `3ebf0689` "
     "(`util/ad-hoc/2026-10-25_apply_driver_budget_docs.py --check`, exit 0). juniper-cascor 0.12.0 (PyPI 2026-10-25 "
-    "18:13Z; the owner approved run 38085392643's `pypi` gate) and juniper-data 0.17.1 (PyPI 2026-10-23 23:49Z) are "
+    "18:13Z; the Overtoad approved run 38085392643's `pypi` gate) and juniper-data 0.17.1 (PyPI 2026-10-23 23:49Z) are "
     "served, which unblocks R-ML-SERVERS: the `[servers]` floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`, "
-    "then a 0.11.2 cut. SERVERS_STATE. The owner ruled on 2026-10-25 that this arc cuts 0.11.2 and stops at "
+    "then a 0.11.2 cut. SERVERS_STATE. The Overtoad ruled on 2026-10-25 that this arc cuts 0.11.2 and stops at "
     "`PENDING_PYPI_APPROVAL`, with 0.11.1's rating (Medium; CWE-201, CWE-755, CWE-770; priority High), and that "
     "juniper-ml#2062's fix does not ride it. Measured on the published wheels, data 0.17.1 differs from 0.17.0 only "
     "in its version and its two floors (the builder's setuptools version aside), and both floors sit under its `[api]` "
@@ -61,19 +61,19 @@ RECORD = (
 )
 
 NEXT_OLD = (
-    "  - **Next**: the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; the owner's, since that file is not on turing). "
+    "  - **Next**: the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; the Overtoad's, since that file is not on turing). "
     "juniper-ml#2210 is the next driver task: `per_run_timeout_seconds` against the summed driver budgets, where `save_model` is now one `max_wall`-bounded HTTP call on the "
-    "snapshot path and the 600 s re-fit only for a pre-W1.5 service. A juniper-config-tools 0.2.0 cut (the owner's call) needs its `[Unreleased]` backfilled first. "
-    "The juniper-recurrence-client 0.3.1 release (owner's cut) carries the embargo fix. juniper-data's next release carries W5.7 (owner's cut). The W0.1 service-core half "
+    "snapshot path and the 600 s re-fit only for a pre-W1.5 service. A juniper-config-tools 0.2.0 cut (the Overtoad's call) needs its `[Unreleased]` backfilled first. "
+    "The juniper-recurrence-client 0.3.1 release (Overtoad's cut) carries the embargo fix. juniper-data's next release carries W5.7 (Overtoad's cut). The W0.1 service-core half "
     "and the W1.12 / W1.11 smokes (owed on the 0.8.0 image, on a host whose Docker reaches GHCR) stay open, and the next real recurrence run with `save_model` enabled is the "
     "snapshot path's first live exercise."
 )
 
 NEXT_NEW = (
-    "  - **Next**: R-ML-SERVERS: SERVERS_NEXT the 0.11.2 cut, driven to `PENDING_PYPI_APPROVAL` with 0.11.1's rating, as the owner ruled; its `pypi` gate stays the "
-    "owner's. juniper-ml#2062's fix (`[servers]` installs no client) gets its own PR and a later release. The juniper-recurrence-client 0.3.1 release "
-    "(owner's cut) carries the embargo fix. juniper-data's next release carries W5.7 (owner's cut); W5.7 changes a default, so whether a patch release may carry it is "
-    "the owner's call too. A juniper-config-tools 0.2.0 cut (the owner's call) needs its `[Unreleased]` backfilled first. The W0.1 service-core half stays open, "
+    "  - **Next**: R-ML-SERVERS: SERVERS_NEXT the 0.11.2 cut, driven to `PENDING_PYPI_APPROVAL` with 0.11.1's rating, as the Overtoad ruled; its `pypi` gate stays the "
+    "Overtoad's. juniper-ml#2062's fix (`[servers]` installs no client) gets its own PR and a later release. The juniper-recurrence-client 0.3.1 release "
+    "(Overtoad's cut) carries the embargo fix. juniper-data's next release carries W5.7 (Overtoad's cut); W5.7 changes a default, so whether a patch release may carry it is "
+    "the Overtoad's call too. A juniper-config-tools 0.2.0 cut (the Overtoad's call) needs its `[Unreleased]` backfilled first. The W0.1 service-core half stays open, "
     "and the next real recurrence run with `save_model` enabled is the snapshot path's first live exercise."
 )
 
@@ -87,7 +87,7 @@ def _servers(servers_pr: "str | None", servers_sha: "str | None") -> tuple[str, 
     """(SERVERS_STATE for the record, SERVERS_NEXT for the Next bullet, the revision row's owed prefix)."""
     if servers_pr is None:
         return (
-            "Its floors PR is with another session, to which the owner assigned it (as that session relayed)",
+            "Its floors PR is with another session, to which the Overtoad assigned it (as that session relayed)",
             "the `[servers]` floors PR, which another session holds, and then",
             "the `[servers]` floors PR; ",
         )
@@ -122,9 +122,9 @@ def row(servers_pr: "str | None", servers_sha: "str | None") -> str:
     return (
         f"| 2026-10-25 | 1.7.17 | **{_HEADLINE}**: {record}. "
         "Updated: Status line, the Progress block (2026-10-25 bullet, Next rewritten). "
-        f"Owed: {owed_servers}the 0.11.2 cut (owner-approved, to `PENDING_PYPI_APPROVAL`) and its `pypi` gate (owner); juniper-ml#2062 (its own PR); "
+        f"Owed: {owed_servers}the 0.11.2 cut (Overtoad-approved, to `PENDING_PYPI_APPROVAL`) and its `pypi` gate (Overtoad); juniper-ml#2062 (its own PR); "
         "the client 0.3.1 release; juniper-data's next release (W5.7); "
-        "juniper-config-tools 0.2.0 (owner); W0.1's service-core half; the first live exercise of `save_model`'s snapshot path. | Paul Calnon |\n"
+        "juniper-config-tools 0.2.0 (Overtoad); W0.1's service-core half; the first live exercise of `save_model`'s snapshot path. | Paul Calnon |\n"
     )
 
 

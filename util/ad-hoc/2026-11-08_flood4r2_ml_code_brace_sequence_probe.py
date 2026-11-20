@@ -6,8 +6,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
-Status: ad-hoc — investigation (flood-4 round-2 ml-code carrier: the increment-range bypass, owner ruling "Carry in ml-code")
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — investigation (flood-4 round-2 ml-code carrier: the increment-range bypass, Overtoad ruling "Carry in ml-code")
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tmp/flood4r2/ml-code/proposed/increment_range_probe.txt (the builder's finding: `cat ~/.{r..t..1}sh/config`
          passed the guard); BRIEF_COMMON_R2 rules 12 and 14.
 

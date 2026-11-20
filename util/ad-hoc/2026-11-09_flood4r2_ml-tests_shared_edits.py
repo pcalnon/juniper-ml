@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: BRIEF_COMMON_R2 rules 7, 8 and 10; juniper-ml#2512 (its ERROR-row hunk), #2481 and #2512 (their tree lines)
 
 Edits, each by an exact anchor that must occur exactly once (nothing is written otherwise; a file whose

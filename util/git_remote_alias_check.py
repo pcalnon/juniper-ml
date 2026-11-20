@@ -74,13 +74,13 @@ Usage
     The file ``--if-configured`` looks in. Default: ``~/.ssh/config``.
 
 ``--fix`` changes nothing else. It never edits the ssh config, never chmods and never creates a key.
-For those failures the report carries the owner's remediation instead:
+For those failures the report carries the Overtoad's remediation instead:
 
 - ``bash util/juniper_repo_ssh_setup.bash <repo>`` for a missing Host block or key;
 - ``chmod 600 <key>`` for a bad mode;
 - the ``AddKeysToAgent no`` edit.
 
-It also refuses an origin that names a different repository (another owner, another repo, a
+It also refuses an origin that names a different repository (another Overtoad, another repo, a
 non-GitHub host): it rewrites the transport, never the destination. It does not add a missing origin.
 
 ``--if-configured`` exists for task G6's pre-push hook, so CI and hosts without the aliases pass:
@@ -150,7 +150,7 @@ Every check object has these fields:
     "status": "pass" | "fail" | "fixed" | "error"
     "ok": bool                    # status is pass or fixed
     "message": str                # the human line's detail
-    "remediation": str | null     # the owner's next step when the check does not pass
+    "remediation": str | null     # the Overtoad's next step when the check does not pass
 
 Each check adds its own fields:
 

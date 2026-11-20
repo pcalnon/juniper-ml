@@ -4,7 +4,7 @@ Survey the flood-4 round-2 ml-tests drafts: each draft's OWN hunks, and the ml-c
 For every draft head fetched as refs/flood4r2/pr/<N>, list the commits that origin/main lacks and keep
 the ones the Cursor fleet authored (author name "Cursor Agent" or "cursor[bot]"). The draft's OWN diff
 is the diff from the first parent of its earliest Cursor commit to its head, which leaves out the
-owner's commits a draft was stacked on (those reached main as their own PRs). Each own diff is written
+Overtoad's commits a draft was stacked on (those reached main as their own PRs). Each own diff is written
 as <scratch>/own/own-<N>.diff.txt with a one-line file summary in <scratch>/own/summary.json, and its
 sha256 is compared with the round-2 triage's own-ml-<N>.diff.txt when that file is given.
 
@@ -21,7 +21,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (round 2, ruling 14)
 """
 
@@ -67,7 +67,7 @@ def _own(n: int) -> dict:
         "own_base": base,
         "cursor_commits": [c["sha"][:10] + " " + c["subject"] for c in cursor],
         "foreign_above_base": [c["sha"][:10] + " " + c["author"] for c in foreign],
-        "owner_commits_below": [c["sha"][:10] + " " + c["author"] + " " + c["subject"] for c in commits if c not in above],
+        "Overtoad_commits_below": [c["sha"][:10] + " " + c["author"] + " " + c["subject"] for c in commits if c not in above],
         "files": files,
         "diff": diff,
     }

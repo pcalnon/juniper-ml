@@ -2,7 +2,7 @@ You are Lane B2 (analysis review, ADVERSARIAL, briefed ONLY on a correction pass
 
 HARD RULES
 - READ-ONLY. No edits, commits, pushes, PR/issue writes, arming, disarming, `gh pr ready` or `gh pr merge`. `gh api` GETs and `gh pr view` are fine. Do not start or stop any canopy/cascor/data process; never touch ports :8051, :8101, :8202 or any :805x leg. Scratch in `mktemp -d`.
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential to an external service. When you grep session transcripts under `~/.claude/projects/`, print only file names and bounded matched substrings, never whole lines; use `grep -r --include='*.jsonl'`, not a shell glob (a glob overflows the argument list). Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential to an external service. When you grep session transcripts under `~/.claude/projects/`, print only file names and bounded matched substrings, never whole lines; use `grep -r --include='*.jsonl'`, not a shell glob (a glob overflows the argument list). Report any slip.
 - Do not use `git -C` against `/home/pcalnon/Development/python/Juniper/juniper-ml` (the primary checkout); use the worktree below. If a shell guard refuses a compound command, split it into plain separate commands.
 
 THE CHANGE UNDER REVIEW: in juniper-ml worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/graceful-sprouting-panda`, run `git -C <worktree> diff f6861234 e624c281`. Two files:

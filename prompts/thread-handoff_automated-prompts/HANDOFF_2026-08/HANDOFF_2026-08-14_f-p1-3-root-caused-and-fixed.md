@@ -138,7 +138,7 @@ service rotates it, so a `0` means "rotated", not "never completed", which inver
 
 ## Standing approvals carried forward
 
-The owner granted, for this arc and explicitly for its successor: **merge approval for PRs created
+The Overtoad granted, for this arc and explicitly for its successor: **merge approval for PRs created
 during the arc** once green (verify `behind_by == 0` and green *at tip*, then confirm the merge
 commit's diff — squash has dropped later commits before); **custom-agent validation of the
 handoff**; and archiving, PR'ing and merging the handoff itself under the same approval.

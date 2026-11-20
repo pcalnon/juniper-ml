@@ -24,18 +24,18 @@ own §2 note records 16 of the 17 open rows as *parked*. The single unparked row
 1. **Successor, first — validate this document (§7).** No round has run on it.
 2. **`juniper-canopy`'s three-way prompt — the ONLY piece of the partial-data contract left, and it
    is now UNBLOCKED.** Both blockers named by round 35 are shipped: cascor#621 (the flag) and
-   cascor#624 (`dataset_shortfall` + the non-clobbering merge). **The owner's option-numbering
+   cascor#624 (`dataset_shortfall` + the non-clobbering merge). **The Overtoad's option-numbering
    ambiguity is RESOLVED** — see §3.
    Canopy has **zero** occurrences of `allow_truncation` today. Its code is under `src/`, not
    `juniper_canopy/` (which holds only `__init__.py`); the dataset paths are `src/dataset_schema.py`,
    `src/main.py`, and the flows pinned by `src/tests/integration/test_apply_dataset_flow.py`.
-3. **`APD-DATA-019` is the one unparked register row, and it needs an owner decision before code.**
+3. **`APD-DATA-019` is the one unparked register row, and it needs an Overtoad decision before code.**
    `total = len(filtered)` (`juniper-data/juniper_data/storage/base.py:537`) materialises the whole
    filtered set per page — **including on the cursor path** (`:545-548`), so `APD-DATA-011`'s keyset
    pagination did not touch it. The register's own assessment says a real fix needs a storage index
    **plus making `total` estimated, cached or absent** — the last being a **response-shape change for
-   existing clients**. Do not start until the owner rules on `total`.
-4. **`juniper-data#378` is OPEN, GREEN, and deliberately UNMERGED pending the owner's
+   existing clients**. Do not start until the Overtoad rules on `total`.
+4. **`juniper-data#378` is OPEN, GREEN, and deliberately UNMERGED pending the Overtoad's
    re-confirmation.** See §2 — its second half has a blast radius wider than the decision that
    authorised it.
 5. **Carried from round 35, still unbuilt in cascor** (all filed in cascor#624's PR body): the
@@ -75,13 +75,13 @@ cross-check **79 / 79 / 79, AGREE**. Unchanged from round 35 — see the note ab
 | **ml#1791** | **MERGED** (`9523f7cc`). The juniper-ml half of the same corrections. |
 | **cascor#621** | **MERGED** (`58a0d42`). Round 35 left it OPEN and RED. Unblocked twice — §5.2. |
 | **cascor#624** | **MERGED** (`995be91`). The two contract gaps — §3. |
-| **data#378** | **OPEN, GREEN, HELD.** The two owner decisions — §2.1. |
+| **data#378** | **OPEN, GREEN, HELD.** The two Overtoad decisions — §2.1. |
 
 ### 2.1 Why data#378 is held rather than merged
 
 Its `CommonStockSharesIssued` rung is self-contained. Its **other** half — `fundamentals_fill`
 default `"zero"` → `"nan"` — was authorised on the framing *"an unfillable fundamental reads as
-missing"*. Building it surfaced a wider radius than that framing implies, and the owner was asked to
+missing"*. Building it surfaced a wider radius than that framing implies, and the Overtoad was asked to
 re-confirm:
 
 * SEC XBRL reaches back only to ~2009, so this is **not** limited to unrescued tickers — **every**
@@ -103,7 +103,7 @@ a small change from the branch as it stands.
 ## 3. Owner rulings, 2026-09-05 — do not re-litigate
 
 Round 35 flagged an ambiguity and recorded it **only in its own handoff prompt** — not in data#366's
-body, not in the register, not in any note. It had therefore never reached the owner. Put to them
+body, not in the register, not in any note. It had therefore never reached the Overtoad. Put to them
 directly and answered:
 
 | Question | Ruling |
@@ -215,7 +215,7 @@ Written from harness worktree `compiled-inventing-sprout`, branch `docs/round-36
 All three repos' `main` are current: juniper-ml `9523f7cc`, juniper-data `df71574` + #378 pending,
 juniper-cascor `995be91`.
 
-**Worktrees created this session and deliberately NOT removed** (cleanup needs the owner's explicit
+**Worktrees created this session and deliberately NOT removed** (cleanup needs the Overtoad's explicit
 signal, and `git worktree remove` deletes ignored files):
 
 - `juniper-cascor--feat--allow-truncated-datasets-cli-flag--20260905-0631--77e02a86` (#621, merged)
@@ -249,11 +249,11 @@ Two pre-existing stash entries in juniper-data belong to other sessions and were
 - [x] Corrections propagated to all 10 files (ml#1791, data#377)
 - [x] `sort_index` corruption found, reproduced against the real cache, fixed and mutation-pinned (data#376)
 - [x] cascor#621 unblocked and merged; cascor#624 (both contract gaps) merged
-- [x] Four owner decisions obtained and recorded (§3)
+- [x] Four Overtoad decisions obtained and recorded (§3)
 - [x] Memories written: `reference_unstable_sort_dedup_keeps_the_wrong_row`,
       `project_partial_data_contract_arc_2026-09-05`,
       `reference_cap_unit_must_be_measurable_ex_ante`; `reference_codeql_unused_global_cascor` extended
-- [ ] **data#378 — owner re-confirmation on the NaN default (§2.1), then merge**
+- [ ] **data#378 — Overtoad re-confirmation on the NaN default (§2.1), then merge**
 - [ ] **juniper-canopy three-way prompt — unblocked, and the last piece of the contract**
-- [ ] `APD-DATA-019` — owner ruling on `total` before any code
+- [ ] `APD-DATA-019` — Overtoad ruling on `total` before any code
 - [ ] The four cascor follow-ups in §0.5

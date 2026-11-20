@@ -267,7 +267,7 @@ merely waived:
 
 | former heading | what happened to it |
 |---|---|
-| `### Option A/B/C` (destination options) | Superseded once the owner clarified the **three-tier architecture**: `/mnt/Backups/Ubuntu` is the *specified* home for this tier, so the destination stopped being an open A/B/C choice. Option B's substance (purge to reclaim space) survives in §2, §8 row 2 and §9 steps 2–3, including the `--dry-run`-first warning. Option C's (off-machine) survives as the *existing* offline external-archive tier in §3's table. |
+| `### Option A/B/C` (destination options) | Superseded once the Overtoad clarified the **three-tier architecture**: `/mnt/Backups/Ubuntu` is the *specified* home for this tier, so the destination stopped being an open A/B/C choice. Option B's substance (purge to reclaim space) survives in §2, §8 row 2 and §9 steps 2–3, including the `--dry-run`-first warning. Option C's (off-machine) survives as the *existing* offline external-archive tier in §3's table. |
 | `## 4. Settings for the fresh job` | Same heading, body replaced wholesale when every value was re-derived from measurement. |
 | `## 5. The 50 MB skip must become an explicit decision` | Renamed to **§5 Replace the size cap with path exclusions** and expanded ~3x, once measurement showed the cap is the wrong instrument. |
 

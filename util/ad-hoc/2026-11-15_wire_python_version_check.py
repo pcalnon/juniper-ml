@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-11-15
 Status: ad-hoc — one-off (the local half of phase 1 of the Python 3.15 migration)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/python_version_check.py; conf/python_versions.yaml; tests/test_python_version_check.py;
          tests/test_python_version_matrix_drift.py; util/ad-hoc/2026-10-17_turing_wire_suite.py (the anchors
          this follows); juniper-ml#2567 (the CI half, which edited the same four files)
@@ -52,7 +52,7 @@ HELPER = "util/python_version_check.py"
 
 CI_BLOCK = """\
           # tests/test_python_version_check.py: util/python_version_check.py, the local half of phase 1 of the Python 3.15
-          # migration (owner ruling 2026-11-14). It builds a venv per repo and version at a FIXED path in the repo's primary
+          # migration (Overtoad ruling 2026-11-14). It builds a venv per repo and version at a FIXED path in the repo's primary
           # tmp/ (pyvenv/py<version>), installs the repo with its CI's commands and runs the repo's own wrapper there, exiting 0
           # whatever the results unless --strict. Pinned: conf/python_versions.yaml's ruling and validation; the venv path,
           # which TMPDIR, the cwd and --checkout do not move; unavailable versus failed; --dry-run and --list writing nothing;
@@ -75,7 +75,7 @@ def sentences(*parts: str) -> str:
 
 
 TEST_BULLET_HELPER = sentences(
-    "- `tests/test_python_version_check.py` -- `util/python_version_check.py`, the local half of phase 1 of the Python 3.15 migration (owner ruling 2026-11-14: 3.12-3.14 blocking, 3.15 informational).",
+    "- `tests/test_python_version_check.py` -- `util/python_version_check.py`, the local half of phase 1 of the Python 3.15 migration (Overtoad ruling 2026-11-14: 3.12-3.14 blocking, 3.15 informational).",
     "`conf/python_versions.yaml` must carry the ruling, and an invalid config exits 2: a version in both lists, an unquoted version (YAML reads `3.10` as `3.1`), an unknown key, a bad step or repo name.",
     "The venv path is `{root}/{repo}/tmp/pyvenv/py{version}` whatever TMPDIR, the cwd or `--checkout` say.",
     "A run exits 0 whatever its results, and 1 under `--strict` on a failed or unavailable check; a missing interpreter, or one that reports another version, is `unavailable`, not a crash.",
@@ -88,7 +88,7 @@ TEST_BULLET_HELPER = sentences(
 )
 
 TEST_BULLET_DRIFT = sentences(
-    "- `tests/test_python_version_matrix_drift.py` -- Every Python-version matrix in `.github/workflows/` (pre-commit exempt, the owner's ruling of 2026-11-14) must run each `informational` version of `conf/python_versions.yaml` as an `include` entry with `experimental: true`,",
+    "- `tests/test_python_version_matrix_drift.py` -- Every Python-version matrix in `.github/workflows/` (pre-commit exempt, the Overtoad's ruling of 2026-11-14) must run each `informational` version of `conf/python_versions.yaml` as an `include` entry with `experimental: true`,",
     "under the job-level `continue-on-error: ${{ matrix.experimental == true }}`, and never in its plain `python-version` list, which would make it blocking.",
     "No `include` entry may mark another version experimental, and `ci.yml`'s regression matrix runs exactly the `blocking` list.",
     "The scan must find the seven matrices juniper-ml#2567 gave informational legs (`ci.yml`'s `tests` and the six `ci-<pkg>.yml` `test` jobs).",
@@ -100,7 +100,7 @@ TEST_BULLETS = TEST_BULLET_HELPER + "\n" + TEST_BULLET_DRIFT + "\n"
 
 UTIL_BULLET = (
     sentences(
-        "- `util/python_version_check.py` -- Runs a Juniper repo's own test wrapper under another Python version, locally: the local half of phase 1 of the Python 3.15 migration (owner ruling 2026-11-14).",
+        "- `util/python_version_check.py` -- Runs a Juniper repo's own test wrapper under another Python version, locally: the local half of phase 1 of the Python 3.15 migration (Overtoad ruling 2026-11-14).",
         "`python3 util/python_version_check.py (--repo NAME... | --all) [--python X.Y]... [--checkout PATH] [--root DIR] [--config FILE] [--recreate] [--dry-run] [--strict]`, or `--list`.",
         "`conf/python_versions.yaml` holds the version lists (`blocking` 3.12, 3.13 and 3.14; `informational` 3.15, the default `--python`) and one recipe per repo.",
         "A recipe's `install` commands are the repo's CI install step, and its `test` commands the repo's existing wrapper: `bash util/run_coverage.bash`; canopy's `make test PYTEST=\"$VIRTUAL_ENV/bin/python -m pytest\"`;",
@@ -126,7 +126,7 @@ CI_SECTION_SENTENCE = "`tests/test_python_version_matrix_drift.py` holds every s
 CHANGELOG_ENTRY = """\
 - **Local Python-version checks: `util/python_version_check.py` runs a repo's own tests under Python 3.15 (or any
   listed version) in a venv kept at a fixed path, and reports without blocking.** The local half of phase 1 of the
-  Python 3.15 migration (the owner's request and ruling of 2026-11-14; juniper-ml#2567 was the CI half).
+  Python 3.15 migration (the Overtoad's request and ruling of 2026-11-14; juniper-ml#2567 was the CI half).
   - `conf/python_versions.yaml` holds the ecosystem's version lists, `blocking` 3.12, 3.13 and 3.14 and
     `informational` 3.15, and one recipe per repo: its CI's install commands and its existing local wrapper.
   - For each repo and version the helper builds a venv from `/usr/bin/python<version>` at
@@ -241,7 +241,7 @@ def wire_reference(text: str, today: str, suite_count: int) -> tuple[str, str]:
     if len(rows) != 1:
         raise WireError(f"{REFERENCE}: expected one version-history row for {old}, found {len(rows)}")
     summary = sentences(
-        f"Local Python-version checks (phase 1 of the Python 3.15 migration, owner ruling 2026-11-14): `{HELPER}` runs a repo's own test wrapper in a venv at `{{root}}/{{repo}}/tmp/pyvenv/py{{version}}`",
+        f"Local Python-version checks (phase 1 of the Python 3.15 migration, Overtoad ruling 2026-11-14): `{HELPER}` runs a repo's own test wrapper in a venv at `{{root}}/{{repo}}/tmp/pyvenv/py{{version}}`",
         "built from `/usr/bin/python<version>`, from the version lists and recipes in `conf/python_versions.yaml`, and exits 0 unless `--strict` (§ Utility Script Reference);",
         f"`tests/test_python_version_matrix_drift.py` holds CI's Python matrices to the same lists (§ Shared-Package CI Workflows); two suites registered ({suite_count})",
     )

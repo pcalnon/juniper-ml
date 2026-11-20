@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register maintenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- read-only census; prints a table for a person to read
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 juniper-ml#1098 inserted three lines at primer line 5758, ten hours after the register was built, so every
 register citation past 5758 that was taken from the earlier text was three short. Round 42's fix-forward

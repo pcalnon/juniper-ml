@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml (cross-repo: juniper-cascor, juniper-recurrence, juniper-data, juniper-data-client, juniper-deploy)
 **Author**: Paul Calnon
 **Document Type**: Design + Implementation Plan (design of record)
-**Status**: Proposed (draft for owner review)
+**Status**: Proposed (draft for Overtoad review)
 **Last Updated**: 2026-07-29
 **Scope repos**: `juniper-ml` (tooling home), `juniper-cascor`, `juniper-recurrence`, `juniper-data`, `juniper-data-client`, `juniper-deploy`
 
@@ -956,7 +956,7 @@ This table is the W-item register. W-11 and W-12 (added by the validation pass) 
 ## 12. Performance Testing, Benchmarking & Optimization — Design Beginning
 
 **This section is a design start, not a final design.** It fixes the reuse decisions and the measurement contract; the scenario matrix and thresholds need a ratification pass of their own.
-> **Update (2026-08-16) — §12 development is GATED, per owner direction.** The owner concurs that
+> **Update (2026-08-16) — §12 development is GATED, per Overtoad direction.** The Overtoad concurs that
 > this lane is open engineering and requires **design → planning → verification → documentation
 > before development begins**. The four phases, their exit criteria, and their **priority relative to
 > every other outstanding and in-progress program item** are recorded in
@@ -1112,7 +1112,7 @@ Dependency-ordered. Size: S ≈ one focused sitting, M ≈ a day, L ≈ multi-da
 
 | #    | Item                                                                                                                                                                                                                                                                                                                                                                                                    | Repo       | Size | Depends on |
 |------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|------|------------|
-| 0.1  | This plan, reviewed and ratified by the owner — **DONE 2026-07-30** (PR #867 merged; every Q-1…Q-12 recommendation concurred)                                                                                                                                                                                                                                                                           | juniper-ml | S    | —          |
+| 0.1  | This plan, reviewed and ratified by the Overtoad — **DONE 2026-07-30** (PR #867 merged; every Q-1…Q-12 recommendation concurred)                                                                                                                                                                                                                                                                           | juniper-ml | S    | —          |
 | 0.2  | Execute P0 preflight (§10.1) steps P0.1-P0.9 + P0.11-P0.12 and file the evidence — **DONE 2026-07-30, all PASS** ([evidence](JUNIPER_2026-07-30_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P0-PREFLIGHT-EVIDENCE.md); two command-form errata folded back into §10.1)                                                                                                                                        | —          | S    | 0.1        |
 | 0.2b | Execute **P0.10** against a hand-applied, **uncommitted** copy of the §7 compose/prometheus overlay — answers Q-4 empirically (relay reachability; the without-relay control arm shows connection-refused); its evidence gates merging Wave 1.1 — **DONE 2026-07-30**: control arm = connection refused, relay arm = `up` 2/2 with run-scoped labels; **Wave 1.1 unblocked** (evidence F-2/F-3 binding) | —          | S    | 0.2        |
 
@@ -1190,16 +1190,16 @@ Dependency-ordered. Size: S ≈ one focused sitting, M ≈ a day, L ≈ multi-da
 > `0.9.0`, so no released version carries Q-6. Do not guess `>=0.9.1`. `tests/test_run_suite.py:152`
 > pins the `Q-6` ID in the refusal message — keep it greppable. Not urgent: sequential cascor suites
 > work, and every campaign to date has used them.
-> **Update (2026-08-16) — owner decisions change the standing of BOTH remaining Wave 5 rows.**
+> **Update (2026-08-16) — Overtoad decisions change the standing of BOTH remaining Wave 5 rows.**
 >
-> - **5.3 — "Not urgent" above is SUPERSEDED.** The owner's Q-6 answer is *"parallel execution
+> - **5.3 — "Not urgent" above is SUPERSEDED.** The Overtoad's Q-6 answer is *"parallel execution
 >   on-stack is becoming important."* Lifting `run_suite.py:112` is therefore demand-driven, and 5.3
 >   should be scheduled as soon as its precondition clears. The precondition is unchanged and is
 >   **external**: a `juniper-cascor` release carrying #523, which does not exist yet. Re-check
 >   `curl -s https://pypi.org/pypi/juniper-cascor/json` each pass; do not guess a floor. Everything
 >   else for 5.3 is ready.
 > - **5.5 / W-12 is UN-PARKED, and its scope grew.** Q-7 is answered **yes**, and *wider than the
->   question asked*: the owner requires a `csv_import` option for **both the cascor and the
+>   question asked*: the Overtoad requires a `csv_import` option for **both the cascor and the
 >   recurrence corpus**, whereas Q-7 asked only about the cascor dataset matrix. W-12 therefore needs
 >   a sequence-shaped (3-D) import path in addition to the tabular one, and two matrix rows rather
 >   than one. **Re-estimate before scheduling** — the row's `S` predates this widening.
@@ -1244,7 +1244,7 @@ Dependency-ordered. Size: S ≈ one focused sitting, M ≈ a day, L ≈ multi-da
 | R-9 | The proposed cascor/recurrence changes (Wave 3) are large PRs against actively-developed repos. | Medium | Medium | Wave 3 is independent of Waves 1-2, so the program is usable (env-configured) before the YAML layer lands. Ship 3.1 and 3.3 as separate PRs per repo. |
 | R-10 | Dashboards drift from the metric names they query as apps evolve. | Low | Medium | The panel-id test already exists; a metric-name-existence gate is a possible follow-on but is not proposed here (it needs a live scrape to be meaningful). |
 
-### 15.2 Open questions (owner decisions)
+### 15.2 Open questions (Overtoad decisions)
 
 | ID       | Question                                                                                                        | Recommendation                                                                                                                                                         |
 |----------|-----------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1307,12 +1307,12 @@ Dependency-ordered. Size: S ≈ one focused sitting, M ≈ a day, L ≈ multi-da
 >
 > | ID | Decision | Consequence |
 > |---|---|---|
-> | **Q-6** | **Yes — worth doing.** "Parallel execution on-stack is becoming important." | Already shipped (cascor#523 + ml#1120). The owner's rationale **raises the priority** of the remaining half: lifting `run_suite.py:112` so cascor suites can run parallel cells. That is now demand-driven work, not opportunistic — but it still cannot land until a cascor release carries #523 (see the Q-6 block above). **Re-check the release on every pass.** |
+> | **Q-6** | **Yes — worth doing.** "Parallel execution on-stack is becoming important." | Already shipped (cascor#523 + ml#1120). The Overtoad's rationale **raises the priority** of the remaining half: lifting `run_suite.py:112` so cascor suites can run parallel cells. That is now demand-driven work, not opportunistic — but it still cannot land until a cascor release carries #523 (see the Q-6 block above). **Re-check the release on every pass.** |
 > | **Q-7** | **Yes — `csv_import` is needed, for BOTH corpora.** A CSV import option must be available to the **cascor** and the **recurrence** corpus. | **Un-parks W-12** (Wave 5.5), which the plan gated on this question and which has been parked since 2026-08-08. Note the scope is *wider* than the original Q-7 wording, which asked only about the **cascor dataset matrix**: the decision extends it to recurrence, so W-12 must cover a sequence-shaped (3-D) import path as well as the tabular one, and the matrix row work is now two rows. W-12's original "gated on Q-7" size estimate (S) should be re-estimated before scheduling. |
 > | **Q-8** | **A dedicated, NEW directory.** | Supersedes the recommendation above ("juniper-ml, beside the tooling that produces them"). Run-level performance baselines get their own directory rather than living beside the tooling or in per-app repos. The directory's location, name, and retention contract are part of the §12 design phase (below), not an implementation detail to be improvised — and Q-8 also gates the `JR-CAS-OBS-004` targets (§16). |
 > | **Q-10** | **Yes — juniper-recurrence gets a dedicated conda env.** | Supersedes "probably yes … but not a blocker". A `JuniperRecurrence` env joins `JuniperCanopy` / `JuniperCascor` / `JuniperData` as a first-class ecosystem environment, which makes it a documentation change as well as a provisioning one (the parent `CLAUDE.md` env table, `docs/REFERENCE.md`, and `experiment_stack.bash`'s recurrence launch path, which currently rides `JuniperCascor1`). |
 >
-> **Still open owner items after this round:** F-P1-4 (snapshot lifecycle — owner directed a
+> **Still open Overtoad items after this round:** F-P1-4 (snapshot lifecycle — Overtoad directed a
 > designed/validated/documented systems solution, explicitly **not** an ad-hoc sweep) and the §12 PF
 > threshold ratification. **F-P1-2 is CLOSED** (premise refuted —
 > [closure evidence](JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_F-P1-2-GRAFANA-RENDER-CLOSURE-EVIDENCE.md)).
@@ -1325,7 +1325,7 @@ Dependency-ordered. Size: S ≈ one focused sitting, M ≈ a day, L ≈ multi-da
 Verified against [`notes/requirements/by-area/TEST.md`](requirements/by-area/TEST.md), [`OBS.md`](requirements/by-area/OBS.md), [`PERF.md`](requirements/by-area/PERF.md), and [`TRAIN.md`](requirements/by-area/TRAIN.md); index at [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md). Verbs per the repo's PR conventions.
 
 - **Partially closes `JR-CAS-TEST-006`** — "Establish performance testing infrastructure with reproducible baselines and CI/CD integration." (proposed, P1; `TEST.md:466-478`). §12 reuses the existing 5-phase performance suite and its persisted baselines and adds the run-level measurement contract; CI integration is explicitly deferred (§12.4), hence *partially*.
-- **Partially closes `JR-CAS-OBS-004`** — "Define performance targets for latency and throughput." Notes: "Benchmark harness needed to measure actual performance against targets." (proposed, P2; `OBS.md:1579-1589`). §12.3's scenario list plus §7's Grafana surface provide the measurement harness; the *targets* themselves remain an owner decision (Q-8).
+- **Partially closes `JR-CAS-OBS-004`** — "Define performance targets for latency and throughput." Notes: "Benchmark harness needed to measure actual performance against targets." (proposed, P2; `OBS.md:1579-1589`). §12.3's scenario list plus §7's Grafana surface provide the measurement harness; the *targets* themselves remain an Overtoad decision (Q-8).
 - **References `JR-CAS-TEST-018`** — "Create end-to-end integration tests spinning up JuniperData and full pipeline." Detail: "No automated integration tests spin up JuniperData and verify full pipeline (Cascor → JuniperData → artifact → tensor conversion → training). All current tests use mocks." (proposed, P3; `TEST.md:1562-1573`). §10.2-10.3 exercise exactly that pipeline for real, on-host — as an operator-invoked program rather than automated tests, so *references*.
 - **References `JR-CAS-OBS-002`** — "Define Prometheus histogram buckets for latency metrics per observability requirements." (**shipped**, P2; `OBS.md:1013-1021`). §12.1 consumes the shipped `juniper_cascor_training_step_duration_seconds` buckets rather than adding new ones.
 - **References `JR-CAS-PERF-004`** — "Create baseline performance profiles using py-spy for regression detection." (deferred, P3; `PERF.md:385-395`). §12.1 uses cascor's in-repo `--profile` / `--profile-memory` tooling instead of py-spy; the requirement stays deferred.
@@ -1334,9 +1334,9 @@ Verified against [`notes/requirements/by-area/TEST.md`](requirements/by-area/TES
 - **References `JR-CAS-OBS-005`** — "Verify WebSocket responsiveness under load when training runs via asyncio.run_in_executor()." (proposed, P2; `OBS.md:2333-2338`). Same relationship as TEST-019.
 - **References `JR-CAS-TRAIN-010`** — "Cascor must implement mini-batch training for the output-layer trainer…" with proposed config knobs `use_mini_batch` / `mini_batch_size` (proposed, P0; `TRAIN.md:211-222`). Cited as the **config-knob precedent**: any knob that requirement adds should be exposed through the §5.4 YAML layer, not a new env-only path.
 
-**No `JR-REC-*` requirement IDs exist.** The owner enum is fixed at `notes/requirements/README.md:20` (`cas/can/dat/dep/ml/cwk/ccl/dcl`) and the snapshot is "as of 2026-05-12"; juniper-recurrence postdates it, and a repo-wide grep for `JR-REC-` across `notes/requirements/by-area/` returns nothing. Every recurrence work item in this plan is therefore traceable only through the design notes in §17.
+**No `JR-REC-*` requirement IDs exist.** The Overtoad enum is fixed at `notes/requirements/README.md:20` (`cas/can/dat/dep/ml/cwk/ccl/dcl`) and the snapshot is "as of 2026-05-12"; juniper-recurrence postdates it, and a repo-wide grep for `JR-REC-` across `notes/requirements/by-area/` returns nothing. Every recurrence work item in this plan is therefore traceable only through the design notes in §17.
 
-**Work item 7.6 (PROPOSED)**: extend the owner enum with a `rec` tag and mint a `JR-REC-*` block covering, at minimum, the experiment-config layer (§5.5), the plotting gap (G-5), the bench `--results-dir` and `ar_p` registration (W-5/W-7), the missing Grafana dashboard (G-4), and the absent `performance` marker (G-17) — so recurrence requirements stop being untrackable.
+**Work item 7.6 (PROPOSED)**: extend the Overtoad enum with a `rec` tag and mint a `JR-REC-*` block covering, at minimum, the experiment-config layer (§5.5), the plotting gap (G-5), the bench `--results-dir` and `ar_p` registration (W-5/W-7), the missing Grafana dashboard (G-4), and the absent `performance` marker (G-17) — so recurrence requirements stop being untrackable.
 
 ---
 
@@ -1382,23 +1382,23 @@ Verified against [`notes/requirements/by-area/TEST.md`](requirements/by-area/TES
 The independent adversarial validation pass is **complete** — three validators, findings folded
 in — and recorded in §2.4.
 
-The original trailer read *"Proposed (draft for owner review). Ratification requires owner
+The original trailer read *"Proposed (draft for Overtoad review). Ratification requires Overtoad
 decisions on Q-1 through Q-12"*, which stayed unchanged while the whole program executed against
 this plan. The honest state of the Q-table (§13):
 
 | Q | State |
 |---|---|
-| Q-1 | **SHIPPED 2026-08-21**, re-scoped by owner decision. `config/experiment.resolved.yaml` is now written on both app paths, from the same `finally` that writes the manifest (so every run has one, including failed / stalled / timed-out). The original wording — *dumped from the live `Settings` object* — is **not implementable as written**: the driver is an HTTP client and never constructs the app's `Settings`; cascor exposes no settings endpoint (`GET /v1/training/params` covers `TrainingParams` only) and recurrence exposes no equivalent at all. Building one would also mean designing redaction — cascor's `Settings` carries `api_keys` among 56 fields — which is the hand-maintained-artifact class Q-1 was written to avoid. The file therefore records only what can be **verified**, each half tagged with its source: `driver_resolved` (the input YAML after the driver's own defaulting) and `service_training_params` (the service's echo, or a stated reason there is none). `_meta.scope` names what is **not** covered — app-level `Settings` — inside the artifact, so it cannot be mistaken for a complete picture. Nothing is reconstructed. |
+| Q-1 | **SHIPPED 2026-08-21**, re-scoped by Overtoad decision. `config/experiment.resolved.yaml` is now written on both app paths, from the same `finally` that writes the manifest (so every run has one, including failed / stalled / timed-out). The original wording — *dumped from the live `Settings` object* — is **not implementable as written**: the driver is an HTTP client and never constructs the app's `Settings`; cascor exposes no settings endpoint (`GET /v1/training/params` covers `TrainingParams` only) and recurrence exposes no equivalent at all. Building one would also mean designing redaction — cascor's `Settings` carries `api_keys` among 56 fields — which is the hand-maintained-artifact class Q-1 was written to avoid. The file therefore records only what can be **verified**, each half tagged with its source: `driver_resolved` (the input YAML after the driver's own defaulting) and `service_training_params` (the service's echo, or a stated reason there is none). `_meta.scope` names what is **not** covered — app-level `Settings` — inside the artifact, so it cannot be mistaken for a complete picture. Nothing is reconstructed. |
 | Q-2 | **Decided and wired.** Both knobs now reach the driver from a suite: `execution.stall_seconds` (ml#1069) and `execution.max_wall_seconds`. |
 | Q-3, Q-4, Q-5 | **Decided**; Q-4 answered empirically by P0.10. |
 | Q-6 | **Resolved** by `JUNIPER_CASCOR_LOG_DIR` (juniper-cascor#523). The §13 row itself belongs to the dedicated Q-6 register-propagation change (juniper-ml#1129), which sweeps every site still calling it open; this trailer deliberately does not edit that row. |
-| Q-7, Q-8, Q-10 | **ANSWERED 2026-08-16** (ml#1136) — see the owner-decision block above. Q-7 yes, for BOTH corpora (un-parks W-12, scope widened); Q-8 a dedicated NEW directory; Q-10 yes, a `JuniperRecurrence` env. This row previously read "open owner calls", which contradicted that block; corrected here. |
+| Q-7, Q-8, Q-10 | **ANSWERED 2026-08-16** (ml#1136) — see the Overtoad-decision block above. Q-7 yes, for BOTH corpora (un-parks W-12, scope widened); Q-8 a dedicated NEW directory; Q-10 yes, a `JuniperRecurrence` env. This row previously read "open Overtoad calls", which contradicted that block; corrected here. |
 | Q-9 | **Decided and shipped** — every alert in `juniper-deploy/prometheus/alert_rules.yml` carries `environment!="host-experiment"`. |
 | Q-11 | **Decided**; the direct CLIs gained the `training:` / `dataset:` blocks via W-11 (Wave 3.6). |
 | Q-12 | **Decided** (`propose now`), and Wave 7.6's verb is *Propose* — the proposal exists, so the wave item is done. Ratification into the requirements snapshot is still outstanding; there are zero `JR-REC-` IDs in the index today. |
 
 So ratification is no longer blocked on twelve open questions. **Every Q-1…Q-12 is now answered** —
-Q-6/Q-7/Q-8/Q-10 by the 2026-08-16 owner round (ml#1136) recorded above. What remains is not a
+Q-6/Q-7/Q-8/Q-10 by the 2026-08-16 Overtoad round (ml#1136) recorded above. What remains is not a
 question but follow-through: Q-1's emitter is unimplemented, Q-12 awaits a requirements snapshot
 refresh, and §12's performance lane is **GATED** behind its design→planning→verification→documentation
 phasing (see the §12 block above) and remains **unexecuted**. §12 still describes itself as *"a design

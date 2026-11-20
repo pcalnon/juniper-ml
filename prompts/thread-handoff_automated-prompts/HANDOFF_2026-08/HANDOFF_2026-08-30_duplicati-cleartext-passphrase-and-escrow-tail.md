@@ -165,7 +165,7 @@ it after the next run rather than assuming; do not mark §8.19.8 item 2 closed u
    `git worktree remove` deletes it **silently**. Risk is now lower — with the sda1 escrow in place
    it is no longer the only recoverable copy of `PASSPHRASE_OLD` — but it is still a cleartext key
    inside a backup Source.
-6. **Cloud reporting** (§8.18.4) — owner-**deferred, not rejected**. `remote-control-enabled = True`
+6. **Cloud reporting** (§8.18.4) — Overtoad-**deferred, not rejected**. `remote-control-enabled = True`
    and `additional-report-url` embeds a long-lived bearer JWT (`iss=api.duplicati.com`,
    `exp=2028-08-24`). A credential, not merely a URL.
 7. **The disabled `duplicati-backup.*` user lane** (§8.11.3) — removal PR still unopened. The lane

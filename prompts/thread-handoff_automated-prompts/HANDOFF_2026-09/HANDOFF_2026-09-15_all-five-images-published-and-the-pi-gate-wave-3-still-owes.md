@@ -2,7 +2,7 @@
 
 **Session**: container-registry rollout — the worker Release, plus an environment repair and a memory pass
 **Predecessor**: `HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md`
-**Successor**: `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md`
+**Successor**: `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md`
 **Status**: **SUPERSEDED / CONSUMED 2026-09-17** — re-verified against the live ecosystem 2026-09-21.
 
 ---
@@ -11,7 +11,7 @@
 
 **Do not paste the goal below as a new thread's prompt.** Every actionable item in it has
 shipped. It is retained as the arc's record, not as live work. The successor is
-`HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md`;
+`HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md`;
 the design of record is
 `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`, whose
 `Status:` line was refreshed 2026-09-17 — but see the §5-table caveat under *Residuals* below.
@@ -27,19 +27,19 @@ from the agent that reported it — one agent claim was itself wrong and is reco
 
 | this document's ask | state, verified 2026-09-21 |
 | --- | --- |
-| Settle the Pi-gate contradiction without picking the convenient reading | **CLOSED** — owner **WAIVED** it for Wave 3 on 2026-09-15; recorded with the full L26-vs-L111 adjudication as §5.1 of the plan (juniper-ml#1943). Re-filed against first Pi deployment and OQ-3 |
+| Settle the Pi-gate contradiction without picking the convenient reading | **CLOSED** — Overtoad **WAIVED** it for Wave 3 on 2026-09-15; recorded with the full L26-vs-L111 adjudication as §5.1 of the plan (juniper-ml#1943). Re-filed against first Pi deployment and OQ-3 |
 | Fix the plan so the next reader is not handed the same contradiction | **CLOSED** — §5.1 of the plan document names all four conflicting sources and which governed |
 | Wave 3 — pin `docker-compose.yml`'s 9 `image:` lines | **CLOSED** — juniper-deploy#215. `juniper-deploy/docker-compose.yml` now carries **10** `ghcr.io/pcalnon/…:X.Y.Z` refs (L164, 227, 364, 421, 517, 592, 656, 800, 891, 1109), zero `:latest`. Re-counted 2026-09-21: 17 `image:` occurrences = these 10 + 4 third-party (prometheus, alertmanager, grafana, redis) + 3 in comments |
 | `demo-seed` (then L487) needs an explicit call, having no `build:` | **CLOSED** — it is now L517 and carries a six-line comment stating the reuse, the bump-together rule, and why `make doctor` skips it by design |
 | State the "keep `build:`" stale-image hazard | **CLOSED** — stated in the compose file itself; `make doctor` / `make image-preflight` are the detectors, verified to survive the pin |
 | `Dockerfile.test` runner image | **CLOSED** — `ghcr.io/pcalnon/juniper-deploy-test:0.3.0`, Release `v0.3.0` (juniper-deploy#219 / #220 / #221) |
 | D-1 pull-the-published-images integration test | **CLOSED** — `Published Image Refs` CI job + `scripts/verify_published_images.py` (juniper-deploy#217). **Caveat**: the "6 negative controls" figure repeated in the plan, the CHANGELOG and both prior handoffs is **not re-derivable from the committed code** — `tests/test_published_image_refs.py` defines **5** test functions and no `parametrize`. The gate itself works (re-run live 2026-09-21; all 6 refs resolve amd64+arm64); only the count is unsourced |
-| The worker's PyPI publish (owner-gated when written) | **CLOSED 2026-09-17** — PyPI serves `juniper-cascor-worker` **0.6.0**; run `35033610592` is `completed/success`. Re-confirmed 2026-09-21 against the index, not the Release |
+| The worker's PyPI publish (Overtoad-gated when written) | **CLOSED 2026-09-17** — PyPI serves `juniper-cascor-worker` **0.6.0**; run `35033610592` is `completed/success`. Re-confirmed 2026-09-21 against the index, not the Release |
 | The canopy wheel omission flagged as a side-finding | **CLOSED** — juniper-canopy#631, closed 2026-09-17, and **shipped as `v0.8.1` on 2026-09-18** (see *Residuals*) |
 
-### What remains owner-gated
+### What remains Overtoad-gated
 
-- **Wave 4 (Docker Hub, D-2 phase 2)** — committed, OQ-1 ruled 2026-09-11. Blocked on the owner
+- **Wave 4 (Docker Hub, D-2 phase 2)** — committed, OQ-1 ruled 2026-09-11. Blocked on the Overtoad
   registering `DOCKERHUB_TOKEN` + `DOCKERHUB_USERNAME`, **Read & Write**, in all five image repos.
   **Re-verified 2026-09-21**: `gh secret list` on juniper-cascor, juniper-cascor-worker,
   juniper-data, juniper-canopy and juniper-recurrence returns **no `DOCKERHUB_*` secret in any of
@@ -48,10 +48,10 @@ from the agent that reported it — one agent claim was itself wrong and is reco
   > **"Owner-gated" is narrower than it looks, and the next reader should know it.** No Docker Hub
   > scaffolding exists in any of the five `publish-image.yml` files. A second login+push guarded by
   > `if: ${{ secrets.DOCKERHUB_TOKEN != '' }}` is a provable no-op while the secrets are absent, so
-  > it *could* be written and merged before they exist — which would reduce the owner's eventual
+  > it *could* be written and merged before they exist — which would reduce the Overtoad's eventual
   > action from "register five secrets, then wait for a five-repo PR cycle" to "register five
   > secrets". **Not done here**, because the successor handoff says explicitly not to open
-  > speculative work against owner-gated items. Recorded as an option, not a recommendation.
+  > speculative work against Overtoad-gated items. Recorded as an option, not a recommendation.
 - **OQ-2 / OQ-3 / OQ-4** remain open. **OQ-3's gate — the Pi pull — is still un-runnable from this
   workstation**, re-probed 2026-09-21: `turing` does not answer ICMP, and **`yamaguchi` is this
   workstation itself** (`hostname` = `yamaguchi`, `uname -m` = `x86_64`, and 192.168.50.192 is one
@@ -60,7 +60,7 @@ from the agent that reported it — one agent claim was itself wrong and is reco
   emulated either. OQ-2 and OQ-4 are pure design questions needing neither a Pi nor a credential;
   no analysis exists for either anywhere in `notes/`.
   > **Correction, 2026-10-19 (erratum X6 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).**
-  > `turing` was not down, and it was never a Pi-pull candidate. It is the owner's 15-inch 2018 Intel
+  > `turing` was not down, and it was never a Pi-pull candidate. It is the Overtoad's 15-inch 2018 Intel
   > MacBook Pro (x86_64, macOS), a development laptop in active use away from yamaguchi
   > (`notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_BYPASS-CANDIDATE-DETERMINATION.md:174`), so it cannot
   > meet the pull's 64-bit Pi OS precondition. `192.168.50.222` comes from
@@ -95,8 +95,8 @@ from the agent that reported it — one agent claim was itself wrong and is reco
 
 ### The build-context sweep — executed, with the mechanism corrected
 
-`HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md`
-left one non-owner-gated action open: *"The build context holds `secrets/` with eight live
+`HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md`
+left one non-Overtoad-gated action open: *"The build context holds `secrets/` with eight live
 credential files, and there was no `.dockerignore` … **Check the other repos before their next
 image change.**"* That sweep has been run across all five service image repos.
 
@@ -209,7 +209,7 @@ verified" into "the release is good", in either direction.
   nobody has run on a Pi**."*
 
 Both are in the archived chain and neither supersedes the other explicitly. **Do not resolve this by
-picking the convenient one.** Either run the Pi pull first, or get the owner to waive it on the
+picking the convenient one.** Either run the Pi pull first, or get the Overtoad to waive it on the
 record — and whichever happens, fix the plan so the next reader is not handed the same contradiction.
 The pull is cheap (~270 MB, arm64) and the target finally exists:
 
@@ -242,14 +242,14 @@ Two things in it are decisions, not mechanics:
 Wave 3 also owes juniper-deploy's own `Dockerfile.test` runner image (context at
 `docker-compose.yml:1061`) and the pull-the-published-images integration test (plan D-1).
 
-### Still owner-gated
+### Still Overtoad-gated
 
 - **The worker's PyPI publish has NOT happened.** Run `35033610592` is `waiting` on the `pypi`
   environment gate and PyPI's latest is still **0.5.0** — checked against the index, not inferred
   from the Release. When it is approved, note the 0.6.0 wheel is **byte-identical to 0.5.0's** apart
   from the version string: 43 commits and 23 files across `v0.5.0...main` with **zero** in
   `juniper_cascor_worker/` or `pyproject.toml`. Nothing is wrong; the Release exists for the image.
-- **Wave 4 (item 5)** is committed (OQ-1 ruled 09-11) and blocked on the owner registering
+- **Wave 4 (item 5)** is committed (OQ-1 ruled 09-11) and blocked on the Overtoad registering
   `DOCKERHUB_TOKEN` + `DOCKERHUB_USERNAME`, **Read & Write**, in all five image repos.
 - **OQ-2 / OQ-3 / OQ-4** remain open. OQ-1's finding bears on OQ-3, which was framed as RAM only:
   Docker Hub's anonymous limit is **100 pulls / 6 h per IPv4 *or IPv6 /64*, counted once per

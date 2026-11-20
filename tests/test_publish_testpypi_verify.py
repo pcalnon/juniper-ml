@@ -7,7 +7,7 @@ uploaded wheel installs from TestPyPI AND that the light extras ``[clients]`` an
 (mistyped name, missing roll-up, dangling self-ref) that only the bare install
 would catch would otherwise ship to production PyPI.
 
-**2026-08-08 two-phase amendment (owner-approved).** The verify used to pass
+**2026-08-08 two-phase amendment (Overtoad-approved).** The verify used to pass
 ``--index-url <testpypi> --extra-index-url <pypi>`` to a single ``pip install``.
 pip has NO index priority: those two flags form ONE merged namespace and pip picks
 the HIGHEST version across both. That is a dependency-confusion vector -- a TestPyPI

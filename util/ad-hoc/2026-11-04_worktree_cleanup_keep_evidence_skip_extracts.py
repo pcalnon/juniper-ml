@@ -7,8 +7,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-04
-Status: ad-hoc — one-off (flood-3: the predecessor worktree's cleanup, owner ruling 2026-11-04 "Remove; keep evidence")
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (flood-3: the predecessor worktree's cleanup, Overtoad ruling 2026-11-04 "Remove; keep evidence")
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-30_worktree_cleanup_keep_evidence.py (the copy, skip and verify logic this runs);
          util/ad-hoc/2026-11-04_tarball_extract_pristine_check.py (writes ``extracts.tsv``);
          notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§6, §8)
@@ -72,13 +72,13 @@ def main(argv: list[str]) -> int:
     dest_root, targets, extracts = Path(argv[1]), Path(argv[2]), Path(argv[3])
     roots, devs = read_extracts(extracts)
     worktrees = [Path(line.split("\t")[0]).resolve() for line in targets.read_text().splitlines() if line.strip() and not line.startswith("#")]
-    owner: dict[str, Path] = {}
+    Overtoad: dict[str, Path] = {}
     for root in roots:
         hits = [wt for wt in worktrees if Path(root).is_relative_to(wt)]
         if len(hits) != 1:
             print(f"ERROR extract outside every target (or in two): {root}", file=sys.stderr)
             return 1
-        owner[root] = hits[0]
+        Overtoad[root] = hits[0]
 
     keep = _load_keep()
     original = keep.regen_reason
@@ -101,7 +101,7 @@ def main(argv: list[str]) -> int:
     kept = bad = 0
     with (dest_root / "MANIFEST.tsv").open("a", encoding="utf-8") as manifest:
         for root, rows in sorted(devs.items()):
-            wt = owner.get(root)
+            wt = Overtoad.get(root)
             if wt is None:
                 continue
             for verdict, rel in rows:

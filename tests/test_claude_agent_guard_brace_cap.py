@@ -11,7 +11,7 @@ License:     MIT License
 name hidden in the last alternative is still seen. The expansion is capped at
 ``MAX_BRACE_ALTERNATIVES`` (64): the last slot of a full list is kept and judged.
 A word that needs more alternatives is refused (``MalformedInput``, which the hook
-turns into exit 2) instead of being judged on its first 64: the owner's
+turns into exit 2) instead of being judged on its first 64: the Overtoad's
 "Fail closed" ruling of 2026-11-08. Until then alternative 65 was dropped, so a
 ``.ssh`` or ``.gnupg`` spelled there passed the credential check.
 
@@ -30,7 +30,7 @@ timeout is 10 s. ``_brace_closes`` answers every ``{`` of a word in one pass, an
 again when it is expanded: a word that needs more is refused, never passed
 unexamined. A word with no ``{`` is not scanned at all.
 
-Sequence expressions (owner ruling "Carry in ml-code", 2026-11-09). bash 4+ also
+Sequence expressions (Overtoad ruling "Carry in ml-code", 2026-11-09). bash 4+ also
 expands ``{x..y..incr}``, which the guard left as written, so
 ``cat ~/.{r..t..1}sh/config`` read ``~/.ssh/config`` past the credential check.
 The guard now follows bash 5.3's own brace code: a step of either sign, a step of

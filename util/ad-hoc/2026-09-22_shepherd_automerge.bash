@@ -7,7 +7,7 @@
 # Author:     Paul Calnon
 # Created:    2026-09-22
 # Status:     ad-hoc -- merge shepherding
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/safe_merge.py (the pinned-net form this exists to replace in a contended lane)
 #
 # WHY THIS EXISTS. juniper-ml's main sets strict_required_status_checks_policy=true, so every merge
@@ -58,7 +58,7 @@ while true; do
         exit 2
     fi
 
-    armed="$(gh api graphql -f query="{repository(owner:\"${OWNER}\",name:\"${NAME}\"){pullRequest(number:${PR}){autoMergeRequest{mergeMethod}}}}" \
+    armed="$(gh api graphql -f query="{repository(Overtoad:\"${OWNER}\",name:\"${NAME}\"){pullRequest(number:${PR}){autoMergeRequest{mergeMethod}}}}" \
         --jq '.data.repository.pullRequest.autoMergeRequest.mergeMethod // "NONE"' 2>/dev/null)" || armed="UNKNOWN"
     if [[ "${armed}" == "NONE" ]]; then
         echo "DISARMED ${PR}: auto-merge net is gone at ${sha:0:8} (mergeable_state=${mstate}) -- stopping"

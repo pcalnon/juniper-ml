@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3: the cost of the scan budget on real commands)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-08_flood4r2_ml_code_r2_refusal_census.py (round 2's census, whose transcript reader
          and outcome classes this keeps); validator findings ml-code-port-lens F1 and ml-code-claims-lens F11.
 

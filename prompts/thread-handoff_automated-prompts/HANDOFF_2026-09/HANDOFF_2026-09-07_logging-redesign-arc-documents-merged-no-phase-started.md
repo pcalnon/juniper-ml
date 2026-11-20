@@ -27,7 +27,7 @@
 2. **DESIGN and ANALYSIS are corrected, not retired.** DESIGN carries **8** inline `CORRECTION 2026-09-02` markers (lines 138, 189, 224, 245, 280, 300, 315, 330; a ninth occurrence at line 19 is the legend). ANALYSIS carries **4** (lines 89, 261, 275, 293). **Only those passages are superseded** — the rest, notably DESIGN §7 and §7.1, stands.
 3. **Two different decision sets exist and they are both numbered 1–6.** See §2. Getting these confused will send you at the wrong work.
 4. **Run the probe with the level vars unset** (§11). Exported `JUNIPER_CASCOR_LOG_LEVEL` produces a **false negative** that looks like "the defect is fixed" — see §11's warning.
-5. **The arc is owner-blocked.** Six of seven ROADMAP §13 decisions are unanswered. §3 states them so you can ask in one message rather than reading them out of a document.
+5. **The arc is Overtoad-blocked.** Six of seven ROADMAP §13 decisions are unanswered. §3 states them so you can ask in one message rather than reading them out of a document.
 
 ---
 
@@ -44,12 +44,12 @@
 
 ## 2. Goal statement
 
-Continue the **juniper-cascor logging redesign** ([cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573)). Design work is finished and merged; **no implementation phase has started**, and the arc is **blocked on six owner decisions** (§3).
+Continue the **juniper-cascor logging redesign** ([cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573)). Design work is finished and merged; **no implementation phase has started**, and the arc is **blocked on six Overtoad decisions** (§3).
 
 **Completed:**
 
 - **RECON** — created. Verdict on every substantive claim in DESIGN and ANALYSIS; a call-site census with its method caveats; the pre-#598 measured baseline (reproduced in §6 below); nine findings N-1…N-9.
-- **ROADMAP** — created. Eight phases P0–P7, 30 numbered steps, 32 named guardrails, five traps, critical path, rollback and release obligations, seven owner decisions.
+- **ROADMAP** — created. Eight phases P0–P7, 30 numbered steps, 32 named guardrails, five traps, critical path, rollback and release obligations, seven Overtoad decisions.
 - **DESIGN** and **ANALYSIS** — correction markers added, narrowing rather than deleting.
 - `util/ad-hoc/2026-09-02_logging_doc_refutation_probe.py` — the instrument that found the central defect.
 - Consensus: Lane A two entry points, Lane B three lenses, then round 2 on the corrections (24 further defects).
@@ -87,7 +87,7 @@ Continue the **juniper-cascor logging redesign** ([cascor#573](https://github.co
 | 2 | **Flush per record** — *"a complete log for a crashed run outweighs the throughput; a truncated log is how several analyses in this arc went wrong"* |
 | 3 | Per-process file handle, opened lazily — **premise refuted** (it says "after fork"; read "after forkserver start"), never formally re-issued |
 | 4 | **Console stays on stdout** (provisional) |
-| 5 | Call-site migration scope **deferred, and reserved to the owner** — this is ROADMAP §13 decision 6 |
+| 5 | Call-site migration scope **deferred, and reserved to the Overtoad** — this is ROADMAP §13 decision 6 |
 | 6 | JSON via `juniper-observability` — **already violated deliberately**; `api/observability.py:75-119` is a local fork |
 
 **ROADMAP §13 decisions 1–7 are the OPEN set.** §13.1 is a response slot: `.` means unanswered. Only 7 is answered. **Everywhere below, "decision N" means ROADMAP §13 N.**
@@ -102,7 +102,7 @@ Continue the **juniper-cascor logging redesign** ([cascor#573](https://github.co
 | 6 | **Call-site migration scope** (= DESIGN decision 5). ROADMAP **schedules P6 but does not take the decision**; *"it must not become planned work by default"* | P6.2 and P6.4 | open |
 | 7 | **§7.1 swallowed-pytest investigation** | nothing — explicitly not a blocker | **ANSWERED: "i concur. let's run the investigation as written."** |
 
-**Ask 1–6 in one message.** The arc is waiting on the owner, not on more analysis.
+**Ask 1–6 in one message.** The arc is waiting on the Overtoad, not on more analysis.
 
 **On decision 7's investigation**: the symptom is *pytest summary lines vanishing from local runs*, recorded
 in
@@ -209,7 +209,7 @@ cap-64 figure is **not** established as being in this bucket.
   `Logger._log_at_level` → no-op (`:921-927`). **The `CandidateUnit` seam is the one that matters most** — the
   eight guard sites are `self.logger.isEnabledFor(...)`, so with `_noop_logger` in place **no test exercises
   them**. Characterising only the third seam produces a false all-clear. Deliverable: a per-phase table of
-  invalidated acceptance criteria — agree with the owner whether it lands as a ROADMAP §3 subsection or its own
+  invalidated acceptance criteria — agree with the Overtoad whether it lands as a ROADMAP §3 subsection or its own
   notes document.
 - **P5.1 — adjudicate the fork.** This *is* decision 3, so **produce the adjudication and its recommendation; do
   not implement it.** Options: (a) upstream into `juniper_observability.configure_logging` — **note this deletes
@@ -301,7 +301,7 @@ Reproduced from ROADMAP §1 and §12 so "remaining work" is not read as "everyth
    the whole base..head range**, not one commit's final paragraph — though writing it as the last paragraph of
    one commit errs safe. Also decide `src/backups/check.py` (~68 sites, **untracked**, invisible to `git grep`,
    survives a tracked-tree deletion).
-4. **P3.3 (rotation owner) before P3.4 (persistent handle)** — and ordering alone is not sufficient; P3.4 must implement stat-and-reopen or `copytruncate`. **The defect exists today**: Path C rotates the file Path B holds open, so Path B's records land in `.1` and vanish from the live file. That is why a run's live `juniper_cascor.log` is ~2 KB while `.1` is 15 MB.
+4. **P3.3 (rotation Overtoad) before P3.4 (persistent handle)** — and ordering alone is not sufficient; P3.4 must implement stat-and-reopen or `copytruncate`. **The defect exists today**: Path C rotates the file Path B holds open, so Path B's records land in `.1` and vanish from the live file. That is why a run's live `juniper_cascor.log` is ~2 KB while `.1` is 15 MB.
 5. **The mirror gate is one-directional** — `juniper-cascor/juniper-cascor-model/tests/test_drift.py:78` walks the **package** tree, so a file existing only in `src/` is never compared. P3.1 adds a module; add it to the package tree in the same PR.
 6. **Unresolved CodeQL threads block a merge while every check reads green.** ml#1573 hit this at 17/17 required contexts with `mergeStateStatus: BLOCKED`, on one unused-import alert. Fix the finding; do not `noqa` it.
 7. **Do not hand-roll a CI poll loop** — use `juniper-ml/util/wait_for_checks.py`. The predecessor session hand-rolled one on `gh pr checks --json`, which this `gh` does not support; the fallback returned an empty array and the loop reported "no pending checks". A probe that cannot observe a failure must exit non-zero, not report success.

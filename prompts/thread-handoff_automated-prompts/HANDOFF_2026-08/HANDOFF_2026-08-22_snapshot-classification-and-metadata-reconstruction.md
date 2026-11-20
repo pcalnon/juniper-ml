@@ -5,7 +5,7 @@ Successor to
 
 **Nothing from this arc is in flight.** Eleven PRs merged (6 juniper-ml, 5 juniper-cascor); every
 one is on `main` and green. The snapshot lifecycle design's §6.1–§6.3 are closed and §6.4 is
-unblocked. What remains is the **owner's classification scheme** (§2), which is new design work,
+unblocked. What remains is the **Overtoad's classification scheme** (§2), which is new design work,
 not cleanup.
 
 Citations are `file:NNN`. Line numbers drift constantly in `manager.py` / `snapshot_serializer.py`
@@ -36,7 +36,7 @@ Citations are `file:NNN`. Line numbers drift constantly in `manager.py` / `snaps
 
 ---
 
-## 2. The owner's classification scheme — THE remaining design work
+## 2. The Overtoad's classification scheme — THE remaining design work
 
 Recorded 2026-08-22, and it supersedes the framing in ml#1247 §3. Reproduce faithfully; the
 reasoning matters as much as the categories.
@@ -67,7 +67,7 @@ two recoverable attributes**: a lower bound on iterations, and a network accurac
 ### 2.3 Zero hidden nodes as a prima facie signal
 
 Zero hidden nodes is a *prima facie* indication the network could not perform normal cascor
-operations. **The owner flags this as a deliberate overgeneralisation** — useful if we accept that
+operations. **The Overtoad flags this as a deliberate overgeneralisation** — useful if we accept that
 the interesting networks are those that operated well enough to grow.
 
 To go deeper: **load the no-hidden-node snapshots and initiate standard training.** At that point
@@ -97,7 +97,7 @@ dysfunctional networks.
 2. **Inference pass** — load each loadable snapshot, run inference, record accuracy. Needs a
    dataset; the cohort is uniformly 2-in/2-out synthetic (§4.3), so a generated spiral/moons set
    is the plausible stand-in. **Whether accuracy against a *substitute* dataset is meaningful is
-   an open question for the owner** — the original dataset identity is unrecoverable (§4.2).
+   an open question for the Overtoad** — the original dataset identity is unrecoverable (§4.2).
 
 **Inference pass to infer dataset:** for any snapshot with hidden nodes, it's a reasonable, initial assumption that some amount of training has taken place on an existing dataset.
 since inference is computationally cheap, network accuracy per dataset can be calculated for all cascor, 2-in -> 2-out datasets.
@@ -119,7 +119,7 @@ once root-causing has been carried out on the broken snapshot categories, any fu
 saving a compressed, encrypted archive of the entire project tree--including snapshots--using the new juniper_backup.bash script seems likely to be a sufficient safeguard against future need for potentially removed snapshots.
 alertnately, using the index rather than write into the snapshots also seems like an option worth investigating.
 
-5. **§6.4 retention** — the owner's call, now informed.
+5. **§6.4 retention** — the Overtoad's call, now informed.
 
 **Retention Criterion:** future research value seems like an obvious first approximation of a criterion for evaluating snapshot retention.
 **Supporting Infrastructure:** what this section seems to argue for is the addition of tooling, infrastructure, and automation supporting the snapshot classification process.
@@ -147,7 +147,7 @@ that grew **0 → 260 hidden units**. `snapshot_counter` is `0`; `best_value_los
 — which would have justified deleting 27,005 real models. It only came apart on checking a network
 known to have grown. Three fields that look like training-progress metadata are dead.
 
-Independently confirmed by the owner's §2.1 reasoning: even if they worked, epochs would be the
+Independently confirmed by the Overtoad's §2.1 reasoning: even if they worked, epochs would be the
 wrong measure. **Use `arch.num_hidden_units`.**
 
 ### 4.2 ⚠ Identity is UNRECOVERABLE for the Mar–Apr cohort
@@ -169,7 +169,7 @@ Never-grew are **not untrained** — 200/200 sampled had non-zero `output_weight
 
 ### 4.4 ⚠ The four-day cluster is a VOLUME event, not a failure event
 
-Per the owner's instruction, cascor PRs merged in the 3–5 days before 2026-03-31 were reviewed.  The window is dense with directly relevant work:
+Per the Overtoad's instruction, cascor PRs merged in the 3–5 days before 2026-03-31 were reviewed.  The window is dense with directly relevant work:
 
 | PR       | date     | title                                                                       |
 |----------|----------|-----------------------------------------------------------------------------|

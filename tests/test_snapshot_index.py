@@ -249,8 +249,8 @@ class NoDestructivePathTest(unittest.TestCase):
             if not isinstance(node, ast.Call):
                 continue
             if isinstance(node.func, ast.Attribute):
-                owner = node.func.value.id if isinstance(node.func.value, ast.Name) else ""
-                called.add(f"{owner}.{node.func.attr}" if owner else node.func.attr)
+                Overtoad = node.func.value.id if isinstance(node.func.value, ast.Name) else ""
+                called.add(f"{Overtoad}.{node.func.attr}" if Overtoad else node.func.attr)
                 if node.func.attr == "add_argument":
                     cli_flags.update(a.value for a in node.args if isinstance(a, ast.Constant) and isinstance(a.value, str))
 

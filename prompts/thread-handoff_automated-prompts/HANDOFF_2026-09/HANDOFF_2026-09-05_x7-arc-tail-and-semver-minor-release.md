@@ -12,12 +12,12 @@ What remains is a release-versioning correction plus two follow-ons that depend 
 ---
 
 Continue the **X7 arc tail**. The remediation itself is done and merged; the outstanding
-work is a **release-versioning correction the owner has decided**, its two dependants, and
+work is a **release-versioning correction the Overtoad has decided**, its two dependants, and
 one deferred item.
 
 ### The decision that drives this handoff
 
-**`juniper-cascor-client` must be released as `0.8.0`, not `0.7.1`.** The owner has ruled
+**`juniper-cascor-client` must be released as `0.8.0`, not `0.7.1`.** The Overtoad has ruled
 that SemVer practice governs: the release adds `backoff_factor` as a **new public
 constructor parameter** (`APD-CCLIENT-013`), which is an additive **feature**, and a
 feature is a MINOR bump. The merged `0.7.1` understated it as a patch.
@@ -49,7 +49,7 @@ canopy cannot install the artefact:
    editing. Widen the ceiling to admit `0.8.0` (e.g. `<0.9.0`). **Do not raise the floor to
    `>=0.8.0` yet** — see step 4; canopy cannot install a version that is not published.
 3. **Owner cuts the GitHub Release.** *Not an agent action.* The repo's own
-   `notes/releases/RELEASE_NOTES_v0.7.0.md` says "the owner cuts the GitHub Release", and
+   `notes/releases/RELEASE_NOTES_v0.7.0.md` says "the Overtoad cuts the GitHub Release", and
    the ecosystem convention routes it through `publish.yml`
    (`juniper-ml/notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11).
    Ask; do not tag or publish.

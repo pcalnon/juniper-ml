@@ -11,7 +11,7 @@ Status:      ad-hoc -- census run for the handoff-length question raised as
              item C.6 of the 2026-08-28 shared-session-memory arc handoff
              (prompts/thread-handoff_automated-prompts/), and recorded on
              tracker juniper-ml#1326. NOTE: "C.6" numbers an item in that
-             HANDOFF document, not a row of the plan's Sec 5 owner-decision
+             HANDOFF document, not a row of the plan's Sec 5 Overtoad-decision
              table -- an earlier version of this line cited it in a way that
              read as a plan reference and was correctly reported UNTRACEABLE by
              an independent reviewer who searched the plan for it.

@@ -4,7 +4,7 @@ Rewrite the session-8 parts of the flood-4 "ml-tests" carrier's manifest inputs 
 
 The manifest tool (util/ad-hoc/2026-11-14_flood4r2_ml-tests-r2_manifest.py) copies open_questions_input.json,
 if_main_moves_input.json, checks_input.json and dispositions.json into manifest.json as written. Session 8 changed
-what they must say (the owner's ruling of 2026-11-14 resolved one open question; main moved twice; the landing
+what they must say (the Overtoad's ruling of 2026-11-14 resolved one open question; main moved twice; the landing
 command is the 2026-11-14 one). This tool rewrites them, taking every number from a landing's own records under
 --scratch (derived.json, landing_report.json, the suite reports, the probe's result.json) rather than typing them:
 
@@ -23,7 +23,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier, its session-8 fix-up)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-14_flood4r2_ml-tests-r2_manifest.py (reads what this writes)
 """
 
@@ -146,7 +146,7 @@ def main() -> int:
     for row in dispositions["round_1_open_questions"]:
         if row.get("n") == 5:
             row["disposition"] = "done"
-            row["why"] = "the owner's ruling of 2026-11-14, \"Add all fifteen\": all fifteen suites are in main-verify.yml's Regression Battery, in ci.yml's order (session 8; the battery tool derives each line's place at the landing). Six were there before, as round 1 built it."
+            row["why"] = "the Overtoad's ruling of 2026-11-14, \"Add all fifteen\": all fifteen suites are in main-verify.yml's Regression Battery, in ci.yml's order (session 8; the battery tool derives each line's place at the landing). Six were there before, as round 1 built it."
     (s / "dispositions.json").write_text(json.dumps(dispositions, indent=2) + "\n", encoding="utf-8")
     left = [name for name in ("open_questions_input.json", "if_main_moves_input.json") if re.search(r"\bsix of the fifteen\b|the six in main-verify", (s / name).read_text(encoding="utf-8"))]
     print(f"rewritten: open_questions ({len(questions)}), if_main_moves, checks (+10, {len(checks)} in all), dispositions; stale 'six' statements left: {left or 'none'}")

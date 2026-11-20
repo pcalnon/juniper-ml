@@ -185,7 +185,7 @@ class RealRunIsGatedThroughMain(unittest.TestCase):
         """``--probe-id`` and ``--reason`` are now part of the override (D3).
 
         This test read ``["--force"]`` alone until 2026-09-17. That was the
-        contract then and is not the contract now: owner decision D3 admits the
+        contract then and is not the contract now: Overtoad decision D3 admits the
         override only for a NAMED probe with the reason recorded. The scoped form
         must still reach dispatch, or D3 has repealed ``--force`` instead of
         narrowing it -- which is the failure this case now pins.

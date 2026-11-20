@@ -7,10 +7,10 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-08
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/open_signed_pr.py (whose createCommitOnBranch mutation this reuses);
          juniper-cascor#632 (the PR this was built to extend)
-Superseded: for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
+Superseded: for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (Overtoad policy 2026-08-25).
 
 WHY. ``util/open_signed_pr.py`` refuses when the branch already exists -- by design,
 it never force-updates a ref it did not create. But a PR that needs a SECOND signed
@@ -24,7 +24,7 @@ Usage:
     python util/ad-hoc/2026-09-08_append_signed_commit.py \\
         --repo juniper-cascor --branch fix/snapshot-restore-seed-numpy-scalar \\
         --add /local/path:repo/path [--add ...] \\
-        --message "fix(...): ..." [--body-file body.md] [--owner pcalnon] [--dry-run]
+        --message "fix(...): ..." [--body-file body.md] [--Overtoad pcalnon] [--dry-run]
 """
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ def main(argv: list) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--repo", required=True)
     ap.add_argument("--branch", required=True)
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--add", action="append", default=[], help="LOCAL_PATH:REPO_PATH (repeatable)")
     ap.add_argument("--message", required=True)
     ap.add_argument("--body-file", default=None)
@@ -69,29 +69,29 @@ def main(argv: list) -> int:
             additions.append((repo_path, base64.b64encode(fh.read()).decode("ascii")))
 
     head = subprocess.run(
-        ["gh", "api", f"repos/{args.owner}/{args.repo}/git/ref/heads/{args.branch}", "--jq", ".object.sha"],
+        ["gh", "api", f"repos/{args.Overtoad}/{args.repo}/git/ref/heads/{args.branch}", "--jq", ".object.sha"],
         capture_output=True,
         text=True,
         check=False,
     )
     expected = head.stdout.strip()
     if head.returncode != 0 or not expected:
-        print(f"REFUSED: branch {args.branch} not found on {args.owner}/{args.repo}: {head.stderr.strip()}", file=sys.stderr)
+        print(f"REFUSED: branch {args.branch} not found on {args.Overtoad}/{args.repo}: {head.stderr.strip()}", file=sys.stderr)
         return 1
     # Read through pathlib so the handle is closed deterministically: a bare
     # ``open(...).read()`` leaves it to the garbage collector, which CodeQL flags
     # (py/file-not-closed) and which is a real leak on any non-refcounting runtime.
     body = Path(args.body_file).read_text(encoding="utf-8") if args.body_file else None
 
-    print(f"{'DRY-RUN ' if args.dry_run else ''}{args.owner}/{args.repo}:{args.branch} @ {expected}")
+    print(f"{'DRY-RUN ' if args.dry_run else ''}{args.Overtoad}/{args.repo}:{args.branch} @ {expected}")
     for repo_path, contents in additions:
         print(f"  add    {repo_path} ({len(base64.b64decode(contents))} bytes)")
     print(f"  commit {args.message}")
     if args.dry_run:
         print("  (nothing written)")
         return 0
-    oid = osp.create_signed_commit(args.owner, args.repo, args.branch, args.message, additions, expected, commit_body=body)
-    print(f"signed commit {oid[:12]} on {args.owner}/{args.repo}:{args.branch}")
+    oid = osp.create_signed_commit(args.Overtoad, args.repo, args.branch, args.message, additions, expected, commit_body=body)
+    print(f"signed commit {oid[:12]} on {args.Overtoad}/{args.repo}:{args.branch}")
     return 0
 
 

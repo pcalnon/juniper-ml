@@ -2,20 +2,20 @@
 
 # Round 2, lane B: refutation of `HANDOFF_2026-09-24_round-42-follow-up-lane-four-prs-await-validation-and-the-observability-release.md`
 
-The rewrite fixes every round-1 HIGH. It introduces one new HIGH: it hands the release to this lane, against the owner's own ruling text. There are also three new MEDIUMs.
+The rewrite fixes every round-1 HIGH. It introduces one new HIGH: it hands the release to this lane, against the Overtoad's own ruling text. There are also three new MEDIUMs.
 
 Nothing was edited. The document's hash is unchanged (`ffd111ef…`), and `hvE/` is pruned.
 
 ## New errors
 
-**1. HIGH: the release is reassigned, against the owner's ruling.**
-- **Text:** L33 "That covers validation, fix-forwards, the release PRs and the lock and floor PRs." L108 "This lane opens version-bump and release-notes PRs". L111 "This is the only owner step."
-- **Problem:** the option the owner chose as "Fix everywhere now (Recommended)" reads "Up to four PRs. … **Releases stay yours.**" That comes from the transcript and is archived at `reports/2026-09-24_defect-register-round-42/pending-items-snapshot-2026-09-24T1110Z.md:9`.
+**1. HIGH: the release is reassigned, against the Overtoad's ruling.**
+- **Text:** L33 "That covers validation, fix-forwards, the release PRs and the lock and floor PRs." L108 "This lane opens version-bump and release-notes PRs". L111 "This is the only Overtoad step."
+- **Problem:** the option the Overtoad chose as "Fix everywhere now (Recommended)" reads "Up to four PRs. … **Releases stay yours.**" That comes from the transcript and is archived at `reports/2026-09-24_defect-register-round-42/pending-items-snapshot-2026-09-24T1110Z.md:9`.
 - v1 had this right ("Owner steps: not agent work"). Lane C's H3 moved it without seeing this text.
-- As written, a successor chooses the version numbers itself, and the sweeper may merge those bumps. L111's "only owner step" also contradicts L118 and the (a)–(c) calls.
-- **Replacement:** "The owner reserved releases ('Releases stay yours'). Once the juniper-ml F-PR validates, ask the owner with verbatim options:
-  - the owner prepares and cuts both releases; or
-  - this lane opens the bump and notes PRs at versions the owner names, and the owner cuts the Releases.
+- As written, a successor chooses the version numbers itself, and the sweeper may merge those bumps. L111's "only Overtoad step" also contradicts L118 and the (a)–(c) calls.
+- **Replacement:** "The Overtoad reserved releases ('Releases stay yours'). Once the juniper-ml F-PR validates, ask the Overtoad with verbatim options:
+  - the Overtoad prepares and cuts both releases; or
+  - this lane opens the bump and notes PRs at versions the Overtoad names, and the Overtoad cuts the Releases.
 
   Ask separately about the cap, lock and floor PRs. Never approve the `pypi` gate (`feedback_deploy_approvals_paul_manages.md`)."
 
@@ -54,17 +54,17 @@ Nothing was edited. The document's hash is unchanged (`ffd111ef…`), and `hvE/`
   - The register lane writes the consolidation only after this PR (its 23:34Z message), so a successor that starts first is never told to switch.
 - **Replacement:** "`[24f8d8]` will publish a consolidated handoff after this PR merges. Ask it for the path at Step 0, and again before each OPEN item. Once it is on `main`, it governs every instruction, and this file becomes only an evidence index. #2084's handoff never governs."
 
-**8. LOW: cleanup has no owner gate.**
+**8. LOW: cleanup has no Overtoad gate.**
 - **Text:** L170-171 "Removable". L177 "is safe to delete".
-- **Evidence:** `feedback_worktree_cleanup_only_on_explicit_merge_2026-05-15.md` requires the owner's explicit go-ahead per PR plus `gh` confirming MERGED. v1's "Before removing: verify each is clean…" was dropped. Deleting #686's branch also blocks reopening #686.
-- **Replacement:** "Only with the owner's go-ahead in your session. First re-check `git status` and `gh pr view --json state,mergedAt`."
+- **Evidence:** `feedback_worktree_cleanup_only_on_explicit_merge_2026-05-15.md` requires the Overtoad's explicit go-ahead per PR plus `gh` confirming MERGED. v1's "Before removing: verify each is clean…" was dropped. Deleting #686's branch also blocks reopening #686.
+- **Replacement:** "Only with the Overtoad's go-ahead in your session. First re-check `git status` and `gh pr view --json state,mergedAt`."
 
 **9. LOW: the git status is incomplete.**
 - **Text:** L193-197.
 - **Evidence:** the worktree also holds the three round-1 reports, `2026-09-24_archive_followup_handoff_validation.py` and `2026-09-24_open_followup_handoff_pr.py`. The opener adds every changed path (about 90 files).
 
 **10. NITs.**
-- L25, "adds commits: canopy#685 got two": both are web-flow commits by the owner's account with Autofix-style messages. Nothing shows the sweeper made them.
+- L25, "adds commits: canopy#685 got two": both are web-flow commits by the Overtoad's account with Autofix-style messages. Nothing shows the sweeper made them.
 - L184: the title search is fragile. `--head docs/handoff-round42-followup-lane` is exact, taken from the opener script.
 - L87 marks data's whole `TestAPIKeyAuth` class `unit`, while the report says to mark only the spy test. That is a wider change.
 
@@ -95,7 +95,7 @@ Nothing was edited. The document's hash is unchanged (`ffd111ef…`), and `hvE/`
   - The headers now read "k of 5".
 - **Identities and quotes:**
   - The Step 0 identities are right, and `2fba4397` was active at 23:53Z.
-  - The owner quotes are verbatim, and the merge grant ("merge approval granted.", 2026-09-22T17:59:59Z) is real.
+  - The Overtoad quotes are verbatim, and the merge grant ("merge approval granted.", 2026-09-22T17:59:59Z) is real.
 - **Traps:** the three restored traps match the 09-23 handoff verbatim.
 
 ## Round-1 disposition
@@ -122,14 +122,14 @@ Key: ✓ = addressed correctly; ◐ = addressed, but with a flaw (the new-error 
 | B-L3 (ledger) | 135-138 | ✓ ("It" is ambiguous; no action stated) |
 | B-L4 | 178 | ✓ |
 | B-NIT (stale comment) | 77, 101 | ✓ |
-| B-NIT (blank-key script retire) | none | ✗, harmless. The script is in canopy's `util/ad-hoc/`, and juniper-ml's policy (owner, 2026-08-25) makes retirement owner-only. Leave it out. |
+| B-NIT (blank-key script retire) | none | ✗, harmless. The script is in canopy's `util/ad-hoc/`, and juniper-ml's policy (Overtoad, 2026-08-25) makes retirement Overtoad-only. Leave it out. |
 | B-NIT (recurrence) | 113-116 | ✓ |
 | C-H1 (Step 0) | 16-21 | ◐ the fallback can select #2084's handoff (#7) |
 | C-H2 | 22-23 | ✓ |
 | C-H3 (release) | 106-117 | ◐ addressed wrongly (#1, #3, #4) |
 | C-M2, C-M3, C-M4, C-M6, C-M8 | 11, 95-97, 95, 27/60/105, 150 | ✓ |
 | C-L1 | 183-187 | ✓ (L184 fragile) |
-| C-L2, C-L6 (cleanup; branch gate) | 173-177 | ◐ reason given, but gate dropped with no owner signal (#8) |
+| C-L2, C-L6 (cleanup; branch gate) | 173-177 | ◐ reason given, but gate dropped with no Overtoad signal (#8) |
 | C-L4 (harness mapping) | 62 | ✓ (verified) |
 | C-L5 | 148 | ✓ |
 | C-NITs | 51-52, 88, 36, 135 | ✓ |

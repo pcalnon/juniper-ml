@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 docs carrier, check D-ml-docs)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: the docs carrier must not name a test that the tree it lands on does not have.
 
 Reads `git diff -U0 <base> -- <paths>` and collects, from the added lines only, every `test_*.py` file name and

@@ -44,7 +44,7 @@ Completed (2026-09-23, this thread):
   - #212: MERGE.
   #431 and #434 are now DRAFT, so no unseen actor can auto-merge them before the cut.
 
-Remaining, agent-doable (merge approval is per-session: ask the owner for it again):
+Remaining, agent-doable (merge approval is per-session: ask the Overtoad for it again):
 1. Spec v3. Fold §15 of the spec (R2-1..R2-10, then the MINORs and NITs, each traceable to a lane id
    in the archived reports) into §1-§13. Add a round-2 disposition table in the style of §14.
    Decisions v3 has to carry:
@@ -52,14 +52,14 @@ Remaining, agent-doable (merge approval is per-session: ask the owner for it aga
    - W10 has a precondition: a juniper-recurrence release that carries W4's widened cap, plus an
      `[all]` dry-run resolve.
    - W11 and FIRST_EMITTING_VERSION are conditional on OQ-1 = yes, and the "no" branch is written out.
-   - The "0.6.1 is a PATCH" argument is dropped. Release 0.7.0 instead, or put it to the owner in §16.
+   - The "0.6.1 is a PATCH" argument is dropped. Release 0.7.0 instead, or put it to the Overtoad in §16.
    - The status, override and caveat surfaces are named for each consumer.
    Update the reference gate so it has a vector for every R2 cluster, notably R2-1 (an unknown scheme
    with a changed core must be `unverifiable`, not refused). Move the citation checker's pins:
    juniper-data main is at 7125e16 (0.16.0's proposal), and cascor main moved at 0e016a7c, which
    shifted the manager.py lines. Then run ROUND 3 with fresh lanes on frozen text, and only then
-   ask the owner to rule on anything in §16.
-2. juniper-data#431, then juniper-data#434: merge ONLY after the owner cuts juniper-data v0.16.0.
+   ask the Overtoad to rule on anything in §16.
+2. juniper-data#431, then juniper-data#434: merge ONLY after the Overtoad cuts juniper-data v0.16.0.
    Both are DRAFT; run `gh pr ready` after the cut. Commit and push #434's uncommitted round-3
    fixes first (see §3).
    Neither is in 0.16.0's approved scope, which ends at 90ad035e; check with
@@ -112,7 +112,7 @@ gh pr view 2066 -R pcalnon/juniper-ml          --json state,mergedAt,headRefOid
 gh pr view 431  -R pcalnon/juniper-data        --json state,mergedAt,headRefOid   # head 4b0d0a97, DRAFT
 gh pr view 434  -R pcalnon/juniper-data        --json state,mergedAt,headRefOid   # head ac6bdc8, DRAFT; fixes uncommitted (see §3)
 gh pr view 212  -R pcalnon/juniper-data-client --json state,mergedAt,headRefOid
-gh release list -R pcalnon/juniper-data --limit 1        # v0.15.0 until the owner cuts v0.16.0
+gh release list -R pcalnon/juniper-data --limit 1        # v0.15.0 until the Overtoad cuts v0.16.0
 gh issue view 178 -R pcalnon/juniper-recurrence --json state --jq .state   # OPEN
 git show origin/main:notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md | grep -c '^| \*\*R2-'   # 10
 /opt/miniforge3/envs/JuniperData/bin/python util/ad-hoc/2026-09-23_partition_provenance_v2_reference_gate.py --data-checkout /home/pcalnon/Development/python/Juniper/worktrees/juniper-data--verify--spec-v2-pin--20260923-1545--90ad035e | tail -1   # 52 PASS, 0 FAIL, 0 SKIP
@@ -148,7 +148,7 @@ curl -s https://pypi.org/pypi/juniper-data/json | python3 -c "import sys,json; p
 ## 5. What this evidence cannot support
 
 - **The reference gate is an implementation of v2's text, not of a shipped gate.** Its 52 passes show the text is implementable and survives the vectors. Round 2 then found defects that the vectors did not cover, such as R2-1, the unknown-scheme path.
-- **#431's confirmation step has never run in Actions.** The dispatch 403s until the owner widens the token, so the step is tested only locally, on four cases.
+- **#431's confirmation step has never run in Actions.** The dispatch 403s until the Overtoad widens the token, so the step is tested only locally, on four cases.
 - **V-3's "arm A = arm B's network" rests on reading the code.** The plan's identity check (B against B′ at 0.8/0.05/0.15) is what would confirm it, and it has not been run.
 - **The #2034 inventory is one agent's sweep.** Two of its load-bearing claims were re-checked against run directories: T6's `split: "validation"` with no `final` block, and #2064's figures, 0.9187 in-loop against 0.8997 held-out. The rest are as the agent reported them.
 

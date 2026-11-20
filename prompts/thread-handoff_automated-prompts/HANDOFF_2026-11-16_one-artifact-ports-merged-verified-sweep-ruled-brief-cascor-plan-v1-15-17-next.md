@@ -1,4 +1,4 @@
-# Handoff: one-artifact publish. All 8 port PRs are merged, and all 15 ported workflows pass the identity check on each repo's `main`. On 2026-11-16 the owner ruled the sweep's two design questions. The sweep brief, cascor's template PR, the ports and plan v1.15.17 remain
+# Handoff: one-artifact publish. All 8 port PRs are merged, and all 15 ported workflows pass the identity check on each repo's `main`. On 2026-11-16 the Overtoad ruled the sweep's two design questions. The sweep brief, cascor's template PR, the ports and plan v1.15.17 remain
 
 **Written**: 2026-11-16 ~22:15Z by session `85756bf1`. Its ListAgents name is
 `one-artifact-ports-8-prs-open-reviews-then-merge-plan-v1-15-17-next`, ref `bdd9d4`. Worktree
@@ -7,7 +7,7 @@
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-15_one-artifact-ports-8-prs-open-reviews-then-merge-plan-v1-15-17-next.md`
 (juniper-ml#2594).
 
-**Merge approval**: the owner wrote "merge approval granted" at this session's start. It is per-session: ask again.
+**Merge approval**: the Overtoad wrote "merge approval granted" at this session's start. It is per-session: ask again.
 
 ## Done this session
 
@@ -17,7 +17,7 @@
   - cascor-client#199 at 08:31Z (`fe962b7b`) and data-client#264 at 08:36Z (`61d6b44b`);
   - ml#2593 at 08:47Z (`67e9aab1`) and cascor-worker#232 at 08:49Z (`a0b5e363`).
 
-  The owner's armed auto-merge merged the last six, each at the head that carried its review fixes. For ml#2593 and
+  The Overtoad's armed auto-merge merged the last six, each at the head that carried its review fixes. For ml#2593 and
   #232 that head is an update-branch merge on top of the reviewed `acc5c262` and `41933886`. The fix-up agents'
   reports are in the predecessor session's transcript (`d67643b8…jsonl`, after 23:38Z).
 - **Identity check, 15:29Z: 15 of 15 PASS.** Every ported workflow on each repo's `main` matches cascor `main`'s
@@ -26,7 +26,7 @@
 - **The 26 uncommitted scripts were copied** from `.claude/worktrees/giggly-foraging-sunbeam/util/ad-hoc/` into this
   worktree's `util/ad-hoc/`, untracked: 14 carried, 5 tools and 7 writers. The 14 carried files match
   `carried_scripts.sha256` (copy in `tmp/arc/`), and the other 12 are byte-identical to the source. Both copies exist.
-- **The owner's rulings of 2026-11-16** (this session's AskUserQuestion, asked 15:32:57Z, answered 22:08:20Z). No
+- **The Overtoad's rulings of 2026-11-16** (this session's AskUserQuestion, asked 15:32:57Z, answered 22:08:20Z). No
   earlier ruling exists: 32 transcripts since 11-15 23:30Z were searched.
   1. **"Gate it in the job (Recommended)"**, for SWEEP items 11, 21 and 26. "The republish job reads the newest
      release run for the tag and refuses unless its TestPyPI job(s) concluded success in the latest attempt, and
@@ -105,9 +105,9 @@
 - **The Bash guard trips on "git" inside words**, `.github` included, on a `cd` into another worktree, and on complex
   git lines. Put such commands in a script file, as `tmp/ports/verify_all_mains.bash` does.
 - **The predecessor's `tmp/ports/`** (in giggly-foraging-sunbeam) holds the clones and each repo's evidence, hundreds of
-  MB, under the retention rule. Cleaning up the agent worktrees waits for the owner's word.
+  MB, under the retention rule. Cleaning up the agent worktrees waits for the Overtoad's word.
 - **task-executor agents get their own worktree** and mirror their files here through Bash.
-- **The owner's answer took 6.5 h.** Launch independent agents before you ask.
+- **The Overtoad's answer took 6.5 h.** Launch independent agents before you ask.
 
 ## Git status (this worktree, 22:15Z)
 

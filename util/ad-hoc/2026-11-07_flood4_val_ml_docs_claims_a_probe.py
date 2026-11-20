@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: flood-4 juniper-ml docs carrier validation, claims lens slice A
          (#2417 zero / NaN / inf rendering, #2422 failed-auth table sizes, #2409 DeprecationWarning attribution,
          #2433 worker connection bucket timing)

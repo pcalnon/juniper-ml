@@ -19,7 +19,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier, the finish of round 2 of its build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-12_flood4r2_ml-tests-r2_shared_edits.py (the tool that writes most of these sites)
 """
 
@@ -68,7 +68,7 @@ def main() -> int:
         ("Version History row: macOS list total", "docs/REFERENCE.md", r"Cursor flood-4 round-2 tests carrier: .* runs every agent-guard suite, (\d+) suites in all\. \|$", str(host["total"]), 1, "the number of names in ci.yml's HOST_TOOLING_SUITES", SHARED_EDITS),
         ("the 'Running every suite' tally", "docs/REFERENCE.md", r"\*\*(\d+)\*\* on \d{4}-\d{2}-\d{2} with the flood-4 round-2 tests carrier's fifteen", count, 1, "the suite count; the sentence keeps every earlier figure and gains this one at its end", SHARED_EDITS),
         ("the 'Running every suite' tally: date", "docs/REFERENCE.md", r"\*\*\d+\*\* on (\d{4}-\d{2}-\d{2}) with the flood-4 round-2 tests carrier's fifteen", date, 1, "the landing date", SHARED_EDITS),
-        ("macOS gate's Test Suite Reference entry: added and total", "docs/REFERENCE.md", r"The agent guard's (\d+ other suites made it \d+) \(the owner's ruling of 2026-11-12\)", f"{host['guard_suites_added']} other suites made it {host['total']}", 1, "the guard suites this carrier adds to the list, and the list's length", SHARED_EDITS),
+        ("macOS gate's Test Suite Reference entry: added and total", "docs/REFERENCE.md", r"The agent guard's (\d+ other suites made it \d+) \(the Overtoad's ruling of 2026-11-12\)", f"{host['guard_suites_added']} other suites made it {host['total']}", 1, "the guard suites this carrier adds to the list, and the list's length", SHARED_EDITS),
         ("CI/CD Pipeline Reference item: guard files on disk", "docs/REFERENCE.md", r"\(`tests/test_claude_agent_guard\*\.py`, (\d+) files\) beside the turing suites", str(host["guard_suites_on_disk"]), 1, "the number of tests/test_claude_agent_guard*.py files", SHARED_EDITS),
         ("suite count in the 'Run all tests' comment", "AGENTS.md", r"^# Run all tests -- the full ordered list of (\d+) `python3 -m unittest`", count, 1, "the suite count", SHARED_EDITS),
         ("AGENTS.md date", "AGENTS.md", r"^\*\*Last Updated\*\*: (\d{4}-\d{2}-\d{2})$", date, 1, "the landing date; when main already holds it the line is not in the diff, and the AGENTS.md date check passes only while it runs on that UTC day", SHARED_EDITS),
@@ -90,7 +90,7 @@ def main() -> int:
         "agents_md_last_updated_line_is_in_the_diff": bool(main_agents_date) and main_agents_date.group(1) != date,
         "sites": sites,
         "ml_propose_token": {"token": ML_PROPOSE_TOKEN, "tree_sites": [f"CHANGELOG.md:{number}" for number, _match in token], "rule": "the ml-propose pull request's number; the landing tool writes it with --ml-propose-pr N", "written_by": LAND},
-        "dates_that_are_not_stamps": "2026-11-08, 2026-11-09 and 2026-11-12 in the CHANGELOG entry, ci.yml, docs/REFERENCE.md and tests/test_ci_host_tooling_macos.py are the days of owner rulings; they do not move with the landing",
+        "dates_that_are_not_stamps": "2026-11-08, 2026-11-09 and 2026-11-12 in the CHANGELOG entry, ci.yml, docs/REFERENCE.md and tests/test_ci_host_tooling_macos.py are the days of Overtoad rulings; they do not move with the landing",
         "problems": problems,
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)

@@ -6,7 +6,7 @@
 refuter) per `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`,
 then a second round on the corrections — record in § Validation record at the end. **Round 1 found
 two refuted claims of mine, two amputations, six executability majors and two real check gaps**, all
-corrected below; the two check gaps are also fixed in code (§ item 6a). **Round 2 caught the owner
+corrected below; the two check gaps are also fixed in code (§ item 6a). **Round 2 caught the Overtoad
 cutting three Releases under the document** (2026-09-09 07:15 UTC) — items 1 and 4 and § Where this
 stands were rewritten from the live state, and round 2's other findings are folded in.
 
@@ -17,7 +17,7 @@ stands were rewritten from the live state, and round 2's other findings are fold
 ---
 
 Continue the **container-registry rollout**. Item 1 and Wave 2 are done or landing; what remains is
-**owner-gated** (items 1, 3, 4, 5, 7) plus follow-ups that need no owner (item 6). Merge approval
+**Overtoad-gated** (items 1, 3, 4, 5, 7) plus follow-ups that need no Overtoad (item 6). Merge approval
 for this arc's PRs was granted on 2026-09-08 and is **per-session** — the successor must obtain its
 own before merging anything. Predecessor:
 `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_container-registry-rollout-wave-1-complete.md`
@@ -54,10 +54,10 @@ amd64 image pulls anonymously and reports `torch=2.12.0+cpu (cuda=None) distribu
 cuda_stack=0`. Sizes, with units: **312 MB compressed** (registry transfer, amd64; arm64 270 MB) and
 **1.47 GB unpacked** on disk, against **2.86 GB compressed / 8.05 GB unpacked** for the predecessor's
 CUDA image `dispatch-3d81f2c`, which is still in the registry (deleting a package version needs
-`delete:packages`; owner action). `dispatch-8673396` (the first fixed publish, identical Dockerfile,
+`delete:packages`; Overtoad action). `dispatch-8673396` (the first fixed publish, identical Dockerfile,
 older workflow) also exists.
 
-**The first two real release images exist, cut by the owner.** At 07:15 UTC on 2026-09-09 the owner
+**The first two real release images exist, cut by the Overtoad.** At 07:15 UTC on 2026-09-09 the Overtoad
 cut cascor v0.11.0 (tag on `5eb6f144`, after #634), data v0.14.0 (tag on `e769999d`, the #387 merge)
 and canopy v0.7.0 (tag on `d8b1592d`, BEFORE #603). `publish-image.yml` ran on the first two — runs
 **34322913368** (cascor) and **34322906608** (data), three jobs green each — and published
@@ -130,11 +130,11 @@ recurrence get the census only, with `EXPECT_TORCH=absent` (no `pip check`; recu
 ### Remaining work
 
 **1. OWNER GATE — the first publish in recurrence and canopy.** (data's and cascor's packages were
-created at 07:15 UTC on 2026-09-09 by the owner's own Releases; the worker's exists since Wave 1.) A
+created at 07:15 UTC on 2026-09-09 by the Overtoad's own Releases; the worker's exists since Wave 1.) A
 first publish — a `workflow_dispatch` with `push: true`, or a Release — creates a new GHCR package,
 and all three workflow-created so far (worker, cascor, data) came up **public** (GitHub's docs say a
 package inherits the repo's permissions but NOT its visibility, so verify each new package's
-visibility on its package page after the first publish rather than assuming). Confirm with the owner
+visibility on its package page after the first publish rather than assuming). Confirm with the Overtoad
 first. **Precondition: the repo's `publish-image.yml` on `main` must carry the CORRECTED identity
 check** (the merge job resolves each pushed digest with `imagetools inspect` before comparing; the
 step text says `verified build digests resolve to`). Both recurrence and canopy `main` carry it now (canopy since #603 merged at
@@ -203,7 +203,7 @@ exists only as `dispatch-*` tags), recurrence app still `juniper-recurrence-v0.4
 client v0.3.0 Releases of 07:22 / 07:31 UTC are not the app and were skipped by the guard). **Wave 3
 therefore still needs three Releases — worker (> v0.5.0), canopy (any `v*` tag cut from `main` at or
 after `134d375f`, i.e. after #603; the 0.7.0 tag can never carry an image), recurrence app
-(`juniper-recurrence-v` > 0.4.0) — plus the Pi pull of item 3.** All owner actions.
+(`juniper-recurrence-v` > 0.4.0) — plus the Pi pull of item 3.** All Overtoad actions.
 cascor's and canopy's CHANGELOGs list the workflow under `[Unreleased]` although cascor's 0.11.0 tag
 ships it — cosmetic, the release author's call. Carried from the predecessor (verified 2026-09-09):
 `docker-compose.yml` has **13 `image:` lines, 9 Juniper, 5 unique** — canopy ×3 (L620/764/855, identical
@@ -219,7 +219,7 @@ integration test (plan D-1).
 **5. Wave 4 — Docker Hub** as a second push target (D-2). Needs a `DOCKERHUB_TOKEN` secret per repo;
 answer OQ-1 first. Not started; the worker workflow header still says "phase 2, not in this file".
 
-**6. Follow-ups that need no owner (do these):**
+**6. Follow-ups that need no Overtoad (do these):**
 
 - **6a. Harden the two checks** (found by the refuter lane; both real, both small):
   (i) `check_image_cpu_only.py` forbids `nvidia-*` and `triton` but **not `cuda-*`** — the real CUDA
@@ -387,7 +387,7 @@ docker manifest inspect ghcr.io/pcalnon/juniper-cascor-worker:dispatch-9890a23 |
 docker run --rm -i -e EXPECT_TORCH=2.12.0+cpu --entrypoint python ghcr.io/pcalnon/juniper-cascor-worker:dispatch-9890a23 - < juniper-cascor-worker/util/check_image_cpu_only.py
 gh run view 34294654855 --repo pcalnon/juniper-cascor-worker --json jobs --jq '.jobs[] | "\(.name)\t\(.conclusion)"'   # three rows, all success
 
-# The first release images (cut by the owner 2026-09-09 07:15 UTC) and the guard proof
+# The first release images (cut by the Overtoad 2026-09-09 07:15 UTC) and the guard proof
 gh release list --repo pcalnon/juniper-cascor --limit 1      # v0.11.0  2026-09-09T07:15:09Z
 gh release list --repo pcalnon/juniper-data --limit 1        # v0.14.0  2026-09-09T07:15:05Z
 gh release list --repo pcalnon/juniper-canopy --limit 1      # v0.7.0   2026-09-09T07:15:13Z  (no image: #603 was not on main)
@@ -412,7 +412,7 @@ Local `main` in every primary checkout is clean but **may be behind** (see the p
 **No local branch was ever pushed**: every remote commit in this arc was created through the GitHub API
 and is GitHub-signed. The five arc worktrees hold the same content as their PR branches but as
 uncommitted changes (the worker's also has one unsigned local bookkeeping commit, `87380f5`, never
-pushed, not the merged SHA). Leave them alone — cleanup is a separate, owner-signalled step, and
+pushed, not the merged SHA). Leave them alone — cleanup is a separate, Overtoad-signalled step, and
 `worktree remove` deletes ignored files silently.
 
 ```
@@ -476,7 +476,7 @@ claims: the recurrence lint "file does not exist" (a lint false positive: the fi
 `working-directory`; filed juniper-ml#1836) and "two" skipped-green recurrence runs (three). Lane B1
 (executability + amputation): **NOT SAFE on both** — six majors (the `docker run` form for ENTRYPOINT
 images, a Pi command that needed a checkout, primaries behind origin, data's unstated dispatch
-precondition, ambiguous owner-gate wording, no `gh run view --log` fallback) and two amputations (the
+precondition, ambiguous Overtoad-gate wording, no `gh run view --log` fallback) and two amputations (the
 Definition of Done, Wave 4). Lane B2 (refuter): **conclusions SURVIVE** with precision fixes (two shapes
 shipped CUDA, not three; the torch-dependent lock pin; "linux entries"; size units; commit counts) and
 two real check gaps — the census let `cuda-*` through, and the identity step needed a one-image-per-digest
@@ -486,7 +486,7 @@ assertion — which became item 6a. The draft was rewritten wholesale.
 is the least trustworthy part".** Lane A (grounding, 84 claims): **FAIL** — 78 CONFIRMED against primary
 sources (pip-log lines verbatim, lock counts 19/72/53/0, sizes recomputed in SI units from registry
 layer sums, test counts via `--collect-only`, compose line numbers, `match=` in `meta.ts`), 3 REFUTED:
-the Release state (the owner cut cascor v0.11.0, data v0.14.0 and canopy v0.7.0 at 07:15 UTC, twelve
+the Release state (the Overtoad cut cascor v0.11.0, data v0.14.0 and canopy v0.7.0 at 07:15 UTC, twelve
 minutes before the save), "~02:30 UTC" (local time), and "`docker image prune` reclaims the 8.05 GB
 image" (a by-digest pull, not dangling — needs `docker rmi <repo>@sha256:…`); 1 partly refuted (a
 canopy dispatch before #603 is refused, it cannot "write the tag then fail"). Lane B (fold-in /
@@ -512,5 +512,5 @@ reason stated.
 cuda_stack=0`, both "CPU-only contract holds"); `docker images -f dangling=true` is empty.
 
 **Known deviation**: the goal statement is ~5,100 words against the ~1,200-word target. The arc spans
-five repos with four owner gates and the successor cannot read this session; round 1's amputation lane
+five repos with four Overtoad gates and the successor cannot read this session; round 1's amputation lane
 classified every predecessor trim as a loss, so I chose length over amputation. The successor may split it.

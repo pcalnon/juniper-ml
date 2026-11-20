@@ -6,10 +6,10 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-06
 Status: ad-hoc — migration
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-20_raise_recurrence_floor_0_8_0.py (the 0.8.0 raise this follows, ml#2292);
          juniper-recurrence#229 (0.8.1's model-core floor); item 2 of
-         prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-06_recurrence-equities-0-8-1-published-owner-rulings-recorded-ml-floor-next.md
+         prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-06_recurrence-equities-0-8-1-published-Overtoad-rulings-recorded-ml-floor-next.md
 
 Why this exists
 ---------------
@@ -25,7 +25,7 @@ when its requirement forces it, so without the floor 0.8.0 stays in place.
 
 Only the recurrence pin moves. 0.8.1's ``requires_dist`` asks for ``juniper-recurrence-model>=0.6.0,<0.7.0``,
 the model pin the extra already has, and no client contract changed. Like the 0.8.0 script: no version bump
-(the 0.11.4 cut carries this, owner ruling 2026-11-06), the entry goes first under ``[Unreleased]`` ->
+(the 0.11.4 cut carries this, Overtoad ruling 2026-11-06), the entry goes first under ``[Unreleased]`` ->
 ``### Changed``, and ``AGENTS.md``'s ``**Last Updated**:`` is set to the run's UTC date. ``docs/QUICK_START.md``'s
 sample ``pip list`` block already reads ``juniper-recurrence 0.8.x``, so it does not move. ``docs/REFERENCE.md``'s
 compatibility sentence describes what each published release declares, so the 0.11.4 cut updates it, not this.
@@ -76,7 +76,7 @@ _EDITS: list[tuple[str, str, str, int]] = [
 _ENTRY_MARKER = "`[recurrence]` now floors `juniper-recurrence>=0.8.1`"
 _CL_ENTRY = f"""- **{_ENTRY_MARKER}** (`<0.9.0`), the release that floors
   `juniper-model-core[crossval]>=0.3.0,<0.4.0` (juniper-recurrence#229). The pin was
-  `juniper-recurrence>=0.8.0,<0.9.0`. The owner approved the raise on 2026-11-06, with a 0.11.4 cut to carry it.
+  `juniper-recurrence>=0.8.0,<0.9.0`. The Overtoad approved the raise on 2026-11-06, with a 0.11.4 cut to carry it.
   - **Why.** recurrence 0.8.0's `_folds.build_folds` passes `groups=` to `walk_forward_folds` on every
     `POST /v1/crossval`, and `groups=` first shipped in juniper-model-core 0.3.0. 0.8.0 declared
     `juniper-model-core>=0.2.0`, so an environment holding model-core 0.2.0 passed `pip check` while every

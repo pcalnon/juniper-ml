@@ -333,7 +333,7 @@ class CreateTest(_Fixture):
         self.assertRegex(calls[0], rf"^-F {re.escape(str(self.ssh_dir))}/\.config\.juniper_repo_ssh_setup\.\w+ -G {ALIAS}$")
         self.assertEqual(calls[1], f"-G {ALIAS}")
 
-    def test_owner_web_ui_step_is_printed(self) -> None:
+    def test_Overtoad_web_ui_step_is_printed(self) -> None:
         proc = self.run_setup()
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         for text in (
@@ -374,8 +374,8 @@ class CreateTest(_Fixture):
                 self.assertEqual(self.keygen_calls()[0][5], title)
                 self.assertIn(f"Title  {title}", proc.stdout)
 
-    def test_owner_option_shapes_the_url(self) -> None:
-        proc = self.run_setup("--owner", "someone-else")
+    def test_Overtoad_option_shapes_the_url(self) -> None:
+        proc = self.run_setup("--Overtoad", "someone-else")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertIn("https://github.com/someone-else/juniper-k8s/settings/keys/new", proc.stdout)
 
@@ -720,7 +720,7 @@ class UsageTest(_Fixture):
             "no repo": [],
             "unknown option": ["--frobnicate", "k8s"],
             "two repos": ["k8s", "ml"],
-            "owner without value": ["k8s", "--owner"],
+            "Overtoad without value": ["k8s", "--Overtoad"],
             "title without value": ["k8s", "--title"],
             "empty title": ["--title", "", "k8s"],
             "ssh-dir without value": ["k8s", "--ssh-dir"],
@@ -730,7 +730,7 @@ class UsageTest(_Fixture):
             "shell syntax": ["k8s;id"],
             "empty short name": ["juniper-"],
             "leading dash": ["-k8s"],
-            "bad owner": ["--owner", "a/b", "k8s"],
+            "bad Overtoad": ["--Overtoad", "a/b", "k8s"],
             "title with a quote": ["--title", 'Deploy "Key"', "k8s"],
             "title with a newline": ["--title", "Deploy\nKey", "k8s"],
         }

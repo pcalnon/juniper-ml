@@ -21,7 +21,7 @@ Then land the sitting's record in the recovery plan's §6.3.1 as one signed PR.
 The **first task** is the process change described in the section "Process change: automate the remainder" below. Build
 the two tools, then run the rest of the sitting through them.
 
-**The working pattern holds.** The owner runs every command that changes the host or reaches the server, in the root
+**The working pattern holds.** The Overtoad runs every command that changes the host or reaches the server, in the root
 shell or the pcalnon shell. They paste the summary lines. The session checks read-only, keeps the running record, and
 writes each next block with its expected output. "merge approval granted" covers this sitting's PRs.
 
@@ -29,7 +29,7 @@ writes each next block with its expected output. "merge approval granted" covers
 
 - **Step 9, the escrow.** Two scripts were written and audited: `util/key_escrow.bash` and
   `util/secure_copy-to-clipboard.bash`.
-  - The owner's stub was empty: it never called a clipboard tool. The only `xclip` was in a deprecated conda env and
+  - The Overtoad's stub was empty: it never called a clipboard tool. The only `xclip` was in a deprecated conda env and
     wrote the PRIMARY selection, which a password manager's paste doesn't read.
   - The settings key went into all three escrow places, each confirmed by sha256: the sda1 sibling, 3 printed copies,
     and the password manager (two typed checks).
@@ -43,13 +43,13 @@ writes each next block with its expected output. "merge approval granted" covers
     `--aes-version=2`, and "Keep all backups". There are no server-wide retention defaults.
   - The guard dry run exited 0. The service was restarted, `export 2` confirmed the edits, and `resume` fired the
     overdue backup, which is the AC-3 run.
-- **AC-3, accepted by owner ruling (2026-11-08).**
+- **AC-3, accepted by Overtoad ruling (2026-11-08).**
   - The run is `20261107T212908Z`: `Warning`, 3 transient Firefox `PathNotFound`/`MetadataProcessFailed` warnings, 0
     errors, census `AGREE`, nothing deleted.
   - The new baseline is **1,882,694 files / 280.40 GiB**. The growth is real, not lost filters: the 45 filters are
     intact. About 1.05M of the files are in `juniper-ml/.claude/worktrees` (234 worktrees). Excluding that tree was
     rejected because uncommitted work lives there.
-  - The `~/.ssh` (33 files) and `~/.gnupg` (97) finds were done in the UI's Restore browser, by owner ruling instead of
+  - The `~/.ssh` (33 files) and `~/.gnupg` (97) finds were done in the UI's Restore browser, by Overtoad ruling instead of
     `duplicati-cli find`.
 - **Step 12** was skipped (it applies to Procedure A only).
 - **Step 13.**
@@ -65,7 +65,7 @@ writes each next block with its expected output. "merge approval granted" covers
 - **AC-7 was found failing and fixed temporarily.**
   - The post-recovery volumes are `0640 duplicati:duplicati` (the unit's `UMask=0027`). The Dropbox daemon, started
     10-28, lacked gid 139, so every new volume was `unsyncable`.
-  - The owner restarted it with `sg duplicati -c 'dropbox start'`, giving it primary gid 139. It is now syncing.
+  - The Overtoad restarted it with `sg duplicati -c 'dropbox start'`, giving it primary gid 139. It is now syncing.
 - **A new AC-4 driver.** `util/ad-hoc/2026-11-09_ac4_restore_drill.py` decrypts in-process with no passphrase on argv,
   names the fileset with `--dlist`, keeps secrets out of the sample, and runs two negative controls.
   - Its self-test passes.
@@ -75,10 +75,10 @@ writes each next block with its expected output. "merge approval granted" covers
 ### Remaining work, in order
 
 1. **The process change.** See the section "Process change: automate the remainder" below.
-2. **AC-4, drill 1.** Restore `duplicati-20260918T140000Z.dlist.zip.aes`. **The owner had not reported its result at
+2. **AC-4, drill 1.** Restore `duplicati-20260918T140000Z.dlist.zip.aes`. **The Overtoad had not reported its result at
    handoff.**
    - Check first whether `/root/phase-d-tmp/ac4-drill1.out` exists. If it does, read its result lines through the
-     owner; don't re-run.
+     Overtoad; don't re-run.
    - Run it after that day's 14:00Z backup has finished. The drill refuses its own result if the dlist list changes
      mid-restore.
    - Then shred the run directory.
@@ -106,13 +106,13 @@ writes each next block with its expected output. "merge approval granted" covers
 11. **Then:** update the memory hub `project_backup_arc_hub.md`, and move on to the after-Phase-D items: Phase E, O-11,
     D-12, finding 15, and AC-14's Phase E ruling.
 
-### Open questions (the owner's to rule)
+### Open questions (the Overtoad's to rule)
 
 - **Q1. AC-3's count criterion going forward.** The day after the rebaseline, the 23:41Z run examined 2,045,309 files
   (+8.6%). A fixed count with a ±2 % tolerance will keep failing.
   - Recommendation: compare each run with the previous run (for example ±10 % per day), plus the absolute size check.
-- **Q2. The 2026-11-08 23:41:22Z run, which the owner says they didn't start.**
-  - The job log puts it 30 s after the owner's Restore-browser searches (`ListFilesets`, `ListFolder`, `SearchFiles`
+- **Q2. The 2026-11-08 23:41:22Z run, which the Overtoad says they didn't start.**
+  - The job log puts it 30 s after the Overtoad's Restore-browser searches (`ListFilesets`, `ListFolder`, `SearchFiles`
     from 23:35 to 23:40:51).
   - Nothing on the host triggered it: the journal from 17:38 to 17:43 CST shows no unit or timer.
   - Most likely it was an inadvertent **Start** or **Run now** click in the UI. The result was `Success`, 0 warnings.
@@ -131,7 +131,7 @@ writes each next block with its expected output. "merge approval granted" covers
 
 ### Process change: automate the remainder (the first task)
 
-**The problem.** Each step of this sitting cost one owner round-trip per command block. On top of that, about a third
+**The problem.** Each step of this sitting cost one Overtoad round-trip per command block. On top of that, about a third
 of the session's corrections came from hand-written check commands:
 
 - a grep for a log line the wrapper never writes (`via systemd credential`);
@@ -139,7 +139,7 @@ of the session's corrections came from hand-written check commands:
 - a warning classifier that matched path text;
 - a parser that returned 0 entries silently.
 
-**The change.** Move every remaining check into tools with fixed, tested predicates. The owner then runs one command per
+**The change.** Move every remaining check into tools with fixed, tested predicates. The Overtoad then runs one command per
 step and pastes one verdict block.
 
 1. **`util/ad-hoc/yamaguchi_acceptance_probe.py`**, read-only, run as pcalnon. Install it on a daily user timer after
@@ -167,7 +167,7 @@ step and pastes one verdict block.
    the probe.
 3. **Tests.** Add hermetic tests for every predicate in both tools. Start with the four regressions above: the absent log
    line, the time-window edge, tag-based classification, and a BOM or empty stream.
-4. **Rule for future sittings:** no hand-written grep, count or filter in an owner block when a tool can carry it. A new
+4. **Rule for future sittings:** no hand-written grep, count or filter in an Overtoad block when a tool can carry it. A new
    check goes into a tool with a test first.
 
 ### Key context
@@ -183,7 +183,7 @@ step and pastes one verdict block.
   - `util/key_escrow.bash` and `util/secure_copy-to-clipboard.bash` (step 9);
   - `util/ad-hoc/2026-11-09_ac4_restore_drill.py` (AC-4).
 
-  They resolve the owner's home through `getent`/`pwd` (the G5 home-path gate), never as a literal. The drill's
+  They resolve the Overtoad's home through `getent`/`pwd` (the G5 home-path gate), never as a literal. The drill's
   self-test is `tmp/phase-d-sitting/drill_selftest.py` (gitignored), which the probe's test suite should absorb.
 - **Old drill tool, superseded for AC-4:** `util/ad-hoc/duplicati_drill_fresh.py`. It puts the passphrase on argv
   through `duplicati-aescrypt d <pw>`, drills only the newest dlist, passes the deprecated `--no-local-blocks`, and its

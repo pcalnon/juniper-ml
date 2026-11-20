@@ -6,9 +6,9 @@
 
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-15_r-obs-sc-2-cascor-0-14-0-canopy-0-10-0-at-pypi-gates-guard-pr-plan-v1-15-16-next.md` (juniper-ml#2574).
 
-**The record**: plan v1.15.16 (`notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, juniper-ml#2588) records everything up to 2026-11-15 ~06:07Z. This file covers what came after, and what remains. Every state fact below was read from `gh`, PyPI or the disk between 05:41Z and 13:10Z. `[moves]` marks state that an armed merge or the owner changes.
+**The record**: plan v1.15.16 (`notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, juniper-ml#2588) records everything up to 2026-11-15 ~06:07Z. This file covers what came after, and what remains. Every state fact below was read from `gh`, PyPI or the disk between 05:41Z and 13:10Z. `[moves]` marks state that an armed merge or the Overtoad changes.
 
-## Owner rulings this session (verbatim; times from the transcript, `util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py b9dfa450`)
+## Owner rulings this session (verbatim; times from the transcript, `util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py b9dfa450`)
 
 - **Merge approval**: "merge approval granted", with "continue work arc from handoff: …". It is per-session and does not carry over.
 - **Directive** (typed 05:14:10Z): "this needs to be fixed. deploy to pypi should send the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks again."
@@ -25,7 +25,7 @@
 ## Completed this session
 
 - **Published and verified.**
-  - The owner approved canopy 0.10.0's gate (on PyPI from 05:17Z) and cascor 0.14.0's (05:24Z).
+  - The Overtoad approved canopy 0.10.0's gate (on PyPI from 05:17Z) and cascor 0.14.0's (05:24Z).
   - `util/ad-hoc/2026-11-15_verify_cascor_0_14_0_canopy_0_10_0_published.py` at 05:41:45Z: 0 failed checks.
     - canopy: PyPI's files equal TestPyPI's by sha256.
     - cascor: PyPI's files are a second build with every member identical (wheel `b70f3d39…` vs `c5c9a5dc…`).
@@ -43,7 +43,7 @@
 - **juniper-cascor#767** (follow-up; `[moves]`: it was being merged at writing). An independent Opus review of #763 said "merge after fixes", and #767 applies all of them:
   - the build job reuses attempt 1's artifact on a re-run;
   - `id-token: write` moves to the two publish jobs only;
-  - the owner's recovery ladder: a `workflow_dispatch` "republish TestPyPI's files" job that never builds, then "Re-run failed jobs" within 30 days, then a new patch;
+  - the Overtoad's recovery ladder: a `workflow_dispatch` "republish TestPyPI's files" job that never builds, then "Re-run failed jobs" within 30 days, then a new patch;
   - two test gaps closed, and the docs corrected.
 
   Its second commit carries `Allow-Symbol-Loss:` lines, so the squash must keep GitHub's default message (`util/safe_merge.py` does). `update-branch` ran at ~13:03Z, and safe_merge is running: `tmp/cascor-767/safe_merge_767.log` in this worktree.
@@ -54,7 +54,7 @@ Continue the R-OBS-SC-2 follow-ups: port the one-artifact publish fix, then reco
 
 1. **First turn**:
    - Confirm #767 MERGED: `gh pr view 767 --repo pcalnon/juniper-cascor --json state,mergeCommit`. Read the log's `MERGED` line; exit 0 is not proof.
-   - Ask the owner for merge approval, naming the PRs below.
+   - Ask the Overtoad for merge approval, naming the PRs below.
 2. **The ports.** This is dialog 1's "every other". Make one PR per repo, copying the five template steps from cascor `main` after #767, with dialog 2's ladder in each. The audit (18 publishers in 8 repos) is `util/ad-hoc/2026-11-15_publish_workflow_artifact_audit.py`; its last output is `tmp/cascor-publish-artifact/audit_run3.txt` in worktree `agent-a54a0a279acc3a863`.
    - **Shared build plus checks** (both jobs rebuild today): juniper-data (keep `notify-consumers`, `needs: pypi`), juniper-data-client (drop `skip-existing`), juniper-cascor-client, juniper-cascor-worker.
    - **Checks only** (one artifact already): drop `skip-existing` and raise retention from 7 to 90 days.
@@ -65,7 +65,7 @@ Continue the R-OBS-SC-2 follow-ups: port the one-artifact publish fix, then reco
      - keep the job names "Publish to TestPyPI" / "Publish to PyPI" (`util/release_train/ceremony.py:611`), and keep "pypi" out of the republish job's name;
      - give each one an independent review, then green CI, then merge with `util/safe_merge.py`.
 3. **Release-train gaps (juniper-ml)**:
-   - (a) A failed build job now classifies as `HALT_PUBLISH`, which files only a note, instead of `HALT_TESTPYPI`, which files an issue. Add a build-failed halt with a fixture, or get the owner's acceptance.
+   - (a) A failed build job now classifies as `HALT_PUBLISH`, which files only a note, instead of `HALT_TESTPYPI`, which files an issue. Add a build-failed halt with a fixture, or get the Overtoad's acceptance.
    - (b) `ceremony.py:811` reads only release-event runs, so it never sees a successful republish dispatch.
 4. **Plan v1.15.17.** Record:
    - dialog 2;
@@ -74,18 +74,18 @@ Continue the R-OBS-SC-2 follow-ups: port the one-artifact publish fix, then reco
    - the ports;
    - the ceremony gaps;
    - **finding**: juniper-ci-tools 0.9.1 on PyPI (`1dc8e01e…`) differs from TestPyPI (`ade363e8…`), because run 38045867684's attempt 2 re-ran its build;
-   - **unverified**: whether the PyPI trusted publishers are environment-bound (it needs the owner's PyPI login).
+   - **unverified**: whether the PyPI trusted publishers are environment-bound (it needs the Overtoad's PyPI login).
 5. **Land the uncommitted scripts with plan v1.15.17**, after pre-commit and the §9 gate. They are in `.claude/worktrees/agent-a54a0a279acc3a863/`:
    - `util/ad-hoc/2026-11-15_publish_workflow_artifact_audit.py`;
    - `…_cascor_one_artifact_publish_edits.py`, `…_cascor_one_artifact_followup_tree.py` and `…_cascor_one_artifact_live_index_rehearsal.py`;
    - `util/ad-hoc/2026-11-15_cascor_one_artifact_helpers/` (10 files).
 
    Keep its `tmp/cascor-publish-artifact/` (644 MB of evidence) under the retention rule.
-6. **Housekeeping, worktree by worktree, on the owner's word.** The lists in both 11-15 handoffs stand. Add:
+6. **Housekeeping, worktree by worktree, on the Overtoad's word.** The lists in both 11-15 handoffs stand. Add:
    - this worktree: its `tmp/` holds `deploy-pin/`, `plan-pr/`, `v1-15-16/`, `review-a/`, `review-b/`, `review-763/` and `cascor-767/`;
    - `agent-a54a0a279acc3a863`: do not remove it until item 5 lands.
 
-**Still open with the owner**:
+**Still open with the Overtoad**:
 - the juniper-deploy stack's restart;
 - the trio's environment upgrade, then the per-environment probe (ruling 6 of 2026-11-13);
 - juniper-deploy's `juniper-recurrence:0.8.0` pin (0.8.1 is published);
@@ -99,7 +99,7 @@ Continue the R-OBS-SC-2 follow-ups: port the one-artifact publish fix, then reco
 
 - **The isolation guard reads "git" inside words**: a scanner named after git, `.github/` paths, `git -C`, `$(git …)`, and heredocs that hold git commands. Put those arguments in a script or file. The §9 gate runs through `util/ad-hoc/2026-11-15_pre_push_gate_run.bash PAYLOAD_DIR`, with `files/`, `text/`, `added/` and per-part `accept.<part>.txt` files: the scanner refuses an `--accept` that names no current finding.
 - **Transcripts move between `~/.claude/projects/*/` directories**: `1b4fec84`'s moved at ~03:20Z. Find them by session-id prefix glob.
-- **The owner can merge a PR while you are still preparing its follow-up**: #763 merged while its review fixes were in flight. Re-read a PR's state before every push.
+- **The Overtoad can merge a PR while you are still preparing its follow-up**: #763 merged while its review fixes were in flight. Re-read a PR's state before every push.
 - **An isolated agent's worktree is removed once it goes idle with no changes.** A resumed agent then works in YOUR worktree.
 - **Dialog 2 held the session from 06:27Z to 11:47Z.** Ask with background, and only when nothing time-critical is pending.
 
@@ -112,7 +112,7 @@ gh pr view 278 --repo pcalnon/juniper-deploy --json state,mergedAt              
 python3 -I util/ad-hoc/2026-11-15_verify_cascor_0_14_0_canopy_0_10_0_published.py   # 0 failed check(s)
 sha256sum /home/pcalnon/Development/python/Juniper/AGENTS.md                         # 3009c3f4… unless edited since
 python3 -I util/ad-hoc/2026-11-15_r_obs_sc_2_followups_record_reprobe.py             # 221 PASS at 06:07Z; later moves expected
-python3 -I util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py b9dfa450                # two dialogs
+python3 -I util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py b9dfa450                # two dialogs
 ```
 
 ## Git status (2026-11-15 13:04Z)

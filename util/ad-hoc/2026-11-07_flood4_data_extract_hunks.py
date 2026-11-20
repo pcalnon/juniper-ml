@@ -7,8 +7,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (generated with Claude Code)
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 consolidation, juniper-data carriers)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: HANDOFF_2026-11-06_open-pr-sweep-triaged-owner-rulings-consolidation-next.md; flood-4 common brief rule 7
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: HANDOFF_2026-11-06_open-pr-sweep-triaged-Overtoad-rulings-consolidation-next.md; flood-4 common brief rule 7
 
 The brief forbids taking a draft's copy of a shared file wholesale: its base is stale. This writes, per PR,
 `pr<N>_own.diff` (git diff merge-base..head, i.e. only the draft's own changes), `pr<N>_commits.txt`

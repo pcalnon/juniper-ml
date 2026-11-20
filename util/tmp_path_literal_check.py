@@ -13,7 +13,7 @@ Why this exists
 ---------------
 On the Linux host the system temp directory is a tmpfs that ``systemd-tmpfiles-clean`` ages daily: a
 file untouched for ten days is deleted while it is still in use, and a reboot erases the rest. In the
-week to 2026-10-26 that emptied a live E2E stack's pid files and venv three times. The owner's rule
+week to 2026-10-26 that emptied a live E2E stack's pid files and venv three times. The Overtoad's rule
 (2026-10-26): no file is ever written there; each repo writes its temp files to its own gitignored
 ``tmp/``. This gate stops a *new* temp-directory literal from landing while the existing ones are
 rewritten.

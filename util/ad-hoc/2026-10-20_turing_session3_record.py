@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — one-off (the Session 3 record of the turing bring-up)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§17, §18);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-2-e6-d5-d6-h1-done-e2-blocked-on-little-snitch.md
          (the handoff Session 3 continued from); reports/2026-10-20_turing-e2-envs/README.md
@@ -61,7 +61,7 @@ STATUS = {
     "JuniperCanopy1": (
         "# STATUS 2026-10-20: the spec still solves (223 conda packages, 189 MB); the env is NOT yet created. mamba now\n"
         "# reaches conda.anaconda.org, but the pip section runs the new env's python3.14 against pypi.org, which Little\n"
-        "# Snitch holds for an unanswered alert (plan §18.3 E-NET-3). Create it once the owner allows pypi.org and\n"
+        "# Snitch holds for an unanswered alert (plan §18.3 E-NET-3). Create it once the Overtoad allows pypi.org and\n"
         "# files.pythonhosted.org for the env interpreters.\n"
     ),
 }
@@ -77,7 +77,7 @@ Session 3 ran on turing on 2026-10-19/20 (EDT; 2026-10-20 UTC). It continued fro
 ### 18.1 Owner rulings
 
 - **Merging.** Approval is granted for every PR in the session's work arc, merging only after green, as in §16.1. It does not cover the `pypi` deployment gate.
-- No new decision ruling. The E2-first order of §17.1 stood. E2 went first, and the G-arc ran while E2 waited on the owner's Little Snitch approval.
+- No new decision ruling. The E2-first order of §17.1 stood. E2 went first, and the G-arc ran while E2 waited on the Overtoad's Little Snitch approval.
 
 ### 18.2 Task status after Session 3
 
@@ -94,7 +94,7 @@ Session 3 ran on turing on 2026-10-19/20 (EDT; 2026-10-20 UTC). It continued fro
 - **E-SSL (D6's and E2's recipes).** mamba 2.x ignores `CONDA_SSL_VERIFY`. With `~/.condarc`'s `ssl_verify: false`, `CONDA_SSL_VERIFY=true mamba config list ssl_verify --sources` still reports `<false>`; `MAMBA_SSL_VERIFY=true` reports `<system>`.
   - So every `CONDA_SSL_VERIFY=true mamba ...` in this plan's records ran without TLS verification. That covers JuniperHostTools (2026-10-17) and the 2026-10-19 dry runs.
   - The recreate lines in `conf/hosts/turing/hosttools-environment.yml` and the three `conf/hosts/turing/conda-envs/*.yml` now say `MAMBA_SSL_VERIFY=true`. `CONDA_SSL_VERIFY` still governs `conda` itself.
-  - OWNER: owner step 4 (`ssl_verify: true` in `~/.condarc`) removes the trap for both tools. Whether to re-create JuniperHostTools with verification on is the owner's call; its packages were checked against repodata that itself arrived without TLS verification.
+  - OWNER: Overtoad step 4 (`ssl_verify: true` in `~/.condarc`) removes the trap for both tools. Whether to re-create JuniperHostTools with verification on is the Overtoad's call; its packages were checked against repodata that itself arrived without TLS verification.
 - **E-NET-3 (E-NET-2 revisited, 2026-10-20).** Little Snitch's verdicts changed between the sessions.
   - `mamba` now reaches conda.anaconda.org: a `mamba search` refreshed the osx-64 and noarch repodata, and both envs downloaded.
   - Base `python3.13` now fails fast with `SSL: UNEXPECTED_EOF_WHILE_READING` in the handshake. That fits a deny verdict rather than a pending alert, and it no longer blocks E2, which uses mamba for the network.

@@ -16,18 +16,18 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 - **If followed literally:** that branch is absent from A6's table, so the worktree reads as eligible now. Canopy's `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md:177-195` removes the worktree and then runs `branch -d`/`-D`. Those two steps delete the only references to `26bf27b3` and `96e7b105` (ledger item 13) and to `135c2782`, and a later `git gc` can prune them.
 - **Evidence (reflogs):** in canopy's `.git`, `26bf27b3`/`96e7b105` appear only in `logs/refs/heads/fix/idle-cuts-round3-wording:10-12` and that worktree's `logs/HEAD:11-15`. `78c057e2` appears only in `logs/refs/heads/perf/idle-dispatch-cuts-v2:3-4` and that worktree's `logs/HEAD:4-5`.
 - **Evidence (gc):** `git config --get-regexp '^gc'` is empty, so the defaults hold: a reflog keeps an unreachable commit for 30 days, and prune waits 2 weeks. A `gc` run today would not delete them; the cleanup would.
-- **Evidence (the tool itself):** the draft's own tool prints `canopy 135c2782 BRANCH-ONLY … held by refs/heads/fix/idle-cuts-round3-wording`, yet the table omits that branch. A's predecessor's item 8 (`HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md`) already scheduled this exact cleanup.
+- **Evidence (the tool itself):** the draft's own tool prints `canopy 135c2782 BRANCH-ONLY … held by refs/heads/fix/idle-cuts-round3-wording`, yet the table omits that branch. A's predecessor's item 8 (`HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md`) already scheduled this exact cleanup.
 - **Fix (A6 text):** replace the sentence with: "No branch holds them; only reflogs do. `26bf27b3` and `96e7b105` are in the reflogs of canopy `fix/idle-cuts-round3-wording` and its worktree's HEAD; `78c057e2` is in those of `perf/idle-dispatch-cuts-v2`. Removing either worktree or deleting either branch drops that protection, and a later `git gc` can then prune them; a `gc` run while the reflogs exist cannot."
 - **Fix (A6 table):** add the row `| canopy | fix/idle-cuts-round3-wording | reflog-only: 26bf27b3, 96e7b105; head 135c2782 (cited by a handoff) |`, and append "; reflog-only: `78c057e2`" to the `idle-dispatch-cuts-v2` row.
 - **Fix (A9):** change the lead-in to "canopy, eligible once A6 is answered, except where A6's table holds a branch:".
 
 **2. MAJOR: the handoff file and the reachability tool are not reachable from either session the draft prescribes.**
-- **Location:** the Goal statement, "juniper-ml `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md`. Read it in full." Also the Verification line `python3 util/ad-hoc/2026-09-24_ledger_cited_commit_reachability.py`, and Git state, "No PR has been opened."
+- **Location:** the Goal statement, "juniper-ml `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md`. Read it in full." Also the Verification line `python3 util/ad-hoc/2026-09-24_ledger_cited_commit_reachability.py`, and Git state, "No PR has been opened."
 - **If followed literally:**
   - **Lane B** is told to start in `idempotent-jumping-sparkle`, whose HEAD is `5ea8e273`. It will never have the file, even after a merge.
   - **Lane A** is told to use a fresh worktree cut from `main`. It lacks both the file and the tool until a PR merges.
 - **Evidence:** `ls` in `idempotent-jumping-sparkle` reports "cannot access" for the handoff, the reachability tool and `2026-09-24_secret_shape_check.py`. In `bubbly-meandering-pie` all three are `??` (untracked), and `git ls-tree origin/main util/ad-hoc/` has no reachability tool.
-- **Fix:** add to the Goal statement: "If it is not in your checkout, Read `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md`. A Lane B session never has it in its tree." To Verification add: "Before this handoff's PR merges, copy the reachability tool into your own `util/ad-hoc/` first; it runs git in the checkout it sits in."
+- **Fix:** add to the Goal statement: "If it is not in your checkout, Read `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md`. A Lane B session never has it in its tree." To Verification add: "Before this handoff's PR merges, copy the reachability tool into your own `util/ad-hoc/` first; it runs git in the checkout it sits in."
 
 **3. MAJOR: C6 and the Goal statement assert a primary state that was already false when the draft was written.**
 - **Location:** Goal statement, "a primary fast-forward that a live stack blocks"; C6, "fast-forward the canopy, cascor and data primaries once nothing holds them."
@@ -36,7 +36,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
   - canopy reflog: `7ab994e5 HEAD@{2026-09-24 19:39:45 +0000}: pull --tags origin main: Fast-forward`.
   - cascor reflog: `7f4a721 … 19:39:46 +0000`, which is cascor `main` (`7f4a7213`, #688). Canopy's HEAD `7ab994e5` equals canopy `main`.
   - The data primary is `[behind 1]`: `1afc348` against `main` `0f0f7e0e` (#438).
-  - Both pulls came before C's predecessor merged at 19:42:44Z (`HANDOFF_2026-09-24_canopy-selection-cleanup-done-item-19-closed-y7-grounded-owner-calls-remain.md` says "The primaries are not pulled") and before the draft's 20:25–20:45Z window.
+  - Both pulls came before C's predecessor merged at 19:42:44Z (`HANDOFF_2026-09-24_canopy-selection-cleanup-done-item-19-closed-y7-grounded-Overtoad-calls-remain.md` says "The primaries are not pulled") and before the draft's 20:25–20:45Z window.
   - `cascor_freeze_tell.py` still exits 1 with the same five holders, so the pulls happened while the freeze was in force.
 - **Fix (C6):** "canopy and cascor were already fast-forwarded at 19:39:45–46Z (`pull --tags origin main`, actor unknown) while the trio held them. Only data is behind: `1afc348`, one commit short of `0f0f7e0e` (#438). The trio's cascor (pid 2857489) and canopy (pid 2858037) run code loaded before those pulls, over newer files, so treat A4's reads of `:8202` as a mixed-version fixture."
 - **Fix (Goal statement):** "…the data primary's one-commit fast-forward, which a live stack blocks…".
@@ -65,7 +65,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 
 **8. MINOR: "deleted from every clone" is broader than the source.**
 - **Location:** B2, "must be deleted from every clone before a suite runs."
-- **If followed literally:** it covers the owner's juniper-deploy primary and the 2b worktree. `git ls-files` lists `.env.secrets.enc` in both, and the 2b worktree's uncommitted state is the only copy (X5).
+- **If followed literally:** it covers the Overtoad's juniper-deploy primary and the 2b worktree. `git ls-files` lists `.env.secrets.enc` in both, and the 2b worktree's uncommitted state is the only copy (X5).
 - **Evidence:** `R15B.md:5` says "I deleted it from my clones"; the memory note `reference_deploy_tracks_env_secrets_enc.md` says "in a scratch clone".
 - **Fix:** "…deleted from each scratch clone a lane rebuilds, before the full deploy suite runs there. Never from the juniper-deploy primary or the 2b worktree."
 
@@ -77,7 +77,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 **10. MINOR: "the newest selection-arc handoff" is ambiguous.**
 - **Location:** move 5, "Point the addendum at the newest one at open time.", and B4.
 - **Evidence:** this handoff's filename does not contain `canopy-selection`, so the "list the canopy-selection handoffs" step that R15C M1 asks for would miss it. By that listing, #2087's (`c32e5f2a`) is the newest on `main`.
-- **Fix:** "The newest is this combined handoff once its PR merges; until then it is #2087's `…cleanup-done-item-19-closed-y7-grounded-owner-calls-remain.md`. The listing must also match `canopy-combined`."
+- **Fix:** "The newest is this combined handoff once its PR merges; until then it is #2087's `…cleanup-done-item-19-closed-y7-grounded-Overtoad-calls-remain.md`. The listing must also match `canopy-combined`."
 
 **11. MINOR: A2(b) gives the wrong source for O9.**
 - **Location:** "The source is `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md` … lines 188–226".
@@ -123,7 +123,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
    - These match the draft: triage 70/48/1/2/19 (P0 1, P1 6, P2 12); #2083 MERGED at `48fc09e5…`; canopy#684 MERGED at `f2147403…`; "0 failed"; `[]` for the secret-leaks branch; data `v0.16.0` Latest; `exit=1` from the freeze tell; the `ss` pids (2856834/:8101, 2858037/:8051, 2857489/:8202); MEMORY.md at 24,962 characters; both `compare` lists; #184 OPEN at 03:36:08Z.
    - The reachability tool is missing in a main-cut worktree. Run from `bubbly-meandering-pie`, it gave the stated three UNREACHABLE commits.
    - `main` has since moved to `c061a99f` (#2086), which touches no lane path.
-3. Ask the owner questions. **PASS**, but A6's question rests on the wrong mechanism (finding 1).
+3. Ask the Overtoad questions. **PASS**, but A6's question rests on the wrong mechanism (finding 1).
 4. A1, the F-059 fix, in a new canopy worktree at `7ab994e5`. **PASS**: `replay_player_panel.py:530-534` holds the `range_value` readout, and `test_p2_wave_batch_a.py:179-190` claims "The exact shape measured…" while typing `"range": [3, 37]`.
 5. A1's drive on a writable cascor. **STUCK** (finding 6). Phase 10 would also stall at finding 4.
 
@@ -147,7 +147,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 1. Ask about C2, C3 and C4. **PASS**: the Y7 note is in §4.3 of the reachability design (`:220-244`), and #437/#438 are on data `main`.
 2. C1's in-use probe, run verbatim with its brace expansion. **PASS**: all four "free", and the guard did not refuse it.
 3. C1's content probe. **Exists on `main`, not run.** It is absent from Lane B's tree.
-4. C1's owner block. **PASS**: each branch name matches its worktree's `HEAD` ref. `origin/main..<branch>` is empty for jazzy, bright, tender and enumerated, so `branch -D` loses no commit.
+4. C1's Overtoad block. **PASS**: each branch name matches its worktree's `HEAD` ref. `origin/main..<branch>` is empty for jazzy, bright, tender and enumerated, so `branch -D` loses no commit.
 5. C6. **MISLED** (finding 3).
 
 ## Could not check

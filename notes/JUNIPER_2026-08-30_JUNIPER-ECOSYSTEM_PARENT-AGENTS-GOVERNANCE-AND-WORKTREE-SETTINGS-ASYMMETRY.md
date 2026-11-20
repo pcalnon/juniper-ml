@@ -3,7 +3,7 @@
 **Project**: Juniper (ecosystem)
 **Sub-Project**: juniper-ml
 **Author**: Paul Calnon
-**Status**: Analysis — owner decisions required, nothing implemented
+**Status**: Analysis — Overtoad decisions required, nothing implemented
 **Created**: 2026-08-30
 **Arc**: shared-session-memory ([plan](JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md) §5 rows 8 and 9; tracker [ml#1326](https://github.com/pcalnon/juniper-ml/issues/1326))
 
@@ -11,8 +11,8 @@
 
 ## 0. Why this document exists
 
-Plan §5 rows 8 and 9 both read **"Yes, separately"**, and neither had a recorded owner
-decision. On 2026-08-29/30 the owner decided **both** should be addressed. This note
+Plan §5 rows 8 and 9 both read **"Yes, separately"**, and neither had a recorded Overtoad
+decision. On 2026-08-29/30 the Overtoad decided **both** should be addressed. This note
 establishes what each actually is, measured rather than recalled, and states the decisions
 that must be made before either can be implemented.
 
@@ -166,7 +166,7 @@ path). But the direction is clear: **the parent file is ~94% content that exists
 else.** It is not redundant bloat. That weakens the case for cutting it and strengthens the
 case that it is genuinely load-bearing shared context.
 
-### 1.6 Options (owner decision)
+### 1.6 Options (Overtoad decision)
 
 | | Option | Cost | Real remote gate? |
 |---|---|---|---|
@@ -336,7 +336,7 @@ resolves identically in both trees.
 The `.mcp.json` gap is the more consequential finding: it is a capability gap involving API
 tokens, not a permissions-prompt annoyance.
 
-### 2.6 Options (owner decision)
+### 2.6 Options (Overtoad decision)
 
 | | Option | Effect |
 |---|---|---|

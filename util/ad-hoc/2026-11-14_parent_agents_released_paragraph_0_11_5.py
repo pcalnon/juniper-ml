@@ -6,8 +6,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
-Status: ad-hoc — one-off (one edit of the unversioned parent AGENTS.md, approved by the owner on 2026-11-14)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (one edit of the unversioned parent AGENTS.md, approved by the Overtoad on 2026-11-14)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-07_parent_agents_released_paragraph_reprobe.py (the re-probe that licenses the date move;
          run 2026-11-14 23:53Z, exit 0, with --expect for juniper-ml 0.11.5, observability 0.4.2, service-core 0.7.2,
          cascor 0.13.0 and canopy 0.9.0); notes/releases/RELEASE_NOTES_v0.11.5.md; publish run 43408809021
@@ -16,7 +16,7 @@ Why this exists
 ---------------
 The parent ``Juniper/AGENTS.md`` is not in any repository, so an edit to it has no PR, no CI and no history. This
 script is that history: it makes exactly four replacements, each of which must match once (or already be at its
-target), and it refuses to write anything otherwise. The owner approved the edit on 2026-11-14 (R-OBS-SC-2
+target), and it refuses to write anything otherwise. The Overtoad approved the edit on 2026-11-14 (R-OBS-SC-2
 follow-ups, "Parent docs": "Edit it (Recommended)").
 
 1. "re-probed against PyPI on 2026-11-07 UTC" becomes 2026-11-14: every package the paragraph names was re-read;
@@ -81,7 +81,7 @@ EDITS = [
       0.11.5's `[tools]` floors them (next bullet). juniper-data 0.17.1 (under `[api]`),
       juniper-cascor 0.13.0, juniper-canopy 0.9.0 and juniper-recurrence 0.8.1 (its
       observability floor under `[observability]`) floor 0.4.1 and 0.7.1. juniper-cascor's
-      and juniper-canopy's next releases raise theirs (owner rulings of 2026-11-09 and
+      and juniper-canopy's next releases raise theirs (Overtoad rulings of 2026-11-09 and
       2026-11-13).
     - **The meta-package: juniper-ml 0.11.5** (2026-11-14 00:16Z, publish run
       43408809021; Release `v0.11.5`, tag at juniper-ml `48b66130`) is the latest on PyPI.

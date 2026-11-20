@@ -37,7 +37,7 @@
   dtype, and in `[1, L]`, where `L` is the matching `X_*`'s window length. **`X_*` / `y_*` /
   `y_reg_*` must be `float32`** in every partition present, **on the 2-D path too**, so the tabular
   path is no longer "no further checks". The `float32` rule **applies the plan's recommended R2
-  pending the owner's ruling (the alternative is documented dtype tolerance)**. It compares the
+  pending the Overtoad's ruling (the alternative is documented dtype tolerance)**. It compares the
   scalar type, so a big-endian `>f4` array passes, and it deliberately does not reach `dt`, `t`,
   `target_dt`, the masks, `date`, `window_end_date`, `ticker_code` or `ticker_vocab`, which the
   producer emits in their own dtypes. A legacy `X_full` / `y_full` pair is still neither required

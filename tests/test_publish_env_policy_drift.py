@@ -23,7 +23,7 @@ Two invariants matter more than the rest:
    configured while actually being weaker.
 
 **The ``dockerhub`` environment (added 2026-09-23)** is the same control on a different path.
-Wave 4 of the container-registry rollout will push release images to Docker Hub, and the owner
+Wave 4 of the container-registry rollout will push release images to Docker Hub, and the Overtoad
 ruled (2026-09-22, Option B of
 ``notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`` §3) that
 its credential lives in a ``dockerhub`` environment, readable only by a job that names it, and only
@@ -32,7 +32,7 @@ on a release tag. Each environment differs from ``pypi`` in both sets, so each c
 * **Its own repo set**: the five image repos of that procedure's §5.1, not the registry's eight.
   Three registry repos ship no image, and an environment there would be a foothold with no purpose.
 * **Its own tag set**: ``v*`` and ``juniper-*-v*`` only. ``pypi`` also admits ``rc*`` / ``hf*``.
-* **No reviewer is required**, by the same ruling: the Release is already the owner's act, so a
+* **No reviewer is required**, by the same ruling: the Release is already the Overtoad's act, so a
   second manual gate would only delay every image publish. The gate does not assert the absence of
   one either, because adding a reviewer tightens the path rather than loosening it.
 * **The credential must never sit at repository scope**, where every workflow on every ref can read
@@ -81,7 +81,7 @@ REGISTRY_REL = Path("util") / "release_train" / "registry.yaml"
 PUBLISH_ENVS = ("pypi", "testpypi")
 
 # Repos that must NOT carry a publish environment at all.  juniper-deploy's
-# vestigial pair was deleted 2026-08-17 (owner decision D4); an environment
+# vestigial pair was deleted 2026-08-17 (Overtoad decision D4); an environment
 # named `pypi` on a repo that ships no package is a latent foothold, so this
 # doubles as an anti-resurrection guard.
 NON_PUBLISHING_REPOS = ("juniper-deploy",)
@@ -104,11 +104,11 @@ EXPECTED_TAG_PATTERNS = frozenset(
 # operation, which is exactly what the ref policy exists to avoid needing.
 ENVS_REQUIRING_REVIEWERS = ("pypi",)
 
-# The Docker Hub credential environment (Option B, owner ruling 2026-09-22).  Its
+# The Docker Hub credential environment (Option B, Overtoad ruling 2026-09-22).  Its
 # repo set is the five image repos of the registration procedure's §5.1 -- NOT the
 # registry: juniper-ml, juniper-cascor-client and juniper-data-client ship no image.
 # juniper-deploy publishes a test-runner image, and whether that goes to Docker Hub
-# is an open owner question (the procedure's §10), so it is deliberately absent
+# is an open Overtoad question (the procedure's §10), so it is deliberately absent
 # here; adding it is a decision, and this list is where it gets recorded.
 DOCKERHUB_ENV = "dockerhub"
 DOCKERHUB_REPOS = ("juniper-cascor", "juniper-cascor-worker", "juniper-canopy", "juniper-data", "juniper-recurrence")
@@ -304,8 +304,8 @@ class DockerhubContractTest(unittest.TestCase):
         for repo in ("juniper-ml", "juniper-cascor-client", "juniper-data-client"):
             self.assertNotIn(repo, DOCKERHUB_REPOS, f"{repo} ships no container image")
 
-    def test_juniper_deploy_is_absent_until_the_owner_decides(self) -> None:
-        """juniper-deploy-test on Docker Hub is an open owner question (the procedure's §10)."""
+    def test_juniper_deploy_is_absent_until_the_Overtoad_decides(self) -> None:
+        """juniper-deploy-test on Docker Hub is an open Overtoad question (the procedure's §10)."""
         self.assertNotIn("juniper-deploy", DOCKERHUB_REPOS)
 
 
@@ -486,7 +486,7 @@ class LivePublishEnvironmentPolicyTest(unittest.TestCase):
             names = {str(e.get("name")) for e in (doc or {}).get("environments") or []}
             for env_name in PUBLISH_ENVS:
                 if env_name in names:
-                    failures.append(f"{repo}: environment '{env_name}' exists but {repo} publishes no package (owner decision D4 deleted it)")
+                    failures.append(f"{repo}: environment '{env_name}' exists but {repo} publishes no package (Overtoad decision D4 deleted it)")
         self.assertEqual(failures, [], "\n  ".join(failures))
 
 

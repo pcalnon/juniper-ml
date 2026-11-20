@@ -198,11 +198,11 @@ separates them.**
 8. **Owner decision 4 (live 3-D, "both arms")** — a demo arm on `/api/dataset/generate` (demo-gated **by
    design**) and a live arm on `/api/stage_dataset`. The sequence control set **M-DATASET-17..26 is 10
    already-BLOCKED rows** gated on this (`dataset-plotter-seq-controls` ships `display:none`, revealed
-   only for a sequence dataset). **They are gated on the owner's scoping decision as well as on the
+   only for a sequence dataset). **They are gated on the Overtoad's scoping decision as well as on the
    technical precondition — surface it, do not drive around it.** Once decided, loading one sequence
    dataset satisfies the precondition for all ten.
 9. **JR-CAN-PERF-004 plan update.** Its §7 item 3 and its Phase 2 blocker (`:189`) still pose the F-036
-   server-vs-clientside choice as open; the owner chose server-side and canopy#536 shipped it. Record that
+   server-vs-clientside choice as open; the Overtoad chose server-side and canopy#536 shipped it. Record that
    Phase 2 is no longer gated on it. **Its "must not run concurrently with F-036" constraint (`:189`)
    still binds anything touching the candidate-metrics feeder.**
 10. **13 BLOCKED rows are owned by no other item**: M-METRICS-11..16 and -18 and -27 (8 — the replay
@@ -224,9 +224,9 @@ separates them.**
 Rulesets canopy `14249530` / ml `13805432` are `strict_required_status_checks_policy: true` with Admin
 bypass `always`, so a `BEHIND` PR merges as `result=bypass` with checks never re-run on the new head. Six
 canopy + one ml merge already recorded that. **Sequence: `update-branch` → wait for green on the NEW head
-→ merge**, via `python3 util/safe_merge.py --pr N --repo R --owner pcalnon --execute` (exit 0 ≠ merged;
+→ merge**, via `python3 util/safe_merge.py --pr N --repo R --Overtoad pcalnon --execute` (exit 0 ≠ merged;
 look for the `MERGED` line). `wait_for_checks.py` can return immediately after an update-branch if it
-still sees the old head's completed rollup — re-check the head SHA. **Merges need the owner's explicit
+still sees the old head's completed rollup — re-check the head SHA. **Merges need the Overtoad's explicit
 per-PR approval and approval does not carry across sessions; this handoff grants none.** The same applies
 to *closing* a PR and to removing any worktree.
 

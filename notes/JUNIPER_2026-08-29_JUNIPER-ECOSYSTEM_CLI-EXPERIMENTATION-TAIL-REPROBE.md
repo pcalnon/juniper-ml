@@ -7,7 +7,7 @@ re-probed against the tree at `origin/main` = `d1f949e9`.
 **Why**: the handoff itself warns that its own T7 line numbers went stale between drafts
 ("a first pass of this handoff had four of the five crossed, so re-check rather than trusting
 them"). That warning generalises. A tail that is copied forward at every hop accumulates items
-that were closed elsewhere by other owners, and nothing in the chain re-checks them — the
+that were closed elsewhere by other Overtoads, and nothing in the chain re-checks them — the
 handoff records what the *previous* session believed, and belief is not a probe.
 
 **Result**: of 16 tail buckets, **6 are already shipped**, **2 carry a label error**, **7 are
@@ -79,7 +79,7 @@ record — **this section overrides them where they disagree.**
 | **6b — §12.2 item 3** cross-app surface | OPEN | **CLOSED** — juniper-deploy#198 + ml#1489 |
 | **12 — the two ml#1412 callers** | OPEN | **CLOSED** — ml#1488 (T6 driver + import probe); the h2h caller was closed independently by ml#1477 |
 | **4e — G-17** | HALF OPEN | **still half open** — the marker is genuinely absent; note `--strict-markers` is set, so it needs a `markers = [...]` section, not merely a usage |
-| **15 — corpus title artifacts** | measured, unowned | **still open** — 172 entries, 163 of them already visited by a repair pass that left the title broken. The extraction rule is an owner decision |
+| **15 — corpus title artifacts** | measured, unowned | **still open** — 172 entries, 163 of them already visited by a repair pass that left the title broken. The extraction rule is an Overtoad decision |
 
 **Two corrections to this document's own claims.**
 
@@ -222,7 +222,7 @@ Wave 7.6 to see whether the five are done gets a misleading answer.
 The sixth item, "the experiment-config layer", is likely **cascor#486** ("Wave 3.1 — experiment
 YAML config layer, service:-block projection, YAML > env", merged 2026-08-08) — Wave 3.1, not
 7.6. Flagged rather than asserted: the handoff gives no line reference for it, so which artifact
-it means is a genuine ambiguity for the owner to settle.
+it means is a genuine ambiguity for the Overtoad to settle.
 
 ### 3.2 PF-4 / PF-8 are gated, but the note never names them
 
@@ -230,7 +230,7 @@ The tail says PF-4/PF-8 are "gated behind the perf-lane phasing note". The note 
 [`JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md`](JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md) —
 contains **zero `PF-` mentions**. The gating is real but sits one level up: §1 "§12 status:
 development is GATED", and Tier 4 orders the whole lane `F-P1 Design → F-P2 Planning → F-P3
-Verification (owner ratifies thresholds) → F-P4 Documentation → development`.
+Verification (Overtoad ratifies thresholds) → F-P4 Documentation → development`.
 
 **This turns an "awaiting a decision" item into an actionable one.** The note's closing paragraph
 of Tier 4 says:
@@ -240,7 +240,7 @@ of Tier 4 says:
 > without starting the lane proper.
 
 So the entry point is **F-P1 Design, specifying the Q-8 baseline directory** — explicitly
-sanctioned as pull-forward work, no owner ratification needed to start, and no GPU. The tail's
+sanctioned as pull-forward work, no Overtoad ratification needed to start, and no GPU. The tail's
 framing ("need a decision, not a suite") obscured that.
 
 ---
@@ -283,7 +283,7 @@ framing ("need a decision, not a suite") obscured that.
 
   Beware the name collision the handoff flags: the plan's own `R-1` at `:1236` is an unrelated
   Prometheus-scrape risk. The live clause is at
-  `JUNIPER_2026-08-12_…P4-SPIRAL-RESURFACE-EVIDENCE.md:183`, owner column **cascor**.
+  `JUNIPER_2026-08-12_…P4-SPIRAL-RESURFACE-EVIDENCE.md:183`, Overtoad column **cascor**.
 
 - **§12.2 item 3, cross-app comparison surface** — genuinely absent. The experiments dashboard
   has a "Cascor Training" row and a separate "Recurrence" row with **disjoint metric families**
@@ -391,7 +391,7 @@ The 163 are the older v3 tranche.
 ## 6. What this document does not cover
 
 - Anything outside handoff §3. The backup arc, P5 rollout, defect register, canopy E2E arc and
-  service-core round-29 work all have other owners and are out of scope by the handoff's own §6.
+  service-core round-29 work all have other Overtoads and are out of scope by the handoff's own §6.
 - **Whether the 172 titles should be repaired, and by what rule.** This sizes the problem and
   supplies the detector; choosing the extraction rule is a design decision, and the evidence
   above is that choosing it badly is the failure mode.

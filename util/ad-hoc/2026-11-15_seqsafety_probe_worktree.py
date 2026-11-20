@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- investigation (pre-push check for the Python 3.15 informational-leg PRs)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: memory note reference_sequence_safety_local_repro.md, § "run the screens on a PROBE COMMIT before every
          signed push" (ml#2552 -> ml#2554: a carrier passed every local check and failed CI's Sequence Safety);
          util/open_signed_pr.py (which writes the real commit this probe stands in for)

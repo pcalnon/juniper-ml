@@ -73,7 +73,7 @@ Shorthand below: `HANDOFF_2026-09-09_…md` is `prompts/thread-handoff_automated
    - Every commit and date is right: `c3cf3951`, `27d3fc15`, `37123036`, `b26acd62`, `3cab4783` and `7b226ca0`.
    - `3cab4783` introduced the "do NOT raise" paragraph, and it is unchanged since.
    - Pinned budgets were raised 7 times and never lowered.
-   - Each side now has one "against it", and every statement of the owner's ruling limits it to the three raises. MAJOR 2 is the exception.
+   - Each side now has one "against it", and every statement of the Overtoad's ruling limits it to the three raises. MAJOR 2 is the exception.
 3. **Holds.** The sample was the same throughout 20:08:43–20:18:20 UTC. See MINOR 7.
 4. **Holds.** The test's WITHDRAWN note matches both rows' notes in `util/safe_merge.py`, and all 78 tests pass.
 5. **Holds**, re-derived by a different route than round 4:
@@ -93,7 +93,7 @@ Round 5 changes a NUMBER / DISPOSITION / ACTION: yes -- NUMBER (deploy's 700 s h
 - `r5_c2_census.py`
 - `r5_c2_fixtures.py`
 - `r5_c2_heading_fence.py`
-- `r5_owner2_history.py`
+- `r5_Overtoad2_history.py`
 - `r5_ml_window.py`
 - `r5_replay_fidelity.py`
 - `r5_soak_all_in_flight.py`

@@ -1,16 +1,16 @@
-# Handoff: Cursor flood-3 arc, the owner's third continuation. Every call a session could act on is done; what remains is the owner's
+# Handoff: Cursor flood-3 arc, the Overtoad's third continuation. Every call a session could act on is done; what remains is the Overtoad's
 
 **Date**: 2026-10-30 (UTC)
 
-**Arc**: The Cursor flood-3 disposition and its follow-ups. This stretch is the owner's request of 2026-10-30: "continue from handoff: …HANDOFF_2026-10-30_flood3-second-continuation-rows-fixed-owner-calls-open.md", with merge approval for this session's PRs.
+**Arc**: The Cursor flood-3 disposition and its follow-ups. This stretch is the Overtoad's request of 2026-10-30: "continue from handoff: …HANDOFF_2026-10-30_flood3-second-continuation-rows-fixed-Overtoad-calls-open.md", with merge approval for this session's PRs.
 
 **Record**: `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, cited below as `…FLOOD-3-DISPOSITION.md`. This handoff's PR makes the record's tenth update: the header, §4, §6, §7, §8 and §9.
 
-**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_flood3-second-continuation-rows-fixed-owner-calls-open.md`, cited below as `HANDOFF_…owner-calls-open.md`.
+**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_flood3-second-continuation-rows-fixed-Overtoad-calls-open.md`, cited below as `HANDOFF_…Overtoad-calls-open.md`.
 
 **Host**: the Linux host.
 - **This session:**
-  - session `719f66a2` (pid 945136), ListAgents `flood3-second-continuation-rows-fixed-owner-calls-open [a78c34]`;
+  - session `719f66a2` (pid 945136), ListAgents `flood3-second-continuation-rows-fixed-Overtoad-calls-open [a78c34]`;
   - worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/proud-crunching-neumann`.
 - **No other session continues this arc.** The duplicate `2fc3f4e1` (`[901969]`) was stopped at 18:46:09Z.
 - **Commits** go only through GraphQL `createCommitOnBranch`: `util/open_signed_pr.py` and `util/push_signed_commit.py`.
@@ -24,19 +24,19 @@
 
 ## Goal
 
-Nothing is owed unless the owner asks. What remains:
-- the owner's calls (Remaining work, item 1);
+Nothing is owed unless the Overtoad asks. What remains:
+- the Overtoad's calls (Remaining work, item 1);
 - one watch item (item 2);
-- a cleanup inventory that needs an owner signal (item 3).
+- a cleanup inventory that needs an Overtoad signal (item 3).
 
 ## Completed (verified on GitHub, PyPI or the host)
 
-- **The owner's rulings of 2026-10-30**, answered at 18:45Z, after the question dialog had been open since 08:29Z:
+- **The Overtoad's rulings of 2026-10-30**, answered at 18:45Z, after the question dialog had been open since 08:29Z:
   - the duplicate continuation: "Terminate; remove worktrees";
   - the SARIF upload in the other five repositories: "Yes, all five";
   - the two low rows: "Docs + the PASS message";
   - the cleanup inventory: "Yes; keep evidence only".
-- **Both watch items of `HANDOFF_…owner-calls-open.md` were checked.**
+- **Both watch items of `HANDOFF_…Overtoad-calls-open.md` were checked.**
   - The first scheduled cascor nightly after #735 and #736, run 40994888636 (03:00Z, `d042de23`), matched on every lane. Its JUnit reports read: smoke 153, none failed; slow integration 20, with 5 golden skips; long 1 xfail; slow unit 15.
   - pytest-benchmark is still at 5.3.0, so the cap stays.
 - **The duplicate is stopped:** `claude stop 2fc3f4e1`, which `~/.claude/daemon.log` records as settled (killed) at 18:46:09Z. Its five queued messages were never delivered.
@@ -56,7 +56,7 @@ Nothing is owed unless the owner asks. What remains:
 - **The cleanup.** The ledger is `/home/pcalnon/Development/python/Juniper/juniper-ml/tmp/worktree-cleanup-2026-10-30/`: `REMOVED.tsv` (its header holds the gates), `MANIFEST.tsv` and `_work/`.
   - **Removed:** ten worktrees and seven local branches.
     - the duplicate's three `fix/flood3-backlog-3` worktrees;
-    - the six centralized worktrees of `HANDOFF_…owner-calls-open.md` item 5;
+    - the six centralized worktrees of `HANDOFF_…Overtoad-calls-open.md` item 5;
     - `.claude/worktrees/whimsical-leaping-glacier`.
   - **Gates:**
     - holder check: all ten clear, with a positive control that read HELD;
@@ -74,12 +74,12 @@ Nothing is owed unless the owner asks. What remains:
 
 ## Remaining work
 
-1. **Owner calls.** A session acts on none of these without the owner's word, and on 1.7 not even then.
+1. **Owner calls.** A session acts on none of these without the Overtoad's word, and on 1.7 not even then.
    1. **Close register row APD-ML-002.** The close condition is met by evidence:
       - the run's state is `/home/pcalnon/.local/state/juniper-experiments/20261030T084056Z-0ac7` (juniper-ml#2390);
       - the procedure is `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` § "Closing a row", four touches, since the row has no §3 entry;
-      - the recurrence arc's handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_recurrence-equities-trio-stopped-notify-matrix-deploy-0-13-0-test-accuracy-filled.md` (item 3), carries the same close. It says "the five touches"; the register's rule makes it four for a row with no §3 entry, so do not look for one. The owner rules once, and whichever session acts tells the other.
-   2. **`CODECOV_TOKEN` in the Dependabot stores** of juniper-data and juniper-canopy, the only two that upload to Codecov. Only the owner can add it. `python3 -I util/ad-hoc/2026-10-29_codecov_token_secret_census.py` re-reads the stores (GET only); `dependabot=-` means absent.
+      - the recurrence arc's handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_recurrence-equities-trio-stopped-notify-matrix-deploy-0-13-0-test-accuracy-filled.md` (item 3), carries the same close. It says "the five touches"; the register's rule makes it four for a row with no §3 entry, so do not look for one. The Overtoad rules once, and whichever session acts tells the other.
+   2. **`CODECOV_TOKEN` in the Dependabot stores** of juniper-data and juniper-canopy, the only two that upload to Codecov. Only the Overtoad can add it. `python3 -I util/ad-hoc/2026-10-29_codecov_token_secret_census.py` re-reads the stores (GET only); `dependabot=-` means absent.
    3. **The stopped duplicate's own worktree:** `.claude/worktrees/iridescent-sniffing-snail`, HEAD `c77b7be5`, branch `worktree-iridescent-sniffing-snail`. It has been unlocked since about 18:50Z.
       - **Preserve its `tmp/` first**, into `/home/pcalnon/Development/python/Juniper/juniper-ml/tmp/worktree-cleanup-<date>/`.
       - **Route A,** `claude rm 2fc3f4e1`: deletes the session record and the worktree, ignored `tmp/` included.
@@ -88,23 +88,23 @@ Nothing is owed unless the owner asks. What remains:
       - **Route B,** the four gates in `REMOVED.tsv`'s header, then `git worktree remove` and `git branch -d worktree-iridescent-sniffing-snail`. The session record survives.
       - **Done when** `git worktree list` no longer shows it.
    4. **The predecessor's own worktree:** `.claude/worktrees/prancy-whistling-knuth`, HEAD `110d5e40`, branch `worktree-prancy-whistling-knuth`, a 1.1 GB `tmp/` (`session/`, `validate-a/`, `-b/`, `-c/`). Its session has ended, and it is unlocked.
-      - `HANDOFF_…owner-calls-open.md` item 5 kept it while that session lived, and the 2026-10-30 ruling did not name it.
-      - On the owner's signal, preserve its `tmp/` first, then apply the gates. The 2026-10-30 ruling kept evidence only, without regenerable parts; whether that applies here is the owner's call.
-   5. **Three open low items, in two rows of `…FLOOD-3-DISPOSITION.md` §4** (the juniper-data row and the new cascor row). A session may fix them on the owner's word.
+      - `HANDOFF_…Overtoad-calls-open.md` item 5 kept it while that session lived, and the 2026-10-30 ruling did not name it.
+      - On the Overtoad's signal, preserve its `tmp/` first, then apply the gates. The 2026-10-30 ruling kept evidence only, without regenerable parts; whether that applies here is the Overtoad's call.
+   5. **Three open low items, in two rows of `…FLOOD-3-DISPOSITION.md` §4** (the juniper-data row and the new cascor row). A session may fix them on the Overtoad's word.
       - juniper-data's `make coverage` does not run CI's per-file gate (a behaviour change).
       - juniper-data's `.github/workflows/agents-md-touch-up.yml:80` pins `actions/checkout@v7.0.1` by tag. Pinning it also means editing `docs/ci_cd/CICD_REFERENCE.md:256`, which names the exception; the pin table at `:260` already holds the SHA.
       - juniper-cascor's upload comment in `.github/workflows/ci.yml` ("165 of 165 uploads succeeded over 200 runs") and `util/ad-hoc/2026-10-27_bandit_sarif_upload_survey.py`'s docstring rest on the blind step-conclusion measure. The fix is a comment and a docstring, plus, if wanted, a failure count read from the check run's error annotations.
-   6. **Promote claim-backing scripts?** This is carried from `HANDOFF_…owner-calls-open.md`. No list exists: neither ledger marks a script as claim-backing.
+   6. **Promote claim-backing scripts?** This is carried from `HANDOFF_…Overtoad-calls-open.md`. No list exists: neither ledger marks a script as claim-backing.
       - The candidates: 59 scripts under `/home/pcalnon/Development/python/Juniper/juniper-ml/tmp/worktree-cleanup-2026-10-30/` and 3 under `…-2026-10-29/` (`find <ledger> -path '*/_work' -prune -o -type f \( -name '*.py' -o -name '*.bash' -o -name '*.sh' \) -print`).
       - A "yes" means: map each to the record claim it backs, then promote those into their repository's `util/ad-hoc/` by signed PR.
-   7. **Host environments**, the owner's own action; never a session's, even on the owner's word.
+   7. **Host environments**, the Overtoad's own action; never a session's, even on the Overtoad's word.
       - `JuniperCanopy1` holds juniper-observability 0.4.0 and juniper-service-core 0.5.0, below canopy's floors (0.4.1 and 0.7.1). Two local test failures follow.
       - `JuniperCascor1`'s editable install still reports juniper-cascor 0.11.0, so cascor's `test_version_matches_pyproject` fails locally.
 2. **Watch: drop the pytest cap.** The cap is `pip install "pytest<9.2"` in cascor's `performance-smoke` job (`.github/workflows/scheduled-tests.yml:294`).
    - **The trigger:** either a pytest-benchmark release that supports pytest 9.2, or a pytest 9.2.x release that restores what pytest-benchmark reads (`'Function' object has no attribute '_nodeid'`). 5.3.0 and 5.2.3 both error at setup on 9.2.0.
    - **The check:** rerun a one-line test that takes the `benchmark` fixture under the new pair. The 10-29 probe lives in `.claude/worktrees/prancy-whistling-knuth/tmp/session/bench-probe/` until item 1.4 removes that worktree.
-   - **The fix:** a signed PR. Merging needs the owner's approval in that session. Keep plugin file paths out of workflow comments (Key context).
-3. **Cleanup inventory (this pass).** Nothing here is removed; each item needs an owner signal.
+   - **The fix:** a signed PR. Merging needs the Overtoad's approval in that session. Keep plugin file paths out of workflow comments (Key context).
+3. **Cleanup inventory (this pass).** Nothing here is removed; each item needs an Overtoad signal.
    - **The gate for a worktree reset to a squashed PR's head:** HEAD equals the PR's final head (`gh pr view <n> --repo pcalnon/<repo> --json headRefOid`). A squashed head is never an ancestor of `main`, so the `REMOVED.tsv` gate "HEAD an ancestor of `origin/main`" cannot pass for these.
    - **The branches:** delete them with `git branch -d` while the stale `origin/<branch>` ref survives locally. The head branches are already deleted on GitHub, and no prune is configured. After a prune, `-d` refuses, and `-D` needs the same `headRefOid` check first.
    - **This pass's six centralized worktrees**, each reset to its PR's head, clean, with no `tmp/`:
@@ -118,7 +118,7 @@ Nothing is owed unless the owner asks. What remains:
      - **When:** once this session (`719f66a2`, pid 945136) has ended and its lock is gone.
      - **First:** preserve `tmp/session/`. It holds the nightly's JUnit artifacts, the SARIF survey outputs, the cleanup's working listings (already copied into the ledger's `_work/`), the PR bodies, the `safe_merge` logs and scratch probes.
      - **Then** apply the gates. The branch `worktree-proud-crunching-neumann` is at `d6b29bb5`, an ancestor of `main`.
-   - **Keep until the owner says otherwise:**
+   - **Keep until the Overtoad says otherwise:**
      - `/home/pcalnon/Development/python/Juniper/juniper-ml/tmp/release-cascor-0.13.0/`;
      - `…/tmp/worktree-cleanup-2026-10-26/`, `-27/`, `-29/` and `-30/`;
      - `…/tmp/flood3-deleted-branches.tsv`;
@@ -155,7 +155,7 @@ Nothing is owed unless the owner asks. What remains:
 
 ## Verification
 
-Run these first. On any mismatch, stop, re-probe and report to the owner rather than act. An earlier draft of this file shipped an expected output that the host had already falsified.
+Run these first. On any mismatch, stop, re-probe and report to the Overtoad rather than act. An earlier draft of this file shipped an expected output that the host had already falsified.
 
 ```bash
 gh pr view 502 --repo pcalnon/juniper-data --json state,mergeCommit --jq '"\(.state) \(.mergeCommit.oid[0:8])"'               # MERGED 8e710d20
@@ -165,13 +165,13 @@ gh pr view 189 --repo pcalnon/juniper-cascor-client --json state,mergeCommit --j
 gh pr view 220 --repo pcalnon/juniper-cascor-worker --json state,mergeCommit --jq '"\(.state) \(.mergeCommit.oid[0:8])"'      # MERGED cadb168b
 gh pr view 737 --repo pcalnon/juniper-cascor --json state,mergeCommit --jq '"\(.state) \(.mergeCommit.oid[0:8])"'             # MERGED 012d4737
 python3 -I util/ad-hoc/2026-10-29_sarif_upload_continue_on_error_census.py /home/pcalnon/Development/python/Juniper   # six ci.yml rows read ${{ github.event_name != 'pull_request' }}; deploy's security-scan.yml: absent. It runs `git fetch origin` in every primary (remote-tracking refs only)
-python3 -I util/ad-hoc/2026-10-29_codecov_token_secret_census.py                                                       # dependabot=- in all nine rows until the owner acts (item 1.2)
+python3 -I util/ad-hoc/2026-10-29_codecov_token_secret_census.py                                                       # dependabot=- in all nine rows until the Overtoad acts (item 1.2)
 /home/pcalnon/.local/bin/claude agents --json --all | python3 -I -c 'import json,sys; [print(a.get("id"), a.get("state")) for a in json.load(sys.stdin) if a.get("id") == "2fc3f4e1"]'   # "2fc3f4e1 stopped" (no line after `claude rm`)
 git worktree list --porcelain | grep -A3 -E 'iridescent-sniffing-snail$|prancy-whistling-knuth$'   # both listed, with no `locked` line, until items 1.3 and 1.4
 curl -s https://pypi.org/pypi/pytest-benchmark/json | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["info"]["version"])'   # 5.3.0 until item 2 fires
 ```
 
-## Residue: the remaining work of `HANDOFF_…owner-calls-open.md`, item by item
+## Residue: the remaining work of `HANDOFF_…Overtoad-calls-open.md`, item by item
 
 1. **Owner calls:**
    - 1.0, the duplicate: stopped, and its three worktrees removed.
@@ -209,6 +209,6 @@ curl -s https://pypi.org/pypi/pytest-benchmark/json | python3 -I -c 'import json
   - `reference_verification_discipline_hub.md`: a step's API `conclusion` is taken after `continue-on-error`.
 - **Unversioned:** `/home/pcalnon/Development/python/Juniper/juniper-ml/tmp/worktree-cleanup-2026-10-30/`: `MANIFEST.tsv`, `REMOVED.tsv`, `_work/` and the preserved files.
 - **Referenced:**
-  - `HANDOFF_…owner-calls-open.md`;
+  - `HANDOFF_…Overtoad-calls-open.md`;
   - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_recurrence-equities-trio-stopped-notify-matrix-deploy-0-13-0-test-accuracy-filled.md` (juniper-ml#2390);
   - `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`.

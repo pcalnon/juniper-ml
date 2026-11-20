@@ -29,7 +29,7 @@ ledger's Consensus record), `ROUND2_SUMMARY_PLACEHOLDER`, `ROUND3_ITEM_PLACEHOLD
 4. **The handoff**, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_canopy-phase15-items-31-32-done-f069-f028-fixed.md`,
    the SUPERSEDED banner on `HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`, the pointer in
    `HANDOFF_2026-10-03_canopy-consolidated.md` (search `Phase 15 (2026-10-20`) and the P2 row of
-   `HANDOFF_2026-10-03_INDEX_consolidated-development-paths.md`. The owner asked for a handoff that "includes all
+   `HANDOFF_2026-10-03_INDEX_consolidated-development-paths.md`. The Overtoad asked for a handoff that "includes all
    remaining tasks and is verified": weigh it as the document a new session will act on with no other context.
 
 ## The evidence to check against
@@ -82,12 +82,12 @@ ledger's Consensus record), `ROUND2_SUMMARY_PLACEHOLDER`, `ROUND3_ITEM_PLACEHOLD
   pinned by a unit test?
 - **The manual (item 31b).** Does the new Patch Weights sentence match `_resolve_patch_values` and `_parse_float_rows`?
 - **Counts and items.** 80 / 63 / 1 / 2 / 14, 0 P0, 4 P1, 10 P2: run `python3 -B util/ad-hoc/e2e_finding_triage.py`
-  and `--open-only`. Is item 33 correctly scoped as the owner's? Does "Still owed" carry every item Phase 14 listed
+  and `--open-only`. Is item 33 correctly scoped as the Overtoad's? Does "Still owed" carry every item Phase 14 listed
   with the right status? Round 1 says it "changed one action's parameter" (item 27's tree): is that the right call
   under the procedure's stopping rule?
 - **The handoff, as the document a new session acts on.** (a) Is EVERY remaining task of this arc in its
-  "Remaining, in order" list, with what it needs to be done (host, tree, interpreter, owner gate)? Check against the
-  Phase 14 handoff's list, the parent's items and owner batch, the ledger's Still owed (items 0–33), the canopy
+  "Remaining, in order" list, with what it needs to be done (host, tree, interpreter, Overtoad gate)? Check against the
+  Phase 14 handoff's list, the parent's items and Overtoad batch, the ledger's Still owed (items 0–33), the canopy
   release, the cleanup of this session's trees, worktree and local commits, and the memory files. Name anything
   missing. (b) Run every command in its "Verification commands" block from the worktree; does each print what its
   comment says? (c) Is every claim in "Completed", "Traps learned", "Git state" and "Changed by this session" true
@@ -95,12 +95,12 @@ ledger's Consensus record), `ROUND2_SUMMARY_PLACEHOLDER`, `ROUND3_ITEM_PLACEHOLD
   Does the Changed list name every file the session created or modified? (d) Do the SUPERSEDED banner, the parent's
   pointer and the INDEX row agree with the handoff and the ledger?
 - **Secrets and names.** Nothing in the phase, the blockquotes, the handoff or the records prints an environment
-  value, a key or the owner's email.
+  value, a key or the Overtoad's email.
 
 ## Rules
 
 - Do not edit any file under the worktree. Do not start any service.
-- Never print environment values, keys or the owner's email.
+- Never print environment values, keys or the Overtoad's email.
 
 ## Report (your final message, verbatim is what gets archived)
 

@@ -275,7 +275,7 @@ def lazy_register_or_reuse(
     on first call and returns the cached object thereafter. That pattern
     is fragile under tests that reset the module-level sentinel without
     also unregistering from ``REGISTRY``. This helper inverts the
-    ownership: the cache lives **here**, keyed by metric name, so the
+    Overtoadship: the cache lives **here**, keyed by metric name, so the
     consumer's lazy wrapper becomes a single line.
 
     Equivalent to :func:`register_or_reuse` plus a process-wide cache.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pin the one-artifact publish: PyPI takes exactly the files TestPyPI took, and the run checks it by sha256.
 
-The owner's directive of 2026-11-15: "deploy to pypi should send the same artifact that was already sent to testpypi.
+The Overtoad's directive of 2026-11-15: "deploy to pypi should send the same artifact that was already sent to testpypi.
 an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to
 prevent this from slipping through the cracks again." juniper-ml's seven publishers handed both publish jobs one
 artifact, but nothing checked it, and a re-run broke it. juniper-ci-tools 0.9.1's run 38045867684: attempt 1's
@@ -14,7 +14,7 @@ build job records ``SHA256SUMS`` and uploads it with the dist directory as one a
 attempt reuses that artifact instead of building again. Each publish job checks the files against ``SHA256SUMS`` before
 it uploads them. TestPyPI's JSON must list exactly those sha256 after the TestPyPI upload and again before the PyPI one,
 and PyPI's after it. No upload sets ``skip-existing``, and only the jobs that upload hold ``id-token: write``. A
-dispatch from the release tag with ``republish_from_testpypi`` runs the republish job, the first rung of the owner's
+dispatch from the release tag with ``republish_from_testpypi`` runs the republish job, the first rung of the Overtoad's
 recovery ladder (2026-11-15): it copies TestPyPI's files for the version to PyPI and builds nothing.
 
 The static cases pin that wiring in all seven workflows, each job's exact steps and conditions (no ``if:`` beyond the

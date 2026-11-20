@@ -41,22 +41,22 @@ Sibling repos were read at origin/main: canopy 9fbd697a, data-client 9bc8870, de
 **M1. REG:1490-1492** *"'without it' is the default configuration, not an edge"*
 
 - **Why it's wrong:** that is only the code default. In juniper-deploy, `docker-compose.yml:690` supplies the key as `CANOPY_API_KEY_FILE`, which is stripped, and `:696` defaults `JUNIPER_CANOPY_REQUIRE_AUTH` to `true`. The demo (`:791`) and dev (`:882`) services set no key at all.
-- No deploy profile reaches the changed configuration. Only a bare launch with a whitespace-only `CANOPY_API_KEY` env var does. This sentence sizes the change for the owner.
+- No deploy profile reaches the changed configuration. Only a bare launch with a whitespace-only `CANOPY_API_KEY` env var does. This sentence sizes the change for the Overtoad.
 - **Fix:** state both defaults and that scope.
 
 **M2. PR #2032's body was never updated.**
 
 - It still says "the 2026-09-11 ruling", "a key no client can present (every request refused)", and "The one real cost is … a canopy checkout". f062a6f0 corrected all three.
-- The PR has no comments or reviews, so this body is the owner's only surface. That contradicts REG:1473-1474, "surfaced to the owner rather than folded in silently".
+- The PR has no comments or reviews, so this body is the Overtoad's only surface. That contradicts REG:1473-1474, "surfaced to the Overtoad rather than folded in silently".
 - The repo squashes with `COMMIT_MESSAGES`, so main will also get the first commit's "the fetch is lazy, so no startup dependency".
 - **Fix:** rewrite the body with `gh api -X PATCH …/pulls/2032`.
 
-**M3. REG:1379-1383** *"The 2026-09-21 framing … named fail-closed, fail-open and a cached set; only the last reached the owner as such."*
+**M3. REG:1379-1383** *"The 2026-09-21 framing … named fail-closed, fail-open and a cached set; only the last reached the Overtoad as such."*
 
 - **Why it's wrong:** R40:168-171 frames the question at startup ("when juniper-data is unreachable at startup"). In that framing:
   - "Refuse to start" was offered ("refuse to boot if juniper-data can't be reached"), and it *is* the fail-closed option.
   - "Fall back to built-in set" was offered ("The opt-in is always forwarded"), and it is a fail-open variant.
-- All three shapes reached the owner. Only the per-request forms (fail the individual request, or forward the opt-in for every generator) did not.
+- All three shapes reached the Overtoad. Only the per-request forms (fail the individual request, or forward the opt-in for every generator) did not.
 - The sentence also cites R40 by date with no filename.
 - **Fix:** name the file and restate which forms were and were not offered.
 
@@ -81,7 +81,7 @@ Sibling repos were read at origin/main: canopy 9fbd697a, data-client 9bc8870, de
 4. **Wrong warning named (REG:1483-1484):** with `JUNIPER_SKIP_AUTH_POSTURE_CHECK` set, the posture check logs "Auth posture check SKIPPED …" (`auth_posture.py:107-111`), not "running OPEN" (`:124-127`).
 5. **Misattributed quote (REG:1366):** the phrase "A DEFAULT, NEVER AN OVERRIDE" is in the caller (`app.py:539`). The resolver's comment reads "A DEPLOYMENT DEFAULT, NOT AN OVERRIDE" (`manager.py:3941`).
 6. **Branch description (REG:1371-1372):** "no caller stance" is not what the branch tests. It tests key absence (`manager.py:3935`), and `_as_bool_stance` maps `None` and `""` to no stance (`:3884-3891`). An implementer following the gloss would change behaviour for `allow_truncation: null`.
-7. **Startup dependency (REG:1376-1379):** "removes a startup dependency only on the first" does not fit the same sentence's "a failure is tolerated"; a boot-time fetch that may fail is not a dependency. The option the owner chose said "Adds no startup dependency", and the entry does not reconcile the two. Auto-start also already waits for juniper-data to be ready (`app.py:523`).
+7. **Startup dependency (REG:1376-1379):** "removes a startup dependency only on the first" does not fit the same sentence's "a failure is tolerated"; a boot-time fetch that may fail is not a dependency. The option the Overtoad chose said "Adds no startup dependency", and the entry does not reconcile the two. Auto-start also already waits for juniper-data to be ready (`app.py:523`).
 8. **Tense and dates:** "authenticated" and "before the fix" describe a condition that is still live, since #660 is OPEN. REG:253-254 ("lagged it until 2026-09-22") and REG:1613 ("the table gained its row 2026-09-22") will be wrong on main, which gets the row only when #2032 merges; it is still open on 2026-09-23.
 9. **Documents cited without a filename:** "its CHANGELOG" (REG:1498) should be `juniper-service-core/CHANGELOG.md`. "The 2026-09-21 framing" (REG:1381) should name R40.
 10. **Unrecorded residue (REG:1496-1498):** the unwatched service-core copy is recorded in prose only. The register's own `APD-DATA-052` row (REG:1276) says an item with no row is invisible to every count. Also, "One copy stays unwatched" covers only the compare, not the whole class. Canopy has no `FailedAuthThrottle`, and its body limit checks Content-Length only (`src/middleware.py:59-74`), which is the CR-024 shape. The register records neither. I did not check whether the canopy F-CANOPY ledger does.
@@ -98,7 +98,7 @@ Sibling repos were read at origin/main: canopy 9fbd697a, data-client 9bc8870, de
 - **Widening measurement:** 8 tests, 0 failures, 0 skips, reproduced. The correction's caveat that this equality is trivial is accurate. The anchoring requirement is sound: with the probe anchored on data and cascor, a missing canopy fails `test_fork_files_named_by_the_registry_exist`. #660 carries both guards' markers (`src/security.py:69`, `:99`, `:103`).
 - **Filter forms in the ECO-008 row:** data uses `list(dict.fromkeys(…))` (`juniper_data/api/security.py:73`); cascor (`src/api/security.py:40`) and service-core (`security.py:45`) use set comprehensions. Canopy does configure exactly one key (`src/security.py:266`). The posture check's `real_keys` behaves as described.
 - **Truncation defaults:** "errs toward refusing partial data" holds (`juniper_data/core/limits.py:138-139` are both `False`). The comment that a non-truncatable generator would ignore a forwarded opt-in holds: `PartitionParams` does not forbid extra fields.
-- **"True when written, 2026-09-21" (REG:1396):** holds. REG:123-124 still says `APD-DATA-019` needs an owner decision, but its row (REG:788) says RULED 2026-09-09. That stale sentence predates this PR and is out of scope.
+- **"True when written, 2026-09-21" (REG:1396):** holds. REG:123-124 still says `APD-DATA-019` needs an Overtoad decision, but its row (REG:788) says RULED 2026-09-09. That stale sentence predates this PR and is out of scope.
 - **Filing dates:** `APD-ECO-008` was filed 2026-09-22 (ml#2005) and `APD-ML-002`…`006` the same day (ml#2026).
 - **Constraint (4)'s "minutes":** defensible, since a retried GET can take 4 × 30 s plus backoff. The lock also blocks `cancel_swap`, which strengthens the constraint.
 

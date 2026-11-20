@@ -200,7 +200,7 @@ suppression, the `nn_model` backend mirror, and flipping `recurrence.status` `co
 
 ---
 
-## 4. Cross-cutting — shared dependencies & ownership
+## 4. Cross-cutting — shared dependencies & Overtoadship
 
 - **WS-5 and WS-6 are independent of each other.** WS-5 (step 5) sits ahead of WS-6 (step 6, Wave E,
   sequenced last). Neither blocks the other.
@@ -213,7 +213,7 @@ suppression, the `nn_model` backend mirror, and flipping `recurrence.status` `co
   whether `juniper-recurrence-client` is on the WS-5 critical path at all.
 - **Recurrence deploy service (Phase 0):** the Dockerfile is **already done** (recurrence #21,
   `76ad27a`); the parent plan assigns the compose service to **WS-7**, and the A1-enabler notes it "may
-  land from the concurrent WS-7/OUT-4 effort." So the live action is **not** a fresh ownership
+  land from the concurrent WS-7/OUT-4 effort." So the live action is **not** a fresh Overtoadship
   assignment but **verification** (DR-4): confirm the concurrent WS-7 session ships it *with* the
   canopy-required `juniper_recurrence_api_keys` secret + outbound `X-API-Key` wiring, and detect a
   stall / incomplete hand-off.

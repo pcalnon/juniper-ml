@@ -27,7 +27,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier, round 2 of its build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-09_flood4r2_ml-tests_mutation_check.py (the runner this spec feeds)
 """
 
@@ -83,7 +83,7 @@ ADDED = [
         "old": "claude_agent_guard_gpgsign_off claude_agent_guard_sign_edges\n",
         "new": "claude_agent_guard_gpgsign_off\n",
         "names": ["test_the_suites_are_the_host_tooling_set_and_exist"],
-        "why": "the owner's ruling of 2026-11-12: a guard suite dropped from HOST_TOOLING_SUITES (the list pin)",
+        "why": "the Overtoad's ruling of 2026-11-12: a guard suite dropped from HOST_TOOLING_SUITES (the list pin)",
     },
     {
         "pr": 0,
@@ -92,7 +92,7 @@ ADDED = [
         "old": "claude_agent_guard_gpgsign_off claude_agent_guard_sign_edges\n",
         "new": "claude_agent_guard_gpgsign_off\n",
         "names": ["test_every_agent_guard_suite_on_disk_is_listed"],
-        "why": "the owner's ruling of 2026-11-12: a guard suite dropped from HOST_TOOLING_SUITES (the on-disk comparison)",
+        "why": "the Overtoad's ruling of 2026-11-12: a guard suite dropped from HOST_TOOLING_SUITES (the on-disk comparison)",
     },
     {
         "pr": 0,

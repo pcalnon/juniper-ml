@@ -69,7 +69,7 @@ The technical substance of `PRIMER.md` Appendix E is correct. But the correction
 - Redis and Postgres ran in-process with fake clients (`redis` and `psycopg2` are absent from the env; no server).
 - Only the `spiral` generator was exercised, with auth off, on the JuniperData env's FastAPI, Starlette and uvicorn versions. No container image, proxy or shared-cache behaviour was tested.
 - The `equities` wall-clock regeneration and the delete → re-create → different-bytes path were checked from source only.
-- The 2026-09-23 owner ruling is corroborated by the #428 PR body, the CHANGELOG, `http_cache.py`'s docstring and the new register row, not by a primary record.
+- The 2026-09-23 Overtoad ruling is corroborated by the #428 PR body, the CHANGELOG, `http_cache.py`'s docstring and the new register row, not by a primary record.
 - Whether #428 actually ships in 0.16.0 depends on a Release that hasn't been cut.
 - The unmarked-passage sweep was regex-driven, so a claim phrased differently could have been missed.
 - `REGISTER.md` changed mid-validation; I checked both the pre-edit (140 Primer fields) and post-edit (148) snapshots.

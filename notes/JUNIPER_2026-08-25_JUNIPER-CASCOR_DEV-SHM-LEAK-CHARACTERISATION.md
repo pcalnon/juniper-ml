@@ -339,7 +339,7 @@ so the re-raise unwinds the interpreter); deliberately not part of the fix.
 
 The fix (cascor#589, merge `67d7ea3`) is live: the primary checkout was advanced to `67d7ea3`
 before the T6 re-baseline launched at 02:51 CDT 2026-08-26, so the campaign pinned it, and the
-running services carried it. The T6 owner reported the campaign completing clean — 23/23 cells,
+running services carried it. The T6 Overtoad reported the campaign completing clean — 23/23 cells,
 rc=0, **zero** net `/dev/shm` `juniper_train_*` / `sem.mp-*` objects across 23 inter-cell
 teardown SIGTERMs — and characterised that as a live confirmation of the fix under real training
 load.

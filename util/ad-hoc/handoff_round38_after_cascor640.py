@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-09
 Status: ad-hoc — one-off (companion to util/ad-hoc/register_close_cascor640.py; refuses until #640 is MERGED)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor#640; util/ad-hoc/register_close_cascor640.py
 
 An archived handoff is normally left alone. This one is edited because it was archived while its

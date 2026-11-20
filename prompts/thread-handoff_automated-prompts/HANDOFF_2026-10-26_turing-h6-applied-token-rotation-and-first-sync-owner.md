@@ -1,9 +1,9 @@
-# Handoff — turing bring-up: H6 applied (VS Code's Serena and markitdown removed, Hugging Face token-less, autostart and the gallery off); the token's rotation and the first sync are the owner's
+# Handoff — turing bring-up: H6 applied (VS Code's Serena and markitdown removed, Hugging Face token-less, autostart and the gallery off); the token's rotation and the first sync are the Overtoad's
 
-- **Continued (2026-10-27, plan v1.4.10).** "cached-enchanting-cosmos-84" ran H3, which passed (juniper-ml#2374), once the owner had installed C8. The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-27_turing-h3-passed-c8-installed-owner-steps.md`, which carries this file's owner steps forward.
+- **Continued (2026-10-27, plan v1.4.10).** "cached-enchanting-cosmos-84" ran H3, which passed (juniper-ml#2374), once the Overtoad had installed C8. The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-27_turing-h3-passed-c8-installed-Overtoad-steps.md`, which carries this file's Overtoad steps forward.
 
-- **From:** the 2026-10-26 session on turing named "c9-landed-h6-audited-owner-decides" (bd4cfc; worktree `.claude/worktrees/clever-finding-lemon`).
-  - The owner pointed it at `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md` and resumed H6.
+- **From:** the 2026-10-26 session on turing named "c9-landed-h6-audited-Overtoad-decides" (bd4cfc; worktree `.claude/worktrees/clever-finding-lemon`).
+  - The Overtoad pointed it at `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-Overtoad-decides.md` and resumed H6.
   - That file had been superseded twice, so the session continued from the arc's main handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`.
   - "cached-enchanting-cosmos-84" (760fde) continued from it too, and took H3 by cross-session agreement.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.9.
@@ -11,7 +11,7 @@
   - §18.2 holds the H6 row, now applied.
   - §18.3 holds erratum E-H6-APPLY.
 - **This file is the arc's main handoff.** It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`, which now points here. H3's session agreed to take v1.4.10 for its record and re-anchor on v1.4.9.
-- **Standing approval:** the owner granted merge approval for the work arc on 2026-10-26, merging only after green. It does not cover the `pypi` deployment gate.
+- **Standing approval:** the Overtoad granted merge approval for the work arc on 2026-10-26, merging only after green. It does not cover the `pypi` deployment gate.
 
 ## Done this session
 
@@ -20,11 +20,11 @@
 | juniper-ml#2368 | `fb5598b2` | **H6, applied on turing** by `util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py`, at 2026-10-27T00:32:24Z (19:32 local, 2026-10-26). Also the record: plan v1.4.9 by `util/ad-hoc/2026-10-26_turing_h6_applied_record.py`, the previous handoff's pointer, and this file |
 | the follow-up PR | — | `util/ad-hoc/2026-10-26_turing_h6_apply_evidence.py`: the read-only evidence behind E-H6-APPLY. It replaces three probes the session first wrote to its scratchpad, against the script-placement rule. Also E-H6-APPLY's pointer to it (the record script's edit 7) |
 
-## The owner's tasks, item by item
+## The Overtoad's tasks, item by item
 
-1. **The scope first.** It stood as ruled on 2026-10-25: every synced host. The change reaches them through Settings Sync once VS Code runs on turing (owner step 2).
+1. **The scope first.** It stood as ruled on 2026-10-25: every synced host. The change reaches them through Settings Sync once VS Code runs on turing (Overtoad step 2).
 2. **VS Code's unpinned Serena entry: removed** before E-H4-WHEEL's wheel build. uv's cache holds only the cryptography 50.0.0 sdist directory, no wheel, and Rust is still 1.71.
-3. **The Hugging Face token: out of `mcp.json`.** The entry runs token-less, the H6 audit's recommended form (§8.4); the owner named none. **Rotating it is the owner's** (owner step 1).
+3. **The Hugging Face token: out of `mcp.json`.** The entry runs token-less, the H6 audit's recommended form (§8.4); the Overtoad named none. **Rotating it is the Overtoad's** (Overtoad step 1).
 4. **markitdown removed; Context7 kept, unchanged;** `"chat.mcp.autostart": "never"`; `"chat.mcp.gallery.enabled": false`; **the 20 unreferenced inputs deleted.** Only `context7_api_key` remains.
 5. **H4's usage report** was already off on `main`: juniper-ml#2335 (`1e4db700`). `util/mcp_setup.bash:206` writes `"env": {"SERENA_USAGE_REPORTING": "false"}`, the exact string Serena compares against (E-H6-VALUE).
 
@@ -58,7 +58,7 @@
 
   So **E-H4-WHEEL no longer waits on H6**, provided the first sync keeps turing's version.
 - **K13 is still open.** `chat.tools.terminal.autoApprove` still holds `"/.*/"`, `"xargs"` and the fragment keys. Context7 and Hugging Face are kept, and the H6 audit says to use them only after K13 (H6-X2). With autostart at `never`, neither starts unless asked.
-- **The guard.** C8 is installed: per "cached-enchanting-cosmos-84", the owner ran it on 2026-10-26 at about 22:30Z, and that session records it. It denies `gh pr create` and `gh api -X`, so land through `util/open_signed_pr.py`. The repo's guard is 1.2.0.
+- **The guard.** C8 is installed: per "cached-enchanting-cosmos-84", the Overtoad ran it on 2026-10-26 at about 22:30Z, and that session records it. It denies `gh pr create` and `gh api -X`, so land through `util/open_signed_pr.py`. The repo's guard is 1.2.0.
 - **H5, option B** is intact: `python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py --offline` exited 0.
 
 ## Owner steps
@@ -77,17 +77,17 @@
    - B.4, a standing Little Snitch rule for the Cellar `node`;
    - B.5, `git remote remove origin` in each H5 tree, from a separate terminal;
    - C0's `tmutil addexclusion ~/.claude/mcp-servers`;
-   - E-H4-WHEEL, whose route is the owner's choice; it is now free of H6;
+   - E-H4-WHEEL, whose route is the Overtoad's choice; it is now free of H6;
    - A1; `~/.condarc` `ssl_verify: true`; the JuniperPython `PYTHONPATH` unset; F2/A6; F3 node mode; C1 and C3;
    - the signing order: no YubiKey into turing until C8 is installed with K12, and K13 is done.
 
 ## Agent next
 
-1. **After the owner's first sync:** re-run `--check` on turing; it should still hold 8 of 8. Run it on another synced host if a session runs there.
+1. **After the Overtoad's first sync:** re-run `--check` on turing; it should still hold 8 of 8. Run it on another synced host if a session runs there.
 2. **H3** belongs to "cached-enchanting-cosmos-84". Its record takes plan v1.4.10.
 3. **After E-H4-WHEEL:** H4's live check, `timeout 30 claude mcp list`.
 4. **After B.5:** re-run `python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py`, and record B.4 and B.5 in the next plan revision.
-5. **F7** (AGENT, P2), if the owner wants it before F4. Its design notes are in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`.
+5. **F7** (AGENT, P2), if the Overtoad wants it before F4. Its design notes are in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`.
 6. **Before numbering the next plan revision,** check for an open turing plan PR: `gh pr list --repo pcalnon/juniper-ml --state open --search "turing in:title"`.
 
 ## Verify the starting state
@@ -118,7 +118,7 @@ python3 -I util/claude_agent_guard.py --version                                 
   - `util/ad-hoc/2026-10-25_turing_h6_vscode_mcp_inventory.py`;
   - `notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` (K13);
   - `util/mcp_setup.bash` (H4's opt-out);
-  - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md`;
+  - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-Overtoad-decides.md`;
   - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-h4-usage-off-c2-block-all-gate-h6-deferred.md`.
 - **Worktree:** `.claude/worktrees/clever-finding-lemon`. Nothing was committed locally; everything landed through the API (`util/open_signed_pr.py`).
 - **Host changes:** the two VS Code files and the quarantine directory above, nothing else.

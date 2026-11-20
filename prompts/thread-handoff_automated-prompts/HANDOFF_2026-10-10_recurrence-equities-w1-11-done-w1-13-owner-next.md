@@ -1,4 +1,4 @@
-# Thread Handoff — Recurrence × Equities: W1.11 done (juniper-data 0.17.0 deployed); W1.13 is the owner's next
+# Thread Handoff — Recurrence × Equities: W1.11 done (juniper-data 0.17.0 deployed); W1.13 is the Overtoad's next
 
 - **Date**: 2026-10-10
 - **Session**: "equities recurrence" (juniper-ml worktree `.claude/worktrees/synchronous-splashing-bird`)
@@ -9,11 +9,11 @@
 
 ## Handoff goal
 
-Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.5.2). **W1.11 is done, and P1's code is complete.** Everything left for M1 waits on the owner:
+Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.5.2). **W1.11 is done, and P1's code is complete.** Everything left for M1 waits on the Overtoad:
 
 - W1.13's four publications, then the recurrence and canopy pins and a re-run of the smoke;
 - W1.14 acceptance;
-- the owner rulings.
+- the Overtoad rulings.
 
 The 2c snapshots-dir reconciliation waits on canopy Lane B.
 
@@ -53,7 +53,7 @@ The 2c snapshots-dir reconciliation waits on canopy Lane B.
 
 ### Remaining work (in order)
 
-1. **W1.13 release train (owner).**
+1. **W1.13 release train (Overtoad).**
    - Order: data-client 0.6.0 → model 0.4.0 → recurrence 0.6.0 → canopy 0.9.0. PyPI on 2026-10-10 serves 0.5.0 / 0.3.0 / 0.5.0 / 0.8.1. The preconditions are met.
    - **Before recurrence 0.6.0**, raise its `[bench]` / `[bench-equities]` cap of `juniper-data<0.17.0` (`juniper-recurrence/pyproject.toml:97,106`).
    - Then move the recurrence and canopy Compose pins, and re-run `bash scripts/test_canopy_recurrence_smoke.sh --published` in juniper-deploy.

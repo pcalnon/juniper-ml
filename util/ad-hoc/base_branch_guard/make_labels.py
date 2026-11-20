@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-20
 Status:      ad-hoc -- migration (one-off)
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: the base-branch guard rollout is complete.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: the base-branch guard rollout is complete.
 Related:     ml#434; util/ad-hoc/base_branch_guard/rollout.py
 
 `pr-base-branch-guard.yml` advertises a `stacked-pr` label as its escape hatch, and an
@@ -59,13 +59,13 @@ def gh(args: list[str], inp: str | None = None):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
     rc = 0
     for repo in REPOS:
-        p = gh(["api", f"repos/{args.owner}/{repo}/labels/{NAME}"])
+        p = gh(["api", f"repos/{args.Overtoad}/{repo}/labels/{NAME}"])
         if p.returncode == 0:
             print(f"{repo:<24} exists")
             continue
@@ -73,7 +73,7 @@ def main() -> int:
             print(f"{repo:<24} [dry-run] would create {NAME!r}")
             continue
         p = gh(
-            ["api", f"repos/{args.owner}/{repo}/labels", "-X", "POST", "--input", "-"],
+            ["api", f"repos/{args.Overtoad}/{repo}/labels", "-X", "POST", "--input", "-"],
             inp=json.dumps({"name": NAME, "color": COLOR, "description": DESC}),
         )
         if p.returncode != 0:

@@ -5,7 +5,7 @@
 
 ## Goal (paste this as the new thread's first prompt)
 
-Continue defect-register round 42 for the Juniper ecosystem. The register is `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`; the API primer is `notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md`. The owner's policy: the PR sweeper is theirs and its merges are intended. Validate a pushed branch before opening its PR when a validated merge matters; otherwise validate after merge and fix forward. Merge approval is granted for this arc's PRs. Checks must pass, and other sessions' PRs are not covered.
+Continue defect-register round 42 for the Juniper ecosystem. The register is `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`; the API primer is `notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md`. The Overtoad's policy: the PR sweeper is theirs and its merges are intended. Validate a pushed branch before opening its PR when a validated merge matters; otherwise validate after merge and fix forward. Merge approval is granted for this arc's PRs. Checks must pass, and other sessions' PRs are not covered.
 
 **Completed:**
 - **juniper-ml#2088 MERGED at 23:41:16Z as `5af9d722`.** It is the second register and primer fix-forward, from `ml2080-round1-laneA-reprobe.md` / `-laneB-refute.md`. Its commits were `e2f87aae`, `990ef3f9` and `2439d049`, plus the update-branch merge `1f116c38`.
@@ -17,10 +17,10 @@ Continue defect-register round 42 for the Juniper ecosystem. The register is `no
   - `n_samples` is bounded to 1..1,000,000. The toy's own suite pins `true`, `null`, a fraction, a surrogate echo and a 15,000-deep cursor.
   - At the head: harness 62/62; `util/ad-hoc/2026-09-24_primer_toy_pin_mutation_check.py` 12/12 caught; `util/ad-hoc/2026-09-24_primer_toy_error_paths_probe.py` 27/27 (25 differ on `main`); register tools 136 rows | 100 fixed | 36 open, AGREE.
 - **juniper-data#438 merged at 18:52Z, before its fix-in-place landed.** The killed executor's uncommitted work was rescued and finished as signed branch `fix/conditional-requests-round4-followups` @ `d1c66a11` (parent `0f0f7e0e` = #438's merge). No PR yet.
-  - It answers every finding in `data438-round1-lane{A-reprobe,B-refute}.md`. F8 (#437's breaking marker) is left to the owner; L5 and L7 are disclosed rather than fixed.
+  - It answers every finding in `data438-round1-lane{A-reprobe,B-refute}.md`. F8 (#437's breaking marker) is left to the Overtoad; L5 and L7 are disclosed rather than fixed.
   - Its own validation (next item) found M2(b) and L2 only partly fixed.
   - Its verification: unit 1901, coverage 97.76%, api+integration 118, harness "PASS: 70 mutations", equivalence 3,495,583 inputs / 0 mismatches.
-- **The "Key leaks" ruling is extracted verbatim** to `reports/2026-09-24_defect-register-round-42/owner-ruling-key-leaks-verbatim.md`: asked 10:22:00.792Z, answered 18:30:09.820Z, "Fix everywhere now (Recommended)". The extractor is `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py --topic key-leaks`. **Both files are uncommitted in this worktree: ship them in the next juniper-ml PR.**
+- **The "Key leaks" ruling is extracted verbatim** to `reports/2026-09-24_defect-register-round-42/Overtoad-ruling-key-leaks-verbatim.md`: asked 10:22:00.792Z, answered 18:30:09.820Z, "Fix everywhere now (Recommended)". The extractor is `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py --topic key-leaks`. **Both files are uncommitted in this worktree: ship them in the next juniper-ml PR.**
 - **The canopy items are handed off.** F-CANOPY-060, -061 and -062 are reserved by the canopy E2E session (the truncation sentence; LOW 3; LOW 4). A fourth item (canopy's two stale copies of #687's "Nothing was loaded…" sentence) sits in canopy combined's handoff with no id yet (Appendix A).
 - **Resolved since the predecessor:**
   - v0.16.0 published to PyPI at 18:35Z;
@@ -91,7 +91,7 @@ gh pr list --repo pcalnon/juniper-data --state open; gh pr list --repo pcalnon/j
 
 ## Git status
 - **Branch:** `worktree-fizzy-hugging-dream`, with three unsigned LOCAL scratch commits (`4c7c5b3e`, `1bfff3cd`, `ee0b9382`) that exist only so the CI screens could run. **Never push them.** Their content is #2088's.
-- **Uncommitted:** `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (M) and `reports/2026-09-24_defect-register-round-42/owner-ruling-key-leaks-verbatim.md` (??). Both are for the next PR.
+- **Uncommitted:** `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (M) and `reports/2026-09-24_defect-register-round-42/Overtoad-ruling-key-leaks-verbatim.md` (??). Both are for the next PR.
 - **juniper-data worktree:** `/home/pcalnon/Development/python/Juniper/worktrees/juniper-data--fix--conditional-requests-round3-followups--20260924-0323--39d1cab2` holds the branch at `d1c66a11`.
 
 ## Appendix A: the closes PR
@@ -118,7 +118,7 @@ gh pr list --repo pcalnon/juniper-data --state open; gh pr list --repo pcalnon/j
   - Fix: in `src/tests/conftest.py`, after line 37, set `SENTRY_SDK_DSN`, `JUNIPER_CASCOR_SENTRY_DSN` and `SENTRY_DSN` to `""`. Set them empty rather than deleting them: `load_dotenv` does not override an existing value.
   - cascor#689's `include_local_variables=False` removes the locals, not the events.
 
-**Quote** the "Key leaks" ruling from `owner-ruling-key-leaks-verbatim.md`.
+**Quote** the "Key leaks" ruling from `Overtoad-ruling-key-leaks-verbatim.md`.
 
 **Residue** to record:
 - #688's 422 is resolved with 400s by #690, which also fixes `_as_bool_stance`.
@@ -128,7 +128,7 @@ gh pr list --repo pcalnon/juniper-data --state open; gh pr list --repo pcalnon/j
 - F-CANOPY-060/061/062 and the fourth canopy item (061 and 062 are fixed by canopy#685).
 - canopy#685's own residue:
   - frame locals until the observability release;
-  - upstream text still passes through on errors that carry a status (the owner's call);
+  - upstream text still passes through on errors that carry a status (the Overtoad's call);
   - a blank `*_API_KEY_FILE` now sends no key;
   - spaces and tabs inside a key are refused;
   - the anonymous rate-limiter 500 is reachable only with `rate_limit_enabled`.
@@ -137,7 +137,7 @@ gh pr list --repo pcalnon/juniper-data --state open; gh pr list --repo pcalnon/j
 
 ## Appendix B: the later arc items (defined in `HANDOFF_2026-09-15_defect-register-round-39-thirty-rulings-taken-eight-implemented-and-the-arc-sequenced.md` §0)
 
-All are ruled, and none is started. They need the owner's go-ahead on sequencing.
+All are ruled, and none is started. They need the Overtoad's go-ahead on sequencing.
 
 **juniper-data:**
 - D-B (caching) is done by data#428, #438 and the fix-forward.
@@ -145,7 +145,7 @@ All are ruled, and none is started. They need the owner's go-ahead on sequencing
 - D-D, lists and pagination: `APD-DATA-026/-027/-028/-008`.
 - D-E, idempotency: `APD-ECO-001`, after D-F.
 - D-F, storage pushdown: `APD-DATA-019`. It collides with data#428 on `storage/base.py`, so rebuild it on post-#438 code.
-- D-G: `APD-DATA-048/-049/-051`, plus `APD-DATA-047`, the 1e11 ceiling, which is an owner decision.
+- D-G: `APD-DATA-048/-049/-051`, plus `APD-DATA-047`, the 1e11 ceiling, which is an Overtoad decision.
 - D-B…D-D share `routes/datasets.py`; sequence them.
 
 **The clients:**
@@ -190,7 +190,7 @@ NIT:
 - The PR body's counts: 16 of the 17 base failures are their own defect, and `[0.16.0]` is 261 lines.
 
 Out of scope:
-- F8 (the owner's ruling);
+- F8 (the Overtoad's ruling);
 - L7 (a known issue);
 - data428 round-3 A1 F2-F4;
 - `juniper_data/api/security.py`, which the peer lane owns.
@@ -202,5 +202,5 @@ Out of scope:
 - **Remaining 3 (closes PR):** Appendix A.
 - **Remaining 4 (canopy nit):** done (F-CANOPY-060).
 - **Remaining 5 (untracked reports):** done by #2084.
-- **Remaining 6 (owner decisions):** #2081 and v0.16.0 are resolved; the rest carry forward as Remaining 7.
+- **Remaining 6 (Overtoad decisions):** #2081 and v0.16.0 are resolved; the rest carry forward as Remaining 7.
 - **In flight 3 (peer):** its PRs are ml#2086, canopy#685, data#440, cascor#689 and cascor#688/#690; its own handoff carries its lane.

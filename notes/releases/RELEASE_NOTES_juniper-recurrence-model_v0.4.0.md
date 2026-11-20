@@ -46,7 +46,7 @@
   `y_reg_*`. The juniper-recurrence app passes no `target`, so under `"reg"` it refused all five —
   `POST /v1/train` → 422 `invalid dataset: regression target 'y_reg_train' missing`, reproduced
   through `bench/app_e2e.py`. The default is therefore R8's alternative, `"auto"`, pending the
-  owner's re-ruling. It lives in one constant, `juniper_recurrence_model.data.DEFAULT_TARGET`;
+  Overtoad's re-ruling. It lives in one constant, `juniper_recurrence_model.data.DEFAULT_TARGET`;
   moving to `"reg"` is that line plus the pin test `test_the_default_is_auto_pending_ruling_r8`,
   once the app passes `target` or the producer emits `y_reg_*`. The bench pins `"auto"` either way.
 - **An unknown `split` is refused up front.** `sequence_data_from_arrays` (and so

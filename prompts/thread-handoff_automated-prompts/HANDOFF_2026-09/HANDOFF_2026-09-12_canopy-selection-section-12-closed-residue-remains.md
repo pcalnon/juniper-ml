@@ -27,7 +27,7 @@ This document is still this arc's live handoff — nothing after 2026-09-12 supe
 | 4 | Y1 / Y2 | **Y1 CLOSED** (canopy#633; `recurrence_backend.py:408`). **Y2 OPEN**, and four *more* methods are missing — see **N1**. |
 | 5 | ∥ packaging | **OPEN, mechanism corrected.** `yfinance` is absent from `juniper-data/requirements.lock` because the lock is compiled `--extra api --extra observability --extra mnist` (its header line 2) and `yfinance` lives in the `equities` extra (`juniper-data/pyproject.toml:51`). Not a forgotten pin — a lock-scope decision. |
 | 6 | §4.3 residue | **CORRECTED 2026-09-21 — half of this is already done, and my first pass repeated the predecessor's error.** The accessibility half is **SHIPPED**: `dashboard_manager.py:1418` renders the gate notice as `html.Div(id="dataset-gate-notice", role="status", **{"aria-live": "polite"})`, and `:1413-1417` records why that mechanism and not `aria-describedby` — Y7 measured zero aria-* attributes, dash 4.2.0's dropdown emits no `aria-disabled`, so a greyed option's gate is invisible to assistive technology and a detached toast would have been worse than rendering inline. **"`aria-describedby` 0 occurrences" is a true count and a false conclusion**; I verified the number without checking the claim, which is `reference_partial_read_generalisation` committed inside a document warning about it. What remains of item 6 is the D5 label only — see item 7, which is the same knot. |
-| 7 | Record OQ-6 answered | **OPEN — and items 6 and 7 are ONE item.** `dashboard_manager.py:2909` asserts the snap is "(dataset-primary conflict policy, D5)". D5 does not say that. `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md:55` defines D5 as *"Conflict rule is a swappable policy… The default policy (dataset-primary vs model-primary) is **chosen after the A1 spike / first real use**"*, and `:305` files that choice as **OQ-6**. So the code cites D5 for a decision D5 explicitly defers, the implementation has since made that choice in fact (dataset-primary), and both design records still say it is open. Ratifying dataset-primary is an owner call; recording that the implementation already took it is not. Either way the code's citation should point at OQ-6's resolution rather than at D5. |
+| 7 | Record OQ-6 answered | **OPEN — and items 6 and 7 are ONE item.** `dashboard_manager.py:2909` asserts the snap is "(dataset-primary conflict policy, D5)". D5 does not say that. `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md:55` defines D5 as *"Conflict rule is a swappable policy… The default policy (dataset-primary vs model-primary) is **chosen after the A1 spike / first real use**"*, and `:305` files that choice as **OQ-6**. So the code cites D5 for a decision D5 explicitly defers, the implementation has since made that choice in fact (dataset-primary), and both design records still say it is open. Ratifying dataset-primary is an Overtoad call; recording that the implementation already took it is not. Either way the code's citation should point at OQ-6's resolution rather than at D5. |
 | 8 | `arc_agi` is a DECISION | **CLOSED.** §12.9 of the design doc adjudicated VR-1…VR-8 (juniper-ml#1923); canopy#623 → **canopy#625** shipped it. The registry expresses a single rank; a rank-flipping knob is withheld, not described. |
 | 9 | "the signed-commit helper has FOUR copies" | **MISSTATED — do not action as written.** A canonical helper *is* already promoted: `util/open_signed_pr.py:117` `create_signed_commit`, with a hermetic test at `tests/test_open_signed_pr.py`. All four ad-hoc files **reuse** it (`import open_signed_pr as osp`, or an `importlib` path-load) rather than duplicating it, and one self-declares as a promotion candidate. The fourth path is `util/ad-hoc/push_signed_commit.py`, **not** `util/push_signed_commit.py`. What remains is consolidating four thin *drivers* — a much smaller job than "promote one, retire three". |
 | 10 | canopy timing flakes | **CORRECTED 2026-09-21 — NOT superseded; I was wrong.** I recorded this as displaced by N0's scheduled-lane defect. They are two independent defects that surfaced together. The flake is real: `test_x7_loop_responsiveness` failed twice in one afternoon on GitHub runners — 0.757s (#643, Python 3.12) and 0.935s (#648, Python 3.13), the second on a **comment-only** diff to `model_registry.py` that cannot affect HTTP latency. Fixed in **canopy#649**. |
@@ -113,7 +113,7 @@ This document is still this arc's live handoff — nothing after 2026-09-12 supe
   What survives: with juniper-data down the operator gets **no warning**, and the failure surfaces
   later at create as a 501 rather than at selection. That is the stated trade-off. §12 raised its
   cost by seeding three availability-gated datasets, which is a reason to **revisit the trade-off**
-  — an owner decision, like N3 — not a defect to fix. Carried by the 09-07 and 09-08 handoffs and
+  — an Overtoad decision, like N3 — not a defect to fix. Carried by the 09-07 and 09-08 handoffs and
   dropped from the 09-12 list without closure; that part of the finding was correct.
 - **N6 — canopy#625 shipped the render half, not the forward half.** `dataset_schema.py:134-136`
   states the contract as "neither render **nor forward**". Only rendering is filtered
@@ -155,13 +155,13 @@ N0 was done first only because it was cheap and already proven — not because i
 | **N6** | **MERGED — canopy#644.** Verified on merged `main`. Confirmed a **live** defect, not merely an untested claim: the mutation check shows a fabricated/stale `flatten: False` control genuinely overrides the seed and stages mnist rank-3. Needed an `Allow-Symbol-Loss:` trailer — the test split is a same-file rename, which the sequence-safety screen reads as deletion, correctly. |
 | **N8** | **PR open — canopy#647.** The floor admitted `juniper-data-client>=0.4.1` while decision 11's contract shipped in 0.5.0; the lock already sat at 0.5.0, so the gap was between what the lock tests and what published metadata lets a consumer install. Verified from the published wheel. Also retires a comment in `demo_mode.py` whose justification ("absent from the pinned / published client (0.4.x)") is now false in both halves — canopy#559's first half. |
 | **N4 / N9** | **PR open — canopy#648.** Both are stale claims the registry makes about juniper-data, not functional defects. The equities evidence was measured at generator `3.0.0`; it is now `5.0.0` and the default matrix is **15 columns, not 16**. The `task_type` vocabulary has been three values since juniper-data#402 added `structured`. |
-| **11** | **CLOSED as asked — juniper-data#409.** The equities-defaults question is filed upstream with the defaults read from source today (`fundamentals_fill="nan"`, `normalize_features=False`, `regression_target="next_close"`, the last non-stationary by its own field description) and the two consumer measurements cited to their origin rather than re-measured. Awaiting an owner ruling; no change proposed, because a silent default change is the class that produced the 4.0.0 → 5.0.0 bump. |
+| **11** | **CLOSED as asked — juniper-data#409.** The equities-defaults question is filed upstream with the defaults read from source today (`fundamentals_fill="nan"`, `normalize_features=False`, `regression_target="next_close"`, the last non-stationary by its own field description) and the two consumer measurements cited to their origin rather than re-measured. Awaiting an Overtoad ruling; no change proposed, because a silent default change is the class that produced the 4.0.0 → 5.0.0 bump. |
 | **N3** | Diagnosis corrected above. Not started — its fix needs a rendering rule for an open vocabulary, which is a UI judgement rather than a mechanical repair. |
 | **N7** | Deliberately not built. canopy's CI does not install the juniper-data service package, so a registry-vs-upstream drift test would either skip in CI — vacuous exactly where it is needed — or require a new install in that lane. A design question, not a comment fix. |
 
 Still unstarted: **N2** (needs the real stack — a different kind of work from the rest), **N5**,
 **N10**, and original items 1, 2, 3, 5, 9, plus the single remaining half of 6/7.
-**N5 and N3 are owner decisions rather than unstarted work** — see their entries above.
+**N5 and N3 are Overtoad decisions rather than unstarted work** — see their entries above.
 **Item 10 was NOT superseded**: the X7 timing flake is real and independent of N0, proved by
 two failures in one afternoon on two Python legs, the second on a comment-only diff. Fixed in
 **canopy#649**, which also machine-checks that the deadline can never be raised past the
@@ -203,7 +203,7 @@ not extend here. juniper-ml worktree `velvety-pondering-frost` on
 
 ## Goal statement
 
-Continue the juniper-canopy selection-reachability arc. **§12 — the generator gap, the owner's
+Continue the juniper-canopy selection-reachability arc. **§12 — the generator gap, the Overtoad's
 stated primary goal — is closed.** Eight of §12.1's ten generators are seeded; the two that are
 not each have a settled reason, and one of those is a **design decision, not effort**. What
 remains is the arc's residue: hydration, the `⊥`-at-mount contradiction, backend-identity
@@ -239,7 +239,7 @@ under `util/ad-hoc/`), and **ml#1893** (the memory-index compaction helpers).
    `dashboard_manager.py:8679` `_init_params_from_backend_handler` is the natural host and
    hydrates hyperparameters and the spiral/element knobs from `/api/state` — but **not the
    dataset axis**. G7 has no test. **N10: hydration lands before `⊥`-at-mount.**
-2. **`⊥`-at-mount (OQ-N2)** — owner-accepted, still undeliverable as specified. Do not
+2. **`⊥`-at-mount (OQ-N2)** — Overtoad-accepted, still undeliverable as specified. Do not
    re-litigate: the `params-init-interval` snap, the seed line at `dashboard_manager.py`
    `value=DEFAULT_DATASET_TYPE`, and the prospective two-writer problem are unchanged.
 3. **X10 / X11** — `recurrence_backend.py:392` `initialize()` returns `True` unconditionally, so a
@@ -376,5 +376,5 @@ run look like 28.
 - **MEMORY.md was compacted** (23.8KB/162 lines → ~20KB/94 lines after a peer session folded it
   further). Verified lossless against a snapshot with
   `util/ad-hoc/2026-09-11_memory_index_verify_lossless.py`; 33 topic files carry an "Index digest".
-- **Merge approval** was granted by the owner for this arc's PRs. It does **not** extend to a new
+- **Merge approval** was granted by the Overtoad for this arc's PRs. It does **not** extend to a new
   arc, and never extended to deploys or PyPI gates.

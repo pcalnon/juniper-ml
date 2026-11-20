@@ -1,7 +1,7 @@
-# Handoff — Cursor flood-3 arc: the owner's three open items closed (0.11.2 erratum, cleanup, §4 backlog); APD-ML-002's cascor half landed
+# Handoff — Cursor flood-3 arc: the Overtoad's three open items closed (0.11.2 erratum, cleanup, §4 backlog); APD-ML-002's cascor half landed
 
 **Date**: 2026-10-27 (UTC)
-**Arc**: the Cursor flood-3 disposition (2026-10-08) and its follow-ups. This stretch is the owner's request of 2026-10-26: "let's address the three open items now".
+**Arc**: the Cursor flood-3 disposition (2026-10-08) and its follow-ups. This stretch is the Overtoad's request of 2026-10-26: "let's address the three open items now".
 **Record of the arc**: `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, written `…FLOOD-3-DISPOSITION.md` below. §4 lists the defects, §6 the traps, §7 the tools, §8 the open items and §9 the files. The PR that lands this file makes its seventh update.
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_flood3-followups-servers-extras-fixed-juniper-ml-0-11-3-at-pypi-gate.md` (ml#2352), written `HANDOFF_2026-10-26_…gate.md` below. § Residue closes or carries each of its six items.
 **Host**: the Linux host, session worktree `.claude/worktrees/enchanted-sniffing-popcorn`. Commits go only through GraphQL `createCommitOnBranch` (`util/open_signed_pr.py`, `util/push_signed_commit.py`); a local `git commit` hangs on the YubiKey.
@@ -10,7 +10,7 @@
 
 ## Goal
 
-Nothing is owed unless the owner asks. The arc's own work is done; what remains is the owner's (Remaining work). The owner's request, verbatim: "let's address the three open items now". Their rulings (2026-10-26):
+Nothing is owed unless the Overtoad asks. The arc's own work is done; what remains is the Overtoad's (Remaining work). The Overtoad's request, verbatim: "let's address the three open items now". Their rulings (2026-10-26):
 - merges: "Yes, all of them";
 - erratum: "0.11.2 + 0.11.3";
 - remote branches: "Delete flood-3's only";
@@ -25,17 +25,17 @@ Nothing is owed unless the owner asks. The arc's own work is done; what remains 
 - **The fork-drift guard.** juniper-ml#2365 (`4db48592`) files `APD-ECO-015` (found already fixed) and adds the `ast`-scoped `throttle-check-never-inserts` guard.
 - **APD-ML-002, cascor half.** juniper-ml#2369 (option A, `--reaggregate`, a non-finite value fails a band) and juniper-cascor#731 (`752a797f`: cascor's final evaluation computes `accuracy`, using the network's own `_accuracy`).
 
-## Remaining work (the owner's)
+## Remaining work (the Overtoad's)
 
 1. **A juniper-cascor release** to ship juniper-cascor#731. Until one ships, `test_accuracy` has no source. The release train's traps are in memory `reference_release_train_ceremony_traps_2026-09-09.md`.
-2. **ml#2064**: carry the labelled final block into `stats.json`, so `test_*` columns, including `test_accuracy` when the block reads `test`, can be emitted (the owner's "test later", option C). It follows juniper-ml#2369.
+2. **ml#2064**: carry the labelled final block into `stats.json`, so `test_*` columns, including `test_accuracy` when the block reads `test`, can be emitted (the Overtoad's "test later", option C). It follows juniper-ml#2369.
 3. **The open §4 rows** of `…FLOOD-3-DISPOSITION.md`, all found on 2026-10-26 except where noted:
    - juniper-cascor: `src/tests/test_memory_budget_check.py`'s 40 tests never run in CI (open).
    - juniper-data: `docs/REFERENCE.md`'s workflow table lists 10 of the 14 workflows (open, low).
    - juniper-ml: `docs/REFERENCE.md` § Canopy E2E Topology Driver's stale #1672 subsection and Yahoo line (open, low).
    - juniper-ml: `tests/test_replay_redrive_stack_refusal.py` fails 13 tests locally under the repo-`tmp/` convention; CI passes (open, low).
    - Two unverified leads, not rows: juniper-data's `ci.yml` reads `secrets.CODECOV_TOKEN`, which is not a repository secret; juniper-cascor's `Bandit` upload step may fail while `Bandit` is required.
-4. **Cleanup of this pass** (an owner signal is needed; see the inventory).
+4. **Cleanup of this pass** (an Overtoad signal is needed; see the inventory).
 
 ## Cleanup inventory (this pass)
 
@@ -46,12 +46,12 @@ Nothing is owed unless the owner asks. The arc's own work is done; what remains 
   - `juniper-canopy--fix--flood3-backlog--20261026-1709--da08414f`, `juniper-deploy--fix--flood3-backlog--20261026-1709--0d9c71f6`, `juniper-recurrence--fix--flood3-backlog--20261026-1709--23a8691f`.
 - **Lane worktrees** `.claude/worktrees/agent-a8c2032598839af1f`, `agent-ada970590dd993c97`, `agent-ac7214da19240fe4d` (branches `worktree-agent-<id>`). Their only unique files were the six `util/ad-hoc/2026-10-26_flood3_*` instruments, which this file's PR commits.
 - **This session's worktree** `.claude/worktrees/enchanted-sniffing-popcorn` is locked while the session lives. Afterwards: `git worktree unlock` if still locked, `git worktree remove --force`, then `git branch -d worktree-enchanted-sniffing-popcorn` (its head `2a69b817` is on `main`). Its modified record copy is old: never upload it.
-- **Keep until the owner says otherwise:** `juniper-ml/tmp/worktree-cleanup-2026-10-26/` and `juniper-ml/tmp/flood3-deleted-branches.tsv`.
+- **Keep until the Overtoad says otherwise:** `juniper-ml/tmp/worktree-cleanup-2026-10-26/` and `juniper-ml/tmp/flood3-deleted-branches.tsv`.
 - Inspect before forcing: use `util/ad-hoc/2026-10-26_worktree_blob_classify.py` where `cd` is refused (`…FLOOD-3-DISPOSITION.md` §6).
 
 ## Key context and traps
 
-- **Merge approval** is per session: the owner's 2026-10-26 grant covered this pass's PRs only (memory `feedback_headless_merge_approval_policy.md`). Never approve a `pypi` gate from a session.
+- **Merge approval** is per session: the Overtoad's 2026-10-26 grant covered this pass's PRs only (memory `feedback_headless_merge_approval_policy.md`). Never approve a `pypi` gate from a session.
 - **Making a swallowed failure loud can redden a test leg** that passed only because of it: the base64 fix and juniper-data's macOS leg (§6; memory `reference_making_a_silent_failure_loud_breaks_tests_that_relied_on_it.md`).
 - **`safe_merge.py`** ended twice without merging (a GraphQL "Something went wrong"; canopy's CI outlasting 3000 s). Read its `MERGED` line; a re-run fixed both.
 - **`JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`** from a centralized worktree checks the lagging primaries.
@@ -76,12 +76,12 @@ python3 -I util/ad-hoc/2026-10-27_flood3_record_seventh_update.py notes/JUNIPER_
 
 ## Residue: the six items of `HANDOFF_2026-10-26_…gate.md`
 
-1. **The 0.11.3 `pypi` gate**: closed. The owner approved it; 0.11.3 has been on PyPI since 2026-10-26 17:48Z.
+1. **The 0.11.3 `pypi` gate**: closed. The Overtoad approved it; 0.11.3 has been on PyPI since 2026-10-26 17:48Z.
 2. **After it publishes**: closed by juniper-ml#2358 (the record's sixth update; the differential wheel check against the published wheel).
 3. **The backlog**: closed by this pass, except the rows found while closing it (Remaining work, item 3) and `test_accuracy` (items 1-2).
 4. **Cleanup**: closed by this pass; this pass's own inventory replaces it.
 5. **The erratum**: closed (juniper-ml#2362, #2363, the Release bodies).
-6. **Not this arc's** (the recurrence arc's owner items): unchanged; that arc recorded 0.11.3 in its plans by juniper-ml#2359.
+6. **Not this arc's** (the recurrence arc's Overtoad items): unchanged; that arc recorded 0.11.3 in its plans by juniper-ml#2359.
 
 ## Documents created or modified
 

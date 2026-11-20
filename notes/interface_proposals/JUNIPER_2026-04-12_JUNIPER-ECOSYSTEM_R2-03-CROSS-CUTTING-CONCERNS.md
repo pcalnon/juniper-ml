@@ -13,7 +13,7 @@
 
 The five Round 1 proposals all do what they are supposed to do: they pick a scoping posture (minimum-viable, safety-first, maximalist, operational runbook, reconciliation) and produce a coherent plan through that lens. But every one of them treats the ten concerns in this document as "things each phase does on its own time," and that treatment has a real cost:
 
-1. **Phase owners each re-derive the same decisions in isolation**. A Phase B author decides what polling-toggle metric name to emit. A Phase C author decides what hot/cold latency histogram name to emit. Without a cross-cutting contract, the two names diverge and the dashboard becomes a forensic exercise.
+1. **Phase Overtoads each re-derive the same decisions in isolation**. A Phase B author decides what polling-toggle metric name to emit. A Phase C author decides what hot/cold latency histogram name to emit. Without a cross-cutting contract, the two names diverge and the dashboard becomes a forensic exercise.
 
 2. **Wire-format additions and changes are not reviewed as a coordinated rollout**. Round 1 proposals mostly agree that `seq`, `server_instance_id`, and `command_id` are additive, but no single R1 lays out the schema-versioning policy that prevents a future non-additive change from sneaking in.
 
@@ -653,7 +653,7 @@ Runbooks, PR descriptions, changelog entries, threat-model acknowledgements, arc
 | **PR template check is bypassed** — maintainer force-merges | Low | CODEOWNERS prevents auto-merge without review |
 | **Changelog omission** — PR merged with no entry | Low | CI hard-fail on missing entry |
 | **Post-mortem never written** — incident contained, team moves on | Medium | Post-mortem is a required outcome of any page-severity alert fire |
-| **CODEOWNERS gap** — a file changes without review from the owner | Medium | GitHub branch protection rule + required reviewer |
+| **CODEOWNERS gap** — a file changes without review from the Overtoad | Medium | GitHub branch protection rule + required reviewer |
 | **Threat-model ack is performative** — box-checking without thought | Low | Security lead review cadence |
 | **Source doc patch omitted** in Round 5 | Medium | Round 5 checklist from R1-05 §6.4 item 5 |
 
@@ -1020,7 +1020,7 @@ Cross-cutting concerns: which component owns which hop, how the histogram is agg
    - **Phase B canopy commit 11** adds Grafana "WebSocket health" panel committed as JSON to the repo.
    - **Phase B post-staging** the SLOs transition from "aspirations" to binding after ≥1 week of data.
 
-3. **GAP-WS-24a vs 24b** (R1-05 §4.8): clean ownership split. 24a is the browser side (JS emitter + POST); 24b is the canopy backend side (endpoint + Prometheus histogram). Both ship in the same Phase B PR wave.
+3. **GAP-WS-24a vs 24b** (R1-05 §4.8): clean Overtoadship split. 24a is the browser side (JS emitter + POST); 24b is the canopy backend side (endpoint + Prometheus histogram). Both ship in the same Phase B PR wave.
 
 4. **Clock offset recomputation** (R1-03 §16.5 step 5): on every reconnect, the browser's JS captures `server_start_time - client_now` and uses the delta as a correction factor. Without this, laptop-sleep wakeups skew the histogram. Tested via `test_latency_histogram_resilient_to_laptop_sleep`.
 
@@ -1175,11 +1175,11 @@ These are risks that **emerge from the cross-cutting nature of the work**, not f
 
 **Mitigation**: CCC-01 rename mandate; Round 3 lead enforces pre-review grep check for `request_id`. R1-05 §8.6 item 1 is the explicit mandate.
 
-### 14.12 CCC-Risk-12: Cross-cutting concerns themselves have no owner
+### 14.12 CCC-Risk-12: Cross-cutting concerns themselves have no Overtoad
 
-**Scenario**: Each phase owner focuses on their phase. Nobody owns CCC-02 (observability) end-to-end, so metrics drift and the metric catalog goes stale.
+**Scenario**: Each phase Overtoad focuses on their phase. Nobody owns CCC-02 (observability) end-to-end, so metrics drift and the metric catalog goes stale.
 
-**Mitigation**: Round 3 consolidation nominates owner-classes per CCC. R2-03 §13 matrix rows implicitly identify ownership; R2-03 §14.12 makes it explicit: observability owner is the canopy-backend lead; schema evolution owner is the backend-cascor lead; kill switch owner is the security lead; documentation owner is the project lead.
+**Mitigation**: Round 3 consolidation nominates Overtoad-classes per CCC. R2-03 §13 matrix rows implicitly identify Overtoadship; R2-03 §14.12 makes it explicit: observability Overtoad is the canopy-backend lead; schema evolution Overtoad is the backend-cascor lead; kill switch Overtoad is the security lead; documentation Overtoad is the project lead.
 
 ---
 
@@ -1191,7 +1191,7 @@ This section lists places where R2-03 takes a position that differs from one or 
 
 **R1 position**: each R1 treats cross-cutting concerns as phase-scoped. R1-02 comes closest to treating observability and kill switches as first-class, but still organizes the material by phase. R1-03 has a consolidated observability plan in §16 and cross-repo in §17, but most other CCCs are embedded in phase sections.
 
-**R2-03 position**: all ten CCCs are first-class deliverables with their own owners, acceptance criteria, and risks.
+**R2-03 position**: all ten CCCs are first-class deliverables with their own Overtoads, acceptance criteria, and risks.
 
 **Justification**: phase-scoped treatment creates drift. A setting added in Phase B but not in the config reference is invisible until Phase C operator tries to use it. A metric added in Phase 0-cascor but not in the panel is a silent gap. Treating each concern as a spanning deliverable gives it a single source of truth and a single review gate.
 
@@ -1295,7 +1295,7 @@ This section lists places where R2-03 takes a position that differs from one or 
 
 **Issue 13**: §13 matrix — Phase G row for CCC-01 was originally "–" (not applicable). But Phase G introduces the `test_command_id_echoed_on_command_response` and `test_cascor_rejects_unknown_param_with_extra_forbid` tests, which are CCC-01 regression guards. Corrected to "✓".
 
-**Issue 14**: §14 initially had 10 CCC-Risks. Added §14.11 (rename incompleteness) as an explicit cross-round risk that only R1-05 §8.6 item 1 flagged. Added §14.12 (CCC ownership gap) as a meta-risk about this document's own purpose.
+**Issue 14**: §14 initially had 10 CCC-Risks. Added §14.11 (rename incompleteness) as an explicit cross-round risk that only R1-05 §8.6 item 1 flagged. Added §14.12 (CCC Overtoadship gap) as a meta-risk about this document's own purpose.
 
 **Issue 15**: §15 initially had 6 disagreements. On re-read, found two more (R2-03 §15.7 cross-version CI lane, R2-03 §15.8 deprecation policy patch) that are R2-03 contributions not present in any R1. Added.
 
@@ -1350,8 +1350,8 @@ All issues 1-20 were corrected in the body of the document before the final self
 
 ### 16.6 Outstanding items for Round 3
 
-- **Ownership allocation**: CCC-02 observability owner, CCC-03 kill switch owner, CCC-04 cross-repo coordinator role. R2-03 §14.12 flags this; Round 3 should nominate names.
-- **CCC-05 contract test fake harness bootstrap**: who writes the `FakeCascorServerHarness` first — it's a prerequisite for canopy Phase B tests and lives in `juniper-cascor-client/testing/server_harness.py`. Round 3 should assign Phase A or Phase 0-cascor ownership.
+- **Ownership allocation**: CCC-02 observability Overtoad, CCC-03 kill switch Overtoad, CCC-04 cross-repo coordinator role. R2-03 §14.12 flags this; Round 3 should nominate names.
+- **CCC-05 contract test fake harness bootstrap**: who writes the `FakeCascorServerHarness` first — it's a prerequisite for canopy Phase B tests and lives in `juniper-cascor-client/testing/server_harness.py`. Round 3 should assign Phase A or Phase 0-cascor Overtoadship.
 - **CCC-07 compose / Helm guardrail**: R2-03 §9.3 item 10 proposes a CI guardrail that refuses weakening flags in prod configs. Implementation details (GitHub Actions? pre-commit? yaml-lint?) are Round 3 decisions.
 - **CCC-09 flag flip PR template**: R2-03 §11.3 item 6 says "flag flip is a separate PR." A PR template for flag-flip PRs should enforce the "reference the criteria" field.
 - **CCC-10 SLO promotion PR timing**: R2-03 §12.5 item 8 says "after ≥1 week of production data." The exact trigger (automated detection? manual?) is a Round 3 decision.
@@ -1376,7 +1376,7 @@ Target: 1200-2000 lines. Final count estimated at ~1700-1800 lines including thi
 
 ### 16.10 Final posture
 
-R2-03 treats cross-cutting concerns as first-class deliverables rather than per-phase afterthoughts. Every CCC has an owner, acceptance criteria, phase touchpoints, and a risk profile. The phase × CCC matrix in §13 is the single index that Round 3 consumers can walk to see what each phase must deliver for each concern.
+R2-03 treats cross-cutting concerns as first-class deliverables rather than per-phase afterthoughts. Every CCC has an Overtoad, acceptance criteria, phase touchpoints, and a risk profile. The phase × CCC matrix in §13 is the single index that Round 3 consumers can walk to see what each phase must deliver for each concern.
 
 The most impactful findings:
 

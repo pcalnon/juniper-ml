@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — one-off (flood-4 round-2 ml-code carrier build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: BRIEF_COMMON_R2 rule 12 (non-vacuous tests; a code fix must be shown to fix);
          reference_mutation_check_stale_pyc_and_piped_exit.md (stale __pycache__, piped exit codes).
 
@@ -25,7 +25,7 @@ the exit status is read from the process itself, never through a pipe.
 
 Writes <out dir>/<run id>.log per run and <out dir>/swap_check.json.
 
-Round 2 (2026-11-09, owner ruling "Carry in ml-code"): the s1-s14 mutants pin the brace sequence handling,
+Round 2 (2026-11-09, Overtoad ruling "Carry in ml-code"): the s1-s14 mutants pin the brace sequence handling,
 g11-g13 are re-anchored on the rewritten brace code, and base-guard also runs the credential-path and
 privilege tables, which gained sequence rows. Run nothing else against the worktree meanwhile: the swap
 edits the worktree's own files, and the older guard mutation checks re-read util/claude_agent_guard.py per
@@ -85,7 +85,7 @@ MUTANTS = [
     ("g11-brace-list-cap-plus-1", GUARD, "if count * len(tack) > limit:", "if count * len(tack) > limit + 1:", [BRACE]),
     ("g12-brace-range-off-by-one", GUARD, "if count > MAX_BRACE_ALTERNATIVES:", "if count > MAX_BRACE_ALTERNATIVES + 1:", [BRACE]),
     ("g13-brace-ignores-earlier-groups", GUARD, "if count * len(tack) > limit:", "if len(tack) > limit:", [BRACE]),
-    # Round 2: brace sequence expressions (owner ruling "Carry in ml-code"). One mutant per new deny or refusal.
+    # Round 2: brace sequence expressions (Overtoad ruling "Carry in ml-code"). One mutant per new deny or refusal.
     ("s1-step-never-parsed", GUARD, r'(?:\.\.([+-]?[0-9]+))?")', r'(?:\.\.(x))?")', [BRACE, CRED_TABLE, PRIV_TABLE, GPG_TABLE]),
     ("s2-step-sign-kept", GUARD, "size = abs(int(step)) if step else 1", "size = int(step) if step else 1", [BRACE]),
     ("s3-zero-step-is-two", GUARD, "size = size or 1", "size = size or 2", [BRACE]),

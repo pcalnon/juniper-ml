@@ -1,13 +1,13 @@
-# Handoff — turing bring-up: C9 landed (guard 1.2.0 covers Serena's edit tools and MCP registration); H6 audited; owner decisions and the guard install next
+# Handoff — turing bring-up: C9 landed (guard 1.2.0 covers Serena's edit tools and MCP registration); H6 audited; Overtoad decisions and the guard install next
 
-- **Continued (2026-10-25, plan v1.4.7).** The "macos dev env setup" session took this handoff. The owner ruled on H4's usage report (opt out, juniper-ml#2335), C2's form (block all, juniper-ml#2338) and H6 (deferred). The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-h4-usage-off-c2-block-all-gate-h6-deferred.md`. The owner steps below still stand, C2's now in its block-all form.
+- **Continued (2026-10-25, plan v1.4.7).** The "macos dev env setup" session took this handoff. The Overtoad ruled on H4's usage report (opt out, juniper-ml#2335), C2's form (block all, juniper-ml#2338) and H6 (deferred). The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-h4-usage-off-c2-block-all-gate-h6-deferred.md`. The Overtoad steps below still stand, C2's now in its block-all form.
 
-- **From:** the 2026-10-25 session on turing named "dev env macos" (014c35; worktree `.claude/worktrees/breezy-baking-lerdorf`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md`. Its author, "mac dev" (165a0b), could not be reached (HTTP 409), and no other session was on that handoff.
+- **From:** the 2026-10-25 session on turing named "dev env macos" (014c35; worktree `.claude/worktrees/breezy-baking-lerdorf`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-Overtoad-b4-b5.md`. Its author, "mac dev" (165a0b), could not be reached (HTTP 409), and no other session was on that handoff.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.6.
   - §18.2 holds the C9 and H6 rows.
   - §18.3 holds errata E-C9 and E-H6.
-- **This file is the arc's main handoff.** It supersedes `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md` and continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md`. Both now point here; the option-B handoff's owner steps still stand.
-- **Standing approval:** the owner granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
+- **This file is the arc's main handoff.** It supersedes `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md` and continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-Overtoad-b4-b5.md`. Both now point here; the option-B handoff's Overtoad steps still stand.
+- **Standing approval:** the Overtoad granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
 
 ## Done this session
 
@@ -20,13 +20,13 @@
 
 - **The guard on `main` is 1.2.0; turing runs no guard.** C8 was never installed (`~/.claude/hooks/` does not exist), so neither C8, K12 nor C9 binds any session yet.
 - **What C9 changes for agents once installed:**
-  - Serena's edit tools cannot reach `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the owner's git configuration, `~/.claude.json` or a `.mcp.json`.
+  - Serena's edit tools cannot reach `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the Overtoad's git configuration, `~/.claude.json` or a `.mcp.json`.
   - Serena's `execute_shell_command` gets the Bash rules.
   - `claude mcp add*`, `add-json` and `add-from-claude-desktop` are denied whatever the command word, and so is `--mcp-config`.
   - **`cat ~/.claude.json` is denied** (Bash, by mention, as `~/.gitconfig` is); the Read tool still reads it.
   - `claude mcp list`, `get`, `remove` and `reset-project-choices` stay allowed, and `util/mcp_setup.bash` keeps working.
 - **H5, option B** is intact: the hardening check exited 0 at 08:13:41Z with `--offline`. B.5 is still pending (both `origin`s set).
-- **H6:** none of VS Code's four servers has ever started from VS Code on turing (VS Code's newest log session is 2026-03-26). The decisions are the owner's.
+- **H6:** none of VS Code's four servers has ever started from VS Code on turing (VS Code's newest log session is 2026-03-26). The decisions are the Overtoad's.
 
 ## Owner steps
 
@@ -55,9 +55,9 @@
 
 ## Agent next
 
-1. **H4's usage report** (E-H6; the owner decides first): Serena v1.7.0 reports usage to `oraios-software.de` on every start unless `SERENA_USAGE_REPORTING=false`, and `util/mcp_setup.bash` writes `"env": {}`. The fix is the variable in the entry, plus `tests/test_mcp_setup.py`'s pins.
-2. **C2's gate follow-up**, once the owner chooses C2's form: G-SEC's firewall condition and its hint at `util/host_state_check.py:709`, with tests in `tests/test_host_state_check.py`.
-3. **H3**, after the owner's C8 install: each H2 agent runs one scripted task on turing against a `util/host_state_probe.bash --json` run within ±10 minutes, plus one negative test; the task prompts go through `prompt-validator`.
+1. **H4's usage report** (E-H6; the Overtoad decides first): Serena v1.7.0 reports usage to `oraios-software.de` on every start unless `SERENA_USAGE_REPORTING=false`, and `util/mcp_setup.bash` writes `"env": {}`. The fix is the variable in the entry, plus `tests/test_mcp_setup.py`'s pins.
+2. **C2's gate follow-up**, once the Overtoad chooses C2's form: G-SEC's firewall condition and its hint at `util/host_state_check.py:709`, with tests in `tests/test_host_state_check.py`.
+3. **H3**, after the Overtoad's C8 install: each H2 agent runs one scripted task on turing against a `util/host_state_probe.bash --json` run within ±10 minutes, plus one negative test; the task prompts go through `prompt-validator`.
 4. **After B.5:** re-run `python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py`, and record B.4 and B.5 in the next plan revision. Before numbering it, check for an open turing plan PR: `gh pr list --repo pcalnon/juniper-ml --state open --search "turing in:title"`.
 5. **Post-merge check (E-LAND-2).** juniper-ml#2320 (the recurrence session) rebuilds `CHANGELOG.md` after #2322, by agreement. After it merges, `python3 -I util/ad-hoc/2026-10-25_turing_c9_guard_doc_edits.py --mutants 26/26 --check` should print "nothing to do", and `python3 -I util/ad-hoc/2026-10-25_turing_c9_h6_record.py --c9-pr 2322 --c9-sha 3f38956ff87cf1751b3652a3493735ba35900164 --mutants 26/26 --dry-run` should report every edit `present`. `util/ad-hoc/2026-10-21_turing_h5_decision_record.py --dry-run` now reports three edits `MISSING` by design: the Version line, the C9 row, and the rows C0, C2 and H6 (whose anchor needs v1.4.5's H6 row). v1.4.6 replaced the Version line and the C9 and H6 rows. Its other seven edits stay `present`.
 
@@ -80,7 +80,7 @@ ls ~/.claude/hooks/juniper_agent_guard.py 2>/dev/null || echo "guard not install
 - **Modified in this session:**
   - `util/claude_agent_guard.py`, `util/install_claude_agent_guard.bash`, `tests/test_claude_agent_guard.py`, `.github/workflows/ci.yml`, `docs/REFERENCE.md` and `CHANGELOG.md` (juniper-ml#2322);
   - `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, to v1.4.6;
-  - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md` and `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md`: pointers to this file (this handoff's PR).
+  - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-Overtoad-b4-b5.md` and `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md`: pointers to this file (this handoff's PR).
 - **Referenced, not changed:**
   - `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md` (RR-10, O-5);
   - `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md`;

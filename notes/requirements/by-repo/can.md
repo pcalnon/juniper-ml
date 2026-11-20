@@ -903,7 +903,7 @@ Re-evaluates 34 gaps from original audit (91 issues, 57 verified, 16 partially f
 
 **Notes**:
 
-[v2 ARCH→UI re-bucket] 22 REAFFIRMED gaps mostly completed via PR #146. DEFERRED gaps tracked as accepted technical debt. COORDINATED gaps require synchronization with R5-01 phase owners.
+[v2 ARCH→UI re-bucket] 22 REAFFIRMED gaps mostly completed via PR #146. DEFERRED gaps tracked as accepted technical debt. COORDINATED gaps require synchronization with R5-01 phase Overtoads.
 
 ### JR-CAN-OBS-002 — ColoredFormatter must not mutate LogRecord during formatting.
 

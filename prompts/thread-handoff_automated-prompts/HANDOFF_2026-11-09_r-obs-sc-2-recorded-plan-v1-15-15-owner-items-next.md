@@ -1,19 +1,19 @@
-# Thread Handoff — R-OBS-SC-2 recorded in plan v1.15.15; owner items next
+# Thread Handoff — R-OBS-SC-2 recorded in plan v1.15.15; Overtoad items next
 
 **Date**: 2026-11-09 UTC (host clock is local time, UTC−6)
 **Session**: `09366253`, the Linux host, worktree `.claude/worktrees/groovy-petting-fiddle` (branch `worktree-groovy-petting-fiddle`, base `734aab58` = `origin/main` at the start). This file lands in the same PR as plan v1.15.15, through `util/open_signed_pr.py` (a signed API commit).
-**Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-09_r-obs-sc-2-published-lock-round-merged-plan-v1-15-15-next.md` (session `e21d1414`). Its step 1 (plan v1.15.15) is done here; its step 2 (owner items) carries forward, corrected below.
+**Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-09_r-obs-sc-2-published-lock-round-merged-plan-v1-15-15-next.md` (session `e21d1414`). Its step 1 (plan v1.15.15) is done here; its step 2 (Overtoad items) carries forward, corrected below.
 
 ## Goal
 
-R-OBS-SC-2's session-side work ends when the v1.15.15 PR merges. What remains is owner decisions. They are recorded in `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, in §6's mid-wave sitting ("R-OBS-SC-2's follow-ups") and in §5's note on R-OBS-SC-2. A successor runs the post-merge re-check, surfaces the owner items, and acts only on a ruling.
+R-OBS-SC-2's session-side work ends when the v1.15.15 PR merges. What remains is Overtoad decisions. They are recorded in `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, in §6's mid-wave sitting ("R-OBS-SC-2's follow-ups") and in §5's note on R-OBS-SC-2. A successor runs the post-merge re-check, surfaces the Overtoad items, and acts only on a ruling.
 
 **Approvals are per-session** (`feedback_headless_merge_approval_policy.md`). This session held "approval granted for PR merge and related operations" (the user's turn, 2026-11-09). **Re-ask in yours.** Paul approves every `pypi` gate.
 
 ## Completed this session
 
 - **Ported the predecessors' 12 files** from worktree `bright-giggling-metcalfe` (sha256 compared, all equal): nine `util/ad-hoc/2026-11-09_*` tools and three handoffs. One was then changed. `util/ad-hoc/2026-11-09_lock_round_2_env_record.py` probes `fastapi.telemetry` through `importlib.import_module`, because CodeQL's unused-import query would flag the `import` statement. It gives the recorded answers in the lock round's own venvs: `True` under FastAPI 0.162.0 and `False` under 0.141.1.
-- **Dated the owner's four rulings from the transcripts** with `util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py`:
+- **Dated the Overtoad's four rulings from the transcripts** with `util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py`:
   - 2026-11-08 08:59:56Z: 0.4.2 is "P3-07 + header names"; 0.7.2 is "Include ml#2514, then cut"; P3 D-03, for the lock PRs, is "This arc opens them".
   - 14:42:17Z: "Approve both cuts".
   - 2026-11-09 00:24:20Z: "Per-lock probe".
@@ -73,6 +73,6 @@ Retention: the predecessors' evidence stays where it is: `bright-giggling-metcal
 - **Referenced**: `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`; `reports/2026-10-04_consolidated-development-plan/extraction-P3-defect-register.md` (D-02 and D-03; P3-03, P3-09, P3-17, P3-18); `notes/releases/RELEASE_NOTES_juniper-observability_v0.4.2.md`; `notes/releases/RELEASE_NOTES_juniper-service-core_v0.7.2.md`; `HANDOFF_2026-11-08_r-obs-sc-2-p3-07-written-round-1-validated-fix-pass-next.md` and the three predecessor handoffs this PR lands; ml#2523's body (P3-07's rounds); the four lock PRs' bodies.
 - **Changed**:
   - `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` (v1.15.15);
-  - the 12 scripts `util/ad-hoc/2026-11-09_consolidated_plan_v1_15_15_r_obs_sc_2_shipped.py`, `…_r_obs_sc_2_record_reprobe.py`, `…_r_obs_sc_2_owner_answers.py`, `…_wait_for_pypi_gates.py` and the eight `…_lock_round_2_*.py`;
+  - the 12 scripts `util/ad-hoc/2026-11-09_consolidated_plan_v1_15_15_r_obs_sc_2_shipped.py`, `…_r_obs_sc_2_record_reprobe.py`, `…_r_obs_sc_2_Overtoad_answers.py`, `…_wait_for_pypi_gates.py` and the eight `…_lock_round_2_*.py`;
   - the three ported handoffs and this file;
   - outside the repo: memory `project_recurrence_equities_p0_arc_2026-10-04.md`.

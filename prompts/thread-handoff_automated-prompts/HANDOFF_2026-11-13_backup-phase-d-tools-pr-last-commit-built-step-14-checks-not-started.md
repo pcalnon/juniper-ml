@@ -18,9 +18,9 @@ unset variable would turn `W/tmp/…` into a path under the system temp director
 
 1. Push the last commit of juniper-ml#2548 and merge the PR. Nothing holds it any more.
 2. Continue the Phase D sitting's step 14 at step C.1 of `HANDOFF_2026-11-12_…md`. None of C.1 to C.11 has run.
-3. Carry the open questions to the owner.
+3. Carry the open questions to the Overtoad.
 
-Ask the owner for merge approval again in a new session.
+Ask the Overtoad for merge approval again in a new session.
 
 ### What changed since the predecessor
 
@@ -28,10 +28,10 @@ Ask the owner for merge approval again in a new session.
   `v0.11.5` was published at 10:24:18Z on that commit, and the release session then lifted its request to hold
   merges. Its PyPI job was still waiting at its gate at 11:13Z. The release-notes PR, juniper-ml#2561, merged at
   10:38:29Z: `main` is `7ae846b6`.
-- The predecessor merged as juniper-ml#2560 (`01f9f89b`, by the owner's account). The alert fix, juniper-ml#2559, is
+- The predecessor merged as juniper-ml#2560 (`01f9f89b`, by the Overtoad's account). The alert fix, juniper-ml#2559, is
   `ae801a70`.
 - **juniper-ml#2548 is open at `1fbc2b02`** (10:49:58Z, an update-branch): `main` plus the PR's eleven files. It is
-  red on purpose until its last commit. Auto-merge has been armed by the owner's account since 2026-11-12 23:07:17Z,
+  red on purpose until its last commit. Auto-merge has been armed by the Overtoad's account since 2026-11-12 23:07:17Z,
   with the first head's commit text stored.
 - **The last commit is built on that head, proven, and not pushed** (`W/tmp/phase-d-finish/readd/state.txt`). Five
   files:
@@ -52,7 +52,7 @@ Ask the owner for merge approval again in a new session.
     empty, while its temporary directory was removed. That suite passed in the run before (on `8f0d4bed`: 239 of
     243) and three times alone afterwards, and this PR does not touch it.
 - **The primary checkout is on `main` again and does not hold the tools.** `HANDOFF_2026-11-12_…md` says it does.
-  Until juniper-ml#2548 merges, the owner's commands use `W`'s copies: `D` is `W`.
+  Until juniper-ml#2548 merges, the Overtoad's commands use `W`'s copies: `D` is `W`.
 - The running record is 708 lines, in `W/tmp/phase-d-sitting/` and in the primary's `tmp/phase-d-sitting/`. Its last
   section covers 2026-11-13 09:54Z to 11:30Z.
 
@@ -96,7 +96,7 @@ Ask the owner for merge approval again in a new session.
 2026-11-13 02:19Z. Re-read at 10:51Z, as pcalnon: there is still no aside directory, no
 `~/.local/state/duplicati/acceptance.json` and no probe unit; root's run directory cannot be read from here.
 
-**C. For the owner.** Every open question of `HANDOFF_2026-11-12_…md` (Q1 to Q4, Q6 to Q8). First: Q2 (three
+**C. For the Overtoad.** Every open question of `HANDOFF_2026-11-12_…md` (Q1 to Q4, Q6 to Q8). First: Q2 (three
 off-schedule runs: was the job's edit page saved near each start?), Q3 (AC-7 against D-14), Q6 (both halves), Q7 before
 the retention save of step C.4, and whether the probe's listing of the destination is acceptable ("Where this segment
 went past 'beyond `stat`'").
@@ -110,7 +110,7 @@ record the three smaller sweep findings of its step B.3, the teardown race above
   `python3 W/util/ad-hoc/2026-11-11_phase_d_tools_mutation_check.py --shard K/4`, K = 0 to 3.
 - This segment wrote times from memory in two documents and a PR comment; they were wrong by up to 14 minutes. The
   first draft of this file did it again. Read a time from a commit or the clock.
-- The owner's account acts on these PRs too: it merged juniper-ml#2560 and updated juniper-ml#2548's branch at
+- The Overtoad's account acts on these PRs too: it merged juniper-ml#2560 and updated juniper-ml#2548's branch at
   09:57Z. Read a PR's head before every push; the scripts pin it.
 - A validating agent listed the host names in `gh`'s hosts file, which can hold a token. It printed no value, but
   that touched "Never read a secret file". Name that file in a brief's limits.
@@ -132,7 +132,7 @@ live and the worktree's heads and changing nothing; the log ending `238 of 243 p
 
 ## Git status at handoff
 
-- **juniper-ml#2548**: open at `1fbc2b02`, twelve commits, red on purpose, auto-merge armed by the owner's account.
+- **juniper-ml#2548**: open at `1fbc2b02`, twelve commits, red on purpose, auto-merge armed by the Overtoad's account.
 - **`W`**: HEAD detached at `1fbc2b02`; `.github/workflows/ci.yml`, `AGENTS.md`, `CHANGELOG.md`, `docs/REFERENCE.md`
   and `util/ad-hoc/2026-11-11_phase_d_tools_mutation_check.py` modified and unstaged (the last commit's content);
   this file untracked until step A.1 follows its PR's merge. The branch `worktree-swift-stargazing-spindle` still

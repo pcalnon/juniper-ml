@@ -22,9 +22,9 @@ PR #660 is already merged (squash `3a6dea95`, 2026-09-23T19:16:49Z), so every fi
 - On the pre-PR base `26e0546f`, all 25 parameterless GETs return 401. On the correction `246f1bf2`, all 25 return 200.
 - Keyless POSTs from `Origin: https://evil.example` go from 401 to 400/422, meaning they passed auth and failed only on the empty body.
 - A cross-site "simple" POST (`text/plain`, empty body) to `/api/dataset/generate` goes from 401 to **200 with a regenerated dataset**. That handler reads `await request.json()` whatever the Content-Type (`src/main.py:1642`), so it is a seventh route a hostile page can hit, beyond the "six" `/api/train/*` POSTs.
-- The PR body says the owner re-confirmed the semantics "after being told the Origin/CSRF consequence". The juniper-ml register draft in this worktree (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`, uncommitted) does say "That opens the keyed HTTP routes". Neither #660 file says so.
+- The PR body says the Overtoad re-confirmed the semantics "after being told the Origin/CSRF consequence". The juniper-ml register draft in this worktree (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`, uncommitted) does say "That opens the keyed HTTP routes". Neither #660 file says so.
 
-**Fix.** Add a leading bullet to that CHANGELOG entry: while the whitespace key was set, every key-gated route (55 pairs, 27 state-changing) refused every client; now all of them serve anyone who can reach the port, and `/api/dataset/generate` accepts a cross-site simple POST. Mirror it in the PR body, and put it to the owner if it wasn't.
+**Fix.** Add a leading bullet to that CHANGELOG entry: while the whitespace key was set, every key-gated route (55 pairs, 27 state-changing) refused every client; now all of them serve anyone who can reach the port, and `/api/dataset/generate` accepts a cross-site simple POST. Mirror it in the PR body, and put it to the Overtoad if it wasn't.
 
 ### MEDIUM: main's commit message for #660 is the text the correction replaced
 

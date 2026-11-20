@@ -1,15 +1,15 @@
-# Handoff: Python 3.15 informational checks -- phase 1 rolled out to all ten repos; phase 2 waits on the owner
+# Handoff: Python 3.15 informational checks -- phase 1 rolled out to all ten repos; phase 2 waits on the Overtoad
 
 **Date**: 2026-11-15 (facts read 00:06Z to 01:51Z)
 **Session**: host yamaguchi, juniper-ml worktree `.claude/worktrees/witty-giggling-twilight` (session 2d726db0).
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-14_python-3-15-informational-checks-phase-1-surveyed.md`
-(juniper-ml#2566). Its owner request and phase plan stand; its open design question is settled below.
+(juniper-ml#2566). Its Overtoad request and phase plan stand; its open design question is settled below.
 
 ## Goal statement
 
 Phase 1 of 4 is done: Python 3.15 runs in every repo's CI test matrices and through a local helper, and its results
 are visible but block nothing. The next step is **phase 2: work through the 3.15 problems below. It needs the
-owner's go-ahead. Do not start it, and do not make any 3.15 check required (phase 3) or move the host default
+Overtoad's go-ahead. Do not start it, and do not make any 3.15 check required (phase 3) or move the host default
 (phase 4).**
 
 ## Owner rulings (2026-11-14)
@@ -91,15 +91,15 @@ python3 util/python_version_check.py --repo juniper-data-client --python 3.15   
   - recurrence `AGENTS.md:250` § Status;
   - deploy `AGENTS.md` § CI/CD job table.
 
-## Open owner questions
+## Open Overtoad questions
 
 1. Should juniper-deploy's `Pre-commit` also run 3.13 and 3.14?
 2. Should deploy's `Unit Tests (Python 3.13)` and `(Python 3.14)` become required in ruleset 14715370? Today they
    block only through its Quality Gate.
 
-## Follow-up the same night: the informational legs now conclude GREEN (owner request 2026-11-15)
+## Follow-up the same night: the informational legs now conclude GREEN (Overtoad request 2026-11-15)
 
-The owner reported that every juniper-ml PR read as failing. The job-level `continue-on-error` kept the gates green
+The Overtoad reported that every juniper-ml PR read as failing. The job-level `continue-on-error` kept the gates green
 (#2568, #2569 and #2572 merged past it, and no 3.15 context is required), but the 3.15 leg's own check concluded
 `failure`: a red X on every PR, `UNSTABLE`, and `gh pr checks` failing.
 
@@ -111,7 +111,7 @@ The owner reported that every juniper-ml PR read as failing. The job-level `cont
 - guarded by `tests/test_python_version_matrix_drift.py`'s `green_violations`.
 
 It was measured on #2578's head `91591864`: `Regression Tests (Python 3.15)` concluded `success` while 2 of its steps
-failed, and carried the warning. **#2578 merged 2026-11-15T04:10:39Z (`be092a2e`).** The owner chose "All nine now", and
+failed, and carried the warning. **#2578 merged 2026-11-15T04:10:39Z (`be092a2e`).** The Overtoad chose "All nine now", and
 the same script, applied on branch `ci/python-3-15-green-legs`, is MERGED in every sibling repo:
 
 | Repo | PR -> squash | 3.15 check after the fix |
@@ -127,7 +127,7 @@ the same script, applied on branch `ci/python-3-15-green-legs`, is MERGED in eve
 | juniper-harcot | #23 -> `6e5e4bd2` | notice |
 
 How these PRs merged:
-- **None was merged by the session or its agents.** Auto-merge was armed from the `pcalnon` account (the owner's PR
+- **None was merged by the session or its agents.** Auto-merge was armed from the `pcalnon` account (the Overtoad's PR
   sweeper; see memory `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`). The same account
   re-armed #2575 after the session had disarmed it to honour a peer's merge hold.
 - **harcot#23 merged before its checks finished.** That private repo enforces no rules. Its checks then passed on the
@@ -144,7 +144,7 @@ How these PRs merged:
      data, recurrence, deploy, data-client, cascor-client, cascor, cascor-worker, canopy, harcot. List them with
      `ls -d /home/pcalnon/Development/python/Juniper/worktrees/*python-3-15*`.
    - the helper agent's `juniper-ml/.claude/worktrees/agent-a071c56ac10b0da13`.
-2. Put the two open questions to the owner, then phase 2 if the owner says go. Start with h5py, which blocks three
+2. Put the two open questions to the Overtoad, then phase 2 if the Overtoad says go. Start with h5py, which blocks three
    repos' legs.
 
 ## Verification commands

@@ -132,18 +132,18 @@ def four_days() -> str:
 
 
 def snapshot_file(when: dt.datetime | None = None, **overrides) -> dict:
-    snapshot = {"size": 610304, "mtime": ((when or fire(11)) + dt.timedelta(seconds=1)).timestamp(), "mode": 0o600, "owner": "operator"}
+    snapshot = {"size": 610304, "mtime": ((when or fire(11)) + dt.timedelta(seconds=1)).timestamp(), "mode": 0o600, "Overtoad": "operator"}
     snapshot.update(overrides)
     return snapshot
 
 
-def volume(name: str, *, owner: str = "operator", mode: int = 0o770, size: int = 1000, written: dt.datetime | None = None) -> dict:
-    return {"name": name, "size": size, "mtime": (written or NOW - dt.timedelta(hours=7)).timestamp(), "mode": mode, "owner": owner, "group": "duplicati"}
+def volume(name: str, *, Overtoad: str = "operator", mode: int = 0o770, size: int = 1000, written: dt.datetime | None = None) -> dict:
+    return {"name": name, "size": size, "mtime": (written or NOW - dt.timedelta(hours=7)).timestamp(), "mode": mode, "Overtoad": Overtoad, "group": "duplicati"}
 
 
-def destination(newest_owner: str = "operator", newest_written: dt.datetime | None = None) -> list[dict]:
+def destination(newest_Overtoad: str = "operator", newest_written: dt.datetime | None = None) -> list[dict]:
     entries = [volume(f"duplicati-b{i:04d}.dblock.zip.aes") for i in range(4)] + [volume(f"duplicati-i{i:04d}.dindex.zip.aes") for i in range(4)]
-    entries += [volume("duplicati-20261110T140000Z.dlist.zip.aes"), volume("duplicati-20261111T140001Z.dlist.zip.aes", owner=newest_owner, mode=0o640, written=newest_written)]
+    entries += [volume("duplicati-20261110T140000Z.dlist.zip.aes"), volume("duplicati-20261111T140001Z.dlist.zip.aes", Overtoad=newest_Overtoad, mode=0o640, written=newest_written)]
     return entries
 
 
@@ -280,7 +280,7 @@ class ExportTest(unittest.TestCase):
         self.assertEqual(finding.verdict, "PASS")
         self.assertIn("sources=5 filters=76 repeat=1D at 13:00:00Z (anchor date 2026-09-17) blocksize=1MB", finding.summary)
 
-    def test_ac2_wants_the_slot_the_owner_moved_to(self) -> None:
+    def test_ac2_wants_the_slot_the_Overtoad_moved_to(self) -> None:
         old = export()
         old["Schedule"]["Time"] = "2026-09-17T14:00:00Z"  # the job as it ran until 2026-11-14
         finding = probe.judge_ac2(old)
@@ -288,7 +288,7 @@ class ExportTest(unittest.TestCase):
         self.assertIn("schedule time of day is 14:00:00 UTC (want 13:00:00)", finding.summary)
 
     def test_ac2_counts_are_the_2026_11_15_ruling(self) -> None:
-        # The owner changed the sources and filters on purpose; the design fixed 2 and 45 until then.
+        # The Overtoad changed the sources and filters on purpose; the design fixed 2 and 45 until then.
         self.assertEqual((probe.EXPECTED_SOURCES, probe.EXPECTED_FILTERS), (5, 76))
 
     def test_ac2_fails_for_each_deviation(self) -> None:
@@ -368,7 +368,7 @@ class ExportTest(unittest.TestCase):
         self.assertIn("set more than once: blocksize", probe.judge_options(twice).summary)
 
     def test_the_ruled_policy_is_the_2026_11_14_amendment(self) -> None:
-        # Q7: the two-week frame keeps every fileset. The read-back judges the string the owner types, exactly.
+        # Q7: the two-week frame keeps every fileset. The read-back judges the string the Overtoad types, exactly.
         self.assertEqual(probe.RULED_RETENTION, "2W:U,6M:1W,2Y:1M,5Y:2M")
         restored = probe.judge_options(export(retention="2W:U,6M:1W,2Y:1M,5Y:2M"), "restored")
         self.assertEqual(restored.verdict, "PASS")
@@ -423,12 +423,12 @@ class Ac5Test(unittest.TestCase):
 
     def test_the_sittings_own_sequence_is_one_day_pending(self) -> None:
         # 2026-11-08 to 11-14 as recorded: OK, RUNNING, ALERT NOT_SUCCESS, RUNNING three times, OK. The handoff's grep
-        # could not show the ALERT. Under the owner's 2026-11-15 ruling the three RUNNING days do not count.
+        # could not show the ALERT. Under the Overtoad's 2026-11-15 ruling the three RUNNING days do not count.
         running = [watchdog_line(noon(day), code="RUNNING", details=f"task {task} for backup 2 running 4.0 h") for day, task in ((11, 46), (12, 48), (13, 49))]
         lines = [watchdog_line(noon(8)), watchdog_line(noon(9), code="RUNNING", details="task 43 for backup 2 running 4.0 h"), watchdog_line(noon(10), "ALERT", "NOT_SUCCESS", details="newest log entry Backup x ParsedResult=Warning [notify-send rc=0]")] + running + [watchdog_line(noon(14))]
         finding = self.judge(lines, now=noon(14) + dt.timedelta(hours=7))
         self.assertEqual(finding.verdict, "PENDING")
-        self.assertIn("OK OK on 1 consecutive day(s) of 3: 2026-11-14 OK; the 3 day(s) before read OK RUNNING and do not count (owner ruling 2026-11-15)", finding.summary)
+        self.assertIn("OK OK on 1 consecutive day(s) of 3: 2026-11-14 OK; the 3 day(s) before read OK RUNNING and do not count (Overtoad ruling 2026-11-15)", finding.summary)
         self.assertEqual((finding.facts["streak_days"], finding.facts["running_days"]), (1, 3))
         self.assertIn("no JOB_MISSING record", finding.summary)
 
@@ -577,7 +577,7 @@ class Ac6aTest(unittest.TestCase):
             ("stale", snapshot_file(fire(10)), "is not the newest run's"),
             ("stub", snapshot_file(size=4096), "a stub"),
             ("loose mode", snapshot_file(mode=0o644), "mode 0644"),
-            ("other owner", snapshot_file(owner="root"), "owner root"),
+            ("other Overtoad", snapshot_file(Overtoad="root"), "Overtoad root"),
         ):
             with self.subTest(case=label):
                 finding = probe.judge_ac6a(snapshot, four_days(), NOW, me="operator")
@@ -643,7 +643,7 @@ class Ac7Test(unittest.TestCase):
 
     def test_a_volume_the_service_still_owns_is_unsyncable_even_with_the_group(self) -> None:
         # Measured 2026-11-11: gid 139 on the daemon, and the three volumes of that day's run read `unsyncable`.
-        entries = destination(newest_owner="duplicati") + [volume("duplicati-b9999.dblock.zip.aes", owner="duplicati", mode=0o640), volume("duplicati-i9999.dindex.zip.aes", owner="duplicati", mode=0o640)]
+        entries = destination(newest_Overtoad="duplicati") + [volume("duplicati-b9999.dblock.zip.aes", Overtoad="duplicati", mode=0o640), volume("duplicati-i9999.dindex.zip.aes", Overtoad="duplicati", mode=0o640)]
         statuses = all_synced(entries, **{"duplicati-20261111T140001Z.dlist.zip.aes": "unsyncable", "duplicati-b9999.dblock.zip.aes": "unsyncable", "duplicati-i9999.dindex.zip.aes": "unsyncable"})
         finding = self.judge(entries, statuses)
         self.assertEqual(finding.verdict, "FAIL")
@@ -943,7 +943,7 @@ class ScheduleTest(unittest.TestCase):
 
 
 class ScheduleMoveTest(unittest.TestCase):
-    """The owner moved the job from 14:00Z to 13:00Z (07:00 CST), and the snapshot from 13:45Z to 12:45Z, on 2026-11-15."""
+    """The Overtoad moved the job from 14:00Z to 13:00Z (07:00 CST), and the snapshot from 13:45Z to 12:45Z, on 2026-11-15."""
 
     def at(self, day: int, hour: int, minute: int = 0, second: int = 0) -> dict:
         return summarized(operation="Backup", begin=dt.datetime(2026, 11, day, hour, minute, second, tzinfo=UTC), fraction="0000000")
@@ -990,12 +990,12 @@ class CensusAndModesTest(unittest.TestCase):
         self.assertEqual(probe.judge_census([], {"TargetFilesCount": "0", "TargetFilesSize": "0"}).verdict, "ERROR", "an empty listing is unread evidence")
 
     def test_modes_record_classes_and_changes(self) -> None:
-        entries = destination(newest_owner="duplicati")
+        entries = destination(newest_Overtoad="duplicati")
         first = probe.judge_modes(entries)
         self.assertEqual(first.verdict, "INFO")
         self.assertIn("1 dlist 640 duplicati:duplicati", first.summary)
         self.assertIn("4 dblock 770 operator:duplicati", first.summary)
-        entries[-1]["owner"] = "operator"
+        entries[-1]["Overtoad"] = "operator"
         second = probe.judge_modes(entries, first.facts["dlists"])
         self.assertEqual(second.facts["changed_since_previous"], ["duplicati-20261111T140001Z.dlist.zip.aes: 640 duplicati:duplicati -> 640 operator:duplicati"])
         self.assertEqual(probe.judge_modes([]).verdict, "ERROR")
@@ -1082,7 +1082,7 @@ class ServerTest(_Stubbed):
         os.chmod(self.cred, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)  # 0644: the mode the API client must refuse
         unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
         self.assertIn("credential refused: FATAL: web credential file", unsafe)
-        self.assertIn("mode 0644", unsafe, "the client's own sentence -- a path, a mode, an owner -- is kept")
+        self.assertIn("mode 0644", unsafe, "the client's own sentence -- a path, a mode, an Overtoad -- is kept")
         never_leaks(self, unsafe)
 
     def test_the_login_failure_pattern_is_the_api_clients_own_line(self) -> None:

@@ -7,7 +7,7 @@
 (branch `docs/canopy-e2e-phase10`). It was cut off by the usage limit. **Not consensus-validated.**
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md` (authoritative for
 P2). Also read `HANDOFF_2026-10-04_canopy-replay-player-fixed-and-live-verified-p2-items-2-to-7-next.md`.
-**Merge approval**: the owner granted it for THIS session's PRs ("merge approval granted"). It is not carried, so
+**Merge approval**: the Overtoad granted it for THIS session's PRs ("merge approval granted"). It is not carried, so
 ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
@@ -23,7 +23,7 @@ before the first merge.
 
 - `0737d573`: the ledger's Phase 10 (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`) files
   F-CANOPY-060 to -066 and declines O4 and O9. Predecessor A is archived as
-  `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md`.
+  `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md`.
   Three instruments ship with it: `util/ad-hoc/2026-10-04_phase10_{f060,o2,o3}_rederive.py`.
 - `2134ca2a`: round 1, four lanes. It added F-CANOPY-067 (P2), re-rated F-CANOPY-065 to P1, and corrected
   W1-09's Phase 1 PASS to FAIL.
@@ -100,7 +100,7 @@ before the first merge.
    - Run against a verify leg: `util/ad-hoc/2026-09-04_canopy_verify_instance.bash up <canopy tree at main>/src <port>`,
      pass `JUNIPER_CANOPY_GIT_SHA` for a tarball tree, and export `JUNIPER_E2E_CANOPY_URL`. It reads the trio
      read-only. Never use `:8051`.
-4. Then items 4, 5 and 7, and the owner batch O2–O16, from the parent. New owner question: is a CHANGELOG or
+4. Then items 4, 5 and 7, and the Overtoad batch O2–O16, from the parent. New Overtoad question: is a CHANGELOG or
    design-plan promise "documented" under plan §6.3? If not, F-CANOPY-065 is P2.
 
 **Traps learned:**
@@ -108,7 +108,7 @@ before the first merge.
 - The worktree guard refuses `$(…)`, loops, computed paths after `sed`, and long heredocs. Use plain commands or
   scripts.
 - `pre-commit` fixes land in the worktree: re-`git add`. Plain `pre-commit run` checks only staged files.
-- Lanes printed the owner's e-mail with `git show --stat`; forbid author fields in every brief.
+- Lanes printed the Overtoad's e-mail with `git show --stat`; forbid author fields in every brief.
 - The link-set tool's `unreachable` view is blind to `[[name-slug]]` links. That caveat is now in
   `feedback_memory_index_target_is_20kb.md`.
 

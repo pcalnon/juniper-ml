@@ -3,7 +3,7 @@
 
 **Entry point:** the ship side: argue the merge, and find over-correction and noise.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` and the PRs named in the brief.
 
 **Ran:** 2026-09-23T01:02:10Z to 2026-09-23T01:27:46Z, read-only. Agent `agent-a7190f019f5237b36`.
 
@@ -34,7 +34,7 @@ THE SEVEN PRs, at these heads:
 - juniper-deploy#228 `e6091c46`;
 - juniper-deploy#227 `991e6653`.
 
-#2020's main artifact is the status banner of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`. It runs from its top to `## Handoff goal`, and includes its `### Validation record for this banner`. The review history is in `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`, eleven lane reports over three rounds. `git diff d0582a21 f68380dd` shows everything #2020 changes against the `main` it branched from. The sibling diffs come from `gh api repos/pcalnon/<repo>/pulls/<n>/files`.
+#2020's main artifact is the status banner of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`. It runs from its top to `## Handoff goal`, and includes its `### Validation record for this banner`. The review history is in `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`, eleven lane reports over three rounds. `git diff d0582a21 f68380dd` shows everything #2020 changes against the `main` it branched from. The sibling diffs come from `gh api repos/pcalnon/<repo>/pulls/<n>/files`.
 
 OUTPUT. Only your final message is returned.
 1. **The ship case.** Per PR: merge now, or hold (with the one thing that must change first). One or two sentences each.
@@ -46,10 +46,10 @@ OUTPUT. Only your final message is returned.
 
 **Round 4, Lane B (ship side): #2020 should ship once L510 is filled, with one pointer fixed in the same commit. Nothing else blocks, and I'd stop the review here, with no round 5.**
 
-Conventions: bare `L` numbers refer to `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` at `f68380dd`, read from GitHub (the local worktree holds different, uncommitted content). Repo paths are juniper-ml-relative. Lane reports are in `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`. External probes ran 2026-09-23 01:05–01:22 UTC.
+Conventions: bare `L` numbers refer to `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` at `f68380dd`, read from GitHub (the local worktree holds different, uncommitted content). Repo paths are juniper-ml-relative. Lane reports are in `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`. External probes ran 2026-09-23 01:05–01:22 UTC.
 
 **What moved while this round ran (recorded as stale, not as defects in the frozen text):**
-- The owner merged five of the seven PRs between 01:02:51Z and 01:12:14Z: cascor-client#170, data-client#210, deploy#227, deploy#228 and canopy#655. The last two merged at update-branch commits with unchanged diffs.
+- The Overtoad merged five of the seven PRs between 01:02:51Z and 01:12:14Z: cascor-client#170, data-client#210, deploy#227, deploy#228 and canopy#655. The last two merged at update-branch commits with unchanged diffs.
 - The worker `0.6.1` wheel reached PyPI at 00:37:07Z.
 - juniper-ml `main` is now `7b226ca0`.
 
@@ -79,7 +79,7 @@ Conventions: bare `L` numbers refer to `prompts/thread-handoff_automated-prompts
   - This repeats note d's own diagnosis for 6f ("The record dropped it", L142–151), one level up.
   - The role-plays in `round2-laneA-full-read-artifact-first.md` and `round3-laneA-record-and-new-numbers.md` both started from this document, not from the tip, which is where the next session starts.
 - **Minimal change:**
-  - Add one line to the tip's banner: "Three open items from the 09-22 re-evaluation live only in the banner of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`: the canopy X7 flake, the arc_agi report to juniper-data, and the 6f watch."
+  - Add one line to the tip's banner: "Three open items from the 09-22 re-evaluation live only in the banner of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`: the canopy X7 flake, the arc_agi report to juniper-data, and the 6f watch."
   - At L16, add "…, but does not carry the Startable items below".
   - Run the staleness pre-flight first: another session wrote the tip last.
 
@@ -94,8 +94,8 @@ Conventions: bare `L` numbers refer to `prompts/thread-handoff_automated-prompts
   - Move the two facts the tip lacks: cascor's publish path imports only `cascade_correlation` (into the serve-check bullet at L329–332), and the revision label `38f39cb8`, not `__version__`, is what identifies the 0.6.1 image (into note b).
   - Update L319's "(the blockquote above)".
 
-**3. One owner-gated item was already done when it was written. REAL-DEFECT, MINOR.**
-- **Passage:** L319–320 "The `0.6.1` wheel waits on the owner's `pypi` deployment approval (run `35795531350`)." Also L44–45.
+**3. One Overtoad-gated item was already done when it was written. REAL-DEFECT, MINOR.**
+- **Passage:** L319–320 "The `0.6.1` wheel waits on the Overtoad's `pypi` deployment approval (run `35795531350`)." Also L44–45.
 - **Evidence:**
   - The wheel uploaded at 00:37:07Z, and run 35795531350 finished `success` at 00:37:13Z.
   - The "(run `35795531350`)" text was added in the round-3 fix pass, committed at 01:00:40Z.
@@ -122,12 +122,12 @@ Conventions: bare `L` numbers refer to `prompts/thread-handoff_automated-prompts
   - I reproduced the census's post-merge result a third time.
 - **Minimal change:** add one line to the sizing block: "After round 3 the census result and the X7 run list were reproduced end-to-end by independent instruments (§3 de-escalator); later checks re-run the instrument." Don't brief further census-adequacy or X7 lanes.
 
-**6. "Seven merges hang on it" overstated the coupling, and the owner has now answered it. PROCESS-DEBT, MAJOR.**
+**6. "Seven merges hang on it" overstated the coupling, and the Overtoad has now answered it. PROCESS-DEBT, MAJOR.**
 - **Passage:** L418 "**Criticality is high.** This is a document of record, and seven merges hang on it."
 - **Evidence:**
   - No sibling PR depends on the banner. Five are comment- or doc-only diffs of 2–9 added lines, each checked line by line (`round1-laneA3-independent-census.md` #10–11, `round2-laneB-attack-the-fix-pass.md` #20, `round3-laneB-attack-the-round2-fix-pass.md` #20).
   - deploy#227 was verified against the published image by 20:13Z on 09-22 (`round1-laneA2-published-artifacts.md`).
-  - The owner merged five of them mid-round.
+  - The Overtoad merged five of them mid-round.
   - Of #2020's 3,642 added lines, 38 are edits to other files. The rest is the banner and in-place notes (551), the census and its mutation check (1,012) and the lane archive (2,041).
 - **Minimal change:** change L418 to "seven PRs were reviewed alongside it; none depends on it".
 
@@ -141,7 +141,7 @@ Conventions: bare `L` numbers refer to `prompts/thread-handoff_automated-prompts
 - **Minimal change:** when reconciling round 4, treat "the census silently drops shape X" and "an evidence count is off" as post-merge docstring or record updates, not merge gates. The gate is the disclaimer at L250 and L372–373.
 
 **8. Corrections 5 counts a canopy flake that predates the arc against the arc. OVER-CORRECTION (scope), MINOR.**
-- **Passage:** L295 "the X7 flake had no owner (note f)."
+- **Passage:** L295 "the X7 flake had no Overtoad (note f)."
 - **Evidence:**
   - The test has been unchanged since canopy#585 (L168–169), and it failed on other branches before this arc's PRs tripped it (canopy#619, canopy#655).
   - The banner itself calls the original's handling "Sound advice for a PR" (L76).
@@ -164,7 +164,7 @@ Conventions: bare `L` numbers refer to `prompts/thread-handoff_automated-prompts
   - Both passes merged on 2026-09-11, and no action depends on their counts or dates.
   - The in-place notes at L548–550 and L554–556 already mark the wrong text where it stands.
   - At least ten lane findings re-derived these figures: `round1-laneA1-github-api.md` #4, #14; `round1-laneB1-refute-conclusions.md` #9; `round1-laneB2-amputation-executability.md` #9; `round2-laneB-attack-the-fix-pass.md` #3, #9; `round2-laneA-full-read-artifact-first.md` pass sizes; `round3-laneB-attack-the-round2-fix-pass.md` #4, #20; `round3-laneA-record-and-new-numbers.md` #5.
-  - Worktree cleanup is owner-gated, and whoever does it will enumerate with `git worktree list`, not from a banner count.
+  - Worktree cleanup is Overtoad-gated, and whoever does it will enumerate with `git worktree list`, not from a banner count.
 - **Minimal change:** reduce Corrections 3 and 4 to one line each pointing at the in-place notes. Keep the numbering, because "Corrections 5/6" are cited at L13, L528, L595 and elsewhere.
 
 **11. The census's figures are stated in several places, and one copy has already drifted. REAL-DEFECT, MINOR.**
@@ -208,16 +208,16 @@ A fresh session needs:
 1. This handoff is superseded, and its title and goal were false when written. Don't paste the goal or run its two greps.
 2. Continue from `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`; its banner is current.
 3. Three open items exist only here: the canopy X7 flake (unowned; diagnose before touching a bound), a report to juniper-data about arc_agi's unchanged `dataset_id`, and the 6f watch (starlette is still 1.6.0). The `dockerhub` drift gate is also in §10 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
-4. Still in flight: #2020, cascor#673, and the claimed worker-0.6.1 repin, now unblocked. Don't duplicate them. Every merge needs the owner's explicit approval in your session.
+4. Still in flight: #2020, cascor#673, and the claimed worker-0.6.1 repin, now unblocked. Don't duplicate them. Every merge needs the Overtoad's explicit approval in your session.
 5. For stale ci-tools text, use the census. Exit 0 means "none of the shapes it parses", not "clean".
 
 **The first screen delivers part of this.** L1–17 deliver bullets 1 and 2 well, and half of 5 (L13–14 say the greps are wrong, not what replaces them). L46–47 carry bullet 4's repin claim. The rest of the screen, L19–47, restates the tip the reader is about to open. Bullet 4's PR list and approval rule are at L347–357, and bullet 3 is about 300 lines down (L333–341) and absent from the tip. The swap in finding 2 fixes both in one edit.
 
 ## 4. Overall verdict: SHIP WITH CHANGES
 
-The work is sound. Every load-bearing number I re-derived held: 93/93, 24/24, 54 live pins, post-merge exit 0, the 13 lines at `main`, and the QUICK_START block. The owner has already shipped five of the seven. Nothing blocks beyond the L510 edit the author has to make anyway. Finding 1 should go in that commit, and findings 2, 3 and 11 are cheap enough to go with it. The rest can follow later, or not at all.
+The work is sound. Every load-bearing number I re-derived held: 93/93, 24/24, 54 live pins, post-merge exit 0, the 13 lines at `main`, and the QUICK_START block. The Overtoad has already shipped five of the seven. Nothing blocks beyond the L510 edit the author has to make anyway. Finding 1 should go in that commit, and findings 2, 3 and 11 are cheap enough to go with it. The rest can follow later, or not at all.
 
-**Termination test:** findings 1 and 3 change an action or a disposition. Finding 1 changes where a successor finds three open items; finding 3 moves the worker wheel from owner-gated to done. No other finding changes a number, disposition or action. By the letter of §4, that reopens the loop. By §3 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`, both are low-uncertainty pointer and date edits, checked by reading them, grepping the tip and re-running the verification block. That calls for a self-check, not a round 5.
+**Termination test:** findings 1 and 3 change an action or a disposition. Finding 1 changes where a successor finds three open items; finding 3 moves the worker wheel from Overtoad-gated to done. No other finding changes a number, disposition or action. By the letter of §4, that reopens the loop. By §3 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`, both are low-uncertainty pointer and date edits, checked by reading them, grepping the tip and re-running the verification block. That calls for a self-check, not a round 5.
 
 **Changed:** no repository file, PR, comment, merge or deployment; the worktree's status is identical to the session start. Everything I wrote is under `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/97c72736-b353-43fe-9e6f-efaa8cf3be0c/scratchpad/lanes/r4b/`:
 - scripts: `fetch_pr_files.py`, `pr_meta.py`, `checks.py`, `measure.py`, `pypi_check.py`, `census_sizes.py`, `open_prs_tip.py`, `issue_search.py`;

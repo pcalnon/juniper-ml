@@ -38,7 +38,7 @@ drift = _load_drift_module()
 def _entry(eid: str, sources: list[dict]) -> dict:
     return {
         "id": eid,
-        "owner": "ml",
+        "Overtoad": "ml",
         "category": "DOC",
         "status": "proposed",
         "priority": "P3",
@@ -178,7 +178,7 @@ class CheckQuickFixtureTests(unittest.TestCase):
             [
                 {
                     "id": "JR-ML-DOC-007",
-                    "owner": "ml",
+                    "Overtoad": "ml",
                     "category": "DOC",
                     "status": "proposed",
                     "priority": "P3",

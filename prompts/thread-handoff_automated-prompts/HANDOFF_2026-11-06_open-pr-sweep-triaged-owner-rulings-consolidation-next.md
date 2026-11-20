@@ -1,20 +1,20 @@
-# Handoff: the open-PR sweep is triaged and the owner has ruled; next, the consolidated PRs (three repos) and the flood-4 record
+# Handoff: the open-PR sweep is triaged and the Overtoad has ruled; next, the consolidated PRs (three repos) and the flood-4 record
 
 **Date**: 2026-11-06 (UTC)
 
-**Arc**: the open-PR sweep and the launcher arc's follow-ups, in session `3323e446-bec4-4448-8f15-a6de7d182e36` (named `launcher-prompt-guard-claudey-defaults-open-pr-sweep-next`). It continued `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-04_launcher-prompt-guard-claudey-defaults-open-pr-sweep-next.md` (cited below as the 11-04 handoff), on the owner's "merge approval granted".
+**Arc**: the open-PR sweep and the launcher arc's follow-ups, in session `3323e446-bec4-4448-8f15-a6de7d182e36` (named `launcher-prompt-guard-claudey-defaults-open-pr-sweep-next`). It continued `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-04_launcher-prompt-guard-claudey-defaults-open-pr-sweep-next.md` (cited below as the 11-04 handoff), on the Overtoad's "merge approval granted".
 
 **Host**: the Linux host.
 
 **Git status**:
 
 - **The primary checkout** (`/home/pcalnon/Development/python/Juniper/juniper-ml`) is on `main` and clean, at `87181fed`, 4 behind `origin/main`.
-  - The owner moved it there from the key-escrow branch, and another actor fast-forwarded it at 13:20:47Z.
+  - The Overtoad moved it there from the key-escrow branch, and another actor fast-forwarded it at 13:20:47Z.
   - Its `util/fleet_triage/predict_merge.py` is therefore the OLD copy. Run `origin/main`'s.
-  - Fast-forward it only if the owner asks. The 11-04 handoff's deferred `git fetch --prune` is still deferred.
+  - Fast-forward it only if the Overtoad asks. The 11-04 handoff's deferred `git fetch --prune` is still deferred.
 - **No local commit** was made in this arc.
-- **Five worktrees are owed cleanup, each only on the owner's word.** Never use `util/remove_stale_worktrees.bash`.
-  - The 11-04 handoff's three: `…--fix--wake-the-claude-followups--20261104-0331--b22126a4`, `…--fix--wake-the-claude-prompt-guard--20261104-0550--b7382bfa` and `…--docs--handoff-2026-11-04-launcher-arc--20261104-1532--1c18106d`. Every file in them is byte-identical to `main`. On 11-06 the owner did not choose to remove them.
+- **Five worktrees are owed cleanup, each only on the Overtoad's word.** Never use `util/remove_stale_worktrees.bash`.
+  - The 11-04 handoff's three: `…--fix--wake-the-claude-followups--20261104-0331--b22126a4`, `…--fix--wake-the-claude-prompt-guard--20261104-0550--b7382bfa` and `…--docs--handoff-2026-11-04-launcher-arc--20261104-1532--1c18106d`. Every file in them is byte-identical to `main`. On 11-06 the Overtoad did not choose to remove them.
   - This arc's two, both PRs merged and both remote branches deleted. All are under `/home/pcalnon/Development/python/Juniper/worktrees/`.
     - `juniper-ml--feat--launcher-v-follows-claude-claudey-file--20261106-0348--8d553b41` (#2468).
     - `juniper-ml--fix--predict-merge-scratch-alternates--20261106-0707--87181fed` (#2474).
@@ -29,16 +29,16 @@
 
 ```text
 Continue the open-PR sweep from juniper-ml/prompts/thread-handoff_automated-prompts/
-HANDOFF_2026-11-06_open-pr-sweep-triaged-owner-rulings-consolidation-next.md. Read it from origin/main:
-  git -C /home/pcalnon/Development/python/Juniper/juniper-ml fetch -q origin && git -C /home/pcalnon/Development/python/Juniper/juniper-ml show origin/main:prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-06_open-pr-sweep-triaged-owner-rulings-consolidation-next.md
+HANDOFF_2026-11-06_open-pr-sweep-triaged-Overtoad-rulings-consolidation-next.md. Read it from origin/main:
+  git -C /home/pcalnon/Development/python/Juniper/juniper-ml fetch -q origin && git -C /home/pcalnon/Development/python/Juniper/juniper-ml show origin/main:prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-06_open-pr-sweep-triaged-Overtoad-rulings-consolidation-next.md
 If it is not on origin/main yet, the draft is at /home/pcalnon/Development/python/Juniper/juniper-ml/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/3323e446-bec4-4448-8f15-a6de7d182e36/scratchpad/sweep/handoff/.
 Run its Verification block first. If an invariant fails, stop, re-derive it from GitHub or the repo,
 and report before acting. New PRs opened since the census are expected, and are not a failure.
 
-FIRST, ask the owner:
+FIRST, ask the Overtoad:
 1. For this session's approval to merge, close, update-branch, retarget and un-draft. No approval
    carries over from the previous session or from this document (auto-memory
-   feedback_headless_merge_approval_policy.md). The owner's 2026-11-06 RULINGS do carry over; they
+   feedback_headless_merge_approval_policy.md). The Overtoad's 2026-11-06 RULINGS do carry over; they
    are quoted below.
 2. Whether the consolidation ruling extends to the 32 Cursor drafts opened since the 09:45Z census
    (juniper-ml #2469 and later). The ruling covered the census drafts and post-grant #2455-#2466 only.
@@ -49,7 +49,7 @@ Completed so far:
 - Triage of the 74 open PRs at the 09:45Z census: juniper-ml 57, juniper-data 9, juniper-canopy 8.
   The other six repositories had 0, and still do. The reports are under the scratchpad's sweep/triage/
   (paths below).
-- Closed on the owner's rulings: juniper-ml#2271 (unsigned commit 85c66d62, so it can never merge),
+- Closed on the Overtoad's rulings: juniper-ml#2271 (unsigned commit 85c66d62, so it can never merge),
   #2420 (duplicates #2435 and would revert #2415's fail-closed fix) and #2435 (moot: the P12 cleanup
   is done). Also deleted the local branch feat/enhancements-to-claude-scripts (was 5ae5a5ec).
 - juniper-ml#2468 merged as fc533642. -v follows `claude -v` in both launchers; claudey takes
@@ -58,14 +58,14 @@ Completed so far:
 - juniper-ml#2474 merged as 827199b6. predict_merge.py borrows the checkout's objects, because the
   primary is shallow, and refuses a history cut by a shallow boundary.
 
-Remaining work (owner's ruling "Consolidate, incl. post-grant"):
+Remaining work (Overtoad's ruling "Consolidate, incl. post-grant"):
 1. Write the new record, notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (ruling:
    "This session, new record"). Lay it out like the flood-3 record (§0-§9), and land it through a
    signed PR.
 2. For each of juniper-ml, juniper-data and juniper-canopy, build ONE tests carrier and ONE docs
    carrier from the drafts' verified content, fixed where triage found faults (list below).
 3. Validate each carrier with independent agents BEFORE opening its PR: open_signed_pr.py opens a
-   ready PR, and the owner's sweeper may arm it. Then merge it after green CI, under the new
+   ready PR, and the Overtoad's sweeper may arm it. Then merge it after green CI, under the new
    session's approval.
 4. Only after its carrier merges, close each carried draft, with a comment naming the carrier.
 5. Record each disposition in the flood-4 record. Archive the next handoff.
@@ -83,7 +83,7 @@ Key context:
 
 ---
 
-## The owner's rulings (2026-11-06, verbatim option labels from the session transcript)
+## The Overtoad's rulings (2026-11-06, verbatim option labels from the session transcript)
 
 | Question | Answer |
 |---|---|
@@ -152,7 +152,7 @@ Key context:
 
 ## New arrivals since the 09:45Z census (not triaged; scope is Goal question 2)
 
-As of 14:25Z, 34 new juniper-ml PRs: 32 Cursor drafts and the owner's #2497 / #2498 (both armed, other arcs). The Cursor drafts are #2469–2472, #2475–2481, #2483–2496 and #2499–2504, plus at least one more.
+As of 14:25Z, 34 new juniper-ml PRs: 32 Cursor drafts and the Overtoad's #2497 / #2498 (both armed, other arcs). The Cursor drafts are #2469–2472, #2475–2481, #2483–2496 and #2499–2504, plus at least one more.
 
 - **Follow-ups to #2474:** #2476, #2480, #2481, #2484 (stacked), #2494, #2496. #2480's fix looks superseded: `main` already copies `.git/shallow` from `--git-common-dir`.
 - **Follow-ups to #2468:** #2471, #2472, #2478, #2479, #2495, #2503, #2504.
@@ -171,7 +171,7 @@ As of 14:25Z, 34 new juniper-ml PRs: 32 Cursor drafts and the owner's #2497 / #2
    Confirm the package imports from the extract, not from an editable install. Delete the extract afterwards: #2360 has not landed, so the doc-link hook scans `tmp/`.
 5. **Mutation-check every carried test** against the code it pins. The triage reports ran few mutants.
 6. **Validate** with independent agents (auto-memory `feedback_multi_agent_adversarial_validation_sop.md`), then open the carrier with `util/open_signed_pr.py`.
-7. **Before any push or update-branch**, run `gh pr view N --json autoMergeRequest,isDraft`. The owner's sweeper arms PRs, so a green carrier may merge on its own. Push only what you would accept on `main`.
+7. **Before any push or update-branch**, run `gh pr view N --json autoMergeRequest,isDraft`. The Overtoad's sweeper arms PRs, so a green carrier may merge on its own. Push only what you would accept on `main`.
 8. **Merge.**
    - Check that the base is `main`.
    - Run `gh pr ready` if the PR is a draft.
@@ -191,12 +191,12 @@ As of 14:25Z, 34 new juniper-ml PRs: 32 Cursor drafts and the owner's #2497 / #2
     3. Push the entry under `[Unreleased]`.
   - Prove each step with `git merge-tree --write-tree` on a local probe commit (`git -c commit.gpgsign=false commit-tree`). A probe commit is valid only if its tree is the PR head's tree with just the changed files replaced. The procedure is in auto-memory `reference_changelog_conflict_signed_update_branch.md`; #2468 and #2474 used it.
 - **predict_merge.py.** Run `origin/main`'s copy; the primary's is old. It lints only `.py` files, so it cannot see markdownlint's 512-character limit.
-- **The juniper-ml primary is shallow.** It has a stray `.git/shallow` entry. A local `git clone --shared` of it carries no `origin/*` heads (auto-memory `reference_shallow_primary_disables_local_clone.md`). Never `fetch --unshallow` or gc it without the owner.
+- **The juniper-ml primary is shallow.** It has a stray `.git/shallow` entry. A local `git clone --shared` of it carries no `origin/*` heads (auto-memory `reference_shallow_primary_disables_local_clone.md`). Never `fetch --unshallow` or gc it without the Overtoad.
 - **gh 2.46.**
   - It has no `gh pr checks --json`.
   - `gh pr edit --body-file` fails; use `gh api -X PATCH repos/pcalnon/<repo>/pulls/N --input <json>`.
   - GraphQL can answer 502 / 504 (it did on 11-06). Retry, and treat a repository missing from a census as unread, not empty.
-- **juniper-ci-tools on this host.** `JuniperCascor1` has 0.8.0, older than CI's 0.9.1. 0.8.0 reads a `#` comment inside a code block as a deleted heading. Upgrading the environment is the owner's call.
+- **juniper-ci-tools on this host.** `JuniperCascor1` has 0.8.0, older than CI's 0.9.1. 0.8.0 reads a `#` comment inside a code block as a deleted heading. Upgrading the environment is the Overtoad's call.
 - **A symbol-loss waiver** goes in a commit body (`Allow-Symbol-Loss: method:<Class>.<name>`), never in PR prose.
 - **Temp paths.** Set `TMPDIR` and `GIT_CEILING_DIRECTORIES` to `/home/pcalnon/Development/python/Juniper/juniper-ml/tmp`, and never write under `/tmp`. Use `LC_ALL=C` for `sort` / `comm`: the default collation produced false census diffs.
 

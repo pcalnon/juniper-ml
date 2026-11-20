@@ -89,7 +89,7 @@ formatting or data issues affecting the *fails to load* snapshots".
 | `load` | **35 files/s → ~14 min** for the archive | category 1, authoritatively |
 | `train` | **not implemented** (handoff item 3) | categories 2 vs 3 |
 
-**Two axes, not one.** The owner's five categories (§2.4 of the handoff) are not a
+**Two axes, not one.** The Overtoad's five categories (§2.4 of the handoff) are not a
 partition, and the order they are listed in is not a first-match-wins precedence — read
 that way, **category 5 is unreachable**, because every attributed snapshot with hidden
 units is caught by category 4 first and every attributed one without them by 2 or 3. So
@@ -102,7 +102,7 @@ the tool emits:
   `has_hidden`.
 
 This is a **resolved ambiguity, not a reading of the source text**, and it is the one
-design decision in this work that is the owner's to overturn. `CATEGORY_PRECEDENCE` in
+design decision in this work that is the Overtoad's to overturn. `CATEGORY_PRECEDENCE` in
 the module is the single place that encodes it. Health questions must be asked with
 `--health`, never `--category`.
 
@@ -322,7 +322,7 @@ bug at unit index 1; the *structural* conclusion does not depend on which it was
   files.
 - **The 265 are the strongest retention-deletion candidates in the archive** (§6.4): they
   are unloadable, unrecoverable, and their loss is already established. That is the
-  owner's call, not this document's.
+  Overtoad's call, not this document's.
 - **`allow_invalid=True` does not reach them.** `load_network` returns at the format gate
   (`:986`) before `_create_network_from_file`, and `allow_invalid` is only consulted at
   `_check_integrity` afterwards. So the D-E forensic hatch covers §4's cohort but **not**
@@ -478,7 +478,7 @@ Vacuous-pass class; fix is to move the guard to the end of the file.
 
 **Not settled, and deliberately not started:**
 
-- **Item 2, the inference pass.** The owner's design (score every 2-in/2-out cascor
+- **Item 2, the inference pass.** The Overtoad's design (score every 2-in/2-out cascor
   dataset, pick the largest above-chance margin) is sound and unblocked by this work, but
   needs the dataset roster enumerated first.
 - **Item 3, the training probe.** The expensive step. `--stage train` refuses rather than

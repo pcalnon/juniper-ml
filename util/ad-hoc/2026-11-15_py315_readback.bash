@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-11-15
 # Status:     ad-hoc -- one-off (the post-upload check for juniper-cascor#759 and juniper-cascor-worker#228)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    tmp/py315/ROLLOUT_BRIEF.md, "Mechanics" (the read-back this automates); util/open_signed_pr.py
 #
 # Usage: readback.bash <bare-repo> <worktree> <paths-file> [<ref>]     Exit 0 = all identical.

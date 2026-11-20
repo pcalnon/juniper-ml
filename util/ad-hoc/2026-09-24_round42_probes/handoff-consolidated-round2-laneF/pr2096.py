@@ -10,8 +10,8 @@ print(files)
 # compare blobs with other worktrees' files
 wt = pathlib.Path("/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees")
 cands = {
-  "graceful-sprouting-panda handoff": wt / "graceful-sprouting-panda/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md",
-  "bubbly draft": wt / "bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md",
+  "graceful-sprouting-panda handoff": wt / "graceful-sprouting-panda/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md",
+  "bubbly draft": wt / "bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md",
 }
 for k, p in cands.items():
     if p.is_file():

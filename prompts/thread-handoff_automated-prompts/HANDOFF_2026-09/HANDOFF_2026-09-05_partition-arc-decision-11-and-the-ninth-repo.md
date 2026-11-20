@@ -603,7 +603,7 @@ The tell was `mergeStateStatus: BLOCKED` rather than `BEHIND` once the branch wa
 Two lessons worth carrying: the lane contention was real but **incidental**, and a plausible
 mechanism that explains the symptom is not thereby the cause; and
 `util/ad-hoc/2026-09-05_auto_merge_shepherd.py` reports `NOT-ARMED` transiently from GraphQL when the
-PR is in fact armed — its own docstring warns about that read, and it wants `owner/repo` where
+PR is in fact armed — its own docstring warns about that read, and it wants `Overtoad/repo` where
 `util/safe_merge.py` wants a bare name.
 
 Working tree carries this document plus `util/ad-hoc/2026-09-05_census_full_family_v2.py`; the other
@@ -642,7 +642,7 @@ document an hour and a wrong diagnosis (§12).
   invocation reports `files_screened=0` and is vacuous. `Allow-Symbol-Loss:` must be the **last**
   paragraph.
 - `util/safe_merge.py` wants a bare repo name; `util/ad-hoc/2026-09-05_auto_merge_shepherd.py` wants
-  `owner/repo`. Background waiters get OOM-killed — do not run two on one PR.
+  `Overtoad/repo`. Background waiters get OOM-killed — do not run two on one PR.
 - `gh` 2.46.0 breaks **all** `gh pr edit`; patch through `gh api -X PATCH .../pulls/N -F body=@file`.
 - cascor's marker-gated `src/tests/integration/` skips without `--integration`.
 - **This worktree-isolated session refuses** compound commands that name git with a runtime-computed

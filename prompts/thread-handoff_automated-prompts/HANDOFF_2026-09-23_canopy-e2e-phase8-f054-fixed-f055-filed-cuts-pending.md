@@ -69,13 +69,13 @@ Continue the canopy E2E validation arc from Phase 8 of the ledger,
    arbitration" is refuted. Correct canopy's `dashboard_manager.py` comment once the mechanism is known.
 4. **The rest of the ledger's still-owed list**:
    - F-053's latency regression hunt;
-   - F-004's contract (owner);
+   - F-004's contract (Overtoad);
    - `FULL_HISTORY_POLL_TICK_MODULUS`;
    - #613's guard;
    - F-049 and #674;
    - CAN-015's loop;
    - M-CANDIDATES-10/-11;
-   - the replay-drives-no-chart owner question;
+   - the replay-drives-no-chart Overtoad question;
    - F1 (pause at the current index on a slider trigger equal to `slider_w`).
 5. **`MEMORY.md` compaction.** It is ~26 KB against a 24.4 KB load limit, so the tail is cut off at load;
    the target is 20 KB. RETIRE entries into topic files; never strip hooks. Snapshot the link SET first

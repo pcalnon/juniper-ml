@@ -7,7 +7,7 @@
   `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-2-e6-d5-d6-h1-done-e2-blocked-on-little-snitch.md`.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.3.0. This session's
   record, task status and errata are in its §18. Task IDs below refer to the plan.
-- **Standing approval:** the owner granted merge approval for the work arc, merging only after green. It does not cover
+- **Standing approval:** the Overtoad granted merge approval for the work arc, merging only after green. It does not cover
   the `pypi` deployment gate.
 
 ## Landed (squash-merged to `main` after green)
@@ -29,7 +29,7 @@
   validation phase `install` for cascor and data, and JuniperCanopy1's own pip section. Little Snitch holds those
   connections for an alert nobody answered (§18.3 E-NET-3): the probe hangs past its 15 s socket timeout.
   Do **not** route around it.
-- **Resume** once the owner has allowed them. Run each env in turn, cascor then data:
+- **Resume** once the Overtoad has allowed them. Run each env in turn, cascor then data:
   1. Run `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py <cascor|data> --phase install`, then `--phase test`. The `prepare` copies are done. Classify each failure as host-environment or a real env problem; fix the real ones.
   2. Create JuniperCanopy1 (dry run first), then run `validate_envs.py canopy`.
   3. Update each spec header's STATUS paragraph, and add the E2 outcome to the plan (a §19 row, or a §18 erratum if the session is short).
@@ -40,7 +40,7 @@
 
 ## Findings this session (all in plan §18.3)
 
-- **E-SSL.** mamba 2.x ignores `CONDA_SSL_VERIFY`, so the D6 and E2 recipes ran with TLS verification off; use `MAMBA_SSL_VERIFY=true`. Owner step 4 (`ssl_verify: true`) fixes the root, and re-creating JuniperHostTools with verification is the owner's call.
+- **E-SSL.** mamba 2.x ignores `CONDA_SSL_VERIFY`, so the D6 and E2 recipes ran with TLS verification off; use `MAMBA_SSL_VERIFY=true`. Owner step 4 (`ssl_verify: true`) fixes the root, and re-creating JuniperHostTools with verification is the Overtoad's call.
 - **E-NET-3.** Little Snitch verdicts moved: mamba is allowed, base `python3.13` is denied (a fast TLS EOF), and new env pythons are held.
 - **E-G6.** A hook without `stages` runs at every stage, and a manifest's `stages` overrides `default_stages`. G6 handles both.
 - **E-CQ2.** CodeQL `py/overly-permissive-file` (a `chmod 0o644`) blocked #2272 until fixed. The pre-screen does not predict it, so grep for `chmod(` before landing.
@@ -59,21 +59,21 @@
 
 ## Agent next
 
-1. **E2 resume**, after owner step 1.
+1. **E2 resume**, after Overtoad step 1.
 2. **G1:** `util/host_state_probe.bash` (collection) and `util/host_state_check.py`, which evaluates `conf/hosts/turing/expected.yaml` against the probe's JSON. Flags `--json`, `--check`, `--section`; suites `tests/test_host_state_probe.py` and `tests/test_host_state_check.py`; R-G1, the X2 class. G1 graduates `util/ad-hoc/2026-10-15_turing_host_state_probe.bash`. When it lands, its two suites join `HOST_TOOLING_SUITES` and `HOST_TOOLING_PATHS` in the G4 job, and `SUITES` in `tests/test_ci_host_tooling_macos.py`. Design notes:
    - The gates come from §9.3, revised by E-D6. G-TOOLS checks that every tool `hosttools-environment.yml` names resolves from `~/.local/bin`.
    - G-ALIAS can reuse `util/git_remote_alias_check.py --json`, and G-SIGN `util/headless_signing_preflight.bash`.
    - G-MEM's thresholds are already in `util/macvm_ctl.bash` (F5a).
    - Scripts check paths and modes only and never read key contents.
 3. **G4 promotion:** after 10 consecutive green runs, add `host-tooling-macos` to `required-checks.needs`, and flip `test_the_job_is_advisory`.
-4. **F3 node mode**, after owner step 7. Then **the Session 3 group:** H2, H4, H5, and E5, which needs A6. D2-upg and D4 still need re-planning under the D6 ruling.
+4. **F3 node mode**, after Overtoad step 7. Then **the Session 3 group:** H2, H4, H5, and E5, which needs A6. D2-upg and D4 still need re-planning under the D6 ruling.
 5. **Post-merge check (E-LAND-2).** After juniper-ml#2273 merged, dry runs of `util/ad-hoc/2026-10-20_turing_g{5,6,4}_apply.py` on `main` at `3968ca04` reported all 25 blocks `present`. The next uploader of the same shared files is the "code signing" session's PR. It adds the plan's §19 and v1.4.0 on top of this record, and its edit script rebuilds from origin/main after this record merges. After it merges, run the three dry runs again: each block reports `present`, or the script re-applies it.
 
 ## Verify the starting state
 
 ```bash
 git fetch origin && git log -3 --oneline origin/main
-gh search prs --owner pcalnon --state open --json repository,number,title
+gh search prs --Overtoad pcalnon --state open --json repository,number,title
 python3 util/home_path_literal_check.py                    # PASS (G5)
 python3 util/git_remote_alias_check.py                     # exit 1 until A1
 /usr/local/miniforge3/condabin/conda env list              # JuniperCascor1 and JuniperData present

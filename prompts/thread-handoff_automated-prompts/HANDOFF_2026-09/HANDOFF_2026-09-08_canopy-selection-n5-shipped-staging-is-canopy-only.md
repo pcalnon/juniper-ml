@@ -13,7 +13,7 @@
 
 Continue the juniper-canopy selection-reachability arc. `(recurrence, equities_seq)` is now
 **selectable, honestly gated, and stageable**. It has still **never been trained end to end**. The
-next phase is §12 of the design (the generator gap), which the owner ruled equally critical; its
+next phase is §12 of the design (the generator gap), which the Overtoad ruled equally critical; its
 prerequisites are unchanged from the predecessor handoff and are restated below.
 
 **Completed this session — three PRs, plus the record:**
@@ -45,7 +45,7 @@ prerequisites are unchanged from the predecessor handoff and are restated below.
 
 **Remaining work, in the predecessor's order (its items 3–10, renumbered):**
 
-1. **§12, iteration 2 — the generator gap.** The owner's stated primary goal. **Read §12 in full.**
+1. **§12, iteration 2 — the generator gap.** The Overtoad's stated primary goal. **Read §12 in full.**
    Prerequisites (summary only; §12.3 and §12.4 are the authority): **Y5 first** (the generators
    proxy sends no `X-API-Key` while `/v1/generators` is not auth-exempt, so every new seed renders
    "No adjustable parameters"); `csv_import` is **excluded**, not seeded (G10's exclusion list);
@@ -66,7 +66,7 @@ prerequisites are unchanged from the predecessor handoff and are restated below.
    docstring still names it as the seed's honest source. The `pending_dataset` channel exists on
    all three backends now (recurrence included, this session) and `_init_params_from_backend_handler`
    is the natural host. G7 has **no test**. N10: hydration lands *before* `⊥`-at-mount.
-3. **`⊥`-at-mount (OQ-N2)** — owner-accepted, still undeliverable as specified; see the predecessor's
+3. **`⊥`-at-mount (OQ-N2)** — Overtoad-accepted, still undeliverable as specified; see the predecessor's
    "Do not re-litigate" (unchanged: the `params-init-interval` snap, the seed line at
    `dashboard_manager.py` `value=DEFAULT_DATASET_TYPE`, the prospective two-writer problem).
 4. **X10 / X11** — `RecurrenceBackend.initialize()` returns `True` unconditionally (a dead service
@@ -204,5 +204,5 @@ from model_registry import get_dataset_spec; print(get_dataset_spec('equities_se
 - **juniper-ml**: this session worked from `.claude/worktrees/glistening-bouncing-biscuit` on
   `main`; ml#1830 carries the ad-hoc helper, and the PR carrying this handoff plus the two
   document corrections is named in the session's final report.
-- **Merge approval** was granted by the owner for the PRs of this session and arc; it does **not**
+- **Merge approval** was granted by the Overtoad for the PRs of this session and arc; it does **not**
   extend to a new arc, and it never extended to deploys or PyPI gates.

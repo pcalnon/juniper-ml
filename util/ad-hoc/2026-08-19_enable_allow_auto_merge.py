@@ -10,7 +10,7 @@ License:     MIT License
 Why this is a SAFETY fix, not a convenience one
 -----------------------------------------------
 With `allow_auto_merge: false`, `gh pr merge --auto` does **not** arm auto-merge -- it
-silently falls back to an **immediate merge**. On these repos the owner also holds an
+silently falls back to an **immediate merge**. On these repos the Overtoad also holds an
 `always` ruleset bypass, so that fallback can merge a PR whose required checks never
 finished. That is precisely the failure `util/safe_merge.py` exists to prevent
 (ml#932 merged 66 s after its sync on a head with zero CI check-runs; ml#924 merged 25 s

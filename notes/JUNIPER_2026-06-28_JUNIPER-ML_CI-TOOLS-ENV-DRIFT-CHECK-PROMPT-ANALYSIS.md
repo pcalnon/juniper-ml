@@ -41,9 +41,9 @@ This session was asked to **develop a validated, correct, effective prompt** (no
 
 ## 3. How the prompt was developed (work performed)
 
-1. **Owner scoping (two `AskUserQuestion` rounds).** The plan is multi-phase; the owner first chose the **entry point** (Canopy A1 — the env-floor guard, the plan's mandated canopy-first start). Grounding then discovered A1's canopy deliverable already exists (§5), so a second question confirmed the **rescope** to §10.1's shared tool.
+1. **Owner scoping (two `AskUserQuestion` rounds).** The plan is multi-phase; the Overtoad first chose the **entry point** (Canopy A1 — the env-floor guard, the plan's mandated canopy-first start). Grounding then discovered A1's canopy deliverable already exists (§5), so a second question confirmed the **rescope** to §10.1's shared tool.
 2. **Grounding (two read-only `Explore` sub-agents + the discovery CLI).** Re-confirmed at current HEAD: the floor drift the guard targets, the crash sites, the mocked seams, the existing canopy floor test, the `juniper-ci-tools` packaging/console-script idiom, the CI gate, the publish flow, the canopy CI insertion point, and the consumer-pin guards.
-3. **Authoring.** Filled a copy of `task.md`, mapping the owner's intent to ordered directives + measurable acceptance criteria, injecting only grounded anchors.
+3. **Authoring.** Filled a copy of `task.md`, mapping the Overtoad's intent to ordered directives + measurable acceptance criteria, injecting only grounded anchors.
 4. **Validation (`prompt-validator` subagent).** Iter-1 FAIL → fix → iter-2 PASS (§2).
 5. **Emission.** Written to `prompts/generated/` under the convention `JUNIPER_<APP>_<SUBJECT>_<TYPE>_<DATE>_<HHMM>.md` (confirmed parseable by `util/generated_prompt_index.py`).
 
@@ -53,7 +53,7 @@ Agents employed — all via the Agent tool: `Explore` ×2 (grounding), `prompt-v
 
 ## 4. Scope evolution (the load-bearing discovery)
 
-The owner's chosen entry point — **Canopy A1, "a dependency-satisfaction check + canopy `test_env_satisfies_floors`"** — turned out **partly shipped**: `juniper-canopy/src/tests/unit/test_client_version_floors.py` already implements the floor check (reads installed versions via `importlib.metadata` — bypassing the conftest mocks — and compares against `pyproject.toml` floors parsed with `tomllib` + `packaging`; its docstring even cites the 2026-06-26 incident).
+The Overtoad's chosen entry point — **Canopy A1, "a dependency-satisfaction check + canopy `test_env_satisfies_floors`"** — turned out **partly shipped**: `juniper-canopy/src/tests/unit/test_client_version_floors.py` already implements the floor check (reads installed versions via `importlib.metadata` — bypassing the conftest mocks — and compares against `pyproject.toml` floors parsed with `tomllib` + `packaging`; its docstring even cites the 2026-06-26 incident).
 
 What is **genuinely missing** (plan §10.1's durable guard) and therefore what the prompt targets:
 
@@ -66,7 +66,7 @@ The prompt therefore directs **generalize, do not duplicate** (the canopy test s
 
 ## 5. The downstream task in one line
 
-Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-env-drift-check`** console script in `juniper-ci-tools` (plain wheels included; `--check-lock` validates `requirements.lock` vs floors), with its own unit tests (≥85% gate) and a `juniper-ml/tests/` dogfood test, landed as a **self-contained juniper-ml PR1**; then — after the owner publishes `juniper-ci-tools` — wire canopy to run it as a preflight (**PR2**). PR1 also widens juniper-ml's own three `<0.5.0` workflow pins alongside the `0.5.0` bump.
+Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-env-drift-check`** console script in `juniper-ci-tools` (plain wheels included; `--check-lock` validates `requirements.lock` vs floors), with its own unit tests (≥85% gate) and a `juniper-ml/tests/` dogfood test, landed as a **self-contained juniper-ml PR1**; then — after the Overtoad publishes `juniper-ci-tools` — wire canopy to run it as a preflight (**PR2**). PR1 also widens juniper-ml's own three `<0.5.0` workflow pins alongside the `0.5.0` bump.
 
 ---
 
@@ -74,13 +74,13 @@ Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-e
 
 ### 6.1 Suite friction observed this session
 
-1. **Discovery cannot detect "deliverable already (partly) exists."** The single most consequential fact this session — that A1's canopy test was already written — was found only by a grounding `Explore` agent, not by any discovery probe, and forced a mid-flight rescope (a second owner question). A **"prior-art / already-shipped" probe** (grep the target repo for an existing test/symbol matching the task's intent before drafting) would catch this class up front. Builds on the debug doc's §6.1 agent-specialization wishlist.
+1. **Discovery cannot detect "deliverable already (partly) exists."** The single most consequential fact this session — that A1's canopy test was already written — was found only by a grounding `Explore` agent, not by any discovery probe, and forced a mid-flight rescope (a second Overtoad question). A **"prior-art / already-shipped" probe** (grep the target repo for an existing test/symbol matching the task's intent before drafting) would catch this class up front. Builds on the debug doc's §6.1 agent-specialization wishlist.
 2. **The single-repo limitation (A-1) bit again.** A `juniper-ml`+`juniper-canopy` task had to be grounded against a single-repo discovery bundle + manual cross-repo `Explore` re-probes. A first-class `--target-repo` / multi-repo mode remains the highest-value suite fix for cross-repo prompts (the common case).
 3. **The validator's value was concrete.** R2.4 (a version bump breaking an ungated lint two directories away) is precisely the cross-file consistency a human author misses; the `prompt-validator`'s independent re-probe caught it with reproducible evidence.
 
 ### 6.2 Other Juniper issues (referenced, not re-discovered)
 
-- **DISC-1 (configuration / env-drift, CONFIRMED live; still unfiled).** `juniper-recurrence` app + client `pyproject.toml:132` filter `starlette.exceptions.StarletteDeprecationWarning`, absent from the live env's Starlette → `pytest --co` errors at config-parse. Recorded in the audit plan §14.2; owner: juniper-recurrence. A separate fix, surfaced again here only because it is the same env-drift class this prompt's tool guards against.
+- **DISC-1 (configuration / env-drift, CONFIRMED live; still unfiled).** `juniper-recurrence` app + client `pyproject.toml:132` filter `starlette.exceptions.StarletteDeprecationWarning`, absent from the live env's Starlette → `pytest --co` errors at config-parse. Recorded in the audit plan §14.2; Overtoad: juniper-recurrence. A separate fix, surfaced again here only because it is the same env-drift class this prompt's tool guards against.
 - The **env-floor-drift guard gap itself** (no shared, plain-wheel-aware checker) is the design gap this prompt closes (plan §10.1 / A-2).
 
 No syntax errors encountered; every cited artifact resolved (validator iter-2: all anchors `grounded: true`).

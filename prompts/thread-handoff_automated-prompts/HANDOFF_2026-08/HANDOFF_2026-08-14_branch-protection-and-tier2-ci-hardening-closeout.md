@@ -40,13 +40,13 @@ on Paul's explicit per-PR/group approval; guardrails (checks RAN + green, verify
    `BUMPED_NOT_RELEASED` cycle should reach `PENDING_PYPI_APPROVAL` in minutes rather than burning
    the 30-min cap.
 
-## Open questions (owner decisions)
+## Open questions (Overtoad decisions)
 
 - **Doc corruption on `main`, unrepaired.** `f366279` injected paste damage into
   `notes/JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_REQUIRED-STATUS-CHECK-CONTEXT-LISTS.md`: a table row
   ending `|Documentation Links`, a stray `Build P` line, and — most consequential — a concatenation
   **inside the juniper-cascor-worker Tier 1 code block**, which is the copy-paste source for ruleset
-  config. Left unreverted because it came from an owner commit. Repair?cd Development/python/Juniper/juniper-ml/; conda activate JuniperCascor1; l; l
+  config. Left unreverted because it came from an Overtoad commit. Repair?cd Development/python/Juniper/juniper-ml/; conda activate JuniperCascor1; l; l
   `gh pr merge --auto` **silently falls back to an immediate merge** instead of arming. Deliberate?
 - **Merge queue?** `strict_required_status_checks_policy` is on fleet-wide (the deliberate
   anti-storm guarantee after the Cursor PR-storm damage). Cost: PRs go `BEHIND` repeatedly under

@@ -7,7 +7,7 @@ Report a FINDING only where a statement is FALSE, a number or reference WRONG, t
 
 HARD RULES
 - READ-ONLY on every repo: no edits to tracked files, no commits, pushes, fetches, PR/issue writes. `gh api` GETs are fine. Do not start or stop any service and do not drive a browser; never touch ports :8051, :8101, :8202, :8052 or any :805x/:806x leg. Scratch work only in a directory you create with `mktemp -d`.
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential anywhere; never request an email field from GitHub. Never run `git show --stat <commit>`, `git log` with an author or body format, or anything else that prints a commit's author line or trailers; use `git show <commit>:<path>`, `git diff <a> <b> -- <path>` and `git log --format='%h %s'`. Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential anywhere; never request an email field from GitHub. Never run `git show --stat <commit>`, `git log` with an author or body format, or anything else that prints a commit's author line or trailers; use `git show <commit>:<path>`, `git diff <a> <b> -- <path>` and `git log --format='%h %s'`. Report any slip.
 - Read juniper-ml only through the worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/dreamy-fluttering-kite` (never `git -C` the primary juniper-ml checkout). Read canopy from `/home/pcalnon/Development/python/Juniper/juniper-canopy`'s object store (no fetch). If a shell guard refuses a compound command, split it, or put a script under your `mktemp -d` directory.
 - If your run is cut off and later resumed, carry on from where you stopped.
 

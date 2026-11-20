@@ -1,6 +1,6 @@
 # Pending items for the NEXT register PR (the closes PR), after the fix-forward PR merges
 
-## From the old session (bc31e993), ~10:50Z -- a NEW owner ruling + PRs in flight THERE (do not duplicate)
+## From the old session (bc31e993), ~10:50Z -- a NEW Overtoad ruling + PRs in flight THERE (do not duplicate)
 - RULING "Key leaks" (AskUserQuestion; verify verbatim from bc31e993's JSONL before quoting -- extend
   util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py MARKERS or add "Key leaks"): chosen "Fix everywhere
   now (Recommended)", no notes. Description: "Up to four PRs. canopy: check outbound keys where they're read,
@@ -42,7 +42,7 @@ Source of each item in brackets. Verify every one against source before filing.
 
 ## Residue to file (verify first)
 - cascor residue (a): flag-off 422 shown as shortfall refusal naming the knob -> RESOLVED by #686 item (4) if it lands; record as found-and-fixed, not a row.
-- cascor residue (b): current_dataset names the fetch after a partial inline start; canopy hydrates its selector from it -> peer confirms harmless and intended (owner's ruling scope, see owner-rulings-verbatim.md). Record, no row.
+- cascor residue (b): current_dataset names the fetch after a partial inline start; canopy hydrates its selector from it -> peer confirms harmless and intended (Overtoad's ruling scope, see Overtoad-rulings-verbatim.md). Record, no row.
 - cascor residue (c): cascor#678's squash message is stale (already recorded by ml#2074). Stands.
 - canopy#683 (canopy follow-up, open, head 8917fdac855b): residue (a) padded JUNIPER_DATA_API_KEY / cascor key via httpx may leak the same way -- validator probing; (b) non-ASCII keys still 500 (documented, unchanged); (c) #678's mutation script 2026-09-23_blank_api_key_warning_mutation_check.py M5/M6 arms can no longer apply (anchor gone) -> its retire condition is met. #683 item 3 is a DISCLOSED behaviour change (whitespace-only env key -> /docs etc. 200).
 - canopy NIT (pre-existing, from #686's validation): VERIFIED 2026-09-24 on canopy main -- src/frontend/dashboard_manager.py:8410 (`_producer_detail_from_refusal`, stops (" To accept it,", " The resulting dataset")) drops juniper-data's own last sentence of the cap refusal (juniper_data/core/limits.py:168: "...to import the first N. The resulting dataset will be permanently annotated as truncated."), so the user never sees that truncation is permanent. Fix = cut only at " To accept it,". Canopy behaviour -> canopy E2E ledger (F-CANOPY-*), per register §4.9, NOT a register row; hand to a canopy session.
@@ -70,7 +70,7 @@ Source of each item in brackets. Verify every one against source before filing.
   /home/pcalnon/Development/python/Juniper/worktrees/juniper-data--fix--conditional-requests-round3-followups--20260924-0323--39d1cab2/).
 - #2080 + #2075-v3 post-merge validation lanes: A a3212838e6d1674b7, B a833573c5bbdf2a36 (scratch r42/pr2080-lane{A,B}).
   Archive as ml2080-round1-laneA-reprobe.md / ml2080-round1-laneB-refute.md.
-- PyPI v0.16.0 publish run 35977786108 WAITING owner approval; ships batch-tags race, NBSP star, symlink fault (fixed by #438). Owner decision.
+- PyPI v0.16.0 publish run 35977786108 WAITING Overtoad approval; ships batch-tags race, NBSP star, symlink fault (fixed by #438). Owner decision.
 
 ## SECOND fix-forward (register + primer), from ml2080-round1-lane{A-reprobe,B-refute}.md -- both lanes agree on H1/M1
 Register (notes/...DEFECT-REGISTER.md at main):

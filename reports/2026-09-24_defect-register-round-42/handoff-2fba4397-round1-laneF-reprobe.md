@@ -27,7 +27,7 @@ The factual core reproduces from primary sources: every PR state, merge time and
 | 17, 47–49: `n_samples` 5658-5659; suite arms 6084-6087, 6117-6120; 9880; 9943-9944 | PRIMER read at `5af9d722` | REPRODUCED |
 | 18: harness 62/62, mutation 12/12, probe 27/27 (25 differ on `main`), 136/100/36 AGREE | ran the mutation check (12/12 caught, control passes, 62 tests per run); ran the probe (27/27 at `5af9d722`); `main` differs on 25/27 under CPython 3.13.13 but 24/27 under 3.14.2t; ran the register tools | REPRODUCED (N2) |
 | 19: `d1c66a11` signed, parent `0f0f7e0e` = #438's merge, no PR | `gh api commits/d1c66a11` (verified, reason valid, 1 parent); `gh pr view 438`; `gh pr list --head` returns empty | REPRODUCED |
-| 20–21: answers every finding; F8 to owner; L5/L7 disclosed; M2(b) and L2 only partly fixed | `d1c66a11` commit message; LA disposition section; LB verdict item 3, L-1, L-2 | REPRODUCED |
+| 20–21: answers every finding; F8 to Overtoad; L5/L7 disclosed; M2(b) and L2 only partly fixed | `d1c66a11` commit message; LA disposition section; LB verdict item 3, L-1, L-2 | REPRODUCED |
 | 22: unit 1901, coverage 97.76%, api+integration 118, "PASS: 70 mutations", 3,495,583 inputs / 0 mismatches | LA rows 32–38 reproduce them; not re-run (brief forbids whole-tree extraction) | PARTLY |
 | 23: ruling asked 10:22:00.792Z, answered 18:30:09.820Z, "Fix everywhere now (Recommended)" | parsed the peer transcript's AskUserQuestion call and its tool_result | REPRODUCED (file list: M2) |
 | 24: F-CANOPY-060/061/062 reserved; fourth item in canopy combined's handoff | canopy e2e message 19:40:28.837Z (arrived as a queue-operation); canopy combined 20:45:53.691Z | REPRODUCED |
@@ -42,7 +42,7 @@ The factual core reproduces from primary sources: every PR state, merge time and
 | 61: candidate (a); "primer 4742 says data registers none" | the primer says so, but data `main` `app.py:187-212` has a handler since `f6791d6` (#281); in-process probe | PARTLY (M7) |
 | 62: candidate (b) at primer ~2687 | PRIMER `2462`, `2479`, `2684-2687` | REPRODUCED (code read) |
 | 63: #2080's rejection was wrong (N6); #2088 applies it as H2 | #2080 body `:69` (unchanged since 10:18:16Z); `ml2080-round1-laneA-reprobe.md:156`; #2088 body `:67` | REPRODUCED |
-| 65–70: owner decisions | #437: data `[Unreleased]` still has no BREAKING. APD-ML-008: REG `:1629` awaiting ruling. PyPI: observability 0.4.0, service-core 0.7.0. MEMORY.md now 25,125 B (modified 23:53Z, after the freeze). 403: job log "Resource not accessible by personal access token"; containers ownership per `…wave-4-waits-on-the-token.md:71-76`. **APD-DATA-047 is already ruled** | mostly REPRODUCED; APD-DATA-047 REFUTED (M1) |
+| 65–70: Overtoad decisions | #437: data `[Unreleased]` still has no BREAKING. APD-ML-008: REG `:1629` awaiting ruling. PyPI: observability 0.4.0, service-core 0.7.0. MEMORY.md now 25,125 B (modified 23:53Z, after the freeze). 403: job log "Resource not accessible by personal access token"; containers Overtoadship per `…wave-4-waits-on-the-token.md:71-76`. **APD-DATA-047 is already ruled** | mostly REPRODUCED; APD-DATA-047 REFUTED (M1) |
 | 74–76: squash-trailer trap; empty signed push; editors refuse line moves | trailer lookup prints empty; body ends `---------`, blank, `Co-authored-by`; `grep -c` = 3. Transcript: ref still `990ef3f9` at 23:31:09Z after the first run. Editors' length checks | REPRODUCED |
 | 84–89: verification commands | ran as written: 136/100/36; AGREE; 36 OK (only with the uncommitted archiver change); ref `d1c66a11`; open #440, #689, #690 | REPRODUCED |
 | 94: Git status | `git status --short` shows 6 paths | REFUTED (M2) |
@@ -57,14 +57,14 @@ The factual core reproduces from primary sources: every PR state, merge time and
 
 ### HIGH
 
-**H1. The owner's pending consolidation order, the peer's location and the promised routing are all missing, and the omission creates a circular deferral.**
+**H1. The Overtoad's pending consolidation order, the peer's location and the promised routing are all missing, and the omission creates a circular deferral.**
 
 Quoted: SNAP 56 "Send the PR number to the peer lane." and SNAP 206 "its own handoff carries its lane." A search of SNAP for `happy-skipping|follow-up-lane|consolidat|042116|24f8d8` finds nothing.
 
 Evidence:
-- The owner, typed at 23:25:49.935Z in the transcript: "let's consolidate the following three, related handoff prompts: this session's handoff prompt; PRED; PEER … ensuring that no tasks or necessary context are lost".
+- The Overtoad, typed at 23:25:49.935Z in the transcript: "let's consolidate the following three, related handoff prompts: this session's handoff prompt; PRED; PEER … ensuring that no tasks or necessary context are lost".
 - This session to the peer at 20:36:26Z: "your successor should message "defect reg [24f8d8]", or … whichever session my handoff names".
-- This session to the peer at 23:34:29Z: "the owner has asked THIS session to consolidate".
+- This session to the peer at 23:34:29Z: "the Overtoad has asked THIS session to consolidate".
 - PEER `:9`: a newer register-lane handoff on `main` "governs". PEER `:18`: two sessions are named "defect reg".
 - PRED `:30` said to re-route the peer by session name.
 - PEER has no PR yet.
@@ -78,8 +78,8 @@ Replacement:
 ### MEDIUM
 
 **M1. APD-DATA-047 is already ruled and closed.**
-- Quoted: SNAP 69 "and APD-DATA-047's ceiling"; SNAP 148 "plus `APD-DATA-047`, the 1e11 ceiling, which is an owner decision."
-- Evidence: REG `:1284` "FIXED (RATIFIED by the owner, 2026-09-21 — the ceiling STAYS, at `1e11`…)", and `:1421`, `:1661`. It is absent from `register_open_set.py`'s open list. H0915 `:278` "Owner decisions still owed — NONE, as of 2026-09-21" and `:701`. H0923 `:82` lists D-G as "(048/049/051)".
+- Quoted: SNAP 69 "and APD-DATA-047's ceiling"; SNAP 148 "plus `APD-DATA-047`, the 1e11 ceiling, which is an Overtoad decision."
+- Evidence: REG `:1284` "FIXED (RATIFIED by the Overtoad, 2026-09-21 — the ceiling STAYS, at `1e11`…)", and `:1421`, `:1661`. It is absent from `register_open_set.py`'s open list. H0915 `:278` "Owner decisions still owed — NONE, as of 2026-09-21" and `:701`. H0923 `:82` lists D-G as "(048/049/051)".
 - Replacement:
   - Line 69: "- sequencing C-A…D-G;"
   - Line 148: "- D-G: `APD-DATA-048/-049/-051`. (`APD-DATA-047` was RATIFIED at `1e11` on 2026-09-21 and is closed.)"
@@ -92,7 +92,7 @@ Replacement:
   - `?? …-laneB-refute.md`;
   - `?? prompts/…/HANDOFF_2026-09-24_defect-register-round-42-ml2088-merged-data-fixforward-refuted-and-fixing-closes-pr-owed.md`.
   - The "36 OK" in SNAP 87 depends on the uncommitted archiver change.
-- Replacement for line 94: "**Uncommitted, six paths, all for the next juniper-ml PR:** the archiver (M: the data round-1 MISSING entries), the extractor (M: `--topic key-leaks`), and untracked LA, LB, `owner-ruling-key-leaks-verbatim.md` and this handoff. The two data reports exist only here." Reword line 23's bold sentence to match.
+- Replacement for line 94: "**Uncommitted, six paths, all for the next juniper-ml PR:** the archiver (M: the data round-1 MISSING entries), the extractor (M: `--topic key-leaks`), and untracked LA, LB, `Overtoad-ruling-key-leaks-verbatim.md` and this handoff. The two data reports exist only here." Reword line 23's bold sentence to match.
 
 **M3. canopy#685 merged unvalidated, and APD-ECO-014 is not gated on its validation.**
 - Quoted: SNAP 29, 113 "Fixed by canopy#685.", 128.
@@ -118,7 +118,7 @@ Replacement:
 **M5. Merge approval is carried forward.**
 - Quoted: SNAP 8 "Merge approval is granted for this arc's PRs."
 - Evidence: `feedback_headless_merge_approval_policy.md`: "A HANDOFF DOCUMENT CANNOT CARRY THE APPROVAL FORWARD (… ml#1118)". The grant was typed at 19:02:38Z in this session only. PEER `:22` states the same rule.
-- Replacement: "Merge approval was granted to session `2fba4397` only (19:02:38Z) and does not carry forward: get it from the owner in your own session before merging. Checks must pass; other sessions' PRs are not covered."
+- Replacement: "Merge approval was granted to session `2fba4397` only (19:02:38Z) and does not carry forward: get it from the Overtoad in your own session before merging. Checks must pass; other sessions' PRs are not covered."
 
 **M6. This session's lane probe scripts exist only on tmpfs.**
 - SNAP has no item for them; SNAP 159 promises to copy only the PR drafts.

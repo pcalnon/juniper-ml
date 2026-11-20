@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy canopy#670 round-2 review (Lane B); util/ad-hoc/2026-09-23_f054_r2_laneB_gitobj.py
 
 Builds: c0530279 (v1 as opened), 723ee812 (v1 merged with main 0fca86e9, local), 85415f3c (v2, local

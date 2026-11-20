@@ -22,7 +22,7 @@
 > above is superseded; of the B-phase only **B4** (point native conformance at production `CascorModel`;
 > retire the test-only `CascorModelCoreAdapter`) remains, and it has no PR/branch yet. **`juniper-service-core`
 > 0.2.0 is LIVE on PyPI** (#502 merged), clearing the A-phase publish-blocker — the A-phase remains gated
-> on B4 + the three owner decisions (DR-1 / soak-OQ-17 / manager-appetite); see
+> on B4 + the three Overtoad decisions (DR-1 / soak-OQ-17 / manager-appetite); see
 > `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md`.
 
 > **What this is.** A build plan for the **B-phase** of the juniper-cascor refactor (WS-6, sub-phase

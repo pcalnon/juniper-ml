@@ -504,7 +504,7 @@ Independent of how the link checker handles cross-repo links, the documentation 
 
 Converting all 107 cross-repo relative links to absolute GitHub URLs (e.g., `https://github.com/pcalnon/juniper-data/blob/main/AGENTS.md`) would make them universally resolvable. However, this approach is **rejected** because:
 
-- Hardcodes the GitHub owner and branch name (fragile if repos transfer or fork)
+- Hardcodes the GitHub Overtoad and branch name (fragile if repos transfer or fork)
 - 107+ URLs to construct and maintain
 - Links break if repos go private
 - Loses the "living reference" quality of relative paths that work when repos are side-by-side
@@ -655,7 +655,7 @@ The `DEVELOPER_CHEATSHEET.md` is fundamentally an ecosystem-wide document. Movin
 
 - The cheatsheet would no longer be CI-validated by any single repo's pipeline
 - The `Juniper/` parent directory is not a git repository; the file would not be version-controlled
-- Cross-repo documentation ownership becomes ambiguous
+- Cross-repo documentation Overtoadship becomes ambiguous
 - The file was intentionally placed in juniper-ml as the ecosystem's meta-package
 
 However, if a future `juniper-docs` repository is created for ecosystem-wide documentation, this approach should be reconsidered.

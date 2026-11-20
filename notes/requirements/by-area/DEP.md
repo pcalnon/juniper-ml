@@ -8,7 +8,7 @@
 
 **By priority**: P0=6 | P1=20 | P2=31 | P3=9
 
-**By owner**: ml=50 | dep=6 | can=6 | dat=1 | cwk=1 | cas=1 | rec=1
+**By Overtoad**: ml=50 | dep=6 | can=6 | dat=1 | cwk=1 | cas=1 | rec=1
 
 ---
 
@@ -831,4 +831,4 @@ docker-compose config for 3-service deployment not tested end-to-end.
 
 **Detail**:
 
-Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an owner call; nothing blocks on it.
+Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an Overtoad call; nothing blocks on it.

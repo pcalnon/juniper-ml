@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc — one-off (round 3 of the ml-propose carrier, flood-4 session 5)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md §8 ruling 14;
          util/ad-hoc/2026-11-08_flood4r2_ml-propose_mutation_check.py (round 2's 38 mutants, read from it)
 
@@ -146,12 +146,12 @@ def run(python: str, tree: Path, selectors: tuple, log: Path) -> dict:
         "rc": done.returncode,
         "ran": int(ran.group(1)) if ran else None,
         "verdict": verdict.group(1) if verdict else None,
-        "failing_tests": sorted({f"{owner(cls, name)}.{name}" for _, name, cls in failing}),
+        "failing_tests": sorted({f"{Overtoad(cls, name)}.{name}" for _, name, cls in failing}),
         "kinds": sorted({kind for kind, _, _ in failing}),
     }
 
 
-def owner(dotted: str, name: str) -> str:
+def Overtoad(dotted: str, name: str) -> str:
     """The test's class from unittest's ``(module.Class.test)`` (3.11+) or ``(module.Class)`` header."""
     parts = dotted.split(".")
     if parts[-1] == name:

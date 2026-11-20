@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — one-off (flood-4 round-2 ml-code carrier build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: BRIEF_COMMON_R2 rules 7, 8 and 10 (re-derive registrations on main; bump each doc once; AGENTS.md
          Last Updated). Drafts: #2502 #2504 #2505 #2508 #2513 (their registration hunks, re-applied by anchor).
 
@@ -112,7 +112,7 @@ BRACE_OLD = (
 BRACE_NEW = (
     "- `tests/test_claude_agent_guard_brace_cap.py` -- Turing bring-up C8: `util/claude_agent_guard.py`'s brace expansion at its cap, `MAX_BRACE_ALTERNATIVES` (64), "
     "which `tests/test_claude_agent_guard.py` never reaches. A brace list of exactly 64 alternatives keeps its last slot, so a `.ssh` or `.gnupg` name assembled there is "
-    "denied as `CRED-PATH-BASH` although the source word does not contain it. A word past the cap fails closed (owner ruling, 2026-11-08): 65 alternatives, and 10,000 or "
+    "denied as `CRED-PATH-BASH` although the source word does not contain it. A word past the cap fails closed (Overtoad ruling, 2026-11-08): 65 alternatives, and 10,000 or "
     "100,000, raise `MalformedInput` in the analyzer, and the hook exits 2 with an empty stdout for a Bash command, a Glob or Grep pattern and a Serena include glob. "
     "Until then the 65th alternative was dropped and the command passed. A product of groups counts as its product: six `{a,b}` are judged, a seventh is refused. "
     "A numeric range of exactly 64 includes both ends in either direction; one past the cap is refused inside `_brace_range`, also when `brace_expand` is given a "
@@ -134,7 +134,7 @@ BRACE_NEW = (
 WAKE_OLD = "- `tests/test_wake_the_claude.py` -- Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`\n"
 WAKE_NEW = (
     "- `tests/test_wake_the_claude.py` -- Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`. It also pins the effort default "
-    "(owner ruling, 2026-11-08): `--effort 0` sends `--effort max`, and `auto`, through any alias and in any case, sends no `--effort`, so Claude Code uses its own "
+    "(Overtoad ruling, 2026-11-08): `--effort 0` sends `--effort max`, and `auto`, through any alias and in any case, sends no `--effort`, so Claude Code uses its own "
     "default. juniper-ml#2396 had made the default `auto`, which Claude Code ignores with a warning.\n"
     "- `tests/test_prompt_file_later_flag.py` -- A later `--file` or `--path` that does not resolve must not send the prompt an earlier flag resolved "
     "(`--file good.md --file missing.md`, `--path good.md --path emptydir`, and the `--file-name`, `-f`, `--file-path` and `-l` spellings): each exits 1 naming the "
@@ -163,7 +163,7 @@ TRIAGE_NEW = (
 UTIL_OLD = "  - Turing bring-up C8. Tests: `tests/test_claude_agent_guard.py`, `tests/test_claude_agent_guard_brace_cap.py`.\n"
 UTIL_NEW = (
     "  - **1.3.0** (the Cursor flood-4 round-2 code carrier) fails closed on a brace expansion past its cap and denies the git and GnuPG prefixes that sign:\n"
-    "    - **A brace expansion past `MAX_BRACE_ALTERNATIVES` (64) fails closed** (owner ruling, 2026-11-08). A word that needs more alternatives, as a list, a range "
+    "    - **A brace expansion past `MAX_BRACE_ALTERNATIVES` (64) fails closed** (Overtoad ruling, 2026-11-08). A word that needs more alternatives, as a list, a range "
     "or a product of groups, raises `MalformedInput`, and the hook exits 2, for a Bash word, a Glob or Grep pattern and a Serena include glob alike. It used to be "
     "judged on its first 64, so a `.ssh` or `.gnupg` spelled in alternative 65 passed. A list is counted before it is built and a range is sized arithmetically, so "
     "`{1..1000000}` is refused without being expanded. `for i in {1..100}` is refused too; `$(seq 1 100)` is not.\n"

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use; wraps util/push_signed_commit.py
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 juniper-ml#2089 preserves the probe scripts of session 2fba4397's round-42 lanes, off tmpfs. The lanes
 that validated the session's two handoffs (its own, and the consolidated handoff of both round-42 lanes)

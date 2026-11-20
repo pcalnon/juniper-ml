@@ -4,7 +4,7 @@ Continue the juniper-canopy E2E front-end validation arc (session "canopy functi
 
 ## Completed so far
 
-- Plan of record MERGED + owner-approved: `notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md` (ml#1036; phases 0-4, traps T-1..T-22). Execution script: `notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md` (298 row-ID'd rows, workflows W1-W14). Both survived dual independent audits (890 claims re-probed).
+- Plan of record MERGED + Overtoad-approved: `notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md` (ml#1036; phases 0-4, traps T-1..T-22). Execution script: `notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md` (298 row-ID'd rows, workflows W1-W14). Both survived dual independent audits (890 claims re-probed).
 - Phase 0 MERGED: ml#1037 (canopy leg nested `JUNIPER_CANOPY_SERVER__PORT`), ml#1042 (`--with-recurrence` leg on 8211 + conditional `PYTHON_GIL` probe + teardown glob `.h5`-only), cascor#501 (restored 5 snapshot modules Paul's `4081f5b` direct push over-deleted; cascor main was import-dead — healed, primary ff'd).
 - Rehearsal PASSED: quad up (data 8101 / cascor 8202 / recurrence 8211 / canopy 8051), honest gate green, teardown clean.
 - Owner authorizations in force: headless merges for all arc PRs; §4.5 recurrence-leg default ratified.

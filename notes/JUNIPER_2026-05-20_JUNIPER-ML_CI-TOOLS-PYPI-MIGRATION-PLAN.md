@@ -3,7 +3,7 @@
 **Date:** 2026-05-20
 **Author:** Paul Calnon (drafted by Amp)
 **Status:** **Complete (2026-05-21)** — Waves 0, 1, 2, 4 merged across all 7 consumer repos; §5.1 + §5.2 drift detection live in `juniper-ml/.github/workflows/docs-full-check.yml`. Wave 3 was skipped per plan (no pre-commit surface). Wave 4 PRs: juniper-ml#298, juniper-cascor-client#56, juniper-cascor-worker#79, juniper-data-client#72, juniper-canopy#306, juniper-data#136, juniper-cascor#290. **Extension series (v0.2.0 + v0.3.0) also shipped 2026-05-21** — same package, same fan-out pattern, two additional lints (`juniper-lint-workflow-paths`, `juniper-lint-agents-md-version`); see §7 below for the PR roll-up. Pattern lessons captured in [`JUNIPER_2026-05-21_JUNIPER-ML_CI-TOOLS-EXTRACTION-PLAYBOOK.md`](JUNIPER_2026-05-21_JUNIPER-ML_CI-TOOLS-EXTRACTION-PLAYBOOK.md).
-**Estimated effort:** 3–5 working days, single owner
+**Estimated effort:** 3–5 working days, single Overtoad
 
 ---
 

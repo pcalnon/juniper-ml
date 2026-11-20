@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-20
 Status:      ad-hoc -- audit (re-runnable; widen --since to re-sweep)
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: ml#434 is closed and the "verify the diff reached main" step is part of the
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: ml#434 is closed and the "verify the diff reached main" step is part of the
              merge procedure rather than a periodic sweep.
 Related:     ml#434; canopy#365/#366; juniper-recurrence#7/#8.
 
@@ -91,13 +91,13 @@ def gh_json(args: list[str]):
         return None
 
 
-def merged_prs(owner: str, repo: str, limit: int):
+def merged_prs(Overtoad: str, repo: str, limit: int):
     return gh_json(
         [
             "pr",
             "list",
             "--repo",
-            f"{owner}/{repo}",
+            f"{Overtoad}/{repo}",
             "--state",
             "merged",
             "--limit",
@@ -108,14 +108,14 @@ def merged_prs(owner: str, repo: str, limit: int):
     )
 
 
-def reachable_from_main(owner: str, repo: str, sha: str):
+def reachable_from_main(Overtoad: str, repo: str, sha: str):
     """Is `sha` reachable from main? Returns True / False / None (undetermined).
 
     Uses the compare API rather than local git so no sibling checkout is required and no
     clone can be stale. `compare/main...<sha>` reports <sha> relative to main:
     `behind` / `identical` mean it is an ancestor.
     """
-    data = gh_json(["api", f"repos/{owner}/{repo}/compare/main...{sha}"])
+    data = gh_json(["api", f"repos/{Overtoad}/{repo}/compare/main...{sha}"])
     if not data or "status" not in data:
         return None
     return data["status"] in ("behind", "identical")
@@ -123,7 +123,7 @@ def reachable_from_main(owner: str, repo: str, sha: str):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", action="append", default=None)
     ap.add_argument("--since", default="2026-06-01", help="window start, YYYY-MM-DD")
     # 1000 truncated juniper-ml, which has 1133 merged PRs. Window coverage was still
@@ -144,7 +144,7 @@ def main() -> int:
 
     incomplete, flagged = [], []
     for repo in repos:
-        prs = merged_prs(args.owner, repo, args.limit) or []
+        prs = merged_prs(args.Overtoad, repo, args.limit) or []
         oldest = min((p["mergedAt"] or "" for p in prs), default="")
         # COVERAGE ASSERTION -- the guard against a silent --limit truncation.
         #
@@ -189,7 +189,7 @@ def main() -> int:
         print("-" * 100)
         for repo, p in sorted(flagged, key=lambda r: (r[0], r[1]["number"])):
             sha = (p.get("mergeCommit") or {}).get("oid")
-            ok = reachable_from_main(args.owner, repo, sha) if sha else None
+            ok = reachable_from_main(args.Overtoad, repo, sha) if sha else None
             # "NOT-ON-MAIN", not "STRANDED". The test answers a narrow question -- is THIS
             # PR's merge commit an ancestor of main -- and a False can still mean the work
             # reached main by another route (canopy#365's content was re-landed by #366, so

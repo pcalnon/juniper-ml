@@ -1,6 +1,6 @@
 # HANDOFF 2026-08-26 — Canopy E2E: F-CANOPY-004 ACCEPTED; F-CANOPY-037 is the new sole open P0/P1
 
-Continue the juniper-canopy E2E validation arc. **Headline: the owner's four decisions were taken and
+Continue the juniper-canopy E2E validation arc. **Headline: the Overtoad's four decisions were taken and
 executed, F-CANOPY-004 is now ACCEPTED under a documented freshness contract, and a NEW P0/P1 —
 F-CANOPY-037 — replaces it as the gate on the topology row block. Ledger: 41 findings / 25 fixed /
 1 accepted / 15 open (1 P0/P1 · 2 P1 · 12 P2). Matrix 298/298, 0 unfilled.** Predecessor:

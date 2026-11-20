@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
 Status: ad-hoc -- one-off (Cursor flood-4 round-2 docs-carrier finish, session 8)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (round 2);
          util/ad-hoc/2026-11-12_flood4r2_ml-docs_manifest.py (the session-6 builder: its CARRIED, MAIN_DEFECT_4
          and CLAIMS data are loaded from it, never copied by hand; it was written but never run)
@@ -50,7 +50,7 @@ SESSION8_FIXES = {
         "Session 8 fix-up (I4, 2026-11-15): the session-8 validator's 31 text fixes (findings F1-F8) applied to the carrier tree and to content/, which the re-derive reads, plus the provenance of #2484's paragraph in the commit body and the CHANGELOG entry; re-derived on 7ce8d365 and re-proved there (PROGRESS.txt, REPORT.txt).",
     ],
     2479: [
-        "Kept the two wording changes the session-6 builder made after its last probe commit: the entry table says `max` and `opus` 'as of juniper-ml#2554' (it said 'as shipped on 2026-11-13'), and the `--effort auto` pitfall row cites the owner's ruling of 2026-11-08 and juniper-ml#2554; both checked against scripts/claude_interactive.bash:95-116 and scripts/wake_the_claude.bash:255-262.",
+        "Kept the two wording changes the session-6 builder made after its last probe commit: the entry table says `max` and `opus` 'as of juniper-ml#2554' (it said 'as shipped on 2026-11-13'), and the `--effort auto` pitfall row cites the Overtoad's ruling of 2026-11-08 and juniper-ml#2554; both checked against scripts/claude_interactive.bash:95-116 and scripts/wake_the_claude.bash:255-262.",
     ],
     2494: [
         "Session 8 fix-up (I4): the inherited-GIT_DIR sentences (the scratch bullet, the pitfall row, the CHANGELOG entry, the PR body, this row and claim 50) name both screens: the docs screen is recorded as skip too, so a .md deletion run that is DAMAGED-FIX-FIRST in a plain environment reads MERGE-CLEAN (the session-8 validator's finding F1; its probe re-run on 7ce8d365, s8b/scratch_probe.json).",

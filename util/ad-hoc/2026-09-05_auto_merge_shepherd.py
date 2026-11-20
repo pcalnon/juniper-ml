@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-09-05
 Status:      ad-hoc -- automation
-Retire when: merge queues become available (they require org/enterprise ownership
+Retire when: merge queues become available (they require org/enterprise Overtoadship
              and are settled policy as UNAVAILABLE), or `allow_update_branch`
              gains a server-side auto-sync.
 Related:     util/safe_merge.py (single-PR local wait + merge).

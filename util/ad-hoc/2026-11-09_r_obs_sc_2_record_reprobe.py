@@ -7,10 +7,10 @@ Sub-Project: ad-hoc tooling (consolidated plan record)
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc -- single-use verifier
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md v1.15.15;
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-09_r-obs-sc-2-published-lock-round-merged-plan-v1-15-15-next.md
-         (the handoff whose facts this checks); util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py (the rulings)
+         (the handoff whose facts this checks); util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py (the rulings)
 
 Why
 ---

@@ -25,21 +25,21 @@ Cursor-PR-flood remediation and the sequence-safety ecosystem rollout. Grounded 
 
 ## Remaining work (standing items — each probed 2026-08-08)
 
-1. **Sequence-safety promotion to required contexts** — per-repo owner call *after soak* (plan D8).
+1. **Sequence-safety promotion to required contexts** — per-repo Overtoad call *after soak* (plan D8).
    Soak is fresh: cascor 47 runs (46 success / 1 cancelled) since 08-07; the six consumers 1-2 runs
    each, all success, all 08-08; ml runs it as a `ci.yml` job. Recommendation (promote after a storm
    survives OR ~2 weeks clean) **not yet met** → keep advisory, track soak; do not promote yet.
-2. **#925 bypass-cleanup agenda — 5 owner decisions, all UNEXECUTED** (ruleset 13805432 bypass list is
+2. **#925 bypass-cleanup agenda — 5 Overtoad decisions, all UNEXECUTED** (ruleset 13805432 bypass list is
    byte-for-byte unchanged since the 08-05 research: 5 `always` + 1 `pull_request`). (a) identify
-   Integration **1276151** (owner UI; also always-bypass on cascor ruleset 15081045); (b) audit the two
+   Integration **1276151** (Overtoad UI; also always-bypass on cascor ruleset 15081045); (b) audit the two
    writable DeployKeys incl. the 2026-08-03-active one; (c) remove cursor **1210556** + claude
-   **1236702** `always` bypasses — KEEP owner RepositoryRole 5 and the release-train App **4362741**
+   **1236702** `always` bypasses — KEEP Overtoad RepositoryRole 5 and the release-train App **4362741**
    (`pull_request`); (d) fix the `code_quality`-no-reporting-tool deadlock (attach a tool or drop the
    rule — the reason 4362741 exists); (e) merge-queue↔bypass coupling.
 3. **Merge-queue availability + rule** — no `merge_queue` rule present; `strict=true` fallback already
-   live; `merge_group` prereq already wired. Verify UI availability first (owner notes a
+   live; `merge_group` prereq already wired. Verify UI availability first (Overtoad notes a
    `merge_queue`-422-on-personal-repos report → may be plan-gated), then add the rule *and* remove the
-   app bypasses (2c) so it binds fleet PRs; it never binds owner batch-merges (Role 5).
+   app bypasses (2c) so it binds fleet PRs; it never binds Overtoad batch-merges (Role 5).
 4. **Fleet-supervisor next-storm readiness** — Stage-0 operational. First move on any storm =
    `predict_merge --batch` triage BEFORE any merges. The two wave-2 PR follow-ups are resolved
    (cascor#471/#477, both MERGED); next storm ~early September (cadence inference — flag as inference).
@@ -67,7 +67,7 @@ Cursor-PR-flood remediation and the sequence-safety ecosystem rollout. Grounded 
 - **Owner-only** pypi / environment gates; headless merges only within Paul's explicit approval scope.
   **Derive the open-PR set LIVE (`gh pr list` per repo) — never trust a snapshot**, including this
   one: PR states churned twice during this handoff's own validation pass. At draft time the known
-  owner-gated release-train proposals were ml **#1026** / ml **#1028** (leave them — NOT session work);
+  Overtoad-gated release-train proposals were ml **#1026** / ml **#1028** (leave them — NOT session work);
   any open feature PR belongs to a concurrent session — dup-guard against it, never touch its branch.
 
 ## Verification commands
@@ -82,5 +82,5 @@ gh pr list --repo pcalnon/juniper-ml --state open --json number,title,headRefNam
 ```
 
 Expected git state: `main` clean and current. Derive the open-PR set live with the last command
-above and classify each (owner-gated proposal / concurrent-session feature work / fleet) before
+above and classify each (Overtoad-gated proposal / concurrent-session feature work / fleet) before
 acting. Start fresh from `origin/main` — do not resume any prior session's worktree branch.

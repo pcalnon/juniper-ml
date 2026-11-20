@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-18
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.3 -> v1.7.4);
          juniper-recurrence#208 (W5.10); util/ad-hoc/2026-10-19_plan_v1_7_3_compose_pin_followed.py (the revision this follows,
          a concurrent session's -- it claimed 1.7.3 first, so this one is 1.7.4)
@@ -59,7 +59,7 @@ def edits(sha: str) -> list[tuple[str, str]]:
         ),
         # P5 status row.
         (
-            "| **P5** | Safe service default and per-fold diagnostics: W5.10 first, then W5.8 (B) + W5.9; W5.11 declined | Accepted 2026-10-18 (owner ruling); not started | 5 | recurrence 0.7.0, model 0.5.0 |",
+            "| **P5** | Safe service default and per-fold diagnostics: W5.10 first, then W5.8 (B) + W5.9; W5.11 declined | Accepted 2026-10-18 (Overtoad ruling); not started | 5 | recurrence 0.7.0, model 0.5.0 |",
             f"| **P5** | Safe service default and per-fold diagnostics: W5.10 first, then W5.8 (B) + W5.9; W5.11 declined | In Progress — **W5.10 Done** ({pr}, 2026-10-18; in `[Unreleased]`); W5.8 (B) + W5.9 next | 5 | W5.10 in the next recurrence 0.6.x; W5.8 (B) + W5.9 in recurrence 0.7.0, model 0.5.0 |",
         ),
         # Dependency row: W5.8 (B) is unblocked.
@@ -82,10 +82,10 @@ def edits(sha: str) -> list[tuple[str, str]]:
 
 
 #: The 1.7.3 row's tail (juniper-ml#2246): the 1.7.4 row goes right after it.
-_ROW_ANCHOR = "the owner's W0.1 service-core half and the parent AGENTS.md paragraph; the open follow-ups. | Paul Calnon |\n"
+_ROW_ANCHOR = "the Overtoad's W0.1 service-core half and the parent AGENTS.md paragraph; the open follow-ups. | Paul Calnon |\n"
 
 _CHANGELOG_ROW = (
-    "| 2026-10-19 | 1.7.4 | **W5.10 landed** ({pr}; merged 2026-10-19 00:50Z; the owner's 2026-10-18 acceptance, first in the P5 order of work). "
+    "| 2026-10-19 | 1.7.4 | **W5.10 landed** ({pr}; merged 2026-10-19 00:50Z; the Overtoad's 2026-10-18 acceptance, first in the P5 order of work). "
     "`POST /v1/train` and every fold of `POST /v1/crossval` carry a `diagnostics` block ({fields}); `GET /v1/crossval/status` re-serves it; the `train` CLI prints it. "
     "Read off the fitted model after the solve, changes no number, additive on the wire; in `[Unreleased]`, ships in the next 0.6.x. "
     "W5.9's attribute contract recorded (`gcv_at_edge_` / `null_model_` on the fitted readout). "

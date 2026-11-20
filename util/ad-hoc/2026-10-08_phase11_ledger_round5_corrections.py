@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-08
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Round 5's correction pass on the ledger's Phase 11, its Consensus record included.
 
@@ -85,13 +85,13 @@ SUBS = [
     ),
     # --- item 26: the manual for every open finding; descriptions beside promises (R5A F1, R5B F1, R5B F3) ---
     (
-        "26. **The reach of the owner's §6.3 ruling, and canopy's manual.** First, without waiting for the ruling, check\n"
-        "    F-CANOPY-012 against canopy's manual (Matrix effect and counts). Once the owner rules, check each open finding\n"
+        "26. **The reach of the Overtoad's §6.3 ruling, and canopy's manual.** First, without waiting for the ruling, check\n"
+        "    F-CANOPY-012 against canopy's manual (Matrix effect and counts). Once the Overtoad rules, check each open finding\n"
         "    not yet rated on a CHANGELOG or a design plan for a promise, of a kind the ruling counts, of the behaviour it\n"
         "    breaks.",
-        "26. **The reach of the owner's §6.3 ruling, and canopy's manual.** First, without waiting for the ruling, check\n"
+        "26. **The reach of the Overtoad's §6.3 ruling, and canopy's manual.** First, without waiting for the ruling, check\n"
         "    every open finding against canopy's manual, which §6.3 already counts, starting with F-CANOPY-012 and\n"
-        "    F-CANOPY-013 (Matrix effect and counts). Once the owner rules, check each open finding not yet rated on a\n"
+        "    F-CANOPY-013 (Matrix effect and counts). Once the Overtoad rules, check each open finding not yet rated on a\n"
         "    CHANGELOG or a design plan for a promise, or, if the ruling counts it, a description of an internal\n"
         "    mechanism, of the behaviour it breaks.",
     ),
@@ -123,10 +123,10 @@ SUBS = [
     ),
     # --- round 4's record: Verdicts, credits and Slips (R5A F2, F4) ---
     (
-        "  action (the reach put to the owner, and item 26), so §4 of\n"
+        "  action (the reach put to the Overtoad, and item 26), so §4 of\n"
         "  `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 5.",
-        "  action (the reach put to the owner, and item 26). Lane 11-R4B's MINOR on the first limb also changed an action,\n"
-        "  the question put to the owner, and under one ruling F-CANOPY-068's rating and a count. So §4 of\n"
+        "  action (the reach put to the Overtoad, and item 26). Lane 11-R4B's MINOR on the first limb also changed an action,\n"
+        "  the question put to the Overtoad, and under one ruling F-CANOPY-068's rating and a count. So §4 of\n"
         "  `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 5.",
     ),
     (

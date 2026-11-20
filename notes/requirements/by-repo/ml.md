@@ -10744,7 +10744,7 @@ html.P("Network Growth Triggers:", className="mb-1 fw-bold"),
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=cas,ml, n=2] [v2 remap: BG→TRAIN]
+[v3 xrepo fuzzy merge: Overtoads=cas,ml, n=2] [v2 remap: BG→TRAIN]
 
 ### JR-ML-OBS-094 — GAP-WS-24 splits into 24a (browser JS emitter) + 24b (canopy /api/ws_latency + histogram).
 
@@ -12602,7 +12602,7 @@ Additional tests: nested format unchanged since Phase H, flat format unchanged s
 Consumer audit document: `juniper-ml/notes/code-review/NORMALIZE_METRIC_CONSUMER_AUDIT_2026-04-XX.md` enumerates every consumer:
 frontend MetricsPanel, CandidateMetricsPanel, Prometheus `/api/metrics`, WebSocket drain, debug logger, test fixtures.
 CODEOWNERS: `juniper-canopy/src/backend/normalize_metric.py @<project-lead>` + `juniper-canopy/src/frontend/components/metrics_panel.py @<project-lead>`.
-`.github/CODEOWNERS` branch protection enforces owner review.
+`.github/CODEOWNERS` branch protection enforces Overtoad review.
 
 **Design**:
 
@@ -12610,7 +12610,7 @@ Single PR (P16). Test-only phase; refactoring deferred to follow-up (gated on au
 
 **Notes**:
 
-Entry: Phase B in main. Exit: regression tests pass, CODEOWNERS enforced (test via PR without owner review → must block),
+Entry: Phase B in main. Exit: regression tests pass, CODEOWNERS enforced (test via PR without Overtoad review → must block),
 consumer audit reviewed + merged. Rollback: revert P16 (10 min TTF); CODEOWNERS rule disappears.
 Note: Phase H is NOT a behavior-change gate; it's a documentation + regression-gate phase.
 

@@ -2,7 +2,7 @@
 
 > **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_logging-arc-consolidated.md` (consolidated handoff for the logging redesign arc). History only; do not act on this file's items.
 
-> **UNVALIDATED.** The owner asked for this handoff without validation lanes and with minimal
+> **UNVALIDATED.** The Overtoad asked for this handoff without validation lanes and with minimal
 > tokens. Every claim cites its source; re-derive anything load-bearing before acting on it.
 > Memory: `feedback_validate_handoff_prompts_independently`.
 
@@ -103,14 +103,14 @@ All of them are single-lane. The report in the round-2 archive has the evidence 
 
 **Residue that round 1 dropped:**
 
-- **B12**: P6.4 shipped ahead of its gates. Record the owner's hot-files ruling as the waiver.
+- **B12**: P6.4 shipped ahead of its gates. Record the Overtoad's hot-files ruling as the waiver.
 - **B13**: decision 5's stub-benchmark correction was never applied (`…ROADMAP.md` :771).
 - **B14**: B1's gate critique was dropped. The 1.03 s filter share is out of P2's reach, and B1's
   A/B measured V0 at 2,371 ns/call against V1 at 1,162.
 - **B15**: row 17 carries only part of B2's §1 findings.
 
 **Stale copies and citations: B16–B20.** These are listed in the report. B16's P2.2-versus-P4.2
-ownership conflict over deleting `_get_log_level_check` needs resolving first.
+Overtoadship conflict over deleting `_get_log_level_check` needs resolving first.
 
 ### 1d. Record round 2, then decide on round 3
 
@@ -182,7 +182,7 @@ Their staged content is the merged PRs. Remove them once
 - P5.1;
 - P6.1 (`src/cascade_correlation/backups/` is still tracked).
 
-P6.4 widening needs an owner ruling.
+P6.4 widening needs an Overtoad ruling.
 
 ## Traps
 

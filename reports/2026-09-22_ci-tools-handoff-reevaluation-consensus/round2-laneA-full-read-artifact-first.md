@@ -3,7 +3,7 @@
 
 **Entry point:** the whole document, every claim re-derived from primary artifacts.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T20:42:05Z to 2026-09-22T21:19:31Z, read-only. Agent `agent-ae990ed940cc3d3f9`.
 
@@ -17,7 +17,7 @@ You are the round-2 FULL-READ, artifact-first lens in an independent-agent conse
 
 READ-ONLY (hard): do not edit/create/delete any repo file; do not commit, push, comment, merge, close, approve anything, or approve deployments. Worktree-isolated harness: only read-only `git log`/`git show`/`git diff` inside the juniper-ml worktree below; `gh api` for all else; plain commands (no shell loops over variables touching gh/git; put multi-step logic into a python script under your scratch dir). Scratch: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/97c72736-b353-43fe-9e6f-efaa8cf3be0c/scratchpad/lanes/r2c/ . FROZEN for this review.
 
-DOCUMENT: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` in the juniper-ml worktree /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl (identical to juniper-ml PR #2020 head 50430e02). Read ALL of it: header, the `## Status banner` (tables, notes a–g, Corrections 1–6, remaining-work lists, verification block), the original goal and every original section below it (What shipped, the traps, Remaining work, Verification commands, Git state, Checkpoint, Validation record) with their in-place 2026-09-22 notes. The `__VALIDATION_RECORD__` and `__ML_PR__` placeholders are intentional.
+DOCUMENT: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` in the juniper-ml worktree /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl (identical to juniper-ml PR #2020 head 50430e02). Read ALL of it: header, the `## Status banner` (tables, notes a–g, Corrections 1–6, remaining-work lists, verification block), the original goal and every original section below it (What shipped, the traps, Remaining work, Verification commands, Git state, Checkpoint, Validation record) with their in-place 2026-09-22 notes. The `__VALIDATION_RECORD__` and `__ML_PR__` placeholders are intentional.
 
 DO:
 1. Build a claim ledger: every checkable fact in the document (banner AND original body). For each, re-derive and mark CONFIRMED / REFUTED / STALE-BUT-MARKED (an original claim now false but carrying an in-place correction or covered by the banner) / STALE-UNMARKED (now false and nothing in the document says so) / UNTRACEABLE. STALE-UNMARKED items in the original body are the most important output: they are what a reader who skips the banner would be misled by.
@@ -29,7 +29,7 @@ OUTPUT (final message only is returned): the ledger summarised (counts per verdi
 
 ## Final report
 
-All L-numbers below refer to `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`. It is byte-identical to the PR #2020 head (`50430e02`), sha256 `714e03f7…`.
+All L-numbers below refer to `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`. It is byte-identical to the PR #2020 head (`50430e02`), sha256 `714e03f7…`.
 
 ## Ledger summary (about 176 checkable claims)
 
@@ -90,7 +90,7 @@ The last three verification comments (L415, L430, L431) are covered only by the 
 1. **L23–26, "the containers session undertook to correct, in its own PR…".** That is done: juniper-ml#2019 merged 2026-09-22 at 20:53:12Z, 13 minutes after #2020 opened. It added a banner to `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` and corrected both stale-pin passages in `JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`.
    - Fix: cite ml#2019 as done.
 2. **L227–228, "is recording this in §5.2".** §5.2 of `JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md` on `main` now records it (via ml#2019). I also confirmed inside the image that yfinance is absent.
-   - Fix: say it is recorded, and that what remains is the owner's decision on `--extra equities`.
+   - Fix: say it is recorded, and that what remains is the Overtoad's decision on `--extra equities`.
 3. **L124, "Both recorded failures (0.586 s and 0.743 s)".** There is now a third: 0.726 s on canopy#655, one of this banner's own PRs (run `35780782107`, job `106926744764`, failed at 20:41:48Z, re-run in progress). `reference_canopy_x7_timing_tests_flake_on_ci_runners.md` records it, along with a 0.696 s stall in the same module. The conclusion is unchanged.
    - Fix: "all three (0.586, 0.743, 0.726 s)".
 4. **L458, "gained … `recurrence-lock-check:local`".** That image was gained in the 09-09 session (L202 of `HANDOFF_2026-09-09_container-registry-item-6-closed-and-a-whole-file-clobber-caught-by-ci.md` says so), and it is no longer on the host. Nothing is dangling.
@@ -105,12 +105,12 @@ The last three verification comments (L415, L430, L431) are covered only by the 
   - The mutation check (L373).
   - The commitBody growing from 1139 chars (L383). The final 1614 is consistent, since 64 + 1614 = 1678, the length of the merge commit message.
   - That `--auto` on an already-armed PR is a no-op (L381).
-- Judgments: "on the owner's instruction" (L83), "Measured in both images" (L225), and "Creating the repository is the owner's call" (L218).
+- Judgments: "on the Overtoad's instruction" (L83), "Measured in both images" (L225), and "Creating the repository is the Overtoad's call" (L218).
 
 ## Omissions and nits
 
 Omissions:
-- §10 of `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` lists a "drift gate for dockerhub" row (`test_publish_env_policy_drift.py` reads only `pypi`/`testpypi`). It is a non-owner item, and it is absent from both note c and the "Startable" list.
+- §10 of `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` lists a "drift gate for dockerhub" row (`test_publish_env_policy_drift.py` reads only `pypi`/`testpypi`). It is a non-Overtoad item, and it is absent from both note c and the "Startable" list.
 - Note g's 25 excludes the chain's two juniper-ml session worktrees, `.claude/worktrees/{luminous-inventing-crystal,tender-splashing-wigderson}`. Both exist, and `HANDOFF_2026-09-08_container-registry-rollout-wave-2-opened-and-the-cuda-class-in-three-shapes.md` L458 records the first as holding untracked files.
 
 Nits:
@@ -141,7 +141,7 @@ These were run from `/home/pcalnon/Development/python/Juniper`.
 
 ## Role-play verdict
 
-No instruction leads to an unsafe action. Merges, deploys and worktree cleanup are all gated on the owner, and the verification block is read-only. The path forward is unambiguous: go to `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`, whose ml#2019 banner agrees with this one, and use the "Startable" list here.
+No instruction leads to an unsafe action. Merges, deploys and worktree cleanup are all gated on the Overtoad, and the verification block is read-only. The path forward is unambiguous: go to `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`, whose ml#2019 banner agrees with this one, and use the "Startable" list here.
 
 There are five ways a fresh session could go slightly wrong:
 - It could re-record the equities finding, which ml#2019 already recorded.

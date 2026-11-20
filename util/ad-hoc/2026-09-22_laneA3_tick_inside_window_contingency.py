@@ -8,7 +8,7 @@ Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc — investigation (POST-HOC diagnostic over the Lane A3 artifacts; NOT the pre-registered verdict,
         which lives in 2026-09-22_laneA3_candidate_tick_period_test.py and is not affected by this script)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-09-22_laneA3_candidate_tick_period_test.py;
          reports/e2e-canopy-2026-09-02/transcripts/2026-09-22_laneA3_candidate_tick_period_run*.json
 

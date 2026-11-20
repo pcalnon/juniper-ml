@@ -11,7 +11,7 @@
 
 **Round 2, Lane A: ml#2017 at `d873aed6`**
 
-I re-derived all five items with my own scripts. I did not run the reprobe, and I edited no tracked file. Most of the corrections hold. I found two major defects and five minor ones. Nothing changes a budget or an owner decision. The run used about 395 REST calls and about 60 GraphQL calls.
+I re-derived all five items with my own scripts. I did not run the reprobe, and I edited no tracked file. Most of the corrections hold. I found two major defects and five minor ones. Nothing changes a budget or an Overtoad decision. The run used about 395 REST calls and about 60 GraphQL calls.
 
 ### 1. Lockfile census: confirmed, except one overstatement
 Route: GraphQL PRs by head branch plus force-push events, the REST run list for the branch (90 runs), and each opening run's attempt 1 and its job count.
@@ -19,7 +19,7 @@ Route: GraphQL PRs by head branch plus force-push events, the REST run list for 
 - 13 parked. `r2a_lockfile_attempt1.py` → `{('action_required',): 12, ('failure',): 1}`, every one with 0 jobs. #1806 flipped to `failure` at 13:59:38Z, the second it was reopened. ✓
 - 12 were released by attempt 2 with `triggering_actor=pcalnon`, which then ran 1–18 jobs. #1806 was released by close/reopen. ✓
 - #1970's five opening runs ran jobs on attempt 1 (counts `[1,19,1,1,1]`), all as `juniper-release-train[bot]`. ✓
-- **#1139 is wrong as worded.** Its opening commit got no run: `runs?head_sha=ea30c105…` → `{"runs":[],"total":0}`. But the owner's merge-from-main push `5d343118` (2026-08-18 21:43Z) got two successful `pull_request` runs. So "no `pull_request` run at all" is true of 4 PRs, not 5.
+- **#1139 is wrong as worded.** Its opening commit got no run: `runs?head_sha=ea30c105…` → `{"runs":[],"total":0}`. But the Overtoad's merge-from-main push `5d343118` (2026-08-18 21:43Z) got two successful `pull_request` runs. So "no `pull_request` run at all" is true of 4 PRs, not 5.
 - Could this have read differently? Yes: #1970 shows jobs, so the check can tell parked from executed.
 
 ### 2. Soak census: confirmed, except the PR count
@@ -76,7 +76,7 @@ Disagreements:
 2. **Two files claim independent reproduction that round 1 did not achieve for juniper-ml.** Fix: "Round 1 reproduced 8 of 9; juniper-ml's (910, 2005) was reproduced in round 2 on the window #1981–#2014." The handoff's de-escalator paragraph needs the same qualification.
 
 **Minor**
-3. #1139: say "5 got no run at opening; #1139 got runs only after the owner's push `5d343118`".
+3. #1139: say "5 got no run at opening; #1139 got runs only after the Overtoad's push `5d343118`".
 4. Change 56 → 57 PRs and "7 of the 56 merges" → "7 of 57 PRs (50 merged)". The trap "ask commits/<sha>/pulls" should add that it returns `[]` for a PR closed without merging.
 5. In `test_safe_merge.py`, change "28 clean heads" to "30 healthy heads".
 6. Change "#1981-#2015" to "#1981-#2014" in both files.

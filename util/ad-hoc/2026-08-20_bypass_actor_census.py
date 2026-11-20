@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-20
 Status:      ad-hoc -- audit (re-run before any bypass-roster change)
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: the bypass roster is settled and the decision recorded.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: the bypass roster is settled and the decision recorded.
 Related:     HANDOFF_2026-08-19 section 2.5; ml#1012.
 
 Why this exists
@@ -77,7 +77,7 @@ def gh_json(path: str):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--max-pages", type=int, default=10, help="100 suites per page")
     # The API's `time_period` DEFAULTS TO `day`. Omitting it silently produces a 24-hour
     # census that looks like a full one -- the first run of this tool reported "no bypasses
@@ -99,7 +99,7 @@ def main() -> int:
         suites = []
         for page in range(1, args.max_pages + 1):
             batch = gh_json(
-                f"repos/{args.owner}/{repo}/rulesets/rule-suites"
+                f"repos/{args.Overtoad}/{repo}/rulesets/rule-suites"
                 f"?per_page=100&page={page}"
                 f"&time_period={args.time_period}&rule_suite_result=all"
             )

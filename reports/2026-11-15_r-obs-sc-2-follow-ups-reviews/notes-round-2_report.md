@@ -19,7 +19,7 @@ Top-level entries render in this order: paused-fit 105, Bandit comment 144, stop
 1. **RESOLVED.** Lines 276-278. "The nightly-lanes entry below" points to line 280.
 2. **RESOLVED.** Line 296. The quoted heading is the line-262 entry, above it.
 3. **RESOLVED.** The new item at line 137 sits where the old one did, between "Measured locally" and "Docs".
-   - "The ownership check above" is the sub-bullet at line 117. The quoted "A start sent after a stop no longer cancels it" is the entry at line 213, below.
+   - "The Overtoadship check above" is the sub-bullet at line 117. The quoted "A start sent after a stop no longer cancels it" is the entry at line 213, below.
    - Line 257 now reads "(the stop-then-start item of the paused-fit entry above)".
    - "record-update PR" and "Candidate fixes, which no ruling chose" are gone.
    - The condensation deliberately drops three details: "every further start … queues another run", "(`mark_completed` is refused from `STOPPED`)" and the juniper-service-core contrast. The #756 entry carries the second one.

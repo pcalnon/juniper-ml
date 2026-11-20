@@ -22,7 +22,7 @@ open, 16 are parked; `-019` is the one unparked row and §0.4 says what actually
 1. **Successor, first — validate this document (§7).** No round has run on it.
 
 2. **`juniper-canopy`'s three-way prompt — the ONLY unbuilt piece of the partial-data contract, and
-   every blocker is now merged.** The owner's ruling is settled and must not be re-litigated:
+   every blocker is now merged.** The Overtoad's ruling is settled and must not be re-litigated:
    **option 3 (fail) is the one that cancels the load and deselects the dataset**; accept and drop
    both continue and annotate.
    - Canopy has **zero** occurrences of `allow_truncation`. Its code lives under `src/`, not
@@ -68,7 +68,7 @@ open, 16 are parked; `-019` is the one unparked row and §0.4 says what actually
    `tests/unit/test_csv_import_generator.py:726` is
    `test_request_cannot_opt_out_of_deployment_allow_truncation`. **An earlier draft of this document
    said "prefer fixing the OR" — that would invert a privilege model juniper-data deliberately
-   encodes, and is withdrawn.** The real question for the owner is whether option 3 should be a
+   encodes, and is withdrawn.** The real question for the Overtoad is whether option 3 should be a
    *caller* right at all, or whether "the operator opted the deployment in" is simply the answer.
 
    **And cascor#624's remedy is NOT portable here.** #624 fixed a dict-merge ORDER bug with a
@@ -166,7 +166,7 @@ open, 16 are parked; `-019` is the one unparked row and §0.4 says what actually
     (CIK 21344), and §0.7's whole measurement depends on them. It is a leftover from before the
     rescue ladder; fix it when touching that file.
 
-11. **The other 16 open register rows are PARKED and need owner unparking before any session may
+11. **The other 16 open register rows are PARKED and need Overtoad unparking before any session may
     action them.** That is the register's own operating rule, not a preference — do not action one
     on your own judgement.
 
@@ -221,7 +221,7 @@ cross-check **79 / 79 / 79, AGREE**.
 All four merge SHAs verified as **ancestors** of their repo's `origin/main`, not merely resolvable.
 
 Round 36's five PRs (data#376/#377, cascor#621/#624, ml#1791/#1795) all merged; **data#378 (the
-`fundamentals_fill="nan"` default) was merged by the owner** at 2026-09-05T22:06 as `005a82b`.
+`fundamentals_fill="nan"` default) was merged by the Overtoad** at 2026-09-05T22:06 as `005a82b`.
 
 ---
 
@@ -316,7 +316,7 @@ alone still skips.
 
 Written from harness worktree `compiled-inventing-sprout`, branch `docs/rescope-apd-data-019`.
 
-Worktrees created this round and **deliberately not removed** (cleanup needs the owner's explicit
+Worktrees created this round and **deliberately not removed** (cleanup needs the Overtoad's explicit
 signal, and `git worktree remove` deletes ignored files):
 
 - `juniper-data--fix--metadata-cache-inert--20260907-0837--a1fc2876`
@@ -361,7 +361,7 @@ in this order:
 
 ## 8. Session-close checklist
 
-- [x] Both open decisions closed interactively with the owner (§3)
+- [x] Both open decisions closed interactively with the Overtoad (§3)
 - [x] The inert cache fixed across all 7 stores, with a non-vacuous conformance suite (data#381)
 - [x] NaN guards added at both consumer boundaries (cascor#630, recurrence#151)
 - [ ] **`APD-DATA-019` re-scope — ml#1813 is still OPEN**, refused twice by `safe_merge` on

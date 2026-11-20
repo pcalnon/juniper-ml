@@ -3,7 +3,7 @@
 **Project**: Juniper — performance lane
 **Author**: Paul Calnon
 **Date**: 2026-09-22
-**Status**: D6's gate DISCHARGED. The measurement's own premise is REFUTED: neither ambient load nor thread width moves the count. The 2026-09-17 evidence is recovered and reproduced from a committed instrument. **The gate/no-gate decision itself remains the owner's** — this buys the measurement, as D6 said it would.
+**Status**: D6's gate DISCHARGED. The measurement's own premise is REFUTED: neither ambient load nor thread width moves the count. The 2026-09-17 evidence is recovered and reproduced from a committed instrument. **The gate/no-gate decision itself remains the Overtoad's** — this buys the measurement, as D6 said it would.
 **License**: MIT License
 
 ---
@@ -95,7 +95,7 @@ worktree, and moving them is that session's call, not this one's.
 > [`JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md`](JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md)
 > is verbatim under a banner. The banner names this document as the record and says what the
 > older instrument cannot show. **Committing was the only option a session could take.**
-> `util/ad-hoc/README.md` makes retiring a script owner-directed only, and deleting the
+> `util/ad-hoc/README.md` makes retiring a script Overtoad-directed only, and deleting the
 > instrument would have left the 09-17 `spread.json` with no record of how it was produced.
 > The "uncommitted" label in §6's table records the state when this document was written.
 
@@ -183,7 +183,7 @@ position is that `52` is an observation of unknown provenance, not evidence of i
 **The gate D6 asked for is discharged: the reference does not move.** An exact-match gate on
 `epochs_completed` would not be flaky for the reason D6 feared.
 
-Three qualifications the owner should have before deciding to build it:
+Three qualifications the Overtoad should have before deciding to build it:
 
 1. **Only 2 of the 4 cells would be real assertions.** At budgets 10 and 50 the count *equals the
    request* — those cells are budget-bound and a gate on them asserts a tautology. The emergent

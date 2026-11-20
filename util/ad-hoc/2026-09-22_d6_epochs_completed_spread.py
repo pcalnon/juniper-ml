@@ -2,12 +2,12 @@
 """
 Project:     Juniper
 Sub-Project: juniper-ml
-Application: Performance lane -- owner decision D6
+Application: Performance lane -- Overtoad decision D6
 Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Status:      ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md
 
 D6: is ``epochs_completed`` stable enough to gate on equality?

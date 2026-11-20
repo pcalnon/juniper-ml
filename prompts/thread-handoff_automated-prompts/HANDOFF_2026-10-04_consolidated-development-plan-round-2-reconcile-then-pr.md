@@ -2,7 +2,7 @@
 
 > **CONSUMED 2026-10-05 by the same session, `1d83ae70`** (it continued after the usage limit reset). It carried out the steps below and went further: v1.2.0 reconciled round 2, v1.3.0 reconciled round 3, and each later round attacked the previous round's corrections.
 > That session ran rounds 4 to 12 and wrote three more handoffs; session `3e8595eb` reconciled round 12 into v1.12.0 and ran round 13.
-> The plan landed on 2026-10-10 as v1.12.1, a record of v1.12.0 with round 13 unreconciled, together with its reports and the arc's handoffs, in one PR that session `560c1ec5` opened and merged on the owner's approval given in that session; v1.13.0 follows.
+> The plan landed on 2026-10-10 as v1.12.1, a record of v1.12.0 with round 13 unreconciled, together with its reports and the arc's handoffs, in one PR that session `560c1ec5` opened and merged on the Overtoad's approval given in that session; v1.13.0 follows.
 > Step 5's "ask again" held throughout: no merge approval carried from one session to the next. The plan's Validation record and the `round*-reconciliation.md` files in `reports/2026-10-04_consolidated-development-plan/` record the outcome. This file is kept as the archived mid-arc handoff.
 >
 > **One correction to the text below:** round 1 found 31 MAJORs, not 30. The seven lane reports' MAJOR rows sum to 31 (4 + 3 + 4 + 1 + 2 + 8 + 9), as the plan's Validation record states.
@@ -35,17 +35,17 @@ Continue the single consolidated development plan, `notes/JUNIPER_2026-10-04_JUN
      - GitHub-native scanning and push protection are off in deploy, and non-provider patterns are off in all nine;
      - gitleaks-action v3.0.0 runs gitleaks 8.24.3 and scans only a PR's own commits.
 
-     Act on them: run local full-history scans with `--redact` (hits go to the owner), and add the owner settings to §6 A3.
+     Act on them: run local full-history scans with `--redact` (hits go to the Overtoad), and add the Overtoad settings to §6 A3.
    - **R2A-02.** Name the six DSN variables inline: `SENTRY_SDK_DSN`, `SENTRY_DSN`, `JUNIPER_CASCOR_SENTRY_DSN`, `JUNIPER_DATA_SENTRY_DSN`, `CANOPY_SENTRY_DSN`, `JUNIPER_CANOPY_SENTRY_DSN`, citing `HANDOFF_2026-10-03_defect-register-round-42-consolidated.md` L126.
    - **R2A-04 / R2A-05 / R2B-07 (drift).**
-     - ml#2134 merged: the P1 fix-forward. Mark P1-01..04 done, close #2129, and add the owner's watchdog redeploy: `yamaguchi_watchdog_deploy.bash --backup-id 2`.
+     - ml#2134 merged: the P1 fix-forward. Mark P1-01..04 done, close #2129, and add the Overtoad's watchdog redeploy: `yamaguchi_watchdog_deploy.bash --backup-id 2`.
      - P12 phase 0 has merged: ml#2130, ml#2145 (W0.3/W0.4), canopy#702 (W0.5) and ml#2139 (W0.2). R6, the APD-ML OD-2 and #685(a) become ratify-or-revert decisions.
      - The fleet now has 24 ml and 6 canopy drafts.
    - **R2B-04.** S0.8 must also set `JUNIPER_E2E_PROJECT_DIR` to scratch and rebase on ml#2139.
-   - **R2B-08.** In the owner sitting, the rulings come first; Phase C steps 1–9 then follow in source order.
-   - **R2B-09.** The concurrency rule is the owner's choice (§6). It is "soft" in L86 of the P8 handoff (quote it exactly). Define "preempt", add P3-09 to the calendar, and show the arithmetic behind "two weeks".
+   - **R2B-08.** In the Overtoad sitting, the rulings come first; Phase C steps 1–9 then follow in source order.
+   - **R2B-09.** The concurrency rule is the Overtoad's choice (§6). It is "soft" in L86 of the P8 handoff (quote it exactly). Define "preempt", add P3-09 to the calendar, and show the arithmetic behind "two weeks".
    - **R2B-10.** `MEMORY.md` is **over** its ~25,000-character load limit, so its tail lines are dropped. Index edits must be net-negative, and the retirement set moves to Group A.
-   - **R2B-11.** The lock-PR edge applies to images only, since wheels pick up patches within their caps. Add the owner's trio-environment upgrade and restart.
+   - **R2B-11.** The lock-PR edge applies to images only, since wheels pick up patches within their caps. Add the Overtoad's trio-environment upgrade and restart.
    - **R2A-07 / R2B-17.** `curious-plotting-hummingbird` holds S-7, a cleartext copy of both passphrases, and the only *in-backup* copy of `PASSPHRASE_OLD`. Its DO NOT SWEEP stays after step 3.
    - **R2A-08 / R2B-14.** Tier 2 archives `.git`, so row f and row a's committed half are covered.
    - Also apply R2A-09..12, R2B-12, R2B-15 (the missing filenames) and R2B-16 (validation-record accuracy).
@@ -55,7 +55,7 @@ Continue the single consolidated development plan, `notes/JUNIPER_2026-10-04_JUN
    - run `python3 util/ad-hoc/2026-10-04_plan_id_coverage.py <old> <new> 'reports/2026-10-04_consolidated-development-plan/extraction-*.md'`;
    - run the default-rules gitleaks scan on scratch copies of every file.
 4. **Open the PR** with `util/open_signed_pr.py --repo juniper-ml --branch docs/consolidated-development-plan-2026-10-04 --add LOCAL:PATH …`. The files are all new, so nothing is clobbered. Name every file in the PR body.
-5. **Merge only with a fresh owner grant.** The owner approved merging this plan's PR in session `1d83ae70`, but **that approval does not carry**: ask again. Use `util/safe_merge.py`, read its `MERGED` line, and follow `update-branch` when the strict ruleset puts the PR behind.
+5. **Merge only with a fresh Overtoad grant.** The Overtoad approved merging this plan's PR in session `1d83ae70`, but **that approval does not carry**: ask again. Use `util/safe_merge.py`, read its `MERGED` line, and follow `update-branch` when the strict ruleset puts the PR behind.
 
 ## Key context
 

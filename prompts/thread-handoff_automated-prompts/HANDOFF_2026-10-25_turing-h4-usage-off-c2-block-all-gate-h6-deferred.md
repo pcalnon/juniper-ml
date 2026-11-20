@@ -1,27 +1,27 @@
-# Handoff — turing bring-up: H4's Serena usage report off; C2's block-all gate landed; H6 deferred; owner steps next
+# Handoff — turing bring-up: H4's Serena usage report off; C2's block-all gate landed; H6 deferred; Overtoad steps next
 
-- **Continued (2026-10-26, plan v1.4.8).** The "modular-meandering-crayon" session took this handoff. The owner applied C2 (the firewall on, blocking all, with stealth mode), and juniper-ml#2346 narrowed G-SEC's firewall condition to the sentence turing printed. The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`. The other owner steps below still stand.
+- **Continued (2026-10-26, plan v1.4.8).** The "modular-meandering-crayon" session took this handoff. The Overtoad applied C2 (the firewall on, blocking all, with stealth mode), and juniper-ml#2346 narrowed G-SEC's firewall condition to the sentence turing printed. The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`. The other Overtoad steps below still stand.
 
-- **From:** the 2026-10-25 session on turing named "macos dev env setup" (9d4723; worktree `.claude/worktrees/cozy-snuggling-fountain`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md`. That handoff's author, "dev env macos" (014c35), could not be reached (HTTP 409), and no other session was on it.
+- **From:** the 2026-10-25 session on turing named "macos dev env setup" (9d4723; worktree `.claude/worktrees/cozy-snuggling-fountain`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-Overtoad-decides.md`. That handoff's author, "dev env macos" (014c35), could not be reached (HTTP 409), and no other session was on it.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.7.
   - §18.1 holds the three rulings of 2026-10-25.
   - §18.2 holds the H4, C2 and H6 rows.
   - §18.3 holds errata E-C2-GATE, E-H6-VALUE and E-CUT.
-- **This file is the arc's main handoff.** It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md`, which now points here. Its owner steps still stand, and C2's now takes the block-all form.
-- **Standing approval:** the owner granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
+- **This file is the arc's main handoff.** It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-Overtoad-decides.md`, which now points here. Its Overtoad steps still stand, and C2's now takes the block-all form.
+- **Standing approval:** the Overtoad granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
 
 ## Done this session
 
 | PR | Merge | What |
 |---|---|---|
-| juniper-ml#2335 | `1e4db700` | **H4's usage report off** (E-H6, owner ruling). `util/mcp_setup.bash` writes `"env": {"SERENA_USAGE_REPORTING": "false"}`. Serena v1.7.0 skips the report only for that exact string (`src/serena/agent.py:724-737` at `949a27ef`, read through `gh api`). The pin's `verified` record names the check. 38 tests; `util/ad-hoc/2026-10-25_turing_h4_usage_report_mutation_check.py` kills 7 of 7 mutants, and H4's original 20 still apply |
-| juniper-ml#2338 | `95634772` | **C2's gate, block-all form** (owner ruling). The probe captures `socketfilterfw --getblockall`. G-SEC's firewall condition passes only when the firewall is on and that capture reports block all, and its fix names the missing steps. 59 tests in the two G1 suites; `util/ad-hoc/2026-10-25_turing_c2_gate_mutation_check.py` kills 11 of 11 mutants, and the G1 check's 57 still apply, C12 included |
+| juniper-ml#2335 | `1e4db700` | **H4's usage report off** (E-H6, Overtoad ruling). `util/mcp_setup.bash` writes `"env": {"SERENA_USAGE_REPORTING": "false"}`. Serena v1.7.0 skips the report only for that exact string (`src/serena/agent.py:724-737` at `949a27ef`, read through `gh api`). The pin's `verified` record names the check. 38 tests; `util/ad-hoc/2026-10-25_turing_h4_usage_report_mutation_check.py` kills 7 of 7 mutants, and H4's original 20 still apply |
+| juniper-ml#2338 | `95634772` | **C2's gate, block-all form** (Overtoad ruling). The probe captures `socketfilterfw --getblockall`. G-SEC's firewall condition passes only when the firewall is on and that capture reports block all, and its fix names the missing steps. 59 tests in the two G1 suites; `util/ad-hoc/2026-10-25_turing_c2_gate_mutation_check.py` kills 11 of 11 mutants, and the G1 check's 57 still apply, C12 included |
 | this handoff's PR | — | The record: plan v1.4.7 by `util/ad-hoc/2026-10-25_turing_rulings_1025_record.py`, the previous handoff's pointer, and this file. Also E-CUT: the three turing doc-edits scripts (H4, C2 and C9) now find their CHANGELOG marker anywhere in the file, so the 0.11.2 cut no longer looks like a pending edit, and a re-run no longer adds an entry twice |
 
-## The owner's rulings (2026-10-25, one question)
+## The Overtoad's rulings (2026-10-25, one question)
 
 1. **H4's usage report:** opt out. Done (juniper-ml#2335).
-2. **C2's form:** block all incoming connections while nothing inbound is needed. The gate is done (juniper-ml#2338); applying it is the owner's. Revisit when Arc F's VM needs inbound.
+2. **C2's form:** block all incoming connections while nothing inbound is needed. The gate is done (juniper-ml#2338); applying it is the Overtoad's. Revisit when Arc F's VM needs inbound.
 3. **H6:** deferred. When it resumes, its changes cover every synced host, and the agent makes them, backing up `mcp.json` and `settings.json` first with the Hugging Face token redacted. SER-P1's order stands: remove VS Code's Serena entry before E-H4-WHEEL's wheel build. Rotating the Hugging Face token (HF-P1) is still advised: it sat in plaintext in `mcp.json` and in Settings Sync.
 
 ## State (2026-10-25)
@@ -62,10 +62,10 @@
 
 ## Agent next
 
-1. **After the owner's C2 commands:** record the on-state sentences in the plan, and narrow E-C2-GATE's accepted sentences if one never appears. Re-run `python3 util/host_state_check.py --section G-SEC`.
-2. **H3**, after the owner's C8 install: each H2 agent runs one scripted task on turing against a `util/host_state_probe.bash --json` run within ±10 minutes, plus one negative test. The task prompts go through `prompt-validator`.
+1. **After the Overtoad's C2 commands:** record the on-state sentences in the plan, and narrow E-C2-GATE's accepted sentences if one never appears. Re-run `python3 util/host_state_check.py --section G-SEC`.
+2. **H3**, after the Overtoad's C8 install: each H2 agent runs one scripted task on turing against a `util/host_state_probe.bash --json` run within ±10 minutes, plus one negative test. The task prompts go through `prompt-validator`.
 3. **After B.5:** re-run `python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py`, and record B.4 and B.5 in the next plan revision.
-4. **H6, when the owner resumes it:** apply §8 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md` (the H6 audit) to every synced host through a script that never prints a value. Back up both files first, with the token redacted, to `~/.local/state/juniper/quarantine/<date>-vscode-mcp/`, and verify with `python3 -I util/ad-hoc/2026-10-25_turing_h6_vscode_mcp_inventory.py`.
+4. **H6, when the Overtoad resumes it:** apply §8 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md` (the H6 audit) to every synced host through a script that never prints a value. Back up both files first, with the token redacted, to `~/.local/state/juniper/quarantine/<date>-vscode-mcp/`, and verify with `python3 -I util/ad-hoc/2026-10-25_turing_h6_vscode_mcp_inventory.py`.
 5. **Before numbering the next plan revision**, check for an open turing plan PR: `gh pr list --repo pcalnon/juniper-ml --state open --search "turing in:title"`.
 
 ## Verify the starting state
@@ -76,7 +76,7 @@ gh pr list --repo pcalnon/juniper-ml --state open --search "turing in:title"
 python3 -I util/claude_agent_guard.py --version                                  # juniper-agent-guard 1.2.0
 python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py --offline         # exit 0: option B intact
 ls ~/.claude/hooks/juniper_agent_guard.py 2>/dev/null || echo "guard not installed"
-python3 util/host_state_check.py --section G-SEC                                 # firewall: fail until the owner's C2 commands
+python3 util/host_state_check.py --section G-SEC                                 # firewall: fail until the Overtoad's C2 commands
 python3 -I util/ad-hoc/2026-10-25_turing_h4_usage_report_doc_edits.py --mutants 7/7 --check   # nothing to do
 python3 -I util/ad-hoc/2026-10-25_turing_c2_gate_doc_edits.py --mutants 11/11 --check         # nothing to do
 python3 -I util/ad-hoc/2026-10-25_turing_c9_guard_doc_edits.py --mutants 26/26 --check        # nothing to do
@@ -92,7 +92,7 @@ python3 -I util/ad-hoc/2026-10-25_turing_c9_guard_doc_edits.py --mutants 26/26 -
   - `util/mcp_setup.bash`, `tests/test_mcp_setup.py`, `conf/hosts/turing/mcp.json` (juniper-ml#2335);
   - `util/host_state_check.py`, `util/host_state_probe.bash`, `conf/hosts/turing/expected.yaml`, `tests/test_host_state_check.py`, `tests/test_host_state_probe.py` (juniper-ml#2338);
   - `docs/REFERENCE.md` and `CHANGELOG.md` (both PRs);
-  - `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, to v1.4.7, and `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md`, a pointer to this file (this handoff's PR);
+  - `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, to v1.4.7, and `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-Overtoad-decides.md`, a pointer to this file (this handoff's PR);
   - `util/ad-hoc/2026-10-25_turing_h4_usage_report_doc_edits.py`, `util/ad-hoc/2026-10-25_turing_c2_gate_doc_edits.py` and `util/ad-hoc/2026-10-25_turing_c9_guard_doc_edits.py`: the CHANGELOG marker counts anywhere in the file (E-CUT; this handoff's PR).
 - **Referenced, not changed:**
   - `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md` (SER-E1, SER-P1, HF-P1, H6-X3, §8);

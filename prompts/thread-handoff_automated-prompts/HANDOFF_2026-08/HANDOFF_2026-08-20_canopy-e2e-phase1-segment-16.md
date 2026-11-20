@@ -80,7 +80,7 @@ row from closing.**
 
 24 rows, and the route runs through **`util/ad-hoc/e2e_w6_dataset_driver.py`** (note `--steps`, plural,
 **comma-only — no ranges**, despite its docstring). The driver **deliberately stops short of matrix step 16**
-(`#restart-confirm-button`) — its header calls that "an owner call, not a driver's", and its step registry
+(`#restart-confirm-button`) — its header calls that "an Overtoad call, not a driver's", and its step registry
 has no `16`. Staging is automated; **the confirm is yours**.
 
 The W6 cold restart wipes in-memory training state. That no longer costs you anything §3.1 depends on —

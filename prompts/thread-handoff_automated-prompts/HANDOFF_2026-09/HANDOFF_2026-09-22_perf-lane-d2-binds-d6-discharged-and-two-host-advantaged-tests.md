@@ -38,10 +38,10 @@ Documents of record, all on `main`:
 ## 1. GOAL (paste this into the new thread)
 
 Continue the **juniper-ml performance lane**. `juniper-ml#2002` merged as **`f8ffaa48`**,
-implementing owner decision **D2** (the experiment YAML's `runtime:` block now binds) and
+implementing Overtoad decision **D2** (the experiment YAML's `runtime:` block now binds) and
 discharging **D6** (`epochs_completed` spread is zero, and D6's stated premise is refuted).
 
-**Do not re-ask the owner to RULE D1–D6 — that was done 2026-09-11. But four of the six left an
+**Do not re-ask the Overtoad to RULE D1–D6 — that was done 2026-09-11. But four of the six left an
 explicit `Not decided:` clause, and all four are still open.** Do not read "ruled" as "closed":
 
 | | still undecided | where |
@@ -129,9 +129,9 @@ never ratified.
    - A quiet host — or a loaded-host design, see §9.
    - **Its thresholds remain UNRATIFIED** (the suite header says so). Do not read a result
      against a threshold nobody approved.
-3. **Put D4's axis 2 to the owner — it is a DECISION, not a calibration.** The PF-2 re-spec §1
+3. **Put D4's axis 2 to the Overtoad — it is a DECISION, not a calibration.** The PF-2 re-spec §1
    carries a correction: the experiment/driver path fetches from juniper-data, so `MAX_POINTS =
-   10000` binds (`juniper_data/generators/spiral/defaults.py:31`). The owner's requested
+   10000` binds (`juniper_data/generators/spiral/defaults.py:31`). The Overtoad's requested
    250 → 500,000 range is **unreachable on the suite path**. Options: cap at 10,000 (still 40×,
    5× wider than the inert 8×), raise `MAX_POINTS` in juniper-data as its own decision, or run
    outside the suite harness. Axis 3 is already calibrated (viable; **gate on accuracy**, sample
@@ -186,7 +186,7 @@ never ratified.
    3.14 reference and say so.** The two-part form `Linux-CPython-3.13-64bit/0003` *does* resolve
    (`file.py:72-77`) — **do not use it**; it compares across interpreter *and* torch versions and
    produces a number that looks comparable and is not.
-6. **The cascor thread-pin defect is STILL UNREPAIRED and is still an open owner item.**
+6. **The cascor thread-pin defect is STILL UNREPAIRED and is still an open Overtoad item.**
    `cascade_correlation.py:1180` calls `torch.set_num_threads(max(2, worker_thread_count * 2))`
    inside `_init_multiprocessing`, binding only the constructing thread. D1 answered the *width*
    question (keep 2; 2–8 indistinguishable); it did **not** repair the defect, and D2's env route
@@ -216,7 +216,7 @@ never ratified.
   separate *no effect* from *two effects cancelling*, and the rulings' §1 records two channels
   moving oppositely.
 - **Do not quote "16 is 5–7× worse" without its mechanism.** That is the `thread` mechanism; on
-  the `env` route — the one the owner ruled for — width 16 costs about **1%**. True span across
+  the `env` route — the one the Overtoad ruled for — width 16 costs about **1%**. True span across
   both runs is **4.97–7.42×**.
 - **Do not say the 09-17 D6 work was lost.** It was never committed. Different failure, different
   fix.
@@ -374,7 +374,7 @@ question reopens.
 ## 7. What this handoff does NOT cover
 
 The predecessor's §7 and the arcs it names (backup, canopy E2E, defect register, P5, soak,
-partition, service-core, container registry) have other owners. **That enumeration is NOT
+partition, service-core, container registry) have other Overtoads. **That enumeration is NOT
 complete** — the CLI-experimentation arc tail also rides in the predecessor's §8 and is now three
 hops behind unnamed pointers; it is listed in §8 above rather than dropped here. Also out of scope but worth
 flagging: **`MEMORY.md` is 25.8 KB against its 20 KB target** and grew during this session; it
@@ -422,7 +422,7 @@ is not — `make_baseline` refuses them deliberately.
 artifacts, and §5 of the re-probe note records that **163 of 172 broken titles were produced BY a
 repair pass** — so dropping this is work-destroying rather than merely untidy. Also live there:
 `JR-ML-OBS-003` (`notes/requirements/id_assignments.yaml:459`, `status: designed`), R-1's second
-clause, F-P4-7, W-12, G-16's refusal half, and the owner's standing rider on the withdrawn 0.5%
+clause, F-P4-7, W-12, G-16's refusal half, and the Overtoad's standing rider on the withdrawn 0.5%
 threshold.
 
 ### Two debts that are currently stated only as prohibitions

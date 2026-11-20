@@ -5,7 +5,7 @@
 # Author:        Paul Calnon
 # Created:       2026-11-15
 # Status:        ad-hoc -- driver for the plan's pre-push gate (§9, "Every public push, and every other public text")
-# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:       util/ad-hoc/2026-10-04_gitleaks_zero_rule_probe.py (the scan; only exit 0 passes);
 #                util/ad-hoc/2026-10-05_masked_finding_shape.py (the masked read);
 #                notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (§9 and §3 XC-PRESERVE)

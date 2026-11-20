@@ -27,7 +27,7 @@ MANUAL COPY (18:19 Aug-21) Duplicati-server_2026-08-21.sqlite
 ```
 
 The `Ubuntu` job's **local job database** setting now names the 479 KB **server** database. It changed
-between 18:19 and 19:27 on 2026-08-21 — the window the owner was in the UI running Repair/Recreate.
+between 18:19 and 19:27 on 2026-08-21 — the window the Overtoad was in the UI running Repair/Recreate.
 Mechanism is almost certainly the Database page's **Placement** box
 (`/ngclient/backup/2/database`, buttons `Reset` / `Save` / `Save & Repair` / `Move existing database`).
 
@@ -108,7 +108,7 @@ Older copies are **worse**, not graceful fallbacks: the 2025-08-31 database know
 
 ## 5. Ground truth about the archive
 
-**I previously told the owner "your backup data is untouched and safe". That was wrong and is
+**I previously told the Overtoad "your backup data is untouched and safe". That was wrong and is
 retracted.**
 
 - Destination: **2,674 dblock + 2,682 dindex + 10 dlist = 5,366 files**, 2.4 TB used, 1.1 TB free.
@@ -203,7 +203,7 @@ Started 2026-08-21 ~18:20. Still running at time of writing (~21 h).
   explicit decision; the useful axis is **regenerable vs irreplaceable**, not file size.
 - **Automating database backups** — Duplicati only snapshots both DBs **before schema migrations on
   version upgrade** (2023-06, 2025-08, 2026-07 — two complete server+job pairs plus one orphan). The
-  owner's manual 18:19 copy was **not** automatic; an earlier claim of mine that it was is retracted.
+  Overtoad's manual 18:19 copy was **not** automatic; an earlier claim of mine that it was is retracted.
   That copy is currently the only correct record of `DBPath`. The server DB is ~470 KB live and holds
   config, schedule, filters and encrypted credentials — cheap and disproportionately valuable.
 
@@ -212,7 +212,7 @@ Started 2026-08-21 ~18:20. Still running at time of writing (~21 h).
 ## 10. Method note
 
 **This handoff has NOT been through multi-agent validation** — written under context pressure at the
-owner's instruction to prioritise completion. Every factual claim in §1, §2, §4, §5 and §7 was
+Overtoad's instruction to prioritise completion. Every factual claim in §1, §2, §4, §5 and §7 was
 verified directly by command; treat §9 as less certain.
 
 The predecessor runbook *was* validated, and that is the only reason its false premise was caught

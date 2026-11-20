@@ -259,7 +259,7 @@ class ReplayRedriveStackRefusalTest(unittest.TestCase):
         with self.assertRaises(ProcessLookupError):
             os.kill(int(DEAD_PID), 0)
 
-    def test_a_blank_pidfile_and_a_prefix_of_the_listener_do_not_count_as_ownership(self) -> None:
+    def test_a_blank_pidfile_and_a_prefix_of_the_listener_do_not_count_as_Overtoadship(self) -> None:
         eco = self._eco()
         run = eco / "run"
         run.mkdir()

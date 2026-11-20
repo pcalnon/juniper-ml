@@ -34,9 +34,9 @@
 | P1-21 is D-12's dispositions, not a Phase D input | R7B2-04 | `extraction-P1-backup.md` L48 (as archived) | "Disposition each D-12a inherited item", OWNER-DECISION (D-12). **Confirmed** |
 | The unnamed twins | R7B2-10 | `extraction-P4-release-P11-k8s.md` L114–116; `extraction-P6-perf.md` L97–98; `extraction-P7-logging.md` L90; `extraction-P3-defect-register.md` L146–148 (lines as archived, header included) | D-2 is the next data release, with its version; D-3 is the obs/sc release procedure; D-4/5/6 are canopy, cascor and recurrence cut timing. P6 OD-13 is P2's O13, and OD-14 is the cascor cut. P7 D7 is the cascor and cascor-model cuts. D-08 and D-09 are questions inside D-10's parked rows. **Confirmed** |
 | Lane A1's py07 and py08 are the annotated shape | R7A-04 | `round6/a1/cases/X_matrix_R/py07.py`, `py08.py` in the session scratchpad, values masked | A module constant `NAME: str = "…"`, and a dataclass field `name: str = "…"`. The final v5 reports both (exit 2). **Confirmed** |
-| P1's state moved after the 22:33Z census | drift | `git show origin/main:prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md`, and the section headings of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md` (both from ml#2179, 2026-10-05T22:47:04Z) | Phase B is a local frozen commit, `c3d0e890`, in `sorted-stargazing-garden`, with a bundle under `Juniper/backups/`. Round 3 reported; R3B's DEFECT-1..4 are new, and DEFECT-1 needs an owner ruling. The record holds round 2's lanes A, B and C, the ml#2114 and ml#2115 lanes, round 3's lanes A, B and C, both briefs and the handoff validations. It does not hold `…RECOVERY-PLAN.md`'s round 1 or Phase A's narrow lane (XC-PRESERVE row k). **Confirmed** |
+| P1's state moved after the 22:33Z census | drift | `git show origin/main:prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md`, and the section headings of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md` (both from ml#2179, 2026-10-05T22:47:04Z) | Phase B is a local frozen commit, `c3d0e890`, in `sorted-stargazing-garden`, with a bundle under `Juniper/backups/`. Round 3 reported; R3B's DEFECT-1..4 are new, and DEFECT-1 needs an Overtoad ruling. The record holds round 2's lanes A, B and C, the ml#2114 and ml#2115 lanes, round 3's lanes A, B and C, both briefs and the handoff validations. It does not hold `…RECOVERY-PLAN.md`'s round 1 or Phase A's narrow lane (XC-PRESERVE row k). **Confirmed** |
 | The five backup drafts' CI | drift | `gh api repos/pcalnon/juniper-ml/commits/<head>/check-runs`, 2026-10-08 | ml#2137: 26 success, 1 skipped. ml#2181: 22 success. ml#2138: 4 failures. ml#2140: 1 failure. ml#2159: 5 failures. **Confirmed** |
-| Script and handoff names that v1.7.0 cites | R7A-08, R7B2-20 | `ls` of each path in this worktree, and `git show origin/main:` for files added on `main` after this worktree's base | All exist. `HO/HANDOFF_2026-09/HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md` exists. `…round3-fold-in-pending.md`, `…PHASE-B-CONSENSUS-RECORD.md` and `…p1-wave1-in-flight.md` are on `origin/main` (`d3971e10`), not at this worktree's base (`cf711cf4`); the PR branches from `main` |
+| Script and handoff names that v1.7.0 cites | R7A-08, R7B2-20 | `ls` of each path in this worktree, and `git show origin/main:` for files added on `main` after this worktree's base | All exist. `HO/HANDOFF_2026-09/HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md` exists. `…round3-fold-in-pending.md`, `…PHASE-B-CONSENSUS-RECORD.md` and `…p1-wave1-in-flight.md` are on `origin/main` (`d3971e10`), not at this worktree's base (`cf711cf4`); the PR branches from `main` |
 
 ## The rewritten gate, tested (v5)
 
@@ -69,8 +69,8 @@ Gitleaks v8.30.1, on the final v5 (`5a6d1bd81ce6cbec`) unless a row says otherwi
 | R7A-05 Four more repositories rescan history on dispatch | MINOR | Accepted | XC-LEAKS: "What CI rescans" names all eight; note 2 gives the four outside step 3's config PRs a small PR of their own after step 2; the rescan warning covers "any of the eight". H-17 and §9's XC-LEAKS row likewise |
 | R7A-06 Each ERROR line also becomes a Sentry error event | MINOR | Accepted | Overview 2, XC-CRED and H-22 add the error event from sentry-sdk's default logging integration. "Without raising" no longer appears as a reason canopy sends no event |
 | R7A-07 §6.6 was cited for rulings it does not hold | MINOR | Accepted | Wave 0 item 1 cites `…RECOVERY-PLAN.md` §6.6 for O-10 only, `EX/extraction-P1-backup.md` for N-1 and N-2, and `EX/extraction-P2-canopy.md` for O13. Group B's P1 entry now holds only Phase E's rulings, so its parenthetical names §6.6 for O-5 and O-9 |
-| R7A-08 O8's 09-22 source was not named | MINOR | Accepted (re-derived) | §10 names `HO/HANDOFF_2026-09/HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md` |
-| R7A-09 The F-S10 restart waited for R-OBS-SC | NIT | Accepted (with R7B2-03) | Mid-wave sitting: the restarts are owner actions, each when its own input exists; one restart serves both if both are ready |
+| R7A-08 O8's 09-22 source was not named | MINOR | Accepted (re-derived) | §10 names `HO/HANDOFF_2026-09/HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md` |
+| R7A-09 The F-S10 restart waited for R-OBS-SC | NIT | Accepted (with R7B2-03) | Mid-wave sitting: the restarts are Overtoad actions, each when its own input exists; one restart serves both if both are ready |
 | R7A-10 B9's literal also misses `:` and quoted keys | NIT | Accepted | XC-PRESERVE: "misses all of these but a bare `NAME=`" |
 | R7A-11 The sample is files, not documents | NIT | Accepted | "40 real backup files" in XC-PRESERVE and the validation record |
 | R7A-12 P1-25 was called hygiene but sat at T2 | NIT | Accepted | Appendix A puts P1-25 at T6; S0.3 and Wave 2's P1 lane say so |
@@ -119,7 +119,7 @@ Gitleaks v8.30.1, on the final v5 (`5a6d1bd81ce6cbec`) unless a row says otherwi
 v1.7.0 takes in the drift that changes an action, and round 8 checks it.
 
 - **From the 2026-10-05 22:33Z census**:
-  - P12's Phase 1 wave 1 merged pending the owner's rulings (the first table above). data-client#222 is a breaking contract change on `main`, so R-DC-PATCH now needs a branch off `v0.5.0`, and a trio sync to `main` would bring W1.4 too (XC-P12, §5, Wave 1).
+  - P12's Phase 1 wave 1 merged pending the Overtoad's rulings (the first table above). data-client#222 is a breaking contract change on `main`, so R-DC-PATCH now needs a branch off `v0.5.0`, and a trio sync to `main` would bring W1.4 too (XC-P12, §5, Wave 1).
   - The W5.1 review is done (ml#2168), so R5 can be ruled (Group B).
   - The canopy ledger's Phase 10 is filed (ml#2157): P2-01 and P2-02 are done, and its FIXED records reopen if P3-06 refutes canopy#685.
   - Five fleet drafts were added to A10: ml#2147, #2149, #2150 and canopy #704 (in `…p1-wave1-in-flight.md`), and canopy#698.
@@ -128,7 +128,7 @@ v1.7.0 takes in the drift that changes an action, and round 8 checks it.
   - No release was cut and PyPI is unchanged. juniper-data, juniper-data-client and juniper-canopy took dependency and CI bumps.
   - The fleet grew to 115.
   - ml#2179, the backup arc's Phase B handoff and record, merged at 2026-10-05T22:47:04Z. In the plan:
-    - R3B DEFECT-1 becomes an owner ruling at the first sitting (A2, with S0.3 drafting its menu) and a new hazard, H-23: the first backup after recovery would delete 6 to 8 of job 2's 9 filesets.
+    - R3B DEFECT-1 becomes an Overtoad ruling at the first sitting (A2, with S0.3 drafting its menu) and a new hazard, H-23: the first backup after recovery would delete 6 to 8 of job 2's 9 filesets.
     - P1-05..P1-08 become round 3's fold-in and round 4. P1-09's archive half is done for rounds 2–3, while row k stays open.
     - XC-PRESERVE row a moves to `sorted-stargazing-garden` and its bundle, and row b's originals are archived.
     - The watchdog's primary is already synced.
@@ -146,7 +146,7 @@ None. The lanes overlapped on five themes and agreed on each:
 
 ## Slips on the lanes' constraints
 
-None reached a repository or printed a value. The owner may want to know:
+None reached a repository or printed a value. The Overtoad may want to know:
 
 - Lane A loaded the gate in-process, so Python wrote `util/ad-hoc/__pycache__/2026-10-04_gitleaks_zero_rule_probe.cpython-314.pyc`. It is gitignored and was left in place.
 - Lane B1:

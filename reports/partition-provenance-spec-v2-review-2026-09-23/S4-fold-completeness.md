@@ -6,7 +6,7 @@ I have everything I need. Final report follows.
 
 # Lane S4 review of spec v2: fold completeness and amputation
 
-**Verdict: COMPLETE WITH FINDINGS.** All fourteen findings are folded. Nothing was dropped outright. Two folds are partial and three were decided differently, one of them without a label. The three MAJORs below (D1–D3) should be fixed before the owner rules.
+**Verdict: COMPLETE WITH FINDINGS.** All fourteen findings are folded. Nothing was dropped outright. Two folds are partial and three were decided differently, one of them without a label. The three MAJORs below (D1–D3) should be fixed before the Overtoad rules.
 
 The spec is `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md`: v1 at `8b8d5d94`, v2 at `8c9d65f`. Bare § numbers below refer to v2. I read everything through `git show` and changed nothing.
 

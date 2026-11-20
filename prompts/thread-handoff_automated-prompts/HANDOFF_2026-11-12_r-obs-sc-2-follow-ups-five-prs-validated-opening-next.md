@@ -3,7 +3,7 @@
 **Written**: 2026-11-13 01:15Z by session `6e3bdef0` (`r-obs-sc-2-follow-ups-four-ruled-four-open`), which ends
 with this file. The filename keeps its first, checkpoint-time slug because juniper-ml#2555's description cites it.
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-four-ruled-four-open.md`
-(the owner's four rulings verbatim, the seven steps, and round 2's four questions verbatim; read it first).
+(the Overtoad's four rulings verbatim, the seven steps, and round 2's four questions verbatim; read it first).
 **Working record, item by item**: `tmp/lps/fixpass_r1.md` in the worktree named under "Git status" (gitignored;
 every review finding and what was done about it; keep it until plan v1.15.16 has merged).
 
@@ -11,7 +11,7 @@ every review finding and what was done about it; keep it until plan v1.15.16 has
 
 Continue the R-OBS-SC-2 follow-ups. Rulings 2 (first half), 3 (two of three forks) and 4 are carried out and on
 `main`. What remains: the juniper-ml guard and register PR for `APD-ECO-016` (after juniper-data's fix lands), the
-0.11.5 cut (owner's go-ahead first), plan v1.15.16, and the re-ask of round 2's four questions.
+0.11.5 cut (Overtoad's go-ahead first), plan v1.15.16, and the re-ask of round 2's four questions.
 
 ## Completed so far (all merged on 2026-11-13 UTC, each one GitHub-signed commit, squash-merged with `util/safe_merge.py`)
 
@@ -50,14 +50,14 @@ Continue the R-OBS-SC-2 follow-ups. Rulings 2 (first half), 3 (two of three fork
      fork-drift entry ("all eight guards" becomes nine; canopy now forks `RateLimiter`). Run
      `util/ad-hoc/register_open_set.py` and `util/ad-hoc/register_status_crosscheck.py`. After the merge dispatch
      Docs Full Check, the only place the cross-repo arms run.
-2. **juniper-ml 0.11.5** -- ask the owner for the go-ahead first (asked twice on 2026-11-12, unanswered). Then
+2. **juniper-ml 0.11.5** -- ask the Overtoad for the go-ahead first (asked twice on 2026-11-12, unanswered). Then
    §11 of `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md`, as a patch (set the manifest to
    patch: the detector reads `[Unreleased]` as a minor). **In the proposal PR, remove by hand the two clauses
    #2555 added to `docs/REFERENCE.md` line 184**: "except the `juniper-observability` cell: it holds `main`'s
    floor, `>=0.4.2` (unreleased; first in juniper-ml 0.11.5), where the published 0.11.4 declares `>=0.4.1`" and
    "; `main` raises it to `>=0.7.2,<0.8.0` (unreleased; first in juniper-ml 0.11.5)". Keep line 184 one physical
    line. **If the cut is not a 0.11.x**, also put the `0.11.x` row's `juniper-observability` cell back to
-   `>=0.4.1`. No test notices either omission. Stop at the `pypi` gate: the owner approves it.
+   `>=0.4.1`. No test notices either omission. Stop at the `pypi` gate: the Overtoad approves it.
 3. **Plan v1.15.16** (`notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`; writer script
    with `--check`, ID coverage 381 of 381, two independent reviewers, a new dated re-probe). Record the four
    rulings, the five PRs, round 2's outcome, and what the reviews found outside the rulings (the list "For the
@@ -75,11 +75,11 @@ Continue the R-OBS-SC-2 follow-ups. Rulings 2 (first half), 3 (two of three fork
    - `tests/test_release_train_registry.py` walks the checkout for `pyproject.toml` without skipping `tmp/` (3
      tests fail locally whenever `tmp/` holds a repository copy);
    - juniper-ml#2507's row test makes the compatibility row track `pyproject.toml` between a floor PR and its
-     release, and nothing checks that the paragraph says so (flood-4 is taking this to the owner);
+     release, and nothing checks that the paragraph says so (flood-4 is taking this to the Overtoad);
    - juniper-service-core's next release is 0.8.0, so every `<0.8.0` cap has to widen first.
    **Read first**: `main` gained a draft v2 of the plan on 2026-11-12 (juniper-ml#2550, "a draft re-plan, not
-   validated"); settle with the owner which document takes the record.
-4. **Round 2**: ask the owner what to clarify, then re-ask the four questions (verbatim in the predecessor).
+   validated"); settle with the Overtoad which document takes the record.
+4. **Round 2**: ask the Overtoad what to clarify, then re-ask the four questions (verbatim in the predecessor).
 5. **Housekeeping**: remove the four merged fork worktrees and, after flood-4's fix merges, the juniper-data one
    (each `tmp/` checked under the retention rule first); this worktree after the guard PR merges.
 

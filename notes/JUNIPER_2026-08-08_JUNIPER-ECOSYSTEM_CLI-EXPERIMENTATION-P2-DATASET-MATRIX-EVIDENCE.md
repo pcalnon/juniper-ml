@@ -88,12 +88,12 @@ Owner decisions still open: F-P1-2 (native Grafana v13 squatting :3000), stale c
 > **refuted** by direct measurement
 > ([head-to-head §5](JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-HEAD-TO-HEAD-SMOKE-EVIDENCE.md)):
 > on identical data at an identical budget the CLI is not slower at all (36 s vs 46 s; 35 s vs 35 s).
-> Of this paragraph's other items, **F-P1-2 and Q-6 remain genuinely open owner calls.**
+> Of this paragraph's other items, **F-P1-2 and Q-6 remain genuinely open Overtoad calls.**
 >
 > **Update (2026-08-16) — Q-6 is RESOLVED; the line immediately above is itself now stale.** The block
 > above was committed hours before the Q-6 fix merged, so its closing sentence must be read as
-> **F-P1-2 alone** remains a genuinely open owner call. Q-6 is **closed**, and it turned out not to be
-> an owner call at all — it was an engineering item, executed:
+> **F-P1-2 alone** remains a genuinely open Overtoad call. Q-6 is **closed**, and it turned out not to be
+> an Overtoad call at all — it was an engineering item, executed:
 >
 > - **cascor#523** (merged `3909d275`) adds the `JUNIPER_CASCOR_LOG_DIR` override in both tiers;
 >   **ml#1120** exports it per run at all three `cascor_up` sites in `util/experiment_stack.bash`.

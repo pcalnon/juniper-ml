@@ -15,7 +15,7 @@ copied-forward class.
 **Disposition of the predecessor** — all of its §1 mechanics still hold (the worktree-guard command
 shapes, the standalone-command rule, the two-sibling drift-gate scope). Its §3 table is superseded by
 §3 below (it read 58 open). Its §3.1 recommendation (`APD-DCLIENT-002`) is **done**, as are the
-cheap wins its §3.5 listed — *except* `APD-CASCOR-005`, its third bullet, now parked as an owner
+cheap wins its §3.5 listed — *except* `APD-CASCOR-005`, its third bullet, now parked as an Overtoad
 decision (§3.1) — plus the register's §2.3 base-URL drift pair. Its §6.1–§6.5 traps all still stand;
 §5 below adds five new ones plus the updated unfiled ledger (§5.3). Its §7 had four items: one
 closed here (the data-client `__reduce__`), three carried into §5.3 (`raise_on_status`, the
@@ -109,7 +109,7 @@ Re-derived by the §1 script; severity split by the same method.
 | Cross-client `APD-ECO-*` | 7 | R3 M3 E1 | decision-shaped; `-001` unlocks `CCLIENT-001` |
 | `juniper-service-core` | 7 | R2 M3 E2 | **all latent** (`.websocket.*` / `workers/`, no consumer) — still do not fix as live |
 | `juniper-rclient` (in the recurrence monorepo) | 3 | R1 M2 | `-002` per-call timeout is the most actionable single item left |
-| `juniper-cascor` | 2 | M2 | `-003` (response_model on 46 routes — large); `-005` is an **owner decision** (§3.1) |
+| `juniper-cascor` | 2 | M2 | `-003` (response_model on 46 routes — large); `-005` is an **Overtoad decision** (§3.1) |
 | `juniper-data-client` | 1 | E1 | `-008` — kw-only migration, verify call sites first |
 | `juniper-ml` | 1 | M1 | `-001`, primer-flagged as judgement |
 
@@ -121,7 +121,7 @@ Re-derived by the §1 script; severity split by the same method.
   Low-confidence, and the register's §6 confidence note lists it among "should be triaged before
   being actioned".
 - **The juniper-data REST group** (`-026`–`-033`, `-008`, `-017`, `-022`) — outstanding since the
-  08-21 handoff. When decided, record it inline as `(owner decision, YYYY-MM-DD)` per the `-011`/`-014`
+  08-21 handoff. When decided, record it inline as `(Overtoad decision, YYYY-MM-DD)` per the `-011`/`-014`
   precedent.
 - **`APD-ECO-001` → `APD-CCLIENT-001`** — the idempotency mechanism; one decision, not two tasks.
 

@@ -2,7 +2,7 @@
 
 **Project**: Juniper (ecosystem-wide)
 **Author**: Paul Calnon
-**Status**: Active — the flood is still running by owner decision
+**Status**: Active — the flood is still running by Overtoad decision
 **Date**: 2026-09-05
 **Applies to**: juniper-ml, juniper-data, juniper-canopy, juniper-data-client
 
@@ -13,7 +13,7 @@
 The disposition record for the **second** Cursor-fleet PR flood. The first is analysed in
 [`JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`](JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md);
 that arc built the machinery this one used. Read that first for the incident taxonomy and the
-owner decision list; read this one for what round 2 actually found, and — most importantly — for
+Overtoad decision list; read this one for what round 2 actually found, and — most importantly — for
 **§4, the register of claims that did not survive re-derivation**, which is the part with the
 longest shelf life.
 
@@ -26,7 +26,7 @@ longest shelf life.
 | PRs | 134 over ~25 h | **~135 open at any moment**, still running |
 | rate | ~5.4/h, peak 48 per 6-h bucket | **~8.3/h sustained**, peak 36 in one clock hour |
 | repos | juniper-ml only | **four**: ml, data, canopy, data-client |
-| PR state | ready | **draft** — owner decision §4.5 of the round-1 analysis, working as intended |
+| PR state | ready | **draft** — Overtoad decision §4.5 of the round-1 analysis, working as intended |
 | damage in the diffs | 20 test classes + 13 grafts lost in merge; 6 doc-union files not clean | **none found** (see §3) |
 | outcome | 133 merged, 5 heal PRs needed | 13 merged, 10 consolidated + closed, rest open |
 
@@ -41,7 +41,7 @@ remains dashboard-only.
 
 **The backlog refills.** Over this session 13 PRs were merged and 10 closed, and the open-draft
 count returned to roughly where it started (133 → 134). Draining is not convergent while the
-source runs; that is an accepted owner decision, not an oversight.
+source runs; that is an accepted Overtoad decision, not an oversight.
 
 ---
 

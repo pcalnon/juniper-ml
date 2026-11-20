@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (opened juniper-data-client#262, juniper-cascor-client#197 and juniper-deploy#275)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/open_signed_pr.py (the tool ``open`` drives); util/ad-hoc/2026-11-15_py315_informational_green_legs.py
          (juniper-ml#2578, the workflow edit); util/ad-hoc/2026-11-15_py315_green_legs_changelog.py (the CHANGELOG
          entry); tmp/py315/GREEN_LEGS_BRIEF.md and tmp/py315/ROLLOUT_BRIEF.md "Mechanics" (the rules this follows)

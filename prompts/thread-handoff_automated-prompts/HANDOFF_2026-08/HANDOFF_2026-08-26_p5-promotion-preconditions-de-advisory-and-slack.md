@@ -20,7 +20,7 @@ Continue the **shared-session-memory** arc in `juniper-ml`, P5 fleet rollout, **
 handoff: all 8 governable repos carry the memory-budget ratchet (P5 ports, merged 2026-08-25/26), and
 **plan §P5 step d preconditions 2–4 are shipped in all 8** — `--advisory` removed, the three negative
 controls re-run against the non-advisory invocation, real slack declared with `Allow-Ceiling-Raise:
-AGENTS.md`. **NONE is promoted to a required context.** That ruleset write is the owner's explicit call;
+AGENTS.md`. **NONE is promoted to a required context.** That ruleset write is the Overtoad's explicit call;
 this session had merge approval for its PRs, not promotion approval.
 
 Authorities: plan §P5 in `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md` (step d = the
@@ -72,31 +72,31 @@ Also this session: `util/ad-hoc/2026-08-26_p5_fleet_state.py` (API census, `--du
 2. **Post-merge verification, all 8**: `Post-Merge Main Verification` green on each repo's `main`
    (`gh run list --repo pcalnon/<repo> --branch main --limit 3`), and re-run the census — expect
    `advisory=False`, banner `BLOCKING`, `required=False`, `headroom == slack` everywhere. The merge run
-   was owner-authorized; nothing post-merge re-checks the raise (the job is `skipped` on `main` by
+   was Overtoad-authorized; nothing post-merge re-checks the raise (the job is `skipped` on `main` by
    design), so the census is the proof.
 3. **Ledger + peer.** Post ONE comment on ml#1326 with the table above (mergedAt/squash for #529 filled
    in), and message peer `p5 ports, session split [3c9662]` (address
    `uds:/run/user/1000/cc-socks/1210948.sock`) the same figures — it holds the plan banner update. If the
    peer is gone (`ListAgents`), update plan §P5's status banner yourself: "preconditions 1–4 met in all 8;
-   promotion (ruleset) = owner decision" with the table; §4a says status may not be left stale.
+   promotion (ruleset) = Overtoad decision" with the table; §4a says status may not be left stale.
 4. **Archive PR for this handoff + the two scripts** (branch
    `docs/handoff-2026-08-26-p5-promotion-preconditions`, from `origin/main` `d9052022`): merge when green
-   — the owner's approval for this session's PRs covers it. Eight PR bodies cite the script path as
+   — the Overtoad's approval for this session's PRs covers it. Eight PR bodies cite the script path as
    provenance, so it must land.
-5. **Promotion — owner's explicit go required, per repo.** Dry-run first, then write:
+5. **Promotion — Overtoad's explicit go required, per repo.** Dry-run first, then write:
    `python3 util/ad-hoc/2026-08-20_require_context_safely.py --repo juniper-<x> --context 'Memory Budget'`
    (`--status` shows "would add"; observed YES everywhere from the PR heads), then `--apply`. Never
    `--allow-unobserved`, never `add_required_context.py`. `--repo` is required for recurrence (not in the
    default roster). With slack declared, the first fan-out fits every ceiling; cascor's 9,609 is deliberately
    large and comes back down at the cut.
 6. **Worktree cleanup, after MERGED + liveness probe** (`util/ad-hoc/2026-08-20_worktree_liveness_probe.py`),
-   reading the owner's arc approval as the post-merge tail on this session's OWN worktrees, as the 08-26
+   reading the Overtoad's arc approval as the post-merge tail on this session's OWN worktrees, as the 08-26
    precedent did: the eight `<repo>--feat--memory-budget-blocking--20260826-12xx--<sha>` dirs under
    `/home/pcalnon/Development/python/Juniper/worktrees/`, then `git -C <primary> branch -d
    feat/memory-budget-blocking` + `worktree prune` in each sibling primary, then fast-forward each primary
    if it is on `main` and clean (`status -sb` first). `worktree remove` deletes ignored files. The ml
-   primary pull is an owner action from an isolated session.
-7. **Step e stays owner-sequenced**: `docs/REFERENCE.md` must exist in cascor and recurrence before any cut;
+   primary pull is an Overtoad action from an isolated session.
+7. **Step e stays Overtoad-sequenced**: `docs/REFERENCE.md` must exist in cascor and recurrence before any cut;
    the cut lands on `main` with the primary pulled BEFORE any worktree carries the trimmed file (plan hazard).
 8. Owner decisions carried forward unchanged: soak rung 1 (policy stratum 24/24), parent `Juniper/AGENTS.md`,
    worktree settings asymmetry (LEAVE IT), MEMORY.md 120-byte cap on new entries.

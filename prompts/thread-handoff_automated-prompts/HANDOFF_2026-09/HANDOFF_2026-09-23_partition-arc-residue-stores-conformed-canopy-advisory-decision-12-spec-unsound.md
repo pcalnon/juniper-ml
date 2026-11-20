@@ -3,7 +3,7 @@
 **Date**: 2026-09-23 ·
 **Session**: <https://claude.ai/code/session_01WGFQ3uJtGMBygmuwxSSat4> ·
 **Worktree**: `juniper-ml/.claude/worktrees/rippling-wobbling-torvalds` ·
-**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md`.
+**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-Overtoad.md`.
 Its §10 is this session's full re-evaluation; the goal below does not repeat it.
 
 **Documents REFERENCED** (more than one, so every reference carries its filename):
@@ -18,7 +18,7 @@ Its §10 is this session's full re-evaluation; the goal below does not repeat it
 
 - `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md`: new;
 - `util/ad-hoc/2026-09-22_partition_provenance_npz_roundtrip.py`: new;
-- `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md`: header, and a new §10;
+- `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-Overtoad.md`: header, and a new §10;
 - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-12_decision-11-release-train-complete-nine-on-pypi.md`: a correction under its §8.4;
 - `docs/REFERENCE.md`: the Decision 12 and hf/kaggle bullets under "What actually remains";
 - `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md`: a dated update after §10's "Still open" list;
@@ -30,7 +30,7 @@ Its §10 is this session's full re-evaluation; the goal below does not repeat it
 
 ```text
 Continue the partition-arc residue in the Juniper ecosystem. Its state of record is §10 of juniper-ml
-prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md.
+prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-Overtoad.md.
 Read it first, then this file (HANDOFF_2026-09-23_partition-arc-residue-stores-conformed-canopy-advisory-decision-12-spec-unsound.md).
 
 Completed (2026-09-22/23):
@@ -48,10 +48,10 @@ Completed (2026-09-22/23):
 - Filed: juniper-data#423 (Decision 12), #424 (the §6.2 shortfall), #429 (arc_agi unloadable);
   juniper-ml#2034 (decision 4); juniper-cascor#677 (V-3); juniper-data-client#211 (bare curl).
 
-Remaining, agent-doable (merge approval is per-session: ask the owner for it again):
+Remaining, agent-doable (merge approval is per-session: ask the Overtoad for it again):
 1. Spec v2. Fold §14 into §1-§13 of the spec, then run a FRESH consensus round on v2. Freeze the
    artifact while the round runs, and aim at least one lane at identity/versioning/legality.
-   Do not ask the owner to rule on OQ-1..OQ-6 until v2 survives.
+   Do not ask the Overtoad to rule on OQ-1..OQ-6 until v2 survives.
 2. juniper-data#429. Store arc_agi's task_ids as np.str_, and add a fleet test that loads every
    generator's artifact with np.load(allow_pickle=False). Bump arc_agi's VERSION to a target that
    does not collide with the spec's §7.3 (see §14 R-4). cached.py's contextlib.suppress swallows
@@ -96,7 +96,7 @@ gh issue view 178 --repo pcalnon/juniper-recurrence --json state --jq .state    
 gh run list -R pcalnon/juniper-recurrence --event repository_dispatch --limit 1      # empty until then
 git show origin/main:notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md | grep -c '^\*\*B-[1-7]\.\|^\*\*R-[14]\.'   # 9 detail headings in §14
 for p in juniper-ml juniper-data juniper-cascor juniper-canopy; do printf '%s ' "$p"; curl -s "https://pypi.org/pypi/$p/json" | python3 -c "import sys,json; print(json.load(sys.stdin)['info']['version'])"; done
-# expected until the owner cuts releases: juniper-ml 0.9.0, juniper-data 0.15.0, juniper-cascor 0.11.0, juniper-canopy 0.8.1
+# expected until the Overtoad cuts releases: juniper-ml 0.9.0, juniper-data 0.15.0, juniper-cascor 0.11.0, juniper-canopy 0.8.1
 ```
 
 ## 3. Git status at handoff
@@ -118,4 +118,4 @@ for p in juniper-ml juniper-data juniper-cascor juniper-canopy; do printf '%s ' 
 
 - **#422's stores ran only against mocked sources.** No real Hub or Kaggle download ran.
 - **The spec's script passes (15 PASS) exercise encoding, digest and tamper detection.** They say nothing about §14's defects, which are in gate logic that exists only as prose.
-- **"Merged" is not "released".** None of #422, #663, #672 or #2033 is on PyPI until the owner cuts the releases.
+- **"Merged" is not "released".** None of #422, #663, #672 or #2033 is on PyPI until the Overtoad cuts the releases.

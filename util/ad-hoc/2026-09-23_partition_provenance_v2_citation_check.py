@@ -8,7 +8,7 @@ Version:     0.1.0
 License:     MIT License
 Created:     2026-09-23
 Status:      ad-hoc -- evidence for a specification
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md (its header lists the pins)
 
 Why

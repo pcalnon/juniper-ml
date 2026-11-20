@@ -25,7 +25,7 @@ Source key: **P38** = the predecessor handoff
 | 6 | **Merge verification doctrine** — verify with `gh pr view … --json state,mergedAt,mergeCommit` **and** that the content is on `main`; a MERGED badge is not ancestry. **The cost was realised in this very document**, which asserted #404 MERGED while `gh pr view 404` returned `state: OPEN`. | P38 §2 + §5.9 | **LOST** |
 | 7 | **The consensus-procedure document name**, `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` — the target told the successor to run the protocol without naming it. | P38 §7 | **LOST** |
 | 8 | **Why `tests/test_thread_handoff_archive.py` is in the §1 block** — the register cites the handoff by filename and the test requires it to exist in `prompts/thread-handoff_automated-prompts/`, which is why they must land in one PR. | P38 §1 | **LOST** |
-| 9 | **The owner's partial-data spec exists verbatim only in memory** `project_partial_data_contract_arc_2026-09-05`. Directly load-bearing for D-A, whose whole content is option 3's wire form. | P38 §5.9 | **LOST** |
+| 9 | **The Overtoad's partial-data spec exists verbatim only in memory** `project_partial_data_contract_arc_2026-09-05`. Directly load-bearing for D-A, whose whole content is option 3's wire form. | P38 §5.9 | **LOST** |
 | 10 | **The register crosscheck's two silent-miss modes** — a WON'T FIX close with no §5.1 row, and abbreviated ids that its regex does not match; plus that it treats every id on the status line as claimed-fixed. | DRAFT §5.2 | **LOST** |
 | 11 | CodeQL on subclass-registration imports: the fix that works is `importlib.import_module(...)`, a **call**, not an import. Relevant to D-E. | P38 §5.9 | DEGRADED |
 | 12 | "Primary checkouts drift" — read `git show origin/main:<path>`. | P38 §5.10 | DEGRADED |
@@ -36,7 +36,7 @@ Source key: **P38** = the predecessor handoff
 | 17 | §6's branch SHA `44de51c5`. | P38 §6 / DRAFT §6 | DEGRADED |
 | 18 | The three round-38 PR worktrees, named in P38 and reduced to "the three round-38 PR worktrees". | P38 §6 | DEGRADED |
 | 19 | P38 §0.2 — the cascor partial-data follow-ups PR. | P38 §0.2 | **CORRECTLY DROPPED** (cascor#640 MERGED) |
-| 20 | P38 §0.5's "the empty set is still empty" and the five parked owner questions. | P38 §0.5 | **CORRECTLY DROPPED** (superseded by the thirty rulings) |
+| 20 | P38 §0.5's "the empty set is still empty" and the five parked Overtoad questions. | P38 §0.5 | **CORRECTLY DROPPED** (superseded by the thirty rulings) |
 | 21 | DRAFT §5.5's `pre-commit` PATH breakage. | DRAFT §5.5 | **CORRECTLY DROPPED** — the target records the supersession and keeps the surviving half |
 | 22 | P38 §0.4 — live E2E of the prompt on `equities` is impossible at canopy's defaults; workaround: `start_date` ≥ 2010 or `fundamentals_fill='drop'`. | P38 §0.4 | DEGRADED |
 
@@ -72,7 +72,7 @@ Per-unit start check:
 | D-G | Partly | `APD-DATA-049`'s source/target cache paths only in §6; the instruments named in §5.11/§2 **do not exist in the juniper-data checkout** (unmerged branch only) |
 | C-A | Yes | The `APD-ECO-003` ruling in the register still carries the over-generalised claim §0.2 corrects — a successor told "the register is the record" reads the wrong thing |
 | C-B | Yes | No file list for the 43 returns; no census instrument named |
-| C-C | Yes | The register carries an AST census and an `inspect.signature` parity pin, neither in the handoff; the register also records an owner **deferral** of 2026-08-26 on that row |
+| C-C | Yes | The register carries an AST census and an `inspect.signature` parity pin, neither in the handoff; the register also records an Overtoad **deferral** of 2026-08-26 on that row |
 | X-A | Partly | **The `juniper-cascor-model` byte-mirror obligation** (PART 1 #2); and no fallback stated for juniper-data unreachable at startup |
 | X-B | Yes | File named only via the register |
 | X-C | Partly | **The `juniper-service-core` path is named nowhere** |

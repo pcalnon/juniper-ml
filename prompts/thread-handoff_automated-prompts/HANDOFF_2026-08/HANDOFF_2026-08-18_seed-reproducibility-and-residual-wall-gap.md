@@ -478,7 +478,7 @@ errors) · `2026-08-16_h2h_marker_sentinel.bash` (rotation-proof span markers) �
 - **Retrospective re-validation of the existing corpus.** Most of the E-A / E-I / P4 results are
   single-run, and the P3 acceptance rollup grades Reproducibility *"PASS — bit-identical"*; #532
   puts an undeclared ~10 pp on each. Re-validating that corpus is a **separate project** — raise it
-  with the owner rather than absorbing it into §3 or §4.
+  with the Overtoad rather than absorbing it into §3 or §4.
 
 ---
 

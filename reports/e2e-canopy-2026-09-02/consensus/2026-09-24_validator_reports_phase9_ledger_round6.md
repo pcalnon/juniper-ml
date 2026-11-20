@@ -15,7 +15,7 @@ Round 6 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 | # | Claim | Re-derived value | Result | Command → output |
 |---|---|---|---|---|
 | 1a | Question asked at 03:34:45Z | Line 4227: AskUserQuestion at `2026-09-24T03:34:45.231Z`. Lines 4228–4259 are metadata and queue records only; nothing was asked again. | **MISMATCH (ledger text)** | `python3 -B $S/ask_scan.py <bc31e993.jsonl>`. `…E2E-VALIDATION-EVIDENCE.md:8795-8796` says "at 07:32:48Z … session `bc31e993` asked" (Finding 1). |
-| 1b | Answered at 07:32:48Z | Line 4260: tool_result at `07:32:48.582Z` | MATCH | Same command. `owner_answer_extract.py … 4227 4260` prints the same two records. |
+| 1b | Answered at 07:32:48Z | Line 4260: tool_result at `07:32:48.582Z` | MATCH | Same command. `Overtoad_answer_extract.py … 4227 4260` prints the same two records. |
 | 1c | PRs named | data#428, ml#2032, ml#2059 and canopy#678, plus "cascor#678 was armed the same way earlier" | MATCH | Line 4227 text |
 | 1d | "Mine: fix forward" and its option text | "The sweeper is yours and the merges are intended. I keep validating after the merge and fix forward with follow-up PRs." | MATCH | Lines 4227 and 4260 |
 | 1e | Four minutes after `07aef715` | `07aef715` committed 02:28:28-05:00 (07:28:28Z); the answer came 4 min 20 s later | MATCH | `git log --format='%h aI=%aI cI=%cI'` |
@@ -47,7 +47,7 @@ Round 6 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 1. **LOW: the ledger gives the answer's time as the question's time.**
    - Quoted, `…E2E-VALIDATION-EVIDENCE.md:8795-8796`: "On 2026-09-24 at 07:32:48Z, four minutes after round 5's artifact was frozen, session `bc31e993` asked whether the sweeper…"
    - Evidence: the AskUserQuestion is at line 4227 at 03:34:45.231Z, and it was never re-asked. 07:32:48.582Z is the answer (line 4260). Round 5's own report states it correctly (`…phase9_ledger_round5.md:91`).
-   - Fix: "asked at 03:34:45Z …; the owner answered at 07:32:48Z, four minutes after round 5's artifact was frozen."
+   - Fix: "asked at 03:34:45Z …; the Overtoad answered at 07:32:48Z, four minutes after round 5's artifact was frozen."
    - Changes a number: yes, one timestamp only. Disposition: no. Action: no.
 
 2. **LOW: a "not re-derived" item is false as worded.**
@@ -58,7 +58,7 @@ Round 6 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
    - Changes a number, disposition or action: no.
 
 **WHAT I COULD NOT CHECK**
-- Commands outside Claude Code transcripts: a terminal, cron or systemd timers, other hosts, GitHub-side automation. I read no shell history or timer configuration. "No command on this host" rests on transcripts only; the owner's answer covers the sweeper itself.
+- Commands outside Claude Code transcripts: a terminal, cron or systemd timers, other hosts, GitHub-side automation. I read no shell history or timer configuration. "No command on this host" rests on transcripts only; the Overtoad's answer covers the sweeper itself.
 - The mechanism of F-CANOPY-055, on which "holds its layout default whatever cascor reports" rests. I verified the status bar from source only, with no live REPLAYING drive.
 - Who owns the signing key. I compared issuer key IDs without printing them: they are equal across the night's and the 03:00Z commits and differ from GitHub's.
 - Lane R2-F's reflog activity (not in scope). "About 1 MB encoded" is computed, not measured: the push tool is off-limits.
@@ -71,16 +71,16 @@ Round 6 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 
 *agent `a40a56695bf031320` · round 2 · last-assistant-text (after its round-2 brief) · 11612 chars*
 
-**VERDICT: SOUND-WITH-FIXES.** The pass's facts hold. The replay of its 16 substitutions on `07aef715`'s ledger is byte-identical to `b0b17cad`'s (`cmp`), and I confirmed every new timestamp, count and source line I checked. The problems are in the scope given to the owner's answer, one misdated sentence, a new tool whose redaction claim is false, and two over-general or stale statements. Findings 1–3 change a disposition, an action or a number, so under §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` the review continues.
+**VERDICT: SOUND-WITH-FIXES.** The pass's facts hold. The replay of its 16 substitutions on `07aef715`'s ledger is byte-identical to `b0b17cad`'s (`cmp`), and I confirmed every new timestamp, count and source line I checked. The problems are in the scope given to the Overtoad's answer, one misdated sentence, a new tool whose redaction claim is false, and two over-general or stale statements. Findings 1–3 change a disposition, an action or a number, so under §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` the review continues.
 
 Paths: "ledger" is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` at `b0b17cad`. "R5 report" is `reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round5.md`. Canopy was read at `e9053227` explicitly, because `origin/main` has since moved to `6c4ad9a9` (#679). Cascor was read at `0e016a7c`.
 
 **FINDINGS**
 
-**1. MINOR: the ledger states the scope of the owner's answer three different ways, and item 15 claims more than the owner said.**
+**1. MINOR: the ledger states the scope of the Overtoad's answer three different ways, and item 15 claims more than the Overtoad said.**
 - **Quoted:**
-  - "Who", :8800-8802: "The question did not name #676, the account's later actions or ml#2045's next morning, so those remain the owner's to confirm".
-  - Item 15, :9547-9548: "**Answered for the sweeper (2026-09-24):** the pass over nine PRs, 21:47–22:51Z, was the owner's sweeper ("Who", above), whose merges the owner calls intended."
+  - "Who", :8800-8802: "The question did not name #676, the account's later actions or ml#2045's next morning, so those remain the Overtoad's to confirm".
+  - Item 15, :9547-9548: "**Answered for the sweeper (2026-09-24):** the pass over nine PRs, 21:47–22:51Z, was the Overtoad's sweeper ("Who", above), whose merges the Overtoad calls intended."
   - What the evidence cannot support, :9428-9429: "it covers #676's own ready and arm by the pass's pattern, not by name".
 - **Evidence:**
   - I printed transcript lines 4227 and 4260 with the extractor. The question names only data#428, ml#2032, ml#2059 and canopy#678, and says cascor#678 "was armed the same way earlier". It then says "All four merged before their final validation rounds … Is that sweeper yours?"
@@ -94,7 +94,7 @@ Paths: "ledger" is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDE
   - it reaches the pass's other five PRs, #676's ready and arm included, only by the shared pattern (ready, then arm 4–8 s later);
   - "the merges are intended" was said of the four named PRs;
   - in "Who", write "#676's CI re-run", not "#676";
-  - drop "whose merges the owner calls intended" for the whole pass.
+  - drop "whose merges the Overtoad calls intended" for the whole pass.
 - **Changes a number/disposition/action?** Yes, a disposition.
 
 **2. LOW: "Who" gives the wrong time for the question and repeats a false premise.**
@@ -106,7 +106,7 @@ Paths: "ledger" is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDE
 - **Fix:** "asked at 03:34:45Z and answered at 07:32:48Z". Also note that canopy#678 was never a draft and was merged directly.
 - **Changes a number/disposition/action?** Yes, numbers: the time of the question, and four → three.
 
-**3. MINOR: the new `util/ad-hoc/2026-09-24_owner_answer_extract.py` does not redact the tokens its docstring says it does.**
+**3. MINOR: the new `util/ad-hoc/2026-09-24_Overtoad_answer_extract.py` does not redact the tokens its docstring says it does.**
 - **Quoted** (`:15-17`): "…each cut to a bound, with e-mail addresses and token shapes redacted." The same claim is in `util/ad-hoc/README.md:742-743`.
 - **Evidence:**
   - I ran the extractor on a constructed two-record transcript of fake values and printed only whether each value survived.
@@ -186,7 +186,7 @@ Paths: "ledger" is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDE
 
 **WHAT YOU COULD NOT CHECK**
 - Nothing was driven live, so I do not know whether F-055's bar would freeze on an item-16 drive page.
-- I cannot see actors off this host, nor what the owner meant beyond the option text.
+- I cannot see actors off this host, nor what the Overtoad meant beyond the option text.
 - My "no arming command" nets are pattern and keyword checks; a script run by an unnamed path is outside them.
 - I did not run the push tool (so the ~1 MB upload is untested), the F-058 census or the archive dry run. None of them changed in this pass.
 - I only skimmed the archived briefs.

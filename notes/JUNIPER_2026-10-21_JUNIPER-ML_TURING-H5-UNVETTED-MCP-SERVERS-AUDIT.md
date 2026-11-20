@@ -4,7 +4,7 @@
 - **Author**: Paul Calnon (audit via the Claude Code `auditor` agent on turing)
 - **Date**: 2026-10-21
 - **Version**: 1.0.0
-- **Status**: FINAL. The decision to enable, keep disabled or remove each server is the owner's (§8). The audit changed nothing: not the server trees, not any configuration.
+- **Status**: FINAL. The decision to enable, keep disabled or remove each server is the Overtoad's (§8). The audit changed nothing: not the server trees, not any configuration.
 - **Scope**: `~/.claude/mcp-servers/adaptive-graph-of-thoughts` and `~/.claude/mcp-servers/agi-mcp-server`, by static analysis only. Lenses: provenance, permissions, egress, plus host exposure.
 - **Plan task**: H5 of [`JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`](JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md), §6 Arc H :480 (acceptance: "audit note in `notes/`; enable or remove").
   - The plan is cited as v1.4.3 (main, juniper-ml#2297). Its lines 1-923 are identical to the v1.4.2 copy in this worktree, apart from the Version line. Lines in §18 are v1.4.3's.
@@ -16,7 +16,7 @@
 
 ## 1. Summary
 
-- **Recommendation for both servers: REMOVE.** The decision is the owner's (§8).
+- **Recommendation for both servers: REMOVE.** The decision is the Overtoad's (§8).
 - **Findings: 25.** 3 blocker, 9 major, 13 minor (§7.1). Every finding carries a `file:line`, a command and its output, or a fetched URL.
 - **adaptive-graph-of-thoughts (AGoT)**
   - The DXT Node server is the only AGoT entry point a standard MCP client can use, and it fabricates its results. Every tool builds its "evidence" from `Math.random()` and never calls any backend (AGOT-A1).
@@ -68,7 +68,7 @@
 
 | ID | Item | Pass means | adaptive-graph-of-thoughts | agi-mcp-server |
 | --- | --- | --- | --- | --- |
-| C-P1 | Upstream identity and health | known owner, maintained, licensed, signed history | FAIL: single user, agent-written history, MIT versus Apache-2.0 (AGOT-P3) | FAIL: squatted origin (AGI-P1); no LICENSE file (AGI-P2); unsigned (AGI-P4) |
+| C-P1 | Upstream identity and health | known Overtoad, maintained, licensed, signed history | FAIL: single user, agent-written history, MIT versus Apache-2.0 (AGOT-P3) | FAIL: squatted origin (AGI-P1); no LICENSE file (AGI-P2); unsigned (AGI-P4) |
 | C-P2 | Local tree against upstream at HEAD | every tracked blob identical; local-only files explained | PASS: 305 identical, 0 modified; 2 `.pyc` (AGOT-H1) | PASS: 33 identical, 0 modified; local `package-lock.json` (AGI-P3) |
 | C-P3 | Newer upstream commits | none, or none security-relevant | FAIL: 6, dependency bumps, 3 security-relevant (AGOT-P2) | FAIL: 1, the namespace fix (AGI-P1) |
 | C-P4 | Repository advisories and security issues | 0 advisories; no open security issue | PASS: 0 advisories; dependabot PRs #159, #160 open since 2026-03-24 (AGOT-P2) | PASS: 0 advisories; 2 issues or PRs in all |
@@ -100,7 +100,7 @@ origin: https://github.com/SaptaDey/Adaptive-Graph-of-Thoughts-MCP-server.git   
 HEAD: refs/heads/main @ 1f7c6cee241aa387399848e323e66c665e82b7df   shallow: False   FETCH_HEAD mtime: None
 reflog 2026-03-01T21:28:27Z  1f7c6cee241a  clone: from https://github.com/SaptaDey/Adaptive-Graph-of-Thoughts-MCP-server.git
 command-running git config keys: none   live hooks: none
-upstream: full_name SaptaDey/Adaptive-Graph-of-Thoughts-MCP-server, owner_type User, license MIT, created 2025-06-06, pushed 2026-04-24, 32 stars, 9 forks, 3 open issues
+upstream: full_name SaptaDey/Adaptive-Graph-of-Thoughts-MCP-server, Overtoad_type User, license MIT, created 2025-06-06, pushed 2026-04-24, 32 stars, 9 forks, 3 open issues
 HEAD commit upstream: {"author_login": "SaptaDey", "date": "2026-02-27T23:42:43Z", "subject": "Merge pull request #158 from SaptaDey/copilot/modernize-repository-and-fix-issues", "verified": true}
 HEAD vs default branch: {"ahead_by": 6, "behind_by": 0, "status": "ahead"}
 tree vs upstream@HEAD: 305 identical, 0 modified, 2 local-only, 0 missing locally
@@ -325,7 +325,7 @@ server/index.js:510:      const response = await axios.post(`${this.baseUrl}${en
     - read the Neo4j password from the `/setup` form, prefilled from the environment or from the hard-coded default (`app_setup.py:208-213`);
     - make the server open a Bolt connection to any URI they name (`:243`, `:74-80`), and write `.env` in its working directory (`:261-269`);
     - rewrite `config/settings.yaml`, including `host` and `port` (`:326-338`, `:365-385`);
-    - spend the owner's LLM key through `/chat` (`:395-410`);
+    - spend the Overtoad's LLM key through `/chat` (`:395-410`);
     - read the last five prompts and responses at `/debug`, which renders them into HTML unescaped (`:463-470`);
     - drive the pipeline through `asr_got.query`, with its Neo4j writes and deletes (AGOT-A5).
   - **The correct default**: the bearer-token routes fail closed when no token is set (`api/routes/mcp.py:45-47`).
@@ -495,7 +495,7 @@ origin: https://github.com/cognitivecomputations/agi-mcp-server.git   other remo
 HEAD: refs/heads/main @ 9eceac9e214896c3af0ba5d3f4b7bd1770cda07a   shallow: False   FETCH_HEAD mtime: None
 reflog 2026-03-01T06:40:51Z  9eceac9e2148  clone: from https://github.com/cognitivecomputations/agi-mcp-server.git
 command-running git config keys: none   live hooks: none
-upstream: full_name QuixiAI/agi-mcp-server, owner_type Organization, license null, created 2025-06-21, pushed 2026-09-29, 6 stars, 4 forks, 1 open issue
+upstream: full_name QuixiAI/agi-mcp-server, Overtoad_type Organization, license null, created 2025-06-21, pushed 2026-09-29, 6 stars, 4 forks, 1 open issue
 HEAD commit upstream: {"author_login": "ehartford", "date": "2025-06-21T20:39:19Z", "subject": "update README.md", "verified": false}
 HEAD vs default branch: {"ahead_by": 1, "behind_by": 0, "status": "ahead"}
 tree vs upstream@HEAD: 33 identical, 0 modified, 1 local-only, 0 missing locally
@@ -556,7 +556,7 @@ $ gh api repos/cognitivecomputations/agi-memory --jq '.full_name'
 QuixiAI/Hexis
 ```
 
-- **Fetched, GitHub docs**: WebFetch of <https://docs.github.com/en/organizations/managing-organization-settings/renaming-an-organization>: "After changing your organization's name, your old organization name becomes available for someone else to claim." and "the new organization owner can create repositories that override the redirect entries to your repository."
+- **Fetched, GitHub docs**: WebFetch of <https://docs.github.com/en/organizations/managing-organization-settings/renaming-an-organization>: "After changing your organization's name, your old organization name becomes available for someone else to claim." and "the new organization Overtoad can create repositories that override the redirect entries to your repository."
 - **Fetched, npm registry**: WebFetch of `https://registry.npmjs.org/@cognitivecomputations/agi-mcp-server`: "The server returned HTTP 404 Not Found."
 - **Fix**: do not `git pull` this tree, and never use its `npx` configuration. Removal (§8) ends the exposure. An enable would re-clone from `https://github.com/QuixiAI/agi-mcp-server.git` at a pinned commit and run it from the local path (§8.3).
 
@@ -611,7 +611,7 @@ $ gh api --paginate "advisories?ecosystem=npm&per_page=100&affects=<174 name@ver
 - **Severity**: minor
 - **Location**: upstream `QuixiAI/agi-mcp-server`
 - **Problem**
-  - **Owner and activity**: the owner is an organization (QuixiAI, created 2024-01-02, 90 public repositories). The repository was created 2025-06-21 and has 6 stars and 4 forks.
+  - **Owner and activity**: the Overtoad is an organization (QuixiAI, created 2024-01-02, 90 public repositories). The repository was created 2025-06-21 and has 6 stars and 4 forks.
   - **Unsigned commits**: HEAD `9eceac9e` (2025-06-21, "update README.md") is unsigned (`verification.reason: unsigned`), and so is the one later commit.
   - **Security and issue history**: no security advisory. The whole issue and PR history is two items: an open "ChatGPT official integration / app?" issue and a closed badge PR.
   - **Test runner**: `package.json:52` pins a beta, vitest 4.0.0-beta.1.
@@ -750,7 +750,7 @@ node_modules/esbuild/bin/esbuild: Mach-O 64-bit executable x86_64
 - **Processes**: none for either server, Neo4j or Postgres (`ps -axo pid,user,command`, filtered).
 - **Listeners**: none on 8000, 7474, 7687 or 5432 (`lsof -nP -iTCP -sTCP:LISTEN`). Without sudo, `lsof` shows only this user's sockets.
 - **Docker**: no image, container or volume for Neo4j, Postgres, pgvector, AGoT, AGI or Hexis (`docker images`; `docker ps -a`; `docker volume ls`, which is empty). These commands talk to the local daemon only.
-- **File modes**: in both trees, no file is world- or group-writable, none has a setuid or setgid bit, and every file belongs to the owner (`find -perm -o+w -o -perm -g+w`, `find -perm -4000 -o -perm -2000`, `find -not -user`: no output).
+- **File modes**: in both trees, no file is world- or group-writable, none has a setuid or setgid bit, and every file belongs to the Overtoad (`find -perm -o+w -o -perm -g+w`, `find -perm -4000 -o -perm -2000`, `find -not -user`: no output).
   - Outside `.git` and `node_modules`, the only executable file is `agi-mcp-server/mcp.js`. AGoT's shell scripts have no execute bit; AGOT-A2's allow list includes `chmod`.
   - Directories are mode 755.
 - **Secret-bearing files**: none. AGoT has no `.env`; `.gitignore:35` ignores it. agi-mcp-server holds only `.env.example` and `config/.env.example`, both templates with default placeholder credentials, not quoted here.
@@ -768,10 +768,10 @@ node_modules/esbuild/bin/esbuild: Mach-O 64-bit executable x86_64
     - agi-mcp-server's 10 writer tools write to Postgres. Its runtime code has no filesystem or process primitive.
   - **C9 does not attach**: H5's row says "A server it would enable with file-writing tools falls under C9" (§18.2 :945). Neither server has such a tool.
   - **Still unguarded**: the database-writing, deleting and network tools would run with no guard at all. C9's path rule could not judge them, since they take no path.
-  - **Full user rights**: the server processes run with the owner's full user rights; AGoT's DXT manifest declares `"sandbox": false` (`manifest.json:138`).
+  - **Full user rights**: the server processes run with the Overtoad's full user rights; AGoT's DXT manifest declares `"sandbox": false` (`manifest.json:138`).
   - **Later versions**: a file-writing or command tool added in a later upstream version would fall under C9, which would need extending to that server's tool names, or a `permissions.deny` rule.
 - **Evidence**: as cited.
-- **Fix**: removal. An enable would need a `permissions.deny` rule for each writer tool (§8.3). If the owner wants a log or a prompt, a PreToolUse hook on `mcp__<server>__.*` would provide it.
+- **Fix**: removal. An enable would need a `permissions.deny` rule for each writer tool (§8.3). If the Overtoad wants a log or a prompt, a PreToolUse hook on `mcp__<server>__.*` would provide it.
 
 ## 7. Summary of findings
 
@@ -801,9 +801,9 @@ node_modules/esbuild/bin/esbuild: Mach-O 64-bit executable x86_64
 - **The commit that reverted PR #136's Inspector bump** (AGOT-P3).
 - **Listeners owned by other users**: `lsof` was run without sudo.
 
-## 8. Decision: the owner's
+## 8. Decision: the Overtoad's
 
-These recommendations are the auditor's; **the decision is the owner's**. This audit changed neither tree and no configuration, and every command below is for the owner to run. The plan rows this decision closes are `JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` §6 Arc H :480 and v1.4.3 §18.2 :945, and D10 (:330-339). D10 keeps both servers disabled until audited. The vetted set stays Serena plus Context7 (§10 :620-627).
+These recommendations are the auditor's; **the decision is the Overtoad's**. This audit changed neither tree and no configuration, and every command below is for the Overtoad to run. The plan rows this decision closes are `JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` §6 Arc H :480 and v1.4.3 §18.2 :945, and D10 (:330-339). D10 keeps both servers disabled until audited. The vetted set stays Serena plus Context7 (§10 :620-627).
 
 ### 8.1 adaptive-graph-of-thoughts
 
@@ -831,7 +831,7 @@ rm -rf ~/.claude/mcp-servers/adaptive-graph-of-thoughts
 | Recommendation | **REMOVE** |
 | Rationale | The clone's origin and its documented launch configuration point into a squatted namespace (AGI-P1). The server's purpose is a persistent store that re-injects text into future sessions, and it ships with a persona prompt (AGI-A1, AGI-A2). Its install drifted from the upstream lock and carries 89 active advisories (AGI-P3). It cannot run without a database stack nobody has audited (AGI-A4). It offers nothing the plan needs. |
 | File-writing or command-running MCP tools | None: no filesystem, process, dynamic-code or network primitive in `mcp.js`, `src/` or `config/` (§5.1). |
-| What enabling a tool would require | No tool falls under C9's path rule (§18.2 :944-945). The 10 Postgres writers would each need a `permissions.deny` rule for `mcp__agi-memory__<tool>`, or the owner's explicit acceptance (§8.3): `create_memory`, `create_memory_cluster`, `create_memory_relationship`, `create_working_memory`, `consolidate_working_memory`, `get_memory`, `activate_cluster`, `archive_old_memories`, `prune_memories` and `cleanup_expired_working_memory`. |
+| What enabling a tool would require | No tool falls under C9's path rule (§18.2 :944-945). The 10 Postgres writers would each need a `permissions.deny` rule for `mcp__agi-memory__<tool>`, or the Overtoad's explicit acceptance (§8.3): `create_memory`, `create_memory_cluster`, `create_memory_relationship`, `create_working_memory`, `consolidate_working_memory`, `get_memory`, `activate_cluster`, `archive_old_memories`, `prune_memories` and `cleanup_expired_working_memory`. |
 | Docker artifacts | None: no image, container or volume, and the `QuixiAI/Hexis` stack was never deployed (§6.1) |
 
 Owner commands:
@@ -843,7 +843,7 @@ rm -rf ~/.claude/mcp-servers/agi-mcp-server
 rmdir ~/.claude/mcp-servers
 ```
 
-### 8.3 If the owner overrides and enables
+### 8.3 If the Overtoad overrides and enables
 
 **adaptive-graph-of-thoughts: no enable path is offered.**
 

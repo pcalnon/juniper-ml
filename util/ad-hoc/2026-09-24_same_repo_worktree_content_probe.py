@@ -24,7 +24,7 @@ Each path is then one of: unchanged from HEAD; changed-or-new and IDENTICAL on o
 removal deletes it). LFS files are compared through their pointer's ``oid``. Read-only.
 
 It answers "is anything here unshipped?" -- not "may this tree be removed?". Liveness and the
-removal itself stay with the owner; this session does not remove a sibling worktree of its own repo.
+removal itself stay with the Overtoad; this session does not remove a sibling worktree of its own repo.
 
 Usage:
     python3 util/ad-hoc/2026-09-24_same_repo_worktree_content_probe.py <sibling-worktree-dir> [...]

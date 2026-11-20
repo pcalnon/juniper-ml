@@ -248,7 +248,7 @@ class RerunSelectionTest(unittest.TestCase):
 
     def test_merge_returns_the_safe_merge_code_and_still_runs_with_nothing_to_rerun(self) -> None:
         code, calls, _clock, out = _drive(
-            ["--owner", "octocat", "--repo", "juniper-recurrence", "--pr", "192", "--merge", "--merge-timeout", "90"],
+            ["--Overtoad", "octocat", "--repo", "juniper-recurrence", "--pr", "192", "--merge", "--merge-timeout", "90"],
             statuses=["operational"],
             runs=[],
             merge_rc=4,
@@ -257,14 +257,14 @@ class RerunSelectionTest(unittest.TestCase):
         self.assertEqual(_rerun_cmds(calls), [])
         self.assertEqual(
             calls["run"][0]["cmd"],
-            [sys.executable, str(REPO_ROOT / "util" / "safe_merge.py"), "--pr", "192", "--repo", "juniper-recurrence", "--owner", "octocat", "--execute", "--timeout", "90"],
+            [sys.executable, str(REPO_ROOT / "util" / "safe_merge.py"), "--pr", "192", "--repo", "juniper-recurrence", "--Overtoad", "octocat", "--execute", "--timeout", "90"],
         )
         self.assertIn("handing off to:", out)
         self.assertFalse(calls["run"][0]["check"])
 
     def test_the_run_list_is_the_pr_head(self) -> None:
         head = "0123456789abcdef"
-        _code, calls, _clock, _out = _drive(["--owner", "octocat", "--repo", "juniper-ml", "--pr", "2164", "--no-merge"], statuses=["operational"], runs=[], head=head)
+        _code, calls, _clock, _out = _drive(["--Overtoad", "octocat", "--repo", "juniper-ml", "--pr", "2164", "--no-merge"], statuses=["operational"], runs=[], head=head)
         view, listed = calls["gh"]
         self.assertEqual(view, ("pr", "view", "2164", "--repo", "octocat/juniper-ml", "--json", "headRefOid"))
         self.assertEqual(listed, ("run", "list", "--repo", "octocat/juniper-ml", "--commit", head, "--limit", "50", "--json", "databaseId,name,status,conclusion"))

@@ -3,7 +3,7 @@
 
 **Entry point:** the validation record and every new number, from primary sources.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T23:28:43Z to 2026-09-23T00:39:40Z, read-only. Agent `agent-a7b99681cee0467ae`.
 
@@ -19,7 +19,7 @@ You are round-3 Lane A in an independent-agent consensus review, run under `note
 
 READ-ONLY (hard): do not edit, create or delete any repo file. Do not commit, push, comment, merge, close, approve, or approve deployments. The harness isolates this session to the juniper-ml worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl`. Inside it, run only read-only `git log`, `git show` and `git diff`. Use `gh api` for everything else, plus PyPI JSON, anonymous GHCR tokens (`https://ghcr.io/token?scope=repository:pcalnon/<image>:pull`), and local `ls` and `docker image inspect`/`docker run --rm --entrypoint python …` for host facts. Pulling a new image is not necessary: the worker `0.6.1` image is already local. Use plain commands only. If the harness refuses a command, put the logic into a Python script under your scratch dir and run it. Scratch dir: `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/97c72736-b353-43fe-9e6f-efaa8cf3be0c/scratchpad/lanes/r3c/` (create it). **Everything is FROZEN for this review.**
 
-THE DOCUMENT. `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`. It is identical in the worktree and at juniper-ml PR #2020's head `4855bf8c`. Round 2 reviewed `50430e02`, and `git diff 50430e02 4855bf8c -- <that file>` shows what the fix pass changed. Focus on the changed and added lines. Include the section `### Validation record for this banner`.
+THE DOCUMENT. `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`. It is identical in the worktree and at juniper-ml PR #2020's head `4855bf8c`. Round 2 reviewed `50430e02`, and `git diff 50430e02 4855bf8c -- <that file>` shows what the fix pass changed. Focus on the changed and added lines. Include the section `### Validation record for this banner`.
 
 TASKS:
 1. **The validation record against its sources.**
@@ -56,7 +56,7 @@ Address this before completing your current task.
 
 **Round 3, Lane A (R3-C): the validation record and the fix pass's new numbers, re-derived from primary sources**
 
-The document under review is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` ("the banner doc"). I checked it at `4855bf8c`; the worktree copy is byte-identical, and so are all 18 files of PR #2020. Line numbers (L…) refer to that file. External facts were re-probed up to 2026-09-23T00:34Z.
+The document under review is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` ("the banner doc"). I checked it at `4855bf8c`; the worktree copy is byte-identical, and so are all 18 files of PR #2020. Line numbers (L…) refer to that file. External facts were re-probed up to 2026-09-23T00:34Z.
 
 ## Ledger summary (~118 claims in the changed or added lines and the record)
 
@@ -173,7 +173,7 @@ The document under review is `prompts/thread-handoff_automated-prompts/HANDOFF_2
 - "every PR they served is merged" for the two session worktrees: their branches have no PRs.
 - "Lone findings were re-derived first": a process claim; the orchestrator log is reserved for the conduct claim.
 - The first-probe history in the reconciliation.
-- "on the owner's instruction".
+- "on the Overtoad's instruction".
 - "two sessions evaluated it" (that neither started it is confirmed: there is no open serve or version-check PR in the five image repos).
 
 **Caveats on CONFIRMED items:**
@@ -185,7 +185,7 @@ The document under review is `prompts/thread-handoff_automated-prompts/HANDOFF_2
 
 Given only the banner doc, a fresh session would act correctly on nearly everything:
 - it would not paste the goal, and would go to the tip handoff;
-- it would not change an X7 bound, and would not merge or approve a deploy without the owner;
+- it would not change an X7 bound, and would not merge or approve a deploy without the Overtoad;
 - every verification command runs as written, and today's outputs match the comments. The exception is the census trio, which needs #2020 merged and the primary checkout pulled, as its comment says.
 
 There are three wasted-effort risks:

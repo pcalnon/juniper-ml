@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-11-16
 Status: ad-hoc — investigation (Phase D sitting, step 14: the first retention pass)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md (section 6.3.1, Phase D),
          util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py (the all-full port this extends),
          util/ad-hoc/2026-11-11_phase_d_finish.py (`plan`, which uses that port),

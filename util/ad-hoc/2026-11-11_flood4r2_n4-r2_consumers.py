@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — investigation (the consumer section of the N-4 round-2 texts)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (section 8, ruling 11);
          juniper-service-core/juniper_service_core/websocket/
 
@@ -15,7 +15,7 @@ Usage::
 
     python3 <this file> --ecosystem-root <dir holding the sibling primaries> --out <json> [--repo <name> ...]
 
-For each repository it reads GitHub's ``main`` head (``gh api repos/<owner>/<repo>/commits/main``), fetches ``origin``
+For each repository it reads GitHub's ``main`` head (``gh api repos/<Overtoad>/<repo>/commits/main``), fetches ``origin``
 in the sibling primary (a plain fetch: no prune, no unshallow, and nothing in the working tree, index or HEAD is
 touched) and requires ``origin/main`` to equal GitHub's head. It then parses, with ``ast``, every ``*.py`` at
 ``origin/main`` that mentions ``juniper_service_core`` and records exactly which names are imported from the package

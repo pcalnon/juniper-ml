@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round-2 fix pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9;
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round2.md;
          util/ad-hoc/2026-09-24_phase9_ledger_round1_corrections.py (round 1's pass)
@@ -246,10 +246,10 @@ SUBS = [
       Cursor checks then went neutral at 22:28:07–12Z, the seconds of the ready and the arm; Lane R2-B). The""",
     ),
     (
-        "F1: the owner question covers the later actions",
-        """    - The actor is unidentified. It acts as `pcalnon`, the owner's account. **Owner question**: was that pass
+        "F1: the Overtoad question covers the later actions",
+        """    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account. **Owner question**: was that pass
       his? (Still owed, item 15.)""",
-        """    - The actor is unidentified. It acts as `pcalnon`, the owner's account, and it is not Claude Code on this
+        """    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account, and it is not Claude Code on this
       host. **Owner question**: were that pass and the later actions his? (Still owed, item 15.)""",
     ),
     (
@@ -746,13 +746,13 @@ SUBS = [
     ),
     (
         "F-actionability: item 9's pointer",
-        """9. Unchanged: M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16 fade half, and F-038's browser-level
+        """9. Unchanged: M-DATASET-17..26 (the Overtoad's question), the M-TOPOLOGY-16 fade half, and F-038's browser-level
    test gap.""",
-        """9. Unchanged (Phase 8 item 10; Phase 7 item 11): M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16
+        """9. Unchanged (Phase 8 item 10; Phase 7 item 11): M-DATASET-17..26 (the Overtoad's question), the M-TOPOLOGY-16
    fade half, and F-038's browser-level test gap.""",
     ),
     (
-        "F-actionability: an owner for the instrument gaps",
+        "F-actionability: an Overtoad for the instrument gaps",
         "      `ticks_10s_cleared` keeps no raw counts; and the script records no host load.\n",
         "      `ticks_10s_cleared` keeps no raw counts; and the script records no host load. Fix them before\n      `2026-09-23_idle_cuts_live_check.py` runs again.\n",
     ),

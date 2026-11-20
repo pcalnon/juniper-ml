@@ -9,12 +9,12 @@ License: MIT License
 
 WHY THIS EXISTS -- AND THE RULE IT NEARLY BROKE
 
-The memory index must stay under the owner's 20 KB target, and the standing rule in
+The memory index must stay under the Overtoad's 20 KB target, and the standing rule in
 `memory/feedback_memory_index_target_is_20kb.md` is **compact by RETIRING entries, never by
 stripping hooks**.
 
 **THE FIRST VERSION OF THIS TOOL DEFINED "HOOK" AS THE LINK TEXT, AND THAT IS WRONG.** The
-owner's own byte budget lists `titles | 6,522 | mean 30.9 -- the scannable label` and
+Overtoad's own byte budget lists `titles | 6,522 | mean 30.9 -- the scannable label` and
 `hooks | ~4,300 | ~20 bytes per entry` as SEPARATE rows: the title is the link text, the
 hook is the `-- ...` tail. The three examples that memory gives for why the index is worth
 loading at all -- *"NEVER run it"*, *"`_is_dirty` fails OPEN"*, *"exit 0 != merged"* -- are
@@ -88,7 +88,7 @@ LINK = re.compile(r"\[[^\]]*\]\([^)]+\.md\)")
 TAIL = re.compile(r"^(\s*[;,]?\s*)(—\s*.*)$", re.S)
 
 #: A tail matching any of these NAMES A HAZARD and is never dropped, at any length. The
-#: owner's rule is "never strip a hook that names a hazard"; length is not a proxy for
+#: Overtoad's rule is "never strip a hook that names a hazard"; length is not a proxy for
 #: imperativeness, and treating it as one is what deleted "NEVER run it" on 2026-09-22.
 HAZARD = re.compile(
     r"NEVER|DO NOT|never |do not |must not|cannot|BROKEN|BLOCK|blind|LIES|fails OPEN" r"|≠|!=|WRONG|stale|UNRECOVERABLE|DESTROY|kills|corrupt|silent|hangs|waits FOREVER" r"|first|before|instead|use `|exit 0|refus",

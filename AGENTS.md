@@ -50,7 +50,7 @@ PR rather than waiving the budget gate.
   `util/open_signed_pr.py`, not a local commit + push. Check with
   `git log -1 --format=%G?` (`N` = unsigned). An IDE agent (Cursor, Copilot, Amp) must
   never answer a signing failure with `--no-gpg-sign` or `-c commit.gpgsign=false`: stop
-  and ask the owner, who approves the run and touches the key. Owner signing for the
+  and ask the Overtoad, who approves the run and touches the key. Owner signing for the
   Juniper tree: `util/configure_commit_signing.py`. Plans:
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`,
   `notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`.
@@ -248,7 +248,7 @@ See [`util/ad-hoc/README.md`](util/ad-hoc/README.md) for the ad-hoc-script conve
 
 ### Temporary files: `tmp/`, never `/tmp` (mandatory)
 
-**No file is ever written under `/tmp`** (nor `/var/tmp`) by this repo's scripts, tests, tools, services, sessions or agents (owner directive, 2026-10-26). On the Linux host `/tmp` is a tmpfs that `systemd-tmpfiles-clean` ages daily (`q /tmp 1777 root root 10d`): a file untouched for ten days is deleted while still in use, and a reboot erases the rest. In the week to 2026-10-26 it emptied a live test stack's pid files and venv three times. macOS ages `/tmp` too.
+**No file is ever written under `/tmp`** (nor `/var/tmp`) by this repo's scripts, tests, tools, services, sessions or agents (Overtoad directive, 2026-10-26). On the Linux host `/tmp` is a tmpfs that `systemd-tmpfiles-clean` ages daily (`q /tmp 1777 root root 10d`): a file untouched for ten days is deleted while still in use, and a reboot erases the rest. In the week to 2026-10-26 it emptied a live test stack's pid files and venv three times. macOS ages `/tmp` too.
 
 - This repo's temp root is its gitignored `tmp/`. `TMPDIR` points at the **primary** checkout's (it outlives any worktree); a worktree-isolated session writes its own scratch files into its worktree's `tmp/`.
 - Sessions get `TMPDIR` from the launcher (`scripts/wake_the_claude.bash`) and a user-level SessionStart hook, so `tempfile`, `mktemp` and pytest's `tmp_path` follow it. Both also set `GIT_CEILING_DIRECTORIES` at the `tmp/` dirs: under a `TMPDIR` inside a checkout, git would otherwise find the enclosing checkout, so a test's "not a git repo" dir sets the ceiling (a proper ancestor of where git starts) in its subprocess env.

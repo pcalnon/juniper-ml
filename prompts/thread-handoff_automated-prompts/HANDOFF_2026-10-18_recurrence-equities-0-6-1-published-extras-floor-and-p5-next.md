@@ -9,22 +9,22 @@
 
 ## Handoff goal
 
-Continue the arc from plan v1.7.1. **Every M1 publication is on PyPI, including recurrence 0.6.1 with the owner-ruled floors, and every open owner ruling is taken.** The next landing is the juniper-ml `[recurrence]` floor to `>=0.6.1` (an owner ruling, not a decision); after that the P5 work the rulings unblocked, with P2–P4 alongside.
+Continue the arc from plan v1.7.1. **Every M1 publication is on PyPI, including recurrence 0.6.1 with the Overtoad-ruled floors, and every open Overtoad ruling is taken.** The next landing is the juniper-ml `[recurrence]` floor to `>=0.6.1` (an Overtoad ruling, not a decision); after that the P5 work the rulings unblocked, with P2–P4 alongside.
 
 ## Completed since the predecessor handoff
 
-- **recurrence 0.6.1 published.** The owner approved the `pypi` gate; run 39152653722 finished green through `Build and Validate`, `Publish to TestPyPI` and `Publish to PyPI`. Verified on the index at 2026-10-18 19:02Z:
+- **recurrence 0.6.1 published.** The Overtoad approved the `pypi` gate; run 39152653722 finished green through `Build and Validate`, `Publish to TestPyPI` and `Publish to PyPI`. Verified on the index at 2026-10-18 19:02Z:
   - `info.version` = `0.6.1`; files `juniper_recurrence-0.6.1-py3-none-any.whl` (sha256 `c63ebc79…`) and `juniper_recurrence-0.6.1.tar.gz` (`b8c27e9a…`);
   - `requires_dist` carries `juniper-recurrence-model<0.5.0,>=0.4.0` and `juniper-data-client<0.7.0,>=0.6.0` (the juniper-recurrence#206 floors 0.6.0 shipped without), plus `juniper-service-core<0.8.0,>=0.7.1` and `juniper-model-core[crossval]<0.4.0,>=0.2.0`; the `[torch]` and `[bench-torch]` extras carry `juniper-recurrence-model[torch]<0.5.0,>=0.4.0`.
   - Release `juniper-recurrence-v0.6.1` targets `cad03ed52e9e12180bed3c1ec6751d822fc1bdc5`, published 18:06:41Z; archive juniper-ml#2238 is merged; issue juniper-ml#2227 is closed.
 - **Plan v1.7.1**: Status line, M1 row, P1 status row, both Progress 2026-10-18 blocks, the 0.6.1 ruling line and the 2026-10-10 floors dependency note record the publication; change-log row added.
-- Everything in the predecessor's "Completed this session" list stands: the owner rulings (plan "Ruled 2026-10-18, turing deploy-smokes session"), juniper-deploy#249 merged, juniper-ml#2234 / #2238 / #2239 merged, juniper-canopy#751 and juniper-deploy#250 filed, juniper-canopy#738 / #702 annotated, Compose v5.6.0 at user level on turing.
+- Everything in the predecessor's "Completed this session" list stands: the Overtoad rulings (plan "Ruled 2026-10-18, turing deploy-smokes session"), juniper-deploy#249 merged, juniper-ml#2234 / #2238 / #2239 merged, juniper-canopy#751 and juniper-deploy#250 filed, juniper-canopy#738 / #702 annotated, Compose v5.6.0 at user level on turing.
 
 ## Remaining work (in order)
 
-1. **juniper-ml `[recurrence]` floor to `juniper-recurrence>=0.6.1`** (owner ruling of 2026-10-18; no further approval needed for the PR, merge approval still is). Lockstep files as in juniper-ml#2232: `pyproject.toml`, `tests/test_pyproject_extras.py`, `README.md`, `AGENTS.md` (the extras table), `docs/QUICK_START.md`, `docs/REFERENCE.md`, `CHANGELOG.md`. Keep the model floor `>=0.3.0` and the data-client floor `>=0.5.0` (the extras ruling kept them; recurrence 0.6.1's own floors do the forcing). Pre-flight against real PyPI on Python 3.12, 3.13 and 3.14 with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py` before opening the PR; `[recurrence]` resolved 32 packages for #2232, expect the same set with recurrence 0.6.1 and model 0.4.0 / data-client 0.6.0 forced. Check first that no concurrent session has an open PR touching `pyproject.toml` (`gh pr list --repo pcalnon/juniper-ml --search "pyproject"`).
+1. **juniper-ml `[recurrence]` floor to `juniper-recurrence>=0.6.1`** (Overtoad ruling of 2026-10-18; no further approval needed for the PR, merge approval still is). Lockstep files as in juniper-ml#2232: `pyproject.toml`, `tests/test_pyproject_extras.py`, `README.md`, `AGENTS.md` (the extras table), `docs/QUICK_START.md`, `docs/REFERENCE.md`, `CHANGELOG.md`. Keep the model floor `>=0.3.0` and the data-client floor `>=0.5.0` (the extras ruling kept them; recurrence 0.6.1's own floors do the forcing). Pre-flight against real PyPI on Python 3.12, 3.13 and 3.14 with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py` before opening the PR; `[recurrence]` resolved 32 packages for #2232, expect the same set with recurrence 0.6.1 and model 0.4.0 / data-client 0.6.0 forced. Check first that no concurrent session has an open PR touching `pyproject.toml` (`gh pr list --repo pcalnon/juniper-ml --search "pyproject"`).
 2. **Owner: whether the Compose / Helm recurrence pin follows to 0.6.1** (juniper-deploy; still open on the plan's M1 row). If yes, it is a one-line pin bump in each of the two files #249 touched, plus the GHCR image, which the recurrence publish workflow does not build — check `juniper-recurrence/.github/workflows/` for the image workflow and whether a `0.6.1` image exists before pinning.
-3. **Remove the merged juniper-deploy worktree** (owner, sibling-repo git is refused in agent sessions):
+3. **Remove the merged juniper-deploy worktree** (Overtoad, sibling-repo git is refused in agent sessions):
 
    ```bash
    ! git -C /Users/pcalnon/Development/python/Juniper/juniper-deploy worktree remove /Users/pcalnon/Development/python/Juniper/worktrees/juniper-deploy--chore--pin-recurrence-0.6.0-canopy-0.9.0--20261017-1945--541e65e

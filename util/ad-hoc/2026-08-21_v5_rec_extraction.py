@@ -15,7 +15,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-21
 Status: ad-hoc -- one-off (v5 refresh ingestion)
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: the v5 refresh has merged and JR-REC-* IDs are official; the YAML it produces is
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: the v5 refresh has merged and JR-REC-* IDs are official; the YAML it produces is
              the durable artifact, this converter is not.
 Related: T7 of HANDOFF_2026-08-18_cli-experimentation-unowned-tasks.md; Q-12 / Wave 7.6
 """
@@ -48,7 +48,7 @@ ECOSYSTEM_ROOT = _find_ecosystem_root(REPO_ROOT)
 OUT = REPO_ROOT / "notes" / "requirements" / "v5_rec_extraction.yaml"
 
 _HEAD = re.compile(r"^### (?P<id>JR-REC-[A-Z]+-\d+) — (?P<brief>.+)$")
-_META = re.compile(r"^\*\*Status\*\*: (?P<status>\S+)\s+\*\*Priority\*\*: (?P<priority>\S+)\s+\*\*Category\*\*: (?P<category>\S+)\s+\*\*Owner\*\*: (?P<owner>\S+)\s*$")
+_META = re.compile(r"^\*\*Status\*\*: (?P<status>\S+)\s+\*\*Priority\*\*: (?P<priority>\S+)\s+\*\*Category\*\*: (?P<category>\S+)\s+\*\*Owner\*\*: (?P<Overtoad>\S+)\s*$")
 _FIELD = re.compile(r"^\*\*(?P<name>Sources|Detail)\*\*: (?P<value>.+)$")
 
 #: Schema-conformant citations, resolved by ANCHOR rather than by line number.
@@ -152,7 +152,7 @@ def main() -> int:
                 status=meta.group("status"),
                 priority=meta.group("priority"),
                 category=meta.group("category"),
-                owner=meta.group("owner"),
+                Overtoad=meta.group("Overtoad"),
             )
             continue
         field = _FIELD.match(line)
@@ -168,13 +168,13 @@ def main() -> int:
             raise SystemExit(f"{entry['id']}: no citation anchors defined -- add them to SOURCES")
         entry["sources"] = _resolve(entry["id"])
 
-    required = ("id", "brief", "status", "priority", "category", "owner", "sources", "detail")
+    required = ("id", "brief", "status", "priority", "category", "Overtoad", "sources", "detail")
     for entry in entries:
         missing = [f for f in required if not entry.get(f)]
         if missing:
             raise SystemExit(f"{entry.get('id', '?')}: proposal is missing {missing} -- fix the PROPOSAL, not this output")
 
-    ordered = [{k: entry[k] for k in ("id", "owner", "category", "status", "priority", "brief", "sources", "detail")} for entry in entries]
+    ordered = [{k: entry[k] for k in ("id", "Overtoad", "category", "status", "priority", "brief", "sources", "detail")} for entry in entries]
     OUT.write_text(
         "# v5 refresh -- juniper-recurrence (rec) starter block.\n"
         "#\n"

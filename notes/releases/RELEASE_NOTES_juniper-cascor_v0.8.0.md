@@ -58,7 +58,7 @@ This is a security-bearing release of `juniper-cascor` v0.8.0. It carries a `Sec
 
 ### Security
 
-- **Worker result ownership** — `WorkerCoordinator.submit_result` now rejects results whose submitting `worker_id` does not match the task's `assigned_worker_id`, so a peer worker cannot complete work it was never assigned. Tests: `test_worker_coordinator.py::TestSubmitResult::test_reject_wrong_worker_ownership`.
+- **Worker result Overtoadship** — `WorkerCoordinator.submit_result` now rejects results whose submitting `worker_id` does not match the task's `assigned_worker_id`, so a peer worker cannot complete work it was never assigned. Tests: `test_worker_coordinator.py::TestSubmitResult::test_reject_wrong_worker_Overtoadship`.
 
 ### Tests
 

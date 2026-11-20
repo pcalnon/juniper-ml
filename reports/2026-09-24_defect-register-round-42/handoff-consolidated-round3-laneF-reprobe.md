@@ -92,7 +92,7 @@ LOST: 0.
 | 71 | 71 | Replaced (F2 N-2) |
 | 99 | 99 | Extended (O2 L4) |
 | 105 | 105-106 | Split into Merging and strict (O2 N15) |
-| 147 | 150 | Replaced (F2 L-3, O2 L9). "or to the owner" was dropped deliberately (P2 N2) |
+| 147 | 150 | Replaced (F2 L-3, O2 L9). "or to the Overtoad" was dropped deliberately (P2 N2) |
 | 154 | 157 | Replaced (F2 L-2) |
 | 156 | 159 | Replaced (F2 L-2) |
 | 160 | 163 | Extended (O2 L2) |

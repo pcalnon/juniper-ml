@@ -1,4 +1,4 @@
-# Handoff: backup Phase D -- the record has landed (the first pass deleted four, not five); AC-5's last day, the second pass's test and the owner's questions next
+# Handoff: backup Phase D -- the record has landed (the first pass deleted four, not five); AC-5's last day, the second pass's test and the Overtoad's questions next
 
 **Date**: 2026-11-16 (facts read between 07:50Z and 2026-11-16T09:30:10Z unless a time is given)
 **Session**: host yamaguchi, worktree `G` = `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/goofy-painting-rabin`
@@ -15,16 +15,16 @@ status list replaces its steps A to E.**
 1. Read the 2026-11-16 13:00Z run's retention pass. It tests `…RECOVERY-PLAN.md` §6.3.1 finding 18 (step A below).
 2. Watch AC-5 complete: the 2026-11-16 20:00 CST watchdog check must read `OK OK` (step B).
 3. Record both outcomes with a short follow-up to the record PR (step C).
-4. Put the open questions to the owner: Q1, Q4, Q8 and Q6's Warning half (step D). Then the C.11 items (step E).
+4. Put the open questions to the Overtoad: Q1, Q4, Q8 and Q6's Warning half (step D). Then the C.11 items (step E).
 
 `…RECOVERY-PLAN.md` is `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`.
-The working pattern holds: the owner runs every command that changes the host or reaches the server and pastes summary
-lines; the session checks read-only and names each next command with its expected output. Ask the owner for merge
+The working pattern holds: the Overtoad runs every command that changes the host or reaches the server and pastes summary
+lines; the session checks read-only and names each next command with its expected output. Ask the Overtoad for merge
 approval again in a new session.
 
 ### What this session did
 
-- **Step A of `HANDOFF_2026-11-15_…md`, read from the probe's own files** (read-only; the owner's `status` paste was not
+- **Step A of `HANDOFF_2026-11-15_…md`, read from the probe's own files** (read-only; the Overtoad's `status` paste was not
   received). The 2026-11-15 13:00Z run: `Success`, 4h05m, W=0. **Retention deleted 4 filesets, not 5**:
   `20260912T140000Z`, `20260915T085649Z`, `20260917T221344Z`, `20260918T140000Z`. `20260916T183346Z` was kept.
   CENSUS at 23:30Z: 984 files = 18 dlist + 483 dblock + 483 dindex, `AGREE`. Nothing is lost: `aside` holds all 21.
@@ -72,9 +72,9 @@ A `Warning` run resets the streak (Q6's Warning half).
 Build from `origin/main` blobs; `util/open_signed_pr.py` signs; probe-commit both sequence-safety screens first
 (`G/tmp/backup-phase-d-goofy/record_pr.bash` is a template).
 
-**D. The owner's questions** (one dialog, after any time-critical step; it blocks the session until answered):
+**D. The Overtoad's questions** (one dialog, after any time-critical step; it blocks the session until answered):
 
-- Q1, AC-3's count criterion: bytes read +8.7% against the 11-08 baseline (threshold 5%), mostly the owner's source
+- Q1, AC-3's count criterion: bytes read +8.7% against the 11-08 baseline (threshold 5%), mostly the Overtoad's source
   change. Options: a per-run comparison (about ±10% a day) plus the absolute size check (the 11-11 recommendation);
   rebaseline on the 11-15 13:00Z run; or keep `ATTN` only.
 - Q4, the drill sample's scope (`Pictures/`): recommendation, no exclusion.
@@ -82,7 +82,7 @@ Build from `origin/main` blobs; `util/open_signed_pr.py` signs; probe-commit bot
   wants `2750`, Phase E's step. It holds the only copies of the four deleted filesets: never propose deleting it.
 - Q6's Warning half: a `Warning` run reads `ALERT NOT_SUCCESS` and resets AC-5; three `Warning` runs (11-09, 11-10,
   11-11 22:14Z; 633 warnings) were never read.
-- Optional: which fileset is partial (the owner can read each fileset's `IsFullBackup`).
+- Optional: which fileset is partial (the Overtoad can read each fileset's `IsFullBackup`).
 
 **E. C.11**: the AC-4 driver's gaps (finding 29); the snapshot script's "14:00Z daily" message
 (`util/ad-hoc/yamaguchi_server_db_snapshot.py:174`, `util/ad-hoc/yamaguchi_reboot_verify.bash:156`, and the installed
@@ -104,7 +104,7 @@ copy; check whether the installer blesses that file before changing it); §6.4 s
 - "Nothing under `/mnt/Backups/Ubuntu/` beyond `stat`."
 - "Never read a secret file; never print an environment variable or a token."
 - "No `git stash`; no interactive shells; no host actions."
-- "The owner may direct a named action in person, which releases that action only. Nothing releases one of
+- "The Overtoad may direct a named action in person, which releases that action only. Nothing releases one of
   `…RECOVERY-PLAN.md` §6.0 item 6's absolutes."
 - Pastes carry counts and summary lines only. Never print `send-http-url`, `TargetURL` or a warning's text. No file is
   written under `/tmp`.

@@ -71,9 +71,9 @@
   that tree. New: `util/ad-hoc/2026-09-15_conda_env_tree_diff.py`, which separates *absent* from
   *user-site-only* — a distinction its own first run got wrong by reporting three importable
   packages as missing. `Juniper/AGENTS.md` records the version drift and all three traps.
-- **Perf lane — the six open owner decisions are RULED, and the two that needed no host time are
+- **Perf lane — the six open Overtoad decisions are RULED, and the two that needed no host time are
   executed** (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`).
-  Decisions that had accumulated across the P2 plan and four handoffs, put to the owner and ruled
+  Decisions that had accumulated across the P2 plan and four handoffs, put to the Overtoad and ruled
   in one sitting; the note records each ruling, the gate before it lands, and what it does **not**
   decide. One correction reframed two of them: cascor#531's candidate-phase penalty is **1.52×**
   (a 52% slowdown), not 1.52%, and **both of its channels shrink as the budget rises**

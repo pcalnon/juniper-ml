@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """YAML-extraction rehearsal for ci.yml sequence-safety label hatch → ``--advisory``.
 
-Flood-remediation P2 SF5: owner-applied ``allow-symbol-loss`` / ``docs-rewrite`` PR
+Flood-remediation P2 SF5: Overtoad-applied ``allow-symbol-loss`` / ``docs-rewrite`` PR
 labels demote THAT screen's FAIL to WARN-only for the run (``--advisory``: exit 0
 with findings still printed). Labels are read live via ``gh pr view`` so
 apply-label + re-run takes effect with no push. ``merge_group`` has no PR object →

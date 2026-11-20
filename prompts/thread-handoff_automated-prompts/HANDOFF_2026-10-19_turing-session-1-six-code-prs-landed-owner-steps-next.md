@@ -1,4 +1,4 @@
-# Handoff — turing Session 1: all six code PRs landed; owner steps next (C8 install, A1, Wi-Fi, F3 node mode)
+# Handoff — turing Session 1: all six code PRs landed; Overtoad steps next (C8 install, A1, Wi-Fi, F3 node mode)
 
 - **From:** the 2026-10-17 to 2026-10-19 session on turing, named "turing dev env". It continues
   `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-18_turing-session-1-code-staged-landing-blocked-by-wifi.md`.
@@ -13,7 +13,7 @@
 | Task | PR | Merge | Notes |
 |---|---|---|---|
 | F5a | juniper-ml#2237 | `0364e05f` | `util/macvm_ctl.bash` gates the VM start on G-MEM |
-| C8 item 4 | juniper-ml#2242 | `4d9c5c44` | the agent guard plus its owner-run installer. A CodeQL note (`py/import-and-import-from`) blocked the merge until it was fixed |
+| C8 item 4 | juniper-ml#2242 | `4d9c5c44` | the agent guard plus its Overtoad-run installer. A CodeQL note (`py/import-and-import-from`) blocked the merge until it was fixed |
 | G2 | juniper-ml#2245 | `8412ce3e` | the advisory "Verify AGENTS.md Last Updated" check was **red** at merge: UTC rolled over to 2026-10-19 mid-cycle, and auto-merge (which ignores advisory checks) beat the fix. #2247 carries the bump |
 | B7 | juniper-ml#2247 | `6b3c53dc` | the signing preflight; also bumps AGENTS.md `**Last Updated**` to 2026-10-19 |
 | B8 | juniper-ml#2249 | `0ca9d165` | erratum X7: the ed448 validator is deleted, R-B8 is pinned, and the 2026-07-16 note is SUPERSEDED |
@@ -48,7 +48,7 @@ set, every blob equal to local, every commit `verified=true`.
 
 1. **E6 remainder:** errata X6 (stale "turing down" statements) and X10 (`/home/pcalnon` path literals in AGENTS.md and
    REFERENCE.md). Both are in plan §3. X10 edits AGENTS.md, so set `**Last Updated**` to today's UTC date.
-2. **F3 node mode**, once the owner has set the state. Append its summary to `reports/2026-10-17_turing-headroom/`.
+2. **F3 node mode**, once the Overtoad has set the state. Append its summary to `reports/2026-10-17_turing-headroom/`.
 3. **Follow-up:** fold CodeQL `py/import-and-import-from` into `util/ad-hoc/2026-10-05_codeql_python_prescreen.py`. The
    one-off screen is `util/ad-hoc/2026-10-18_codeql_import_and_import_from_screen.py`.
 
@@ -61,14 +61,14 @@ set, every blob equal to local, every commit `verified=true`.
 - **`util/safe_merge.py --timeout N` disarms its auto-merge net** when it exits on that timeout. To arm and leave, use
   `gh pr merge N --auto --squash --match-head-commit <full sha>`, printing the full sha first.
 - **Wait in the foreground.** The session's background PR-wait was reaped under memory pressure (swap about 18 GB), and is
-  not restarted without the owner's say-so. Waits here used `gh run watch <run-id> --exit-status`.
+  not restarted without the Overtoad's say-so. Waits here used `gh run watch <run-id> --exit-status`.
 
 ## Verify the starting state
 
 ```bash
 git fetch origin && git log -1 --oneline origin/main
 gh pr view 2250 --repo pcalnon/juniper-ml --json state,mergeCommit
-gh search prs --owner pcalnon --state open --json repository,number,title
+gh search prs --Overtoad pcalnon --state open --json repository,number,title
 python3 util/git_remote_alias_check.py                  # exit 1 until A1, on juniper-k8s and juniper-recurrence
 printenv GIT_CONFIG_COUNT                               # 2 (C8 item 1)
 python3 -I util/ad-hoc/2026-10-18_turing_link_gate.py   # the link

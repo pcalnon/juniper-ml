@@ -385,7 +385,7 @@ class GhSurfaceInvariantTest(unittest.TestCase):
         # a --repo naming one of the allowed publishing repos passes (the surface is unchanged)
         ce._assert_gh_allowed(["release", "create", "v0.5.0", "--repo", "pcalnon/juniper-cascor-client", "--notes-file", "x", "--latest=false"], allowed)
         ce._assert_gh_allowed(["pr", "create", "--repo", "pcalnon/juniper-ml", "--base", "main", "--head", "b", "--title", "t", "--body", "b"], allowed)
-        # a --repo OUTSIDE the allowlist -- wrong repo or wrong owner -- is a SeamViolation
+        # a --repo OUTSIDE the allowlist -- wrong repo or wrong Overtoad -- is a SeamViolation
         with self.assertRaises(ce.SeamViolation):
             ce._assert_gh_allowed(["release", "create", "v1", "--repo", "pcalnon/juniper-evil", "--notes-file", "x"], allowed)
         with self.assertRaises(ce.SeamViolation):
@@ -399,7 +399,7 @@ class GhSurfaceInvariantTest(unittest.TestCase):
     def test_publishing_repo_slugs_from_registry(self):
         entries = d.load_registry(UTIL_DIR / "registry.yaml")
         slugs = ce.publishing_repo_slugs(entries, "pcalnon")
-        # exactly the 8 publishing repos, each owner-qualified
+        # exactly the 8 publishing repos, each Overtoad-qualified
         self.assertEqual(len(slugs), 8)
         self.assertIn("pcalnon/juniper-ml", slugs)
         self.assertIn("pcalnon/juniper-cascor-client", slugs)
@@ -425,7 +425,7 @@ class GhSurfaceInvariantTest(unittest.TestCase):
             ["api", "repos/pcalnon/juniper-ml/environments/pypi", "-X", "PUT"],  # env mutation
             ["api", "repos/pcalnon/juniper-ml/deployments"],  # deployment mutation
             ["api", "repos/pcalnon/juniper-evil/git/refs", "-X", "POST", "-f", "ref=refs/heads/x", "-f", "sha=a"],  # repo outside the 8
-            ["api", "repos/someone-else/juniper-ml/git/refs", "-X", "POST", "-f", "ref=refs/heads/x", "-f", "sha=a"],  # wrong owner
+            ["api", "repos/someone-else/juniper-ml/git/refs", "-X", "POST", "-f", "ref=refs/heads/x", "-f", "sha=a"],  # wrong Overtoad
             ["api", "repos/pcalnon/juniper-ml/git/refs", "-f", "ref=refs/heads/x", "-f", "sha=a"],  # missing POST method
             ["api", "repos/pcalnon/juniper-ml/git/refs", "-X", "POST", "-f", "ref=refs/tags/v1", "-f", "sha=a"],  # a TAG ref, not heads/*
             ["api", "repos/pcalnon/juniper-ml/git/refs", "-X", "POST", "-f", "sha=a"],  # POST without a ref= field (must not pass)
@@ -1116,7 +1116,7 @@ class ExecuteTest(unittest.TestCase):
         rec, src = self._mk(run_status=PENDING_RUN, automerge_ok=False)
         plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
         result = ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
-        # not a halt -- still parks at the pypi gate; a note records the owner one-click fallback.
+        # not a halt -- still parks at the pypi gate; a note records the Overtoad one-click fallback.
         self.assertEqual(result["state"], "PENDING_PYPI_APPROVAL")
         self.assertFalse(result.get("auto_merge_enabled"))
         self.assertTrue(any("one-click" in n for n in result["notes"]))
@@ -1265,7 +1265,7 @@ class CliDryRunTest(unittest.TestCase):
         buf = io.StringIO()
         with redirect_stdout(buf):
             rc = ce.main(["--manifest", manifest, "--dry-run", "--json", "--repo-root", str(REPO_ROOT), "--registry", str(UTIL_DIR / "registry.yaml")], sources=src)
-        self.assertEqual(rc, 1)  # a halt -> exit 1 (owner attention)
+        self.assertEqual(rc, 1)  # a halt -> exit 1 (Overtoad attention)
         payload = json.loads(buf.getvalue())
         self.assertEqual(payload["summary"]["halted"], 1)
         self.assertEqual(payload["plans"][0]["state"], "HALTED")
@@ -1799,7 +1799,7 @@ class TargetShaTest(unittest.TestCase):
 
     Without it, ``gh release create`` tags the owning repo's main AS IT IS AT CUT TIME while the notes
     come from the ``--ecosystem-root`` checkout -- two trees that agree only if nothing merged in
-    between. On 2026-09-23/24 three juniper-data PRs merged between the owner's approval of the 0.16.0
+    between. On 2026-09-23/24 three juniper-data PRs merged between the Overtoad's approval of the 0.16.0
     notes (pinned at 7125e161) and the cut, and one of them left a duplicate ``## [0.16.0]`` heading on
     main. Each link of the target's path is pinned, because a break in any one is silent: a Release is
     still cut, at the wrong commit."""
@@ -1991,7 +1991,7 @@ class ArchiveNotesTrailingNewlineTest(unittest.TestCase):
 
 class LiveSeamRepoBoundTest(unittest.TestCase):
     """The LIVE seam bounds every --repo to the registry-derived allowlist (Phase 4.1). Cross-repo is
-    expressed by --repo owner/<owning-of-the-8>; anything else raises before gh runs -- hermetically."""
+    expressed by --repo Overtoad/<owning-of-the-8>; anything else raises before gh runs -- hermetically."""
 
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
@@ -2171,7 +2171,7 @@ class ExecuteOutputFormatTest(unittest.TestCase):
         buf, err = io.StringIO(), io.StringIO()
         with redirect_stdout(buf), redirect_stderr(err):
             rc = ce.main(["--manifest", manifest, "--execute", "--repo-root", str(REPO_ROOT), "--registry", str(UTIL_DIR / "registry.yaml"), "--release-date", "2026-07-17"], sources=src)
-        self.assertEqual(rc, 1)  # HALTED -> exit 1 (owner attention), NOT a crash (exit 2)
+        self.assertEqual(rc, 1)  # HALTED -> exit 1 (Overtoad attention), NOT a crash (exit 2)
         f = self._fields(self._result_line(buf.getvalue()))
         self.assertEqual(f["state"], "HALTED")
         self.assertEqual(f["issue_failed"], "1")
@@ -2417,7 +2417,7 @@ class VersionSectionPrefixTest(unittest.TestCase):
 # ── the one-artifact publishers (juniper-cascor#763 and its ports, 2026-11-15) ──────────────────────
 #
 # Every Juniper publisher now builds ONCE, in ``Build and Validate``, and its two publish jobs upload that
-# artifact; a dispatch from the release tag runs ``Republish the tested files (dispatch only)`` (the owner's
+# artifact; a dispatch from the release tag runs ``Republish the tested files (dispatch only)`` (the Overtoad's
 # recovery ladder, rung 1). Job names below are the real ones (juniper-cascor publish.yml at 675884888f5a).
 
 BUILD = "Build and Validate"

@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-08
-# Status      : ad-hoc — instrument wrapper for one fix; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — instrument wrapper for one fix; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Run the F-CANOPY-058 census v2 unchanged against a leg serving canopy's request/ack pacer.
 

@@ -7,7 +7,7 @@
 **Date**: 2026-06-21
 **Status**: Findings report — read-only audit, no fixes applied (remediation = backlog in §9)
 **License**: MIT License
-**Method**: 5 parallel evidence-cited auditors (read-only) + owner spot-verification of all CRIT/HIGH findings. Rubric: [`notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md`](JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md) (Areas A/B/C). This is the deep-dive execution of that ecosystem plan scoped to the one repo it flagged as having **no pre-commit and no root pyproject**.
+**Method**: 5 parallel evidence-cited auditors (read-only) + Overtoad spot-verification of all CRIT/HIGH findings. Rubric: [`notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md`](JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md) (Areas A/B/C). This is the deep-dive execution of that ecosystem plan scoped to the one repo it flagged as having **no pre-commit and no root pyproject**.
 
 **Checkout audited**: `2fd2b81` (clean working tree). At audit time this was 2 commits behind `origin/main` `036fde7` (both bench-only equities-rebench). `origin/main` advanced **during this session** to `461fc4a` — HEAD is now **6 behind**, and the newer commits include the DP-3 P1 readout work (recurrence #30/#31), which is **not** bench-only. Model-package line-refs/findings should therefore be re-confirmed against the tip before remediation; the structural findings (no pre-commit, no coverage config, model-CI lint gap, stale AGENTS.md) are unaffected. Sibling repos under `…/Juniper/` are the desired-state baseline.
 
@@ -55,7 +55,7 @@ Counts are exact enumerations of the finding IDs in §4/§5/§7 (PC-4 ≡ CI-2 c
 
 - **Units**: pre-commit/governance → per repo; testing → per package (app, model, client, bench); CI → per workflow (7).
 - **Verticals (parallel auditors)**: (1) pre-commit & lint governance; (2) CI & publish workflows; (3) testing — app + bench; (4) testing — model + client; (5) dependencies, metadata, versioning, docs.
-- **Anti-hallucination**: every finding cites `file:line`. All CRIT/HIGH findings were owner-spot-verified directly (coverage-section absence, model-CI lint gap, README version drift, autoload-guard placement, checkout currency — see the verification block in the session transcript).
+- **Anti-hallucination**: every finding cites `file:line`. All CRIT/HIGH findings were Overtoad-spot-verified directly (coverage-section absence, model-CI lint gap, README version drift, autoload-guard placement, checkout currency — see the verification block in the session transcript).
 - **Out of scope**: applying fixes (backlog only); dynamic full-suite runs (no recurrence conda env exists on-host — see TST-H3); CI matrix certification (a single-host audit cannot certify the 3.12/3.13/3.14 matrix — recorded as a parity statement, not a pass).
 
 ---
@@ -86,7 +86,7 @@ Counts are exact enumerations of the finding IDs in §4/§5/§7 (PC-4 ≡ CI-2 c
 ### [HIGH] PC-4 · Model-package CI runs no lint — `[tool.ruff]` is dead config in CI  (A4, C4)
 *(cross-listed as CI-2; counted once in the tally)*
 - **What**: `ci-recurrence-model.yml` has only `test` + `build` jobs; the most algorithmically dense package (the LMU model) is the only one with no lint gate.
-- **Evidence**: owner-verified — `grep -niE "ruff|lint" ci-recurrence-model.yml` → none. Contrast `ci-recurrence-app.yml:57-58` (`ruff check .`) and `ci-recurrence-client.yml:61-62`.
+- **Evidence**: Overtoad-verified — `grep -niE "ruff|lint" ci-recurrence-model.yml` → none. Contrast `ci-recurrence-app.yml:57-58` (`ruff check .`) and `ci-recurrence-client.yml:61-62`.
 - **Baseline**: app/client CIs in this same repo both run ruff.
 - **Action**: add a `lint:` job to `ci-recurrence-model.yml` (`working-directory: juniper-recurrence-model`). The §8 pre-commit also covers it locally.
 
@@ -124,7 +124,7 @@ Counts are exact enumerations of the finding IDs in §4/§5/§7 (PC-4 ≡ CI-2 c
 
 ### [HIGH] TST-2 · No `[tool.coverage.*]` in any package — gate is CI-only, non-branch, unenforceable locally  (B4)
 - **What**: none of the 3 pyprojects declare `[tool.coverage.run]`/`[report]`, and none put `--cov` in `addopts`. The only gate is `--cov-fail-under=90` baked into CI YAML — so a local `pytest` produces **no coverage and no gate** (surprise-at-CI), and because `branch=true` is never set, even CI's 90% is **statement-only**.
-- **Evidence**: owner-verified — `grep -rn "tool.coverage" */pyproject.toml` → none; `--cov-fail-under=90` in all 3 workflows (`ci-recurrence-{app:82,client:66,model:62}.yml`).
+- **Evidence**: Overtoad-verified — `grep -rn "tool.coverage" */pyproject.toml` → none; `--cov-fail-under=90` in all 3 workflows (`ci-recurrence-{app:82,client:66,model:62}.yml`).
 - **Baseline**: `juniper-canopy/pyproject.toml:379-418` and `juniper-cascor/pyproject.toml:225-251` ship full `[tool.coverage]` with `branch=true`; client baselines `juniper-data-client:113-140`, `juniper-cascor-client:121-140` likewise.
 - **Impact**: branch blind-spots (the many `if x is None` / error-mapping branches) count as covered; local/CI parity gap; the "90" intent is unrecorded (and exceeds the documented 80% target with no codified rationale).
 - **Action**: add `[tool.coverage.run]` (`source`, `branch=true`, `omit=["*/tests/*"]`) + `[tool.coverage.report]` (`fail_under=90`, `exclude_lines`, `show_missing`) to all 3; optionally add `--cov=… --cov-report=term-missing` to `addopts` so local runs enforce the CI bar.
@@ -136,7 +136,7 @@ Counts are exact enumerations of the finding IDs in §4/§5/§7 (PC-4 ≡ CI-2 c
 
 ### [HIGH] TST-4 · Autoload-SIGSEGV guard missing from app + model `addopts`  (B8)
 - **What**: app & model omit `-p no:dash -p no:playwright`, the fleet-standard defense against the dash/playwright pytest plugins auto-loading from a shared conda env and segfaulting at collection. The client (same repo) carries it; the two others are the gap.
-- **Evidence**: owner-verified — app & model `addopts` MISSING the guard; client HAS it (`juniper-recurrence-client/pyproject.toml:62-63`, comment "Ecosystem-standard autoload SIGSEGV defense").
+- **Evidence**: Overtoad-verified — app & model `addopts` MISSING the guard; client HAS it (`juniper-recurrence-client/pyproject.toml:62-63`, comment "Ecosystem-standard autoload SIGSEGV defense").
 - **Baseline**: `juniper-ml/juniper-model-core/pyproject.toml:75`; `juniper-cascor/pyproject.toml:181-182`.
 - **Impact**: on any env with `dash`/`pytest-playwright` present (common in shared Juniper envs), collection can SIGSEGV before any test runs — esp. relevant on the 3.14t matrix legs.
 - **Action**: add `"-p","no:dash","-p","no:playwright"` to app + model `addopts`.
@@ -236,7 +236,7 @@ Counts are exact enumerations of the finding IDs in §4/§5/§7 (PC-4 ≡ CI-2 c
 
 ### [HIGH] DEP-2 · App README version (`0.1.0`) lags shipped `0.1.1`  (C3)
 - **What**: PyPI landing page for `juniper-recurrence` 0.1.1 will display "Version: 0.1.0".
-- **Evidence**: owner-verified — `juniper-recurrence/README.md:7` `**Version**: 0.1.0` vs `_version.py:9` `0.1.1`, `CHANGELOG.md:31` `[0.1.1]`.
+- **Evidence**: Overtoad-verified — `juniper-recurrence/README.md:7` `**Version**: 0.1.0` vs `_version.py:9` `0.1.1`, `CHANGELOG.md:31` `[0.1.1]`.
 - **Action**: bump README header to `0.1.1` (or drop the header to match the model/client READMEs' convention).
 
 ### [HIGH] DEP-3 · `bench/` deps declared only via the app's `[bench]` extra; equities dep undeclared  (C1)
@@ -282,7 +282,7 @@ A **single root `/.pre-commit-config.yaml`**, cloning `juniper-data`'s ruff-stac
   - local `no-unencrypted-env` (`^\.env(\.secrets)?$`) (PC-2).
 - **`ci:` trailer**: `autofix_prs: false`, `autoupdate_schedule: monthly` (PC-8).
 
-**Decisions**: ruff stack (not black) — repo is already pure-ruff; ONE root config; pre-push coverage gate = **No/optional** (the 3 CIs already gate coverage; `default_install_hook_types` lets it be added later without re-install). **Do NOT** add a root `pyproject.toml` (would fight per-package `[tool.ruff]` ownership) or SOPS (no encrypted secrets yet).
+**Decisions**: ruff stack (not black) — repo is already pure-ruff; ONE root config; pre-push coverage gate = **No/optional** (the 3 CIs already gate coverage; `default_install_hook_types` lets it be added later without re-install). **Do NOT** add a root `pyproject.toml` (would fight per-package `[tool.ruff]` Overtoadship) or SOPS (no encrypted secrets yet).
 
 **Companion files**: `.markdownlint.yaml` (copy `juniper-ml`); `lint:` job in `ci-recurrence-model.yml`; `.gitignore += .ruff_cache/`; `.gitattributes` (`* text=auto`).
 
@@ -317,6 +317,6 @@ All remediation is a **separate effort in the `juniper-recurrence` repo** (its o
 
 - **Auditors** (read-only, parallel, evidence-or-silence): A1 pre-commit/lint (agent `aae7516e`); A2 CI/publish (`af407a15`); A3 testing app+bench (`a8a87b01`); A4 testing model+client (`ab0d6a97`); A5 deps/metadata/docs (`a61559f6`).
 - **Owner spot-verification** (this session): coverage-section absence; `--cov-fail-under` CI-only; model-CI no lint; app README 0.1.0 vs `_version` 0.1.1; autoload-guard placement (app/model missing, client present); checkout `2fd2b81`, 2 behind `origin/main` `036fde7`.
-- **Confidence**: CRIT/HIGH findings corroborated by ≥2 sources (config evidence + owner re-derivation, or ≥2 independent auditors). `NOT VERIFIED` recorded inline where applicable (pypi env dual-gate; `py.typed` presence).
+- **Confidence**: CRIT/HIGH findings corroborated by ≥2 sources (config evidence + Overtoad re-derivation, or ≥2 independent auditors). `NOT VERIFIED` recorded inline where applicable (pypi env dual-gate; `py.typed` presence).
 - **Currency caveat**: audited `2fd2b81` (clean tree). At audit time, 2 behind `origin/main` `036fde7` (both bench equities-rebench). `origin/main` advanced **during this session** to `461fc4a` (HEAD now 6 behind); the newer commits include DP-3 P1 readout work (recurrence #30/#31) — **not** bench-only — so model-package findings warrant re-confirmation against the tip. Structural findings (no pre-commit, no coverage config, model-CI lint gap, stale AGENTS.md) stand.
 - **Validation**: this report was adversarially re-verified by 5 independent fact-checkers (one per section, claim-and-repo re-derivation, all baseline citations re-opened) on 2026-06-21. Result: **0 findings refuted**; corrections applied = severity-tally recount (HIGH 9→10, MED/LOW undercounts fixed), DEP-7 premise corrected + downgraded MED→LOW, §6 ValueError count 6→7, DEP-3/5/6 line-refs (+1..3 off), DEP-1 tag wording, TST-12 `_version` scoping, and this currency caveat.

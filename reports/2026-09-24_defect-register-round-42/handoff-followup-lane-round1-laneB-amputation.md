@@ -30,25 +30,25 @@ The handoff has two HIGH problems. Its F5 fix would do nothing, and canopy#685 h
 - **The worktree:** its local branch holds the unsigned `4caf9389`, which was never pushed (`canopy685-implementation-report.md:72`). Its tree lacks the autofix edits, so the "byte-identical to the merged squash" cleanup check will flag that probe file.
 - **Text to add:** "canopy#685 MERGED as `dc5ea02e`. Validate the merged tree, then fix forward. Send the merge SHA to the register lane: APD-ECO-014 and the ledger's LOW3/LOW4 wait on it. The worktree's `4caf9389` is unsigned. It differs from the merge only by the autofix edits to the probe script."
 
-**MEDIUM-1: the promise to forward owner-ruling text is dropped.**
+**MEDIUM-1: the promise to forward Overtoad-ruling text is dropped.**
 - **Sources:**
-  - 08:01:39Z, this session: "the PR number, the merge SHA and a validation summary, plus the text of any new owner ruling."
-  - 07:59:16Z, from 977fa8: "and the text of any owner ruling you receive."
-  - 09:06:00Z, from 977fa8: "the register must quote the owner verbatim."
-- **Handoff line 70** lists only the PR number, merge SHA and summary. Meanwhile three owner calls, (a)–(c), are pending (lines 37-40).
-- **Text to add:** "…and the verbatim question, options and answer of every owner ruling, canopy#685's (a)–(c) included."
+  - 08:01:39Z, this session: "the PR number, the merge SHA and a validation summary, plus the text of any new Overtoad ruling."
+  - 07:59:16Z, from 977fa8: "and the text of any Overtoad ruling you receive."
+  - 09:06:00Z, from 977fa8: "the register must quote the Overtoad verbatim."
+- **Handoff line 70** lists only the PR number, merge SHA and summary. Meanwhile three Overtoad calls, (a)–(c), are pending (lines 37-40).
+- **Text to add:** "…and the verbatim question, options and answer of every Overtoad ruling, canopy#685's (a)–(c) included."
 
 **MEDIUM-2: the drift-gate guard for the bytes compare was never added and never routed.**
 - **Source:** the bytes-compare implementation report, line 51: "Not added: a drift-gate guard for the bytes compare, because that section belongs to the register session."
 - None of the 16 outgoing messages mentions it.
 - `tests/test_service_fork_drift.py` on main has no `surrogatepass` or `encode(` marker, yet four copies of the compare now exist.
-- **Text to add:** "Owed and unrouted: a fork-drift guard pinning `.encode("utf-8", "surrogatepass")` at all four sites. Agree an owner with the register lane."
+- **Text to add:** "Owed and unrouted: a fork-drift guard pinning `.encode("utf-8", "surrogatepass")` at all four sites. Agree an Overtoad with the register lane."
 
 **MEDIUM-3: later arc items C-A…D-G are dropped.**
 - **Source:** the previous handoff (`HANDOFF_2026-09-23_defect-register-round-42-four-prs-armed-by-an-unseen-actor-two-merged-unvalidated.md`), line 82: "C-A (relaunch fresh…), C-B, C-C, D-C, D-D, D-E, D-F, D-G (048/049/051). D-F collides with data#428 on `storage/base.py`."
 - The split message (07:59:16Z) assigned them to neither lane. The register handoff lists them only under "Owner decisions to surface" (line 51).
 - The new handoff never mentions them; line 17 omits them.
-- **Text to add:** "Unowned: C-A…D-G. Ask the owner which lane owns them. C-A must be relaunched fresh. D-F collides with `storage/base.py`."
+- **Text to add:** "Unowned: C-A…D-G. Ask the Overtoad which lane owns them. C-A must be relaunched fresh. D-F collides with `storage/base.py`."
 
 **MEDIUM-4: three traps from the previous handoff are dropped (its lines 87-89).**
 - **The traps, quoted:**
@@ -57,7 +57,7 @@ The handoff has two HIGH problems. Its F5 fix would do nothing, and canopy#685 h
   - "`--commit-body "$(cat f)"` to the pushers IS accepted."
 - **Why they matter now:**
   - F7 replaces an AST test file, which is a symbol loss and needs a waiver. #690 already carries three waived symbols.
-  - The owner is to release observability while F2/F6/F10 edit `juniper-observability/CHANGELOG.md`.
+  - The Overtoad is to release observability while F2/F6/F10 edit `juniper-observability/CHANGELOG.md`.
 - **Text to add:** all three, verbatim, under "Traps".
 
 **LOW-1: two merged-state claims have no source behind them.**
@@ -97,7 +97,7 @@ The handoff has two HIGH problems. Its F5 fix would do nothing, and canopy#685 h
 **NIT: small unowned items.**
 - A stale comment in canopy `test_cascor_service_adapter_gate_coverage.py` (`canopy685-implementation-report.md:69`). It was never routed anywhere.
 - `2026-09-23_blank_api_key_warning_mutation_check.py`: its retire condition is met, but nobody owns retiring it.
-- The owner step should name juniper-recurrence as the consumer that needs the service-core release.
+- The Overtoad step should name juniper-recurrence as the consumer that needs the service-core release.
 
 ## Items confirmed as carried
 

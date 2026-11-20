@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — one-off (flood-4 round-2 ml-code carrier build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: BRIEF_COMMON_R2 DELIVERABLES (manifest.json shape).
 
 Usage: python3 2026-11-08_flood4r2_ml_code_manifest.py <scratch dir> <checks.json>   (run from the worktree root)
@@ -101,9 +101,9 @@ CARRIED = {
 }
 
 OPEN_QUESTIONS = [
-    "Brace cap cost (owner ruling 'Fail closed' implemented literally: ANY word past 64 alternatives is refused, ranges and products included). Census over the 200 newest juniper-ml transcripts: 21 of 44,660 Bash commands (0.047%) would be refused; 19 of the 21 overflow in a word that carries quoting (python3 -c code, JSON), text bash never brace-expands, because the guard's lexer strips quotes before expanding. A quote-aware expansion would remove most false refusals without reopening the bypass. Ask the owner whether to follow up.",
+    "Brace cap cost (Overtoad ruling 'Fail closed' implemented literally: ANY word past 64 alternatives is refused, ranges and products included). Census over the 200 newest juniper-ml transcripts: 21 of 44,660 Bash commands (0.047%) would be refused; 19 of the 21 overflow in a word that carries quoting (python3 -c code, JSON), text bash never brace-expands, because the guard's lexer strips quotes before expanding. A quote-aware expansion would remove most false refusals without reopening the bypass. Ask the Overtoad whether to follow up.",
     "NEW DEFECT on main AND in this carrier (not fixed: outside the ruling's wording): the guard does not model bash's increment range {x..y..n}. `cat ~/.{r..t..1}sh/config` (bash: .rsh .ssh .tsh) and `ls ~/.{f..h..1}nupg` pass with no hit. A 3-line fail-closed patch (refuse any {x..y..n}) is validated on a scratch copy: tmp/flood4r2/ml-code/proposed/increment_range_fail_closed.diff.txt and increment_range_probe.txt. Carry it here, or as its own PR?",
-    "Guard version: bumped 1.2.0 -> 1.3.0 (every earlier behaviour change bumped it; the owner must re-run util/install_claude_agent_guard.bash --apply). Keep, or make it 1.2.1?",
+    "Guard version: bumped 1.2.0 -> 1.3.0 (every earlier behaviour change bumped it; the Overtoad must re-run util/install_claude_agent_guard.bash --apply). Keep, or make it 1.2.1?",
     "The drafts cite git 2.43; this host runs git 2.53.0 and every claim was re-derived there. macOS turing's git version was not probed.",
     "main-verify.yml: the three non-guard suites were added as the drafts did; the two guard suites were not (main-verify carries neither guard suite today).",
     "Trap for the validators: pre-commit detects a hook's edits through git, so it cannot see edits to UNTRACKED files. Pre-commit run 1 reformatted two new suites with black and still printed Passed. The final state was proven with sha256 before/after a further run (all 13 new files byte-identical).",

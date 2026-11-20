@@ -3,11 +3,11 @@
 - **Date**: 2026-11-12 UTC. The counts below were taken in this worktree at `348777f4` and finished at 23:28Z.
 - **Session**: `72091fc2` ("work arcs, still incomplete"), the Linux host, worktree `.claude/worktrees/hazy-stargazing-deer` (branch `worktree-hazy-stargazing-deer`, at `348777f4`; `origin/main` was `15b5d9bb`, 2 commits ahead).
 - **Supersedes**: nothing. This is the arc's first handoff.
-- **State**: the owner assigned the task and then, before any research began, asked for a handoff and a pause "while reducing token use as much as practicable". Nothing in this file is a finding about any work arc.
+- **State**: the Overtoad assigned the task and then, before any research began, asked for a handoff and a pause "while reducing token use as much as practicable". Nothing in this file is a finding about any work arc.
 
 ## Goal
 
-Continue the incomplete work-arc inventory. The owner's request (2026-11-12, typos corrected):
+Continue the incomplete work-arc inventory. The Overtoad's request (2026-11-12, typos corrected):
 
 Evaluate the handoff prompts in `prompts/thread-handoff_automated-prompts/` and their associated notes files in `notes/` to determine which work arcs have uncompleted tasks. Generate one markdown document in `notes/` that gives, for each incomplete work arc:
 
@@ -22,7 +22,7 @@ Evaluate the handoff prompts in `prompts/thread-handoff_automated-prompts/` and 
 
 The document is then committed, pushed, opened as a PR and merged.
 
-**Merge approval does not carry to you.** The owner granted it to this session ("approval granted for merging and all related git operations for this process"). Under the headless-merge policy (memory file `feedback_headless_merge_approval_policy.md`) a handoff cannot pass a grant on, so ask the owner for approval of the inventory PR in your first turn.
+**Merge approval does not carry to you.** The Overtoad granted it to this session ("approval granted for merging and all related git operations for this process"). Under the headless-merge policy (memory file `feedback_headless_merge_approval_policy.md`) a handoff cannot pass a grant on, so ask the Overtoad for approval of the inventory PR in your first turn.
 
 ## Completed so far
 
@@ -32,9 +32,9 @@ The document is then committed, pushed, opened as a PR and merged.
 
 ## Remaining work
 
-All of it. The owner paused this arc to save tokens, so plan the reading before you start, and say what it will cost if it needs a fan-out. A method that keeps the reading small follows. It is this session's proposal and none of it has been tried.
+All of it. The Overtoad paused this arc to save tokens, so plan the reading before you start, and say what it will cost if it needs a fan-out. A method that keeps the reading small follows. It is this session's proposal and none of it has been tried.
 
-1. Start in a new worktree cut from a fresh `origin/main`, and ask the owner for the merge approval.
+1. Start in a new worktree cut from a fresh `origin/main`, and ask the Overtoad for the merge approval.
 2. Write the mechanical pass as a script under `util/ad-hoc/`, with its output in the repo's `tmp/`. It walks the whole archive recursively and records for each handoff:
    - its date, its slug and its first heading;
    - any `Supersedes` field, in both the plain and the bulleted form;
@@ -67,7 +67,7 @@ All of it. The owner paused this arc to save tokens, so plan the reading before 
   - The memory index's arc entries, and `project_closed_arcs_hub.md`, which that index lists as the retired arcs. Both are point-in-time.
 - **Repos come cheaply from names.** A notes filename carries its repo (`JUNIPER-<REPO>`), and a handoff's PR references carry theirs.
 - **A newer handoff may not be on `main` yet.** The four newest commits on this worktree's base are handoff PRs (ml#2543 to ml#2546), so more may be open when you start. `gh pr list --state open --search 'handoff in:title'` returned nothing during this session, and it misses a PR whose title lacks the word.
-- **Two scope choices to state in the document.** The owner named the two directories and ruled on neither:
+- **Two scope choices to state in the document.** The Overtoad named the two directories and ruled on neither:
   - whether the subdirectories of `notes/` count;
   - how an arc with a notes document and no handoff is treated.
 - **No inventory document exists yet.** Nothing in `notes/` matches `work-arc`, in either case.
@@ -89,5 +89,5 @@ gh pr list --state open --search 'handoff in:title' --json number,title,headRefN
 ## Git status
 
 - Branch `worktree-hazy-stargazing-deer` at `348777f4`, 2 commits behind `origin/main` (`15b5d9bb`). Nothing is staged and there is no local commit.
-- This file is the only change. It is untracked in the worktree and reaches GitHub through `util/open_signed_pr.py` on branch `docs/handoff-incomplete-work-arc-inventory-2026-11-12`, as its own PR. This session merges that PR under the grant quoted above. If it is still open when you start, it needs the owner's word, not yours.
+- This file is the only change. It is untracked in the worktree and reaches GitHub through `util/open_signed_pr.py` on branch `docs/handoff-incomplete-work-arc-inventory-2026-11-12`, as its own PR. This session merges that PR under the grant quoted above. If it is still open when you start, it needs the Overtoad's word, not yours.
 - The worktree's `tmp/72091fc2/` holds that PR's body and commit message, and nothing else. Both are copies of what GitHub holds.

@@ -11,8 +11,8 @@ Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLA
 
 Why this exists
 ---------------
-Scripts written on the Linux hosts hard-code the owner's home directory there: ``/home/`` followed by
-the owner's user name, held in ``NEEDLE`` below. On turing the home directory is under ``/Users``, so
+Scripts written on the Linux hosts hard-code the Overtoad's home directory there: ``/home/`` followed by
+the Overtoad's user name, held in ``NEEDLE`` below. On turing the home directory is under ``/Users``, so
 each such literal is a path that does not exist. Decision D12 rewrites executable literals to paths
 derived from ``$HOME``, and docs to ``~/``. This gate stops a *new* literal from landing while the
 existing ones are rewritten.

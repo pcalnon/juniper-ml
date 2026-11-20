@@ -32,13 +32,13 @@ Direct pushes were **never permitted**. The existing ruleset already carries a `
 rule suites show it firing: `pull_request: fail "Changes must be made through a pull request"` — while
 the push lands anyway, because the suite result is `bypass`.
 
-**Bypass actors are per-ruleset.** The main ruleset grants `RepositoryRole 5` (owner) an `always`
+**Bypass actors are per-ruleset.** The main ruleset grants `RepositoryRole 5` (Overtoad) an `always`
 bypass, which makes every rule in that ruleset advisory for that actor.
 
 That entitlement is genuinely load-bearing — it covers squash-SHA races (where the merge commit has no
 reports yet), unresolved review threads, and emergency access — so it is **not** being removed. Instead
 a second ruleset carries the same `pull_request` rule with an **empty** `bypass_actors` list. GitHub
-evaluates both, so the no-bypass copy binds everyone including the owner, while the original keeps its
+evaluates both, so the no-bypass copy binds everyone including the Overtoad, while the original keeps its
 bypass for the other seven rules.
 
 ## 3. What was applied
@@ -68,7 +68,7 @@ Tested live on juniper-ml by temporarily extending the ruleset to a throwaway re
 (`refs/heads/zz-ruleset-probe`), so `main` was never at risk. The probe branch and the extra condition
 were removed afterwards.
 
-1. **A ref UPDATE is rejected, even for the owner** — the intended behaviour:
+1. **A ref UPDATE is rejected, even for the Overtoad** — the intended behaviour:
 
    ```text
    remote: error: GH013: Repository rule violations found for refs/heads/zz-ruleset-probe.

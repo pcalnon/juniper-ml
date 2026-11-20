@@ -189,7 +189,7 @@ state was later cleared by a plain merge, the very thing §5.2's doctrine says w
 
 > *(2026-09-09: … they do end the empty set: the §4.9 rows marked actionable (`APD-DATA-039`'s
 > cache-key half, `APD-CASCOR-009` / `-010` / `-012`) are the first a session may work without asking
-> first, because the owner-issued round-37 handoff listed them as remaining work.)*
+> first, because the Overtoad-issued round-37 handoff listed them as remaining work.)*
 
 **It contradicts three of the register's own §2 rules, quoted verbatim:**
 
@@ -198,7 +198,7 @@ state was later cleared by a plain merge, the very thing §5.2's doctrine says w
 
 > **This does not license the reverse, either.** Unparked ≠ actionable.
 
-> **As of 2026-09-03 the set of rows a session may action without asking the owner first is empty**,
+> **As of 2026-09-03 the set of rows a session may action without asking the Overtoad first is empty**,
 > and that is a fact about how far this register has been worked, **not an obstacle to route around**.
 
 The note asserts exactly the unparked-⇒-actionable equivalence §2 rejects — with `APD-DATA-019`
@@ -207,8 +207,8 @@ of them *register* sentences; "a handoff listed it" is a fourth shape invented h
 licensing mechanism, which §2 says the rule set does not contain.
 
 **"Owner-issued" holds only for the merge, not the content.** The round-37 handoff's commit is an
-owner-merged archive of a machine-generated document produced under the thread-handoff protocol —
-not an owner instruction. Round 37's own **§3 "Owner rulings — do not re-litigate"** table has eight
+Overtoad-merged archive of a machine-generated document produced under the thread-handoff protocol —
+not an Overtoad instruction. Round 37's own **§3 "Owner rulings — do not re-litigate"** table has eight
 dated rows and **not one concerns any of the four**.
 
 ### Per-row verdict, against the exact round-37 §0 text
@@ -227,17 +227,17 @@ declares false. **Circular; -012's licence should not stand on this.**
 
 **`APD-DATA-039` — NOT listed as remaining work at all. The weakest of the four.** Round 37 §0.9 is a
 hazard description with three consequence bullets; it proposes no fix, asks for no work, assigns no
-owner, and is in neither §0.5's "still unbuilt" list nor §0.11's parked list. Worse, the round-38
+Overtoad, and is in neither §0.5's "still unbuilt" list nor §0.11's parked list. Worse, the round-38
 document's **own §0.4** places that very bullet under *"Owner decisions, each blocking a row — do not
 action without a ruling."* **Unsupported, and self-contradicted by the shipping document.**
 
 **All four, additionally: round 37 could not have unparked rows that did not exist.** §0.11 says the
-other 16 open rows *"are PARKED and need owner unparking before any session may action them"*. The
+other 16 open rows *"are PARKED and need Overtoad unparking before any session may action them"*. The
 §4.9 rows were filed 2026-09-09, two days after round 37 was written. Retroactive
 self-authorization, and §0.11 is round 37 saying the opposite of what the note attributes to it.
 
 **Recommendation:** not defensible as written. The cleanest fix is to delete the licensing clause and
-let the four rows carry ordinary `parked: owner decision` sentences until the owner rules.
+let the four rows carry ordinary `parked: Overtoad decision` sentences until the Overtoad rules.
 
 **One more inconsistency:** §0.2 of the handoff tells the successor to build "one PR" from four
 bullets **including** the `-011` flag — which §4.9 **parks** as a design question.

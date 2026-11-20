@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc -- investigation (claim evidence for the Cursor flood-4 round-2 docs carrier, draft juniper-ml#2479)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (round 2);
          tests/test_claude_interactive.py (``ClaudeInteractiveEndToEndTests._launch``, whose fixture this copies)
 
@@ -232,7 +232,7 @@ CASES = [
     {"id": "P13b claudey --no-remote-control --prompt --remote-control", "entry": "claudey", "args": ["--no-remote-control", "--prompt", "--remote-control"], "expect": [("exit 0", rc(0)), ("remote control stays off", lambda r: "--remote-control" not in options_of(r)), ("the prompt text is --remote-control", lambda r: prompt_of(r) == "--remote-control")]},
     {"id": "P13c claudey -rc is remote control", "entry": "claudey", "args": ["--no-remote-control", "-rc"], "expect": [("exit 0", rc(0)), ("--remote-control is sent", lambda r: "--remote-control" in options_of(r))]},
     {"id": "P14 wake prefers --prompt to a prompt file", "entry": "wake", "args": ["--prompt", "typed", "--file", "prompts/other.md"], "env": {"WTC_DEBUG": "1"}, "expect": [("exit 0", rc(0)), ("the typed prompt is sent, the file dropped", lambda r: r["argv"] == ["--", "typed"])]},
-    # ---- effort (owner ruling, 2026-11-08) ----------------------------------------------------------------
+    # ---- effort (Overtoad ruling, 2026-11-08) ----------------------------------------------------------------
     {"id": "F1 wake --effort 0", "entry": "wake", "args": ["--effort", "0", "-p", "hi"], "env": {"WTC_DEBUG": "1"}, "expect": [("exit 0", rc(0)), ("--effort max", lambda r: r["argv"] == ["--effort", "max", "--", "hi"])]},
     *[{"id": f"F2 wake {flag} {value}", "entry": "wake", "args": [flag, value, "-p", "hi"], "env": {"WTC_DEBUG": "1"}, "expect": [("exit 0", rc(0)), ("no --effort flag", lambda r: r["argv"] == ["--", "hi"])]} for flag, value in (("--effort", "auto"), ("-e", "AUTO"), ("--effort-type", "Auto"), ("--effort-level", "auto"))],
     {"id": "F3 wake --effort 1", "entry": "wake", "args": ["--effort", "1", "-p", "hi"], "env": {"WTC_DEBUG": "1"}, "expect": [("exit 0", rc(0)), ("no --effort flag", lambda r: r["argv"] == ["--", "hi"])]},

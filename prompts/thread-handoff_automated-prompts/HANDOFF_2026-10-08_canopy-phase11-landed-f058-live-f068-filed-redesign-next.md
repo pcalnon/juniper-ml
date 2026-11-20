@@ -6,9 +6,9 @@
 **Written**: 2026-10-08 by the session in juniper-ml worktree `.claude/worktrees/dreamy-fluttering-kite`, at a phase
 boundary, as its PR was opened. **Not consensus-validated.**
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md` (authoritative for P2;
-its items 3 and 4, its owner batch (now O1–O17) and its P3 dependency carry this session's status). It supersedes
+its items 3 and 4, its Overtoad batch (now O1–O17) and its P3 dependency carry this session's status). It supersedes
 `HANDOFF_2026-10-05_canopy-phase10-five-rounds-pr-open-census-ran-live-phase11-owed.md`.
-**Merge approval**: the owner granted it in this session for this session's PRs. It is NOT carried: ask again.
+**Merge approval**: the Overtoad granted it in this session for this session's PRs. It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
 
@@ -38,7 +38,7 @@ commands first. Merge approval is not carried, so ask before the first merge.
       median of 9 and 7 fires per run, against 1 when the phase is random.
     - It is a finding of its own, because each fix leaves the other in place.
   - **Counts**: 79 findings, 53 fixed, 1 accepted, 2 withdrawn, 23 open (0 P0, 7 P1, 16 P2).
-  - **The owner's §6.3 question has two limbs.** First, Phase 10's: does a CHANGELOG or design-plan promise count as
+  - **The Overtoad's §6.3 question has two limbs.** First, Phase 10's: does a CHANGELOG or design-plan promise count as
     documented? That decides F-CANOPY-065. Second, if it does: does that extend to a CHANGELOG's description of an
     internal mechanism? That decides F-CANOPY-068. Moving those two alone, the open P1/P2 counts are 7/16, 6/17 or
     5/18.
@@ -67,7 +67,7 @@ commands first. Merge approval is not carried, so ask before the first merge.
 1. **Land the Phase 11 PR** if it has not merged.
    - Run `python3 util/wait_for_checks.py` against it.
    - Query `reviewThreads(isResolved:false)`, because the prescreen only predicts CodeQL.
-   - Ask the owner.
+   - Ask the Overtoad.
    - Then run `python3 util/safe_merge.py --execute` and read its `MERGED` line.
 2. **Item 4 (ledger item 0's second half, Phase 11's item 24): one design for F-CANOPY-055, -058 and -068.**
    - Lane B's request/ack pacer takes the watchdog off the guarded lane. A design that keeps a watchdog must base it
@@ -87,9 +87,9 @@ commands first. Merge approval is not carried, so ask before the first merge.
    - Then test the gate, a tab switch, the end of an Apply (with the clamp defeat) and a second-Input change, each in
      mid-request.
 4. **Item 26: the manual sweep, without waiting for the ruling.** Check every open finding against canopy's manual,
-   F-CANOPY-012 and F-CANOPY-013 first. Then, once the owner rules, sweep against the CHANGELOG and the design plans.
+   F-CANOPY-012 and F-CANOPY-013 first. Then, once the Overtoad rules, sweep against the CHANGELOG and the design plans.
    Whatever the ruling, the CAN-015g/h design note's "every CAN-015g item has merged" needs a dated correction.
-5. Then the parent's items 5 and 7, and the owner batch, O1–O17. O17 is the two-limbed question.
+5. Then the parent's items 5 and 7, and the Overtoad batch, O1–O17. O17 is the two-limbed question.
 
 **Traps learned:**
 

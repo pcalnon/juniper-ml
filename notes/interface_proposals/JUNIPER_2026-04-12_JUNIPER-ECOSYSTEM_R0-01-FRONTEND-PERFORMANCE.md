@@ -835,7 +835,7 @@ After the initial draft, I re-read it and made the following corrections:
 - **Cascor server agent (GAP-WS-13 seq)**: the browser's `seq` monotonicity check and the `_lastSeq` ring depend on cascor emitting `seq`. If cascor lags, my JS client handles it gracefully (assumes `seq=0`) but the reconnect test will be a partial skip.
 - **SDK agent (Phase A)**: no direct dependency. The browser never imports `juniper-cascor-client`.
 - **Adapter/Phase C agent**: Phase C uses the browser-side WebSocket wiring from Phase B to drive `set_params` slider handlers. The slider click handler needs to call `window.cascorControlWS.send({command: "set_params", params: ...})`. That JS wiring is trivial once Phase B's `cascorControlWS` cleanup is done; the adapter agent can consume it directly.
-- **Frame budget / latency instrumentation**: my browser-side emitter POSTs to `/api/ws_latency`. The backend owner of that endpoint must be confirmed. If no one owns it, gate the POST behind a feature flag so Phase B can ship without waiting.
+- **Frame budget / latency instrumentation**: my browser-side emitter POSTs to `/api/ws_latency`. The backend Overtoad of that endpoint must be confirmed. If no one owns it, gate the POST behind a feature flag so Phase B can ship without waiting.
 
 ### 8.7 Final line count target
 

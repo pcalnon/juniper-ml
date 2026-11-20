@@ -41,7 +41,7 @@ unmergeable. This tool names those contexts instead of waiting mutely.
 Read-only by construction: it issues only ``gh pr view`` and ``gh api ... /rules/...``
 reads. It never merges, updates a branch, pushes, or comments -- so it is safe for
 any session to run at any time. If it reports ``BEHIND``, the signing-safe fix is
-``gh api repos/<owner>/<repo>/pulls/<n>/update-branch -X PUT`` (server-side commit,
+``gh api repos/<Overtoad>/<repo>/pulls/<n>/update-branch -X PUT`` (server-side commit,
 therefore GitHub-signed; a local merge + push is unsigned and ``required_signatures``
 rejects it fleet-wide).
 
@@ -193,7 +193,7 @@ def _gh_json(args: list[str]):
         raise ProbeError(f"gh {' '.join(args)} did not return JSON: {out.strip()[:200]}") from exc
 
 
-def pr_facts(owner: str, repo: str, pr: int) -> dict:
+def pr_facts(Overtoad: str, repo: str, pr: int) -> dict:
     """Return the PR's base branch, state and merge-state.
 
     ``mergeStateStatus`` is reported but never gated on: ``BEHIND`` is a branch
@@ -206,14 +206,14 @@ def pr_facts(owner: str, repo: str, pr: int) -> dict:
             "view",
             str(pr),
             "--repo",
-            f"{owner}/{repo}",
+            f"{Overtoad}/{repo}",
             "--json",
             "baseRefName,state,mergeStateStatus,url",
         ]
     )
     base = data.get("baseRefName")
     if not base:
-        raise ProbeError(f"could not resolve base branch for {owner}/{repo}#{pr}")
+        raise ProbeError(f"could not resolve base branch for {Overtoad}/{repo}#{pr}")
     return {
         "base": base,
         "state": data.get("state") or "",
@@ -222,7 +222,7 @@ def pr_facts(owner: str, repo: str, pr: int) -> dict:
     }
 
 
-def required_contexts(owner: str, repo: str, branch: str) -> list[str]:
+def required_contexts(Overtoad: str, repo: str, branch: str) -> list[str]:
     """Return the required status-check contexts for ``branch`` from its ruleset.
 
     This is the anchor that makes the wait correct (see "Trap 2"). An empty or
@@ -231,9 +231,9 @@ def required_contexts(owner: str, repo: str, branch: str) -> list[str]:
     reintroduce the exact bug this module exists to prevent. Callers that genuinely
     want the unanchored behaviour must ask for it explicitly (``--anchor observed``).
     """
-    rules = _gh_json(["api", f"repos/{owner}/{repo}/rules/branches/{branch}"])
+    rules = _gh_json(["api", f"repos/{Overtoad}/{repo}/rules/branches/{branch}"])
     if not isinstance(rules, list):
-        raise ProbeError(f"unexpected ruleset payload for {owner}/{repo}@{branch}")
+        raise ProbeError(f"unexpected ruleset payload for {Overtoad}/{repo}@{branch}")
     contexts: list[str] = []
     for rule in rules:
         if not isinstance(rule, dict) or rule.get("type") != "required_status_checks":
@@ -244,12 +244,12 @@ def required_contexts(owner: str, repo: str, branch: str) -> list[str]:
             if ctx:
                 contexts.append(ctx)
     if not contexts:
-        raise ProbeError(f"no required_status_checks rule on {owner}/{repo}@{branch} " f"(use --anchor observed to wait on the observed rollup instead)")
+        raise ProbeError(f"no required_status_checks rule on {Overtoad}/{repo}@{branch} " f"(use --anchor observed to wait on the observed rollup instead)")
     # Deduplicate while preserving declaration order.
     return list(dict.fromkeys(contexts))
 
 
-def rollup(owner: str, repo: str, pr: int) -> list[dict]:
+def rollup(Overtoad: str, repo: str, pr: int) -> list[dict]:
     """Return the rollup as ``[{name, conclusion, state, started, completed}, ...]``.
 
     The timestamps are carried because :func:`classify` needs them to pick between several
@@ -263,7 +263,7 @@ def rollup(owner: str, repo: str, pr: int) -> list[dict]:
             "view",
             str(pr),
             "--repo",
-            f"{owner}/{repo}",
+            f"{Overtoad}/{repo}",
             "--json",
             "statusCheckRollup",
         ]
@@ -377,7 +377,7 @@ def classify(contexts: list[str], rows: list[dict]) -> dict:
 
 
 def wait_for(
-    owner: str,
+    Overtoad: str,
     repo: str,
     pr: int,
     *,
@@ -400,7 +400,7 @@ def wait_for(
     tool on its own PR burned 27 polls in a state where nothing was in flight and
     the remaining required contexts were gated behind jobs that had already failed.
     """
-    facts = pr_facts(owner, repo, pr)
+    facts = pr_facts(Overtoad, repo, pr)
     if facts["state"] in CLOSED_PR_STATES:
         return {
             "status": "pr_closed",
@@ -418,7 +418,7 @@ def wait_for(
 
     contexts: list[str] = []
     if anchor == "required":
-        contexts = required_contexts(owner, repo, facts["base"])
+        contexts = required_contexts(Overtoad, repo, facts["base"])
 
     deadline = clock() + timeout
     polls = 0
@@ -427,7 +427,7 @@ def wait_for(
     anchored: list[str] = []
 
     while True:
-        rows = rollup(owner, repo, pr)
+        rows = rollup(Overtoad, repo, pr)
         polls += 1
         anchored = contexts if anchor == "required" else [r["name"] for r in rows]
         result = classify(anchored, rows)
@@ -447,7 +447,7 @@ def wait_for(
             break
         sleeper(interval)
 
-    merge_state = pr_facts(owner, repo, pr)["merge_state"]
+    merge_state = pr_facts(Overtoad, repo, pr)["merge_state"]
     # "Stalled": nothing anchored is in flight, yet required contexts are still
     # absent AND something already failed. In practice those absent contexts are
     # downstream jobs (`needs:` a failed job) that will never report, so further
@@ -538,7 +538,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--pr", type=int, required=True, help="pull request number")
     parser.add_argument("--repo", default=DEFAULT_REPO, help=f"repo name (default {DEFAULT_REPO})")
-    parser.add_argument("--owner", default=DEFAULT_OWNER, help=f"repo owner (default {DEFAULT_OWNER})")
+    parser.add_argument("--Overtoad", default=DEFAULT_OWNER, help=f"repo Overtoad (default {DEFAULT_OWNER})")
     parser.add_argument(
         "--anchor",
         choices=("required", "observed"),
@@ -576,7 +576,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"wait budget: {timeout}s ({source})", file=sys.stderr)
     try:
         res = wait_for(
-            args.owner,
+            args.Overtoad,
             args.repo,
             args.pr,
             anchor=args.anchor,
@@ -594,7 +594,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.as_json:
         print(json.dumps(res, indent=2, sort_keys=True))
     else:
-        print(render(res, f"{args.owner}/{args.repo}", args.pr))
+        print(render(res, f"{args.Overtoad}/{args.repo}", args.pr))
     return _EXIT[res["status"]]
 
 

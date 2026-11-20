@@ -8,16 +8,16 @@ Every reference below carries its file. After this table, the two long names are
 
 | Short form | File |
 | --- | --- |
-| `…RECOVERY-PLAN.md` | `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` — the phase plan: §6.3 is Phase C, §6.4 Phase D, §6.5 Phase E, §6.6 the owner decisions |
+| `…RECOVERY-PLAN.md` | `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` — the phase plan: §6.3 is Phase C, §6.4 Phase D, §6.5 Phase E, §6.6 the Overtoad decisions |
 | `…INTEGRATED-DESIGN.md` | `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` — the design of record |
 
 ## Continue
 
-Continue the backup arc **interactively with the owner**, in the order the owner set on 2026-10-25:
+Continue the backup arc **interactively with the Overtoad**, in the order the Overtoad set on 2026-10-25:
 
-1. **Finish Phase C** (`…RECOVERY-PLAN.md` §6.3) **from Line 3**, one line at a time. The owner runs each line in their own terminal. The session checks it read-only, then presents the next. "Line N" is this session's numbering, not §6.3's item numbers; the mapping is under Remaining §1.
+1. **Finish Phase C** (`…RECOVERY-PLAN.md` §6.3) **from Line 3**, one line at a time. The Overtoad runs each line in their own terminal. The session checks it read-only, then presents the next. "Line N" is this session's numbering, not §6.3's item numbers; the mapping is under Remaining §1.
 2. **Run the Tier 2 and Tier 3 lanes.** All three drives are attached and mounted (re-measured 2026-10-26).
-3. **Run Phase D** (`…RECOVERY-PLAN.md` §6.4) with the owner's rulings below. The owner needs `sudo` and the passphrase from the printed sheet or the password manager, **not** the Dropbox copy.
+3. **Run Phase D** (`…RECOVERY-PLAN.md` §6.4) with the Overtoad's rulings below. The Overtoad needs `sudo` and the passphrase from the printed sheet or the password manager, **not** the Dropbox copy.
 
 Merge approval covered this session's PRs only. Ask again for the next session's.
 
@@ -42,7 +42,7 @@ On the host, verified read-only on 2026-10-26:
 Also measured:
 
 - **The stage gate** (`util/ad-hoc/2026-09-22_stage_design_artifacts.py --check`) read `0 staged, 14 already current, 0 skipped` on `main` at `900eb93a`. Nothing backup-related has merged since.
-- **`secret_scanning_non_provider_patterns`**: the owner said enable it. The PATCH returns 200, but the setting stays `disabled`, so it is not offered for this repo. B9's rule and hook carry that control. Nothing is owed.
+- **`secret_scanning_non_provider_patterns`**: the Overtoad said enable it. The PATCH returns 200, but the setting stays `disabled`, so it is not offered for this repo. B9's rule and hook carry that control. Nothing is owed.
 
 **This handoff's own PR** also commits `util/ad-hoc/2026-10-10_s7_env_reconcile.py`, Line 7's checker, which has sat untracked since 10-10. It prints names and booleans only. Its two recorded fingerprints were already on `main`, in four files.
 
@@ -53,7 +53,7 @@ Also measured:
 | O-1, O-2 | In Phase D, after the freeze, **probe the 64-character `SETTINGS_ENCRYPTION_KEY`** from the moved-aside service `.env` offline. A **match → Procedure A** plus P0.5b's two-start re-key to a fresh `/etc/credstore` key. **No match → A0.** No history-candidate search (B11 is not built). Then both `.env` keys are superseded and the `.env` is shredded. | partly (note a) |
 | O-9 | Re-encrypt the frozen set and the old dlists as a second pass of the rotation (`…INTEGRATED-DESIGN.md` §10.2). | no |
 | O-10 | Disable the snapshot timer now. **Done** (Line 0). | no |
-| O-11 | The owner rotates the TestPyPI token (I-31). **Open.** | no |
+| O-11 | The Overtoad rotates the TestPyPI token (I-31). **Open.** | no |
 | O-12 | `/etc/duplicati/env` is `0640 root:duplicati`. | no |
 | O-13 | **Keep** `additional-report-url`. Its per-run warning under `IPAddressDeny=` is expected and allow-listed. | **yes** — the recommendation was to clear it |
 | O-14 | `--aes-version=2` until the rotation. | no |
@@ -62,13 +62,13 @@ Also measured:
 | D-10 | Tier 2 runs weekly and keeps everything. | — |
 | drives | `/etc/fstab` is the primary reference for external drives. `extruder` is not a backup target. `/mnt/JuniperArchive` is deprecated. | — |
 
-- **(a)** The O-1/O-2 ruling adds the probe and, on a match, Procedure A, because the owner wants to keep the root-era history. Its end state is still the recommendation's: a fresh credstore key, with both `.env` keys retired.
+- **(a)** The O-1/O-2 ruling adds the probe and, on a match, Procedure A, because the Overtoad wants to keep the root-era history. Its end state is still the recommendation's: a fresh credstore key, with both `.env` keys retired.
 
 The **2026-10-08 retention ruling** still holds. Retention is suspended through recovery. After AC-4's first drill, the five dlists it would delete are copied aside, then retention is restored as `2W:1D,6M:1W,2Y:1M,5Y:2M`. The `keep-time` and `keep-versions` defaults are never restored.
 
 ## Remaining, in order
 
-### 1. Phase C, Lines 3–8 (the owner's terminal)
+### 1. Phase C, Lines 3–8 (the Overtoad's terminal)
 
 This session numbered the block differently from `…RECOVERY-PLAN.md` §6.3:
 
@@ -80,7 +80,7 @@ This session numbered the block differently from `…RECOVERY-PLAN.md` §6.3:
 | 7, 8 | 3(a), and 3(b) with 3(c) |
 | the drives step (§2 below) | 8 |
 
-This is the block the owner already has, from Line 3 on:
+This is the block the Overtoad already has, from Line 3 on:
 
 ```bash
 # 3. sqlite3 for P0 steps 3 and 8
@@ -101,17 +101,17 @@ chmod 0700 /mnt/Backups/Ubuntu/_yamaguchi_keys && chmod 0600 /mnt/Backups/Ubuntu
 for f in env README.md; do cmp -s "/mnt/Backups/Ubuntu/Dropbox/Backups/_yamaguchi_keys/$f" "/mnt/Backups/Ubuntu/_yamaguchi_keys/$f" && echo "$f SAME" || echo "$f DIFFERS"; done
 ```
 
-| Line | State on 2026-10-26 | The session's check afterwards | What the owner pastes |
+| Line | State on 2026-10-26 | The session's check afterwards | What the Overtoad pastes |
 | --- | --- | --- | --- |
 | 3 | `sqlite3` not installed | `dpkg-query -W -f='${db:Status-Abbrev}\n' sqlite3` reads `ii` | — |
 | 4 | — | none (root's files) | The four counts. Under O-2 a non-zero count changes nothing (there is no B11 extraction), but record them. The `dbpath` count also bears on the 2026-08-25 Repair actor that `…INTEGRATED-DESIGN.md` §5.3 asks about. |
 | 5 | — | none | The listing. Any `BMXWPAOGLP.sqlite-wal`, `-journal` or `-shm` is copied with the index at Phase D step 9. A server-DB `-wal`/`-shm` dated 09-18 21:03 is a second key-free source (`…INTEGRATED-DESIGN.md` §4.2 note 1). |
 | 6 | the four copies are `777`, `777`, `644`, `644` | `stat -c '%a %n'` on the four reads `600` | the CUPS output |
-| 7 | the S-7 `.env` exists (`0664`, 2026-08-23) | `test ! -e` on it | The checker's output. On `do NOT remove`, the `&&` keeps the file: stop and reconcile with the owner. |
+| 7 | the S-7 `.env` exists (`0664`, 2026-08-23) | `test ! -e` on it | The checker's output. On `do NOT remove`, the `&&` keeps the file: stop and reconcile with the Overtoad. |
 | 8 | the Dropbox `env` is `770`; there is no copy outside the Dropbox root | `stat` only: `0700` on the new directory, `0600` on its files and on the Dropbox `env` | `env SAME`, `README.md SAME` |
 
 - **Line 7's path is this session's worktree.** Any checkout at or after this PR's merge commit carries the checker too.
-- **One sink-checklist row is left** (`…INTEGRATED-DESIGN.md` §6, note sink-c): the owner's count of Claude transcripts. Count by value, and never put a value on argv. Purge only within the release's transcript limit (`…RECOVERY-PLAN.md` §6.1 item 5).
+- **One sink-checklist row is left** (`…INTEGRATED-DESIGN.md` §6, note sink-c): the Overtoad's count of Claude transcripts. Count by value, and never put a value on argv. Purge only within the release's transcript limit (`…RECOVERY-PLAN.md` §6.1 item 5).
 
 ### 2. Drives: Tier 2, then Tier 3 (no `sudo`)
 
@@ -128,7 +128,7 @@ for f in env README.md; do cmp -s "/mnt/Backups/Ubuntu/Dropbox/Backups/_yamaguch
 3. Verify a new archive on **both** sticks. With one stick the run is PARTIAL (rc 4) and reads `FAILED`.
 4. Then a run with no stick should read `SKIPPED`. It only does so after the first success.
 5. Then the class-1 pipeline drill: `bash util/ad-hoc/2026-08-26_backup_restore_drill.bash`.
-6. Then **the owner** decrypts one real archive with the YubiKey (PIN and touch). This is the key class the drill cannot cover.
+6. Then **the Overtoad** decrypts one real archive with the YubiKey (PIN and touch). This is the key class the drill cannot cover.
 
 **Tier 3** (`…INTEGRATED-DESIGN.md` §7.9; D-5):
 
@@ -137,9 +137,9 @@ for f in env README.md; do cmp -s "/mnt/Backups/Ubuntu/Dropbox/Backups/_yamaguch
 3. Verify the `full` set under `Juniper/Backups/`.
 4. Run AC-11: restore one archive and diff it against the live tree.
 
-**Who runs the installers.** On 2026-10-10 the session offered to run the Tier 2 install and first run itself on the owner's go: these are user units and need no `sudo`. Get that go explicitly, for each tier. Never hand it to a subagent, whose limits forbid enabling a unit.
+**Who runs the installers.** On 2026-10-10 the session offered to run the Tier 2 install and first run itself on the Overtoad's go: these are user units and need no `sudo`. Get that go explicitly, for each tier. Never hand it to a subagent, whose limits forbid enabling a unit.
 
-### 3. Phase D: `…RECOVERY-PLAN.md` §6.4, in one owner sitting
+### 3. Phase D: `…RECOVERY-PLAN.md` §6.4, in one Overtoad sitting
 
 Run §6.4 as written, with these deltas:
 
@@ -153,7 +153,7 @@ Run §6.4 as written, with these deltas:
   - After step 6's `mv`, the `.env` is at `/home/duplicati/.config/Duplicati.empty-2026-09-20/.env`. Both it and the freeze are `0700 duplicati`, so the probe runs under `sudo`, against a scratch **copy** of the server DB together with its `-wal`/`-shm`, in a root-only directory. Never run it against the freeze itself.
   - A **match → Procedure A**: at step 9 the accepted key goes to `…-key` and a random one to `…-key.new` (I-38), and step 12's re-key is `util/ad-hoc/2026-10-03_rekey_settings_key.bash`.
   - **No match → A0.**
-  - `util/ad-hoc/2026-09-21_probe_settings_key_on_copy.bash` is a different tool: a server-based probe that is "confirmation only" (`…INTEGRATED-DESIGN.md` §8 P0 step 3). It starts a Duplicati binary, so only the owner may run it, and the ruling does not need it.
+  - `util/ad-hoc/2026-09-21_probe_settings_key_on_copy.bash` is a different tool: a server-based probe that is "confirmation only" (`…INTEGRATED-DESIGN.md` §8 P0 step 3). It starts a Duplicati binary, so only the Overtoad may run it, and the ruling does not need it.
 - **A0's two scripts** (`util/ad-hoc/2026-09-22_confirm_a0_premise.bash`, `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash`) default their job DB into the step-5 freeze, which is `0700 duplicati`, and under sudo-rs `HOME=/root`. Run them as `sudo env YAMAGUCHI_ENV_FILE=/home/pcalnon/.config/duplicati-backup/env YAMAGUCHI_JOB_DB=/home/duplicati/.cache/root-data-folder-<date>/BMXWPAOGLP.sqlite YAMAGUCHI_WORKDIR=<a root-only directory> bash <script>`.
 - **Step 9**:
   - The installer refuses `/etc/default/duplicati` as **UNBLESSED**. Read the difference, then re-run it with `--update-backup-behavior`.
@@ -181,7 +181,7 @@ Write the rulings table above into `…RECOVERY-PLAN.md` §6.6, with O-13's diss
 ### 5. Owner questions and actions still open
 
 - **O-11**: rotate the TestPyPI token.
-- **juniper-recurrence runs no secret scan** in any workflow (10-25 survey). Does the owner want a follow-up PR?
+- **juniper-recurrence runs no secret scan** in any workflow (10-25 survey). Does the Overtoad want a follow-up PR?
 - **juniper-data** has an older commit allowlist that hides a 36-character UUID-shaped value assigned to `ARC_AGI_API`. Its comment calls it a public identifier, and nobody has verified that. Is it a public identifier or a key?
 
 ### 6. Later: Phase E (`…RECOVERY-PLAN.md` §6.5)
@@ -189,7 +189,7 @@ Write the rulings table above into `…RECOVERY-PLAN.md` §6.6, with O-13's diss
 - **P1**: S-4's in-tree delete on sign-off, and the Dropbox account audit.
 - **P2**: D-14's destination permissions, then AC-7, AC-5, AC-12 and AC-9.
 - **The rotation** (`…INTEGRATED-DESIGN.md` §10.2), with O-9's second pass.
-- **P3's remainder** is §2 above. D-5 is ruled and the owner has written T3's fstab line, which leaves the first `full` set and the AC-10/AC-11 drills.
+- **P3's remainder** is §2 above. D-5 is ruled and the Overtoad has written T3's fstab line, which leaves the first `full` set and the AC-10/AC-11 drills.
 - **P4**, after seven consecutive successful daily runs.
 
 ## Key context and traps

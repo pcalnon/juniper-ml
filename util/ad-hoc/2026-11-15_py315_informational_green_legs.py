@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- migration (phase 1 of the Python 3.15 migration, follow-up to juniper-ml#2567)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: util/ad-hoc/2026-11-14_py315_informational_edits.py (added the legs); the owner's report of 2026-11-15:
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: util/ad-hoc/2026-11-14_py315_informational_edits.py (added the legs); the Overtoad's report of 2026-11-15:
          "tests run using python3.15 are supposed to produce an informational message without affecting the ability
          of code to commit, push, PR, or merge"
 

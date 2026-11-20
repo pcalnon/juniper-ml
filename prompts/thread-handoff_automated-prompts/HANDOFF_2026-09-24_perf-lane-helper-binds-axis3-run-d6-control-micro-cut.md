@@ -36,9 +36,9 @@ Continue the **juniper-ml performance lane**. This session did the following:
 - **Built and ran PF-2 axis 3**, which the previous two work lists had dropped. It also probed the
   result's one anomaly over 5 dataset seeds.
 - **Cut the Python 3.14 micro reference**, LOADED.
-- **Recorded three owner rulings** as the rulings §6.
+- **Recorded three Overtoad rulings** as the rulings §6.
 
-**The owner rulings in the rulings §5 and §6 are final. Do not re-ask them.**
+**The Overtoad rulings in the rulings §5 and §6 are final. Do not re-ask them.**
 
 - **PF-3** waits for a quiet window: no `clamscan` running, and a 1-minute load that STAYS under ~6.
 - **The micro cut** is done: it went ahead LOADED.
@@ -52,7 +52,7 @@ Continue the **juniper-ml performance lane**. This session did the following:
    converged. This session hashed it against `f8e04b11`: 3,052 tracked files, 0 untracked,
    0 modified, 0 missing, with LFS pointers and symlinks excluded. It is **safe to remove**. This
    session could not remove it, because the classifier refuses git aimed at a sibling worktree.
-2. **PF-2 axis 1: publish the candidate count from cascor** (owner ruling, the rulings §6). The
+2. **PF-2 axis 1: publish the candidate count from cascor** (Overtoad ruling, the rulings §6). The
    design sketch is grounded in the code, not built:
    - **Source.** `TrainingResults.epochs_completed` is built per candidate phase in
      `_process_training_results` (`juniper-cascor/src/cascade_correlation/cascade_correlation.py:3033`).
@@ -83,10 +83,10 @@ Continue the **juniper-ml performance lane**. This session did the following:
    is the OWNER's decision, and 28 legs is not a basis for one.**
 5. **PF-2 axis 3: nothing fires on its own.** The seed probe settled the 4/5 question: the
    inversion was the seed (re-spec §4.3). It also showed that one seed cannot order adjacent
-   spiral counts, because the seed spread is about 5× the gap. If the owner wants a gateable
+   spiral counts, because the seed spread is about 5× the gap. If the Overtoad wants a gateable
    axis, the suite needs about 5 dataset seeds per cell, compared paired. The choice of accuracy
    column (roc_auc, raw f1 or chance-adjusted f1) is a threshold decision, and **thresholds are
-   the owner's.** Put it as a menu; do not decide it.
+   the Overtoad's.** Put it as a menu; do not decide it.
 6. **Carried items**: the 09-22 handoff's §8 table, with one row now discharged. **Discharged:
    the wall-ordering survey over the new axes.** Axis 2 is OK (2400 > 2000), axis 3 OK
    (1800 > 900), PF-3 OK; 0 INVERTED, 0 EQUAL. The UNRESOLVED rows are other suites, and are the
@@ -199,7 +199,7 @@ JUNIPER_EXP_CASCOR_SRC_DIR=/home/pcalnon/Development/python/Juniper/worktrees/ju
 7. **A 1.28 MB `createCommitOnBranch` payload landed on the first attempt** (ml#2068, 16 files,
    including the 821 KB `docs/REFERENCE.md`). Do not read that as a guarantee: the 499/502 memory
    still applies.
-8. **The owner's sweeper applies Copilot Autofix to CodeQL findings, and one autofix BROKE the
+8. **The Overtoad's sweeper applies Copilot Autofix to CodeQL findings, and one autofix BROKE the
    PR.** Commit `884e4dc6` answered "Module is imported with 'import' and 'import from'" by
    deleting `from unittest import mock` and leaving all six `mock.` uses. Every pre-commit leg
    failed on F821. **Fix forward, do not revert:** `import unittest.mock` is a plain import, so

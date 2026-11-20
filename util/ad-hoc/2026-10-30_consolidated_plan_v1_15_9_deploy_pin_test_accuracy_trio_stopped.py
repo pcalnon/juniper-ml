@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-30
 Status: ad-hoc — one-off (a record revision of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-29_consolidated_plan_v1_15_8_cascor_primary_carries_731.py (the revision this follows, and the pattern);
          util/ad-hoc/2026-10-30_plan_v1_7_24_failed_stands_notify_matrix_trio_stopped.py (the recurrence plan's matching revision);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_recurrence-equities-trio-stopped-notify-matrix-deploy-0-13-0-test-accuracy-filled.md
@@ -14,14 +14,14 @@ Related: util/ad-hoc/2026-10-29_consolidated_plan_v1_15_8_cascor_primary_carries
 
 Why
 ---
-Session ``904851c9`` (``ListAgents`` ref ``6f4d37``) put two question sets to the owner. The first was asked 2026-10-29
+Session ``904851c9`` (``ListAgents`` ref ``6f4d37``) put two question sets to the Overtoad. The first was asked 2026-10-29
 22:48Z and answered 23:10:11Z the same day: the work to do (the ``test_accuracy`` run, the deploy pin, the notify matrix),
 ``failed`` for the index row, and the pull ("i don't think the PR was mine. let's stop the :8202 stack"). The second, the
 stop's scope, was answered 2026-10-30 08:20:32Z: "Trio via --down". The session acted on every answer on 2026-10-30, and
 its handoff (landed by juniper-ml#2390) records the actions. Those times are the transcript's own timestamps. v1.15.8 says
 none of it:
 
-- **The deploy pin.** The option the owner chose reads: "Choosing it rules that 0.13.0, which has no F-S10 fix, counts for
+- **The deploy pin.** The option the Overtoad chose reads: "Choosing it rules that 0.13.0, which has no F-S10 fix, counts for
   the consolidated plan's R-CASCOR pin route." juniper-deploy#266 (``3070bd7e``, 2026-10-30 08:41:07Z) moves
   ``docker-compose.yml:233`` / ``:427`` and helm ``values.yaml:120`` to 0.13.0. GHCR's index for the tag is
   ``sha256:721417527c4f…`` (re-read here through the registry API), and cascor's ``requirements-cpu.lock`` at ``v0.13.0``
@@ -30,7 +30,7 @@ none of it:
   spiral-smoke cell on the cascor primary's ``src/`` at ``e8e8bf4d``) wrote ``eval_metrics.final`` on ``test`` with
   ``accuracy`` 0.575. ``stats.json``'s ``cascor.eval_scalars`` carries it (``held_out`` true; schema
   ``juniper-experiment-stats/2``), and the suite's ``aggregate.csv`` has ``test_accuracy`` 0.575 (all re-read here). So
-  APD-ML-002's close condition is met by a run. The close itself is the owner's, and this revision does not make it.
+  APD-ML-002's close condition is met by a run. The close itself is the Overtoad's, and this revision does not make it.
 - **The trio is stopped.** ``util/isolated_stack.bash --down`` stopped data ``:8101``, cascor ``:8202`` and canopy ``:8051``
   at 2026-10-30 08:25:52Z. ``ss`` here shows only the four canopy legs of 2026-10-10 among the trio's ports, and none of the
   host's TCP listeners runs from ``JuniperCascor1``. Short-lived processes do: ``python3`` on this host is that environment's
@@ -47,14 +47,14 @@ none of it:
   its ``[0.12.0]`` section but no heading in ``[0.13.0]``.
 
 Not edited: register row APD-ML-002 (``notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md``), whose five-touch close
-is the owner's; the parent ``Juniper/AGENTS.md``, whose "juniper-deploy still pins the 0.12.0 image" is stale but needs the
-owner's approval; and the non-P12 paths, which keep v1.14.0's state (v1.15.0's status note). Every line stays within 512
+is the Overtoad's; the parent ``Juniper/AGENTS.md``, whose "juniper-deploy still pins the 0.12.0 image" is stale but needs the
+Overtoad's approval; and the non-P12 paths, which keep v1.14.0's state (v1.15.0's status note). Every line stays within 512
 characters, and the script refuses if any line is over.
 
 Validation: one independent read-only reviewer checked the first draft. Its BLOCKER was the ruling dates (three of the four
 answers came on 2026-10-29, not 2026-10-30); its MAJORs were a ``/proc`` claim that read as "nothing uses the environment"
 and the Overview's "it pins ... cascor 0.12.0"; its MINORs and NITs (the stop's order of events, the trio's tense, action 6's
-v1.7.23 pointer, the record's source list, a "Filled" pointer, the owner's own words, the session alias, the changed-file
+v1.7.23 pointer, the record's source list, a "Filled" pointer, the Overtoad's own words, the session alias, the changed-file
 list and the parent ``AGENTS.md`` item) are applied here.
 
 Usage
@@ -86,8 +86,8 @@ _STATUS_ANCHOR = (
     "so the experiment stack's default `src/` serves it for the canonical checkout, while juniper-deploy still pins 0.12.0 (XC-P12; §4; §5). Like v1.15.0, no round checks it.\n"
 )
 _STATUS_ADD = (
-    "  - v1.15.9 (2026-10-30) records the owner's answers of 2026-10-29 and 2026-10-30 and what followed: juniper-deploy pins cascor 0.13.0 (deploy#266), "
-    "a run on the cascor primary's `src/` filled `test_accuracy`, so APD-ML-002's close condition is met (the close is the owner's), the trio is stopped, "
+    "  - v1.15.9 (2026-10-30) records the Overtoad's answers of 2026-10-29 and 2026-10-30 and what followed: juniper-deploy pins cascor 0.13.0 (deploy#266), "
+    "a run on the cascor primary's `src/` filled `test_accuracy`, so APD-ML-002's close condition is met (the close is the Overtoad's), the trio is stopped, "
     "juniper-data#501 adds juniper-canopy to the notify matrix, and index row 483 says `failed` (Overview; §2; XC-P12; §4; §5; §8; Appendix A). Like v1.15.0, no round checks it.\n"
 )
 
@@ -100,12 +100,12 @@ _OVERVIEW_PIN_NEW = (
 _OVERVIEW_TRIO_OLD = "     - The stack trio runs from conda environments.\n"
 _OVERVIEW_TRIO_NEW = "     - The stack trio runs from conda environments. It has been stopped since 2026-10-30 (§4 Wave 1's trio route; v1.15.9).\n"
 
-_S2_OLD = "and its `test_*` columns (ml#2381, 10-28); 003..006 wait on one owner menu."
-_S2_NEW = "and its `test_*` columns (ml#2381, 10-28); a run filled `test_accuracy` on 10-30, and the register row's close is the owner's (XC-P12); 003..006 wait on one owner menu."
+_S2_OLD = "and its `test_*` columns (ml#2381, 10-28); 003..006 wait on one Overtoad menu."
+_S2_NEW = "and its `test_*` columns (ml#2381, 10-28); a run filled `test_accuracy` on 10-30, and the register row's close is the Overtoad's (XC-P12); 003..006 wait on one Overtoad menu."
 
-_NOTIFY_ANCHOR = "  The owner ruled on 2026-10-26 that the release-train archive cap is 1,000,000 B (ml#2364), after a GitHub-hosted runner accepted every GraphQL body it tried, up to 16,777,216 B (run 40410086979).\n"
+_NOTIFY_ANCHOR = "  The Overtoad ruled on 2026-10-26 that the release-train archive cap is 1,000,000 B (ml#2364), after a GitHub-hosted runner accepted every GraphQL body it tried, up to 16,777,216 B (run 40410086979).\n"
 _NOTIFY_ADD = (
-    "  On the owner's word of 2026-10-29 (v1.15.9; that plan's v1.7.24), juniper-data#501 (`95163c47`, merged 2026-10-30) adds juniper-canopy to `notify-consumers.yml`'s matrix, so a data release also dispatches canopy's drift check. "
+    "  On the Overtoad's word of 2026-10-29 (v1.15.9; that plan's v1.7.24), juniper-data#501 (`95163c47`, merged 2026-10-30) adds juniper-canopy to `notify-consumers.yml`'s matrix, so a data release also dispatches canopy's drift check. "
     "The `workflow_dispatch` with version 0.17.1 (run 41027844552) succeeded, and so did canopy's `juniper-data Schema Drift` run 41027857909 and recurrence's bench run 41027858881: `CROSS_REPO_DISPATCH_TOKEN` covers canopy.\n"
 )
 
@@ -114,14 +114,14 @@ _PUBLISHED_NEW = "**Published 2026-10-28** (v1.15.7): PyPI serves 0.13.0 from 11
 
 _GATE_OLD = (
     "juniper-deploy pins 0.12.0, but the experiment stack's default (the cascor primary's `src/`, for the canonical checkout) carries cascor#731 from 2026-10-29 20:48:58Z (v1.15.8). "
-    "ml#2381 left the register row's close to the owner.\n"
+    "ml#2381 left the register row's close to the Overtoad.\n"
 )
 _GATE_NEW = (
     "juniper-deploy pins 0.13.0 from 2026-10-30 (deploy#266; v1.15.9), and the experiment stack's default (the cascor primary's `src/`, for the canonical checkout) carries cascor#731 from 2026-10-29 20:48:58Z (v1.15.8). "
-    "ml#2381 left the register row's close to the owner.\n"
+    "ml#2381 left the register row's close to the Overtoad.\n"
     "   - **Filled 2026-10-30** (v1.15.9): `util/ad-hoc/2026-10-30_test_accuracy_731_smoke_suite.yaml`, one spiral-smoke cell on the cascor primary's `src/` at `e8e8bf4d`, ran as `20261030T084056Z-0ac7` (index row 484). "
     "Its final evaluation is on `test` with `accuracy` 0.575, and the suite's `aggregate.csv` carries it as `test_accuracy`. "
-    'So the register row\'s close condition, "until that column exists", is met by a run. The five-touch close is the owner\'s.\n'
+    'So the register row\'s close condition, "until that column exists", is met by a run. The five-touch close is the Overtoad\'s.\n'
 )
 
 _W0_1_OLD = "A live cascor on `:8202` imports from that environment (§8)."
@@ -145,7 +145,7 @@ _ACTION6_NEW = "Further P12 work follows the **Next** bullet of `…EQUITIES-END
 
 _TRIO_ANCHOR = "  - verifies the code, not the version: pip reports 0.5.0 for an editable checkout whatever it holds.\n"
 _TRIO_ADD = (
-    "  - **Stopped 2026-10-30** (v1.15.9), on the owner's word: `util/isolated_stack.bash --down`, run from the juniper-ml primary with the trio's guard dir as `JUNIPER_E2E_RUN_DIR`, "
+    "  - **Stopped 2026-10-30** (v1.15.9), on the Overtoad's word: `util/isolated_stack.bash --down`, run from the juniper-ml primary with the trio's guard dir as `JUNIPER_E2E_RUN_DIR`, "
     "stopped data `:8101`, cascor `:8202` and canopy `:8051` at 08:25:52Z. The canopy E2E session was told first; its no-hold reply had arrived, and was read only after the stop.\n"
     "    - The logs are kept in `juniper-ml/tmp/2026-10-30-trio-stop/`. Who pulls the primaries stays open under O13.\n"
     "    - The cascor primary is cascor `main` whole (§5), which this route pulls only after P3-05, with #683's deployment note applied, and a later `--up` runs it as it stands.\n"
@@ -158,21 +158,21 @@ _P6_OLD = (
 )
 _P6_NEW = (
     "and filled on 2026-10-30, in a run on the experiment stack's default `src/`, which carries cascor#731 from 2026-10-29; "
-    "juniper-deploy pins 0.13.0 from 2026-10-30, and the register row's close is the owner's (§5; XC-P12 action 4).\n"
+    "juniper-deploy pins 0.13.0 from 2026-10-30, and the register row's close is the Overtoad's (§5; XC-P12 action 4).\n"
 )
 
-_P12ROW_OLD = "is annotated: `index.jsonl` line 482 (owner, 10-26) |"
-_P12ROW_NEW = "is annotated: `index.jsonl` lines 482-483 (owner, 10-26 and 10-29) |"
+_P12ROW_OLD = "is annotated: `index.jsonl` line 482 (Overtoad, 10-26) |"
+_P12ROW_NEW = "is annotated: `index.jsonl` lines 482-483 (Overtoad, 10-26 and 10-29) |"
 
-_CASCOR_ANCHOR = "    - The pull landed while a stack on `:8202` runs from that `src/`, and its actor is unrecorded. O13 governs a pull of the trio's primaries (§4 Wave 1), so whether it was intended is the owner's to say.\n"
+_CASCOR_ANCHOR = "    - The pull landed while a stack on `:8202` runs from that `src/`, and its actor is unrecorded. O13 governs a pull of the trio's primaries (§4 Wave 1), so whether it was intended is the Overtoad's to say.\n"
 _CASCOR_ADD = (
-    '    - **2026-10-30** (v1.15.9): the owner had answered "i don\'t think the PR was mine" (2026-10-29), so the pull\'s actor is still unknown, and had the trio stopped (2026-10-30 08:25:52Z; §4 Wave 1). '
+    '    - **2026-10-30** (v1.15.9): the Overtoad had answered "i don\'t think the PR was mine" (2026-10-29), so the pull\'s actor is still unknown, and had the trio stopped (2026-10-30 08:25:52Z; §4 Wave 1). '
     "The primary moved again at 18:18:33Z, `e8e8bf4d` → `d042de23` (cascor `main`: cascor#735 and #736, whose changes under `src/` are all in `src/tests/`); that pull's actor is unrecorded too.\n"
     "  - **2026-10-30** (v1.15.9): juniper-deploy pins 0.13.0 (deploy#266, `3070bd7e`, 08:41:07Z; `docker-compose.yml:233` and `:427`, helm `values.yaml:120`), "
-    "on the owner's ruling of 2026-10-29 that 0.13.0 counts for R-CASCOR's pin route though it carries no cascor F-S10 fix. The fix-forward question stands.\n"
+    "on the Overtoad's ruling of 2026-10-29 that 0.13.0 counts for R-CASCOR's pin route though it carries no cascor F-S10 fix. The fix-forward question stands.\n"
     "    - GHCR's index for `0.13.0` is `sha256:721417527c4f…`, both architectures labelled revision `61a67c53`; `scripts/verify_published_images.py --fail-on-stale` passes, and its control on the old pins fails. "
     "A run filled `test_accuracy` (0.575, run `20261030T084056Z-0ac7`; XC-P12 action 4).\n"
-    "    - The unversioned parent `Juniper/AGENTS.md` still says juniper-deploy pins the 0.12.0 image; its edit needs the owner's approval.\n"
+    "    - The unversioned parent `Juniper/AGENTS.md` still says juniper-deploy pins the 0.12.0 image; its edit needs the Overtoad's approval.\n"
 )
 
 _DEPLOY_OLD = "and deploy#258 pins data 0.17.1 and cascor 0.12.0 |"
@@ -184,21 +184,21 @@ _T6_NEW = (
     "where 0.12.0's repeats `### Added` and `### Fixed`; deploy#266 pins 0.13.0, v1.15.9)"
 )
 
-_T5_OLD = "it fills once a cascor carrying cascor#731 serves a run with a test split, and the register row's close is the owner's"
-_T5_NEW = "it filled on 2026-10-30 in run `20261030T084056Z-0ac7` (v1.15.9), and the register row's close is the owner's"
+_T5_OLD = "it fills once a cascor carrying cascor#731 serves a run with a test split, and the register row's close is the Overtoad's"
+_T5_NEW = "it filled on 2026-10-30 in run `20261030T084056Z-0ac7` (v1.15.9), and the register row's close is the Overtoad's"
 
-_T2_OLD = "Done 2026-10-26 by the owner's ruling: a correction row (line 482).\n"
-_T2_NEW = "Done 2026-10-26 by the owner's ruling: a correction row (line 482). It records `degraded`; the owner ruled `failed` on 2026-10-29, and line 483, appended 2026-10-30, corrects line 482 (v1.15.9).\n"
+_T2_OLD = "Done 2026-10-26 by the Overtoad's ruling: a correction row (line 482).\n"
+_T2_NEW = "Done 2026-10-26 by the Overtoad's ruling: a correction row (line 482). It records `degraded`; the Overtoad ruled `failed` on 2026-10-29, and line 483, appended 2026-10-30, corrects line 482 (v1.15.9).\n"
 
 _VALIDATION_ANCHOR = (
-    "  - v1.15.8 is a record of the cascor primary's move onto cascor#731 (2026-10-29). No round checks it (owner ruling 2026-10-24); its facts cite the primary's `main` reflog, the `752a797f...e8e8bf4d` compare, "
+    "  - v1.15.8 is a record of the cascor primary's move onto cascor#731 (2026-10-29). No round checks it (Overtoad ruling 2026-10-24); its facts cite the primary's `main` reflog, the `752a797f...e8e8bf4d` compare, "
     "the primary's `classification_metrics.py` and `manager.py`, juniper-deploy's compose file and helm values, PyPI's juniper-ml 0.11.3 and juniper-cascor 0.12.0 / 0.13.0 metadata, and a `[servers]` pip dry-run.\n"
 )
 _VALIDATION_ADD = (
-    "  - v1.15.9 is a record of P12's state on 2026-10-30. No round checks it (owner ruling 2026-10-24); its facts cite deploy#266 with deploy's compose file and helm values, juniper-data#501, runs 41027844552, 41027857909 and 41027858881, "
+    "  - v1.15.9 is a record of P12's state on 2026-10-30. No round checks it (Overtoad ruling 2026-10-24); its facts cite deploy#266 with deploy's compose file and helm values, juniper-data#501, runs 41027844552, 41027857909 and 41027858881, "
     "GHCR's `juniper-cascor:0.13.0` index, cascor's `requirements-cpu.lock` and CHANGELOG at `v0.13.0`, and `index.jsonl` lines 482-484.\n"
     "    - Also run `20261030T084056Z-0ac7`'s results and its suite's `aggregate.csv`, `ss` and `/proc`, `util/experiment_stack.bash`, the trio's stop record, "
-    "the cascor primary's reflog with the `e8e8bf4d...d042de23` and `0d2d826b...v0.12.0` compares, and the owner's answers with their timestamps in session `904851c9`'s transcript.\n"
+    "the cascor primary's reflog with the `e8e8bf4d...d042de23` and `0d2d826b...v0.12.0` compares, and the Overtoad's answers with their timestamps in session `904851c9`'s transcript.\n"
     "    - One independent read-only reviewer checked the first draft: its BLOCKER was the ruling dates (three answers came on 2026-10-29), its MAJORs a `/proc` claim and the Overview's cascor 0.12.0 pin; all are applied.\n"
 )
 

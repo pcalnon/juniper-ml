@@ -6,7 +6,7 @@ the only lane of round 3. Work only inside the juniper-ml worktree
 scratch under `/private/tmp/claude-501/lane15R3/`). Record the worktree HEAD sha you review. Do not start any
 service or leg. The worktree-isolation guard refuses `git -C`, `for` loops over tools, `awk` programs, `$(…)` in
 command text and env prefixes: one plain command per call, interpreters by absolute path. Never print environment
-values, keys or the owner's email.
+values, keys or the Overtoad's email.
 
 **Scope.** Round 2 (one lane, an adversarial review) found five MAJORs and fifteen MINORs; the reconciler applied all
 of them in `util/ad-hoc/2026-10-21_phase15_ledger_round2_corrections.py`. Round 2's report, verbatim, is
@@ -40,7 +40,7 @@ correction and check it against the evidence round 2 cited, not against round 2'
   carried in the ledger's Still owed, the handoff, the INDEX row and the parent's pointer?
 - **MAJOR 3 (items 18–21).** Check the ledger's Phase 10 items 18–21 and Phase 13's re-statement against the new
   handoff item 3. Is anything else in the ledger's Still owed (items 0–34) owed and in no handoff? Items 0–17 are the
-  parent's item 5 or the owner batch; say which, if any, has no carrier.
+  parent's item 5 or the Overtoad batch; say which, if any, has no carrier.
 - **MAJOR 4 (item 33).** Check the venv layout (`pyvenv.cfg` and `pip show juniper-canopy` with
   `/Users/pcalnon/.local/state/juniper/turing-e2/venvs/JuniperCanopy1/bin/python`) and whether the recipe as now
   written would bring dash to 4.x. Do not install anything.
@@ -58,7 +58,7 @@ correction and check it against the evidence round 2 cited, not against round 2'
 - Run every command in its "Verification commands" block from the worktree; does each print what its comment says?
   (`gh pr list … --head docs/canopy-e2e-phase15` prints `[]` until the landing; say so, do not flag it.)
 - Is every remaining task present, ordered sensibly, and actionable from the text alone (host, tree, interpreter,
-  owner gate, the exact command where one is given)? Check against the ledger's Still owed (Phases 10–15), the Phase
+  Overtoad gate, the exact command where one is given)? Check against the ledger's Still owed (Phases 10–15), the Phase
   14 handoff's Remaining list, and the parent `HANDOFF_2026-10-03_canopy-consolidated.md` (its items, O1–O17).
 - Does the "Changed by this session" list match `git diff --stat 907b6b3e HEAD` (the session's base) plus the files
   it names as created later in the landing (the round-3 pass and report)?

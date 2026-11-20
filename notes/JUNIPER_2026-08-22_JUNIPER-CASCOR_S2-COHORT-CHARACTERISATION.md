@@ -9,7 +9,7 @@
 
 **Status**: FINDINGS — **no retention policy is proposed here, and nothing was deleted.**
 S-2 asks *"is the March–April 2026 cohort of retained research value?"*. This characterises
-the cohort so that question can be answered; the answer, and any policy, is the owner's
+the cohort so that question can be answered; the answer, and any policy, is the Overtoad's
 under design §6.4.
 
 Every number is measured from the §6.2 index
@@ -142,7 +142,7 @@ register.
 - **What the four-day cluster was.** ~6,000 near-identical snapshots over 2026-03-31 →
   04-03 is the single largest concentration in the archive. If it was one sweep, it may be
   reproducible today for a fraction of the storage; if it was an incident, it is residue.
-  Nothing in the files answers this — but it is the kind of thing the owner may simply
+  Nothing in the files answers this — but it is the kind of thing the Overtoad may simply
   remember.
 - **Whether 1.7 GiB is worth acting on at all.** The design's own position is that the
   index is worth building *even if no file is ever deleted*, and 1.7 GiB is less than a
@@ -150,7 +150,7 @@ register.
 
 ---
 
-## 7. If the owner does want to act
+## 7. If the Overtoad does want to act
 
 Recorded for completeness, in increasing order of irreversibility. **None is recommended
 here**, and no tooling for any of them exists — `util/snapshot_index.py` is read-only by

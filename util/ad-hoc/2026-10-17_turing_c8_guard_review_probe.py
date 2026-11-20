@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-17
 Status: ad-hoc — investigation (review of the C8 / D11 item 4 guard before it lands)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/claude_agent_guard.py; tests/test_claude_agent_guard.py;
          notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (D11 item 4, task C8, H3)
 
@@ -46,7 +46,7 @@ ALLOW_BASH = [
     "gh pr checks 12",
     "gh api repos/pcalnon/juniper-ml/git/ref/heads/feat/x --jq .object.sha",
     'gh api "repos/pcalnon/juniper-ml/compare/main...feat/x" --jq .ahead_by',
-    "gh search prs --owner pcalnon --state open --json repository,number,title",
+    "gh search prs --Overtoad pcalnon --state open --json repository,number,title",
     "ssh -G github_juniper-ml",
     "python3 util/git_remote_alias_check.py",
     "bash util/headless_signing_preflight.bash",

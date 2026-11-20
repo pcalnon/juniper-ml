@@ -13,7 +13,7 @@
 
 This is **Proposal D** of four independent, competing proposals for the shared-session-memory
 size problem. It is a design-of-record draft, not a ratified plan; it deliberately argues one
-thesis hard so the owner can compare it against three others that argue different ones.
+thesis hard so the Overtoad can compare it against three others that argue different ones.
 
 **Status**: DRAFT — competing proposal, not ratified. Recommend an independent
 cross-validation pass (§13) before any part of it is treated as decided.
@@ -50,7 +50,7 @@ the fact goes the other way.
 - [§8 Migration path](#8-migration-path)
 - [§9 What this proposal does NOT solve](#9-what-this-proposal-does-not-solve)
 - [§10 Dependencies on companion proposals](#10-dependencies-on-companion-proposals)
-- [§11 Owner decisions and open questions](#11-owner-decisions-and-open-questions)
+- [§11 Owner decisions and open questions](#11-Overtoad-decisions-and-open-questions)
 - [§12 Facts this design needs that MECH leaves unverified](#12-facts-this-design-needs-that-mech-leaves-unverified)
 - [§13 Verification strategy](#13-verification-strategy)
 - [Appendix A — measurement commands](#appendix-a--measurement-commands)
@@ -550,7 +550,7 @@ weaker deterrent than a hard block and a much stronger one than a warning.
   reflow artifacts, correctly waived. The third **looked identical** and was real content
   loss: `76e4513` reformatted nine notes files (568 insertions / 572 deletions — net *minus
   four lines*, the signature of a harmless reflow) and silently removed three substantive
-  owner-decision blockquotes. It was fixed by restoration, not waiver, in `40230d2` (#1165).
+  Overtoad-decision blockquotes. It was fixed by restoration, not waiver, in `40230d2` (#1165).
   The pattern-match "this is the reflow thing again, waive it" was wrong precisely because the
   two are indistinguishable at the level anyone actually looks at.
 - The general form: **a waiver used three times correctly trains everyone to use it the fourth
@@ -733,16 +733,16 @@ that reads the inbox, applies D4 to each item, and opens **one** PR. Because
 [`util/open_signed_pr.py`](../util/open_signed_pr.py), which creates branch + commit + PR via
 `createCommitOnBranch` so the commit is GitHub-signed and needs no working tree.
 
-#### Rejected alternative: per-section ownership
+#### Rejected alternative: per-section Overtoadship
 
 The flood analysis already proposed per-class disjoint file scopes for the fleet
 ([`:502-504`](JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md): *"docs
 automation owns `docs/**`+`AGENTS.md`, test automation owns `tests/**`"*). Rejected here as
 the primary mechanism for three reasons: it is a Cursor-**dashboard** setting the repo cannot
 verify or enforce; sections are not stable (the tree-drift gate exists precisely because
-structure drifts); and a single owner per section is a serialisation bottleneck exactly where
+structure drifts); and a single Overtoad per section is a serialisation bottleneck exactly where
 throughput is the point. It remains a good *supplementary* control at the fleet's source, and
-is listed as an owner decision in §11.
+is listed as an Overtoad decision in §11.
 
 **Analysis**
 
@@ -1013,7 +1013,7 @@ This repo's own history is the evidence, and it is not favourable.
   time. Two prior recurrences were harmless reflows, correctly waived. The third was **real
   content loss** — `76e4513` reformatted nine notes files at 568 insertions / 572 deletions
   (net *−4 lines*, indistinguishable from a reflow) and removed three substantive
-  owner-decision blockquotes. Restored, not waived, in `40230d2` (#1165).
+  Overtoad-decision blockquotes. Restored, not waived, in `40230d2` (#1165).
 
 What stops the budget waiver becoming the default path:
 
@@ -1029,7 +1029,7 @@ What stops the budget waiver becoming the default path:
 always-bypass actors can click-merge past every non-nuclear stage
 ([flood analysis](JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md):448-449),
 including the Cursor App itself. `ci.yml:791-794` already concedes the equivalent point for
-`sequence-safety`: *"Even promoted, the owner + Cursor App always-bypass it, so its guaranteed
+`sequence-safety`: *"Even promoted, the Overtoad + Cursor App always-bypass it, so its guaranteed
 value is the visible red at review."* **The same ceiling applies to every gate in this
 proposal.** The budget gate's guaranteed value is a legible number at review time and a
 metered ledger — not prevention.
@@ -1118,7 +1118,7 @@ Three honest qualifications:
   *this* waiver is checkable by a reviewer in seconds — the content is visible in the same
   diff, at its destination.
 - The #1165 case proves the screen's limits: a **net −4 line** reformat destroyed 116 tokens of
-  owner decisions and was nearly waived as a reflow. A byte-neutral edit can be catastrophic,
+  Overtoad decisions and was nearly waived as a reflow. A byte-neutral edit can be catastrophic,
   and no size budget will ever see it. The docs screen caught it; the size budget structurally
   could not have.
 - A **density counter-metric**, reported never gated: mean bytes/line and the count of lines
@@ -1519,8 +1519,8 @@ brief asks for, and it is unflattering in exactly two rows.
 **The summary sentence.** Proposal D is a complete solution to *rate* and a partial solution to
 *level*. A proposal that reorganises `AGENTS.md` is a complete solution to *level* and no
 solution at all to *rate* — its work is undone in 44 days (§3.2). **Neither is sufficient; the
-pair is.** If the owner adopts exactly one, adopt a cutting proposal, because 170 KB now is
-worse than 290 KB later; if the owner adopts exactly one *and* expects it to still be true in
+pair is.** If the Overtoad adopts exactly one, adopt a cutting proposal, because 170 KB now is
+worse than 290 KB later; if the Overtoad adopts exactly one *and* expects it to still be true in
 2027, adopt this one.
 
 ---
@@ -1536,7 +1536,7 @@ Marked as decisions, not guessed at.
 | **OD-3** | `LEVEL_SLACK` | 8,000 / other | 8,000 ≈ 2.6 days at the current rate, ≈ 16 days at R=15,000 |
 | **OD-4** | Waiver alarm threshold | `MEMORY_WAIVER_ALARM` default 3/month | 3 |
 | **OD-5** | Fleet-wide rollout | juniper-ml only / all nine (BASE §7) | ml first; revisit at Phase 3. canopy (94,373) and cascor (70,118) are on the same curve. |
-| **OD-6** | Per-section ownership for the fleet | adopt as a Cursor-dashboard control / reject | request it as a *supplement* (flood analysis `:502-504`); do not make Proposal D depend on it |
+| **OD-6** | Per-section Overtoadship for the fleet | adopt as a Cursor-dashboard control / reject | request it as a *supplement* (flood analysis `:502-504`); do not make Proposal D depend on it |
 | **OD-7** | Parent `Juniper/AGENTS.md` (§9.5) | leave / `claudeMdExcludes` / put it under version control | **decide explicitly** — it is 11,016 ungoverned additive bytes with no `.git` at all |
 | **OD-8** | `MEMORY.md` per-entry cap | 120 bytes / other | 120 — frees 3,711 bytes ≈ 31 entries |
 | **OD-9** | Does the `memory-budget` job name carry `(Advisory)`? | yes / no | decide **before** Phase 1: the suffix is part of the required-context string (`e209b74`) |

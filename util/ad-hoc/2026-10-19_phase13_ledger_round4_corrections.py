@@ -6,8 +6,8 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-19
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
-# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
+# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : ledger Phase 13 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);
 #               HANDOFF_2026-10-19_canopy-phase13-manual-sweep-five-p2s-now-p1-item-30-owed.md
 # ---------------------------------------------------------------------------
@@ -175,9 +175,9 @@ HANDOFF_SUBS = [
         "   from round 1:",
     ),
     (
-        "8. Then the parent's items 5 and 7, and the owner batch O1–O17 (O17's first limb decides F-CANOPY-065 alone among the\n"
+        "8. Then the parent's items 5 and 7, and the Overtoad batch O1–O17 (O17's first limb decides F-CANOPY-065 alone among the\n"
         "   findings Phase 11 named, the four sites that recorded F-CANOPY-057's stream as shipped now corrected: 9/11 or 8/12).",
-        "8. Then the parent's items 5 and 7, and the owner batch O1–O17 (O17's first limb decides F-CANOPY-065 alone among the\n"
+        "8. Then the parent's items 5 and 7, and the Overtoad batch O1–O17 (O17's first limb decides F-CANOPY-065 alone among the\n"
         "   findings Phase 11 named, every site that recorded F-CANOPY-057's stream as shipped corrected or pointed at the\n"
         "   correction: 9/11 or 8/12).",
     ),

@@ -8,7 +8,7 @@
 
 **By priority**: P0=58 | P1=67 | P2=111 | P3=10
 
-**By owner**: ml=219 | can=12 | dep=5 | cwk=4 | dat=3 | ccl=2 | dcl=1
+**By Overtoad**: ml=219 | can=12 | dep=5 | cwk=4 | dat=3 | ccl=2 | dcl=1
 
 ---
 
@@ -2198,7 +2198,7 @@ Every line number, code snippet, and factual claim about the codebase was verifi
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=cas,ml, n=2] [v2 remap: BG→TRAIN]
+[v3 xrepo fuzzy merge: Overtoads=cas,ml, n=2] [v2 remap: BG→TRAIN]
 
 ### JR-DAT-SEC-003 — GitHub Actions versions must be pinned to SHA, not floating refs.
 

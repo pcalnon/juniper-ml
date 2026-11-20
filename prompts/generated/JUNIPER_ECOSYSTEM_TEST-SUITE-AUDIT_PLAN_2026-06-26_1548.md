@@ -11,7 +11,7 @@ prompt starts produces a PLANNING DOCUMENT — it does not add tests or change c
 ## Role
 
 You are a **principal test architect** for the Juniper ML research platform
-Your deliverable is a single, owner-actionable **planning document** that designs a rigorous, comprehensive test-suite audit and remediation roadmap spanning all 9 Juniper applications and their packaged sub-modules (**19 coverage units** in total).
+Your deliverable is a single, Overtoad-actionable **planning document** that designs a rigorous, comprehensive test-suite audit and remediation roadmap spanning all 9 Juniper applications and their packaged sub-modules (**19 coverage units** in total).
 You weigh trade-offs and commit to a defensible measurement-and-remediation strategy, grounded in the real repositories.
 You **author the plan; you do not add tests, modify source, or change CI in this session** — execution is downstream.
 
@@ -133,7 +133,7 @@ The new click-through work extends this, it does not replace it.
 
 ## Primary Objective
 
-Produce a clear, owner-actionable **test-suite-audit plan** (a `notes/` document; **no code changes**) for the 19 Juniper coverage units that, when executed downstream, closes the systemic gap whereby every suite is green yet `juniper-canopy` is fundamentally broken at runtime.
+Produce a clear, Overtoad-actionable **test-suite-audit plan** (a `notes/` document; **no code changes**) for the 19 Juniper coverage units that, when executed downstream, closes the systemic gap whereby every suite is green yet `juniper-canopy` is fundamentally broken at runtime.
 The plan must specify, grounded in each real repo:
 
 (a) how to reach **and enforce per-source-file coverage ≥90%** with a **packaged sub-module average ≥95%**
@@ -141,7 +141,7 @@ The plan must specify, grounded in each real repo:
 (c) **regression tests for every issue** documented in the contemporaneous canopy debug doc, behind a **re-entrant ingestion procedure** that keeps absorbing newly-appended issues across iterations
 (d) durable remediation for the "green tests / dead app" class itself.
 
-Leave implementation latitude where the owner has not pinned a value; the numeric coverage targets and the re-entrant-ingestion property **are** owner-pinned.
+Leave implementation latitude where the Overtoad has not pinned a value; the numeric coverage targets and the re-entrant-ingestion property **are** Overtoad-pinned.
 
 ## Assigned Tasks / Directives
 
@@ -171,7 +171,7 @@ Leave implementation latitude where the owner has not pinned a value; the numeri
     - Model new click-through coverage on canopy's existing `src/tests/ui/` Playwright harness, and **require coverage of the exact flows that currently crash**: first data fetch (spiral/demo fetch), dataset apply, train-after-reset, and model selection including the Recurrence-LMU path.
     - Specify how each runs in CI without the historical event-loop leak (the `--ignore=src/tests/ui` + dedicated `ui-tests` job pattern), and where the equivalent harness would live for any other webapp surface found.
 
-4. **Specify the re-entrant debug-findings ingestion procedure (owner-pinned property).**
+4. **Specify the re-entrant debug-findings ingestion procedure (Overtoad-pinned property).**
     - The plan must contain a standing, repeatable procedure that:
       1. **Locates** the current canonical canopy debug-findings doc on each run — search `$J/juniper-ml/notes/` and `$J/juniper-canopy/notes/` for `JUNIPER_CANOPY_*{DEBUG,FINDINGS,ANALYSIS,RUNTIME}*.md`, most-recently-modified wins; the volatile worktree seed above is the fallback if no merged copy exists yet.
       2. **Parses** its §5 crash-site table rows and its §6.2 issue IDs (`I-`/`C-`/`D-`/`A-`/`S-`) as the contract — the doc is explicitly designed to grow these lists.
@@ -225,7 +225,7 @@ Leave implementation latitude where the owner has not pinned a value; the numeri
         - add test-audit-specific ones:
           - a per-file-coverage-gap mapper
           - a click-through-test author
-      - (b) any **other Juniper issues** discovered while planning, each classified with a recommended owner:
+      - (b) any **other Juniper issues** discovered while planning, each classified with a recommended Overtoad:
         - design gaps
         - configuration problems
         - syntax errors

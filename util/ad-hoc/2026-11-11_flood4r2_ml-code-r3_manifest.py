@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3: the manifest)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tmp/flood4/BRIEF_COMMON_R2.txt (the manifest's shape) and tmp/flood4/session5/BRIEF_S5_ADDENDUM.txt in the
          orchestrator's worktree; util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_snapshot.py (the file list).
 

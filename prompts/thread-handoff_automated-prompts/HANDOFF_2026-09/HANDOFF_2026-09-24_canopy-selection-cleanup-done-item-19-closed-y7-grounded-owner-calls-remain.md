@@ -1,16 +1,16 @@
-# Handoff: canopy selection arc — cleanup done, item 19 closed, Y7 grounded; the owner's calls remain
+# Handoff: canopy selection arc — cleanup done, item 19 closed, Y7 grounded; the Overtoad's calls remain
 
 **Date**: 2026-09-24 · **Predecessor**:
 `HANDOFF_2026-09-24_canopy-selection-four-rulings-shipped-cleanup-and-carry-forwards-remain.md` (same directory; its
-work items are cited here as W5 and W6) · **Merge approval**: granted by the owner for this arc in this session
+work items are cited here as W5 and W6) · **Merge approval**: granted by the Overtoad for this arc in this session
 (2026-09-24).
 
 ## Goal
 
 Nothing in this arc is left for an agent to implement. What remains:
 
-- owner decisions;
-- three worktree removals that only the owner can run;
+- Overtoad decisions;
+- three worktree removals that only the Overtoad can run;
 - a date, 2026-09-29.
 
 Start a successor thread only when one of the items under "Remaining" moves.
@@ -43,7 +43,7 @@ Start a successor thread only when one of the items under "Remaining" moves.
   - cascor: `:8202`, pid 2857489, cwd `juniper-cascor/src`. `util/ad-hoc/cascor_freeze_tell.py` reports FREEZE IN
     FORCE;
   - data: a live cwd holder.
-- **juniper-ml's three worktrees are verified; removing them is the owner's job.**
+- **juniper-ml's three worktrees are verified; removing them is the Overtoad's job.**
   - An isolated session may not run git against another worktree of its own repo. So
     `util/ad-hoc/2026-09-24_same_repo_worktree_content_probe.py` (new) reads their files and compares them with this
     worktree's object store instead.
@@ -64,7 +64,7 @@ Start a successor thread only when one of the items under "Remaining" moves.
   - `main`'s `[0.16.0]` is byte-identical to the tag's.
   - `Juniper/CLAUDE.md` is the containers session's to edit.
 - **The canopy E2E arc accepted O2–O5 and O9 for triage.** They are item 2 of its next thread
-  (`HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md`, on branch
+  (`HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md`, on branch
   `docs/canopy-e2e-handoff-2026-09-24`).
   - O4 relates to OBS-1 (canopy#526), and O5 to the network-stats poller.
   - O9 may come back to this arc as the U-6 design question. Its triage will say.
@@ -76,9 +76,9 @@ Start a successor thread only when one of the items under "Remaining" moves.
   - upstream `dev` is unchanged, and no issue or PR there mentions it;
   - the reason is already announced through the label suffix; the state is not.
 
-  The note ends with four options for the owner.
+  The note ends with four options for the Overtoad.
 
-### Remaining — every item is the owner's call or waits on a date
+### Remaining — every item is the Overtoad's call or waits on a date
 
 1. **Remove juniper-ml's three worktrees.** Re-run the in-use probe first. `--force` is needed because each tree
    is dirty with untracked copies of what merged. Beyond those copies it deletes caches, and jazzy's three
@@ -94,13 +94,13 @@ Start a successor thread only when one of the items under "Remaining" moves.
    ```
 
 2. **Y7:** pick one of the four options in the §4.3 note, or accept the gap.
-3. **X8's release.** The next juniper-data release after 0.16.0 carries #437 and #438. Cutting it is the owner's call.
-4. **O9 / U-6:** wait for the canopy E2E triage. If O9 comes back, it is a design question for the owner.
+3. **X8's release.** The next juniper-data release after 0.16.0 carries #437 and #438. Cutting it is the Overtoad's call.
+4. **O9 / U-6:** wait for the canopy E2E triage. If O9 comes back, it is a design question for the Overtoad.
 5. **2026-09-29T00:00Z:** the peer `canopy` session's claims on Y2 waves 2/3 and X10 lapse, on the terms in
    `HANDOFF_2026-09-23_canopy-selection-six-prs-queued-live-swap-mirror-staged.md`.
 6. **Phase 7:** fast-forward the canopy, cascor and data primaries once nothing holds them.
 7. **This session's worktree**, `enumerated-marinating-puddle`, can go once this handoff's PR merges.
-8. **A-N9 needs no action.** It was never put to the owner as a question and stands as the predecessor's Key
+8. **A-N9 needs no action.** It was never put to the Overtoad as a question and stands as the predecessor's Key
    context records it: no `ModelSpec` accepts `structured`, and `arc_agi` stays unseeded.
 
 ### Traps
@@ -117,7 +117,7 @@ Start a successor thread only when one of the items under "Remaining" moves.
 
 ```bash
 ls /home/pcalnon/Development/python/Juniper/worktrees/ | grep -cE 'selection|nn-model-mirror|a-n2-loop|x8-task|start-fresh|wider-dataset|equities-seq-task-type|status-current-dataset'   # 0
-git worktree list | grep -E 'jazzy-soaring-minsky|bright-crunching-alpaca|tender-wibbling-flask'   # present until the owner removes them
+git worktree list | grep -E 'jazzy-soaring-minsky|bright-crunching-alpaca|tender-wibbling-flask'   # present until the Overtoad removes them
 du -sh /home/pcalnon/Development/python/Juniper/backups/worktree-harvest-2026-09-24-canopy-selection-arc   # 174M
 python3 util/ad-hoc/cascor_freeze_tell.py   # exit 1 while a live stack holds the cascor primary
 gh release list --repo pcalnon/juniper-data --limit 2   # has a release after 0.16.0 carried X8?
@@ -136,7 +136,7 @@ ss -ltnp | grep -E ':(8101|8202|8051) '   # the peer's stack; do not touch
 - **Referenced:**
   - the predecessor (named above);
   - `HANDOFF_2026-09-23_canopy-selection-six-prs-queued-live-swap-mirror-staged.md` (same directory);
-  - `HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md` (the canopy E2E arc's,
+  - `HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md` (the canopy E2E arc's,
     on its branch);
   - `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`;
   - `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` (grepped, not changed);

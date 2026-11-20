@@ -7,7 +7,7 @@ Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- investigation (found the target jobs for juniper-data-client#262, juniper-cascor-client#197 and
         juniper-deploy#275)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_py315_informational_green_legs.py (juniper-ml#2578; it edits the jobs this finds);
          tmp/py315/GREEN_LEGS_BRIEF.md ("Target jobs ... Find them by parsing every workflow; don't trust memory")
 

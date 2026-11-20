@@ -2,7 +2,7 @@ You are Lane 11-A2 (measurement re-creation, RAW-TRANSCRIPT-FIRST, ROUND 1) of t
 
 HARD RULES
 - READ-ONLY on every repo: no edits to tracked files, no commits, pushes, fetches, PR/issue writes. Do not start or stop any service and do not drive a browser; never touch ports :8051, :8101, :8202, :8052 or any :805x/:806x leg. Scratch work only in a directory you create with `mktemp -d`; put your reader there.
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential anywhere; never request an email field from GitHub. Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential anywhere; never request an email field from GitHub. Report any slip.
 - Read juniper-ml only through the worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/dreamy-fluttering-kite` (never `git -C` the primary juniper-ml checkout). If a shell guard refuses a compound command, split it, or put a script under your `mktemp -d` directory and run it with `python3 -B`.
 
 THE FROZEN ARTIFACT: commit `1b7cf44b` in that worktree (branch `docs/canopy-e2e-phase11`). Read every file as `git -C <worktree> show 1b7cf44b:<path>` (write the transcripts into your scratch directory that way). The ledger is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, Phase 11 the section "## Phase 11 — 2026-10-05". The evidence directory is `reports/e2e-canopy-2026-09-02/f058-census-v2/`.

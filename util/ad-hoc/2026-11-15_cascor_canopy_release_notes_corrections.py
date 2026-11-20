@@ -85,17 +85,17 @@ CASCOR = [
         "  - **Not fixed here: the stop-then-start race.**",
         "  - **Reported here, fixed later in this release: the stop-then-start race.** A start sent after a stop, before the old fit reached its next checkpoint, cleared the shared `_stop_event`, so the old "
         "fit was never interrupted: it trained on to its natural end while the FSM read `STOPPED` and, still owning the lifecycle, wrote `training_state` `Completed` and counted a successful session for a "
-        "run the operator had stopped. `swap_dataset_live` cleared the event the same way after its 10 s join timed out. The ownership check above could not help, because cascor's queue keeps the new run "
-        "from starting until the old fit returns. This change shipped `util/ad-hoc/2026-11-08_stop_then_start_race_repro.py`, which reproduced it (exit 1). The owner's ruling 17 (2026-11-09), "
-        '"cascor: stop-then-start", gave it a fix of its own: see "A start sent after a stop no longer cancels it" below, whose per-run stop signal the owner ruled on 2026-11-12 to keep, and with which '
+        "run the operator had stopped. `swap_dataset_live` cleared the event the same way after its 10 s join timed out. The Overtoadship check above could not help, because cascor's queue keeps the new run "
+        "from starting until the old fit returns. This change shipped `util/ad-hoc/2026-11-08_stop_then_start_race_repro.py`, which reproduced it (exit 1). The Overtoad's ruling 17 (2026-11-09), "
+        '"cascor: stop-then-start", gave it a fix of its own: see "A start sent after a stop no longer cancels it" below, whose per-run stop signal the Overtoad ruled on 2026-11-12 to keep, and with which '
         "the reproducer exits 0.\n",
     ),
     Fix("M3b", "text", '("Reported, not fixed here: the stop-then-start race")', "(the stop-then-start item of the paused-fit entry above)"),
     Fix(
         "M4",
         "item",
-        "  - **The job caps pytest below 9.2 (owner ruling 2026-10-29).**",
-        "  - **The job capped pytest below 9.2 (owner ruling 2026-10-29); the cap is gone in this release** (the pytest 9.2 entry above). pytest 9.2.0 (PyPI 2026-10-27) broke pytest-benchmark 5.3.0, "
+        "  - **The job caps pytest below 9.2 (Overtoad ruling 2026-10-29).**",
+        "  - **The job capped pytest below 9.2 (Overtoad ruling 2026-10-29); the cap is gone in this release** (the pytest 9.2 entry above). pytest 9.2.0 (PyPI 2026-10-27) broke pytest-benchmark 5.3.0, "
         "then the latest release, at fixture setup: `AttributeError: 'Function' object has no attribute '_nodeid'` (`pytest_benchmark/fixture.py:88`). Every benchmark test errored, and run 40970853599 "
         "logged `5 errors` and stopped at `--maxfail=5`. The job therefore installed `pytest<9.2` (9.1.1) after the project until pytest-benchmark 5.3.1 supported 9.2. The required lanes kept pytest 9.2. "
         "Locally, on 9.1.1 with pytest-benchmark 5.3.0, all 153 passed.\n",
@@ -158,7 +158,7 @@ CANOPY = [
         "B3",
         "text",
         "A Dependabot PR reads the Dependabot secret store, which does not hold the token, so its upload stays tokenless.",
-        "A Dependabot PR reads the Dependabot secret store, which did not hold the token then, so its upload stayed tokenless until the owner added the token there on 2026-11-04.",
+        "A Dependabot PR reads the Dependabot secret store, which did not hold the token then, so its upload stayed tokenless until the Overtoad added the token there on 2026-11-04.",
     ),
     Fix(
         "B4",
@@ -190,8 +190,8 @@ CANOPY = [
     Fix(
         "m9",
         "text",
-        "(the owner's ruling 17 of 2026-11-09 in juniper-ml's Cursor flood-4 arc, which that record's next update adds to §8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`)",
-        "(the owner's ruling 17 of 2026-11-09 in juniper-ml's Cursor flood-4 arc; as of this release its record, `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, lists "
+        "(the Overtoad's ruling 17 of 2026-11-09 in juniper-ml's Cursor flood-4 arc, which that record's next update adds to §8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`)",
+        "(the Overtoad's ruling 17 of 2026-11-09 in juniper-ml's Cursor flood-4 arc; as of this release its record, `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, lists "
         "rulings 1 to 14 in §8 and not this one)",
     ),
     Fix(

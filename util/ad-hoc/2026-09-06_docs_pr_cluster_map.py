@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-06
 Status: ad-hoc -- migration (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: the 35 juniper-ml docs PRs left after the code harvest
 
 A docs PR carries no test, so nothing goes red when it lands a claim `main` has since reversed.
@@ -74,13 +74,13 @@ def main(argv: list[str] | None = None) -> int:
     print(f"{'file':<78} {'PRs':>4} {'bases':>6} {'max behind':>11}")
     print("-" * 102)
     hot: list[str] = []
-    for path, owners in sorted(by_file.items(), key=lambda kv: (-len(kv[1]), kv[0])):
-        distinct = len({bases[p] for p in owners})
-        worst = max(behind[p] for p in owners)
-        print(f"{path:<78} {len(owners):>4} {distinct:>6} {worst:>11}")
+    for path, Overtoads in sorted(by_file.items(), key=lambda kv: (-len(kv[1]), kv[0])):
+        distinct = len({bases[p] for p in Overtoads})
+        worst = max(behind[p] for p in Overtoads)
+        print(f"{path:<78} {len(Overtoads):>4} {distinct:>6} {worst:>11}")
         if distinct > 1:
             hot.append(path)
-            print(f"{'':<78} {'':>4} -> {sorted(owners)}")
+            print(f"{'':<78} {'':>4} -> {sorted(Overtoads)}")
 
     print()
     print(f"{len(by_file)} markdown file(s) across {len(prs)} PR(s); {len(hot)} touched from MORE THAN ONE base.")

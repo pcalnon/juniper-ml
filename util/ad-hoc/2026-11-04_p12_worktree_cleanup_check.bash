@@ -3,8 +3,8 @@
 # Sub-Project: ad-hoc tooling
 # Author: Paul Calnon
 # Created: 2026-11-04
-# Status: ad-hoc -- one-off (the P12 worktree cleanup the owner ruled on 2026-11-03)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status: ad-hoc -- one-off (the P12 worktree cleanup the Overtoad ruled on 2026-11-03)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 #
 # Why
 # ---
@@ -12,7 +12,7 @@
 # worktree's tmp/ to juniper-ml/tmp/worktree-cleanup-2026-11-03-p12/, check each tree
 # against main, then remove five worktrees. The archive was made on 2026-11-04 (sizes
 # matched). A worktree-isolated session may not run git against another worktree, so
-# the owner runs this.
+# the Overtoad runs this.
 #
 # For each target it prints the branch, the uncommitted files (tmp/ is gitignored and
 # already archived), the commits not on origin/main, and the branch's PR state.

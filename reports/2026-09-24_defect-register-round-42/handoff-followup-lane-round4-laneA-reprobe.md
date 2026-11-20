@@ -37,8 +37,8 @@ v4 holds up. Every v3→v4 claim I re-derived is true against primary sources, a
 
 1. **The register handoff exists and is untracked.** `…closes-pr-owed.md:6` reads "Superseded if consolidated". It is in neither fizzy-hugging-dream's index nor its HEAD. Its header names session `2fba4397` as "defect reg [24f8d8]", and `:86` says "The canopy E2E session has exited". PID 6555 is that session, still running.
 2. **The 00:21:47Z message** from that session says "My lane corrects it together with the surrogatepass marker" and "I consolidate the three once you send your final path and PR number".
-3. **`…followup-684.md:53-66`** reserves F-CANOPY-060 ("no owner yet"), 061 (LOW 3) and 062 (LOW 4). They are FIXED-BY `fix/secret-leaks-683-validation`, which is #685's head branch.
-4. **`…canopy-combined-e2e-y2-wave2-selection-owner-calls.md:165-170`** holds the `:42` copy (line `:168`) and the `:8381` copy (line `:170`), with "no id reserved" at `:162`. The anchors hold on:
+3. **`…followup-684.md:53-66`** reserves F-CANOPY-060 ("no Overtoad yet"), 061 (LOW 3) and 062 (LOW 4). They are FIXED-BY `fix/secret-leaks-683-validation`, which is #685's head branch.
+4. **`…canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md:165-170`** holds the `:42` copy (line `:168`) and the `:8381` copy (line `:170`), with "no id reserved" at `:162`. The anchors hold on:
    - canopy `main` `dc5ea02e`, where the files are unchanged since `7ab994e5` (`:8381`, `:8410`, test `:42`);
    - cascor `main` `:4766`;
    - `78e99414:4841`, where the sentence is reworded.

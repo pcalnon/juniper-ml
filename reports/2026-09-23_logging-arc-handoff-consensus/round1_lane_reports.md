@@ -926,7 +926,7 @@ RECON N-4 lists five breaking surfaces. The fifth, filename plus rotation, is ab
 4. **P2.2** is a candidate to fold into P3.1, which replaces `:579-580` anyway.
 5. **Decision 4's timing is unaddressed.** Converging the mirror before P2/P3 adds a mirror-plus-release obligation to every `logger.py` edit (roadmap §10).
 
-Neither decision 7 nor the P6.4 residue is more urgent: the first is not a blocker, and the second needs an owner ruling.
+Neither decision 7 nor the P6.4 residue is more urgent: the first is not a blocker, and the second needs an Overtoad ruling.
 
 ## Attack 5 — the P2.1(c) prescription: SURVIVES at `0d2d826`, with a forward hazard
 

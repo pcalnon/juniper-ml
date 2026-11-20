@@ -11,7 +11,7 @@
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 # Status:        ad-hoc -- one-off
-# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:       juniper-canopy#646
 #
 # Description:
@@ -29,7 +29,7 @@
 
 set -uo pipefail
 
-REPO="${1:?usage: $0 <owner/repo> <pr> <old-sha> [timeout-s]}"
+REPO="${1:?usage: $0 <Overtoad/repo> <pr> <old-sha> [timeout-s]}"
 PR="${2:?pr number required}"
 OLD="${3:?old head sha required}"
 TIMEOUT="${4:-900}"

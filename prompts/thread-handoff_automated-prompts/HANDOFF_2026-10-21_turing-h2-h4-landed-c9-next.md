@@ -3,9 +3,9 @@
 > **Superseded** by `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md`, which was written after H5 (#2300), plan v1.4.4 (#2302) and the R-S9 fix (#2304). Start from that file. This one is kept because plan v1.4.3 cites it.
 
 - **From:** the 2026-10-20/21 session on turing named "code signing" (ae687e; worktree `.claude/worktrees/linked-floating-sprout`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-g1-landed-g4-promoted-h2-next.md`.
-- **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.3. This session's record is in §18.1 (two owner rulings), §18.2 (the H2, H4, C9 and H5 rows) and §18.3 (errata E-SPLIT, E-H4-WHEEL and E-SERENA-EDIT). Task IDs below are the plan's.
-- **Standing approval:** the owner granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
-- **Coordination.** The owner gave H2 and H4 to this session and H5 to the "mac dev" session (37a935). "mac dev" later received a different answer, all three for itself. Both sessions kept the first split, and the owner was told (E-SPLIT).
+- **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.3. This session's record is in §18.1 (two Overtoad rulings), §18.2 (the H2, H4, C9 and H5 rows) and §18.3 (errata E-SPLIT, E-H4-WHEEL and E-SERENA-EDIT). Task IDs below are the plan's.
+- **Standing approval:** the Overtoad granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
+- **Coordination.** The Overtoad gave H2 and H4 to this session and H5 to the "mac dev" session (37a935). "mac dev" later received a different answer, all three for itself. Both sessions kept the first split, and the Overtoad was told (E-SPLIT).
   - "mac dev" is doing H5, one `notes/` audit. It will write H5's record itself, as plan v1.4.4, after checking for an open turing plan PR. It will also message any next session on this arc, so H5 is not recorded twice. The audit marks any server it would enable that has file-writing tools as falling under C9.
   - Run `ListAgents` and `gh pr list --repo pcalnon/juniper-ml --state all --search "<task>"` before starting any task here.
 
@@ -26,7 +26,7 @@
      - (b) pin Serena v1.6.1, whose cryptography 48.0.1 has wheels but CVE-2026-69247, -69248 and -69249;
      - (c) keep Serena off turing.
    - H4's live check (`timeout 30 claude mcp list` shows serena connected) waits on this.
-2. **C8 step 1, then H2's install.** Fast-forward the primary checkout (`git pull --ff-only origin main`); it is still at 6 agents. Then run `bash util/install_agents.bash` from it, which should give 9 agent links (H2's acceptance). The C8 guard install (`bash util/install_claude_agent_guard.bash --apply`) is the same owner step.
+2. **C8 step 1, then H2's install.** Fast-forward the primary checkout (`git pull --ff-only origin main`); it is still at 6 agents. Then run `bash util/install_agents.bash` from it, which should give 9 agent links (H2's acceptance). The C8 guard install (`bash util/install_claude_agent_guard.bash --apply`) is the same Overtoad step.
 3. **E-SPLIT:** confirm the split, or overrule it.
 4. **Unchanged from the previous handoff:**
    - A1 (rewrite the two remotes, then `pre-commit install --hook-type pre-push`);
@@ -45,14 +45,14 @@
    - **The matcher.** The installed settings matcher is `Bash|Read|Write|Edit|MultiEdit|NotebookEdit|Grep|Glob`. `util/install_claude_agent_guard.bash` writes it, so the matcher must grow to name the Serena tools (`mcp__serena__...`).
    - **The tools.** At v1.7.0 they are `replace_content`, `replace_symbol_body`, `insert_after_symbol`, `insert_before_symbol`, `rename_symbol`, `replace_in_files`, the optional `delete_lines` / `replace_lines` / `insert_at_line`, and the memory writers.
    - **The paths.** Serena's paths are `relative_path` values against its `--project` root, which is the checkout. Deny a call that resolves into `.git/`, `~/.ssh`, `~/.gnupg` or the Claude settings. An unknown MCP tool must keep passing silently, as the guard's contract says.
-   - **Tests and install.** Add tests in `tests/test_claude_agent_guard.py`, plus a mutation check on the C8 and K12 pattern. The owner re-installs the guard.
+   - **Tests and install.** Add tests in `tests/test_claude_agent_guard.py`, plus a mutation check on the C8 and K12 pattern. The Overtoad re-installs the guard.
 2. **H3**, after C8 is installed, C9 has landed and H2's agents are installed. Each agent runs one scripted task on turing, compared against a `util/host_state_probe.bash --json` run taken within ±10 minutes, plus one negative test. The task prompts go through `prompt-validator`.
 3. **H4's live check**, once E-H4-WHEEL is resolved:
    - `bash util/mcp_setup.bash` in the primary checkout;
    - pre-warm with `uvx --from git+https://github.com/oraios/serena@949a27ef1e5fda1a6e7b561e777bcece345c6ffd serena --version`;
    - then `timeout 30 claude mcp list`.
 4. **H5's record is "mac dev"'s:** it writes v1.4.4. Number any later revision after that one lands, and check for an open turing plan PR first.
-5. F3 node mode follows owner step 6. E5 waits on A6. D2-upg and D4 still need re-planning under the D6 ruling.
+5. F3 node mode follows Overtoad step 6. E5 waits on A6. D2-upg and D4 still need re-planning under the D6 ruling.
 6. **Post-merge check (E-LAND-2).** About an hour after the last merge, re-run each of these against `main`. Each should report every edit `present`:
    - `python3 -I util/ad-hoc/2026-10-20_turing_h2_apply.py --dry-run`;
    - `python3 -I util/ad-hoc/2026-10-21_turing_h4_apply.py --dry-run`;
@@ -67,7 +67,7 @@
 
 ```bash
 git fetch origin && git log -5 --oneline origin/main
-gh search prs --owner pcalnon --state open --json repository,number,title
+gh search prs --Overtoad pcalnon --state open --json repository,number,title
 python3 util/host_state_check.py                                    # the readiness report
 python3 -I util/ad-hoc/2026-10-20_turing_h2_apply.py --dry-run       # every edit present
 python3 -I util/ad-hoc/2026-10-21_turing_h4_apply.py --dry-run
@@ -98,4 +98,4 @@ python3 -I util/ad-hoc/2026-10-18_turing_link_gate.py                # the link,
   - The worktree's test `.mcp.json` was removed.
 - **Memory notes:**
   - updated: `turing-host-profile`, `duplicate-handoff-pickup`;
-  - new: `serena-intel-mac-cryptography`, `c8-guard-misses-mcp-tools` and `owner-question-latency`.
+  - new: `serena-intel-mac-cryptography`, `c8-guard-misses-mcp-tools` and `Overtoad-question-latency`.

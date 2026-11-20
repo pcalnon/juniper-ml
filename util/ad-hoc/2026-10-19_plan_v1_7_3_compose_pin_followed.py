@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-19
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.2 -> v1.7.3);
          util/ad-hoc/2026-10-18_plan_v1_7_2_recurrence_floor_landed.py (the revision this follows); juniper-deploy#251
 
@@ -34,11 +34,11 @@ def plan_edits(sha: str) -> list[tuple[str, str]]:
     return [
         ("- **Version**: 1.7.2", "- **Version**: 1.7.3"),
         (
-            "every M1 landing but the owner's Compose-pin decision is on `main`).",
-            f"every M1 landing but the owner's Compose-pin decision is on `main`); **the Compose pin followed to 0.6.1** (v1.7.3: {pr}, ruled and merged 2026-10-19 UTC; **every M1 landing is on `main`**).",
+            "every M1 landing but the Overtoad's Compose-pin decision is on `main`).",
+            f"every M1 landing but the Overtoad's Compose-pin decision is on `main`); **the Compose pin followed to 0.6.1** (v1.7.3: {pr}, ruled and merged 2026-10-19 UTC; **every M1 landing is on `main`**).",
         ),
         (
-            f"Left: whether the Compose pin follows to 0.6.1, the owner's; {_IMAGE}; the Helm chart carries no recurrence image, so it is one `docker-compose.yml` line plus the prose that names 0.6.0 |",
+            f"Left: whether the Compose pin follows to 0.6.1, the Overtoad's; {_IMAGE}; the Helm chart carries no recurrence image, so it is one `docker-compose.yml` line plus the prose that names 0.6.0 |",
             f"**Ruled yes and landed 2026-10-19 UTC**: {pr} pins `juniper-recurrence:0.6.1` in `docker-compose.yml` and re-words the prose that named 0.6.0 (`README.md`, `docs/REFERENCE.md`, `scripts/test_recurrence_snapshots.sh`); {_IMAGE}; the Helm chart carries no recurrence image. **Every M1 landing is on `main`**; {_SMOKES} |",
         ),
         (
@@ -46,17 +46,17 @@ def plan_edits(sha: str) -> list[tuple[str, str]]:
             f"**The Compose pin followed** ({pr}, 2026-10-19 UTC; {_SMOKES}). Still owed: `docs/REFERENCE.md:177`'s pins sentence",
         ),
         (
-            f"- **Still the owner's**: whether the Compose recurrence pin follows to 0.6.1 ({_IMAGE}). Done 2026-10-18:",
-            f"- **Still the owner's**: nothing on this list. The Compose recurrence pin followed to 0.6.1 (ruled yes 2026-10-19 UTC; {pr}; {_IMAGE}). Done 2026-10-18:",
+            f"- **Still the Overtoad's**: whether the Compose recurrence pin follows to 0.6.1 ({_IMAGE}). Done 2026-10-18:",
+            f"- **Still the Overtoad's**: nothing on this list. The Compose recurrence pin followed to 0.6.1 (ruled yes 2026-10-19 UTC; {pr}; {_IMAGE}). Done 2026-10-18:",
         ),
     ]
 
 
 def changelog_row(sha: str) -> str:
     return (
-        f"| 2026-10-19 | 1.7.3 | **The Compose recurrence pin followed to 0.6.1** (owner ruling 2026-10-19 UTC; juniper-deploy#251 merged as `{sha}`): `docker-compose.yml` pins `juniper-recurrence:0.6.1`, and the prose naming 0.6.0 in `README.md`, `docs/REFERENCE.md` and `scripts/test_recurrence_snapshots.sh` now names 0.6.1 with the routes shipped in 0.6.0; the Helm chart has no recurrence image. "
+        f"| 2026-10-19 | 1.7.3 | **The Compose recurrence pin followed to 0.6.1** (Overtoad ruling 2026-10-19 UTC; juniper-deploy#251 merged as `{sha}`): `docker-compose.yml` pins `juniper-recurrence:0.6.1`, and the prose naming 0.6.0 in `README.md`, `docs/REFERENCE.md` and `scripts/test_recurrence_snapshots.sh` now names 0.6.1 with the routes shipped in 0.6.0; the Helm chart has no recurrence image. "
         f"**Every M1 landing is on `main`.** {_SMOKES[0].upper() + _SMOKES[1:]}. "
-        "Updated: Status line, M1 row, P1 status row, the owner's open list. Owed: P5 (W5.10 → W5.8 (B) + W5.9; W5.2, W5.4; W5.7) with P2–P4 alongside; the owner's W0.1 service-core half and the parent AGENTS.md paragraph; the open follow-ups. | Paul Calnon |\n"
+        "Updated: Status line, M1 row, P1 status row, the Overtoad's open list. Owed: P5 (W5.10 → W5.8 (B) + W5.9; W5.2, W5.4; W5.7) with P2–P4 alongside; the Overtoad's W0.1 service-core half and the parent AGENTS.md paragraph; the open follow-ups. | Paul Calnon |\n"
     )
 
 
@@ -64,10 +64,10 @@ def handoff_edits(sha: str) -> list[tuple[str, str]]:
     return [
         (
             "1. **Owner: whether the Compose recurrence pin follows to 0.6.1** (juniper-deploy; open on the plan's M1 row). The inputs are all in hand:",
-            f"1. **Done 2026-10-19 UTC — the owner ruled yes and juniper-deploy#251 merged as `{sha}`** (`docker-compose.yml` pins `juniper-recurrence:0.6.1`; the prose in `README.md`, `docs/REFERENCE.md` and `scripts/test_recurrence_snapshots.sh` follows; plan v1.7.3). **Owed from it**: the W1.12 snapshot smoke and W1.11 canopy smoke on a host whose Docker reaches GHCR, at the next bring-up. The inputs that were in hand when this was written:",
+            f"1. **Done 2026-10-19 UTC — the Overtoad ruled yes and juniper-deploy#251 merged as `{sha}`** (`docker-compose.yml` pins `juniper-recurrence:0.6.1`; the prose in `README.md`, `docs/REFERENCE.md` and `scripts/test_recurrence_snapshots.sh` follows; plan v1.7.3). **Owed from it**: the W1.12 snapshot smoke and W1.11 canopy smoke on a host whose Docker reaches GHCR, at the next bring-up. The inputs that were in hand when this was written:",
         ),
         (
-            "Continue the arc from plan v1.7.2. **Every M1 landing except the owner's Compose-pin decision is on `main`**:",
+            "Continue the arc from plan v1.7.2. **Every M1 landing except the Overtoad's Compose-pin decision is on `main`**:",
             "Continue the arc from plan v1.7.3. **Every M1 landing is on `main`** (the Compose pin followed in juniper-deploy#251 after this handoff was first written; step 1 below records it):",
         ),
     ]

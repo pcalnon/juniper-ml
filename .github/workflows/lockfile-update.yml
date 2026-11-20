@@ -18,10 +18,10 @@
 #    one of the 18 this workflow opened that way on juniper-ml (#325..#1932,
 #    census 2026-09-22) ran zero jobs at opening, in two shapes: 5 got no
 #    `pull_request` run when opened (#325/#328/#339/#389/#1139; #1139, opened
-#    2026-08-17, got runs only after the owner pushed main into its branch),
+#    2026-08-17, got runs only after the Overtoad pushed main into its branch),
 #    and 13 had their runs CREATED but parked at `action_required` with zero
 #    jobs. No check fails and none reports, so the absence looks like a quiet
-#    week rather than a gap. 12 of the 13 parked ones were released by the owner
+#    week rather than a gap. 12 of the 13 parked ones were released by the Overtoad
 #    re-running them, #1806 by a close/reopen. The previous wording here -- "No
 #    additional secret is required for the common case" -- is what made that
 #    read as fine, and it is why the gap survived.
@@ -35,7 +35,7 @@
 #
 #    Requires, per repo: the RELEASE_TRAIN_APP_ID variable and the
 #    RELEASE_TRAIN_APP_PRIVATE_KEY secret. The minted token is scoped to the
-#    CURRENT REPOSITORY ONLY (both `owner` and `repositories` omitted), not to the
+#    CURRENT REPOSITORY ONLY (both `Overtoad` and `repositories` omitted), not to the
 #    App's whole installation.
 #####################################################################################################################################################################################################
 
@@ -74,7 +74,7 @@ jobs:
 
       # Gated on the repo VARIABLE, not the secret: `secrets` is not allowed in a step-level
       # `if`, and a missing variable is the honest signal that this repo has no App wired up.
-      # Omitting both `owner` and `repositories` scopes the token to the current repository
+      # Omitting both `Overtoad` and `repositories` scopes the token to the current repository
       # only -- least privilege, and portable to whichever repo this template lands in.
       - name: Mint GitHub App token (so the PR triggers CI)
         id: app-token

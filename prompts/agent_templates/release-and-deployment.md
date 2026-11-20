@@ -28,14 +28,14 @@ Produce a complete, correct release/deployment plan: the target version(s) and S
 ## Key Deliverables & Requirements
 
 - A release/deployment plan document (target version + SemVer rationale, changelog draft, gate checklist, ordered publish steps, rollback plan).
-- Confirmation that deploy/PyPI approval gates remain owner-controlled.
+- Confirmation that deploy/PyPI approval gates remain Overtoad-controlled.
 
 ## Constraints
 
-- **Planning only** -- this prompt MUST NOT change, modify, or bump any source file, version string, or changelog; it produces a plan the owner executes.
+- **Planning only** -- this prompt MUST NOT change, modify, or bump any source file, version string, or changelog; it produces a plan the Overtoad executes.
 - Do not invent version numbers, pins, ports, or workflow names -- every value must come from the grounding bundle.
 
 ## Finalize / Validation
 
 - Re-confirm the current version(s) and pins against the live repo before finalizing the plan.
-- Note that the owner approves the PyPI/deploy dual-gate (drive to the gate, then hand off).
+- Note that the Overtoad approves the PyPI/deploy dual-gate (drive to the gate, then hand off).

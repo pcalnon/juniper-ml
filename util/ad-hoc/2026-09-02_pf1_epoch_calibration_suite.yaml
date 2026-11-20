@@ -5,13 +5,13 @@
 # Author:      Paul Calnon
 # Created:     2026-09-02
 # Status:      ad-hoc -- investigation (perf lane P2 item 0.3)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 #
 # WHY THIS EXISTS
 #
 # cascor#618 set `output_epochs: 50` alongside `max_epochs: 50` in `spiral-smoke.yaml`, ending a
 # silent ~125x service/CLI divergence. Correct -- and it drops PF-1's (10, 10) cell from 65-126 s to
-# 15.1 s, BELOW the ~40 s Prometheus scrapeability floor, which undoes 2026-09-01 owner decision 2
+# 15.1 s, BELOW the ~40 s Prometheus scrapeability floor, which undoes 2026-09-01 Overtoad decision 2
 # (cells lengthened to ~60 s). The duration requirement belongs to PF-1's override, not to a smoke
 # config, so PF-1 is re-calibrated here rather than the fix being reverted.
 #

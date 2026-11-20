@@ -5,7 +5,7 @@
 **Prepared by**: Claude Code (Fable 5), session "canopy functionality testing"
 **Started**: 2026-08-09
 **Status**: PHASE 0 COMPLETE — PHASE 1 IN PROGRESS (run `20260810T002233Z`)
-**Plan of record**: [`JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md`](JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md) (merged juniper-ml#1036, approved by owner 2026-08-09)
+**Plan of record**: [`JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md`](JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md) (merged juniper-ml#1036, approved by Overtoad 2026-08-09)
 **Execution script**: [`JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md`](JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md)
 
 This file accumulates the arc's execution evidence phase by phase (plan §9). Matrix row statuses live in the matrix's own `status` column at Phase-1 close; this file holds transcripts, findings, and the PR ledger.
@@ -24,7 +24,7 @@ This file accumulates the arc's execution evidence phase by phase (plan §9). Ma
 | `--down` releases all ports | **PASS** (8051/8101/8202/8211 all free post-teardown) |
 | Env preflight | **PASS** (see below) |
 | PR-M1 | **MERGED** — juniper-ml#1037 |
-| PR-M2 (§4.5 default, owner-ratified) | juniper-ml#1042 (auto-merge armed at time of writing) |
+| PR-M2 (§4.5 default, Overtoad-ratified) | juniper-ml#1042 (auto-merge armed at time of writing) |
 
 ### Env preflight (plan §6.1 step 3)
 
@@ -68,7 +68,7 @@ Found by the #1044 executor while mutation-testing: the live-up stubs capture `e
 
 | PR | Repo | Content | State |
 |---|---|---|---|
-| #1036 | juniper-ml | Planning docs (plan + matrix + dual audits) | MERGED (owner) |
+| #1036 | juniper-ml | Planning docs (plan + matrix + dual audits) | MERGED (Overtoad) |
 | #1037 | juniper-ml | PR-M1: canopy leg nested `JUNIPER_CANOPY_SERVER__PORT`/`__HOST` + checklist §3.3 + 3 test-site inversion + negative guards | MERGED |
 | cascor#501 | juniper-cascor | Restore 5 snapshot modules (F-E2E-001 heal) | MERGED |
 | #1042 | juniper-ml | PR-M2: `--with-recurrence` leg (8211, occupancy pre-check, canopy URL hand-off) + GIL probe + teardown glob `.h5`-only | auto-merge armed |
@@ -179,12 +179,12 @@ Measured: Reset click → WS frame sent + success ack in ~1 s → optimistic ⏳
 
 **VERIFIED LIVE (2026-08-26, run `20260826T174225Z`, `e2e_p1wave_redrive.py --step f005`).** Across six control cycles under a live run, every button re-enabled in **0.82–3.59 s** (was 30 s–minutes) — the success ack releases the button directly, the sweep is only the backstop. C2.5-09 → PASS. **FIXED.**
 
-**F-CANOPY-004 — server-side Dash callbacks lag behind reality during a live run; clientside callbacks are instant (P0/P1 systemic; owner ACCEPTED 2026-08-26 under a documented freshness contract, WS migration scheduled as JR-CAN-PERF-004).**
+**F-CANOPY-004 — server-side Dash callbacks lag behind reality during a live run; clientside callbacks are instant (P0/P1 systemic; Overtoad ACCEPTED 2026-08-26 under a documented freshness contract, WS migration scheduled as JR-CAN-PERF-004).**
 
 > **OWNER DISPOSITION (2026-08-26) — ACCEPTED under a freshness contract; migration scheduled.**
 > After Stage 1–3 of the callback-starvation remediation (canopy#507 + #509 + #511), the measured envelope is
 > **3–16 s for an interaction-triggered render** and **20–40 s for fresh-session population** — down from the
-> 30 s–minutes recorded below at the finding's discovery. The owner's decision is to **accept and document
+> 30 s–minutes recorded below at the finding's discovery. The Overtoad's decision is to **accept and document
 > that envelope as canopy's freshness contract** rather than hold the arc open on it, **and** to schedule the
 > WebSocket-migration workstream (**JR-CAN-PERF-004**) that removes the polling architecture instead of
 > tuning it. F-CANOPY-004 therefore stops gating Phase 3 entry.
@@ -211,7 +211,7 @@ Measured, run 2 (topology tab, 1 Hz sampling for 60 s): canopy `/api/status` ste
 **F-CANOPY-005 — WS command send-promise races its own 3 s timeout under congestion: the REST fallback double-fires state-changing commands AFTER WS success (P0; root-caused live; canopy#518 `d275ce2`; re-drive 2026-08-26 → 0 double-fires + alert; VERIFIED LIVE, FIXED).**
 Captured on a W2 resume: the `{command:"resume"}` frame was acked on the wire **+18 ms** after send (`command_response`, matching `command_id`), yet the send-promise rejected `"Command timeout (no command_response for 81c7f1a1-…)"` and the Phase-D fallback then POSTed `/api/train/resume` — which the (already-resumed) backend refused **409**. Mechanism: `send()` arms a per-command `setTimeout` ceiling — start 11 s, set_params 2 s, **everything else 3 s** (`websocket_client.js:396-403,410-413`) — while ack matching happens in `_handleMessage → _resolvePendingCommand` on the browser main thread (`:210-211`, `:436-447`); during a run the main thread is blocked by the F-CANOPY-004 render queue, so the expired timer task can beat the queued WS `message` task and reject a command whose ack already arrived. Consequences: (a) duplicate **state-changing** POSTs (a lost race on `start` would re-POST start; observed on resume as a 409); (b) the operator sees a failure signal for a command that succeeded — `reportFailure` fed `training-control-action` with `success:false` (console: `[Phase D] REST fallback (resume): WS rejected: Command timeout…` then `…returned 409`), though the danger alert itself ALSO never rendered (its server-side callback starved — same congestion; alert element still empty 6+ min later). Composed with F-CANOPY-003: after this sequence THREE buttons (start/pause/resume) sat stuck ⏳ disabled >8 min — during a run the interval-driven sweep pass effectively never lands (quiet-page clear ≈ +32 s), so a rejected/raced command wedges its button for the rest of the run. W2 step 2's pause-pause rejection arm is **BLOCKED** by exactly this wedge: the second pause click hits a still-disabled button, so no frame is ever sent and C2.5-10's alert is unreachable via that route.
 
-**FIX MERGED (2026-08-25, canopy#518 `d275ce2`; the entry stays OPEN until the live verification lands, after the T6 GPU window).** Both halves are the ledger's own fix directions: (1) the send-promise timeout re-arms ONCE for a 250 ms grace window, so an ack task already queued behind the congested main thread wins the race it used to lose (the captured instance: acked +18 ms, rejected at 3 s, REST re-POST → 409); (2) every WS rejection is classed (`err.transport`) and the Phase-D REST fallback fires ONLY for transport-class failures — a business rejection (segment 10's pause-while-STOPPED, `Training cannot be paused in the current state`) now surfaces through the `training-control-action` danger alert instead of re-issuing an adjudicated state-changing command over HTTP. Pinned by `src/tests/unit/test_f005_ws_command_race.py` plus the updated Phase-D clientside pins (`test_phase_d_button_clientside.py`); full unit suite, `node --check` and sequence-safety green; merged by the owner after a branch update (`8ea00b3b`) at 21:09Z. **Verification owed** (stack on merged main, a training run for congestion): drive the control buttons — expect zero `409` double-fires; then induce a business rejection — expect the danger alert via `training-control-action` and **no** `/api/train/*` POST in the request capture. Then the closure block, the rows in its blast radius (W2 step 2's pause-pause arm; C2.5-10's alert route), and coordination with F-CANOPY-003, which touches the same Phase-D code.
+**FIX MERGED (2026-08-25, canopy#518 `d275ce2`; the entry stays OPEN until the live verification lands, after the T6 GPU window).** Both halves are the ledger's own fix directions: (1) the send-promise timeout re-arms ONCE for a 250 ms grace window, so an ack task already queued behind the congested main thread wins the race it used to lose (the captured instance: acked +18 ms, rejected at 3 s, REST re-POST → 409); (2) every WS rejection is classed (`err.transport`) and the Phase-D REST fallback fires ONLY for transport-class failures — a business rejection (segment 10's pause-while-STOPPED, `Training cannot be paused in the current state`) now surfaces through the `training-control-action` danger alert instead of re-issuing an adjudicated state-changing command over HTTP. Pinned by `src/tests/unit/test_f005_ws_command_race.py` plus the updated Phase-D clientside pins (`test_phase_d_button_clientside.py`); full unit suite, `node --check` and sequence-safety green; merged by the Overtoad after a branch update (`8ea00b3b`) at 21:09Z. **Verification owed** (stack on merged main, a training run for congestion): drive the control buttons — expect zero `409` double-fires; then induce a business rejection — expect the danger alert via `training-control-action` and **no** `/api/train/*` POST in the request capture. Then the closure block, the rows in its blast radius (W2 step 2's pause-pause arm; C2.5-10's alert route), and coordination with F-CANOPY-003, which touches the same Phase-D code.
 
 **VERIFIED LIVE (2026-08-26, run `20260826T174225Z`, `e2e_p1wave_redrive.py --step f005`).** Six control cycles on a live run: **zero** `/api/train/*` POSTs from the browser and **zero** 409s (the double-fire is gone). The reachable business rejection (pause-while-paused) surfaced the danger alert *"Pause failed. Training cannot be paused in the current state"* at +7.9 s via `training-control-action` with **no** HTTP re-issue; the pause-while-STOPPED arm is N-A (the pause button is correctly disabled when stopped). C2.5-10 → PASS. **FIXED.**
 
@@ -295,7 +295,7 @@ Minted in run `20260811T010700Z` (`statuses.tsv:88`, W3-08) but never entered th
 > successful apply: Apply stayed enabled and `params-status` read `⚠️ Unsaved changes` until a page reload, with
 > no value differing (the three-key latch above). That is a documented behaviour broken, P1 under plan §6.3. The
 > toast this entry is named for the manual does not describe; canopy's 0.6.0 CHANGELOG does (`CHANGELOG.md:2360-2365`
-> at `571743db`), which is the owner's first limb (O17) and is no longer needed for this rating. The fix is in
+> at `571743db`), which is the Overtoad's first limb (O17) and is no longer needed for this rating. The fix is in
 > code: canopy#533 (`6b55399d`, merged 2026-08-28T05:09:29Z, an ancestor of v0.7.0). The entry stays OPEN until
 > C2.9-05 is re-driven on a leg serving that code (item 30); the row was measured in service mode, and the tracker
 > and toast are canopy-side, so a demo leg is expected to reach them, to be confirmed on the drive.
@@ -1005,7 +1005,7 @@ whose *existence* is the finding, not a mechanism.
 - **NOT established**: *which* pre-reducer mechanism discards it. "No dispatch ever carries the
   value" is consistent with renderer retirement — the arc's documented 12-slot behaviour, and the 69%
   request overlap measured on 2026-09-05 — but it is equally consistent with any other discard on the
-  path between response receipt and the aggregate action. **This measurement narrows the owner; it
+  path between response receipt and the aggregate action. **This measurement narrows the Overtoad; it
   does not name the mechanism**, and the retirement hypothesis is still a hypothesis.
 - A weak side-signal, recorded because it is cheap and might matter: `Callback failed: the server did
   not respond` appeared in the console of **2 of the 4** failing probe runs and **none** of the
@@ -1036,7 +1036,7 @@ Evidence, all under `reports/e2e-canopy-2026-09-02/transcripts/`:
 #### 2026-09-07, later — the writer's lifecycle never completes. Supersession is the leading
 #### hypothesis and is NOT established — a Lane B review took the earlier claim apart
 
-The previous block narrowed the owner to "something discards the payload before the reducer" and
+The previous block narrowed the Overtoad to "something discards the payload before the reducer" and
 explicitly refused to name the mechanism. **This block first claimed to name it — renderer-level
 supersession — and that claim did not survive review. It is withdrawn to a hypothesis.** What stands
 is the lifecycle observation; what does not is the inference from it. Both are below, in that order,
@@ -1266,7 +1266,7 @@ add the entry counts).
 > this file.
 
 **F-CANOPY-036 — candidate pool history NEVER accumulates in the live lane: the history-append callback loses its race with its own feeder's repoll, so short-lived pool states are never recorded (P2, FIXED canopy#536, verified live 2026-09-08 — closure block at the end of this entry; the panel's rendering is F-CANOPY-050; found during the 2026-08-24 live re-drive).**
-Across five training runs on one bring-up (~20 candidate phases), `candidate-metrics-panel-history-section` never rendered a card — while in the same sessions the SAME store's sibling consumers provably rendered active-pool values (run 5: an in-page 500 ms observer, healthy all run — 8 sampler gaps > 2 s, worst 2.8 s — recorded the badge rendering `Selecting Best` at t+189 s; runs 1/2 rendered pool 40 / `Training` / progress `351/400`). So this is **not** the fixed F-CANOPY-027 store→consumer starvation. Constructive probe on a CALM post-run page: injecting a fully-shaped `candidate_pool_status:"Training"` payload through the store's own `setProps` (the §12.1 idiom, `ok via memoizedProps.setProps`) produced **no card in 100 s**, and the request capture shows `update_pool_history` (output `…-pool-history-store.data`, `candidate_metrics_panel.py:347-381`) **never executed after the injected write** — while the same capture shows it executing normally on an ordinary poll fill (with `candidate_pool_status=Inactive`, i.e. after the transient state was already overwritten). Mechanism family: dash-renderer executes a queued callback with the store's CURRENT value (or supersedes the queued trigger entirely) when the feeder — `fetch_training_state`, polling at ~1 s on the candidates tab — rewrites the store before the append is promoted; any pool state shorter-lived than the promotion delay is unrecordable. The append's design contract (`:344-392`, one snapshot per `current_epoch` while a pool is active) is therefore probabilistic-to-never under load, and zero-across-five-runs in practice. Matrix effect: M-CANDIDATES-09 FAIL (populated arm unreachable, cause re-attributed from F-CANOPY-027 to this finding); M-CANDIDATES-10/-11 remain BLOCKED (their DEAD-EXPECTED click test needs a rendered card; blocker likewise re-attributed). Candidate fixes (owner decision): append server-side (canopy backend accumulates pool history and serves it, removing the client-side race entirely) or make `update_pool_history` clientside so it runs synchronously in the same commit as the store write.
+Across five training runs on one bring-up (~20 candidate phases), `candidate-metrics-panel-history-section` never rendered a card — while in the same sessions the SAME store's sibling consumers provably rendered active-pool values (run 5: an in-page 500 ms observer, healthy all run — 8 sampler gaps > 2 s, worst 2.8 s — recorded the badge rendering `Selecting Best` at t+189 s; runs 1/2 rendered pool 40 / `Training` / progress `351/400`). So this is **not** the fixed F-CANOPY-027 store→consumer starvation. Constructive probe on a CALM post-run page: injecting a fully-shaped `candidate_pool_status:"Training"` payload through the store's own `setProps` (the §12.1 idiom, `ok via memoizedProps.setProps`) produced **no card in 100 s**, and the request capture shows `update_pool_history` (output `…-pool-history-store.data`, `candidate_metrics_panel.py:347-381`) **never executed after the injected write** — while the same capture shows it executing normally on an ordinary poll fill (with `candidate_pool_status=Inactive`, i.e. after the transient state was already overwritten). Mechanism family: dash-renderer executes a queued callback with the store's CURRENT value (or supersedes the queued trigger entirely) when the feeder — `fetch_training_state`, polling at ~1 s on the candidates tab — rewrites the store before the append is promoted; any pool state shorter-lived than the promotion delay is unrecordable. The append's design contract (`:344-392`, one snapshot per `current_epoch` while a pool is active) is therefore probabilistic-to-never under load, and zero-across-five-runs in practice. Matrix effect: M-CANDIDATES-09 FAIL (populated arm unreachable, cause re-attributed from F-CANOPY-027 to this finding); M-CANDIDATES-10/-11 remain BLOCKED (their DEAD-EXPECTED click test needs a rendered card; blocker likewise re-attributed). Candidate fixes (Overtoad decision): append server-side (canopy backend accumulates pool history and serves it, removing the client-side race entirely) or make `update_pool_history` clientside so it runs synchronously in the same commit as the store write.
 
 > **2026-09-08 — live verification attempted twice and blocked upstream.** Two growth runs with the
 > Candidate Metrics tab open (40 → 44, 44 → 48): canopy's own `/api/state` never carried a non-Inactive
@@ -1335,7 +1335,7 @@ from F-CANOPY-006 (closed) to this finding**. The mandate's flagship visualizati
 live lane for ~4 sessions in 5. Independently, a 141 KB payload rewritten 0.57/s on a finished run is ~80 KB/s
 of pointless traffic and its own regression on Stage 2's intent.
 
-**Candidate fixes (owner decision).** (a) Suppress no-op writes on the `metrics-panel-metrics-store` feeder —
+**Candidate fixes (Overtoad decision).** (a) Suppress no-op writes on the `metrics-panel-metrics-store` feeder —
 the Stage 2 lever, simply not applied to this producer; (b) drop `metrics-panel-metrics-store` from the
 rebuild's Input list (the rebuild does not use metrics data for the node graph — it is a legacy chain);
 (c) stop the metrics poll entirely once `fsm_status` is terminal. (a) and (b) are independent and either alone
@@ -1375,7 +1375,7 @@ triggers. Remaining Inputs are only what means "the topology changed": `network-
 the tab-gated 5 s `tabpoll-topology` (slower than the 1.5-5 s rebuild, so it structurally cannot starve it)
 and `ws-cascade-add-buffer`.
 
-**Why (b) and not (a) — the argument that settles the owner choice.** (a) can only fix the idle regime: at
+**Why (b) and not (a) — the argument that settles the Overtoad choice.** (a) can only fix the idle regime: at
 idle the refetch is identical, so suppression applies. **During a run the store changes legitimately at 1 Hz**,
 so the claimed-Input starvation would survive exactly when the cascade is growing and the user is watching it
 — and this finding measured the graph *equally absent during an active run and post-run*. Only decoupling
@@ -1446,7 +1446,7 @@ Two further observations from the same review, each checkable in the transcripts
 this arc gathered F-CANOPY-037's own evidence on a 10-unit fixture on 2026-08-26/28, and the matrix
 says plainly that the network *"was deliberately left [saturated] on 2026-09-02 to preserve the
 2/40/2/944 baseline"*. So W4-10, W1-13 and M-TOPOLOGY-16 are blocked on a choice this arc made and
-can unmake — pending owner sign-off, since the fixture is held by an explicit hold.
+can unmake — pending Overtoad sign-off, since the fixture is held by an explicit hold.
 
 **Disposition (2026-09-04): F-CANOPY-037 stays OPEN.** Its stated mechanism (claimed-Input starvation
 on a completed run) is credibly closed on merged main and the M-TOPOLOGY rows are re-driven; what
@@ -1457,7 +1457,7 @@ alone would be closing the symptom on the easy branch.
 
 ### CLOSED 2026-09-05 — the growth trigger is driven, on a live cascade, twice
 
-The owner lifted the fixture hold, so the regime this finding is actually about was finally
+The Overtoad lifted the fixture hold, so the regime this finding is actually about was finally
 exercised. `max_hidden_units` was raised by `PATCH /v1/training/params` — **the network was never
 destroyed** (`POST /v1/network` was not used; the uuid is unchanged throughout) — and training
 restarted, twice, with a browser attached and watching *before* growth began.
@@ -3084,7 +3084,7 @@ investigations. Reproduce with `util/ad-hoc/e2e_f027_redux_actions.py`.
 > WRONG.** Live on merged canopy `6b55399`: **908 `RESET_COMPONENT_STATE` in 60 s (~15/s)** — the rate
 > holds. But this entry named the target by reading an itempath INDEX (`…/props/children/12/…`) and
 > calling it "the Cassandra panel's subtree". Resolving the same itempaths against **Dash's own
-> `paths.strs` id→itempath map** (`util/ad-hoc/e2e_f039_reset_target.py`), the owners are:
+> `paths.strs` id→itempath map** (`util/ad-hoc/e2e_f039_reset_target.py`), the Overtoads are:
 >
 > | resets (of 40 sampled) | owning component |
 > |---:|---|
@@ -3785,11 +3785,11 @@ experiment cascor on port 8230 that were resident at segment start were gone aft
 
 Consequence for this arc: **the isolated cascor leg cannot be kept alive while the campaign runs**, and
 189 matrix rows remain, most of which need it. This is a coordination/tooling blocker, not a canopy defect
-— escalated to the session owner rather than worked around, because every available workaround either
+— escalated to the session Overtoad rather than worked around, because every available workaround either
 deviates from the byte-matched launch recipe the E2E evidence depends on, or edits a shared tool another
 running session is actively using.
 
-#### Remedy adopted (owner-selected): supervise the leg under a live parent
+#### Remedy adopted (Overtoad-selected): supervise the leg under a live parent
 
 `util/ad-hoc/e2e_cascor_leg_supervise.bash` (new) launches the cascor leg as a **direct child of a resident
 supervisor** instead of via `( … nohup … & )`. It targets the reaper's *orphan* predicate only — the
@@ -4551,7 +4551,7 @@ never see it, so it is easy to omit from a recipe and then lose time to it after
 
 ### W11 — in-metrics replay: first pass (SUPERSEDED below by the training run)
 
-> The verdicts in this subsection were recorded **before** the owner-approved training run. They are kept
+> The verdicts in this subsection were recorded **before** the Overtoad-approved training run. They are kept
 > because they document what was and was not distinguishable without history — but the recorded row
 > statuses have since been **revised** by "W11 re-driven with real history" below. Nine rows moved from
 > BLOCKED to **FAIL**.
@@ -4593,12 +4593,12 @@ None of that distinguishes a correct control from a dead one, so none of it is r
 **Unblocking W11 needs a decision, not just more driving.** It requires a short cascor training run to
 accumulate metrics history — that is W1 — which is a live state change: it would overwrite the
 deliberately mutated network built by W5-12/13/15 and this segment's editor rows, and the standing
-guidance is not to disturb a live cascor training state casually. Flagged for the owner rather than taken
+guidance is not to disturb a live cascor training state casually. Flagged for the Overtoad rather than taken
 unilaterally.
 
 ### W11 re-driven with real history — and the lane is a defect, not a precondition gap
 
-The owner approved the training run. An insurance snapshot of the mutated network was taken first
+The Overtoad approved the training run. An insurance snapshot of the mutated network was taken first
 (`snapshot_20260813T051936Z`), then:
 
 1. `Start` alone → **`409: Training cannot be started: Training data not provided`**.
@@ -4658,7 +4658,7 @@ because the slider is a percentage scale. It reads `100` whether history is 0 ro
 
 ---
 
-## Phase 1 — segment 9 (2026-08-14): the W6 owner gate, driven
+## Phase 1 — segment 9 (2026-08-14): the W6 Overtoad gate, driven
 
 Segment 9 opened from `main` (the segment-8 evidence PR #1100 having landed) with the browser MCP
 **available for the first time in the arc** — `mcp__playwright__*` tools entered the session index, so the
@@ -4668,7 +4668,7 @@ left alone but recorded as pinning `#513` — see the F-CASCOR-003b row for why 
 
 ### The headline: W6-16..20 driven, and F-CANOPY-019's open question is settled
 
-The owner gate the last three segments deferred is now driven, and it answered the question it was blocking:
+The Overtoad gate the last three segments deferred is now driven, and it answered the question it was blocking:
 **the STAGED dataset wins at restart, while the modal describes the SIDEBAR.**
 
 The reproduction was built as a single-variable discriminator, because the segment-8 setup (staged *moons*
@@ -5129,7 +5129,7 @@ options is permanently unusable; cascor's third literal `mixed` has no canopy op
 
 > **CORRECTION (same segment, after source review).** The first bullet is **not** a cascor defect, and calling
 > it one was an error of method: I read only the `data` block of a raw `curl` response. `epochs_max` is a
-> **derived read-only** value by owner decision (C2b / Q1 outcome (c),
+> **derived read-only** value by Overtoad decision (C2b / Q1 outcome (c),
 > `juniper-cascor/src/api/lifecycle/manager.py:1618-1640`), and cascor deliberately accepts it at the request
 > boundary "so pre-N5 canopy full-form applies keep succeeding" while reporting it as `skipped(not-updatable)`
 > in its C2a accounting (`manager.py:3583-3586`) — so it is not silent either. **The defect is canopy-only,
@@ -5211,7 +5211,7 @@ future GPU- or process-level assertion in this arc: attribute to the leg pid, or
 `C2.8-12`'s documented "or" (a mid-transition read at 1000 ms; the settled state is exclusive). Both would
 have been plausible, specific, and wrong.
 
-### All three segment-12 findings fixed the same day (owner-directed)
+### All three segment-12 findings fixed the same day (Overtoad-directed)
 
 | finding | PR | merge | shape of the fix |
 |---|---|---|---|
@@ -6086,7 +6086,7 @@ merged main. Two intermediate probes read the welcome modal's container through 
 (an instrument miss, corrected by targeting the confirm modal's own element); the probe scripts were left in
 `/tmp` and are gone — the logs survive, and an `f031` driver step is owed at the next stack window.
 
-**canopy#518 (`d275ce2`) — the F-CANOPY-005 fix — was merged by the owner at 21:09Z** (after a branch
+**canopy#518 (`d275ce2`) — the F-CANOPY-005 fix — was merged by the Overtoad at 21:09Z** (after a branch
 update; all checks green): a 250 ms one-shot grace re-arm on the send-promise timeout, and a
 transport-only (`err.transport`) gate on the Phase-D REST fallback so business rejections surface as the
 danger alert instead of a re-issued command. Its **live verification is queued behind the T6 re-baseline
@@ -6108,7 +6108,7 @@ required checks under the plan's merge policy, and main-verify green after each 
 finding therefore stays **OPEN with a fix-merged rider** until the post-T6 live re-drive, the discipline
 F-CANOPY-005 set. **Correction (adversarial validation, rulesets API): protection IS strict on both repos**
 (`strict_required_status_checks_policy: true`; canopy ruleset `14249530`, ml `13805432`) with an Admin
-bypass (`bypass_mode: always`). The REST squash of a green-but-`BEHIND` PR therefore merged on the owner's
+bypass (`bypass_mode: always`). The REST squash of a green-but-`BEHIND` PR therefore merged on the Overtoad's
 bypass — rule-suites recorded `result=bypass` for canopy `29a8c41e`, `9c381604`, `f20602cb`, `141324fa`,
 `27a4bb1d`, `ef495cf3` and ml `aaf7c751` (`ce819775`, `07e9a061`, `74c5fce5` were `pass`). No required
 check ran on those merged trees; the post-merge `main-verify` run, green for every one of them, is the
@@ -6189,7 +6189,7 @@ probe), both archived.
 whose acceptance is a *live render during a run* are gated by the still-open F-CANOPY-004 callback
 congestion, which starves the render for tens of seconds before it catches up.** So the re-drive
 confirms the fixes are correct and, for the render-latency-sensitive ones, re-confirms F-CANOPY-004 as
-the dominant open issue — the freshness-contract owner decision.
+the dominant open issue — the freshness-contract Overtoad decision.
 
 ### Verified live (PASS)
 
@@ -6362,7 +6362,7 @@ callback's **own Inputs** (three `show-weights` off/on toggles, 112 s — no wak
 
 ### F-CANOPY-004 — ACCEPTED under a documented contract
 
-Per the owner decision, F-004 is now **ACCEPTED**, not open: the post-Stage-2 envelope (**≤ 16 s**
+Per the Overtoad decision, F-004 is now **ACCEPTED**, not open: the post-Stage-2 envelope (**≤ 16 s**
 interaction renders, **≤ 40 s** fresh-session population, clientside immediate, during-run steady-state
 best-effort) is written into the finding as canopy's freshness contract, and **JR-CAN-PERF-004** is scheduled
 as the workstream that removes the polling architecture rather than tuning it. F-004 no longer gates Phase 3.
@@ -6372,7 +6372,7 @@ does not cover a surface that never renders at all. A row that never painted is 
 acceptance must not be used to close it.
 
 `e2e_finding_triage.py` gained a third disposition (`ACCEPTED`) so the ledger can express "real, unrepaired,
-owner-signed-off" without either overstating what shipped or holding an exit criterion red. Header token
+Overtoad-signed-off" without either overstating what shipped or holding an exit criterion red. Header token
 `ACCEPTED` in the last 170 chars, same convention as `FIXED`.
 
 ### Instrument correction that invalidates a handoff diagnosis
@@ -6431,7 +6431,7 @@ brought up; every fix is grounded in the Phase 1–3 measurements plus source tr
 >
 > - **All of the wave merged 2026-08-28**: canopy#532 (F-001/-013/-015/-034), #533 (F-018/-028),
 >   #534 + cascor#594 (F-026 both halves), #535 (F-012). The table's F-CANOPY-036 row still reads
->   "deferred — —"; it shipped as **canopy#536** (server-side accumulation) on the owner's decision.
+>   "deferred — —"; it shipped as **canopy#536** (server-side accumulation) on the Overtoad's decision.
 > - **The honest count is 9 of 11 FIXED**, not 8 and not 10: the eight above plus F-036, with
 >   **F-CANOPY-032 NOT fixed** (contract pins only — its mechanism does not reproduce) and
 >   **F-CANOPY-033 deferred**.
@@ -6439,8 +6439,8 @@ brought up; every fix is grounded in the Phase 1–3 measurements plus source tr
 >   which is why they remain OPEN in the triage. That is correct, but it is correct for a different
 >   reason than this paragraph gave. The owed rows are listed at the end of this section.
 >
-> **F-CANOPY-036's owner-decision note is also now spent**: it read as an open choice between server-side
-> accumulation and a clientside append. The owner chose **server-side**, and canopy#536 shipped it. The
+> **F-CANOPY-036's Overtoad-decision note is also now spent**: it read as an open choice between server-side
+> accumulation and a clientside append. The Overtoad chose **server-side**, and canopy#536 shipped it. The
 > JR-CAN-PERF-004 plan still carries that as an open question in its §7 and its Phase 2 blocker —
 > `notes/JUNIPER_2026-08-27_JUNIPER-CANOPY_WS-MIGRATION-PLAN-JR-CAN-PERF-004.md` — and should be updated
 > to record that Phase 2 is no longer gated on it.
@@ -6459,7 +6459,7 @@ brought up; every fix is grounded in the Phase 1–3 measurements plus source tr
 | F-CANOPY-012 output_weights 2-D | canopy#535 | fixed — unblocked by the D-0 route fix |
 | F-CANOPY-032 worker alert | canopy#533 (pins only) | **NOT fixed — mechanism does not reproduce; re-diagnosed** |
 | F-CANOPY-033 RESET storm | — | **deferred** — needs live redux tracing; no root cause in source |
-| F-CANOPY-036 pool-history race | — | **deferred** — the entry states the fix is an owner design decision |
+| F-CANOPY-036 pool-history race | — | **deferred** — the entry states the fix is an Overtoad design decision |
 
 ### What the wave changed about the findings themselves
 
@@ -6488,7 +6488,7 @@ were both wrong in ways that would have deleted working behaviour.
 - **F-CANOPY-033** (`RESET_COMPONENT_STATE` at ~13/s into the Cassandra subtree). No source-level root
   cause was found and the entry's own evidence is a redux trace. This needs the live instrument
   (`e2e_f027_redux_actions.py`) re-run against post-Stage-3 main, not a guess.
-- **F-CANOPY-036** (candidate pool history never accumulates). The entry states the fix is an **owner
+- **F-CANOPY-036** (candidate pool history never accumulates). The entry states the fix is an **Overtoad
   design decision** between server-side accumulation and a clientside `update_pool_history`. It also
   overlaps Phase 2 of the JR-CAN-PERF-004 plan, which must not run concurrently with it.
 
@@ -6496,7 +6496,7 @@ were both wrong in ways that would have deleted working behaviour.
 
 Everything from Phase 3, plus: the **live re-drive of every row these eight fixes touch** once they
 merge (C2.9-05, M-PARAMETERS-04/-05/-06, M-METRICS-03, M-WORKERS-02, C2.1-01/02 and the Network Editor
-patch rows); **F-CANOPY-033's redux re-trace**; and **F-CANOPY-036's owner decision**.
+patch rows); **F-CANOPY-033's redux re-trace**; and **F-CANOPY-036's Overtoad decision**.
 
 ### Owner decision 4 (the live 3-D posture) — unblocked by source diagnosis, no stack needed
 
@@ -6521,7 +6521,7 @@ deliberately demo-only** — those rows need either a DEMO-lane arm or a differe
 (`/api/stage_dataset`, which is what the cold-swap flow actually uses, or the juniper-data service
 directly).
 
-**Open question for the owner:** should the live 3-D arm drive `/api/stage_dataset` (the path the
+**Open question for the Overtoad:** should the live 3-D arm drive `/api/stage_dataset` (the path the
 product actually uses in service mode), or should those rows be re-scoped to the demo lane? That is a
 matrix-semantics decision, not an implementation one, and it should be made before the rows are
 re-driven rather than discovered mid-drive.
@@ -6896,8 +6896,8 @@ is still the one that creates that landing. Evidence: `…_seg17_storestorm.json
 every sequence control is present in the DOM — inside `dataset-plotter-seq-controls`, which is
 `display:none` because the loaded dataset is the 2-D spirals the fixture trains on. The rows need a
 sequence dataset **loaded**, and which arm loads it (the live `/api/stage_dataset` path, or the demo lane)
-is the owner question the 2026-09-07 handoff recorded as unanswered. So the block's blocker is no longer
-"the extra is missing" — that half is closed — and it stays **BLOCKED on the owner decision**, with the
+is the Overtoad question the 2026-09-07 handoff recorded as unanswered. So the block's blocker is no longer
+"the extra is missing" — that half is closed — and it stays **BLOCKED on the Overtoad decision**, with the
 denominator expected to grow if the both-arms answer is chosen. Evidence: the step's transcript,
 `…_dataset_seq.txt`.
 
@@ -6959,7 +6959,7 @@ withdrawn.) What changed, all at once:
   reframe an earlier draft built on it is WITHDRAWN** (round-1 validation). Both writers were live:
   `ws-metrics-buffer` `gen` went 3 → 5 → 9, and `ws_liveness_store.metrics_live` read **`False` at four of
   the five samples** — and the poll is demoted only while that flag is true, so the REST poll was the
-  un-demoted owner across the very interval (59 → 63) the draft credited to the WS appender. The store also
+  un-demoted Overtoad across the very interval (59 → 63) the draft credited to the WS appender. The store also
   plateaus at 63 while cascor's own history reached 66. Two writers, one Output, nothing in the artifact
   attributing an increment to either. What survives: the store is **not** frozen at 0 during a live run
   with the relay up, which is what the 2026-08-31 GLOWPROBE also saw (4 and 23 rows in the detector's
@@ -7089,7 +7089,7 @@ Matrix: **M-METRICS-11/-12/-13/-14/-15/-16 BLOCKED → FAIL** (F-CANOPY-048); M-
 F-035, controls retired by F-048); **M-TOPOLOGY-16 BLOCKED → PASS** (active half only, window 3, with the three limits above);
 M-CANDIDATES-09 stays FAIL **with no cause established by this run** (F-036 is fixed at the server, F-050 is withdrawn, and
 F-051 says the page was probably on the wrong tab); M-CANDIDATES-10/-11 stay BLOCKED (no card to click); M-DATASET-17..26 stay
-BLOCKED on the owner's arm decision (the extra is no longer the blocker). Run dir `reports/e2e/20260908T000000Z/`;
+BLOCKED on the Overtoad's arm decision (the extra is no longer the blocker). Run dir `reports/e2e/20260908T000000Z/`;
 `CURRENT_RUN_ID` bumped. **BLOCKED cells: 28 → 21** — count them with a pattern that also catches the annotated form, because
 C2.10-03 reads `BLOCKED (F-CANOPY-025)` and a bare `| BLOCKED |` grep misses it and reports 27 → 20.
 
@@ -7106,7 +7106,7 @@ frame arrival", because the relay already has a 60 s stale rule and defeats it b
 every 30 s; the fix must distinguish a heartbeat from a payload without re-breaking the idle-stream case that call was added
 for. (3) A growth window driven **one tab at a time** (or one browser context per page), recording each page's own
 `active_tab`: that is what M-CANDIDATES-09/-10/-11 need, and what a re-filed F-050 would need. (4) F-CANOPY-048's promotion
-block. (5) The owner's arm decision for M-DATASET-17..26. (6) A dispatch-probe control run under a rule fixed before it.
+block. (5) The Overtoad's arm decision for M-DATASET-17..26. (6) A dispatch-probe control run under a rule fixed before it.
 (7) F-CANOPY-038's identity guard, noting it suppresses nothing until a first write lands. (8) Still-owed item 7 re-opened:
 both legs' commits in every artifact, and a dirty-tree tell beside the sha. (9) The fade half of M-TOPOLOGY-16.
 
@@ -7853,7 +7853,7 @@ at once, but the figure kept `paper_bgcolor #ffffff` for 16 s. The diagnostic ru
 - the figure re-themed at **~30 s**.
 
 The chain works; it is ~2× outside the contract. Attributed to **F-CANOPY-004's envelope no longer holding
-on `9bffaba1`**, the same L as above. It is recorded for the owner's re-evaluation of that contract and not
+on `9bffaba1`**, the same L as above. It is recorded for the Overtoad's re-evaluation of that contract and not
 filed separately.
 
 ### F-CANOPY-048 — located: a two-callback cycle the renderer's cycle breaker never breaks
@@ -8153,7 +8153,7 @@ The verbatim reports are in `reports/e2e-canopy-2026-09-02/consensus/2026-09-22_
 9. **CAN-015's replay-player loop**: the latent trigger shape F-048's review named, exempted in
    canopy#658's cycle test.
 10. **M-CANDIDATES-10/-11**, now re-drivable.
-11. Unchanged: M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16 fade half, and F-038's
+11. Unchanged: M-DATASET-17..26 (the Overtoad's question), the M-TOPOLOGY-16 fade half, and F-038's
     browser-level test gap.
 
 ## Phase 8 — 2026-09-23: F-CANOPY-054 fixed by moving the replay block clientside and counting its events, F-CANOPY-055 filed (the top status bar never applies), and the idle weight drain gated
@@ -8761,9 +8761,9 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
 8. **CAN-015's replay-player loop** (Phase 7 item 9). The CAN-015 player is a different component from the
    metrics replay fixed here. Its loop is still exempted in canopy's cycle test.
 9. **M-CANDIDATES-10/-11** (Phase 7 item 10).
-10. Unchanged: M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16 fade half, and F-038's
+10. Unchanged: M-DATASET-17..26 (the Overtoad's question), the M-TOPOLOGY-16 fade half, and F-038's
     browser-level test gap (Phase 7 item 11).
-11. **New, owner question.** The metrics replay drives nothing but itself. `replay-state` has no consumer
+11. **New, Overtoad question.** The metrics replay drives nothing but itself. `replay-state` has no consumer
     outside the replay block, before or after canopy#670, so playback moves the slider and the
     `current / max` readout while every chart stays on the full history. `docs/USER_MANUAL.md` ("In-metrics
     replay") documents only the bar, so the rows pass against their own contract. Is a replay that moves no
@@ -9055,11 +9055,11 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
       23:24:21Z and 23:22:46Z; ml#2045 disarmed and re-armed at 23:48:47–52Z; cascor-worker#196 merged at
       01:21:37Z; and #676's CI re-run at 01:22:32Z, without which its armed merge could not have fired. A
       background shepherd can update a branch, but none of the day's launches names ml#2066 or data#434.
-    - **Commits signed with the owner's key landed in that window** (Lanes R2-B, R3-A and R4-A; re-derived
+    - **Commits signed with the Overtoad's key landed in that window** (Lanes R2-B, R3-A and R4-A; re-derived
       from the commits API). `4c496443` on ml#2058 (committed 21:45:22Z, two minutes before the pass's first
       ready) and `c666403b` on ml#2045 (23:47:30Z, a minute before that PR's disarm and re-arm) are committed
       by "Paul Calnon", not by GitHub's web-flow, with valid PGP signatures, while no Claude Code session made a
-      tool call. On this host signing needs the owner's hardware key (`util/push_signed_commit.py`'s docstring
+      tool call. On this host signing needs the Overtoad's hardware key (`util/push_signed_commit.py`'s docstring
       says a touch; R4-A found five signatures stamped within one second, so one touch can cover a burst).
       ml#2045 also took a fast-forward push at 00:00:38Z of 29 more commits signed with that key between
       23:57:24Z and 00:00:07Z (R4-A, from the activity and compare APIs; R3-A had read it as a force-push).
@@ -9088,21 +9088,21 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
       Cursor checks then went neutral at 22:28:07–12Z, the seconds of the ready and the arm; Lane R2-B). The
       ledger-first order and round 3 appeared only in the PR body. So the ready met the comment's literal
       condition; the arm, which the comment asked no one to do, did not.
-    - **The owner has answered: the sweeper is the owner's.** It acts as `pcalnon` and is not Claude Code on
-      this host. Session `bc31e993` asked at 03:34:45Z on 2026-09-24, and the owner answered at 07:32:48Z, four
+    - **The Overtoad has answered: the sweeper is the Overtoad's.** It acts as `pcalnon` and is not Claude Code on
+      this host. Session `bc31e993` asked at 03:34:45Z on 2026-09-24, and the Overtoad answered at 07:32:48Z, four
       minutes after round 5's artifact was frozen. The question named four PRs of the pass above (data#428,
       ml#2032, ml#2059 and canopy#678) as taken out of draft and armed 4–7 s later as `pcalnon`, which three
       were; canopy#678 was never a draft and merged directly, with no arm event. It added that cascor#678 was
       armed the same way earlier (its only arm was at 13:32:10Z on 09-23, and it too was never a draft), and
-      asked whether that sweeper was the owner's. The owner chose "Mine:
-      fix forward", an option whose text says the sweeper is the owner's and "the merges", those PRs', are
+      asked whether that sweeper was the Overtoad's. The Overtoad chose "Mine:
+      fix forward", an option whose text says the sweeper is the Overtoad's and "the merges", those PRs', are
       intended, with validation continuing after the merge and fixes going forward in follow-up PRs.
       - **Its scope.** It names none of the pass's other five PRs. It reaches three of them, #676, data#431 and
         data#434, only through the shared pattern (a draft readied, then armed 4–8 s later), and ml#2066's arm
         and data-client#212's direct merge not even that way. It does not cover #676's CI re-run, the account's
-        other later actions or ml#2045's next morning, which remain the owner's to confirm (Still owed, item
+        other later actions or ml#2045's next morning, which remain the Overtoad's to confirm (Still owed, item
         15).
-      - Lane R5-B found the exchange; `util/ad-hoc/2026-09-24_owner_answer_extract.py` prints it, redacted,
+      - Lane R5-B found the exchange; `util/ad-hoc/2026-09-24_Overtoad_answer_extract.py` prints it, redacted,
         from lines 4227 and 4260 of that session's transcript.
   - **What landed.** `git diff e9053227^ e9053227` equals `git diff 4b4cfb16^ 4b4cfb16` byte for byte outside the
     `index` and hunk-offset lines (445 lines each, `cmp` exit 0). The change round 3 reviewed is the change on
@@ -9394,7 +9394,7 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   (`src/backend/cascor_service_adapter.py:1960-1991`) still rebuilds each row without `weights`. The CAN-015g/h
   design note (`JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`) now carries the dated
   correction item 26 required: g-3 never reached `main`. With that it no longer records the stream as shipped, and
-  the owner's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1
+  the Overtoad's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1
   (`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`) and the 2026-05-05 audit's §5.2 (`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md`), which had said "shipped end-to-end
   on `main`" while its own §11.4 confirmed only g-1 and g-6, carry the same correction since Phase 13's rounds 1
   and 2, and the roadmap's CAN-015 row and the audit's three restatements (its §5.2 Status delta, §8.1 and §11.7
@@ -9611,7 +9611,7 @@ Phase 7's list, with items 1, 3 and 4 closed or converted:
   base URL, Stop included, so it too left cascor replaying (Phase 1 ended that session with a direct API stop).
   It was rated P1 and is fixed. What this one adds is that no session view appears at all. §6.3's words give
   P0 to a finding that blocks the workflow, which would cover F-CANOPY-014 too; which rating replay findings
-  take is an owner question (Still owed, item 15).
+  take is an Overtoad question (Still owed, item 15).
 - **Not yet driven live.** A drive starts a replay, which writes the cascor it runs against; the shared trio's
   must not be written. The fix and its live check are Still owed item 16.
 
@@ -9663,8 +9663,8 @@ All are under `util/ad-hoc/`:
     moved `main` must re-apply it (Lanes R2-F and R2-B).
   - `2026-09-24_phase9_ledger_round2_corrections.py`: round 2's pass, entirely scripted; rounds 3 to 10's
     passes are `…_round{3,4,5,6,7,8,9,10}_corrections.py`, likewise.
-  - `2026-09-24_owner_answer_extract.py`: prints chosen records of a session transcript, redacted; round 5
-    used it for the owner's answer ("Who", above). Round 6 widened its secret shapes, and the launch scan's and
+  - `2026-09-24_Overtoad_answer_extract.py`: prints chosen records of a session transcript, redacted; round 5
+    used it for the Overtoad's answer ("Who", above). Round 6 widened its secret shapes, and the launch scan's and
     the archive tool's, after Lane R6-B found `sk-ant-…` keys passing it; round 7 set the bare `sk-` floor to
     20 characters in all four shape-bearing tools (round 6 had raised the extractor's from 20 to 32, and the
     other three had used 32 since they were written; Lanes R7-B, R8-A and R8-B). `2026-09-24_secret_shape_check.py` tests all three,
@@ -9775,7 +9775,7 @@ All are under `util/ad-hoc/`:
       precedent;
     - the launch scan's pattern and counts (44 background launches on 09-23 and 40 naming one PR, where 38
       and 34 stood), after it missed the converge driver; the conclusion held;
-    - the owner question's evidence: commits signed locally with the owner's key inside the quiet window, and
+    - the Overtoad question's evidence: commits signed locally with the Overtoad's key inside the quiet window, and
       the same arming pattern that morning;
     - F-CANOPY-057's history: cascor#184 reached `main` through its retarget, #189;
     - the per-request ranges (3–5 s and 7–8 s, not "±"), two merge dates now in UTC, two line numbers, the
@@ -9798,7 +9798,7 @@ All are under `util/ad-hoc/`:
     script is exact, and the REPLAYING lock-in, the Reset escape, #184, the dates, the line numbers and
     `800c20bb` held.
   - **What round 4 changed:**
-    - the owner question's evidence, stated with bounds: arms like the pass's ran twice earlier that day, on at
+    - the Overtoad question's evidence, stated with bounds: arms like the pass's ran twice earlier that day, on at
       least twelve PRs (round 5 found a third occasion and at least 20 PRs); ml#2045's 00:00Z push was a
       fast-forward of 29 signed commits, not a force-push; and one touch of the key can sign a burst;
     - F-CANOPY-014's precedent: it too left cascor replaying, so only the missing session view separates the
@@ -9825,19 +9825,19 @@ All are under `util/ad-hoc/`:
     script is exact, both launch-scan outputs regenerate byte-identical, and the counts, F-CANOPY-014's
     precedent, item 17, the F-CANOPY-015 pointer, the REPLAYING refusals and the signed-commit facts held.
   - **What round 5 changed:**
-    - the owner question, answered four minutes after the freeze for the sweeper that readied and armed the
+    - the Overtoad question, answered four minutes after the freeze for the sweeper that readied and armed the
       drafts it named (R5-B): "Who", item 15 and "What the evidence cannot support" record the answer and its
       scope;
     - the arm census: at least three earlier occasions and at least 20 PRs, where two and twelve stood; three
       later background launches, not two, the two `safe_merge` runs re-arming canopy#670 after its disarms;
-      and ml#2045's 03:02:06Z push of three commits signed with the owner's key;
+      and ml#2045's 03:02:06Z push of three commits signed with the Overtoad's key;
     - the status bar's cause: its own `else` (and, on a page slower than its tick, F-CANOPY-055's frozen
       layout default), not `state_sync.py:177`; item 16's check now reads `fsm_status` and the badge;
     - the push tool's group sizes, the scan's round-3 forms and its docstring (the forms it still misses), and
       item 13's account of the FAQ's old error and of the follow-up's review, which terminated at round 8;
     - the ledger's changes all in `util/ad-hoc/2026-09-24_phase9_ledger_round5_corrections.py`, with no hand
       edit to the ledger.
-  - **Re-derived before applying (round 5):** the owner's question and answer (lines 4227 and 4260 of
+  - **Re-derived before applying (round 5):** the Overtoad's question and answer (lines 4227 and 4260 of
     `bc31e993`'s transcript); the events of ml#2059, canopy#676 and canopy#678; canopy#670's arms and
     disarms, ml#2041's single arm, the 13:35:20Z foreground command and the three background rows; the arms
     of ml#2013, deploy#228 and ml#2057; the status bar's `else` and layout default; ml#2045's 03:02:06Z push
@@ -9853,7 +9853,7 @@ All are under `util/ad-hoc/`:
     count, time and source line round 5 added held except two, the question's time and the count of drafts
     (R6-A's finding 1, R6-B's finding 2); the signing key of the 03:00Z commits held too.
   - **What round 6 changed:**
-    - the owner's answer: the question's time (03:34:45Z; 07:32:48Z is the answer), the three of its four PRs
+    - the Overtoad's answer: the question's time (03:34:45Z; 07:32:48Z is the answer), the three of its four PRs
       that were drafts, and one statement of its scope, in "Who", which item 15 and "What the evidence cannot
       support" now follow;
     - "whatever cascor reports": F-CANOPY-055 freezes the bar on some pages, not on every page (whether only on
@@ -9963,7 +9963,7 @@ All are under `util/ad-hoc/`:
   - "no watchdog false fire" in the census, which it does not record;
   - who re-ran #676's CI, or took the account's other later actions, beyond "no Claude Code process on this
     host" (foreground calls and background launches whose command lines match a pattern, which a script run
-    by an unnamed path escapes): the owner's answer covers the sweeper that readied and armed the drafts it
+    by an unnamed path escapes): the Overtoad's answer covers the sweeper that readied and armed the drafts it
     named, and names neither; #676's own ready and arm are tied to that sweeper by the pass's pattern, not by
     the answer;
   - any browser other than headless GPU Chromium on one Linux host.
@@ -10042,7 +10042,7 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
        check, and the live drive saw no echo request.
      - F-CANOPY-057 stays open, and is P2 since canopy#684 (its status).
 8. **M-CANDIDATES-10/-11** (Phase 8 item 9), now re-drivable (Phase 7 item 10).
-9. Unchanged (Phase 8 item 10; Phase 7 item 11): M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16
+9. Unchanged (Phase 8 item 10; Phase 7 item 11): M-DATASET-17..26 (the Overtoad's question), the M-TOPOLOGY-16
    fade half, and F-038's browser-level test gap.
 10. **Owner question**: the metrics replay drives no chart (Phase 8 item 11).
 11. **The starvation mechanism, re-derived under FIFO** (Phase 8 item 12). Unstarted; canopy's comment at
@@ -10087,15 +10087,15 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
       (item 0).
     - Size the window, and any verdict floor, to the lane's cadence, fixed before the run. The census's "≥ 10
       responses" assumed a 1 Hz lane and VOIDed a fix that self-clocks at ~7.5 s.
-15. **New: owner questions and loose ends from #676's merge.**
+15. **New: Overtoad questions and loose ends from #676's merge.**
     - **Answered for the sweeper (2026-09-24):** the sweeper that readied and armed the drafts the question
-      named is the owner's, and the owner called their merges intended; the pass's other drafts, #676 included,
-      share its pattern but were not named ("Who", above, gives the answer's scope). Still the owner's to
+      named is the Overtoad's, and the Overtoad called their merges intended; the pass's other drafts, #676 included,
+      share its pattern but were not named ("Who", above, gives the answer's scope). Still the Overtoad's to
       confirm, because the question did not name them: the account's later actions, which are the update-branches on ml#2066 and data#434
       (23:16–23:17Z), ml#2045's disarm and re-arm (23:48Z), cascor-worker#196's merge (01:21:37Z) and #676's CI
       re-run (01:22:32Z), without which its armed merge could not fire; and ml#2045's draft and ready the next
       morning (03:04–03:05Z). No Claude Code process on this host did any of them, while commits signed with the
-      owner's key landed at 21:45:22Z, 23:47:30Z, 23:57–00:00Z and 03:00–03:02Z. Lane R2-F reports interactive
+      Overtoad's key landed at 21:45:22Z, 23:47:30Z, 23:57–00:00Z and 03:00–03:02Z. Lane R2-F reports interactive
       git activity in host reflogs from about 21:39Z to 00:07Z (not re-derived). What follows for this arc: a
       disarm, a draft or a comment does not hold a PR, so a PR that must be validated before it merges is
       validated before it is opened.
@@ -10129,7 +10129,7 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
     `stop_replay()` restores the earlier one, and `_auto_snap_best` is off by default (`:1472`). So a Replay
     discards an unsaved trained network, while canopy's Replay modal promises "a read-only playback session"
     (`hdf5_snapshots_panel.py:533`), as does the proxy route's docstring (`main.py:2985`). The canopy
-    follow-up's FAQ note warns of it. Triage it: canopy's wording, cascor's design, or both (the owner).
+    follow-up's FAQ note warns of it. Triage it: canopy's wording, cascor's design, or both (the Overtoad).
 
 ## Phase 10 — 2026-10-04: the peer arcs' hand-overs filed — F-CANOPY-060 to -067, two of them P1, one conditionally; two declined; a Phase 1 PASS corrected
 
@@ -10157,7 +10157,7 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
   - F-CANOPY-067 (P2 pending a live drive, OPEN): the relay forwards cascor's `initial_metrics` burst
     unnormalized, so those rows paint loss and accuracy as 0. By source the zeros can persist, which would
     make it P1 (Still owed, item 18). Found by round 1 of this phase's validation, not handed over.
-- **Two declined:** the selection arc's O4 (an environment artifact) and O9 (a design question, the owner's).
+- **Two declined:** the selection arc's O4 (an environment artifact) and O9 (a design question, the Overtoad's).
 - **F-CANOPY-057 re-rated P2.** canopy#684 corrected the manual and FAQ that its P1 rested on, the re-rating
   its entry said was owed with that merge (found in round 2).
 - **Counts** (`e2e_finding_triage.py`): 78 findings, 53 fixed, 1 accepted, 2 withdrawn, **22 open**; no open
@@ -10172,10 +10172,10 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
 | F-CANOPY-062 | the same (id reserved): that validation's LOW 4 | canopy#685's PR body, row 4 | filed, P2, FIXED by canopy#685 |
 | "Nothing was loaded" | the same, no id reserved | that arc's session `bc31e993` (`defect reg [042116]`) | filed as F-CANOPY-063, P2, OPEN; one half declined |
 | O2 | the canopy selection arc's A-N2 run | `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md` § "Observations (not A-N2 failures)" | filed as F-CANOPY-064, P1, OPEN |
-| O3 | the same | the same | filed as F-CANOPY-065, P1 if the owner's question goes that way (re-rated in round 1), OPEN |
+| O3 | the same | the same | filed as F-CANOPY-065, P1 if the Overtoad's question goes that way (re-rated in round 1), OPEN |
 | O4 | the same | the same | declined: an environment artifact |
 | O5 | the same | the same | filed as F-CANOPY-066, P2, OPEN |
-| O9 | the canopy selection arc | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-24_canopy-selection-four-rulings-shipped-cleanup-and-carry-forwards-remain.md:76-81` | declined: a design question for the owner |
+| O9 | the canopy selection arc | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-24_canopy-selection-four-rulings-shipped-cleanup-and-carry-forwards-remain.md:76-81` | declined: a design question for the Overtoad |
 
 The A-N2 run's O1 is F-CANOPY-055. Its O6, O7 and O8 were not handed over. F-CANOPY-067 was not handed over
 either: round 1 of this phase's validation found it (Consensus record, below).
@@ -10403,11 +10403,11 @@ either: round 1 of this phase's validation found it (Consensus record, below).
   first, on unfixed `main` (Still owed, item 18). Whether cascor should label rows by the work that
   produced them is cascor's question; canopy's fix should not depend on the answer.
 
-**F-CANOPY-065 — `/api/set_params`'s `applied` list omits every key sent over `/ws/control`, so the apply toast canopy 0.6.0 promised never reports a key cascor declines there: canopy's partition extractor never looks where cascor's WS ack carries the partition (P1 if a shipped CHANGELOG or design-plan promise counts as documented, else P2, the first limb of the owner's question; canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**
+**F-CANOPY-065 — `/api/set_params`'s `applied` list omits every key sent over `/ws/control`, so the apply toast canopy 0.6.0 promised never reports a key cascor declines there: canopy's partition extractor never looks where cascor's WS ack carries the partition (P1 if a shipped CHANGELOG or design-plan promise counts as documented, else P2, the first limb of the Overtoad's question; canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**
 
 - **Status 2026-10-19 (Phase 13): not reached by canopy's manual.** At canopy `main` `571743db` the manual says
   only that edits are staged until **Apply** and that the Parameters tab shows the applied values
-  (`docs/USER_MANUAL.md:267-269`); no sentence describes what the toast reports. The rating stays with the owner's
+  (`docs/USER_MANUAL.md:267-269`); no sentence describes what the toast reports. The rating stays with the Overtoad's
   first limb, which after Phase 13 decides this entry alone among the findings Phase 11 named (Phase 13, Matrix
   effect and counts).
 - **Observed** (A-N2, `02_gaussian/03_set_params_caps.json`, 2026-09-23T19:38:06.747Z). The request set five
@@ -10455,7 +10455,7 @@ either: round 1 of this phase's validation found it (Consensus record, below).
   `CHANGELOG.md:1975-1980`). The defects plan says canopy renders both sets
   (`JUNIPER_2026-07-11_JUNIPER-CANOPY_TRAINING-RUNTIME-DEFECTS-PLAN.md:311`). On the default WS leg that
   example never appears. No manual or REFERENCE text makes this promise, so the P1 holds only if a shipped
-  CHANGELOG or design-plan promise counts as documented under plan §6.3, the owner's question (Consensus
+  CHANGELOG or design-plan promise counts as documented under plan §6.3, the Overtoad's question (Consensus
   record); if not, F-CANOPY-065 is P2. Round 1 also cited F-CANOPY-057 as a precedent. Round 2 withdrew that:
   F-CANOPY-057's P1 rested on the manual, and has lapsed (its status). The values themselves land.
 - **Fix direction:** unwrap the ack in `_apply_params_hot`, and keep the two legs' partitions apart instead of
@@ -10581,7 +10581,7 @@ either: round 1 of this phase's validation found it (Consensus record, below).
     says why: "so the left menu reflects the actually-selected type" (`:1329-1331`, N7/U-6).
   - An Apply Dataset leaves the same state. The selection arc found the routes honest (`current_dataset`
     against `pending_dataset`), and the pending banner says that a dataset is staged.
-  - Whether "Current Dataset" should tell staged from loaded is the owner's design question (the consolidated
+  - Whether "Current Dataset" should tell staged from loaded is the Overtoad's design question (the consolidated
     handoff's C4), not a defect.
 
 ### Instruments
@@ -10637,10 +10637,10 @@ out otherwise.
   executions were not re-run by the orchestrator. Their scripts are archived as
   `util/ad-hoc/2026-10-04_phase10_r1_{a2,b1,b2}_*` (25 files) by
   `util/ad-hoc/2026-10-04_archive_phase10_lane_probes.py`.
-- **Unresolved, for the owner:** whether a CHANGELOG or design-plan promise counts as "documented" under plan
+- **Unresolved, for the Overtoad:** whether a CHANGELOG or design-plan promise counts as "documented" under plan
   §6.3. Lane 10-B1 read it so. If it does not, F-CANOPY-065 returns to P2. Round 1 also named F-CANOPY-057
   here; round 2 removed it, because its P1 rested on the manual and has lapsed.
-- **Slips.** Lanes 10-A2 and 10-B2 each printed a commit's author line, which carries the owner's e-mail
+- **Slips.** Lanes 10-A2 and 10-B2 each printed a commit's author line, which carries the Overtoad's e-mail
   address, into their own local tool output (`git show --stat`). Neither repeated or sent it, and the archived
   reports hold no e-mail-shaped string.
 - **What the evidence cannot support.** Nothing in this phase was driven live. F-CANOPY-064's tile,
@@ -10662,7 +10662,7 @@ out otherwise.
   - one disposition, outside Phase 10: F-CANOPY-057, P1 to P2. Its own entry said that re-rating was owed with
     canopy#684, which had merged (both lanes);
   - the counts: 7 to 6 open P1, 15 to 16 open P2;
-  - F-CANOPY-065's P1, now stated as conditional on the owner's question, with the F-CANOPY-057 precedent
+  - F-CANOPY-065's P1, now stated as conditional on the Overtoad's question, with the F-CANOPY-057 precedent
     withdrawn (both lanes);
   - F-CANOPY-067's triggers. A switch back to CasCor (W8 step 13) fires it (both lanes; round 3 added: only
     when the swap is real). A cascor restart's burst is empty, so a check induced that way could not have
@@ -11036,7 +11036,7 @@ on each transcript; where two figures are given, they are the first run's and th
 
 ### New findings
 
-**F-CANOPY-068 — canopy's metrics-store strand watchdog re-enables a lane that has not stranded: it samples the lane's `disabled` on the 5 s slow lane and restarts its 30 s clock only on a sample that finds the lane enabled, so when the feeder's cycle is close to 5 s its samples keep landing on requests in flight; on canopy `main` it fired 13 and 15 times in two 25-minute runs, each time during a fetch, which its own comment says it must never do, and 7 of the 28 fires evicted a response, 6 of them starting F-CANOPY-058 cascades (P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2, the second limb of the owner's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census; re-rated P1 in round 1 of this phase's validation; FIXED by canopy#731 (the watchdog removed), merged 2026-10-09 as `25c5c887`, in canopy 0.9.0; verified live on the branch at `2689a207` 2026-10-08, Phase 12).**
+**F-CANOPY-068 — canopy's metrics-store strand watchdog re-enables a lane that has not stranded: it samples the lane's `disabled` on the 5 s slow lane and restarts its 30 s clock only on a sample that finds the lane enabled, so when the feeder's cycle is close to 5 s its samples keep landing on requests in flight; on canopy `main` it fired 13 and 15 times in two 25-minute runs, each time during a fetch, which its own comment says it must never do, and 7 of the 28 fires evicted a response, 6 of them starting F-CANOPY-058 cascades (P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2, the second limb of the Overtoad's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census; re-rated P1 in round 1 of this phase's validation; FIXED by canopy#731 (the watchdog removed), merged 2026-10-09 as `25c5c887`, in canopy 0.9.0; verified live on the branch at `2689a207` 2026-10-08, Phase 12).**
 
 - **Status 2026-10-19: FIXED by canopy#731 (Phase 12).** The watchdog and `METRICS_STORE_STRAND_TIMEOUT_MS` are
   removed. A request that never gets a response is re-issued by its own age, past a stale bound of
@@ -11045,7 +11045,7 @@ on each transcript; where two figures are given, they are the first run's and th
   which is the structural expectation, not a measurement, since the fire detector has nothing left to see; the
   real-renderer check's 10 idle minutes on a lane whose cycle was near 5 s issued no stale re-issue, where the
   guard-and-watchdog control fired 4 times. canopy's CHANGELOG `[0.9.0]` carries the correction to the `[0.8.0]`
-  description. The rating's condition, the second limb of the owner's question, now decides this entry's rating
+  description. The rating's condition, the second limb of the Overtoad's question, now decides this entry's rating
   of record only; it moves no count (Phase 12, Matrix effect and counts).
 - **The watchdog** is the repair for a lane stranded by a request that never gets a response
   (`dashboard_manager.py:2497-2555` at canopy `60ae1870`). It is a clientside callback on `slow-update-interval`
@@ -11092,7 +11092,7 @@ on each transcript; where two figures are given, they are the first run's and th
   time. 28 of the 29 evicted responses followed a false fire. Without F-CANOPY-058, an evicting false fire would
   cost one answer, a cycle's delay; the longer stalls are F-CANOPY-058's.
 - **Rating: P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2**, the
-  second limb of the owner's question: whether its first, Phase 10's question, which decides F-CANOPY-065, extends
+  second limb of the Overtoad's question: whether its first, Phase 10's question, which decides F-CANOPY-065, extends
   to such a description.
   Plan §6.3's P1 is "breaks a documented behaviour", and canopy's shipped CHANGELOG describes the behaviour
   these fires break (Its own contract, above). If such a description does not count, it is P2: on its own it
@@ -11224,7 +11224,7 @@ on each transcript; where two figures are given, they are the first run's and th
   round 2.
 - **What round 1 changed:**
   - one rating: F-CANOPY-068, from P2 to P1 if a shipped CHANGELOG promise counts as documented, else P2 (Lane
-    11-B2), the owner's question F-CANOPY-065 already carries; round 2 split that question, and F-CANOPY-068's
+    11-B2), the Overtoad's question F-CANOPY-065 already carries; round 2 split that question, and F-CANOPY-068's
     rating now rests on its second limb. The counts move to 7 open P1 and 16 open P2.
     Lane 11-B1, on the opposite brief, kept F-CANOPY-068 a finding of its own: the gate and the second Input
     stay inside F-CANOPY-058 because they do what they are specified to do, and the watchdog does not;
@@ -11263,12 +11263,12 @@ on each transcript; where two figures are given, they are the first run's and th
   sets `has_update` from `has_output`, which is true for any callback with an Output (`:640-645`), so the answer
   is a 200 with empty data, as F-CANOPY-058's entry says. Lane 11-A1's other two points on the shim's docstring
   stand.
-- **Unresolved, for the owner:** Phase 10's question, whether a CHANGELOG or design-plan promise counts as
+- **Unresolved, for the Overtoad:** Phase 10's question, whether a CHANGELOG or design-plan promise counts as
   documented under plan §6.3, which decides F-CANOPY-065's rating; and, since round 2 (Lane 11-R2B), a second
   limb: if it does, whether that extends to a CHANGELOG's description of an internal mechanism, which decides
   F-CANOPY-068's. Since rounds 3 and 4, the first limb is known to reach further than F-CANOPY-065 (Matrix effect
   and counts; item 26).
-- **Slips.** Lanes 11-A2, 11-A3 and 11-B2 each printed a commit's author line, which carries the owner's e-mail
+- **Slips.** Lanes 11-A2, 11-A3 and 11-B2 each printed a commit's author line, which carries the Overtoad's e-mail
   address, into their own local tool output (`git show --stat`). None repeated or sent it.
 - **What the evidence cannot support.** Two idle pages on one host, about 25 minutes each: no rate for a page
   during training, with a live stream or in a full view; nothing live on dash 4.4.1; no stall of minutes on
@@ -11286,11 +11286,11 @@ on each transcript; where two figures are given, they are the first run's and th
   - Their own probes are archived as `util/ad-hoc/2026-10-05_phase11_r2_{a,b}_*.py` (16 files) by
     `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 2`.
 - **Verdicts.** Both returned SOUND-WITH-FIXES. Lane 11-R2A's two NITs change nothing; Lane 11-R2B's findings
-  change numbers (the counts for each ruling, and the horizon) and actions (the owner's question, and item 25's
+  change numbers (the counts for each ruling, and the horizon) and actions (the Overtoad's question, and item 25's
   method), so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires
   round 3.
 - **What round 2 changed:**
-  - the owner's question. F-CANOPY-065's P1 rests on a shipped CHANGELOG or design-plan promise of something a
+  - the Overtoad's question. F-CANOPY-065's P1 rests on a shipped CHANGELOG or design-plan promise of something a
     user sees, the toast; F-CANOPY-068's on a CHANGELOG's description of an internal mechanism. So the question
     gains a second limb, and the counts are given for each ruling: 7 open P1 and 16 open P2 if both are P1, 6 and
     17 if F-CANOPY-065 alone, 5 and 18 if neither (Lane 11-R2B);
@@ -11316,7 +11316,7 @@ on each transcript; where two figures are given, they are the first run's and th
   longest waits for the next request, each at the census's T-tab activity; Lane 11-R2B's pairing mutation, now the
   trace's fifth self-test, and the new flag's count, 0, in both runs.
 - **Slips.** Lane 11-R2B's `git log --format=%B` of canopy `06d8607e` printed a co-author trailer holding a
-  generic bot no-reply address, not the owner's, into its own local output. Lane 11-R2A reported none.
+  generic bot no-reply address, not the Overtoad's, into its own local output. Lane 11-R2A reported none.
 
 - **Round 3**: two lanes on the frozen `7af6a381`, briefed on round 2's corrections only, from one brief,
   `reports/e2e-canopy-2026-09-02/drafts/lane11R3_phase11_ledger_brief.md`. The reports, verbatim, are in
@@ -11331,7 +11331,7 @@ on each transcript; where two figures are given, they are the first run's and th
     `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 3`.
 - **Verdicts.** Both returned SOUND-WITH-FIXES. Their findings change a disposition (the condition F-CANOPY-068's
   rating is stated to rest on), numbers (the counts each ruling gives, and F-CANOPY-058's horizon as worded) and
-  actions (the owner's question's reach, and items 24 and 26), so §4 of
+  actions (the Overtoad's question's reach, and items 24 and 26), so §4 of
   `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 4.
 - **What round 3 changed:**
   - the two limbs, carried further. F-CANOPY-068's header, the Summary and the Rating's lead gave the first
@@ -11387,8 +11387,8 @@ on each transcript; where two figures are given, they are the first run's and th
     `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 4`. A second run of the CodeQL pass,
     `--round r4`, fixed the 7 alerts the prescreen predicted on them.
 - **Verdicts.** Both returned SOUND-WITH-FIXES. Both found that the reach left out F-CANOPY-012, which changes an
-  action (the reach put to the owner, and item 26). Lane 11-R4B's MINOR on the first limb also changed an action,
-  the question put to the owner, and under one ruling F-CANOPY-068's rating and a count. So §4 of
+  action (the reach put to the Overtoad, and item 26). Lane 11-R4B's MINOR on the first limb also changed an action,
+  the question put to the Overtoad, and under one ruling F-CANOPY-068's rating and a count. So §4 of
   `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 5.
 - **What round 4 changed:**
   - the reach. F-CANOPY-012 is within reach of the first limb through the CAN-015g/h note, which records h-5, the
@@ -11554,9 +11554,9 @@ New items:
     method on the synthetic check before a live run; and score each as described under Instruments. Then run, on
     `main` or on item 0's fix, the four triggers these runs could not test as scored triggers: the gate, a tab
     switch, the end of an Apply (with the clamp defeat) and a second-Input change in mid-request.
-26. **The reach of the owner's §6.3 ruling, and canopy's manual.** First, without waiting for the ruling, check
+26. **The reach of the Overtoad's §6.3 ruling, and canopy's manual.** First, without waiting for the ruling, check
     every open finding against canopy's manual, which §6.3 already counts, starting with F-CANOPY-012 and
-    F-CANOPY-013 (Matrix effect and counts). Once the owner rules, check each open finding not yet rated on a
+    F-CANOPY-013 (Matrix effect and counts). Once the Overtoad rules, check each open finding not yet rated on a
     CHANGELOG or a design plan for a promise, or, if the ruling counts it, a description of an internal
     mechanism, of the behaviour it breaks. Start with F-CANOPY-057, F-CANOPY-018, F-CANOPY-012 and F-CANOPY-013, and re-rate what the ruling
     reaches. Whatever the ruling, the CAN-015g/h design note's "every CAN-015g item has merged to `main`" needs a
@@ -11574,7 +11574,7 @@ New items:
   Input of the pacer, compared by value. It was squash-merged on 2026-10-09T02:27:27Z as `25c5c887`, after three
   review rounds, and shipped in **canopy 0.9.0** (CHANGELOG dated 2026-10-10; GitHub Release published 2026-10-17T19:45:37Z
   at `bd001153`; on PyPI when this phase was written).
-- **Three findings are FIXED**: F-CANOPY-055 (P1), F-CANOPY-058 (P1) and F-CANOPY-068 (P1 or P2 by the owner's
+- **Three findings are FIXED**: F-CANOPY-055 (P1), F-CANOPY-058 (P1) and F-CANOPY-068 (P1 or P2 by the Overtoad's
   ruling). Each is fixed in code on the merge and verified live on the branch at `2689a207`, the fourth commit,
   on 2026-10-08, within the limits in "What VERIFIED LIVE rests on" below. No live run has been made on the merged
   tree or on the 0.9.0 wheel.
@@ -11999,14 +11999,14 @@ the predicate is gone, and the pacer's own rule runs under node.
 - **Counts**, from `e2e_finding_triage.py`: **79 findings**, 56 fixed, 1 accepted, 2 withdrawn, **20 open**.
   - **No open P0.**
   - **4 open P1:** F-CANOPY-064, F-CANOPY-065, F-CASCOR-001 and F-CASCOR-002. F-CANOPY-065 is P1 only if a shipped
-    CHANGELOG or design-plan promise counts as documented, the first limb of the owner's question: by that ruling
+    CHANGELOG or design-plan promise counts as documented, the first limb of the Overtoad's question: by that ruling
     alone, 4 open P1 and 16 open P2, as the triage counts them, or 3 and 17.
   - **The second limb moves no count now.** It decides F-CANOPY-068's rating of record, which stays "P1 if … else
-    P2" in its header, with FIXED after it. O17 of the owner batch still asks both limbs, because the first reaches
+    P2" in its header, with FIXED after it. O17 of the Overtoad batch still asks both limbs, because the first reaches
     F-CANOPY-057, F-CANOPY-018, F-CANOPY-012 and F-CANOPY-013 (Phase 11, item 26), and the second is the record.
   - **16 open P2**, unchanged. Of the three findings Phase 11 named within the first limb's reach, and F-CANOPY-013,
     none is touched by this phase.
-- **Plan §6.3's Phase 2 exit criterion**, every P0 and P1 closed or explicitly deferred with owner sign-off, now
+- **Plan §6.3's Phase 2 exit criterion**, every P0 and P1 closed or explicitly deferred with Overtoad sign-off, now
   waits on four P1s: F-CANOPY-064 (item 18), F-CANOPY-065 (item 20 and the ruling), and the two cascor findings,
   which are not this arc's to fix.
 
@@ -12048,7 +12048,7 @@ New items:
     latency on a page that does not train; that ask has no venue and is unmet by design (round 2, Lane 12-R2B).
     Record the result in F-CANOPY-025's and F-CANOPY-055's entries.
 28. **The first live run on the shipped pacer.** When the trio's canopy `:8051` is next restarted on 0.9.0 or
-    later (the owner's call, O13), or on any leg serving the merged tree, re-run the F-058 census through the
+    later (the Overtoad's call, O13), or on any leg serving the merged tree, re-run the F-058 census through the
     wrapper and the status-bar census once each, 25 minutes and 60 s, as a check that the merged tree behaves as
     the branch did; and, on a leg that may be restarted, inject one failure (stop the leg for 10 s with a page
     open) and read how long the lane waits before its first applied answer, against the stale bound. This is the
@@ -12064,7 +12064,7 @@ New items:
 
 **Summary.**
 
-- **The check.** Phase 11's item 26 asks first, without waiting for the owner's §6.3 ruling (O17), that every open
+- **The check.** Phase 11's item 26 asks first, without waiting for the Overtoad's §6.3 ruling (O17), that every open
   finding be checked against canopy's manual, which plan §6.3 already counts as documentation ("P1 (breaks a
   documented behaviour)", `JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360`). This phase
   does that for all 20 open findings against `docs/USER_MANUAL.md` at canopy `main` `571743db` (2026-10-17T23:01:09Z,
@@ -12094,7 +12094,7 @@ New items:
   -034, -049, -051, -060, -063, -066, F-ML-002, and F-CANOPY-057, whose Replay Tab text says "Today no weight
   sample reaches the page"). Two were already P1 on other grounds, and the manual bears on neither (F-CASCOR-001,
   F-CASCOR-002). F-CANOPY-064's P1 already rests on the manual; the lines it cites have moved, not changed.
-  F-CANOPY-065 is not reached: no manual text describes the apply toast, so its rating stays with the owner's
+  F-CANOPY-065 is not reached: no manual text describes the apply toast, so its rating stays with the Overtoad's
   first limb. F-CANOPY-067's rating stays "P2 pending a live drive", its own condition; the manual documents the
   plots it would corrupt, so the live drive is all that is left to decide it, and one round-1 lane would rate it
   P1 by source today (Consensus record).
@@ -12103,7 +12103,7 @@ New items:
   API, and its two g-3 rows are annotated
   (`notes/JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`). F-CANOPY-057's defect was
   re-confirmed at both current `main`s while doing it.
-- **The owner's question narrows.** Of the three findings Phase 11 placed within the first limb's reach
+- **The Overtoad's question narrows.** Of the three findings Phase 11 placed within the first limb's reach
   (F-CANOPY-057, -018, -012) and F-CANOPY-013, which it left unsettled, three (F-CANOPY-012, -013, -018) are P1 by
   the manual without any ruling. F-CANOPY-057 was still recorded as shipped by two documents the design note's
   correction does not touch: the V7 roadmap's §28.1 and CAN-015 row
@@ -12128,7 +12128,7 @@ New items:
 
 - **Who.** This phase was written in juniper-ml worktree `federated-stargazing-blanket` on the same host as
   Phase 12 (no Juniper service listening, no reach to the trio), so it is a reading of documents, source and the
-  GitHub API, not a live phase. Nothing ran against a canopy. The owner granted merge approval for this phase's PR
+  GitHub API, not a live phase. Nothing ran against a canopy. The Overtoad granted merge approval for this phase's PR
   in the session that wrote it.
 - **The instrument** is a reading of one file against twenty ledger entries. For each open finding the manual
   section covering its surface was read in full (the Network Editor Tab for F-CANOPY-012 and -013; Configuration
@@ -12219,7 +12219,7 @@ with the same reasoning in brief.
   `⚠️ Unsaved changes` until a page reload, with nothing differing; Phase 4 traced it to three keys the dirty
   comparison read that the apply payload never wrote. That is the documented rule broken, P1. The toast the entry
   is named for the manual does not describe; canopy's 0.6.0 CHANGELOG does (`CHANGELOG.md:2360-2365` at
-  `571743db`), which is the owner's first limb and is no longer needed for this rating. **In code:** canopy#533.
+  `571743db`), which is the Overtoad's first limb and is no longer needed for this rating. **In code:** canopy#533.
 - **F-CANOPY-028.** The manual says the pin set "lives in browser local storage, so it survives a reload".
   Segment 15 measured it surviving the reload and being discarded by the first pin after it, because the writer
   replaced the store with the state of every rendered checkbox (Phase 4: the writer, not the rehydration, and the
@@ -12262,7 +12262,7 @@ The note now carries a dated correction under its status block, its header's Sta
 rows say the merges landed in a stacked base and not on `main`, and its "Last updated" is this date. Nothing else
 in the note was re-verified; the correction is scoped to g-3 and to the "decision-boundary animation with
 per-unit weight evolution" its summary describes, which has not shipped. With that, the note no longer records
-the weight stream as implemented, and F-CANOPY-057 is not within reach of the owner's first limb through it; its
+the weight stream as implemented, and F-CANOPY-057 is not within reach of the Overtoad's first limb through it; its
 P2 rests on the manual's and the FAQ's current text, as since Phase 10 (the FAQ's status note of 2026-09-24 was
 re-read at `571743db` in round 1, Lane 13-B).
 
@@ -12311,7 +12311,7 @@ would find.
   - Lane 13-A rated the twenty open findings from the manual first, with the entries read at `main` `ad6013f4` so
     the phase's ratings could not leak, then compared, then re-derived every manual, GitHub, source, triage, matrix
     and ledger fact. Its twenty ratings equal the phase's, and every fact held.
-  - Lane 13-B was adversarial on the re-ratings: each of the five, the ten not reached, the owner's question, the
+  - Lane 13-B was adversarial on the re-ratings: each of the five, the ten not reached, the Overtoad's question, the
     counts, item 30, and what was stated that was inferred.
   - Lane 13-C replayed the apply pass from `ad6013f4` (all six files byte-identical, no hand edit), checked the seven
     files against each other, the rest of the ledger, the matrix, the repo's tests and conventions and GitHub, and
@@ -12326,7 +12326,7 @@ would find.
   requires round 2. No lane refuted a re-rating, the triage's counts or any entry's disposition; one lane dissents
   on F-CANOPY-028 and on F-CANOPY-067 (below).
 - **What round 1 changed:**
-  - the owner's question: the V7 roadmap's §28.1 and CAN-015 row and the 2026-05-05 audit's activity line still
+  - the Overtoad's question: the V7 roadmap's §28.1 and CAN-015 row and the 2026-05-05 audit's activity line still
     recorded g-3 as shipped (Lane 13-B, MAJOR). §28.1 now carries the same dated correction as the design note
     (`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`: a note under
     the heading and the g-3 row annotated), the audit is left as a dated snapshot (reversed in round 2), and the
@@ -12560,7 +12560,7 @@ would find.
     (item 30); F-CANOPY-064 is item 18; F-CANOPY-065 is item 20 and the first limb; the two cascor findings are
     not this arc's to fix.
   - **11 open P2.**
-  - **The owner's question** (O17): the first limb decides F-CANOPY-065 alone among the findings Phase 11 named,
+  - **The Overtoad's question** (O17): the first limb decides F-CANOPY-065 alone among the findings Phase 11 named,
     every site that recorded F-CANOPY-057's stream as shipped now corrected or pointed at the correction (three
     sections corrected, four restatements pointed): 9 open P1
     and 11 open P2 if a shipped CHANGELOG or design-plan promise counts as documented, as the triage counts them;
@@ -12570,7 +12570,7 @@ would find.
     round-1 lane rates P1 by source today, one P1 more, 10 and 10 by that reading alone. F-CANOPY-012's
     counter-reading, that the manual's "lets CasCor validate the exact target shape" makes a shape rejection the
     documented outcome, is weaker and no lane adopted it.
-- **Plan §6.3's Phase 2 exit criterion**, every P0 and P1 closed or explicitly deferred with owner sign-off, now
+- **Plan §6.3's Phase 2 exit criterion**, every P0 and P1 closed or explicitly deferred with Overtoad sign-off, now
   waits on nine P1s instead of four. Five of the nine can move without a design: four re-drives of merged fixes
   and one re-drive that closes or re-diagnoses (item 30).
 
@@ -12579,7 +12579,7 @@ would find.
 Phase 12's list stands, items 0 to 29, with these changes:
 
 - **Item 26's first step is DONE**: every open finding has been checked against canopy's manual. Its second step
-  stays: once the owner rules, check each open finding not yet rated on canopy's CHANGELOG and the design plans
+  stays: once the Overtoad rules, check each open finding not yet rated on canopy's CHANGELOG and the design plans
   for a promise, or, if the ruling counts it, a description of an internal mechanism, of the behaviour it breaks.
   Of the findings Phase 11 named, F-CANOPY-065 is the one the ruling moves; the design note, the V7 roadmap's
   §28.1 and the 2026-05-05 audit's §5.2 carry the dated correction, and the roadmap's CAN-015 row and the audit's
@@ -13068,7 +13068,7 @@ New items:
 
 The session in juniper-ml worktree `sequential-coalescing-boot` on turing (macOS; Chrome 145 headless under
 Playwright's `chrome` channel; the CDN stylesheet aborted in the browser, so every page unstyled; no trio), from
-`HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`, with the owner's merge approval for the
+`HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`, with the Overtoad's merge approval for the
 session. Every leg served the E2 tree or a copy of it. The E2 tree was proved byte-identical to canopy `main` `571743db`
 for the files the item 32 script touches by `util/ad-hoc/2026-10-20_e2_tree_blob_sha_check.py` (git blob ids against
 the contents API), on 2026-10-20 before that script ran
@@ -13193,12 +13193,12 @@ documented. Owed as item 34, before the release that ships canopy#761.
     land after the second render, behind a screenshot; nothing holds the writer); item 31b's new manual sentence is
     wrong for the three 1-D patch targets; the handoff omitted ledger items 18–21, two of the four open P1s among
     them; item 33's recipe would not upgrade dash; item 27's drive never opens the Live Switch modal, so F-CANOPY-069's
-    gated click-through had no owner, and the recipe's leg would have stamped `571743db`.
+    gated click-through had no Overtoad, and the recipe's leg would have stamped `571743db`.
   - MINOR: wordings in F-CANOPY-069's blockquote (the alert's add time; response times read as alert lives; two of
     three new run dependencies; the floor's counter-position); F-CANOPY-028's stale-input example (a four-key analogue,
     not `early#2`'s 22-box body) and its M-PARAMETERS-06 claim (that row runs only in the `settled` arm); the eviction
     residual the fix leaves; the provenance sentence; the round-1 record's wording; statements true only at landing;
-    `--expected-head`'s owner; the screenshots; the driver's forced arm, whose timing changed between the passes;
+    `--expected-head`'s Overtoad; the screenshots; the driver's forced arm, whose timing changed between the passes;
     M-PARAMETERS-04's Expected cell; and an erratum to Phase 14's F-CANOPY-069 text: two callback pairs and three ids,
     not three pairs, and no registration overwritten (`callback_map` is keyed by each callback's whole output
     string; canopy#760's own `test_callback_map_and_served_list_agree` passes on `571743db`).
@@ -13271,7 +13271,7 @@ New items:
     Owner: re-sync the E2 tree to canopy `main` (`fbf01dff` or later; at `571743db` its floor
     is met by 3.3.0), then `pip install -e <tree>` with the E2 venv's interpreter
     (`~/.local/state/juniper/turing-e2/venvs/JuniperCanopy1`, a system-site venv over the conda env, holds the
-    editable canopy, pointing at the E2 tree); pip takes the newest dash 4.x (4.4.1 today) with `comm` and `janus`. Once the owner has pulled the canopy primary to `main`,
+    editable canopy, pointing at the E2 tree); pip takes the newest dash 4.x (4.4.1 today) with `comm` and `janus`. Once the Overtoad has pulled the canopy primary to `main`,
     `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py canopy --phase all` does the re-sync, that install
     (with the `[test,juniper-cascor,observability]` extras) and the lanes the E2 record cites in one run; on this
     route the conda env itself keeps dash 3.3.0, shadowed by the venv.

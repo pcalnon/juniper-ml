@@ -7,10 +7,10 @@ Application: ad-hoc operations tooling
 Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-16
-Status:      ad-hoc -- investigation (cascor-model required check, owner ruling 2026-11-16: juniper-recurrence's pattern)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status:      ad-hoc -- investigation (cascor-model required check, Overtoad ruling 2026-11-16: juniper-recurrence's pattern)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     prompts/thread-handoff_automated-prompts/
-             HANDOFF_2026-11-15_python-3-15-phase-2-complete-dill-drift-nightly-markers-cleanup.md (open owner question 1)
+             HANDOFF_2026-11-15_python-3-15-phase-2-complete-dill-drift-nightly-markers-cleanup.md (open Overtoad question 1)
 
 Why this exists
 ---------------

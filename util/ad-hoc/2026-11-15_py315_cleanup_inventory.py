@@ -8,9 +8,9 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-15
 Status:      ad-hoc -- one-off (cleanup of the Python 3.15 migration arc's worktrees)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md (Phase 4);
-             util/ad-hoc/2026-10-30_worktree_cleanup_keep_evidence.py (the owner's "evidence only" ruling of
+             util/ad-hoc/2026-10-30_worktree_cleanup_keep_evidence.py (the Overtoad's "evidence only" ruling of
              2026-10-30: keep tmp/ minus its regenerable parts);
              juniper-ml memory reference_worktree_remove_deletes_ignored_files.md
 

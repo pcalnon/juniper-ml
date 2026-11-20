@@ -3,7 +3,7 @@
 **Date**: 2026-09-10
 **Repo**: juniper-ml
 **Author**: Paul Calnon
-**Status**: closes §5's selection question; raises no new owner decision
+**Status**: closes §5's selection question; raises no new Overtoad decision
 
 Closes the item carried as §5 of
 [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md)
@@ -100,12 +100,12 @@ rather than only the 43 valid rows:
 The two extra content reads are **P18 (21:53) and P20 (21:52) — both already in the
 discarded 10**, and both already excluded for answer-key contamination.
 
-This tightens owner decision 8 of the 09-09 handoff — *whether the ledger leak invalidates
+This tightens Overtoad decision 8 of the 09-09 handoff — *whether the ledger leak invalidates
 its runs*. The full-corpus exposure is 3 runs, but 2 are already out of the corpus on an
 unrelated and stronger ground, so **the decision governs exactly one scored observation**:
 `P18-health-interval-non-positive`, 2026-08-22T21:41:09Z, recorded `follow`.
 
-That bounds what owner decision 8 can do. Computed with the repo's own
+That bounds what Overtoad decision 8 can do. Computed with the repo's own
 `util/soak_ledger.py` `wilson()` against its `DECISION_BOUNDARY = 0.75`:
 
 | corpus | k/n | rate | Wilson 95% | terminal? |
@@ -138,7 +138,7 @@ identifier-shaped-facts authoring rule violated a second time, in the document t
 **Not redacted here.** The quoted record is that note's evidence for a claim it makes; removing
 it would weaken the record to protect a measurement that has already been taken. Whether the
 soak's own working documents should be excluded from probe-reachable paths, or written so a
-subject's grep cannot hit them, is a registry/authoring decision in owner decision 1's
+subject's grep cannot hit them, is a registry/authoring decision in Overtoad decision 1's
 neighbourhood — raised, not ruled.
 
 ## 5. What this does not settle
@@ -149,7 +149,7 @@ neighbourhood — raised, not ruled.
   tool that states the wrong count is where the next reader will get it. Where the figure 8
   originally came from is still not recorded, and is not chased.
 - **Whether contamination should have been a *discard* rather than a scored outcome.** That
-  is the same family as owner decision 1 (whether index-recovery becomes a scored outcome)
+  is the same family as Overtoad decision 1 (whether index-recovery becomes a scored outcome)
   and is untouched.
 - **The 7 retired probes' runs.** Those have reasons; this note did not audit whether the
   reasons are good ones.
@@ -188,7 +188,7 @@ unrelated prose. Citations to that rule in this note and in
 ## 7. Documents
 
 - [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md)
-  — §5 (the open question), §3.F′ (the ledger leak), §6.8 (owner decision 8).
+  — §5 (the open question), §3.F′ (the ledger leak), §6.8 (Overtoad decision 8).
 - [`notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md`](JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md)
   — the mechanism re-audit and the 24/43 figure this note compares against.
 - [`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`](JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md)

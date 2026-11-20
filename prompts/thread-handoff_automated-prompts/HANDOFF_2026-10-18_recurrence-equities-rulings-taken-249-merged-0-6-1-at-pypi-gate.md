@@ -1,4 +1,4 @@
-# Thread Handoff — Recurrence × Equities: the owner rulings are taken, juniper-deploy#249 is merged, recurrence 0.6.1 is at its PyPI gate
+# Thread Handoff — Recurrence × Equities: the Overtoad rulings are taken, juniper-deploy#249 is merged, recurrence 0.6.1 is at its PyPI gate
 
 - **Date**: 2026-10-18
 - **Session**: "recurrence equities", run on host **turing** in the juniper-ml worktree `.claude/worktrees/unified-knitting-galaxy`
@@ -9,7 +9,7 @@
 
 ## Handoff goal
 
-Continue the arc from plan v1.7.0. **M1's code, publication and deployment halves are complete, and every open owner ruling is taken.** What is left is the owner's `pypi` gate for recurrence 0.6.1, two merges, and the P2–P5 work the rulings unblocked.
+Continue the arc from plan v1.7.0. **M1's code, publication and deployment halves are complete, and every open Overtoad ruling is taken.** What is left is the Overtoad's `pypi` gate for recurrence 0.6.1, two merges, and the P2–P5 work the rulings unblocked.
 
 ## Completed this session (2026-10-18)
 
@@ -18,7 +18,7 @@ Continue the arc from plan v1.7.0. **M1's code, publication and deployment halve
   - W5.8 (B) + W5.9 + W5.10 accepted for **recurrence 0.7.0 / model 0.5.0** (CHANGELOG Changed; W5.10 first, may ship in a 0.6.x); W5.11 declined;
   - F-P8 Major with the W5.7 guard; F-P4 re-rated Major (resolved);
   - milestone dates confirmed as written; **M1 does not wait for 0.6.1**; the juniper-ml `[recurrence]` floor moves to `>=0.6.1` once published;
-  - W0.1's service-core half: owner-run at the next cascor restart (checklist below);
+  - W0.1's service-core half: Overtoad-run at the next cascor restart (checklist below);
   - 2c: `${RUN_DIR}/snapshots`; juniper-ml#2227: fix and re-archive; canopy 5xx (#702/#738): annotate only; the extras PR was a concurrent session's (juniper-ml#2232, merged).
 - **juniper-deploy#249 merged** (squash of `980989e9`) through `util/safe_merge.py`, after the Linux-host session's smokes passed (8/8 and 3/3; outputs on #249). Compose and Helm now pin data 0.17.0 / recurrence 0.6.0 / canopy 0.9.0.
 - **recurrence 0.6.1** (the floors 0.6.0 shipped without, juniper-recurrence#206):
@@ -39,9 +39,9 @@ Continue the arc from plan v1.7.0. **M1's code, publication and deployment halve
    gh pr view 2238 --repo pcalnon/juniper-ml --json state     # MERGED (auto-merge fired 2026-10-18)
    ```
 
-   Then: a juniper-ml extras PR moving `[recurrence]` to `juniper-recurrence>=0.6.1` (owner ruling; lockstep files as in juniper-ml#2232: `pyproject.toml`, `tests/test_pyproject_extras.py`, `README.md`, `AGENTS.md`, `docs/QUICK_START.md`, `docs/REFERENCE.md`, `CHANGELOG.md`; pre-flight against PyPI on 3.12–3.14), and the owner's decision on whether the Compose pin follows to 0.6.1.
+   Then: a juniper-ml extras PR moving `[recurrence]` to `juniper-recurrence>=0.6.1` (Overtoad ruling; lockstep files as in juniper-ml#2232: `pyproject.toml`, `tests/test_pyproject_extras.py`, `README.md`, `AGENTS.md`, `docs/QUICK_START.md`, `docs/REFERENCE.md`, `CHANGELOG.md`; pre-flight against PyPI on 3.12–3.14), and the Overtoad's decision on whether the Compose pin follows to 0.6.1.
 2. **Merge juniper-ml#2239** once green. (#2235 was its first form, on a branch from `2719f7f3`; it conflicted with plan v1.6.2 once #2236 merged and was closed. #2239 starts from `8580153c`.) It carries plan v1.7.0 re-based on v1.6.2 after juniper-ml#2236 merged (`8580153c`); the edits are exact-string replacements, listed in the 1.7.0 change-log row.
-3. **Remove the merged juniper-deploy worktree** (owner, sibling-repo git is refused in agent sessions):
+3. **Remove the merged juniper-deploy worktree** (Overtoad, sibling-repo git is refused in agent sessions):
 
    ```bash
    ! git -C /Users/pcalnon/Development/python/Juniper/juniper-deploy worktree remove /Users/pcalnon/Development/python/Juniper/worktrees/juniper-deploy--chore--pin-recurrence-0.6.0-canopy-0.9.0--20261017-1945--541e65e

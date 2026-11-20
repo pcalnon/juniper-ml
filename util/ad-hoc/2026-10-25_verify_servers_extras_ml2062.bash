@@ -5,7 +5,7 @@
 # Author:       Paul Calnon
 # Created:      2026-10-25
 # Status:       ad-hoc — verification (juniper-ml#2062)
-# Retire when:  RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when:  RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:      juniper-ml#2062; util/ad-hoc/2026-10-25_servers_own_extras_ml2062.py (the fix);
 #               util/ad-hoc/2026-09-21_decision11_wheel_contract_probe.py (the instrument, which
 #               measured the defect on 2026-09-23)

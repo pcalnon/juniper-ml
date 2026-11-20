@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-04
-# Status      : ad-hoc — instrument check; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — instrument check; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """A scratch Dash app with canopy#613's lane wiring, for checking the F-CANOPY-058 census on known answers.
 

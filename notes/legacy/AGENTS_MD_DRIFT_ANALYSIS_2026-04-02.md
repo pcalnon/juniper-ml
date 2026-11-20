@@ -201,7 +201,7 @@ AGENTS.md only documents `.github/workflows/publish.yml`. The repository now has
 | `.gitattributes` | Git LFS tracking for image files (jpg, png, ico, xcf, svg, etc.) |
 | `MANIFEST.in` | Source distribution includes (`.gitignore`) |
 | `CHANGELOG.md` | Version history in Keep a Changelog format (latest: v0.3.0 on 2026-03-12) |
-| `.github/CODEOWNERS` | Code ownership: @pcalnon for all files |
+| `.github/CODEOWNERS` | Code Overtoadship: @pcalnon for all files |
 | `.github/dependabot.yml` | Automated dependency updates: pip (weekly) and github-actions (weekly) |
 
 ---

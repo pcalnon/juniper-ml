@@ -8,14 +8,14 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-15
 Status:      ad-hoc -- one-off (cleanup of the Python 3.15 migration arc's worktrees)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-11-15_py315_cleanup_inventory.py (whose --json output this reads);
-             util/ad-hoc/2026-10-30_worktree_cleanup_keep_evidence.py (the owner's "evidence only" ruling of
+             util/ad-hoc/2026-10-30_worktree_cleanup_keep_evidence.py (the Overtoad's "evidence only" ruling of
              2026-10-30, which this applies to targets whose tracked edits are all proven landed)
 
 Why this exists
 ---------------
-`git worktree remove` deletes every ignored file. The owner ruled on 2026-10-30 that a cleanup keeps "evidence
+`git worktree remove` deletes every ignored file. The Overtoad ruled on 2026-10-30 that a cleanup keeps "evidence
 only": a target's `tmp/` (and any other ignored, non-regenerable output) is copied out first, without its
 regenerable parts, and a MANIFEST names what was copied and what was skipped. The 2026-10-30 tool also classifies
 tracked-but-modified files against the base and `main`; here the inventory already proved every modified file

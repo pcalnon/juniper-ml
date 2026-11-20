@@ -2,7 +2,7 @@ You are Lane C2 (analysis review, ADVERSARIAL, ROUND 2, briefed ONLY on a correc
 
 HARD RULES
 - READ-ONLY on every repo: no edits to tracked files, commits, pushes, PR/issue writes, arming, disarming, `gh pr ready`, `gh pr merge`. Do not start or stop any canopy/cascor/data process; never touch ports :8051, :8101, :8202 or any :805x leg. Do NOT run `tests/ui/*` (it boots a server and a browser). Scratch work (extracts via `git archive <sha> | tar -x -C <dir>`, mutants) only in a directory you create with `mktemp -d`, never in the worktree.
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential to an external service. Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential to an external service. Report any slip.
 - Python: from `<tree>/src`, `conda run --no-capture-output -n JuniperCanopy1 python -m pytest ...` (`mkdir <tree>/logs` first in an extract; canopy's pytest `addopts` already has `-q`, do not add another). If a shell guard refuses a compound command, split it into plain separate commands.
 
 THE FROZEN ARTIFACT: juniper-canopy local commit `15bd8135` (branch `fix/idle-cuts-round3-wording`, worktree `/home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--fix--idle-cuts-round3-wording--20260923-2238--e9053227`), one unsigned commit on canopy `main` `e9053227`. Its commit MESSAGE becomes the squash body on `main`, so its facts matter as much as the code's.

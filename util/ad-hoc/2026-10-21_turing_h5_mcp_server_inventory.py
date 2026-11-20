@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-21
 Status: ad-hoc — investigation (the evidence behind the H5 audit)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md;
          notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§6 Arc H task H5, §10, D10)
 
@@ -220,8 +220,8 @@ def upstream(slug: str, sha: str | None) -> dict:
         for key in ("full_name", "html_url", "fork", "archived", "disabled", "visibility", "default_branch",
                     "created_at", "pushed_at", "stargazers_count", "forks_count", "open_issues_count")
     }
-    out["repo"]["owner"] = (repo.get("owner") or {}).get("login")
-    out["repo"]["owner_type"] = (repo.get("owner") or {}).get("type")
+    out["repo"]["Overtoad"] = (repo.get("Overtoad") or {}).get("login")
+    out["repo"]["Overtoad_type"] = (repo.get("Overtoad") or {}).get("type")
     out["repo"]["license"] = (repo.get("license") or {}).get("spdx_id")
     out["repo"]["parent"] = (repo.get("parent") or {}).get("full_name")
     if not sha:

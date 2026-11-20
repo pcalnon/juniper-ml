@@ -172,7 +172,7 @@ a payload without re-breaking the idle-stream case that call was added for.
    found the defect (`metrics_store_len: 0` before and after every step). Re-drive with
    `2026-09-08_replay_block_redrive.py`.
 5. **M-DATASET-17..26** — the `equities` extra is no longer the blocker (`/v1/generators` reports both equities generators
-   available on `:8101`); the owner question from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_canopy-e2e-arc-f035-cause-found-and-outstanding-work.md`
+   available on `:8101`); the Overtoad question from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_canopy-e2e-arc-f035-cause-found-and-outstanding-work.md`
    stands: which arm loads a sequence dataset.
 6. **The dispatch probe's control under a rule fixed BEFORE the run** — two runs observed 3 dispatches naming the store and an
    independent read of `hidden_units: 48`; both verdict strings are artifacts of a rule changed afterwards (first list-only, so

@@ -6,7 +6,7 @@
 
 **By category**: ARCH=275 | SEC=191 | WS=157 | OBS=151 | API=123 | TEST=106 | TRAIN=106 | UI=85 | TOOL=58 | DEP=53 | DOC=46 | DATA=40 | PERF=30 | OPS=16 | LOCK=8
 
-**By owner**: ml=1119 | can=180 | cas=74 | dep=26 | ccl=17 | dat=14 | dcl=10 | cwk=4 | rec=1
+**By Overtoad**: ml=1119 | can=180 | cas=74 | dep=26 | ccl=17 | dat=14 | dcl=10 | cwk=4 | rec=1
 
 ---
 
@@ -2133,7 +2133,7 @@ exception hierarchy (7 exception classes), design patterns (context manager, cal
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents have no guidance on codebase structure / Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
+[v3 xrepo fuzzy merge: Overtoads=ccl,dcl, n=2] High severity: agents have no guidance on codebase structure / Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
 
 ### JR-ML-WS-026 — Add async set_params() method to CascorControlStream for WebSocket parameter control.
 
@@ -4046,7 +4046,7 @@ Re-evaluates 34 gaps from original audit (91 issues, 57 verified, 16 partially f
 
 **Notes**:
 
-[v2 ARCH→UI re-bucket] 22 REAFFIRMED gaps mostly completed via PR #146. DEFERRED gaps tracked as accepted technical debt. COORDINATED gaps require synchronization with R5-01 phase owners.
+[v2 ARCH→UI re-bucket] 22 REAFFIRMED gaps mostly completed via PR #146. DEFERRED gaps tracked as accepted technical debt. COORDINATED gaps require synchronization with R5-01 phase Overtoads.
 
 ### JR-CAN-OBS-002 — ColoredFormatter must not mutate LogRecord during formatting.
 
@@ -5073,7 +5073,7 @@ CHANGELOG.md, docs/ (4 files), scripts/ (2 files), notes/, .env.example, .pre-co
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents cannot orient themselves or find major code components / Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
+[v3 xrepo fuzzy merge: Overtoads=ccl,dcl, n=2] High severity: agents cannot orient themselves or find major code components / Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
 and juniper-canopy). Agents working on this codebase are unaware of its existence when omitted from AGENTS.md.
 Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2).
 
@@ -5939,7 +5939,7 @@ permissions. Add contents:read for artifact access.
 
 **Notes**:
 
-[v2 ARCH→TEST re-bucket] [v3 xrepo fuzzy merge: owners=ccl,cwk,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
+[v2 ARCH→TEST re-bucket] [v3 xrepo fuzzy merge: Overtoads=ccl,cwk,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
 
 ### JR-CAN-OBS-004 — Health checks must use async probes instead of blocking network calls.
 
@@ -6807,7 +6807,7 @@ Phase A-server (Day 3). R0-03 §6.1 "initial_status race" documented in code com
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=ccl,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
+[v3 xrepo fuzzy merge: Overtoads=ccl,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
 
 ### JR-ML-DEP-017 — Release readiness checklist: pre-commit compliance, test pass, version sync across 6 applications.
 
@@ -11186,7 +11186,7 @@ html.P("Network Growth Triggers:", className="mb-1 fw-bold"),
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=cas,ml, n=2] [v2 remap: BG→TRAIN]
+[v3 xrepo fuzzy merge: Overtoads=cas,ml, n=2] [v2 remap: BG→TRAIN]
 
 ### JR-ML-OBS-094 — GAP-WS-24 splits into 24a (browser JS emitter) + 24b (canopy /api/ws_latency + histogram).
 
@@ -13451,7 +13451,7 @@ Additional tests: nested format unchanged since Phase H, flat format unchanged s
 Consumer audit document: `juniper-ml/notes/code-review/NORMALIZE_METRIC_CONSUMER_AUDIT_2026-04-XX.md` enumerates every consumer:
 frontend MetricsPanel, CandidateMetricsPanel, Prometheus `/api/metrics`, WebSocket drain, debug logger, test fixtures.
 CODEOWNERS: `juniper-canopy/src/backend/normalize_metric.py @<project-lead>` + `juniper-canopy/src/frontend/components/metrics_panel.py @<project-lead>`.
-`.github/CODEOWNERS` branch protection enforces owner review.
+`.github/CODEOWNERS` branch protection enforces Overtoad review.
 
 **Design**:
 
@@ -13459,7 +13459,7 @@ Single PR (P16). Test-only phase; refactoring deferred to follow-up (gated on au
 
 **Notes**:
 
-Entry: Phase B in main. Exit: regression tests pass, CODEOWNERS enforced (test via PR without owner review → must block),
+Entry: Phase B in main. Exit: regression tests pass, CODEOWNERS enforced (test via PR without Overtoad review → must block),
 consumer audit reviewed + merged. Rollback: revert P16 (10 min TTF); CODEOWNERS rule disappears.
 Note: Phase H is NOT a behavior-change gate; it's a documentation + regression-gate phase.
 

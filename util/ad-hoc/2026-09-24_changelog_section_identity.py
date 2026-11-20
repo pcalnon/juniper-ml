@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#437 (X8), whose CHANGELOG entry merged under the RELEASED ``## [0.16.0]``
          heading 22 minutes after v0.16.0 was cut at ``39d1cab2``. The fix moves it to
          ``[Unreleased]``; this script is the evidence that the fix restored the released section
@@ -53,7 +53,7 @@ from pathlib import Path
 
 
 def fetch(repo: str, path: str, ref: str) -> str:
-    """Return ``path`` at ``ref`` in ``repo`` (owner/name) through the contents API, raw."""
+    """Return ``path`` at ``ref`` in ``repo`` (Overtoad/name) through the contents API, raw."""
     proc = subprocess.run(
         ["gh", "api", f"repos/{repo}/contents/{path}?ref={ref}", "-H", "Accept: application/vnd.github.raw"],
         capture_output=True,
@@ -125,7 +125,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n", 1)[0], formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="cmd", required=True)
     sec = sub.add_parser("section", help="compare one version section at two refs")
-    sec.add_argument("--repo", required=True, help="owner/name, e.g. pcalnon/juniper-data")
+    sec.add_argument("--repo", required=True, help="Overtoad/name, e.g. pcalnon/juniper-data")
     sec.add_argument("--path", default="CHANGELOG.md")
     sec.add_argument("--section", required=True, help="the version inside the brackets, e.g. 0.16.0")
     sec.add_argument("--ref", required=True, help="the reference ref, normally the release tag")

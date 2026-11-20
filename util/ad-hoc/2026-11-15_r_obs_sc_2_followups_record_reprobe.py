@@ -7,11 +7,11 @@ Sub-Project: ad-hoc tooling (consolidated plan record)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- single-use verifier
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md v1.15.16;
          util/ad-hoc/2026-11-15_consolidated_plan_v1_15_16_r_obs_sc_2_followups.py (the writer);
          util/ad-hoc/2026-11-09_r_obs_sc_2_record_reprobe.py (the pattern; RETAINED, it records the pre-fix state);
-         util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py (the rulings, from the transcripts);
+         util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py (the rulings, from the transcripts);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-four-ruled-four-open.md,
          HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-five-prs-validated-opening-next.md,
          HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next.md and
@@ -33,7 +33,7 @@ not the source, so each fact the plan states is checked here against the record 
   GHCR's highest tags;
 - the register's ``APD-ECO-016`` row on ``main`` and the Docs Full Check run dispatched after juniper-ml#2576;
 - the source lines each finding cites, on each repository's ``main``;
-- the owner's answers and directive, from the session transcripts, each dated by the first timestamped entry that
+- the Overtoad's answers and directive, from the session transcripts, each dated by the first timestamped entry that
   carries it;
 - the trio's environments, and the parent ``Juniper/AGENTS.md`` and its copies (read in place, read-only).
 
@@ -41,7 +41,7 @@ Each check has an expected value and prints PASS or FAIL beside what it read.
 
 State that moves
 ----------------
-The two ``pypi`` gates (juniper-cascor run 43663237489 and juniper-canopy run 43664277663) moved when the owner
+The two ``pypi`` gates (juniper-cascor run 43663237489 and juniper-canopy run 43664277663) moved when the Overtoad
 approved them, and so their checks accept either state, WAITING or PUBLISHED. juniper-deploy#278 pinned cascor and
 canopy afterwards, so those pins are checked as fixed; its recurrence pin (``docker-compose.yml:598``) moves only if a
 later PR moves it, and its check accepts BEHIND or CURRENT against GHCR's highest tag. A check FAILs only on a state that
@@ -142,7 +142,7 @@ RELEASES = {
     ("juniper-canopy", "v0.10.0"): ("57d90dec", "2026-11-15T01:41:30Z"),
 }
 
-#: The publish runs whose `pypi` gate the owner approves: (repo, run) -> (package, version, head prefix)
+#: The publish runs whose `pypi` gate the Overtoad approves: (repo, run) -> (package, version, head prefix)
 GATED_RUNS = {
     ("juniper-cascor", 43663237489): ("juniper-cascor", "0.14.0", "bf6f0108"),
     ("juniper-canopy", 43664277663): ("juniper-canopy", "0.10.0", "57d90dec"),
@@ -268,7 +268,7 @@ CAP_LINES = [
     ("juniper-canopy", "pyproject.toml", 135),
 ]
 
-#: The owner's answers: (session prefix, labels that must each appear as ="<label>", answered-at prefix, asked-at prefix)
+#: The Overtoad's answers: (session prefix, labels that must each appear as ="<label>", answered-at prefix, asked-at prefix)
 ANSWERS = [
     ("a4e1e914", ("In release PRs (Recommended)", "Floor PR, then 0.11.5 (Recommended)", "Row + fix all three (Recommended)", "Port to both now (Recommended)"), "2026-11-09T14:48:41", "2026-11-09T14:27:13"),
     ("218ff61e", ("Yes, as patch 0.11.5 (Recommended)", "One at a time, with background", "Remove after checks (Recommended)"), "2026-11-13T01:57:00", "2026-11-13T01:50:37"),
@@ -283,9 +283,9 @@ ANSWERS = [
     # the 2026-11-15 dialog: cascor 0.14.0, the fix's scope, the parent docs
     ("b9dfa450", ("Approve as is, verify after (Recommended)", "cascor, then every other (Recommended)", "Edit it once both publish (Recommended)"), "2026-11-15T05:24:49", "2026-11-15T05:17:06"),
 ]
-#: Dialogs the owner sent back to clarify: (session prefix, asked-at prefix, answered-at prefix)
+#: Dialogs the Overtoad sent back to clarify: (session prefix, asked-at prefix, answered-at prefix)
 CLARIFIED = [("a4e1e914", "2026-11-09T14:49:42", "2026-11-12T00:20:11"), ("7d425759", "2026-11-14T10:20:43", "2026-11-14T22:10:39")]
-#: The owner's typed words: (session prefix, timestamp prefix, fragment)
+#: The Overtoad's typed words: (session prefix, timestamp prefix, fragment)
 TYPED = [
     ("7d425759", "2026-11-14T22:37:55", "the four open questions should be handled by the session working from the updated handoff."),
     ("7d425759", "2026-11-14T22:12:40", "let's update the latest identified handoff doc for this work arc"),
@@ -293,7 +293,7 @@ TYPED = [
     ("218ff61e", "2026-11-13T01:45:27", "merge approval granted"),
     ("6e3bdef0", "2026-11-12T00:39:16", "approval granted for merging and related git operations for this work arc."),
     ("b9dfa450", "2026-11-15T03:14:03", "merge approval granted"),
-    # the owner's directive on the publish artifact, quoted verbatim in the plan
+    # the Overtoad's directive on the publish artifact, quoted verbatim in the plan
     (
         "b9dfa450",
         "2026-11-15T05:14:10",
@@ -334,7 +334,7 @@ PARENT_PAIR = {
 }
 #: (repo, path, ref, line, fragments): more lines this record cites
 MORE_LINES = [
-    ("juniper-canopy", "CHANGELOG.md", "v0.10.0", 221, ("owner ruling 17",)),
+    ("juniper-canopy", "CHANGELOG.md", "v0.10.0", 221, ("Overtoad ruling 17",)),
     ("juniper-ml", "prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-09_flood4-record-merged-fixes-corrected-landing-next.md", "main", 89, ("3. Ruling 17: build, validate and land four fixes",)),
     ("juniper-deploy", "docker-compose.yml", "main", 598, ("image: ghcr.io/pcalnon/juniper-recurrence:",)),
 ]
@@ -459,7 +459,7 @@ def jobs_of(repo: str, run: int) -> list[dict]:
     return gh_json("api", f"repos/{OWNER}/{repo}/actions/runs/{run}/jobs")["jobs"]
 
 
-def owner_approvals(repo: str, run: int) -> list[str]:
+def Overtoad_approvals(repo: str, run: int) -> list[str]:
     approvals = gh_json("api", f"repos/{OWNER}/{repo}/actions/runs/{run}/approvals") or []
     return [f"{a['state']} by {a['user']['login']} ({a.get('comment')!r})" for a in approvals if a["user"]["login"] == OWNER]
 
@@ -470,8 +470,8 @@ def published_run() -> None:
         check(job["conclusion"] == "success", f"run 43408809021 job '{job['name']}'", f"{job['status']}/{job['conclusion']} {job['started_at']} -> {job['completed_at']}")
         if job["name"] == "Publish to PyPI":
             check((job["started_at"], job["completed_at"]) == ("2026-11-14T00:16:06Z", "2026-11-14T00:16:27Z"), "Publish to PyPI ran 00:16:06Z-00:16:27Z", f"{job['started_at']} -> {job['completed_at']}")
-    approvals = owner_approvals("juniper-ml", 43408809021)
-    check(any("approved by pcalnon ('approved for pypi')" in a for a in approvals), "run 43408809021 owner approval", "; ".join(approvals) or "none")
+    approvals = Overtoad_approvals("juniper-ml", 43408809021)
+    check(any("approved by pcalnon ('approved for pypi')" in a for a in approvals), "run 43408809021 Overtoad approval", "; ".join(approvals) or "none")
     pending = gh_json("api", f"repos/{OWNER}/juniper-ml/actions/runs/43408809021/pending_deployments") or []
     check(not pending, "run 43408809021 pending_deployments", str([p["environment"]["name"] for p in pending]))
 
@@ -482,7 +482,7 @@ def gated_runs() -> None:
         meta = gh_json("api", f"repos/{OWNER}/{repo}/actions/runs/{run}")
         jobs = {j["name"]: j for j in jobs_of(repo, run)}
         pending = [p["environment"]["name"] for p in (gh_json("api", f"repos/{OWNER}/{repo}/actions/runs/{run}/pending_deployments") or [])]
-        approvals = owner_approvals(repo, run)
+        approvals = Overtoad_approvals(repo, run)
         status, _ = http(f"https://pypi.org/pypi/{package}/{version}/json")
         pypi_job = jobs.get("Publish to PyPI", {})
         others_ok = all(j["conclusion"] == "success" for name, j in jobs.items() if name != "Publish to PyPI")
@@ -490,7 +490,7 @@ def gated_runs() -> None:
         published = others_ok and pypi_job.get("conclusion") == "success" and not pending and bool(approvals) and status == 200
         state = "WAITING at pypi" if waiting else ("PUBLISHED" if published else "NEITHER")
         trail = "; ".join(f"{n}: {j['status']}/{j['conclusion']} {j['started_at']}->{j['completed_at']}" for n, j in jobs.items())
-        check(meta["head_sha"].startswith(head) and (waiting or published), f"{repo} run {run} ({package} {version})", f"{state}; created {meta['created_at']}; {trail}; pending {pending}; owner approvals {approvals or 'none'}; PyPI /{version}/json {status}")
+        check(meta["head_sha"].startswith(head) and (waiting or published), f"{repo} run {run} ({package} {version})", f"{state}; created {meta['created_at']}; {trail}; pending {pending}; Overtoad approvals {approvals or 'none'}; PyPI /{version}/json {status}")
         NOTES.append(f"{package} {version}: {state} (read {datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')})")
         if published:
             same_files(package, version, GATED_COMPARE[package])
@@ -657,7 +657,7 @@ def sources() -> None:
     check(all(n in body for n in needles), "juniper-ml#2576's body lists the stale plan passages and the stale text it leaves", ", ".join(n for n in needles if n in body))
 
 
-# --- The owner's answers, from the transcripts -------------------------------------------------------------------------
+# --- The Overtoad's answers, from the transcripts -------------------------------------------------------------------------
 
 
 def transcript(prefix: str) -> Path | None:
@@ -676,7 +676,7 @@ def result_text(content: object) -> str:
 def ask_calls(path: Path) -> list[dict]:
     """Each AskUserQuestion call: when FIRST asked and FIRST answered by a timestamped entry, and the result text.
 
-    util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py keeps the LAST entry carrying a result; a later
+    util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py keeps the LAST entry carrying a result; a later
     ``api-request-blob`` copy has no timestamp, so it reads ``answered None`` for 218ff61e's call 5 and 7d425759's call.
     A call can also first appear in such a copy (1b4fec84's), so neither time is taken from an entry without one.
     """
@@ -729,7 +729,7 @@ def typed_turns(path: Path) -> list[tuple[str, str]]:
 
 
 def answers() -> None:
-    print("== The owner's answers (transcripts found by session-id prefix; first timestamped result)")
+    print("== The Overtoad's answers (transcripts found by session-id prefix; first timestamped result)")
     cache: dict[str, list[dict] | None] = {}
     for prefix in sorted({a[0] for a in ANSWERS} | {c[0] for c in CLARIFIED}):
         path = transcript(prefix)
@@ -752,7 +752,7 @@ def answers() -> None:
         path = transcript(prefix)
         turns = typed_turns(path) if path else []
         hit = [t for t, text in turns if t.startswith(stamp) and fragment in text]
-        check(bool(hit), f"{prefix}: the owner wrote {fragment[:60]!r}", hit[0] if hit else ("transcript not found" if path is None else "not at that time"))
+        check(bool(hit), f"{prefix}: the Overtoad wrote {fragment[:60]!r}", hit[0] if hit else ("transcript not found" if path is None else "not at that time"))
 
 
 # --- The host: the trio's environments and the parent AGENTS.md (read-only) -------------------------------------------

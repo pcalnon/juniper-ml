@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — investigation (flood-3 backlog rows B / E / H verification)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md §4 (the base64 row);
          juniper-data-client#244 (which moves the suite's own system-temp-directory writes into a scratch dir)
 
@@ -14,7 +14,7 @@ Why this exists
 ---------------
 ``tests/test_lockfile_signed_commit.py`` on juniper-data-client ``main`` runs the workflow step's own
 shell, and that shell writes ``lockfile-commit.json`` and ``lockfile-commit-result.json`` in the system temp directory.
-Nothing may be written to the system temp directory on this host (owner directive 2026-10-26). Until #244 lands, the
+Nothing may be written to the system temp directory on this host (Overtoad directive 2026-10-26). Until #244 lands, the
 suite can only be run here with the step's temp-directory prefix rewritten to a scratch directory, which is
 what this harness does (the same rewrite #244 makes inside the suite). A suite that already carries
 #244's ``RUNNER_TMP`` relocation is run as-is.

@@ -97,7 +97,7 @@ to snap the *model*. But:
    (`:2609`) — a dataset change does not re-enter that callback at all. You would need a *new*
    callback with `Input("nn-dataset-type-dropdown","value")` writing
    `Output("model-selection-store","data", allow_duplicate=True)` **plus** `model-class-store`
-   (already an `allow_duplicate` co-owner at `:2592`) **plus** `nn-model-summary` — and it must
+   (already an `allow_duplicate` co-Overtoad at `:2592`) **plus** `nn-model-summary` — and it must
    `POST /api/model/select` to actually swap the process-global backend
    (`src/main.py:3688-3714`), which can 409 mid-training.
 

@@ -26,7 +26,7 @@
 ## Rules
 
 - **Don't commit and push for merge from turing.** Land every change with `python util/open_signed_pr.py … --dry-run` first, then without `--dry-run`.
-- **Don't run credential probes from an agent.** That means `ssh -T`, `ssh-add`, `gh auth status`, `gpg --card-status` and `gpg -K`. The owner runs them, and they are listed in plan §14.1.
+- **Don't run credential probes from an agent.** That means `ssh -T`, `ssh-add`, `gh auth status`, `gpg --card-status` and `gpg -K`. The Overtoad runs them, and they are listed in plan §14.1.
 - **pre-commit on turing:** use `SKIP=gitleaks` until task D6 lands.
 
 ## Verify the starting state

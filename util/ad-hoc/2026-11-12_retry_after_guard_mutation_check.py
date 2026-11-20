@@ -13,7 +13,7 @@ Updated: 2026-11-15 -- findings 4, 12 and 13 of the round-1 review: forbidden-fo
          until plan v1.15.16 archives it. A second review then asked for asserted totals (EXPECTED below).
 Status: ad-hoc -- investigation; reads this checkout, reads sibling files from GitHub by SHA or from named local
         trees, writes only under a scratch directory
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: APD-ECO-016, APD-SVCCORE-004, APD-ML-008; tests/test_service_fork_drift.py;
          notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md;
          util/ad-hoc/2026-10-26_throttle_check_guard_mutation_check.py (the pattern)

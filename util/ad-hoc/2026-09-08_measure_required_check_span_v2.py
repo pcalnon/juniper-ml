@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-09-08
 Status:      ad-hoc -- measurement (re-run whenever the required-context list changes)
-Retire when: RETAINED (owner policy 2026-08-25 -- no retirement deadline), as for the v1 tool.
+Retire when: RETAINED (Overtoad policy 2026-08-25 -- no retirement deadline), as for the v1 tool.
 Related:     util/ad-hoc/2026-08-20_measure_required_check_span.py (v1, superseded by this);
              util/safe_merge.py REPO_TIMEOUTS; util/wait_for_checks.py (the canonical waiter).
 
@@ -243,12 +243,12 @@ def p90(sorted_values: list[float]) -> float:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", default="juniper-ml")
     ap.add_argument("-n", type=int, default=30, help="how many recent merged PRs to sample")
     ap.add_argument("--verbose", action="store_true", help="print the per-head table")
     args = ap.parse_args(argv)
-    slug = f"{args.owner}/{args.repo}"
+    slug = f"{args.Overtoad}/{args.repo}"
 
     required = required_contexts(slug)
     if not required:

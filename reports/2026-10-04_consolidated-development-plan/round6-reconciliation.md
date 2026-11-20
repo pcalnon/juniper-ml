@@ -29,7 +29,7 @@
 | CI's git mode reads hunks whole | R6A2-05 | gitleaks v8.30.1 `sources/git.go` L393–404; `sources/file.go` L21 | Git mode yields each hunk's added lines as one fragment (`textFragment.Raw(gitdiff.OpAdd)`); `defaultBufferSize = 100 * 1_000` belongs to the file source. **Confirmed**: the chunk limit binds only the local gate |
 | Cascor's further relays; the loader must raise | R6A2-03 | cascor `main`: `manager.py` L189–195, L3361; `app.py` L589–591. data-client `client.py` L88, L213 | A loader returning `None` lets the client re-read the raw variable. **Confirmed** |
 | P3-08 does not wait on P3-05 | R6A3-14 | `extraction-P3-defect-register.md` L64 | **Confirmed** |
-| Twin owner questions | R6A3-09 | `extraction-P12-equities.md` §2 (O8 and O12 are P2's; P4-Q6 is P4 item 6); `extraction-P4-release-P11-k8s.md` L116 (D-4/5/6), L120 (D-10), L124 (D-14); `extraction-P6-perf.md` OD-11; `extraction-P5-partition.md` OD-9 | **Confirmed**. Each is now asked once, with its twin named |
+| Twin Overtoad questions | R6A3-09 | `extraction-P12-equities.md` §2 (O8 and O12 are P2's; P4-Q6 is P4 item 6); `extraction-P4-release-P11-k8s.md` L116 (D-4/5/6), L120 (D-10), L124 (D-14); `extraction-P6-perf.md` OD-11; `extraction-P5-partition.md` OD-9 | **Confirmed**. Each is now asked once, with its twin named |
 | Script and handoff names | R6A3-11, R6A3-17, R6A3-24 | `ls` of each path in this worktree and in `HO/HANDOFF_2026-09/` | All exist. The P12 handoff `HANDOFF_2026-10-04_recurrence-equities-p0-executed-go-verdict-p1-next.md` exists on `origin/main` (`1dea3b39`), not at this worktree's base, so `tests/test_thread_handoff_archive.py` fails locally on it. The PR branches from `main` |
 
 ## The rewritten gate, tested (v4)

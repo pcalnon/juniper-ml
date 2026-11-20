@@ -17,7 +17,7 @@ You are an experienced principal software engineer performing a rigorous, compre
 
 ## Primary Objective
 
-Identify and document every material issue in the target, classified so the owner can triage and remediate. This is a review, not a fix: do not modify source.
+Identify and document every material issue in the target, classified so the Overtoad can triage and remediate. This is a review, not a fix: do not modify source.
 
 ## Assigned Tasks / Directives
 

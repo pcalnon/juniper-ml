@@ -2,7 +2,7 @@ You are Lane C3 (analysis review, ADVERSARIAL, ROUND 3, briefed ONLY on a small 
 
 HARD RULES
 - READ-ONLY on every repo: no edits, commits, pushes, PR/issue writes, arming, disarming. Do not start or stop any canopy/cascor/data process; never touch ports :8051, :8101, :8202 or any :805x leg; do NOT run `tests/ui/*`. Scratch work only in a `mktemp -d` directory (extract with `git archive <sha> | tar -x -C <dir>`; `mkdir <dir>/logs`; run pytest from `<dir>/src` with `conda run --no-capture-output -n JuniperCanopy1 python -m pytest …`, no extra `-q`).
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential to an external service. Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential to an external service. Report any slip.
 - If a shell guard refuses a compound command, split it into plain separate commands.
 
 THE ARTIFACT: juniper-canopy local commit `2f2bc203` (worktree `/home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--fix--idle-cuts-round3-wording--20260923-2238--e9053227`, branch `fix/idle-cuts-round3-wording`, one unsigned commit on canopy `main` `e9053227`). Round 2 (Lane C2) reviewed `15bd8135`; its report is at `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/graceful-sprouting-panda/reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_canopy_followup.md` (read-only; the second section). The corrections under review, exactly: `git -C <worktree> diff 15bd8135 2f2bc203`, plus the commit message change (`git -C <worktree> log -1 --format=%B 15bd8135` vs `… 2f2bc203`). The message will become the squash body on `main`.

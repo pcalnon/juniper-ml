@@ -5,9 +5,9 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
-Status: ad-hoc -- one edit of the parent AGENTS.md, after both releases published (owner ruling of 2026-11-15:
+Status: ad-hoc -- one edit of the parent AGENTS.md, after both releases published (Overtoad ruling of 2026-11-15:
         "Edit it once both publish (Recommended)")
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-14_parent_agents_released_paragraph_0_11_5.py (the previous edit, the pattern);
          util/ad-hoc/2026-11-07_parent_agents_released_paragraph_reprobe.py (the re-probe that runs first);
          util/ad-hoc/2026-11-15_verify_cascor_0_14_0_canopy_0_10_0_published.py (the publish check, 0 failed);
@@ -63,7 +63,7 @@ _FLOORS_OLD = (
     "      0.11.5's `[tools]` floors them (next bullet). juniper-data 0.17.1 (under `[api]`),\n"
     "      juniper-cascor 0.13.0, juniper-canopy 0.9.0 and juniper-recurrence 0.8.1 (its\n"
     "      observability floor under `[observability]`) floor 0.4.1 and 0.7.1. juniper-cascor's\n"
-    "      and juniper-canopy's next releases raise theirs (owner rulings of 2026-11-09 and\n"
+    "      and juniper-canopy's next releases raise theirs (Overtoad rulings of 2026-11-09 and\n"
     "      2026-11-13).\n"
 )
 _FLOORS_NEW = (
@@ -71,7 +71,7 @@ _FLOORS_NEW = (
     "      0.14.0, juniper-canopy 0.10.0 and juniper-ml 0.11.5's `[tools]` floor them (the next\n"
     "      two bullets). juniper-data 0.17.1 (under `[api]`) and juniper-recurrence 0.8.1 (its\n"
     "      observability floor under `[observability]`) floor 0.4.1 and 0.7.1; their next\n"
-    "      releases raise theirs (owner ruling of 2026-11-09). juniper-cascor 0.13.0 and\n"
+    "      releases raise theirs (Overtoad ruling of 2026-11-09). juniper-cascor 0.13.0 and\n"
     "      juniper-canopy 0.9.0 floor 0.4.1 and 0.7.1 too.\n"
 )
 _META_ANCHOR = "    - **The meta-package: juniper-ml 0.11.5** (2026-11-14 00:16Z, publish run\n"
@@ -84,7 +84,7 @@ _RELEASES = (
     "      carries its own `Retry-After` round-up and FastAPI telemetry opt-out. canopy's PyPI\n"
     "      files are the ones TestPyPI took. cascor's are a second build of `bf6f0108`: every\n"
     "      file in them equals TestPyPI's, but the archives differ, because cascor's publish\n"
-    "      run builds once per publish job (to be fixed: owner ruling of 2026-11-15).\n"
+    "      run builds once per publish job (to be fixed: Overtoad ruling of 2026-11-15).\n"
     "      juniper-deploy pins both images since juniper-deploy#278 (2026-11-15).\n"
 )
 EDITS = (

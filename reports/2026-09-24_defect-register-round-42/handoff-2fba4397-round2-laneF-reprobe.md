@@ -28,7 +28,7 @@ The rewrite's facts mostly re-derive: every PR state, head, merge SHA and time; 
 | L31: "CodeQL may flag the probes" | CodeQL check-run on `a2fa3ad8` completed with **failure** at 00:27:51Z: "33 new alerts including 4 high severity security vulnerabilities" | REFUTED by timing (M1) |
 | L32–L33: branch at `d1c66a11…`, parent `0f0f7e0e`; #438 merged 18:52Z | `commits/d1c66a11`: verified, parent `0f0f7e0e`. #438 merged 18:52:00Z | REPRODUCED |
 | L36: 5 s readiness timeout; three failures needed | `juniper-deploy` `k8s/helm/juniper/values.yaml:87-91`: `timeoutSeconds: 5`, `failureThreshold: 3` | REPRODUCED (6.6 s not re-measured) |
-| L37: ruling times and answer | `owner-ruling-key-leaks-verbatim.md` lines 7, 19 and 38 | REPRODUCED |
+| L37: ruling times and answer | `Overtoad-ruling-key-leaks-verbatim.md` lines 7, 19 and 38 | REPRODUCED |
 | L40–L44: items resolved since the predecessor | `gh pr view` for ml#2081, ml#2086, canopy#683, canopy#685 and cascor#688. juniper-data run 35977786108: "Publish to PyPI" 18:35:46Z, notify-consumers job failed | REPRODUCED |
 | L47–L50: executor brief; full brief is the user record at 23:48:49Z; `last_report()` | `agent-a46e715a6801b98ca.jsonl` has a user record (isMeta) at 23:48:49.313Z. `def last_report` is at `2026-09-24_archive_round42_reports.py:151` on `origin/main` | REPRODUCED |
 | L49: "written in the last ~10 minutes" means alive | The executor transcript has 600 s and 580 s gaps while alive | PARTLY (M5) |
@@ -61,7 +61,7 @@ The rewrite's facts mostly re-derive: every PR state, head, merge SHA and time; 
 | L186–L195: residue and its sources | `cascor686-fixup-implementation-report.md:16`; `pending-items-snapshot-2026-09-24T1110Z.md:40`; canopy mutation script `:22` retire condition; register L1616; both canopy handoff files exist; branch `docs/canopy-e2e-handoff-2026-09-24` at `dd4413e5`, no PR, 4 F-CANOPY-06x hits | REPRODUCED |
 | L200: A1's F2 and F4 are recorded nowhere | `data428-round3-laneA1-security.md:23`, `:26`, `:29`. The register has no 8192 or header-limit record | REPRODUCED |
 | L201: four "turn-ending report" headers | First lines of the peer's reports | REPRODUCED |
-| L205–L217: owner decisions | No AskUserQuestion after 18:30:09Z in either transcript. PyPI: observability 0.4.0, service-core 0.7.0, data 0.16.0. `pr-63` and `pr-683` both at `4caf9389` (unsigned; parent `7ab994e5`; tree `7fbccc33` = `4a8af2a0`'s); activity API shows branch creation by pcalnon at 22:55:30Z and 22:55:39Z. MEMORY.md 24,929 characters | REPRODUCED (one open decision missing: M1) |
+| L205–L217: Overtoad decisions | No AskUserQuestion after 18:30:09Z in either transcript. PyPI: observability 0.4.0, service-core 0.7.0, data 0.16.0. `pr-63` and `pr-683` both at `4caf9389` (unsigned; parent `7ab994e5`; tree `7fbccc33` = `4a8af2a0`'s); activity API shows branch creation by pcalnon at 22:55:30Z and 22:55:39Z. MEMORY.md 24,929 characters | REPRODUCED (one open decision missing: M1) |
 | L219–L235: the later arc items | Open set; register L1284 (047 FIXED); `HANDOFF_2026-09-22_defect-register-round-41-…md:37` (38 `def` lines); register L1251–1257; 0 `data_quality` hits in recurrence | REPRODUCED |
 | L240–L245: PR drafts | The durable copy equals `"# " + title + "\n\n" + body` byte for byte; mtime 00:27Z. The tmpfs drafts are unchanged since 20:46Z | REPRODUCED |
 | L249–L277: brief summary and anchors at `d1c66a11` | Compared with the 23:48:49Z brief. Every anchor (1357-1362, 45-47, 200-202, 93-94, 1374-1375, 117-118, 546-547, 1282) holds the stated text. `[0.16.0]` is 261 lines, the same sha across `v0.16.0`, `0f0f7e0e`, `d1c66a11` and `0bee089e` | REPRODUCED |
@@ -73,17 +73,17 @@ The rewrite's facts mostly re-derive: every PR state, head, merge SHA and time; 
 
 ### MEDIUM
 
-**M1. #2089's CodeQL check has FAILED. That block was the owner's decision last time, and the snapshot says neither.**
+**M1. #2089's CodeQL check has FAILED. That block was the Overtoad's decision last time, and the snapshot says neither.**
 - Quoted: L31 "CodeQL may flag the probes, as it did #2081's." L61 "Merge #2089 once it is green, with your own grant."
 - Evidence:
   - CodeQL completed at 00:27:51Z, 26 s before the freeze: "33 new alerts including 4 high".
   - The four highs are `py/overly-permissive-file`, all in `data438-fixforward-round1-laneB/stripe_probe.py`. The rest are `file-not-closed` warnings and notes. `mergeStateStatus` is BLOCKED.
-  - The predecessor handoff, In flight 2, calls #2081's identical block "the owner's decision (paths-ignore, dismissal, or a tarball)".
-  - The owner cleared it by committing `73dc109c` and `f9964d78` himself, at 22:24Z and 22:31Z.
+  - The predecessor handoff, In flight 2, calls #2081's identical block "the Overtoad's decision (paths-ignore, dismissal, or a tarball)".
+  - The Overtoad cleared it by committing `73dc109c` and `f9964d78` himself, at 22:24Z and 22:31Z.
   - #2089 also carries the peer's four README rows. The peer agreed at 00:25:06Z to drop them from its own PR.
 - Replacement:
-  - L31: "CodeQL FAILED on `a2fa3ad8` at 00:27:51Z: 33 new alerts, 4 high (`py/overly-permissive-file` in `data438-fixforward-round1-laneB/stripe_probe.py`). The same block on #2081 was the owner's decision, and the owner cleared it by committing `73dc109c` and `f9964d78`. Surface it; do not dismiss alerts or edit the preserved probes yourself. If #2089 is closed or rebuilt, keep the peer's four README rows."
-  - L61: "Merge #2089 once the owner has resolved its CodeQL block and it is green, with your own grant."
+  - L31: "CodeQL FAILED on `a2fa3ad8` at 00:27:51Z: 33 new alerts, 4 high (`py/overly-permissive-file` in `data438-fixforward-round1-laneB/stripe_probe.py`). The same block on #2081 was the Overtoad's decision, and the Overtoad cleared it by committing `73dc109c` and `f9964d78`. Surface it; do not dismiss alerts or edit the preserved probes yourself. If #2089 is closed or rebuilt, keep the peer's four README rows."
+  - L61: "Merge #2089 once the Overtoad has resolved its CodeQL block and it is green, with your own grant."
   - Appendix B: add "#2089's CodeQL alerts (as #2081's)."
 
 **M2. The release list omits the lock that cascor's image actually installs.**
@@ -162,7 +162,7 @@ The rewrite's facts mostly re-derive: every PR state, head, merge SHA and time; 
   - Replacement: move that bullet to a separate "Not for the next PR" item, with "byte-identical to `a2fa3ad8`; leave them out".
 - **L7.** L19: "SendMessage the peer lane, "defect reg [042116]"".
   - The peer is handing off too, and its draft (line 3) says "Never message it".
-  - Replacement, append: "If [042116] is gone or has handed off, message the other live "defect reg [...]" session (the peer's successor), or ask the owner."
+  - Replacement, append: "If [042116] is gone or has handed off, message the other live "defect reg [...]" session (the peer's successor), or ask the Overtoad."
 - **L8.** L112 says "(run from this worktree)", but a successor normally starts in its own worktree. The sandbox refused my `git -C` into another juniper-ml worktree (`happy-skipping-hollerith`).
   - Replacement: "run from `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fizzy-hugging-dream`. From elsewhere, read its files by absolute path; `git -C` into it is refused."
 

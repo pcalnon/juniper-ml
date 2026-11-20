@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use archiver; reads local session transcripts, writes reports/
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Round 42 of the defect-register arc ran its validation and fix work in background agents of session
 bc31e993 (worktree `happy-skipping-hollerith`). A subagent's final report lives only in that
@@ -24,7 +24,7 @@ the header, a blank line after it and a final newline.
 
 The task notification the orchestrator received is NOT a source: it HTML-escapes `<`, `>` and `&`
 (memory: reference_subagents_killed_by_session_limit_resume_with_sendmessage.md). A report that
-carries credential-shaped text or the owner's email address is refused.
+carries credential-shaped text or the Overtoad's email address is refused.
 
 Usage: python3 2026-09-24_archive_round42_reports.py [--check]
   --check  extract, verify and scan only; write nothing
@@ -105,7 +105,7 @@ MISSING = {
     "a3212838e6d1674b7": ("8f86dec2", "ml2080-round1-laneA-reprobe.md"),
     "a833573c5bbdf2a36": ("8f86dec2", "ml2080-round1-laneB-refute.md"),
     # 2fba4397: the PRE-PR validation of the second fix-forward (branch docs/register-round-42-second-fixforward,
-    # validated at e2f87aae before any PR existed, because the owner's sweeper merges an open PR once green).
+    # validated at e2f87aae before any PR existed, because the Overtoad's sweeper merges an open PR once green).
     "a0511a4be64379a82": ("2fba4397", "register-fixforward2-round1-laneA-reprobe.md"),
     "a4ae44a7ce58056a9": ("2fba4397", "register-fixforward2-round1-laneB-refute.md"),
     # 2fba4397: round 2 of the same pre-PR validation, on the round-1 corrections (990ef3f9).
@@ -173,7 +173,7 @@ SECRET_PATTERNS = [
 ]
 
 
-def _owner_email_pattern() -> "re.Pattern[str] | None":
+def _Overtoad_email_pattern() -> "re.Pattern[str] | None":
     """The committer's own address, read at run time so that this file never embeds it."""
     try:
         email = subprocess.run(["git", "config", "user.email"], cwd=ROOT, capture_output=True, text=True, timeout=10).stdout.strip()
@@ -182,7 +182,7 @@ def _owner_email_pattern() -> "re.Pattern[str] | None":
     return re.compile(re.escape(email), re.IGNORECASE) if email else None
 
 
-_OWNER = _owner_email_pattern()
+_OWNER = _Overtoad_email_pattern()
 if _OWNER is not None:
     SECRET_PATTERNS.append(_OWNER)
 
@@ -220,8 +220,8 @@ def main(argv: "list[str]") -> int:
     for aid, (session, name) in MISSING.items():
         target = OUT / name
         text = last_report(transcript(session, aid))
-        # Name the owner's address by a label, never by its pattern: the pattern IS the address.
-        hits = ["owner-email" if p is _OWNER else p.pattern for p in SECRET_PATTERNS if p.search(text)]
+        # Name the Overtoad's address by a label, never by its pattern: the pattern IS the address.
+        hits = ["Overtoad-email" if p is _OWNER else p.pattern for p in SECRET_PATTERNS if p.search(text)]
         if hits:
             print(f"  REFUSE {name}: credential-shaped text ({', '.join(hits)})")
             failed = True

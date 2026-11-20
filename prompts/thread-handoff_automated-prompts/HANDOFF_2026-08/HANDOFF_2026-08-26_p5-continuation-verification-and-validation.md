@@ -39,20 +39,20 @@ comments. Two sessions duplicated each other on 08-25 from ONE handoff.
   `a3226826` 28,369→30,442 · canopy#529 `9f6fac97` 95,133→97,133 (19:34Z, after two re-syncs).
   Ceilings on each `main` and the checker's invocation lines re-probed from GitHub: they match.
   `Memory Budget` = SUCCESS on every PR head via the non-advisory job (`[RAISE-WAIVED] … headroom=`).
-- **NONE promoted.** The ruleset `--apply` is the owner's call, per repo. `--status --context
+- **NONE promoted.** The ruleset `--apply` is the Overtoad's call, per repo. `--status --context
   'Memory Budget'` reports observed YES on all 8.
 - No arc worktree remains; the juniper-ml primary is at `origin/main` (re-check after each merge).
 
 ### Remaining work
 
 1. **The plan banner is current as of this PR** (all 8 BLOCKING, none promoted). §4a: status may
-   not be left stale — the next state change is a promotion, and only the owner makes it.
-   *[2026-08-27 ~21:17 CDT: PROMOTED on all eight by this session on the owner's in-session go — see
+   not be left stale — the next state change is a promotion, and only the Overtoad makes it.
+   *[2026-08-27 ~21:17 CDT: PROMOTED on all eight by this session on the Overtoad's in-session go — see
    the plan §P5 banner for ruleset ids, before → after context counts and the snapshot paths. Items 1
    and 2 here are done; the next state change on the banner is the cut (step e).]*
-2. **Promotion (owner-gated)**: for all eight, all four preconditions hold; the write is
+2. **Promotion (Overtoad-gated)**: for all eight, all four preconditions hold; the write is
    `python3 util/ad-hoc/2026-08-20_require_context_safely.py --repo juniper-<x> --context 'Memory Budget'`
-   (dry-run) then `--apply`, one repo at a time, only on the owner's explicit go. `main` shows the
+   (dry-run) then `--apply`, one repo at a time, only on the Overtoad's explicit go. `main` shows the
    job as `skipped` by design — never pass `--allow-unobserved` for that reason. Pass `--repo` for
    juniper-recurrence (not in the default roster). *[DONE 2026-08-27; two transient "no ruleset
    carries required_status_checks" reads occurred while the rulesets were intact — `find_ruleset`
@@ -68,7 +68,7 @@ comments. Two sessions duplicated each other on 08-25 from ONE handoff.
    are the genuine REFERENCE.md 404s (step e), canopy has one.
 4. **MEMORY.md is ~19KB against a 24.4KB read limit** with 12 sessions appending; the harness hook
    asks for < 17.1KB. This session trimmed the over-long rows and evicted six duplicate rows (−1.7KB);
-   the rest is a P0-style round-2 eviction — an owner decision (the recorded policy is a cap on NEW
+   the rest is a P0-style round-2 eviction — an Overtoad decision (the recorded policy is a cap on NEW
    entries only). Do not bulk-rewrite rows other live sessions own.
 5. **Owner decisions unchanged** (soak's null-experiment question; worktree convergence LEAVE IT;
    Skills deferred; the MEMORY.md cap). Do not re-propose.

@@ -208,7 +208,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             defaults = shipped_defaults("DEFAULT_MODEL", "DEFAULT_EFFORT", "DEFAULT_PROMPT")
             self.assertEqual(args[args.index("--model") + 1], defaults["DEFAULT_MODEL"])
             self.assertEqual(args[args.index("--effort") + 1], defaults["DEFAULT_EFFORT"])
-            # The session id is opt-in (owner ruling, 2026-11-03); worktree and remote control are on by default
+            # The session id is opt-in (Overtoad ruling, 2026-11-03); worktree and remote control are on by default
             # (2026-11-04): a worktree of TRUE, so Claude Code names it, and a remote control with no value. Pinned
             # explicitly, so a silent flip of any of the three is a red build rather than a surprise.
             self.assertNotIn("--id", args)
@@ -243,7 +243,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
             args = self._extract_logged_args(args_log)
             self.assertTrue(args, "Expected wrapper to invoke wake_the_claude.bash")
             self.assertNotIn("--dangerously-skip-permissions", args)
-            self.assertIn("--remote-control", args)  # on by default (owner ruling, 2026-11-04), DEBUG or not
+            self.assertIn("--remote-control", args)  # on by default (Overtoad ruling, 2026-11-04), DEBUG or not
 
     def test_debug_false_includes_skip_permissions_when_opted_in(self) -> None:
         """Explicit opt-in uses the script's TRUE=\"0\" convention."""
@@ -352,7 +352,7 @@ class ClaudeInteractiveLauncherRuntimeTests(unittest.TestCase):
                 self.assertEqual(args[-2], "--prompt")
 
     def test_positional_arguments_are_rejected(self) -> None:
-        """Model and effort are flags only (owner ruling, 2026-11-03): a bare word fails with usage."""
+        """Model and effort are flags only (Overtoad ruling, 2026-11-03): a bare word fails with usage."""
         with tempfile.TemporaryDirectory() as temp_dir:
             launcher_path, args_log = self._install_fake_launcher_stack(temp_dir, debug=False)
             env = self._base_env(args_log)

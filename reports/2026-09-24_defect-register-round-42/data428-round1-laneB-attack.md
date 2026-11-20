@@ -30,11 +30,11 @@
 - **Why it is a problem:**
   - RFC 9110 §8.8.1 defines "strong" without a "for what this route does" qualifier.
   - The same primer's judgement call (:4285) is "Prefer an honest `W/` to a dishonest strong tag."
-  - A false premise found after a ruling goes back to the owner. `…DEFECT-REGISTER.md` §2.4 requires rulings to be taken "against evidence re-derived that day".
+  - A false premise found after a ruling goes back to the Overtoad. `…DEFECT-REGISTER.md` §2.4 requires rulings to be taken "against evidence re-derived that day".
 - **Wrong row:** `APD-DATA-019` (`…DEFECT-REGISTER.md` :784) is the `/filter` full-population pushdown row (D-F), not an artifact digest. D-F will close it without doing this, so the residual becomes untracked.
 - **Runtime exposure is low:** the service only wires LocalFS (`api/app.py:42`), whose artifact files are written once.
 - **Fix:**
-  - Put the choice to the owner: strong with a caveat, `W/"<checksum>"`, or a stored byte digest.
+  - Put the choice to the Overtoad: strong with a caveat, `W/"<checksum>"`, or a stored byte digest.
   - File a real row for it.
   - Correct both pointers (`http_cache.py` and the PR body).
 

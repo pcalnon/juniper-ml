@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (the juniper-cascor 0.14.0 and juniper-canopy 0.10.0 cuts)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-10_fill_security_notes_placeholders.py (the filler this drives);
          util/ad-hoc/2026-11-13_juniper_ml_0_11_5_security_notes_header.py (the pattern: the same patch, floored by the meta-package);
          util/ad-hoc/2026-11-14_cascor_canopy_release_cochanges.py (the same cuts' co-changes);

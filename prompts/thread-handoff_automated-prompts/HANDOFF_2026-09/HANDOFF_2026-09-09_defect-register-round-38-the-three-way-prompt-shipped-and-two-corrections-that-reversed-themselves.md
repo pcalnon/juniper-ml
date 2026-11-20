@@ -16,7 +16,7 @@ dates and times UTC.
 **Register** (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`): **112 rows, 85
 fixed, 27 open** — the 96 primer rows plus **16** filed this round in a new §4.9. Open splits 17
 primer (16 parked, `APD-DATA-019` unparked) + 10 post-primer. **The set of rows a session may
-action without asking the owner first is still empty**; §4.9's rows do not change that, and §0.5
+action without asking the Overtoad first is still empty**; §4.9's rows do not change that, and §0.5
 says why the attempt to claim otherwise was withdrawn.
 
 ---
@@ -98,7 +98,7 @@ says why the attempt to claim otherwise was withdrawn.
    (`grep -rn data_quality --include='*.py'` in juniper-recurrence returns nothing). See §5.10 for
    how to run that tier at all — it has no conda environment.
 
-8. **The 16 parked primer rows are unchanged** and need owner unparking, as do the 13 open
+8. **The 16 parked primer rows are unchanged** and need Overtoad unparking, as do the 13 open
    post-primer rows, each of which carries its own park sentence under the §4.9 table.
 
 ---
@@ -148,7 +148,7 @@ all of which read green on a register that reddens CI.
 | **juniper-cascor#640** | MERGED 2026-09-09T21:45:03Z, `53c0338` | The four follow-ups (§0.2): auto-start forwards the stance, annotates and records its failure; `get_metrics()` carries the shortfall; the CLI flag says what it does; the operator docs name the knob. Closes `APD-CASCOR-009` / `-010` / `-012`. |
 | **juniper-ml#1858** | this document + the register + the reports + the scripts, 30 files | Bundled for the reason §1 gives. |
 
-Auto-merge was armed natively on every PR under the owner's session-wide approval. Verify each with
+Auto-merge was armed natively on every PR under the Overtoad's session-wide approval. Verify each with
 `gh pr view <N> --json state,mergedAt,mergeCommit` **and** check the content is on `main` — a MERGED
 badge is not ancestry, and `util/safe_merge.py` prints the *head* SHA, not the squash commit (§5.9).
 
@@ -275,7 +275,7 @@ six:
 - juniper-data's `test_shares_are_not_visible_before_they_were_filed` asserts `ages.min() >= 0`,
   which catches a *future* value and cannot catch a **stale** one — `APD-DATA-040` and
   `APD-DATA-045` are invisible to it by construction.
-- The owner's partial-data spec exists verbatim only in memory
+- The Overtoad's partial-data spec exists verbatim only in memory
   `project_partial_data_contract_arc_2026-09-05` (its table of the three options and their wire
   forms); the register and the handoffs paraphrase it.
 - The `-q` doubling recipe — kept, at §5.6.
@@ -306,7 +306,7 @@ register was refreshed from `origin/main` before editing, so diff the register a
 `reports/2026-09-09_round-38-consensus/`, `util/ad-hoc/2026-09-08_round38_pr_edit_scripts/`, and the
 four `util/ad-hoc/` scripts named in §2. The juniper-ml PR branch exists only on GitHub (API-created).
 
-Worktrees created this round and **deliberately not removed** (cleanup needs the owner's explicit
+Worktrees created this round and **deliberately not removed** (cleanup needs the Overtoad's explicit
 signal, and `git worktree remove` deletes ignored files):
 `juniper-cascor--fix--dataset-shortfall-acceptance-source--20260908-0716--d39d537e`,
 `juniper-canopy--feature--partial-data-three-way-prompt--20260908-0729--eb05021d`,

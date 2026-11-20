@@ -99,7 +99,7 @@ I found two HIGH findings. The document's F5 fix is wrong, and canopy#685 has me
 - **Owner rulings:**
   - "Keep while fetched splits stay" and "Mine: fix forward" were answered at 07:32:48Z.
   - "Fix everywhere now (Recommended)" was answered at 18:30:09Z; its option text says "Up to four PRs".
-  - **"Split: old does follow-ups" is supported only as a claim relayed by "defect reg [977fa8]".** The owner's own answer in this session (08:01:26Z) was "Resume both here", which is consistent with the split.
+  - **"Split: old does follow-ups" is supported only as a claim relayed by "defect reg [977fa8]".** The Overtoad's own answer in this session (08:01:26Z) was "Resume both here", which is consistent with the split.
   - "defect reg [24f8d8]" is [977fa8]'s successor.
 - **Files and traps:**
   - 18 untracked files: 1 handoff, 12 reports and 5 harnesses. Both predecessor files exist.

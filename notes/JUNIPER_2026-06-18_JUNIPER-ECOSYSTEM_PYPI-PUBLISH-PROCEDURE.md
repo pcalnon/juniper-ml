@@ -310,7 +310,7 @@ rm -rf tmp/test-testpypi
 
 > **Important**: The `--extra-index-url https://pypi.org/simple/` flag is essential. TestPyPI does not host all packages — without this fallback, dependencies will fail to resolve.
 
-> **2026-08-08 amendment — the CI meta-verify no longer uses the merged-index form above (owner-approved two-phase mechanism)**: pip has **no index priority**, so `--index-url` + `--extra-index-url` collapse into ONE namespace where the *highest version across both indexes wins* — a dependency-confusion vector in which a TestPyPI squatter outranks the real package (live failure: TestPyPI `fastapi 1.0`, a broken sdist, beat production `fastapi 0.141.1` and killed the juniper-ml v0.7.0 verify, run 31281873275). `.github/workflows/publish.yml` now verifies in two phases — **(1) provenance**: `pip download --no-deps --index-url https://test.pypi.org/simple/ --dest <tmp> "juniper-ml==${VERSION}"` (TestPyPI only, exact version), then **(2) resolution**: `pip install --index-url https://pypi.org/simple/ "<wheel>[extra]"` (production PyPI only, no `--no-deps`, so extras resolution is still genuinely exercised). The one-index-at-a-time rule is the point; the manual recipe above remains merged-namespace and is therefore subject to the same squatting risk. Gate: `tests/test_publish_testpypi_verify.py`.
+> **2026-08-08 amendment — the CI meta-verify no longer uses the merged-index form above (Overtoad-approved two-phase mechanism)**: pip has **no index priority**, so `--index-url` + `--extra-index-url` collapse into ONE namespace where the *highest version across both indexes wins* — a dependency-confusion vector in which a TestPyPI squatter outranks the real package (live failure: TestPyPI `fastapi 1.0`, a broken sdist, beat production `fastapi 0.141.1` and killed the juniper-ml v0.7.0 verify, run 31281873275). `.github/workflows/publish.yml` now verifies in two phases — **(1) provenance**: `pip download --no-deps --index-url https://test.pypi.org/simple/ --dest <tmp> "juniper-ml==${VERSION}"` (TestPyPI only, exact version), then **(2) resolution**: `pip install --index-url https://pypi.org/simple/ "<wheel>[extra]"` (production PyPI only, no `--no-deps`, so extras resolution is still genuinely exercised). The one-index-at-a-time rule is the point; the manual recipe above remains merged-namespace and is therefore subject to the same squatting risk. Gate: `tests/test_publish_testpypi_verify.py`.
 
 ---
 
@@ -460,7 +460,7 @@ jobs:
 > 1. **Bounded poll, not `sleep 30`.** TestPyPI's simple index is CDN-fronted and lags ~5–30s, so the first fetch of a just-published version can 404. A fixed sleep is wrong in both directions: paid in full when the index is already warm (77% of a measured 39s step), and still a coin-flip when propagation runs long. Live Gate 1 polls `pip download --no-deps` from TestPyPI-only, 10 attempts × 6s (~60s ceiling), then a real `::error::` if the version is never served. The fetch stays on one parseable line (`tests/test_publish_testpypi_verify.py` matches `^pip download`). Sibling publishers retry `pip install --no-deps` five times with a 10s interval.
 > 2. **The trigger is the gate.** The six sub-package publishers used to carry a `Require a GitHub Release for this tag` step gated on `if: github.event_name == 'push'`. None of them subscribe to `push:` (removed after #555, where Release-plus-push raced the immutable TestPyPI upload), so those steps could never run. Dead code shaped like a guard is worse than no guard. With `release: published` as the only automatic trigger, a bare `git push <tag>` starts **no run**. Gate: `tests/test_publish_release_only_trigger.py` (glob-discovered; pins both directions). Re-measured 2026-08-24: 12 tags exist with no Release and none of them published.
 
-> **2026-11-15 amendment (the one-artifact publish).** PyPI must receive exactly the files TestPyPI took, and the run proves it by sha256: the build runs once, both publish jobs upload its one artifact, and TestPyPI's and PyPI's JSON are checked against it. The contract, every repository's port and the owner's recovery ladder are in [§11.8](#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi).
+> **2026-11-15 amendment (the one-artifact publish).** PyPI must receive exactly the files TestPyPI took, and the run proves it by sha256: the build runs once, both publish jobs upload its one artifact, and TestPyPI's and PyPI's JSON are checked against it. The contract, every repository's port and the Overtoad's recovery ladder are in [§11.8](#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi).
 
 ### 10.4 GitHub environment setup
 
@@ -565,9 +565,9 @@ pip show juniper-ml
 ### 11.7 The release-train ceremony (the automated path), and what it cannot check
 
 §11.1–§11.6 describe the manual path. Most releases now go through `util/release_train/` instead,
-which keeps both gates with the owner and automates only the middle:
+which keeps both gates with the Overtoad and automates only the middle:
 
-- **Gate 1**: the version bump and the CHANGELOG's `## [<version>]` section ride an owner-approved PR.
+- **Gate 1**: the version bump and the CHANGELOG's `## [<version>]` section ride an Overtoad-approved PR.
 - **The middle**: `ceremony.py` authors the notes, opens the central archive PR, cuts the Release, and
   parks at the `pypi` environment.
 - **Gate 2**: the PyPI deploy waits there for its reviewer.
@@ -602,7 +602,7 @@ Notes on those commands:
   same commit: for a sibling, extract
   `gh api repos/pcalnon/<repo>/tarball/<sha>`. It needs exactly one `--package`, and it refuses an
   abbreviated sha, which `gh` would reject only after the archive PR was armed. Added 2026-09-24,
-  after three juniper-data PRs merged between the owner's approval of the 0.16.0 notes (pinned at
+  after three juniper-data PRs merged between the Overtoad's approval of the 0.16.0 notes (pinned at
   `7125e161`) and the cut. One of them left a duplicate `## [0.16.0]` heading, which would have
   published only its own bullets.
 - **`.github/workflows/release-train.yml` also runs on a daily cron (13:00 UTC), but it cannot cut
@@ -652,7 +652,7 @@ dated in local time near midnight UTC disagrees with the body rendered from it.
 has no `v*` tag. The ceremony cuts that package with `--latest` and every other with `--latest=false`,
 which is §11.4's rule. Until 2026-09-23 it passed `--latest=false` on every cut, the meta-package's
 included. Six repos' badges had fallen behind their newest release, juniper-ml's own among them
-(v0.6.0 against v0.10.0). They were moved by hand that day, on the owner's approval. Moving a badge
+(v0.6.0 against v0.10.0). They were moved by hand that day, on the Overtoad's approval. Moving a badge
 (`gh release edit <tag> --latest`) fires nothing: every release-triggered workflow in the nine repos
 subscribes to `published` only (`util/ad-hoc/2026-09-23_release_trigger_types_census.py`, 24 workflows).
 
@@ -666,9 +666,9 @@ subscribes to `published` only (`util/ad-hoc/2026-09-23_release_trigger_types_ce
 `non-`, `not` or `no` directly before the word negates it. Lowercase mid-sentence prose is
 deliberately not a marker, because it is usually a denial ("this is not a breaking change").
 
-**Gate 2 belongs to the owner.** `PENDING_PYPI_APPROVAL` is the ceremony's success state.
+**Gate 2 belongs to the Overtoad.** `PENDING_PYPI_APPROVAL` is the ceremony's success state.
 `current_user_can_approve` reads `true` for an agent's token, and an agent approving anyway defeats the
-gate's entire purpose. Hand the owner the run URL and stop.
+gate's entire purpose. Hand the Overtoad the run URL and stop.
 
 **Verify from the registry, not from a tally.** Use the version-specific endpoint
 (`/pypi/<pkg>/<version>/json` returns 200), because the aggregate endpoint lags behind the CDN. For a
@@ -679,7 +679,7 @@ and unreleased until a final registry sweep caught it
 
 ### 11.8 One artifact, and recovering a release that did not reach PyPI
 
-**The one-artifact contract (2026-11-15).** The owner's directive: "deploy to pypi should send the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks again." Every Juniper publish workflow is to carry juniper-cascor's one-artifact template ([juniper-cascor#763](https://github.com/pcalnon/juniper-cascor/pull/763) and [#767](https://github.com/pcalnon/juniper-cascor/pull/767)), copied verbatim:
+**The one-artifact contract (2026-11-15).** The Overtoad's directive: "deploy to pypi should send the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks again." Every Juniper publish workflow is to carry juniper-cascor's one-artifact template ([juniper-cascor#763](https://github.com/pcalnon/juniper-cascor/pull/763) and [#767](https://github.com/pcalnon/juniper-cascor/pull/767)), copied verbatim:
 
 - the build job builds once, records `SHA256SUMS`, and uploads the dist directory and `SHA256SUMS` as one artifact, `<package>-dist`, kept 90 days, longer than the `pypi` gate's 30-day cap and the 30-day re-run window; on a re-run attempt its first step reuses that artifact instead of building again;
 - each publish job checks the files against `SHA256SUMS` before it uploads them;
@@ -690,7 +690,7 @@ The contract and the template's steps: [juniper-cascor `docs/ci_cd/MANUAL.md` §
 
 Why: juniper-cascor 0.13.0's and 0.14.0's wheels differ between PyPI and TestPyPI (`eda26e26…` against `f5dbc1b6…`, and `b70f3d39…` against `c5c9a5dc…`), because its PyPI job built again. juniper-ci-tools 0.9.1's do too (`1dc8e01e…` on PyPI, `ade363e8…` on TestPyPI): run 38045867684's PyPI job failed at its download on day 11, after the 7-day artifact expired, and its second attempt ("Re-run all jobs") built again, while the `skip-existing` TestPyPI upload kept the first build.
 
-**Recovering a release that did not reach PyPI.** The owner's ladder (ruling of 2026-11-15). Every rung publishes the files TestPyPI took, or nothing ([juniper-cascor `docs/ci_cd/MANUAL.md` § Recovering a Release That Did Not Reach PyPI](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#recovering-a-release-that-did-not-reach-pypi)). **Rungs 1 and 2 apply only when the release run's TestPyPI job, install check included, succeeded, or failed only for a transient index lag (TestPyPI not yet serving the upload).** A real install-check failure means a broken package: fix it and cut a new patch version, never rung 1, which would copy the broken files to PyPI. A failed build published nothing: "Re-run failed jobs" if the failure was transient, otherwise fix it and cut a new patch version. The ladder, in this order:
+**Recovering a release that did not reach PyPI.** The Overtoad's ladder (ruling of 2026-11-15). Every rung publishes the files TestPyPI took, or nothing ([juniper-cascor `docs/ci_cd/MANUAL.md` § Recovering a Release That Did Not Reach PyPI](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#recovering-a-release-that-did-not-reach-pypi)). **Rungs 1 and 2 apply only when the release run's TestPyPI job, install check included, succeeded, or failed only for a transient index lag (TestPyPI not yet serving the upload).** A real install-check failure means a broken package: fix it and cut a new patch version, never rung 1, which would copy the broken files to PyPI. A failed build published nothing: "Re-run failed jobs" if the failure was transient, otherwise fix it and cut a new patch version. The ladder, in this order:
 
 1. **Republish TestPyPI's files.** Dispatch the release's own publish workflow from its release tag:
 

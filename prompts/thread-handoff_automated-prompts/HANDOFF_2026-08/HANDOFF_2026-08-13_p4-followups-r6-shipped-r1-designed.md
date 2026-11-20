@@ -2,7 +2,7 @@
 
 Continue the **CLI experimentation program**. Successor to
 [`HANDOFF_2026-08-12_p4-spiral-resurface-and-followups.md`](HANDOFF_2026-08-12_p4-spiral-resurface-and-followups.md),
-which remains accurate for everything it records. The owner approved **all six** §7 follow-ups
+which remains accurate for everything it records. The Overtoad approved **all six** §7 follow-ups
 (R-1..R-6) plus two decisions captured below. R-6 is shipped as a PR; R-1 is fully designed but
 **no cascor code is written yet**.
 
@@ -77,7 +77,7 @@ All code work: worktree, PR, **never self-merge**, `gh pr list` dup-guard first.
    **Note the conflict**: R-3 edits `p4/e-a-cascor-budget-sweep.yaml`, which ml#1074 also touches — land or
    rebase on #1074 first.
 
-4. **R-4 — E-C spiral rows at E-A-class budget** (owner-decided). Currently based on `spiral-smoke.yaml`
+4. **R-4 — E-C spiral rows at E-A-class budget** (Overtoad-decided). Currently based on `spiral-smoke.yaml`
    (2-unit cap), where the noise curve is flat because the cap binds. Will also need its own
    `execution.stall_seconds` once the pool grows — the new gate enforces that automatically.
 
@@ -116,7 +116,7 @@ All code work: worktree, PR, **never self-merge**, `gh pr list` dup-guard first.
 ## Verification commands
 
 ```bash
-gh pr view 1074 --repo pcalnon/juniper-ml --json state,mergeable -q '.state'   # OPEN until owner merges
+gh pr view 1074 --repo pcalnon/juniper-ml --json state,mergeable -q '.state'   # OPEN until Overtoad merges
 gh issue view 509 --repo pcalnon/juniper-cascor --json state -q '.state'       # OPEN
 python3 -m unittest tests/test_experiment_suite_yamls.py                       # 5 tests, green
 grep -nE "app: (cascor|recurrence)" util/experiments/suites/p4/*.yaml          # R-2 scoping
@@ -134,7 +134,7 @@ git fetch --prune && git log --oneline HEAD..origin/main   # must be empty befor
 
 - `juniper-ml`: session worktree `.claude/worktrees/gleaming-riding-ritchie` on branch
   `feat/p4-suites-adopt-stall-seconds` (the feature commit, the touch-up bot's `AGENTS.md` date bump, the
-  symbol-loss waiver, and this handoff). Pushed and **CI green**; PR #1074 needs only the owner's merge.
+  symbol-loss waiver, and this handoff). Pushed and **CI green**; PR #1074 needs only the Overtoad's merge.
   `origin/main` was `adbd49b` at branch point. Other open PR: **#1073** (ruleset validation, different arc).
 - `juniper-cascor`: `origin/main` = `ed7c590`, primary checkout in sync. **No cascor code was modified and
   no cascor branch or worktree remains** — the R-1 worktree was created, never written to, and removed

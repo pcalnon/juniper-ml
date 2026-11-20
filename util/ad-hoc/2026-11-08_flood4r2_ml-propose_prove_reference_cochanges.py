@@ -6,9 +6,9 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — investigation (the Cursor flood-4 round-2 "ml-propose" carrier)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2507 (Cursor draft: pin docs/REFERENCE.md's compatibility record to pyproject.toml);
-         owner ruling "Carry + extend propose.py"; util/release_train/propose.py (step 5b-v);
+         Overtoad ruling "Carry + extend propose.py"; util/release_train/propose.py (step 5b-v);
          util/ad-hoc/2026-10-21_simulate_release_proposal.py (the simulator this adapts)
 
 Why this exists
@@ -17,7 +17,7 @@ Why this exists
 docs/REFERENCE.md sites to ``pyproject.toml``: the Package Overview Version cell, the "`juniper-ml` X.Y.Z
 declares the following pins" sentence, the current series' matrix row, and the [recurrence] "sets them to"
 clause. ``util/release_train/propose.py`` on ``main`` edits none of them, so with those tests carried every
-juniper-ml release proposal would fail CI until someone edited REFERENCE by hand. The owner ruled that the
+juniper-ml release proposal would fail CI until someone edited REFERENCE by hand. The Overtoad ruled that the
 generator be extended. This script is the evidence for that ruling, in both directions.
 
 It materializes ``--base-ref`` with ``git archive`` into two trees:

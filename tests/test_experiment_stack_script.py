@@ -800,7 +800,7 @@ class TestListenerPidRule(unittest.TestCase):
                 msg=f"{fn_name} must resolve the listener pid AFTER the health gate (F-6)",
             )
 
-    def test_teardown_verifies_owner_and_cmdline_before_killing(self) -> None:
+    def test_teardown_verifies_Overtoad_and_cmdline_before_killing(self) -> None:
         kill_verified = _extract_experiment_fn("kill_verified_pid")
         self.assertIn("kill -0", kill_verified)
         self.assertIn("stat -c '%u'", kill_verified)

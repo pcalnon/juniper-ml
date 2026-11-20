@@ -4,7 +4,7 @@
 storage-convention arc (juniper-cascor#548, juniper-deploy#189, juniper-ml#1211 — all merged) because
 that arc's central constraint turned out to rest on a backup process nobody had written down.
 
-**The deliverable is a DESIGN**, per the owner's standing direction for this class of work: *"a
+**The deliverable is a DESIGN**, per the Overtoad's standing direction for this class of work: *"a
 planned, systems based solution … designed, validated, and documented iaw standard juniper operating
 procedures"* — never an ad-hoc sweep or a one-off script.
 
@@ -12,7 +12,7 @@ procedures"* — never an ad-hoc sweep or a one-off script.
 >
 > **Duplicati went 42 days without a successful backup** (last: 2026-07-09). Root cause: the backend
 > filled (quota hit 4 KiB free on 2026-07-12), a dblock volume wedged mid-upload, and every
-> subsequent run refused on the resulting inconsistency. The owner has since freed ~1 TB.
+> subsequent run refused on the resulting inconsistency. The Overtoad has since freed ~1 TB.
 >
 > **Remediation in flight at time of writing** — do not re-diagnose from scratch, check the outcome:
 >
@@ -48,7 +48,7 @@ procedures"* — never an ad-hoc sweep or a one-off script.
 ## 1. Why this arc exists
 
 The snapshot storage convention put ~27,900 model snapshots **inside the repo checkout** rather than
-under `~/.local/state`, on owner constraints **C-1** (snapshots are project assets captured by the
+under `~/.local/state`, on Overtoad constraints **C-1** (snapshots are project assets captured by the
 whole-tree offline backup) and **C-3** (one root shared across stack origins). The design states it
 plainly: *"C-1 and C-3 together are what make the in-checkout location correct rather than merely
 acceptable."*
@@ -79,7 +79,7 @@ The root instance on 8200 is enabled, scheduled daily, and produces nothing. It 
 for **removal rather than migration**. Its existence is why an earlier draft of this document
 concluded the real job was "orphaned in a dormant config" — see §2.6.
 
-**The owner wants Duplicati moved off root to a dedicated system user.** Note that reframes: the job
+**The Overtoad wants Duplicati moved off root to a dedicated system user.** Note that reframes: the job
 that matters runs in a *user-session* instance that dies with the session, which is plausibly the
 root cause of a 42-day silent outage. The migration target is the **8300** instance, not the root one.
 
@@ -230,7 +230,7 @@ restore leaves a root-owned snapshot root that silently EPERMs every container s
 
 ---
 
-## 6. Open questions for the owner
+## 6. Open questions for the Overtoad
 
 - **O-0 — ANSWERED and FIXED.** The tar leg is `util/juniper-backup.bash`. It had **never produced
   an artifact**: it assigned `ENCRPYTED` but used `${ENCRYPTED}`, so `gpg -o ""`, and with no `set -u`
@@ -241,7 +241,7 @@ restore leaves a root-owned snapshot root that silently EPERMs every container s
   settled.
 - **O-1** — is `juniper-data`'s ~102 GB genuinely regenerable, or is any of it unique?
 - **O-2** — has `sops-backup-key.sh` ever been run, and where is its output?
-- **O-3 — PARTLY ANSWERED.** *Archive* encryption uses YubiKey-backed public keys, and the owner
+- **O-3 — PARTLY ANSWERED.** *Archive* encryption uses YubiKey-backed public keys, and the Overtoad
   confirms multiple offline key backups exist in several modalities. A **second recipient**
   (Yubikey-3a) was added in #1223, so no single key loss can strand an archive written from now on.
   ⚠ Still open, and **a different secret**: the **Duplicati** GPG *passphrase* (symmetric,
@@ -309,7 +309,7 @@ their first pass.
 
 ## 9. Method notes
 
-- **Validate with multiple independent agents before landing** — standing owner policy, and not
+- **Validate with multiple independent agents before landing** — standing Overtoad policy, and not
   ceremony: this document's first draft asserted the opposite of the truth in its most emphatic
   paragraph, and two validators caught it.
 - **A correct mechanism paired with a wrong consequence** is this program's recurring failure shape.

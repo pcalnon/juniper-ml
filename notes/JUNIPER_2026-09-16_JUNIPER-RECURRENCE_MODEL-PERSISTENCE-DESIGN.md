@@ -13,11 +13,11 @@
 Whether and how the juniper-recurrence service persists a trained LMU, so that canopy's snapshot
 affordance stops reporting success over a model it never saved.
 
-Three questions needed an owner ruling — §4 (where the bytes live), §5 (retention), §6 (what a
+Three questions needed an Overtoad ruling — §4 (where the bytes live), §5 (retention), §6 (what a
 restored model reports). §7–§8 are the mechanical consequence of those answers and need no ruling.
 
 **All three were ruled on 2026-09-16; the answers are in §11.** §4–§6 are left as written, so the
-reasoning that was put to the owner stays readable next to what was decided — including §4's
+reasoning that was put to the Overtoad stays readable next to what was decided — including §4's
 recommendation, which the ruling **corrects**.
 
 ---
@@ -101,7 +101,7 @@ steps — the API would report a durable artifact that a `docker compose restart
 | | Approach | Cost | Risk |
 |---|---|---|---|
 | **A** | `snapshots_dir` setting + a named volume in juniper-deploy | One setting, one compose stanza, one env var | Introduces the service's first persisted artifact class — backup posture, permissions, image `USER` all newly relevant |
-| **B** | Return the `.npz` **in the HTTP response**; canopy stores it | No service-side storage, no volume, no retention question | Breaks the cascor precedent (server-side ownership); moves MBs through canopy; canopy then owns durability it has never owned |
+| **B** | Return the `.npz` **in the HTTP response**; canopy stores it | No service-side storage, no volume, no retention question | Breaks the cascor precedent (server-side Overtoadship); moves MBs through canopy; canopy then owns durability it has never owned |
 | **C** | Persist into juniper-data as a dataset-adjacent artifact | Reuses an existing storage tier | juniper-data stores *datasets*; a model is not one, and the `dataset_id` hashing contract does not describe it |
 
 **Recommendation: A.** It matches the cascor precedent exactly — cascor names and stores snapshots
@@ -230,7 +230,7 @@ Notes that are consequences, not choices:
 
 | § | Question | Recommendation |
 |---|---|---|
-| **4** | Where do the bytes live? | **A** — `snapshots_dir` + a named volume in juniper-deploy, matching cascor's server-side ownership. Not done until the volume exists. |
+| **4** | Where do the bytes live? | **A** — `snapshots_dir` + a named volume in juniper-deploy, matching cascor's server-side Overtoadship. Not done until the volume exists. |
 | **5** | Retention? | **A** — inherit §6.4's ratified no-deletion; record it as inherited rather than assumed. |
 | **6** | What does a restored model report? | **A** — `trained` with `result: null`, plus the snapshot id as provenance. Both sides already handle `None`; B fabricates a run. |
 
@@ -244,7 +244,7 @@ so the endpoints can be exercised before anything depends on them.
 
 All three questions are answered. One ruling **corrects this document's own recommendation**; one
 **departs from it**. Both are recorded here rather than by rewriting §4–§6, so the reasoning that
-was put to the owner stays legible next to what was decided.
+was put to the Overtoad stays legible next to what was decided.
 
 | § | Question | Ruling | vs. §4–§6's recommendation |
 |---|---|---|---|
@@ -281,7 +281,7 @@ the container, with a matching `snapshots_dir` setting pointing at the in-contai
 properties transfer unchanged.
 
 **Why §4 got it wrong, recorded so the next reader does not repeat it:** the note reasoned from
-"cascor stores snapshots server-side" without reading how. The *ownership* precedent was right; the
+"cascor stores snapshots server-side" without reading how. The *Overtoadship* precedent was right; the
 *mechanism* was the one that had already failed. Reading the `volumes:` block, not the service
 block, is what surfaced it.
 

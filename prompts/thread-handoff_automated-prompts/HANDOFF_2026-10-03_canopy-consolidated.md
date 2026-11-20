@@ -1,4 +1,4 @@
-# HANDOFF 2026-10-03 — P2 canopy: E2E validation arc + canopy-selection arc (CONSOLIDATED): F-CANOPY-059 (P0) still unfixed, Phase 10 unfiled, Y2 wave 2 stalled at round 15 with its claim lapsed, selection arc owner-gated only
+# HANDOFF 2026-10-03 — P2 canopy: E2E validation arc + canopy-selection arc (CONSOLIDATED): F-CANOPY-059 (P0) still unfixed, Phase 10 unfiled, Y2 wave 2 stalled at round 15 with its claim lapsed, selection arc Overtoad-gated only
 
 **Written**: 2026-10-03 by a drafter session of the handoff-consolidation task (juniper-ml worktree
 `.claude/worktrees/snappy-strolling-waterfall`, branch `docs/handoff-consolidation-2026-10-03`, cut from
@@ -18,16 +18,16 @@
 **Also read and carried** (predecessors the combined handoff left unfinished; frozen copies on `main` via juniper-ml#2096 under
 `reports/2026-09-24_canopy-combined-handoff-consensus/r1/`):
 
-- the combined DRAFT itself, `HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md` (untracked in
+- the combined DRAFT itself, `HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md` (untracked in
   worktree `bubbly-meandering-pie`; byte-identical to `r1/DRAFT_r1.md`, sha256 `8c2fa290…`), plus its round-1 fix list
   F1–F22 and the five reports `r1/reports/R1{A..E}.md` (four SAFE AFTER FIXES, R1-E FAIL). **All F1–F22 are folded in
   below**, so this file does not repeat round 1's defects;
-- predecessor **A** `HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md` (origin branch
+- predecessor **A** `HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md` (origin branch
   `docs/canopy-e2e-handoff-2026-09-24`, no PR) — not validated;
 - predecessor **B** `HANDOFF_2026-09-24_y2-wave2-round-15-fix-pass.md` (untracked, only in worktree `idempotent-jumping-sparkle`) — not validated;
-- predecessor **C** `HANDOFF_2026-09-24_canopy-selection-cleanup-done-item-19-closed-y7-grounded-owner-calls-remain.md` (main, #2087), and its chain
+- predecessor **C** `HANDOFF_2026-09-24_canopy-selection-cleanup-done-item-19-closed-y7-grounded-Overtoad-calls-remain.md` (main, #2087), and its chain
   `…canopy-selection-four-rulings-shipped-cleanup-and-carry-forwards-remain.md`, `…four-rulings-made-x11-f2-f1-x8-to-implement.md`,
-  `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-owner-rulings-open.md` (`…queue-drained.md` below).
+  `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-Overtoad-rulings-open.md` (`…queue-drained.md` below).
 
 **Supersedes**: the four sources above, the combined draft, and predecessors A, B and C.
 
@@ -46,7 +46,7 @@ Continue the juniper-canopy work from `prompts/thread-handoff_automated-prompts/
 in full. Three lanes, separable across sessions: **A** the E2E validation arc (queue = ledger
 `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, Phase 9 "Still owed", items 0–17); **B** Y2 wave 2 (four prepared,
 never-opened PRs: juniper-deploy 2b, juniper-recurrence 2a, juniper-ml 2c, and the addendum to the 09-08 selection handoff); **C** the
-canopy-selection arc's residue, which is owner calls only.
+canopy-selection arc's residue, which is Overtoad calls only.
 
 **Completed so far (verified 2026-10-03):** Phase 7/8/9 ledger PRs merged (juniper-ml#2030, #2054, #2083 `48fc09e5`); canopy#670 (F-054),
 #676 (idle cuts), #684 (#676's round-3 follow-up, `f2147403`) merged; canopy#685 (`dc5ea02e`, 09-24 23:24Z) fixed F-CANOPY-061/062's
@@ -56,9 +56,9 @@ data#437); juniper-data 0.16.0 is on PyPI; the round-1 handoff, its `r1/` record
 2026-09-25** except dependabot merges; the primaries were pulled (C6).
 
 **Before anything else:** pick lanes per § Session layout (the verification block is split by checkout); then run § Verification commands
-for your lane; then put ONE owner message containing every owner-gated item below (O1–O17). **No merge approval is carried** — ask before the first merge.
+for your lane; then put ONE Overtoad message containing every Overtoad-gated item below (O1–O17). **No merge approval is carried** — ask before the first merge.
 
-**Remaining work, ordered.** (OG = owner-gated; AG = agent-doable.)
+**Remaining work, ordered.** (OG = Overtoad-gated; AG = agent-doable.)
 
 Lane A (E2E):
 
@@ -102,7 +102,7 @@ Lane A (E2E):
    (`gh pr list --repo pcalnon/juniper-ml --head docs/canopy-e2e-phase11 --state all`).
    - F-CANOPY-058 is observed live: 29 of 611 requests evicted, in runs of up to 11 and 34.8 s.
    - Its trigger, the strand watchdog's false fires, is filed as F-CANOPY-068: P1 if a CHANGELOG's description of an
-     internal mechanism counts as documented, else P2 (owner batch O17).
+     internal mechanism counts as documented, else P2 (Overtoad batch O17).
    - Counts 79/53/1/2/23, 7 P1, 16 P2. New items 24–26: F-CANOPY-068 with item 4's design, census triggers fired from
      the page, and the reach of the §6.3 ruling plus a sweep of canopy's manual.
    - The evidence is in `reports/e2e-canopy-2026-09-02/f058-census-v2/`, and the census in `util/ad-hoc/2026-10-04_f058_census_v2_*`.
@@ -174,9 +174,9 @@ Lane C (selection):
 11. **OG** — C1 worktree removals, C2 Y7, C3 X8 release `[ALSO P4]`, C4 O9 if it returns as a design question. C5's date has passed; C6
    changed (§ Context C).
 
-**Key context.** The owner's sweeper readies and arms open PRs (drafts too); its merges are intended ("Mine: fix forward", 2026-09-24
+**Key context.** The Overtoad's sweeper readies and arms open PRs (drafts too); its merges are intended ("Mine: fix forward", 2026-09-24
 07:32:48Z) — validate BEFORE opening. Never touch the trio (`:8101` data, `:8202` cascor, `:8051` canopy) [VERIFIED 2026-10-03: still
-listening, pids 2856834 / 2857489 / 2858037, started 2026-09-22]. Never print secrets, env values or the owner's email. Never merge other
+listening, pids 2856834 / 2857489 / 2858037, started 2026-09-22]. Never print secrets, env values or the Overtoad's email. Never merge other
 sessions' PRs. Name every referenced or changed document by filename.
 
 ---
@@ -193,7 +193,7 @@ sessions' PRs. Name every referenced or changed document by filename.
   `HANDOFF_2026-10-03_defect-register-round-42-consolidated.md` and in the INDEX's P2 ↔ P3 row.
   canopy#685 (P3's PR) is merged, so the old "get the PR number" step is closed.
 - **P6 (perf lane), possibly**: the trio holds the cascor primary (`util/ad-hoc/cascor_freeze_tell.py` reported FREEZE IN FORCE on 09-24);
-  stopping the trio is an explicit owner decision (O13). [UNVERIFIED — freeze tell not re-run; it is a host probe]
+  stopping the trio is an explicit Overtoad decision (O13). [UNVERIFIED — freeze tell not re-run; it is a host probe]
 - **All paths**: MEMORY.md compaction (item 6) is shared; re-read right before each write.
 
 ---
@@ -293,9 +293,9 @@ worktree `…fix--f055-status-bar-running-guard--20260923-1425--ce78e0de` (prove
 
 [VERIFIED 2026-10-03: canopy refs and reflog files read directly; juniper-ml `git branch -a --contains` from this worktree; none is on any
 origin branch.] **The threat is cleanup, not `gc`**: gc config is default; removing a worktree deletes its HEAD reflog and `branch -d/-D`
-deletes the branch reflog. Options for the owner: push to a provenance ref per remote (e.g. `refs/provenance/canopy-e2e-phase9`, pointing at
+deletes the branch reflog. Options for the Overtoad: push to a provenance ref per remote (e.g. `refs/provenance/canopy-e2e-phase9`, pointing at
 branch TIPS), keep a local ref, or accept loss. `util/ad-hoc/2026-09-24_ledger_cited_commit_reachability.py` (on main via #2096) reports
-BRANCH 29 / REFLOG-ONLY 4; its reflog upgrade is unvalidated. Also owner: the account's later actions (update-branches on ml#2066 and
+BRANCH 29 / REFLOG-ONLY 4; its reflog upgrade is unvalidated. Also Overtoad: the account's later actions (update-branches on ml#2066 and
 data#434 23:16–23:17Z; ml#2045 disarm/re-arm 23:48Z; cascor-worker#196 merge 01:21:37Z; #676's CI re-run 01:22:32Z; ml#2045 draft/ready
 03:04–03:05Z, all 09-23/24) and the ratings on plan §6.3 (`notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360`):
 F-056/057 P1, F-059 P0, against F-014's P1 precedent.
@@ -314,7 +314,7 @@ re-locate, #684 edited the manual) and the live-check instrument's gaps (missing
 absent"; PROBE never checks node id; no store read-back after `setProps`; `ticks_10s_cleared` keeps no raw counts; no host load) — fix
 before `2026-09-23_idle_cuts_live_check.py` reruns; 14 standing rule: a census must be able to fail.
 
-**A8 (MEMORY.md).** Limit is ~25,000 CHARACTERS (`wc -m`), owner target 20 KB (`feedback_memory_index_target_is_20kb.md`). Retire entries,
+**A8 (MEMORY.md).** Limit is ~25,000 CHARACTERS (`wc -m`), Overtoad target 20 KB (`feedback_memory_index_target_is_20kb.md`). Retire entries,
 never strip hooks; `util/ad-hoc/2026-09-12_memory_index_linkset.py snapshot <f>` then `compare <f>`; compare link SETS, not counts; re-read
 before each write. The canopy E2E entry is this path's (F22: there are no "ACTIVE" lines in MEMORY.md).
 
@@ -322,14 +322,14 @@ before each write. The canopy E2E entry is this path's (F22: there are no "ACTIV
 `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`). Eligible now: canopy `…control--main--20260923-1423--3a6dea95`
 (detached). Hold until A6 is answered: `…fix--idle-cuts-round3-wording--20260923-2238--e9053227`, `…perf--idle-dispatch-cuts-v2--20260923-1418--3a6dea95`,
 `…perf--idle-dispatch-cuts--20260923-0830--723ee812`, `…fix--f054-replay-block-clientside--20260923-0036--2f973ca2`; juniper-ml
-`graceful-sprouting-panda`, `squishy-dancing-moth` (owner-run, C1). Also `bubbly-meandering-pie` (the combined session; its draft is
+`graceful-sprouting-panda`, `squishy-dancing-moth` (Overtoad-run, C1). Also `bubbly-meandering-pie` (the combined session; its draft is
 superseded by this file) and `lively-humming-pixel`, `partitioned-twirling-stream` (earlier Phase 7/8 sessions; the latter holds `ada8e50c`).
 [VERIFIED 2026-10-03: all listed worktrees exist.]
 
 **Lane A traps** [UNVERIFIED — from predecessor A and the combined draft, which were not validated]. The trio's cascor fixture is
 "2/68/2" (uuid `1cd15120…`), and a resumed snapshot has NO metrics history. PNGs go through the signed API as LFS pointers
 (`util/ad-hoc/2026-09-23_lfs_pointers_for_api_commit.py` stores each image and writes its pointer; then `git lfs push --object-id origin
-<oids>`). Agent briefs must forbid printing secrets or env values AND sending the owner's email anywhere (the A-N2 subagent sent it to an
+<oids>`). Agent briefs must forbid printing secrets or env values AND sending the Overtoad's email anywhere (the A-N2 subagent sent it to an
 external site in a User-Agent header; `…queue-drained.md:105`). Lanes build fake secrets by concatenation and print booleans only.
 Consensus mechanics: freeze the artifact as a local commit and have lanes read git OBJECTS; briefs live in `reports/e2e-canopy-2026-09-02/drafts/`.
 canopy `addopts` already has `-q` (another `-q` hides the summary); use `conda run --no-capture-output -n JuniperCanopy1`.
@@ -339,7 +339,7 @@ first (39% on 2026-10-03; 98% on 09-23 crashed Chromium). Delivered-but-not-appl
 with `COMMIT_MESSAGES`; `safe_merge.py` sends no body, so `Allow-Symbol-Loss:` trailers in commit bodies survive; check `auto_merge` on your
 own PR before landing. Archive lane reports with `util/ad-hoc/2026-09-23_archive_consensus_reports_by_round.py`; `--allow-shape
 AGENT_ID=LITERAL` only after reviewing by known-literal and length; `key_material()` refuses key material whatever is allowed;
-`util/ad-hoc/2026-09-24_secret_shape_check.py` tests the four shape users. Earlier E2E review lanes C5, R4-A, A1 and B2 printed the owner's
+`util/ad-hoc/2026-09-24_secret_shape_check.py` tests the four shape users. Earlier E2E review lanes C5, R4-A, A1 and B2 printed the Overtoad's
 email in their own local output (nothing sent).
 
 **Shared traps (all lanes)** [UNVERIFIED — from the combined draft, not validated]. gh 2.46.0: `gh pr edit` fails, so use `gh api -X
@@ -359,9 +359,9 @@ a waiver trailer must be in a COMMIT body.
   any outstanding work remains update the handoff document accordingly begin performing the outstanding tasks validation by consensus should
   be performed where appropriate merge approval granted", then "continue as planned". Its merge approval was "ONLY this session's four PRs
   (2b, 2a, 2c, addendum), plus the closing PR. No deploys, images, PyPI or GitHub Releases"; per-session, so it did not survive.
-  **Restored rules (F6): "Never merge other sessions' PRs"; "The juniper-recurrence release is owner-gated".**
+  **Restored rules (F6): "Never merge other sessions' PRs"; "The juniper-recurrence release is Overtoad-gated".**
 - **Short names**: `S` = `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/idempotent-jumping-sparkle/reports/2026-09-23_y2-wave2-consensus/session-state/`
-  (untracked; pass as the freeze tool's `--scratch`). `…queue-drained.md` = `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-owner-rulings-open.md` (#2058).
+  (untracked; pass as the freeze tool's `--scratch`). `…queue-drained.md` = `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-Overtoad-rulings-open.md` (#2058).
 - **The four PRs** (prepared, unopened): **2b** deploy — bind-mount the LMU snapshot root with a preflight on every bring-up path; **2a**
   recurrence — track `recurrence-snapshots/.gitkeep` and correct #172's unreleased claims; **2c** juniper-ml — both launchers declare the root,
   shared tripwire `tests/snapshot_root_tripwire.py`, two mutation harnesses; **addendum** — status addendum v13 spliced into the 09-08 handoff,
@@ -411,7 +411,7 @@ a waiver trailer must be in a COMMIT body.
 - **The stake (X1/F7)**: if 2b lands before 2a is merged and pulled, every deploy-main bring-up refuses (recurrence in profiles full/demo/dev/
   test; long-form mount with `create_host_path: false`, so Docker refuses a missing source on every path; `JUNIPER_SNAPSHOT_ROOT_OK=1` bypasses
   only the preflight). Also 2b's comment and CHANGELOG and 2a's CHANGELOG are false until 2c merges, and merge-time checks never run. Real
-  options: exclude the four PRs from the sweeper, or fix forward (owner may pre-create `juniper-recurrence/recurrence-snapshots/` in the shared
+  options: exclude the four PRs from the sweeper, or fix forward (Overtoad may pre-create `juniper-recurrence/recurrence-snapshots/` in the shared
   checkout); R15D's alternative wording is "let 2b's preflight warn rather than refuse until 2a is released" (a code change → delta route).
 - **B4 closing**: closing handoff from `S/main/handoff_v4.md` (fill `PR_2C`/`PR_2A`/`PR_2B`/`PR_ADD`, `GIT_STATUS_BLOCK`,
   `HANDOFF_VALIDATION_BLOCK`; point at the newest selection-arc handoff); archive `reports/2026-09-23_y2-wave2-consensus/` rounds 1–16+ with a
@@ -436,7 +436,7 @@ a waiver trailer must be in a COMMIT body.
 - Done: W5 cleanup (26 worktrees, 20 branches in canopy/cascor/data; harvest 174 MB in 25 dirs at
   `/home/pcalnon/Development/python/Juniper/backups/worktree-harvest-2026-09-24-canopy-selection-arc/` [VERIFIED 2026-10-03: du 174M]); item 19
   closed; X8 CHANGELOG in data `[Unreleased]` via #438; Y7's dropdown half grounded in §4.3 of the selection design note.
-- **C1 (OG, owner runs)**: remove juniper-ml worktrees `jazzy-soaring-minsky`, `bright-crunching-alpaca`, `tender-wibbling-flask` (verified
+- **C1 (OG, Overtoad runs)**: remove juniper-ml worktrees `jazzy-soaring-minsky`, `bright-crunching-alpaca`, `tender-wibbling-flask` (verified
   superseded/on-main by C), and `enumerated-marinating-puddle` (#2087 merged; 0 untracked files at 09-24 — still run
   `util/ad-hoc/2026-09-24_same_repo_worktree_content_probe.py` first) [VERIFIED 2026-10-03: all four exist]. Re-run
   `util/ad-hoc/2026-09-02_worktree_inuse_probe.py`; `--force` needed (dirty with untracked copies of merged content; also deletes caches and
@@ -446,7 +446,7 @@ a waiver trailer must be in a COMMIT body.
   consumer-notify job after PyPI succeeded.)
 - **C4** O9/U-6, from A2(b).
 - **C5** [CHANGED SINCE HANDOFF: 2026-09-29T00:00Z has passed; the Y2 waves 2/3 and X10 claims lapsed; no PR or pushed branch carries them.]
-- **C6** [CHANGED SINCE HANDOFF: the primaries were fast-forwarded by the owner's account outside any session — canopy/cascor at 09-24
+- **C6** [CHANGED SINCE HANDOFF: the primaries were fast-forwarded by the Overtoad's account outside any session — canopy/cascor at 09-24
   19:39Z, again at 09-25 04:20–04:23Z (data too), and at 10-02 23:31–23:32Z; canopy primary now `72b1a5f6` (one behind main `58b467ca`), cascor `b2921712` and
   data `1c67f8d6` equal main. The trio's processes (started 09-22) still run older code, so the trio is mixed-version.] Remaining: decide who
   may pull under the freeze and whether the trio is still wanted (O13). A clean holder scan is not proof (editable-finder imports leave no
@@ -460,7 +460,7 @@ a waiver trailer must be in a COMMIT body.
 O1 merge approval for this session (none carried). O2 A6 provenance refs (urgent before any cleanup). O3 ledger item 17. O4 the account's
 later actions (A6). O5 the ratings (A6). O6 ledger items 3, 4, 9 (M-DATASET), 10. O7 Y2: continue after the lapsed claim? who runs it? sweeper
 vs merge order (exclude the four PRs / fix-forward / preflight-warns). O8 wave 3 gating: capability test (§8 item 3 and §11.4 step 3 of `notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`) vs third
-branch (item 4 of `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md` § B); record the choice in that persistence design. O9 Y7 (C2). O10 token rotation: `HF_TOKEN` and `JUNIPER_ML_PYPI` /
+branch (item 4 of `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md` § B); record the choice in that persistence design. O9 Y7 (C2). O10 token rotation: `HF_TOKEN` and `JUNIPER_ML_PYPI` /
 `JUNIPER_ML_TEST_PYPI` (leaked into agent transcripts; status unknown). O11 retain or retire the ad-hoc signed-commit driver copies (promoted in
 juniper-ml#2036; `…queue-drained.md:36`). O12 make recurrence's `Settings` case-sensitive (`S/main/handoff_v4.md:54`). O13 who may stop the
 trio and who pulls primaries under the freeze. O14 X8 release (C3). O15 C1 removals. O16 whether this consolidated handoff gets its own
@@ -470,7 +470,7 @@ limbs. First: does a CHANGELOG or design-plan promise count as "documented"? Tha
 -018 and -012. Second: if it does, does that extend to a CHANGELOG's description of an internal mechanism? That decides F-CANOPY-068.
 Moving 065 and 068 alone, the counts are 7/16, 6/17 or 5/18 open P1/P2 (since Phase 12, 2026-10-19, F-CANOPY-068 is FIXED, so the second limb
 decides its rating of record only and moves no count; the first limb alone gives 4/16 or 3/17). Phase 11's item 26 checks every open finding against canopy's
-manual without waiting for the ruling, then sweeps the rest once the owner rules. **Since Phase 13 (2026-10-19) the manual
+manual without waiting for the ruling, then sweeps the rest once the Overtoad rules. **Since Phase 13 (2026-10-19) the manual
 check is done**: F-CANOPY-012, -013 and -018 are P1 by the manual without a ruling, and the corrected CAN-015g/h design note no
 longer promises F-CANOPY-057's stream (the V7 roadmap's §28.1 and the 2026-05-05 roadmap audit's §5.2 carry the same correction,
 and the roadmap's CAN-015 row and the audit's three restatements point at it), so the first limb decides F-CANOPY-065 alone among
@@ -496,7 +496,7 @@ df -i /tmp | tail -1
 wc -m /home/pcalnon/.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml/memory/MEMORY.md   # 24,929 on 2026-10-03
 gh api repos/pcalnon/juniper-recurrence/compare/ca9609f0...main --jq '[.files[].filename]'
 gh api repos/pcalnon/juniper-deploy/compare/d589dd95...main --jq '[.files[].filename]'
-# C1, owner-run only:
+# C1, Overtoad-run only:
 python3 util/ad-hoc/2026-09-02_worktree_inuse_probe.py /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jazzy-soaring-minsky /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/bright-crunching-alpaca /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/tender-wibbling-flask /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/enumerated-marinating-puddle
 git -C /home/pcalnon/Development/python/Juniper/juniper-ml worktree remove --force /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jazzy-soaring-minsky
 git -C /home/pcalnon/Development/python/Juniper/juniper-ml worktree remove --force /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/bright-crunching-alpaca

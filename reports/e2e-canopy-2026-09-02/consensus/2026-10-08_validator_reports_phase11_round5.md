@@ -47,7 +47,7 @@ L-numbers refer to `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDE
      - L11097-11098: "No open finding has been swept against canopy's CHANGELOG, the design plans or canopy's manual".
      - L11114: "F-CANOPY-013, the editor's success messages, is unsettled: the note promises no message text (Lane 11-R3A)."
      - L11115: "Item 26 is the sweep, owed with the ruling; it checks F-CANOPY-012 against the manual first."
-     - Item 26 (L11145-11148): "First, without waiting for the ruling, check F-CANOPY-012 against canopy's manual … Once the owner rules, check each open finding … for a promise, of a kind the ruling counts".
+     - Item 26 (L11145-11148): "First, without waiting for the ruling, check F-CANOPY-012 against canopy's manual … Once the Overtoad rules, check each open finding … for a promise, of a kind the ruling counts".
    - **Evidence:**
      - canopy's `docs/USER_MANUAL.md`, Network Editor workflow step 6: "Use the API response shown in the status alert to confirm the edit."
        - It is at `:424` at `28da69f8^`, nine lines below the pass's `:407-415`.
@@ -58,7 +58,7 @@ L-numbers refer to `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDE
    - **Fix:**
      - In item 26's first step: without waiting for the ruling, check the open findings against canopy's manual, F-CANOPY-012 and F-CANOPY-013 first. Or narrow the Matrix's sentence to match.
      - In the F-013 bullet: it is unsettled against the note, and the manual may reach it without any ruling (`:424` at `28da69f8^`).
-   - **Changes a number, disposition or action?** Action: yes (item 26's first step, and the reach put to the owner). Number: no, until the check is made.
+   - **Changes a number, disposition or action?** Action: yes (item 26's first step, and the reach put to the Overtoad). Number: no, until the check is made.
 
 2. **NIT: the round-4 Slips bullet leaves out Lane 11-R4B's bytecode writes.**
    - **Quoted (L11083-11085):** "Lane 11-R4A … wrote one git-ignored bytecode file into the worktree … Lane 11-R4B ran one canopy `git log` …"
@@ -77,7 +77,7 @@ L-numbers refer to `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDE
 
 4. **NIT: the round-4 record's account of the lanes.**
    - **Evidence:**
-     - The Verdicts bullet (L11054-11056) names only the F-012 omission as changing an action. Lane 11-R4B's F1 (MINOR) also said it changes an action (the question put to the owner) and a number (F-068's rating and 6/17, under one ruling).
+     - The Verdicts bullet (L11054-11056) names only the F-012 omission as changing an action. Lane 11-R4B's F1 (MINOR) also said it changes an action (the question put to the Overtoad) and a number (F-068's rating and 6/17, under one ruling).
      - In "the note promises no message text (Lane 11-R3A)" (L11114), the reason is Lane 11-R4A's ("N promises no message text"); Lane 11-R3A said only "not settled".
      - The trigger-lag bullet credits both lanes, but T-mode's unrecorded effect was raised by Lane 11-R4B's F3 alone; Lane 11-R4A's F5 concerned only the README's split.
    - **Changes a number, disposition or action?** No.
@@ -138,7 +138,7 @@ L-numbers refer to `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDE
    - **Quoted:**
      - Matrix (L11097-11098): "No open finding has been swept against canopy's CHANGELOG, the design plans or canopy's manual".
      - Matrix (L11115): "Item 26 is the sweep, owed with the ruling; it checks F-CANOPY-012 against the manual first."
-     - Item 26 (L11145-11147): "First, without waiting for the ruling, check F-CANOPY-012 against canopy's manual … Once the owner rules, check each open finding not yet rated on a CHANGELOG or a design plan".
+     - Item 26 (L11145-11147): "First, without waiting for the ruling, check F-CANOPY-012 against canopy's manual … Once the Overtoad rules, check each open finding not yet rated on a CHANGELOG or a design plan".
      - F-013 (L11114): "is unsettled: the note promises no message text (Lane 11-R3A)".
    - **Evidence:**
      - The manual section the ledger cites for F-012 says, nine lines lower, "6. Use the API response shown in the status alert to confirm the edit." That is `docs/USER_MANUAL.md:424` at `28da69f8^`, `:465` at `60ae1870`, and `:387` at `3411673c`, when F-013 was filed.

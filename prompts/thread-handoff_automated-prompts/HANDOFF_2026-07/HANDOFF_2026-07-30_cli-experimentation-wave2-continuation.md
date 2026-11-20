@@ -1,6 +1,6 @@
 # HANDOFF 2026-07-30 — CLI Experimentation Program: continue after Waves 0-2.1
 
-Continue executing the CLI test/validation/experimentation program for juniper-cascor + juniper-recurrence (plan of record: `notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`, merged ml#867; owner ratified all Q-1..Q-12).
+Continue executing the CLI test/validation/experimentation program for juniper-cascor + juniper-recurrence (plan of record: `notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`, merged ml#867; Overtoad ratified all Q-1..Q-12).
 
 ## Completed so far
 
@@ -11,7 +11,7 @@ Continue executing the CLI test/validation/experimentation program for juniper-c
 - Wave 2.1 (util/experiment_stack.bash + tests/test_experiment_stack_script.py): OPEN ml#876, CI green; live smoke passed (F-6 pidfile=ss-listener confirmed).
 - Plan erratum (recurrence HTTP families are GENERIC `juniper_http_*` — no namespace kwarg at `juniper_recurrence/app.py:118`): OPEN ml#875, CI green.
 
-## Remaining next steps (dependency order, after owner merges the 4 open PRs)
+## Remaining next steps (dependency order, after Overtoad merges the 4 open PRs)
 
 1. Wave 2.2: `util/experiments/run_experiment.py` cascor path + tests (plan §6.3: drive POST /v1/training/start -> poll to COMPLETED, sample loopback `/metrics` into `metrics_series.csv` each poll — correlation is NOT in `/v1/metrics/history`; plots per §8.1; manifest per §13.4).
 2. Wave 2.3: driver recurrence path (train/predict/crossval; `y_` keys for synthetics, `y_reg_` only for equities_seq).

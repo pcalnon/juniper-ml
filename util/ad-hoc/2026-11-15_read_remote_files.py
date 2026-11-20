@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-15
 Status:      ad-hoc -- investigation (Python 3.15 migration arc, phase 2: the pre-existing defects)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     prompts/thread-handoff_automated-prompts/
              HANDOFF_2026-11-15_python-3-15-phase-2-deploy-precommit-required-h5py-prs.md ("Key context / traps")
 

@@ -33,7 +33,7 @@ threshold. Both answer the only question that matters — *can contention reach 
 
 **The measurements that WOULD change a decision**, in cost order:
 
-1. **Free — ask the owner the minimum effect size worth detecting.** P1 §5
+1. **Free — ask the Overtoad the minimum effect size worth detecting.** P1 §5
    (`notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md`) terminates in "if that floor
    exceeds the effect size anyone cares about detecting, conclude *this host cannot gate that
    metric*." That effect size is stated in **no** perf-lane document, so no candidate threshold can
@@ -48,7 +48,7 @@ threshold. Both answer the only question that matters — *can contention reach 
    evidence has exactly two points (4/16 → +0.051%, 14/16 → +90–165%) and nothing between. A settled
    run at 14/16 adds no information about where the floor sits.
 
-**A settled-`heavy` five-repeat run remains available** (~20 min, owner approval is per-arc — re-ask)
+**A settled-`heavy` five-repeat run remains available** (~20 min, Overtoad approval is per-arc — re-ask)
 but is **not** blocking. If taken, launch the load and the suite **from the same shell**: the
 generator traps `EXIT` and can reap its own workers if backgrounded separately. Wait for its
 `[load] READY` line, and size the load from **loaded** cell durations (~190 s/cell), never quiet ones.
@@ -59,7 +59,7 @@ a single cell (+7.6%) and on the mean (+1.50%), but **not on the median** (65.23
 +0.02%). §4 of the heavy-load results
 (`notes/JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-HEAVY-LOAD-AND-DURATION-RESULTS.md`) then adopts the
 median as the fix — and 0.5% survives that fix with ~25× margin. So the number should be re-examined
-alongside the shape, not treated as dead. The owner's own standing rider on it is recorded in §7 of
+alongside the shape, not treated as dead. The Overtoad's own standing rider on it is recorded in §7 of
 the loaded-and-bridged results
 (`notes/JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-LOADED-AND-BRIDGED-RESULTS.md`): "come back and
 verify after this gate goes live."
@@ -68,12 +68,12 @@ verify after this gate goes live."
 (`notes/JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md`) orders the
 lane **F-P1 → F-P2 → F-P3 → F-P4**; P2's deliverable is a §14-style wave table of work items with
 repo, size and dependencies, and no such artifact exists in `notes/`. The P3 measurements were taken
-ahead of it at the owner's direction, which is a legitimate compression — but **this handoff's first
+ahead of it at the Overtoad's direction, which is a legitimate compression — but **this handoff's first
 draft said "do not restart P2", which both inverted the phase order and implied P2 had been started.
-It has not.** Raise it with the owner rather than sealing it shut.
+It has not.** Raise it with the Overtoad rather than sealing it shut.
 
 Separately, **P1 is not formally accepted**: its acceptance checklist still has `- [ ] Reviewed —
-owner` at `notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md:202`, though the owner
+Overtoad` at `notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md:202`, though the Overtoad
 approved it in session on 2026-09-01. §12 development of the CLI-experimentation plan
 (`notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`)
 stays gated regardless.
@@ -163,7 +163,7 @@ are a matrix axis and `include` cells do not inherit the matrix. See §3 of this
 | item | state |
 |---|---|
 | settled-`heavy` 5-repeat run | **OWED** — the immediate next action |
-| gate shape + threshold | owner, §6 of `notes/JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-HEAVY-LOAD-AND-DURATION-RESULTS.md` |
+| gate shape + threshold | Overtoad, §6 of `notes/JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-HEAVY-LOAD-AND-DURATION-RESULTS.md` |
 | other duration classes (E-A/E-C, hundreds of seconds) | unmeasured; duration exposure is higher there by construction |
 | **PF-4 cannot run as written** | `baseline_20260526.json` holds **10 entries, 0 with timing data**; its first task is *establishing* a baseline. §1 of the P1 design (`notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md`) |
 | **PF-8 has no suite** | `run_suite`'s parallel mode runs cells of ONE suite, not two suites concurrently. Deferred to P2 |
@@ -187,7 +187,7 @@ last four bullets below were recovered by adversarial validation.
 - **G-16's refusal half is now UNTESTABLE in `JuniperData`** — installing HF `datasets` made every
   generator available, so nothing refuses. Exercising it now needs a deliberately withheld optional
   dependency: a test-fixture question, not a host-provisioning one.
-- **91 requirement title artifacts** — owner must choose the extraction rule. 81 were repaired
+- **91 requirement title artifacts** — Overtoad must choose the extraction rule. 81 were repaired
   (ml#1511); the remaining 91 are truncated or field-label titles needing editorial judgement. §5 of
   the tail re-probe (`notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md`).
 - **The title-repair ACCEPTANCE GATE, which is work-destroying if dropped.** §5 of the tail re-probe
@@ -212,7 +212,7 @@ last four bullets below were recovered by adversarial validation.
   `environment="host-experiment"` from existing alert rules so a deliberately brutal benchmark does
   not page. A `juniper-deploy` change, now more pressing: this session added a 14-of-16-core load
   profile and turned the Grafana bridge on.
-- **"Whether the run tier ever gates CI"** — §6 of the P1 design names it a separate owner decision
+- **"Whether the run tier ever gates CI"** — §6 of the P1 design names it a separate Overtoad decision
   that §5's floor may answer in the negative.
 
 ### 4.3 Cross-repo, found in passing
@@ -245,4 +245,4 @@ last four bullets below were recovered by adversarial validation.
 
 Absence is deliberate, so a dropped item stays distinguishable from an out-of-scope one: the
 backup/Duplicati arc, the canopy E2E arc, the defect register, P5 fleet rollout, and juniper-service-core
-round-29 work all have other owners and moved independently during this session.
+round-29 work all have other Overtoads and moved independently during this session.

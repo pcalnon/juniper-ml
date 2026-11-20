@@ -25,7 +25,7 @@ is flagged, not invented.
 **Owner-pinned values carried faithfully (not softened):** per-source-file line coverage **≥90%**;
 packaged-sub-module **average ≥95%**; **click-through** tests for every user-facing webapp;
 **a regression test for every issue** in the canopy debug doc behind a **re-entrant ingestion**
-procedure that keeps absorbing newly-appended issues. Everything else leaves owner latitude.
+procedure that keeps absorbing newly-appended issues. Everything else leaves Overtoad latitude.
 
 ---
 
@@ -189,7 +189,7 @@ Aggregate gates demonstrably permit per-file holes — the per-file gate is the 
 
 ---
 
-## 6. The per-file coverage **contract** (owner-pinned definitions)
+## 6. The per-file coverage **contract** (Overtoad-pinned definitions)
 
 1. **Per-file floor:** every source file in a unit's import package has **line coverage ≥90%**.
 2. **Sub-module average:** for each of the 11 packaged sub-modules (units 9–19), the **mean of
@@ -197,8 +197,8 @@ Aggregate gates demonstrably permit per-file holes — the per-file gate is the 
 3. **Source file** = a `.py` file inside the unit's importable package, minus the **excluded set**
    (§7.4). Exclusions are an explicit, reviewed allowlist — never silent.
 4. **Branch vs line:** the gate is on **line** coverage (matches existing gates + the
-   `.coveragerc.torch` precedent). Branch coverage stays informational unless an owner opts a unit in.
-5. **OPEN — sub-module "average" interpretation (owner to ratify; skeptical-pass finding).** "Average
+   `.coveragerc.torch` precedent). Branch coverage stays informational unless an Overtoad opts a unit in.
+5. **OPEN — sub-module "average" interpretation (Overtoad to ratify; skeptical-pass finding).** "Average
    ≥95%" admits two readings that **diverge for small files**: (i) coverage's standard
    **statement-weighted aggregate** (`totals.percent_covered`), or (ii) the **arithmetic mean of
    per-file %**. They differ sharply — files `{200 stmt @100%, 3 stmt @0%}` give **(i) 98.5%** vs
@@ -238,7 +238,7 @@ cross-repo CI tooling like `juniper-generate-dep-docs`), generalizing `juniper-d
   `[report] include`/`omit` to pre-scope the json (that scoping is version-dependent and may not
   propagate to the json export). The tool is the single source of truth for what counts.
 - **Reports both averages** (statement-weighted aggregate and mean-of-files, §6.5); gates on the
-  owner-ratified one (default: aggregate ≥95).
+  Overtoad-ratified one (default: aggregate ≥95).
 - **Waivers** are a structured file (`coverage-waivers.yaml`: `path`, `reason`, `issue`, `expires`);
   the tool lists active waivers and **warns on expired ones — an expired waiver does NOT unblock the
   gate** (it surfaces as a violation until removed). Waivers are for "untested but kept", distinct
@@ -276,7 +276,7 @@ lane's json.
   an expiry date — **not** a blanket `# pragma: no cover` (which is for unreachable lines, not
   "untested"). Waivers are reviewed each rollout PR; the tool prints the active waiver list.
 - **`juniper-ml` meta:** has no import package, so the per-file mandate is scoped to **`util/`** (the
-  testable surface) or the unit is exempted from the % gate (it intentionally has none); owner picks
+  testable surface) or the unit is exempted from the % gate (it intentionally has none); Overtoad picks
   in §11. **`juniper-deploy`** (no source) is exempt — its compose/secret tests stay as-is.
 
 ### 7.5 Move CI-only thresholds into `pyproject.toml`
@@ -320,7 +320,7 @@ New UI tests live in `$J/juniper-canopy/src/tests/ui/`, carry the `ui` marker, a
 
 ---
 
-## 9. Re-entrant debug-findings ingestion procedure (directive 4 — owner-pinned)
+## 9. Re-entrant debug-findings ingestion procedure (directive 4 — Overtoad-pinned)
 
 A **standing, re-runnable** procedure (a runbook; optionally backed by a helper under
 `util/ad-hoc/`). It must converge as the debug doc grows new IDs, with an **append-only** traceability
@@ -399,7 +399,7 @@ Status ∈ {UNMAPPED, MAPPED, SHIPPED, CLOSED, BLOCKED-ON-OWNER}.
 | `C-1` | configuration | §6.2 | *reference only* — `ecosystem.yaml` env staleness, closed in **PR #566** | — | juniper-ml | CLOSED |
 | `C-2` | configuration | §6.2 | `test_no_stale_commented_pins` | `conf/requirements.txt`,`requirements.txt`,`requirements_ci.txt` carry no contradicting commented `# juniper-*-client==` pins | canopy | UNMAPPED |
 | `D-1` | design-gap | §6.2 | `test_test_status_cache_freshness` | `prompt_discovery/test_status.py` stamps cache mtime + flags/`unavailable` past a TTL | juniper-ml | UNMAPPED |
-| `D-2` | design-gap (decision) | §6.2 | `test_demo_mode_degradation_defined` | demo-mode constructor failure yields the **owner-decided** UX (guard or surfaced error), asserted once decided | canopy | **BLOCKED-ON-OWNER** |
+| `D-2` | design-gap (decision) | §6.2 | `test_demo_mode_degradation_defined` | demo-mode constructor failure yields the **Overtoad-decided** UX (guard or surfaced error), asserted once decided | canopy | **BLOCKED-ON-OWNER** |
 | `D-3` | design-gap | §6.2 | `test_recurrence_start_gated_on_service` | selecting Recurrence-LMU with no `recurrence_service_url` (`settings.py:237`) is gated or shows defined failure UX | canopy | UNMAPPED |
 | `A-1` | architectural | §6.2 | `test_prompt_discovery_target_repo_mode` | discovery/validator accept a cross-repo `--target-repo` | juniper-ml | UNMAPPED |
 | `A-2` | architectural | §6.2 | live-runtime/service-smoke lane (§10.3) = `SEAM`/smoke | a booted-service smoke lane exists for canopy | juniper-ml + canopy | UNMAPPED |
@@ -518,7 +518,7 @@ below folded in. (Over-reaching challenges were tempered with judgment, noted as
 | Challenge | Verdict | Resolution |
 |-----------|---------|------------|
 | K-1 overstated — `juniper-data`'s per-module check is **advisory (warn-only)**, enforces aggregate-only | **Valid** — verified `check_module_coverage.py:111-122` (exit only on aggregate `:115-117`; per-module just `WARN` `:119-122`) | §3 K-1 + §7.1 corrected: json-parsing is the **proven** part; the tool **adds the exit-code gate the script lacks** |
-| "average ≥95%" = mean-of-files vs statement-weighted **diverge** for small files | **Valid** (ambiguity in a pinned value) | §6.5 added — flagged for **owner ratification**; recommend statement-weighted ≥95 (per-file ≥90 already floors each file); tool reports both |
+| "average ≥95%" = mean-of-files vs statement-weighted **diverge** for small files | **Valid** (ambiguity in a pinned value) | §6.5 added — flagged for **Overtoad ratification**; recommend statement-weighted ≥95 (per-file ≥90 already floors each file); tool reports both |
 | `.coveragerc.torch` `[report] include` may **not scope `coverage.json`** | **Valid risk** | §7.2/§7.3: the tool **applies exclusions itself on the parsed json**, never relies on report-section scoping |
 | `fail_under` in pyproject does **not** gate a bare local `pytest --cov` | **Valid** | §7.5: each unit gets a **documented gated local target**, not a bare pytest |
 | DISC-1 blocks recurrence; make it a blocking step | **Valid — confirmed live** (pytest `--co` errors on the Starlette class) | promoted to **Phase B0** (§11); §14.2 upgraded to CONFIRMED |
@@ -538,7 +538,7 @@ below folded in. (Over-reaching challenges were tempered with judgment, noted as
 
 **Residual (downstream, by design):** full mechanization of the parse/diff helper is left to
 execution (the plan is a runbook + optional helper, not the helper itself); the
-mean-of-files-vs-aggregate choice awaits the owner's one-word ratification (a sensible default is
+mean-of-files-vs-aggregate choice awaits the Overtoad's one-word ratification (a sensible default is
 applied meanwhile). Neither blocks ratification of the plan.
 
 ---
@@ -564,7 +564,7 @@ checker; first-class cross-repo grounding — all directly relevant) and the pro
    its conda env, drives it via the `chrome-devtools`/`playwright` MCP servers, reports live tracebacks
    with `file:line`. The only thing that catches "green tests / dead app" by construction.
 
-### 14.2 Other Juniper issues discovered while planning (classified; owners)
+### 14.2 Other Juniper issues discovered while planning (classified; Overtoads)
 
 Already recorded by the debug doc — **referenced, not re-discovered:** the
 `prompts/templates/` → `prompts/agent_templates/` rename drift **(I-1, closed PR #566)** and the

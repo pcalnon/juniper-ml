@@ -16,7 +16,7 @@ Aliases used below. **10-04** = `prompts/thread-handoff_automated-prompts/HANDOF
 | LEDGER (798 KB, 9,785 lines) | **Not in full.** Read: `:9008–9786` (Phase 9 findings, instruments, consensus, still-owed); the still-owed lists of Phases 6, 7 and 8 (`:7064–7083`, `:7847–7873`, `:8448–8493`); the Phase 4 wave (`:6140–6216`); `:213–222`, `:3727`, `:6594–6619` and `:6819–6828`. Every `**F-…**` header was parsed inline with `util/ad-hoc/e2e_finding_triage.py`'s regex. The script itself was not run. |
 | MATRIX | BLOCKED count; M-REPLAY rows `:863–879`. |
 | `reports/2026-09-24_canopy-combined-handoff-consensus/r1/` | `DRAFT_r1.md:120–179`; predecessor A (`…phase9-landed…followup-684.md`) `:8–119`; predecessor B (`…y2-wave2-round-15-fix-pass.md`) outline only, **not read in full**. |
-| `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/` | Predecessor C (`…canopy-selection-cleanup-done-item-19-closed-y7-grounded-owner-calls-remain.md`) in full; `…four-decisions-shipped-residue-is-owner-scoped.md` § B `:142–200`; `…queue-drained-mirror-shipped-a-n2-run-owner-rulings-open.md:86–100`; `…four-rulings-shipped-cleanup-and-carry-forwards-remain.md:76–81`. |
+| `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/` | Predecessor C (`…canopy-selection-cleanup-done-item-19-closed-y7-grounded-Overtoad-calls-remain.md`) in full; `…four-decisions-shipped-residue-is-Overtoad-scoped.md` § B `:142–200`; `…queue-drained-mirror-shipped-a-n2-run-Overtoad-rulings-open.md:86–100`; `…four-rulings-shipped-cleanup-and-carry-forwards-remain.md:76–81`. |
 | Design notes | `notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md` §4.3; `notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md` (headings only); `notes/JUNIPER_2026-08-27_JUNIPER-CANOPY_WS-MIGRATION-PLAN-JR-CAN-PERF-004.md` (grep). |
 | `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md` | `:188–226` (O1–O8). |
 | Other paths' handoffs | P3 (`HANDOFF_2026-10-03_defect-register-round-42-consolidated.md`), P4 (`…release-and-distribution-consolidated.md`) and P10 (`…ci-tools-reevaluation-consolidated.md`): P2-relevant lines only. |
@@ -59,12 +59,12 @@ Aliases used below. **10-04** = `prompts/thread-handoff_automated-prompts/HANDOF
 | P2-30 | Closing work: closing handoff from `handoff_v4.md`, archive rounds 1–16+ with a README, closing PR with the tools; the final summary repeats O10 | CONS B4–B5 | [NOT RE-PROBED] | BLOCKED-ON P2-29 | P2-29 | ml | M | HYGIENE |
 | P2-31 | Wave 3 + X10: a recurrence branch at canopy's five snapshot sites, adapter save/list/get/restore, a probe in `initialize()` | CONS B6 | [VERIFIED 2026-10-04: `recurrence_service_adapter.py` has only `train` and `training_status`; recurrence on PyPI is 0.5.0] | OWNER-DECISION (O8) | recurrence release (P4) | canopy | L | DATA-INTEGRITY |
 | P2-32 | Lane B's P4 tail: recurrence release after 2a; canopy release after wave 3; deploy pin bumps; raise the ml `recurrence` extra | CONS "Dependencies" | [VERIFIED 2026-10-04: `pyproject.toml:105` reads `>=0.5.0,<0.6.0`] | OWNER-ACTION (release) | P2-29, P2-31 | recurrence, canopy, deploy, ml | M | USER-FACING |
-| P2-33 | C1/O15: owner removes `jazzy-soaring-minsky`, `bright-crunching-alpaca`, `tender-wibbling-flask` and `enumerated-marinating-puddle`, after running the probes | CONS C1 | [VERIFIED 2026-10-04: all four exist] | OWNER-ACTION (host) | — | juniper-ml | S | HYGIENE |
+| P2-33 | C1/O15: Overtoad removes `jazzy-soaring-minsky`, `bright-crunching-alpaca`, `tender-wibbling-flask` and `enumerated-marinating-puddle`, after running the probes | CONS C1 | [VERIFIED 2026-10-04: all four exist] | OWNER-ACTION (host) | — | juniper-ml | S | HYGIENE |
 | P2-34 | C2/O9: rule on Y7 (greyed dataset options carry no `aria-disabled`), then implement | CONS C2; design §4.3 | [NOT RE-PROBED — note dated 09-24] | OWNER-DECISION | — | canopy or dash | S–M | USER-FACING |
 | P2-35 | C3/O14: cut the next juniper-data release (X8: #437, #438) | CONS C3 | [VERIFIED 2026-10-04: GitHub latest is v0.16.0; PyPI 0.16.0] | OWNER-ACTION (release) | P3 item 1; P4 | data | S | DATA-INTEGRITY |
 | P2-36 | C4: O9/U-6 ("Current Dataset" shows the staged dataset after a refused Start) becomes a design question if it survives Phase 10 | CONS C4 | [NOT RE-PROBED] | BLOCKED-ON P2-01 | P2-01 | canopy | S | USER-FACING |
 | P2-37 | C6/O13: who may stop the mixed-version trio, and who pulls the primaries under the freeze | CONS C6 | [NOT RE-PROBED — host state; LEDGER's F-059 status says the trio's pids did not change during the 10-04 drive] | OWNER-DECISION / OWNER-ACTION (host) | — | host | S | UNBLOCKER |
-| P2-38 | Send ONE owner message: O1 (merge approval) through O16, plus the dispositions for P2-18 and the release in P2-19 | CONS "Before anything else" | [VERIFIED 2026-10-04: 10-04 says no approval is carried] | STARTABLE | — | — | S | UNBLOCKER |
+| P2-38 | Send ONE Overtoad message: O1 (merge approval) through O16, plus the dispositions for P2-18 and the release in P2-19 | CONS "Before anything else" | [VERIFIED 2026-10-04: 10-04 says no approval is carried] | STARTABLE | — | — | S | UNBLOCKER |
 | P2-39 | O10: rotate `HF_TOKEN`, `JUNIPER_ML_PYPI` and `JUNIPER_ML_TEST_PYPI` (leaked into transcripts) | CONS O10 | [NOT RE-PROBED — secrets] | OWNER-ACTION (secrets) | — | — | S | SAFETY |
 | P2-40 | O11: keep or retire the ad-hoc signed-commit driver copies. O12: make recurrence's `Settings` case-sensitive. | CONS O11/O12 | [NOT RE-PROBED] | OWNER-DECISION | — | ml, recurrence | S | HYGIENE |
 | P2-41 | O16 remainder: archive predecessors A and B under `HANDOFF_2026-09/`, or accept the `r1/predecessors/` copies; retire branch `dd4413e5` | CONS O16; 10-04 i2 | [CHANGED SINCE HANDOFF: CONS was validated (INDEX) and merged (ml#2109); copies of A and B are on main via ml#2096] | OWNER-DECISION | P2-01 | ml | S | HYGIENE |
@@ -79,7 +79,7 @@ Aliases used below. **10-04** = `prompts/thread-handoff_automated-prompts/HANDOF
 | O4 | The account's later actions (update-branch, re-arms, #676's CI re-run) | Confirm or deny | Closes LEDGER i15 | LEDGER i15 |
 | O5 | Replay ratings against F-014's P1 precedent | Now moot except for F-057, which LEDGER's own rule returns to P2 | P2-02 | LEDGER i15 |
 | O6 | (a) F-004's contract: 22–30 s measured against ≤16 s. (b) `FULL_HISTORY_POLL_TICK_MODULUS` → 1 (32.4 s refetch). (c) Which arm loads M-DATASET-17..26: the live `/api/stage_dataset`, the demo lane, or both (both grows the denominator). (d) Is a metrics replay that moves no chart intended? | No recommendation on any of the four | P2-24, MATRIX rows | LEDGER i3/i4/i9/i10 |
-| O7 | Does Y2 wave 2 continue, who runs it, and sweeper vs merge order? | Exclude the four PRs from the sweeper; fix forward (the owner may pre-create `recurrence-snapshots/`); or have 2b's preflight warn until 2a is released. Default if unanswered: fix forward. | P2-27 through P2-30 | CONS i8 |
+| O7 | Does Y2 wave 2 continue, who runs it, and sweeper vs merge order? | Exclude the four PRs from the sweeper; fix forward (the Overtoad may pre-create `recurrence-snapshots/`); or have 2b's preflight warn until 2a is released. Default if unanswered: fix forward. | P2-27 through P2-30 | CONS i8 |
 | O8 | How wave 3 is gated | A capability test (persistence design §8 item 3, §11.4 step 3), or a third branch ("never a widened predicate", 09-22 handoff § B). Record the choice in the design. | P2-31 | CONS O8 |
 | O9 | Y7 | An upstream dash `aria-disabled`; an accessible-name marker (changes labels the Y8 tests pin); a clientside observer (binds to private class names); or accept the gap. No recommendation. | P2-34 | design §4.3 |
 | O10 | Rotate the leaked tokens | Rotate. Status unknown. | Safety | CONS |
@@ -92,7 +92,7 @@ Aliases used below. **10-04** = `prompts/thread-handoff_automated-prompts/HANDOF
 
 ## 3. Cross-path dependencies
 
-- **P2 → P4.** P2-19 (the canopy release), P2-32 (recurrence, canopy, deploy pins and the ml extra), P2-35 (X8) and the shipping of P2-10/P2-17 (cascor's release has 17 unreleased) are all owner-gated release cuts. The P2→P4 row of INDEX applies.
+- **P2 → P4.** P2-19 (the canopy release), P2-32 (recurrence, canopy, deploy pins and the ml extra), P2-35 (X8) and the shipping of P2-10/P2-17 (cascor's release has 17 unreleased) are all Overtoad-gated release cuts. The P2→P4 row of INDEX applies.
 - **P3 → P2.** P3 item 3 (validate canopy#685 after its merge; not started) gates P2-01's FIXED-BY status for F-061/062. P3 item 11 hands F-060..062 and "Nothing was loaded" to P2-01. P2 owns P2-03. **P2 → P3**: send the id assigned to "Nothing was loaded" to P3.
 - **P2-09 ↔ P3/P4**: the service-core changes ride the same release that P3's fix-forwards wait on. Only one session cuts it.
 - **P2-37 (O13) ↔ P6**: stopping the trio may free the cascor primary. P2-07's profiling waits, softly, for P6's quiet windows.
@@ -104,7 +104,7 @@ Aliases used below. **10-04** = `prompts/thread-handoff_automated-prompts/HANDOF
 ## 4. Hazards
 
 - **Never drive a replay against the trio** (`:8101`/`:8202`/`:8051`). Every replay replaces cascor's network. `util/isolated_stack.bash` defaults to the trio's ports, so a bare `--down` kills it. F-ML-002 (P2-16) also kills whatever holds `:8211`.
-- **The owner's sweeper un-drafts and arms open PRs, and its merges are intended.** Validate before opening. The fleet drafts (P2-18) are exposed now, and #698 and #700 would land duplicate docs.
+- **The Overtoad's sweeper un-drafts and arms open PRs, and its merges are intended.** Validate before opening. The fleet drafts (P2-18) are exposed now, and #698 and #700 would land duplicate docs.
 - **Destroying the A6 commits**: removing a worktree or `branch -D` deletes reflog-only commits (canopy `78c057e2`, `26bf27b3`, `96e7b105`, `b07943d6`). O2 comes before any cleanup. Never run `util/remove_stale_worktrees.bash`.
 - **Lane B's uncommitted state is the only copy** (`idempotent-jumping-sparkle` plus the two Y2 worktrees). Never do Lane A edits there: `open_signed_pr.py` uploads whole files and would revert main.
 - **The X1 stake**: if 2b lands before 2a is merged and pulled, every deploy-main bring-up refuses.
@@ -112,7 +112,7 @@ Aliases used below. **10-04** = `prompts/thread-handoff_automated-prompts/HANDOF
 - **MEMORY.md is 7 characters from its limit.** The next index line truncates the tail for every session.
 - **The LEDGER is 798 KB.** It needs its own signed commit, and a 499/502 can still land, so re-read the ref before retrying.
 - **Replay checks need an explicit `POST /v1/snapshots` save.** Automatic snapshots have `length=0`, so every seek or range check on one passes vacuously.
-- Briefs must forbid printing secrets or env values, and forbid sending the owner's email anywhere.
+- Briefs must forbid printing secrets or env values, and forbid sending the Overtoad's email anywhere.
 
 ## 5. Discrepancies
 
@@ -137,12 +137,12 @@ Aliases used below. **10-04** = `prompts/thread-handoff_automated-prompts/HANDOF
 - **R9.** About 16 older E2E-arc canopy worktrees are in no cleanup list. → P2-21.
 - **R10.** Phase 6 items 1b ("RENDER-STILL-DEAD unexplained") and 4 (the ~4–5 s re-enable overhead) are absent from Phase 7 onward. Disposition UNTRACEABLE.
 - **R11.** `notes/JUNIPER_2026-08-27_JUNIPER-CANOPY_WS-MIGRATION-PLAN-JR-CAN-PERF-004.md` still gates Phase 2 on the "F-CANOPY-036 decision" (`:265`, `:279`), although canopy#536 shipped it. No path carries the plan.
-- **R12.** canopy#552 (main-verify failing, filed automatically 08-31) is still OPEN, though main-verify is green on `1b2dd438`. No owner.
+- **R12.** canopy#552 (main-verify failing, filed automatically 08-31) is still OPEN, though main-verify is green on `1b2dd438`. No Overtoad.
 - Closed by probe: the "measured" fixture sweep in LEDGER item 16. Only `test_p2_wave_batch_a.py` still uses the phrase, in a comment that corrects it.
 
 ## 7. Path assessment
 
-- **Urgency.** High for users and low for agents. A P0 (F-059) ships on PyPI until the owner cuts a canopy release. MEMORY.md is 7 characters from overflow. Four fleet drafts are exposed to the sweeper.
+- **Urgency.** High for users and low for agents. A P0 (F-059) ships on PyPI until the Overtoad cuts a canopy release. MEMORY.md is 7 characters from overflow. Four fleet drafts are exposed to the sweeper.
 - **Triage counts** [VERIFIED 2026-10-04: inline parse]. 70 findings: 51 fixed, 1 accepted, 2 withdrawn, 16 open. Of the open: 0 P0, 5 P1 (F-055, -057, -058, F-CASCOR-001, -002) and 11 P2. MATRIX has 20 BLOCKED. Plan §6.3's exit criterion (every P0 and P1 closed or deferred) is 5 P1s away, or 4 after P2-02.
 - **Leverage.**
   - P2-01/02 unblock P2-03, P2-04, P2-36 and P3's hand-over.
@@ -151,9 +151,9 @@ Aliases used below. **10-04** = `prompts/thread-handoff_automated-prompts/HANDOF
 - **Cost.**
   - Lane A agent work: about 3 L, 9 M and 8 S.
   - Lane B: L, needing four PRs across three repos plus rounds.
-  - Lane C: owner-only.
+  - Lane C: Overtoad-only.
 - **Next actions, in order:**
-  1. **P2-38**: one owner message carrying O1, O2, O7, O13, the canopy release (P2-19) and the fleet dispositions. It is cheap, and it unblocks the most.
+  1. **P2-38**: one Overtoad message carrying O1, O2, O7, O13, the canopy release (P2-19) and the fleet dispositions. It is cheap, and it unblocks the most.
   2. **P2-18**: triage the fleet drafts before the sweeper merges duplicates. It also settles the FAQ fix in P2-02.
   3. **P2-01 + P2-02**: the Phase 10 ledger PR, validated before it is opened.
 

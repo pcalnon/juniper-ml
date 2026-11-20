@@ -5,7 +5,7 @@ A COPY of util/ad-hoc/2026-10-03_rekey_settings_key.bash with its four host path
 two credential files, the runtime drop-in dir) rewritten into a per-case scratch root, placed in a
 scratch "repo" next to a STUB API client and the REAL gate. PATH-shadowed stubs: systemctl, journalctl,
 sudo (runs as the current user), id (-u -> 0), chown, sleep, install (refuses host paths), stat (reports
-root ownership for the scratch credstore only). Fake keys only. Nothing reaches /etc, /run or a unit.
+root Overtoadship for the scratch credstore only). Fake keys only. Nothing reaches /etc, /run or a unit.
 
 Usage: t4_rekey_trap.py [--script PATH] [--quiet]   (--script lets the mutation harness reuse it)
 """

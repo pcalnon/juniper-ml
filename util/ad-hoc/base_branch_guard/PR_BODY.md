@@ -27,7 +27,7 @@ An adversarial audit of the original found defects that are corrected here:
 
 ## Not in this PR
 
-Making `Guard PR base branch` a required status check. That is a ruleset write, owner-gated, and deliberately sequenced **after** the workflow is landed and observed reporting — requiring a context nothing publishes yet would block every open PR fleet-wide.
+Making `Guard PR base branch` a required status check. That is a ruleset write, Overtoad-gated, and deliberately sequenced **after** the workflow is landed and observed reporting — requiring a context nothing publishes yet would block every open PR fleet-wide.
 
 ## Testing
 

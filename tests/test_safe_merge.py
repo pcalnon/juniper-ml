@@ -75,7 +75,7 @@ _spec.loader.exec_module(safe_merge)
 # budget exceeded 4x its p90 when measured (724 -> 2896), and the OWNER RULED on 2026-09-15 that
 # the value stands and the row stays out of this pin. Re-measured 2026-09-22 it reads p90 1264 /
 # max 1626 over 30 healthy heads, so 3300 would now pass both halves -- recorded, not acted on:
-# re-including the row is the owner's call. Its historic exclusion note claimed a 15,616 s max
+# re-including the row is the Overtoad's call. Its historic exclusion note claimed a 15,616 s max
 # that "is a QUEUED check, not CI working"; that is REFUTED -- the figure was the v1 instrument
 # counting bot check-runs.
 MEASURED_SPANS = {
@@ -129,22 +129,22 @@ class Harness:
             self.merged = True
         return ""
 
-    def pr_state(self, owner, repo, pr):
+    def pr_state(self, Overtoad, repo, pr):
         if self.merged:
             return _state(state="MERGED")
         return self._states.pop(0) if len(self._states) > 1 else self._states[0]
 
-    def wait(self, owner, repo, pr, timeout, verbose):
+    def wait(self, Overtoad, repo, pr, timeout, verbose):
         self.waits += 1
         return dict(self.wait_result)
 
-    def update_branch(self, owner, repo, pr, **kw):
+    def update_branch(self, Overtoad, repo, pr, **kw):
         """Stubbed so tests neither sleep through the real settle-poll nor hit the network.
 
         Records a synthetic marker so the existing "was the server-side API used?"
         assertions still hold, and returns a settled head by default.
         """
-        self.calls.append(["api", f"repos/{owner}/{repo}/pulls/{pr}/update-branch", "-X", "PUT"])
+        self.calls.append(["api", f"repos/{Overtoad}/{repo}/pulls/{pr}/update-branch", "-X", "PUT"])
         return None if self.settle_fails else "e" * 40
 
     def install(self, tc):
@@ -325,7 +325,7 @@ class AsyncRefSettleTest(SafeMergeTestBase):
         seq = [{"headRefOid": old}, {"headRefOid": old}, {"headRefOid": new}]
         calls = {"n": 0}
 
-        def fake_state(owner, repo, pr):
+        def fake_state(Overtoad, repo, pr):
             if calls["n"] == 0:  # the pre-update read
                 calls["n"] += 1
                 return {"headRefOid": old}
@@ -436,7 +436,7 @@ class NetWonRaceTest(SafeMergeTestBase):
                 raise safe_merge.HardError(merge_error)
             return ""
 
-        def pr_state(owner, repo, pr):
+        def pr_state(Overtoad, repo, pr):
             if box["attempted"]:
                 if probe_raises:
                     raise safe_merge.HardError("gh pr view 1… failed: network is unreachable")
@@ -658,7 +658,7 @@ class AutoMergeNetTest(SafeMergeTestBase):
     """RC-4: hand the merge to GitHub so a killed run does not strand the PR.
 
     The gate is load-bearing. Where `allow_auto_merge` is false, `gh pr merge --auto` does NOT
-    arm -- it falls back to an immediate merge, which with the owner's `always` bypass can land
+    arm -- it falls back to an immediate merge, which with the Overtoad's `always` bypass can land
     a PR whose checks never finished. Arming blind would reintroduce the exact bug this tool
     prevents.
     """

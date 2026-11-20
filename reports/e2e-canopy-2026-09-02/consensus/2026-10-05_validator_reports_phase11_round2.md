@@ -102,7 +102,7 @@ How the rows were derived:
 
 *agent `a75287b001193dc8b` · round 1 · last-assistant-text (not resumed) · 11662 chars*
 
-**VERDICT: SOUND-WITH-FIXES.** The pass replays exactly: running `2026-10-05_phase11_ledger_round1_corrections.py` on copies of `1b7cf44b` reproduces `b3c54692` byte for byte, for both the ledger and the README. Every count and every innermost-record figure reproduces, and the triage tool reads F-CANOPY-068 as OPEN P1, giving 79/53/1/2/23 with 7 open P1 and 16 open P2. The pass did break or overstate four things: the owner's question and its fallback counts, F-CANOPY-058's new horizon, item 25's method, and the release trace's new pairing rule.
+**VERDICT: SOUND-WITH-FIXES.** The pass replays exactly: running `2026-10-05_phase11_ledger_round1_corrections.py` on copies of `1b7cf44b` reproduces `b3c54692` byte for byte, for both the ledger and the README. Every count and every innermost-record figure reproduces, and the triage tool reads F-CANOPY-068 as OPEN P1, giving 79/53/1/2/23 with 7 open P1 and 16 open P2. The pass did break or overstate four things: the Overtoad's question and its fallback counts, F-CANOPY-058's new horizon, item 25's method, and the release trace's new pairing rule.
 
 **TABLE** (ledger = `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` at `b3c54692`)
 
@@ -121,7 +121,7 @@ How the rows were derived:
 
 **FINDINGS**
 
-1. **MINOR: the owner's question and its fallback counts misstate F-065's condition, and treat F-068's promise as the same kind as F-065's.**
+1. **MINOR: the Overtoad's question and its fallback counts misstate F-065's condition, and treat F-068's promise as the same kind as F-065's.**
    - **Quoted:**
      - "F-CANOPY-065 and F-CANOPY-068 are P1 only if a shipped CHANGELOG promise counts as documented; if not, the counts are 5 open P1 and 18 open P2" (:10922-10923).
      - "whether a shipped CHANGELOG promise counts … which now decides two ratings" (:10907-10908).
@@ -131,7 +131,7 @@ How the rows were derived:
    - **For P2:** §6.3's P2 explicitly covers drift, and a mechanism statement that drifted from the code is drift.
    - **Decision:** the conditional P1 is defensible, but a ruling on F-065's kind of promise does not settle F-068's. Also, Lane 11-B1 rated F-068 P2, arguing a code-level contract is only drift (round-1 reports :270), and its brief never mentioned the CHANGELOG. The record cites 11-B1 only on the fold question (:10872).
    - **Fix:** restate Phase 10's question with both sources, plus a second limb: does a CHANGELOG description of a mechanism count as "behaviour"? Give the counts per branch (5/18, 6/17, 7/16), and record 11-B1's P2 as dissent.
-   - **Changes a number or action:** yes (fallback counts; owner question).
+   - **Changes a number or action:** yes (fallback counts; Overtoad question).
 
 2. **MINOR: F-058's corrected horizon labels the wrong event and contradicts F-068's Effect.**
    - **Quoted:** "the renderer makes the next request, 1.3–3.7 s after the re-enable" (:9138) and "the renderer then makes the next request … 1.3–3.7 s" (:9153-9154).
@@ -177,6 +177,6 @@ How the rows were derived:
 - The synthetic check. Not re-run, because it starts apps.
 - A full sweep of the open P2s against canopy's CHANGELOG. I spot-checked F-060's "producer's own sentence … survives to the modal" and found it inconclusive.
 
-**SECRETS/PII:** No environment values, tokens or credentials were printed or sent. I never ran `git show --stat` and printed no author line. One slip: `git log --format=%B -1 06d8607e` (canopy) printed that commit's body, whose Co-authored-by trailer holds a generic bot no-reply address, not the owner's. It went to local output only and was not repeated. `%ad` printed author dates only. Email-shaped strings in the archived reports and in the pass's diff were counted at 0 and never printed. I stayed read-only, wrote scratch files only in my `mktemp -d` directory, and touched no ports or services.
+**SECRETS/PII:** No environment values, tokens or credentials were printed or sent. I never ran `git show --stat` and printed no author line. One slip: `git log --format=%B -1 06d8607e` (canopy) printed that commit's body, whose Co-authored-by trailer holds a generic bot no-reply address, not the Overtoad's. It went to local output only and was not repeated. `%ad` printed author dates only. Email-shaped strings in the archived reports and in the pass's diff were counted at 0 and never printed. I stayed read-only, wrote scratch files only in my `mktemp -d` directory, and touched no ports or services.
 
 ---

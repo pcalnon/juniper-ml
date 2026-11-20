@@ -28,7 +28,7 @@ Authorities, in order:
   and [`…MEMORY-ARCHITECTURE-SYNTHESIS-2.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-ARCHITECTURE-SYNTHESIS-2.md).
 - Tracking issue: **ml#1326** (title still says `(NOT STARTED)` — also stale).
 
-The predecessor's nine-finding backlog is **closed**. What remains is P5 plus three owner decisions.
+The predecessor's nine-finding backlog is **closed**. What remains is P5 plus three Overtoad decisions.
 
 ### Completed and MERGED
 
@@ -114,7 +114,7 @@ with an `Allow-Ceiling-Raise: AGENTS.md` trailer.
 
 **6. Three stale status artifacts**, highest value first: plan §P5's `Status: NOT STARTED` banner;
 issue ml#1326's title; and issue **ml#1239** *"main-verify: post-merge verification failing"*, still
-OPEN though ml#1291 fixed it and main-verify is green — its body says the owner closes it after
+OPEN though ml#1291 fixed it and main-verify is green — its body says the Overtoad closes it after
 adjudication.
 
 ### Owner decisions
@@ -124,8 +124,8 @@ adjudication.
   predecessor's `22/22` was wrong), so index rows cannot move it. Either register new probes with
   headroom, or accept the measurable question is settled and decide on re-scoring source-recovery.
 - **Parent `Juniper/AGENTS.md`** and the **worktree settings asymmetry** — previously deferred by the
-  owner. **Worktree convergence: owner said LEAVE IT (2026-08-20). Proposal A's Skills stay deferred
-  (owner decision #7) — revisited only on a real pointer-follow problem; INCONCLUSIVE is not that
+  Overtoad. **Worktree convergence: Overtoad said LEAVE IT (2026-08-20). Proposal A's Skills stay deferred
+  (Overtoad decision #7) — revisited only on a real pointer-follow problem; INCONCLUSIVE is not that
   signal. Do not re-propose either.**
 - The **MEMORY.md enforcement surface is NOT open** — option A was chosen and built (ml#1329). The
   decided forward cap is **120 bytes on NEW entries only; existing rows are not rewritten**
@@ -238,7 +238,7 @@ python3 util/memory_budget_check.py
   passed every gate while a live session was working in it.
 - **Phase 7 is not yet applicable** (it is the tail of a merged-PR cleanup, and this session performed
   none) — but the substance stands: the **juniper-ml primary checkout is 13 commits behind
-  `origin/main`**. A stale primary checkout is a recorded hazard. This is an owner action; a
+  `origin/main`**. A stale primary checkout is a recorded hazard. This is an Overtoad action; a
   worktree-isolated session is refused by the harness.
 
 ## Corrections to the predecessor

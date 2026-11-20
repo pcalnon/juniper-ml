@@ -14,25 +14,25 @@ Every reference below carries its file. After this table, the long names are sho
 
 ## Continue
 
-Interactively with the owner, in this order:
+Interactively with the Overtoad, in this order:
 
-1. **AC-11** (owner, YubiKey): restore Tier 3's `backups` archive and diff it against the live tree (Remaining §1), then remove the restored copy and record the result in `…RECOVERY-PLAN.md` §6.3.1.
-2. **The transcript count** (owner, root): `util/ad-hoc/2026-10-28_transcript_secret_count.py`, **before Phase D step 9** (Remaining §2; owner ruling 2026-10-28).
-3. **Phase D** (`…RECOVERY-PLAN.md` §6.4) in one owner sitting, with the deltas in Remaining §3. The owner needs `sudo` and the passphrase from the printed sheet or the password manager, **not** the Dropbox copy.
+1. **AC-11** (Overtoad, YubiKey): restore Tier 3's `backups` archive and diff it against the live tree (Remaining §1), then remove the restored copy and record the result in `…RECOVERY-PLAN.md` §6.3.1.
+2. **The transcript count** (Overtoad, root): `util/ad-hoc/2026-10-28_transcript_secret_count.py`, **before Phase D step 9** (Remaining §2; Overtoad ruling 2026-10-28).
+3. **Phase D** (`…RECOVERY-PLAN.md` §6.4) in one Overtoad sitting, with the deltas in Remaining §3. The Overtoad needs `sudo` and the passphrase from the printed sheet or the password manager, **not** the Dropbox copy.
 
 Merge approval covered this session's PRs only. Ask again.
 
 ## Completed, 2026-10-27 and 10-28 (full record: `…RECOVERY-PLAN.md` §6.3.1)
 
 - **`…lines-0-8…md`'s verify block** held, with two moves: the journal's first entry keeps advancing (10-18 12:42:13 CDT, measured 10-27), and the CUPS spool changed overnight. It holds no `c…` or `d…` file, and its `tmp/` holds only an empty `cups-dbus-notifier-lockfile` (00:18:15, the second `logrotate.service` failed). The CUPS row closes.
-- **Tier 2 accepted (AC-10).** Installed 17:24 CDT. The OK run 17:25:58–17:38:43 wrote set `801a3ef5-57b8-48ec-9d07-767193ce97da`: 10 archives, 918,941,308 B per stick. The new `util/ad-hoc/2026-10-27_backup_set_media_readback.py` read both sticks back with `O_DIRECT`: identical. The no-stick run read `SKIPPED`, the class-1 drill passed 7/7, and the owner's YubiKey decrypt gave `pipe: 0 0 0` (which key did it was not recorded).
+- **Tier 2 accepted (AC-10).** Installed 17:24 CDT. The OK run 17:25:58–17:38:43 wrote set `801a3ef5-57b8-48ec-9d07-767193ce97da`: 10 archives, 918,941,308 B per stick. The new `util/ad-hoc/2026-10-27_backup_set_media_readback.py` read both sticks back with `O_DIRECT`: identical. The no-stick run read `SKIPPED`, the class-1 drill passed 7/7, and the Overtoad's YubiKey decrypt gave `pipe: 0 0 0` (which key did it was not recorded).
 - **Tier 3's first set.** Installed 20:32; started by hand at 20:32:13, `OK` at 21:24:46. Set `ce92857f-852d-468e-9688-125ff7753226`: 15 archives, 14,905,974,648 B on Blackbox, read back complete. AC-11 is owed.
 - **The decision record** in `…RECOVERY-PLAN.md`: §6.3.1 (new), §6.6's rulings sub-table, a §1 status line and a §9 row, landing with this file and the two tools in one PR. No step of §6.4 changed.
 - juniper-ml#2376 (another session) fixed `main`'s red Guard 3b tests (the runners' tmpfs temp dir); merged 2026-10-28 01:21Z.
 
 ## Owner rulings, 2026-10-28 (written into `…RECOVERY-PLAN.md` §6.6)
 
-- Build the transcript counter now (done); the owner runs it before Phase D step 9.
+- Build the transcript counter now (done); the Overtoad runs it before Phase D step 9.
 - Wipe root's and duplicati's history files at the §10.2 rotation, **against** the recommendation (Phase D step 14).
 - Skip Phase D step 2's `--rotate` and `--vacuum-time=1s` when its AC-8 counts read 0.
 - Keep each repository's `tmp/` in both tiers' archives (final).
@@ -40,7 +40,7 @@ Merge approval covered this session's PRs only. Ask again.
 
 ## Remaining, in order
 
-### 1. AC-11 (owner, normal shell, YubiKey plugged in)
+### 1. AC-11 (Overtoad, normal shell, YubiKey plugged in)
 
 First confirm the tree has not moved since the set began: `find /home/pcalnon/Development/python/Juniper/backups -newermt '2026-10-27 20:32:13' | wc -l` should print 0 (it did on 10-28 05:08). Then:
 
@@ -52,7 +52,7 @@ diff -r /home/pcalnon/Development/python/Juniper/juniper-ml/tmp/ac11-restore-202
 
 Expect `pipe: 0 0` and `IDENTICAL`. The restored copy is plaintext inside a tree Tier 2 archives: `rm -r` that directory once the result is recorded (the tmp/ retention ruling; it is then no longer needed).
 
-### 2. The transcript count (owner, root shell, before Phase D step 9)
+### 2. The transcript count (Overtoad, root shell, before Phase D step 9)
 
 From a checkout at or after this file's merge commit:
 
@@ -65,7 +65,7 @@ python3 util/ad-hoc/2026-10-28_transcript_secret_count.py --home ~pcalnon --env-
 - After Phase D step 6's `mv`, the service `.env` is at `~duplicati/.config/Duplicati.empty-2026-09-20/.env`.
 - A purge of any hit is a separate step, only within the release's transcript limit (`…RECOVERY-PLAN.md` §6.1 item 5). Never purge a validation report.
 
-### 3. Phase D (`…RECOVERY-PLAN.md` §6.4, one owner sitting)
+### 3. Phase D (`…RECOVERY-PLAN.md` §6.4, one Overtoad sitting)
 
 Every delta in `…lines-0-8…md` Remaining §3 still applies: steps 0, 1, 3, 5, 7, A0's `sudo env` variables, 9, 11 and 14, and its "New" items. Four changes:
 
@@ -77,13 +77,13 @@ Every delta in `…lines-0-8…md` Remaining §3 still applies: steps 0, 1, 3, 5
 ### 4. Later (Phase E, `…RECOVERY-PLAN.md` §6.5) and open items
 
 - Tier 2's capacity: D-10 keeps everything, and `DFF3-2782` has 65 GiB free, about 75 weekly sets (`…RECOVERY-PLAN.md` §6.6 note (c)).
-- The `.path` units cannot see fstab mounts (finding 15), so only the timers trigger. A design follow-up, if the owner wants plug-in runs.
+- The `.path` units cannot see fstab mounts (finding 15), so only the timers trigger. A design follow-up, if the Overtoad wants plug-in runs.
 - O-11 (the TestPyPI rotation); D-12; juniper-recurrence runs no secret scan; juniper-data's `ARC_AGI_API` allowlist entry is unverified.
 - Optional: decrypt a real archive with the *other* YubiKey, so both recipients are proven.
 
 ## Key context and traps
 
-- **Plugging in a drive starts nothing.** The sticks and Blackbox now remount through the owner's fstab lines (2026-10-24), whose mount points persist, and `PathChanged=/run/media/pcalnon` sees only an entry created or removed. The timers trigger instead: Tier 2 Sundays 03:00 (the 11-01 window skips; the next run is due from 11-03), Tier 3 the 1st at 04:00 (due 30 days after 10-27).
+- **Plugging in a drive starts nothing.** The sticks and Blackbox now remount through the Overtoad's fstab lines (2026-10-24), whose mount points persist, and `PathChanged=/run/media/pcalnon` sees only an entry created or removed. The timers trigger instead: Tier 2 Sundays 03:00 (the 11-01 window skips; the next run is due from 11-03), Tier 3 the 1st at 04:00 (due 30 days after 10-27).
 - **To eject a backup drive**, use the desktop's Eject or `udisksctl unmount`, never `umount -a`. On 10-27 at 17:55:25 a root `umount -a`-like event took down 299 snap mounts and the kernel pseudo-filesystems; it was repaired without a reboot.
 - **The runner's own verify reads the page cache.** For a media-level check, use `util/ad-hoc/2026-10-27_backup_set_media_readback.py --uuid <set> [--expect N] DIR...` (`O_DIRECT`; exit 0, 1 or 2).
 - **The harness refuses some shell forms**: a computed value where an option may stand; words like `trap` or `COMPLETE` inside a `grep` pattern; `case` blocks that run `bash`; `sed` with a computed program. Spell paths out and split commands.

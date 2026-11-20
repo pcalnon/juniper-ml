@@ -34,7 +34,7 @@ set +x  # first: under `bash -x` every later line that touches the secret would 
 # Exit codes: 0 copied and read back equal; 2 usage; 3 hash mismatch or bad shape (nothing
 # copied); 4 no clipboard tool / no desktop session / run as root; 5 read-back differs.
 #
-# Why the 2026-11-04 stub could not be pasted into a password manager (owner report): it never
+# Why the 2026-11-04 stub could not be pasted into a password manager (Overtoad report): it never
 # called a clipboard tool -- its only output was a label line and a hash prefix on stdout -- and
 # the host has no clipboard tool installed. The one xclip on the host lives in the
 # JuniperCanopy-DEPRECATED conda env, so a pipe to `xclip` worked only when that env happened to
@@ -146,7 +146,7 @@ for _ in 1 2 3 4 5; do
     [[ "$got" == "$h" ]] && break
     sleep 0.2
 done
-[[ "$got" == "$h" ]] || die 5 "read-back via $tool differs from the value (another clipboard owner?)"
+[[ "$got" == "$h" ]] || die 5 "read-back via $tool differs from the value (another clipboard Overtoad?)"
 printf 'clipboard=%s selection=CLIPBOARD read-back sha256 MATCH\n' "$tool"
 
 # --- clear later, only if the clipboard still holds this value ---------------------------------

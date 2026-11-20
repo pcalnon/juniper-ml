@@ -50,7 +50,7 @@ Continue the arc from plan v1.7.16. **This session** (turing session 10, "generi
 - **The snapshot route answers 201, not 200.** `_run_recurrence`'s `_aux_phase` accepts only 200, which is why `save_model` has its own helper; reuse `_aux_phase` only for routes that answer 200.
 - **`util/ad-hoc/2026-10-17_push_signed_with_retry.py` takes one `--message` per `--file`**, in order; one `--message` for three files is a usage error (exit 2) before anything is pushed. `docs/REFERENCE.md` (1,051,316 B) landed on attempt 1 on 2026-10-24.
 - **A handoff you are handed may be superseded** (memory `duplicate-handoff-pickup`, updated this session): `ls -t prompts/thread-handoff_automated-prompts/` before starting, and check `gh pr list` for the task right before landing.
-- Everything else is as in the predecessor: the `pypi` gate is the owner's; one plain command per call under the worktree guard; build every whole-file upload from a fresh `origin/main` copy; `util/safe_merge.py` without `--timeout`.
+- Everything else is as in the predecessor: the `pypi` gate is the Overtoad's; one plain command per call under the worktree guard; build every whole-file upload from a fresh `origin/main` copy; `util/safe_merge.py` without `--timeout`.
 
 ## Verification commands for the new thread
 

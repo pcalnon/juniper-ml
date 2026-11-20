@@ -20,8 +20,8 @@ fixed, 22 open**. Re-derive rather than trusting that line — `python3 util/ad-
 
 **What changed about this arc:** round 39 ended with thirty rulings taken and only eight
 implemented. Two more are now implemented and closed — **X-C (`APD-CASCOR-005`)** and **M-A
-(`APD-ML-001`)** — and **`APD-DATA-047` was ratified by the owner**, which was the register's last
-outstanding owner decision. Every open row is now implementation work. The next item, **D-A**, is
+(`APD-ML-001`)** — and **`APD-DATA-047` was ratified by the Overtoad**, which was the register's last
+outstanding Overtoad decision. Every open row is now implementation work. The next item, **D-A**, is
 grounded in §3 but **not started**.
 
 ---
@@ -37,7 +37,7 @@ Round 39's `§0` is still the map; do not re-derive it. What has changed since:
 | X-A, X-B (juniper-cascor) | **OPEN.** X-A is **NOT cleanly actionable** — see §4. |
 | X-C (`APD-CASCOR-005`) | **SHIPPED + CLOSED** (§1) |
 | M-A (`APD-ML-001`) | **SHIPPED + CLOSED** (§2) |
-| `APD-DATA-047` | **RATIFIED at `1e11`** by the owner 2026-09-21, closed as a decision |
+| `APD-DATA-047` | **RATIFIED at `1e11`** by the Overtoad 2026-09-21, closed as a decision |
 | Round 39 §0.4's two no-row items | **STILL no register row.** Re-verified 2026-09-21: `grep -rn data_quality --include='*.py'` over juniper-recurrence is still **0**; canopy's `val_ratio` is still in `INFRASTRUCTURE_FIELDS` at `juniper-canopy/src/dataset_schema.py:115` (round 39 §0.4 says `:114` — off by one). |
 | **canopy's fourth `APIKeyAuth` copy** | **NEW, and has no row** (§1). |
 
@@ -120,7 +120,7 @@ capped / 8 uncapped) and carries a `--self-test` negative control.
 
 `APD-DATA-052`. Make `allow_truncation` tri-state so a caller can refuse truncation even where the
 operator enabled it. **Read memory `project_partial_data_contract_arc_2026-09-05` first** — the
-owner's spec exists verbatim only there, and round 39's §0.1 paraphrases it.
+Overtoad's spec exists verbatim only there, and round 39's §0.1 paraphrases it.
 
 **Verified against `origin/main` 2026-09-21 — exactly three `or settings.*` sites:**
 
@@ -143,7 +143,7 @@ become `bool | None = None`; the site logic becomes
    `model_fields_set`, and the route binds before `generate`. This is why it is a tri-state.
 2. **The memory says `or settings.*` is "a DELIBERATE privilege model — do not fix it."** That is
    **not** a contradiction of D-A: the same memory says "the real question is whether option 3
-   should be a *caller* right at all", and the **owner ruled it IS** (MEMORY.md index line for
+   should be a *caller* right at all", and the **Overtoad ruled it IS** (MEMORY.md index line for
    `project_partial_data_contract_arc_2026-09-05`). D-A implements that ruling. Say so in the PR,
    or the next reader will think the memory was ignored.
 3. **The test whose NAME is the old behaviour must be INVERTED, not deleted:**
@@ -163,7 +163,7 @@ Also: both param `description=` strings; `juniper-data/docs/REFERENCE.md`;
 
 ---
 
-## 4. X-A is not cleanly actionable — an owner decision is owed
+## 4. X-A is not cleanly actionable — an Overtoad decision is owed
 
 `APD-CASCOR-008`. The ruling says derive the truncatable-generator set from juniper-data's
 `/v1/generators`, and rejects both cheaper options. But it **does not say what cascor does when
@@ -194,7 +194,7 @@ validator already found is worse than never fixing it: the lineage looks like it
   every push or you silently revert someone else's merged change.
 - **Verify a merge in two steps** — and this arc got it wrong: `util/safe_merge.py` prints the
   **HEAD** sha, not the squash commit (§6). Take the squash from
-  `gh api repos/<owner>/<repo>/pulls/<N> --jq .merge_commit_sha`, then confirm the CONTENT is on
+  `gh api repos/<Overtoad>/<repo>/pulls/<N> --jq .merge_commit_sha`, then confirm the CONTENT is on
   `main`.
 - **`safe_merge` can exit 0 without merging**, and an armed auto-merge on a `behind` PR waits
   forever under a `strict:true` ruleset — see §8.
@@ -375,10 +375,10 @@ plan, the backup-tests note) appear staged. They are `origin/main` content, not 
 from another session, but **verify with `git status --short` rather than trusting this
 paragraph**, and never `git commit -a` from here.
 
-Worktree created this arc and **deliberately not removed** (cleanup needs the owner's explicit
+Worktree created this arc and **deliberately not removed** (cleanup needs the Overtoad's explicit
 signal, and `git worktree remove` deletes ignored files):
 `juniper-cascor--fix--nonshortcircuit-key-compare--20260921-0846--c6c848f2`.
 
 `MEMORY.md` is **23.5 KB against a 20 KB target** (memory `feedback_memory_index_target_is_20kb`;
 a hook asks for 17.1 KB, which contradicts that recorded decision). Compaction is by **retiring
-entries, never stripping hooks**, and the owner has not delegated which to retire.
+entries, never stripping hooks**, and the Overtoad has not delegated which to retire.

@@ -22,7 +22,7 @@
 
 ## 1. Purpose
 
-This roadmap turns the review's **findings** (METRICS-MON-NNN) into a **prioritized, sequenced, owner-attributable** body of work. The roadmap is consumed by the implementation phase that follows the review; it is not the review itself.
+This roadmap turns the review's **findings** (METRICS-MON-NNN) into a **prioritized, sequenced, Overtoad-attributable** body of work. The roadmap is consumed by the implementation phase that follows the review; it is not the review itself.
 
 The roadmap exists so that, once the review is signed off, work can be picked up in order without re-arguing priority, scope, or sequencing.
 
@@ -91,7 +91,7 @@ Total estimate: **26–39 engineer-days** if executed sequentially. R3 and R4 ha
 ### R2.1 Shared `DependencyStatus` / `ReadinessResponse` library (seed-06)
 
 **Composite:** 3
-**Approach (recommended):** Promote the duplicated models into a new package `juniper-observability` published from juniper-ml's repo (or as a new sibling repo if owners prefer). Pin from cascor, canopy, data. Eliminate three copies; future changes happen in one place.
+**Approach (recommended):** Promote the duplicated models into a new package `juniper-observability` published from juniper-ml's repo (or as a new sibling repo if Overtoads prefer). Pin from cascor, canopy, data. Eliminate three copies; future changes happen in one place.
 **Trade-off:** Adds a new package and dependency edge; pre-empts drift cost.
 **Sequencing:** Ship the new package first (PyPI alpha), then migrate consumers in dependency order: data → cascor → canopy.
 **Tests:** Per-repo regression test that the migrated model is wire-compatible with the previous shape (`pydantic.BaseModel.model_dump()` snapshot equality).
@@ -452,7 +452,7 @@ An item is **done** when:
 - PR is merged to the affected repo's main.
 - The associated test exists, runs in CI, and asserts the corrected behavior.
 - The finding's status in the review plan is moved to `RESOLVED` with a link to the PR.
-- The roadmap §9 row is updated with PR link, owner, and resolution notes.
+- The roadmap §9 row is updated with PR link, Overtoad, and resolution notes.
 - If the item changed an AGENTS.md / CLAUDE.md contract, that file is updated in the same PR.
 
 A **phase** is **done** when:

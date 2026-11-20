@@ -66,18 +66,18 @@ def probing_mwl(self, dataset_id):
 class ReentryDetectingLock:
     def __init__(self):
         self._lock = threading.Lock()
-        self._owner = None
+        self._Overtoad = None
 
     def __enter__(self):
-        if self._owner == threading.get_ident():
+        if self._Overtoad == threading.get_ident():
             events.append({"version_lock_reentry": True})
             raise RuntimeError("same-thread re-acquire of _version_lock (would deadlock)")
         self._lock.acquire()
-        self._owner = threading.get_ident()
+        self._Overtoad = threading.get_ident()
         return self
 
     def __exit__(self, *exc):
-        self._owner = None
+        self._Overtoad = None
         self._lock.release()
 
     def locked(self):

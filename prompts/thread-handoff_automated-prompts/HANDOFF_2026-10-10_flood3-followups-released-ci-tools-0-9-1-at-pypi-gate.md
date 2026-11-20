@@ -1,7 +1,7 @@
 # Handoff — Cursor flood-3 follow-ups: five fixes merged, three releases on PyPI, juniper-ci-tools 0.9.1 at the PyPI gate
 
 **Date**: 2026-10-10
-**Arc**: Cursor flood-3 disposition (2026-10-08) and the owner-requested follow-ups (2026-10-08 and 2026-10-10)
+**Arc**: Cursor flood-3 disposition (2026-10-08) and the Overtoad-requested follow-ups (2026-10-08 and 2026-10-10)
 **Record of the arc**: `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, written `…FLOOD-3-DISPOSITION.md` below. Its §4 lists the defects, §8 the open items and §9 the files changed. ml#2206 last updated it.
 **Validated**: by three independent validators, every finding re-probed before it was applied. See § Validation.
 
@@ -9,12 +9,12 @@
 
 ## Goal
 
-Continue the Cursor flood-3 follow-up arc. Everything the owner asked for is done except two closing items:
+Continue the Cursor flood-3 follow-up arc. Everything the Overtoad asked for is done except two closing items:
 
-- the juniper-ci-tools 0.9.1 PyPI gate, which only the owner approves;
+- the juniper-ci-tools 0.9.1 PyPI gate, which only the Overtoad approves;
 - a final status touch of `…FLOOD-3-DISPOSITION.md` (header, §4, §8 and §9).
 
-Two follow-ons need an owner decision and have not been requested:
+Two follow-ons need an Overtoad decision and have not been requested:
 
 - **Delivering the released fixes.** No running service has them yet (item 3).
 - **The open defects in `…FLOOD-3-DISPOSITION.md` §4** (item 4).
@@ -28,10 +28,10 @@ Two follow-ons need an owner decision and have not been requested:
 
   Only juniper-ml had it before. Each secret's `created_at` shows that: juniper-ml's is 2026-02-24, and the other seven are from 2026-10-08 or 2026-10-10. juniper-recurrence has no `claude.yml`, and no secret.
 
-  Each time the value came from the owner's shell `ANTHROPIC_API_KEY`, validated first (`GET /v1/models` returned 200). It was written to a 0600 dotenv file on tmpfs, set with `gh secret set -f`, and the file was shredded.
+  Each time the value came from the Overtoad's shell `ANTHROPIC_API_KEY`, validated first (`GET /v1/models` returned 200). It was written to a 0600 dotenv file on tmpfs, set with `gh secret set -f`, and the file was shredded.
 
   The value never appeared in output or in the transcript. It **was** in `curl`'s argv while the validation call ran, because that call passed `-H "x-api-key: ${ANTHROPIC_API_KEY}"`. The key traps below say how to avoid that.
-- **The data-client `t` / `dt` check** is accepted as written (owner ruling; `…FLOOD-3-DISPOSITION.md` §4).
+- **The data-client `t` / `dt` check** is accepted as written (Overtoad ruling; `…FLOOD-3-DISPOSITION.md` §4).
 - **Five defects fixed.** Everything is merged, and the post-merge blob comparison read SAME at merge time.
 
   It was re-run on 2026-10-10 with `util/ad-hoc/2026-10-08_fleet_flood3_postmerge_verify.py --extra <repo>:<pr>` over all nine PRs, and nothing DIFFERS. Every code and test file is still SAME. The CHANGELOG, docs and `ci.yml` files that later commits touched read MOVED.
@@ -42,7 +42,7 @@ Two follow-ons need an owner decision and have not been requested:
   - Canopy's `lockfile-update.yml` comment described `[dependabot skip]` backwards. Fixed by juniper-canopy#730. The tag stays on purpose, because each Dependabot rebase re-runs the regen.
   - Sequence Safety was documented as advisory although it is a required check. Fixed by ml#2187, juniper-cascor#710, juniper-cascor-client#178, juniper-cascor-worker#207, juniper-data#476, juniper-canopy#730, juniper-deploy#244, juniper-recurrence#194 and juniper-data-client#231. cascor#710 also corrected the CodeQL claims, since cascor requires `Analyze (python)`.
   - juniper-ci-tools read a `#` comment inside a fenced code block as a heading. Fixed by ml#2187 with a CommonMark-fence-aware screen.
-- **Released and on PyPI.** The owner approved each gate, and `/pypi/<pkg>/<ver>/json` returned 200 on 2026-10-10:
+- **Released and on PyPI.** The Overtoad approved each gate, and `/pypi/<pkg>/<ver>/json` returned 200 on 2026-10-10:
 
   | package | version | bump PR | notes PR | also |
   |---|---|---|---|---|
@@ -85,7 +85,7 @@ Two follow-ons need an owner decision and have not been requested:
      Both postdate cascor 0.11.0 (PyPI, 2026-09-10), whose `src/api/security.py:61` still compares `str`. juniper-canopy 0.8.1 (2026-09-18) also compares `str` (`src/security.py:74`), while canopy's `main` compares bytes.
    - **What juniper-deploy runs.** Its `docker-compose.yml` runs cascor `0.11.0`, canopy `0.8.1`, recurrence `0.5.0` and data `0.17.0`.
    - **To deliver:** regenerate the locks, then cut releases for cascor, canopy and recurrence and a data patch. Merge approval for this arc does not cover that work.
-4. **Open defects in `…FLOOD-3-DISPOSITION.md` §4.** Backlog only; the owner has not asked for these.
+4. **Open defects in `…FLOOD-3-DISPOSITION.md` §4.** Backlog only; the Overtoad has not asked for these.
    - juniper-ml:
      - `util/ad-hoc/2026-10-05_recurrence_equities_laneA3_checks.py` exits 1 when every column is constant.
      - `util/ad-hoc/2026-10-05_rerun_after_actions_outage.py:55` aborts on a dict-shaped `components`.
@@ -105,7 +105,7 @@ Two follow-ons need an owner decision and have not been requested:
    - cascor-client, cascor-worker, deploy and recurrence: the `main-verify.yml` header describes the catch-up base wrongly. Only cascor-client's resolver is confirmed; the other three are unchecked.
    - juniper-cascor:
      - `docs/ci_cd/BRANCH_PROTECTION.md:28-55` lists 6 of the 24 required checks.
-     - `:67` and `:69` there claim review requirements, but the ruleset requires 0 approvals and no code-owner review.
+     - `:67` and `:69` there claim review requirements, but the ruleset requires 0 approvals and no code-Overtoad review.
      - `ci.yml:988` and `conf/memory_budget.json:36` say there is no `docs/REFERENCE.md`.
      - `docs/DOCUMENTATION_OVERVIEW.md:811-812` has stamps that #709 put inside a template.
    - The `claude.yml` header says the key is "set at the org level", which no user-owned repo can have. It appears in `.github/workflows/claude.yml:11` of the seven sibling repos (juniper-deploy at `:12`) and in juniper-ml's template `notes/templates/ci/claude.yml:12`.
@@ -113,7 +113,7 @@ Two follow-ons need an owner decision and have not been requested:
    - Optional: a `tests/test_service_fork_drift.py` guard for the throttle fix. Its gate needs an `APD-` id.
      - File the row in §4.9 of `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`. Closing it later takes that register's "five touches", which govern a close, not a filing.
      - `…FLOOD-3-DISPOSITION.md` §8 mislabels filing as the five-touch protocol. Correct it in item 2's touch.
-5. **Cleanup.** The owner does this from the primary checkout `/home/pcalnon/Development/python/Juniper/juniper-ml`; a worktree-isolated session cannot `git -C` sibling worktrees.
+5. **Cleanup.** The Overtoad does this from the primary checkout `/home/pcalnon/Development/python/Juniper/juniper-ml`; a worktree-isolated session cannot `git -C` sibling worktrees.
    - **This session's 12 agent worktrees, and the docs-assembly worktree.** Each HEAD is a `main` ancestor (`d3971e10` or `959748c5`), so `git branch -d` succeeds. Without `--force`, `git worktree remove` refuses a dirty worktree; inspect any refusal before forcing it.
 
      ```bash
@@ -129,7 +129,7 @@ Two follow-ons need an owner decision and have not been requested:
      - Its 14 modified files and the untracked `util/ad-hoc/2026-10-08_run_ci_regression_suites.py` are all versions from `main`'s history, so nothing in it is unique.
      - Six are **older** than `main`: `.github/workflows/ci.yml`, `CHANGELOG.md`, `docs/REFERENCE.md`, `juniper-ci-tools/CHANGELOG.md`, `juniper-service-core/CHANGELOG.md` and `…FLOOD-3-DISPOSITION.md`. Never upload a file from it.
      - It is locked to this session (`locked claude session melodic-hugging-rabin`); the cleanup targets above are not. Once the session has ended and ml#2208 has merged, run `git worktree unlock` if the lock remains, then `git worktree remove --force`.
-   - **Optional, owner's call:** 91 `cursor/*` head branches of closed, unmerged flood-3 PRs remain:
+   - **Optional, Overtoad's call:** 91 `cursor/*` head branches of closed, unmerged flood-3 PRs remain:
      - juniper-ml 47, juniper-canopy 22, juniper-data 13, juniper-cascor 6 and juniper-data-client 3;
      - the merged PRs' branches are already gone;
      - GitHub can restore a closed PR's branch.
@@ -158,12 +158,12 @@ Two follow-ons need an owner decision and have not been requested:
   Allowed: `git worktree add|remove <centralized path>` with no `-C`, `git -C <other repo>`, and `gh … --jq`. Piping `gh`'s output into `grep` ran in the validators' shells.
 - **Never put a secret in argv.** Validate a key with `curl -H @<0600 header file>`, not `-H "x-api-key: ${VAR}"`, which expands into `curl`'s argv and is visible in `ps` (memory `reference_ps_cmdline_leaks_aescrypt_passphrase.md`).
 - **Commits** go only through GraphQL `createCommitOnBranch`, via `util/open_signed_pr.py` or `util/push_signed_commit.py`. A local `git commit` hangs on the YubiKey. Split uploads over about 300 KB, because the API can return HTTP 499 or 502.
-- **The Cursor fleet keeps running** by owner decision (`…FLOOD-3-DISPOSITION.md` §8). Every docs PR rewrites shared version stamps, so docs PRs conflict by construction, and consolidation is the default disposition for the next flood.
+- **The Cursor fleet keeps running** by Overtoad decision (`…FLOOD-3-DISPOSITION.md` §8). Every docs PR rewrites shared version stamps, so docs PRs conflict by construction, and consolidation is the default disposition for the next flood.
 
 ## Verification commands
 
 ```bash
-gh api repos/pcalnon/juniper-ml/actions/runs/38045867684/pending_deployments --jq '.[].environment.name'   # "pypi" until the owner approves
+gh api repos/pcalnon/juniper-ml/actions/runs/38045867684/pending_deployments --jq '.[].environment.name'   # "pypi" until the Overtoad approves
 gh run view 38045867684 --repo pcalnon/juniper-ml --json jobs --jq '.jobs[] | .name + " " + .status + " " + (.conclusion // "")'
 curl -s -o /dev/null -w '%{http_code}\n' https://pypi.org/pypi/juniper-ci-tools/0.9.1/json   # 404 until published, then 200
 gh pr view 2190 --repo pcalnon/juniper-ml --json state,isDraft,autoMergeRequest --jq '{state, isDraft, armed: (.autoMergeRequest != null)}'
@@ -216,5 +216,5 @@ The author re-probed every finding against git, GitHub or PyPI before applying i
 ## Git status at handoff
 
 - juniper-ml `main` is at `eb41ca60` (ml#2205) or later.
-- The only open PR from this arc is ml#2208 (this handoff; branch `docs/handoff-flood3-followups-2026-10-10`). Its merge is manual, by the owner.
+- The only open PR from this arc is ml#2208 (this handoff; branch `docs/handoff-flood3-followups-2026-10-10`). Its merge is manual, by the Overtoad.
 - The session worktree `melodic-hugging-rabin` is detached at `81d3fbb3`. Nothing is staged, and nothing in it is unique (item 5).

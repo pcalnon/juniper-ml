@@ -31,7 +31,7 @@ Continue the **recurrent-structure add-on** effort for juniper-recurse (how to a
 - Two (possibly non-exclusive) approaches under analysis; **a dedicated doc/section is forthcoming (Paul).** Hinge: is the no-count / no-group star-free ceiling acceptable for time-series *regression*? If yes → P1 (self-recurrent RCC) or P3 (reservoir/LMU fading-memory); if breaking it is required → P2 research track (no constructive training recipe yet).
 - **Carry-over from the prior handoff:** Paul flagged "two open questions" on the #377 proposals; as of 2026-06-07 only Q1 (+ a/b) was answered — **confirm whether his second was resolved before proceeding.**
 - On resolution: fold the chosen pick into model doc §1.5/§1.6, update the Part 5 `OQ-4` row (currently `OPEN — under active analysis`), and promote Status-Tracker `WS-0` toward ratification.
-- Also pending: promote "WS-0 temporal substrate" to an explicit WS in the refactor Status Tracker; decide the window-ownership boundary (juniper-data vs model-side; OQ-8-adjacent; proposals §7.2).
+- Also pending: promote "WS-0 temporal substrate" to an explicit WS in the refactor Status Tracker; decide the window-Overtoadship boundary (juniper-data vs model-side; OQ-8-adjacent; proposals §7.2).
 
 ### 2. juniper-cascor-core deploy (CW-05 / cascor#319 dual-path) — PARALLEL THREAD
 

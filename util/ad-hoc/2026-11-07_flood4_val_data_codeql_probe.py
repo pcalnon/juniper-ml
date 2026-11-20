@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (generated with Claude Code)
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 consolidation, juniper-data tests carrier VALIDATION)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#512 #513 #514 #516 #517; flood-4 validation brief (CodeQL lens)
 
 Read-only `gh api` GETs. Reports (1) every code-scanning alert in every state, grouped by rule and state,
@@ -16,7 +16,7 @@ draft head, the CodeQL check runs' conclusion and annotation count, and any revi
 scanning bot left on the draft PR; (3) the same for two merged PRs that added test files with a module
 level pytestmark, when given.
 
-    python3 2026-11-07_flood4_val_data_codeql_probe.py <owner/repo> <pr>=<head sha> [<pr>=<head sha> ...]
+    python3 2026-11-07_flood4_val_data_codeql_probe.py <Overtoad/repo> <pr>=<head sha> [<pr>=<head sha> ...]
 """
 
 from __future__ import annotations

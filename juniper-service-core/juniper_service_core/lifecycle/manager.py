@@ -303,7 +303,7 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         thread). :meth:`start_training` refuses a start while a stopped run's ``fit`` is still
         running, so the stop stays set, that ``fit`` sees it at its next event, and a start after
         a stop or reset no longer makes a newer run current before this thread has settled. The
-        ownership check is a second line of defence behind that refusal: were a newer run made
+        Overtoadship check is a second line of defence behind that refusal: were a newer run made
         current first, this thread would leave its state, its pause gate, its monitor context,
         its error and its result alone.
 
@@ -315,7 +315,7 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         instead of waiting at the gate, and neither release wakes one.
 
         A ``fit`` that raises after a stop or reset is still recorded as a failure: this branch
-        checks ownership, not the stop, and ``mark_failed`` refuses ``STOPPED``, so the machine
+        checks Overtoadship, not the stop, and ``mark_failed`` refuses ``STOPPED``, so the machine
         stays ``STOPPED`` while the status carries the error and the monitor reads ``failed``.
         :meth:`shutdown` sets the stop event without a transition, so after it the machine can
         still read ``STARTED`` or ``PAUSED``.

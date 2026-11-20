@@ -82,7 +82,7 @@ Line numbers are in `…CONSOLIDATED-DEVELOPMENT-PLAN.md` as it stands now.
 
 **15. NIT — `…DEVELOPMENT-PLAN.md:2256`.** In "The four reviews it cites", "it" reads as the probe, which cites no reviews. Make it "v1.15.16 cites".
 
-**16. NIT — `…DEVELOPMENT-PLAN.md:1107` and `:1262`.** These list juniper-deploy's pins as owner items. Per `HANDOFF_2026-11-15_…:54,58`, a session opens the pin PR after the gates, on the owner's merge approval.
+**16. NIT — `…DEVELOPMENT-PLAN.md:1107` and `:1262`.** These list juniper-deploy's pins as Overtoad items. Per `HANDOFF_2026-11-15_…:54,58`, a session opens the pin PR after the gates, on the Overtoad's merge approval.
 
 **17. NIT — `…DEVELOPMENT-PLAN.md:626`.** "the same guarded pulls" understates ruling 7, which adds "on `main` and clean" and "never switch its branch". Lines 657–658 state both.
 
@@ -106,6 +106,6 @@ Line numbers are in `…CONSOLIDATED-DEVELOPMENT-PLAN.md` as it stands now.
 - **Other limits:**
   - I verified "eleven sites" from ml#2576's body and round 2's "88 = 8 × 11", not by parsing the guard.
   - I checked only one unchanged line (1052, still true: legs `:8052` and `:8053` write about 51 MB each to `/tmp/juniper-e2e/`).
-  - The primary's fast-forward at 2026-11-15 02:04:55Z (`4a786c81` → `eeb5c694`) appears in no session transcript, so it was presumably the owner's own move.
+  - The primary's fast-forward at 2026-11-15 02:04:55Z (`4a786c81` → `eeb5c694`) appears in no session transcript, so it was presumably the Overtoad's own move.
 
 **Changed:** no repository file. Scratch only, under `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humble-humming-flask/tmp/review-a/` (gitignored).

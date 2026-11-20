@@ -7,7 +7,7 @@ Author:      Paul Calnon
 Created:     2026-11-09
 Version:     1.0.0
 Status:      ad-hoc -- recovery (Phase D sitting)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (AC-4, note AC-4a)
              notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md (section 6.4 step 14)
              util/ad-hoc/duplicati_drill_fresh.py (the 2026-08 drill this replaces for AC-4)

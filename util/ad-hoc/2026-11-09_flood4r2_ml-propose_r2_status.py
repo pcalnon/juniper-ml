@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (the Cursor flood-4 round-2 "ml-propose" carrier, second build after validation)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2507; util/ad-hoc/2026-11-08_flood4r2_ml-propose_manifest.py (reads the name_status.txt this writes)
 
 The session that builds this carrier is isolated in another worktree, which refuses ``git`` aimed at the carrier's.

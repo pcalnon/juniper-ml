@@ -182,7 +182,7 @@ sudo systemctl daemon-reload && sudo systemctl restart grafana-server
 Requires sudo, so it is left for the operator; nothing in this program depends on it.
 
 > **Update (2026-08-17) — the port IS configurable at start time, proven three ways; and the drop-in
-> above is NOT the best form.** The owner asked (correctly) whether the port could be set at server
+> above is NOT the best form.** The Overtoad asked (correctly) whether the port could be set at server
 > start via command line, environment variable, or config file, rather than settling for a
 > hard-coded root-level fix. **All three are natively supported**, and two were demonstrated on this
 > host **without root**, by running the packaged binary as an unprivileged user against scratch dirs:
@@ -213,7 +213,7 @@ Requires sudo, so it is left for the operator; nothing in this program depends o
 > where the packaging already provides one. Prefer the line above.
 >
 > **What is genuinely not solvable without root, and why it is not a Juniper concern.** The blocker
-> was never the mechanism — it is **file ownership**. `grafana-server` is a *system* service
+> was never the mechanism — it is **file Overtoadship**. `grafana-server` is a *system* service
 > (`User=grafana`, unit under `/usr/lib/systemd/system`, `grafana.ini` `root:grafana 0640`,
 > `/etc/default/grafana-server` `root:root 0644`). Reconfiguring a system service means writing a
 > root-owned file, by design; `systemctl edit` is likewise root. That is a property of system

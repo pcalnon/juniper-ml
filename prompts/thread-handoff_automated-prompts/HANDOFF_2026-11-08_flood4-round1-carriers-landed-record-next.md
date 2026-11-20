@@ -2,7 +2,7 @@
 
 **Date**: 2026-11-08 (UTC; written 03:30Z)
 
-**Arc**: the Cursor flood-4 consolidation, in session `7ceca543-4d37-4c1d-b2fc-3b49758514af` (named `open-pr-sweep-triaged-owner-rulings-consolidation-next`, worktree `.claude/worktrees/humming-stargazing-papert`). It continued `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-06_open-pr-sweep-triaged-owner-rulings-consolidation-next.md` (the 11-06 handoff), on the owner's "merge approval granted" of 2026-11-07.
+**Arc**: the Cursor flood-4 consolidation, in session `7ceca543-4d37-4c1d-b2fc-3b49758514af` (named `open-pr-sweep-triaged-Overtoad-rulings-consolidation-next`, worktree `.claude/worktrees/humming-stargazing-papert`). It continued `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-06_open-pr-sweep-triaged-Overtoad-rulings-consolidation-next.md` (the 11-06 handoff), on the Overtoad's "merge approval granted" of 2026-11-07.
 
 **Host**: the Linux host.
 
@@ -17,11 +17,11 @@
   - `agent-a7674bdaf3240b78b` (the ml tests builder) and `agent-ab56f3c71e4f75377` (the ml docs builder) hold their `util/ad-hoc/2026-11-07_flood4_ml_*` scripts, untracked, and `tmp/flood4/ml-{tests,docs}/`: the manifests and the frozen rebase copies.
   - Validators: `agent-a4d5218b39ee8273c`, `agent-aa05f5bd8126623da`, `agent-a80754b707aae7b98`, `agent-adfe0777292754a5c`, `agent-a3c73385122d55e37` and `agent-af5444824ef90bc24`. Each may hold `util/ad-hoc/2026-11-07_flood4_val_*` scripts.
   - The other `agent-*` and named worktrees there are NOT this arc's. Never touch them; `curious-plotting-hummingbird` is DO NOT SWEEP.
-- **Centralized worktrees this arc made**, all under `/home/pcalnon/Development/python/Juniper/worktrees/`. Remove them only on the owner's word:
+- **Centralized worktrees this arc made**, all under `/home/pcalnon/Development/python/Juniper/worktrees/`. Remove them only on the Overtoad's word:
   - `juniper-data--{test,docs}--flood4-consolidated-*--20261107-1701--28078558`;
   - `juniper-canopy--{test,docs}--flood4-consolidated-*--20261107-1700--af650373`;
   - `juniper-ml--val-fidelity-clean-main--20261107-1800--303ccc0b`.
-- **The primary checkout** (`/home/pcalnon/Development/python/Juniper/juniper-ml`) is on `main` and behind `origin/main` (12 commits at 03:40Z). Its `util/fleet_triage/predict_merge.py` is the old copy, so run `origin/main`'s. Fast-forward it only on the owner's word; the 11-04 handoff's `git fetch --prune` is still deferred.
+- **The primary checkout** (`/home/pcalnon/Development/python/Juniper/juniper-ml`) is on `main` and behind `origin/main` (12 commits at 03:40Z). Its `util/fleet_triage/predict_merge.py` is the old copy, so run `origin/main`'s. Fast-forward it only on the Overtoad's word; the 11-04 handoff's `git fetch --prune` is still deferred.
 - **No local commit was made in this arc.** Every commit went through `util/open_signed_pr.py` or `util/push_signed_commit.py`. Local refs `refs/flood4/pr/<N>` hold the drafts' heads in each repo.
 
 ---
@@ -37,14 +37,14 @@ To work in it, EnterWorktree(path=<that worktree>) once its session has ended (c
 `git worktree list --porcelain`). Run the Verification block first. If an invariant fails, stop, re-derive
 it from GitHub and report. New Cursor drafts since 2026-11-08 03:30Z are expected, and are not a failure.
 
-FIRST ask the owner (no approval carries over from the previous session; auto-memory
+FIRST ask the Overtoad (no approval carries over from the previous session; auto-memory
 feedback_headless_merge_approval_policy.md):
 1. This session's approval: to merge the record PR (and the round-2 carriers, when they exist), to close the
    drafts they carry, and to update-branch.
 2. M-6: scripts/wake_the_claude.bash:259 defaults to `--effort auto`, which the real Claude Code CLI rejects
    ("Unknown --effort value 'auto' -- ignoring it", 2.1.316-2.1.319). What should the default be: a valid
    level, or no flag at all?
-3. OI-1 (the owner's own note, 2026-11-07): juniper-ml#2271 shows "Closed with unmerged commits". Its branch
+3. OI-1 (the Overtoad's own note, 2026-11-07): juniper-ml#2271 shows "Closed with unmerged commits". Its branch
    feat/disable-idle-compress-setting-for-claude-code adds only `"idleCompaction": false` to the repo-root
    settings.local.json, a file Claude Code does not read. Re-land it signed where Claude Code reads it (first
    verify that idleCompaction is a real setting), or delete the remote branch?
@@ -88,7 +88,7 @@ Remaining work:
    e. Harvest every util/ad-hoc/2026-11-07_flood4_* script from the worktrees above. That is about 174 copies
       under about 152 names. Where a name occurs in several worktrees, diff the copies and take the builder's
       newest (three differ; agent-adfe0777292754a5c's are older).
-   f. Screen the scripts for /tmp literals (owner rule; G-TMP lands with #2360), and run
+   f. Screen the scripts for /tmp literals (Overtoad rule; G-TMP lands with #2360), and run
       util/ad-hoc/2026-10-05_codeql_python_prescreen.py (an unresolved CodeQL thread blocks merge).
    g. Build the record PR's CHANGELOG.md entry on CURRENT main (fetch, then 3-way). Never upload the session
       worktree's 303ccc0b copies. Pass --base-sha as the main sha the files were built from.
@@ -97,16 +97,16 @@ Remaining work:
    h. Include THIS handoff file in the record PR, so it lands on main.
    i. Validate with independent agents (the record AND the scripts' headers), then open it signed and merge on
       green. Batch the upload: about 155 files. Before every push to an open PR, run
-      `gh pr view N --json autoMergeRequest,isDraft`, because the owner's sweeper may arm it.
-3. Round 2 (owner, 2026-11-07, "Second wave"): triage the 35 juniper-ml drafts #2469-#2509 against the new
+      `gh pr view N --json autoMergeRequest,isDraft`, because the Overtoad's sweeper may arm it.
+3. Round 2 (Overtoad, 2026-11-07, "Second wave"): triage the 35 juniper-ml drafts #2469-#2509 against the new
    main, then consolidate them the same way: a tests carrier, a docs carrier, and one code carrier for
    #2480/#2493/#2502/#2504. Known shape, from the 11-06 handoff:
    - follow-ups to #2474: #2476, #2480, #2481, #2484, #2494, #2496. #2480 looks superseded, because main
      already copies .git/shallow. #2484 is stacked on a cursor/ branch: never merge a non-main base.
    - follow-ups to #2468: #2471, #2472, #2478, #2479, #2495, #2503, #2504. For the launcher tests, check what
      the REAL CLI makes of an argv (auto-memory reference_claude_cli_optional_flag_eats_the_prompt.md).
-   Ask the owner for round 2's merge approval when its carriers exist.
-4. Round 3 (owner, 2026-11-07): consider juniper-ml #2404 and #2406 individually.
+   Ask the Overtoad for round 2's merge approval when its carriers exist.
+4. Round 3 (Overtoad, 2026-11-07): consider juniper-ml #2404 and #2406 individually.
 5. Archive the next handoff.
 
 Key context:
@@ -122,13 +122,13 @@ Key context:
 
 ---
 
-## The owner's rulings (2026-11-07, this session, verbatim option labels)
+## The Overtoad's rulings (2026-11-07, this session, verbatim option labels)
 
 | Question | Answer |
 |---|---|
 | Does the grant cover update-branch and closing carried drafts? | "Merge, update, close (Recommended)" |
 | The 35 post-census drafts (#2469–#2509) | "Second wave (Recommended)" |
-| #2404 / #2406 | "as a round 3, let's condsider these two draft PRs individually" (the owner's own text) |
+| #2404 / #2406 | "as a round 3, let's condsider these two draft PRs individually" (the Overtoad's own text) |
 | #2271 | Mid-turn note: "Closed with unmerged commits … let's make a note … so it can be addressed when the current tasks are complete" → OI-1 |
 
 The 2026-11-06 rulings in the 11-06 handoff still stand: "Consolidate, incl. post-grant" and "This session, new record".

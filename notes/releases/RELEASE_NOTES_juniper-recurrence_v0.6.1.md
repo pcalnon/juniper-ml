@@ -28,7 +28,7 @@
 - **The floors now require `juniper-recurrence-model>=0.4.0` and `juniper-data-client>=0.6.0`**
   (W1.13 of juniper-ml
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
-  the owner ruled this on 2026-10-10, and 0.6.0 shipped without it). 0.6.0 moved its image lock to
+  the Overtoad ruled this on 2026-10-10, and 0.6.0 shipped without it). 0.6.0 moved its image lock to
   those two releases, but its ranges still admitted model `>=0.3.0` and data-client `>=0.4.2`.
   - A fresh `pip install` resolves the new pair.
   - `pip install -U juniper-recurrence` over a 0.5.0 environment does not. pip's default

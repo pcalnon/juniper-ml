@@ -3,7 +3,7 @@
 
 **Entry point:** adversarial: attack the conclusions.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T19:55:30Z to 2026-09-22T20:23:08Z, read-only. Agent `agent-a753c781479614bca`.
 
@@ -18,7 +18,7 @@ You are Lane B1 (analysis review, ADVERSARIAL) in an independent-agent consensus
 READ-ONLY RULES (hard): do not edit/create/delete files in any repo; do not commit, push, comment on, merge, close or approve anything. Worktree-isolated harness: do NOT run `git` against any repo except read-only `git diff`/`git log`/`git show` inside the juniper-ml worktree below; use `gh api` for other repos. The harness refuses shell loops over variables touching gh/git; write plain commands. Scratch dir: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/97c72736-b353-43fe-9e6f-efaa8cf3be0c/scratchpad/lanes/b1/.
 
 ARTIFACTS (all frozen for this review):
-1. juniper-ml worktree /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl — `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`: the new `## Status banner (added 2026-09-22 ...)` section, its header lines and four in-place notes (`git diff` shows them). The `__VALIDATION_RECORD__` placeholder is intentional.
+1. juniper-ml worktree /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl — `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`: the new `## Status banner (added 2026-09-22 ...)` section, its header lines and four in-place notes (`git diff` shows them). The `__VALIDATION_RECORD__` placeholder is intentional.
 2. juniper-deploy#227 and juniper-canopy#655 (`gh pr view`/`gh pr diff`): their PR bodies and CHANGELOG/commit text make claims too.
 
 ATTACK THESE CONCLUSIONS, each separately:
@@ -27,7 +27,7 @@ ATTACK THESE CONCLUSIONS, each separately:
 (c) "CONFIRMED by a CI log, not by reasoning" for "the floor bump is inert because pip resolves the newest match" — does one pre-floor job log installing 0.9.0 prove the claim as the ORIGINAL document stated it ("all nine repos began installing 0.9.0 the moment it published")? Is the banner over-claiming?
 (d) The X7 row: "Not addressed, and the advice stands" — check the test file and history yourself (`src/tests/regression/test_x7_sites_outside_main_gate.py` in juniper-canopy, canopy#649, canopy#585). Is "the advice stands" a defensible recommendation?
 (e) The census-based claim that only three documents were stale (juniper-ml REFERENCE.md, predict_merge.py, canopy AGENTS.md) — is that a universal claim the instrument cannot support?
-(f) "Not owner-gated" for the author's own PRs, and "startable and belongs to the tip" for item 1 — defensible? Is anything the banner calls owner-gated actually doable without the owner, or vice versa?
+(f) "Not Overtoad-gated" for the author's own PRs, and "startable and belongs to the tip" for item 1 — defensible? Is anything the banner calls Overtoad-gated actually doable without the Overtoad, or vice versa?
 (g) deploy#227: is pinning data 0.15.0 safe for the deployed stack (juniper-cascor 0.11.0, juniper-canopy 0.8.1, demo-seed) given data 0.15.0's CHANGELOG (fetch `gh api repos/pcalnon/juniper-data/contents/CHANGELOG.md`)? Attack its claims "the one changed combination is unreachable on the shipped stack" and "demo-seed requests spiral only, so neither change reaches it". Is adding a retroactive CHANGELOG entry for deploy#226 and editing the canopy entry's last sentence appropriate?
 (h) Self-serving framing: does the banner present the author's own work more favourably than the evidence supports anywhere?
 
@@ -58,7 +58,7 @@ Verdict: **PARTIALLY REFUTED**. Severity: **MAJOR**.
   - Add rows for item 1 (CLOSED: canopy 0.8.0, package public) and 6f (BLOCKED upstream; tracked only in recurrence `pyproject.toml`).
   - Re-disposition X7 as OPEN and unowned.
   - Mark D-1 as "closed as re-scoped (refs resolve; nothing pulls)".
-  - Change the headline to "…closed, waived, owner-gated or owned — except X7 and 6f".
+  - Change the headline to "…closed, waived, Overtoad-gated or owned — except X7 and 6f".
 
 **2. (b) "The two client repos' lockfile-signing conversions cannot execute … both are correct and dormant"**
 Verdict: **PARTIALLY REFUTED**. Severity: **MINOR**.
@@ -101,7 +101,7 @@ Verdict: **PARTIALLY REFUTED**. Severity: **MINOR**.
   - 0.586 s (memory, `main` at `95284f37`) and 0.743 s (this document), against `BLOCK_SECONDS = 0.4`.
   - No stall threshold below the block clears them without also passing a genuinely blocked loop.
   - The fix is structural: raise `BLOCK_SECONDS` and the stall bound together, plus a #649-style guard that keeps them from crossing.
-- **Correction:** "OPEN, unowned, not owner-gated, startable. The fix is structural, not a threshold bump." List it under startable work.
+- **Correction:** "OPEN, unowned, not Overtoad-gated, startable. The fix is structural, not a threshold bump." List it under startable work.
 
 **5. (e) "The census found them" (the banner's "two more places"; canopy#655's "one of two ecosystem-wide current-state documents")**
 Verdict: **REFUTED**. Severity: **MAJOR**.
@@ -125,20 +125,20 @@ Verdict: **REFUTED**. Severity: **MAJOR**.
   - Add `.lock` to the suffixes.
   - Either fix or list the lines above, and scope both claims to "forms the census's regex can see".
 
-**6. (f) "Not owner-gated" for the author's own PRs; item 1 "startable and belongs to the tip"**
+**6. (f) "Not Overtoad-gated" for the author's own PRs; item 1 "startable and belongs to the tip"**
 Verdict: **PARTIALLY REFUTED**. Severity: **MINOR**.
-- Opening the PRs was not owner-gated; merging them is. The headless-merge policy says "headless merges proceed only on his explicit approval", and the document itself says "obtain your own before merging anything". The census's exit 0 depends on those merges.
+- Opening the PRs was not Overtoad-gated; merging them is. The headless-merge policy says "headless merges proceed only on his explicit approval", and the document itself says "obtain your own before merging anything". The census's exit 0 depends on those merges.
 - Wave 4 is narrowed to "register the token":
   - Procedure §7 exists "so the registration is not mistaken for completion".
   - Where Wave 4 names the environment is still undecided (§10).
-  - The empty-environment-name behaviour is "Unverified … Test it in a throwaway repository first". That test is startable now without the owner.
+  - The empty-environment-name behaviour is "Unverified … Test it in a throwaway repository first". That test is startable now without the Overtoad.
   - The tip also says "Wave 4 is not only two secrets" (authenticated Pi pulls, plan §6 OQ-1). The banner omits all of this.
 - Item 1: the re-scope is the banner's own, not the tip's.
   - The tip's text is stale. `cascor/publish-image.yml:210-238` now runs `check_image_no_secrets.py` and an import on the publish path.
   - The name also collides with this document's own item 1.
 - The worker v0.6.1 release proposal (worker#194, opened 09-22T19:44:34Z) is not mentioned among "the Releases that would deliver two fixes".
 - **Correction:**
-  - Use three buckets: owner-gated, startable, and authored-but-awaiting-merge-approval.
+  - Use three buckets: Overtoad-gated, startable, and authored-but-awaiting-merge-approval.
   - Add the Wave 4 workflow change and the throwaway-repo test.
   - Name worker#194.
   - Call it "the tip's item 1, re-scoped here".
@@ -171,10 +171,10 @@ Verdict: **PARTIALLY REFUTED**. Severity: **MAJOR** (every error leans toward cl
   - The census under-counts (finding 5).
 - "Not by reasoning" oversells a single job's log as proof of a universal claim (finding 3).
 - "Both conversions are correct" certifies the arc's own unexecuted work (finding 2).
-- The banner retracts the document's verification command but not its headline claims, even though its own Correction 1 shows two live no-owner stale pins on `main` when it was written:
-  - "Nothing is left that does not need the owner".
+- The banner retracts the document's verification command but not its headline claims, even though its own Correction 1 shows two live no-Overtoad stale pins on `main` when it was written:
+  - "Nothing is left that does not need the Overtoad".
   - "ran to completion across all nine repos".
-  - The title, "every-no-owner-item-is-closed".
+  - The title, "every-no-Overtoad-item-is-closed".
   - Compare the 09-17 banner, which says outright that its title was WRONG.
 - **Correction:** write "fixed in open PRs", and add a Correction 4 retracting the title and goal claims.
 

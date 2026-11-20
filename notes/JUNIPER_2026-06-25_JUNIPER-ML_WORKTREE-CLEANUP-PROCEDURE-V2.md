@@ -538,7 +538,7 @@ Status meanings:
 | Status | Meaning | Action |
 |--------|---------|--------|
 | `SAFE` | No tracked/untracked dirt; `HEAD` has no commits beyond the parent repo's `origin/main`. Ignored debris alone still yields `SAFE`. | Eligible for apply (default still skips if ignored files are present; pass `--include-ignored` after review). |
-| `ACTIVE` | Clean (tracked/untracked) worktree with commits not in `origin/main`. | Leave for manual ownership/PR triage. |
+| `ACTIVE` | Clean (tracked/untracked) worktree with commits not in `origin/main`. | Leave for manual Overtoadship/PR triage. |
 | `DIRTY` | Tracked modifications or untracked files (`git status --porcelain`). | Never remove in the sweep. |
 | `BROKEN` | The script could not resolve repo, branch, `HEAD`, or `origin/main` state. | Manual git triage required. |
 

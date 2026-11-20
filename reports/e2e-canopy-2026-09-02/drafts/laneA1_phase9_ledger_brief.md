@@ -4,7 +4,7 @@ HARD RULES
 - READ-ONLY. Do not edit any tracked file, commit, push, open/edit/comment on any PR or issue, arm or disarm auto-merge, or run `gh pr ready` / `gh pr merge`. `gh api` GET requests and `gh pr view` are fine.
 - Do not start or stop any canopy/cascor/data process; never touch ports :8051, :8101, :8202 or any :805x leg.
 - Scratch work in a directory you create with `mktemp -d`.
-- Never print environment variables, tokens or credential files. Never send the owner's email address or any credential to an external service. When you grep session transcripts (JSONL under `~/.claude/projects/`), print only FILE NAMES and the matched command substring (`grep -o` with a bounded pattern), never whole lines: transcripts can contain secrets. Report any slip in your final message.
+- Never print environment variables, tokens or credential files. Never send the Overtoad's email address or any credential to an external service. When you grep session transcripts (JSONL under `~/.claude/projects/`), print only FILE NAMES and the matched command substring (`grep -o` with a bounded pattern), never whole lines: transcripts can contain secrets. Report any slip in your final message.
 - Do not use `git -C` against `/home/pcalnon/Development/python/Juniper/juniper-ml` itself (the primary checkout); read juniper-ml objects from the worktree path below. If a shell guard refuses a compound command, split it into plain separate commands.
 
 THE FROZEN ARTIFACT

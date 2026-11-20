@@ -27,7 +27,7 @@ planning any UI work.
   only the leg whose conda env name appears in its cmdline (`JuniperCascor1`) matches the reaper's
   candidate gate; data escapes via its venv path, canopy escapes because its argv is a bare
   `python main.py`.
-- **Remedy shipped** (owner-selected): `util/ad-hoc/e2e_cascor_leg_supervise.bash` runs cascor as a direct
+- **Remedy shipped** (Overtoad-selected): `util/ad-hoc/e2e_cascor_leg_supervise.bash` runs cascor as a direct
   child of a resident supervisor. Launch recipe is byte-identical to `cascor_up`; only the parent changes.
   **Verified with the reaper itself** — `reap_pytest_orphans.bash --dry-run` now reports
   `KEEP pid=… (live parent)` for the leg while still flagging the stale campaign orphans.

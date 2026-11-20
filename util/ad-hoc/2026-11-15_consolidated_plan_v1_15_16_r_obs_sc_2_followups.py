@@ -6,14 +6,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc — one-off (a record revision of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: ml#2555 (the [tools] floors), cascor#755 and canopy#816 (telemetry), cascor#757, canopy#817 and data#537
          (Retry-After); ml#2558, ml#2561 and run 43408809021 (juniper-ml 0.11.5); ml#2576 (APD-ECO-016 and its guard);
          cascor#758 and canopy#818, runs 43663237489 and 43664277663 (the two cuts), archives ml#2570 and ml#2572;
          ml#2568 (QUICK_START, the cut tools, the 0.4.3 design's start prompt);
          reports/2026-11-15_r-obs-sc-2-follow-ups-reviews/ (the reviews, this draft's two among them);
          util/ad-hoc/2026-11-15_r_obs_sc_2_followups_record_reprobe.py (the facts, re-probed) and
-         util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py (the rulings, from the transcripts);
+         util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py (the rulings, from the transcripts);
          util/ad-hoc/2026-11-09_consolidated_plan_v1_15_15_r_obs_sc_2_shipped.py (the pattern)
 
 Why
@@ -21,17 +21,17 @@ Why
 v1.15.15 recorded R-OBS-SC-2 and left its follow-ups at §6's mid-wave sitting. Six sessions then carried them out
 (a4e1e914, 6e3bdef0, 218ff61e, 7d425759, 1b4fec84 and b9dfa450, 2026-11-09 to 2026-11-15):
 
-- the owner ruled four items on 2026-11-09 (round 1), seven on 2026-11-13 (round 2 and its re-ask), three on
+- the Overtoad ruled four items on 2026-11-09 (round 1), seven on 2026-11-13 (round 2 and its re-ask), three on
   2026-11-14 and three on 2026-11-15, each dated from its transcript, and on 2026-11-15 directed that PyPI receive
   the files TestPyPI took;
 - the telemetry opt-outs and the forks' Retry-After fixes merged (cascor#755, canopy#816, cascor#757, canopy#817,
   data#537), juniper-ml 0.11.5 floored [tools] on R-OBS-SC-2 and was published, and APD-ECO-016 was filed FIXED with
   an ENFORCED guard (ml#2576);
-- juniper-cascor 0.14.0 and juniper-canopy 0.10.0 were cut and, once the owner approved both pypi gates, published
+- juniper-cascor 0.14.0 and juniper-canopy 0.10.0 were cut and, once the Overtoad approved both pypi gates, published
   (2026-11-15); juniper-deploy#278 pinned both images, and the parent Juniper/AGENTS.md was edited for them.
 
 This revision records that, the findings the arc left open (each with its source and next actor), what stays with
-the owner, and makes current every passage v1.15.15 left that this record makes stale. Two independent reviews of
+the Overtoad, and makes current every passage v1.15.15 left that this record makes stale. Two independent reviews of
 the first draft (a fact-check and an adversarial read, session b9dfa450) are applied, each finding re-checked at its
 source. The v2 draft is not edited: it says v1 takes the record, and its stale lines are listed here.
 
@@ -72,7 +72,7 @@ _FLOOD4_HO = "`…flood4-record-merged-fixes-corrected-landing-next.md`"
 _GATE_READ = "06:04Z"
 _PARENT_TOOL = "`util/ad-hoc/2026-11-15_parent_agents_released_paragraph_cascor_0_14_0_canopy_0_10_0.py`"
 _BACKUP2 = "`juniper-ml/tmp/2026-11-15-parent-agents-md-backup/`"
-#: The owner's words of 2026-11-15 05:14:10Z (session b9dfa450), quoted verbatim: the second paragraph of that message.
+#: The Overtoad's words of 2026-11-15 05:14:10Z (session b9dfa450), quoted verbatim: the second paragraph of that message.
 _DIRECTIVE = (
     "\"this needs to be fixed. deploy to pypi should send the same artifact that was already sent to testpypi. "
     "an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks again.\""
@@ -87,18 +87,18 @@ _DATE_NEW = (
 
 _STATUS_ANCHOR = "  - Planning only: this plan changes no code,"
 _STATUS_NEW = (
-    "  - v1.15.16 (2026-11-15) records R-OBS-SC-2's follow-ups (" + _FNOTE + "). The owner ruled on 2026-11-09, 2026-11-13, 2026-11-14 and 2026-11-15; "
+    "  - v1.15.16 (2026-11-15) records R-OBS-SC-2's follow-ups (" + _FNOTE + "). The Overtoad ruled on 2026-11-09, 2026-11-13, 2026-11-14 and 2026-11-15; "
     "rulings 6 and 7 of 2026-11-13 change the trio's restart gate and extend O13 to the juniper-ml primary. "
     "juniper-ml 0.11.5 floors `[tools]` on R-OBS-SC-2 (R-ML-TOOLS-2, published 2026-11-14). Like v1.15.0, no round checks it.\n"
     "    - The three services that keep their own copies of service-core's security code (data, cascor and canopy, \"the forks\") gained FastAPI's telemetry opt-out and a `Retry-After` that rounds up "
     "(cascor#755, canopy#816, cascor#757, canopy#817, data#537). `APD-ECO-016`, the register's row for the old truncation, is filed FIXED, with a fork-drift guard ENFORCED (ml#2576).\n"
-    "    - Those fixes are on `main`, in cascor 0.14.0 and canopy 0.10.0 (both cut on 2026-11-15 and published the same day, at 05:24Z and 05:17Z, when the owner approved their `pypi` gates), "
-    "and in no data release before 0.18.0. juniper-deploy pins both images since deploy#278 (05:48:57Z); restarting the juniper-deploy stack is the owner's.\n"
-    "    - On 2026-11-15 the owner directed that PyPI receive the very files TestPyPI took, checked by hash, and ruled that the fix go to juniper-cascor first and then to every other publish workflow "
+    "    - Those fixes are on `main`, in cascor 0.14.0 and canopy 0.10.0 (both cut on 2026-11-15 and published the same day, at 05:24Z and 05:17Z, when the Overtoad approved their `pypi` gates), "
+    "and in no data release before 0.18.0. juniper-deploy pins both images since deploy#278 (05:48:57Z); restarting the juniper-deploy stack is the Overtoad's.\n"
+    "    - On 2026-11-15 the Overtoad directed that PyPI receive the very files TestPyPI took, checked by hash, and ruled that the fix go to juniper-cascor first and then to every other publish workflow "
     "(ruling 2 of 2026-11-15); the fix is a session's work in progress. The parent `Juniper/AGENTS.md` was edited for the two releases (ruling 3 of 2026-11-15).\n"
-    "    - v1.15.16 also records the findings the arc left open and what stays with the owner (Overview; §2; XC-SENTRY; XC-P12; §4; §5; §6; §7; §8; §9; §12; Appendix A).\n"
+    "    - v1.15.16 also records the findings the arc left open and what stays with the Overtoad (Overview; §2; XC-SENTRY; XC-P12; §4; §5; §6; §7; §8; §9; §12; Appendix A).\n"
     "    - A draft v2, `notes/JUNIPER_2026-11-12_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN-V2.md` (ml#2550, not validated), proposes to replace §2, §4 and §6; "
-    "this plan stays the record until the owner rules (v2's §6.4 item 20). The v2 lines this record makes stale are listed in " + _FNOTE + ".\n"
+    "this plan stays the record until the Overtoad rules (v2's §6.4 item 20). The v2 lines this record makes stale are listed in " + _FNOTE + ".\n"
     "  - Planning only: this plan changes no code,"
 )
 
@@ -106,7 +106,7 @@ _STATUS_NEW = (
 _DOCS_ANCHOR = "| `…ci-tools-0-9-1-at-pypi-gate.md` | `HO/HANDOFF_2026-10-10_flood3-followups-released-ci-tools-0-9-1-at-pypi-gate.md` (the flood-3 follow-ups' handoff) |\n"
 _DOCS_NEW = (
     _DOCS_ANCHOR
-    + "| `…CURSOR-FLOOD-4-DISPOSITION.md` | `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` (the owner's record of the fourth Cursor flood, \"flood-4\"; its §8 lists rulings 1–14) |\n"
+    + "| `…CURSOR-FLOOD-4-DISPOSITION.md` | `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` (the Overtoad's record of the fourth Cursor flood, \"flood-4\"; its §8 lists rulings 1–14) |\n"
     "| `…flood4-record-merged-fixes-corrected-landing-next.md` | `HO/HANDOFF_2026-11-09_flood4-record-merged-fixes-corrected-landing-next.md` (flood-4's handoff; its item 3 lists the four fixes of flood-4's ruling 17) |\n"
     "| `…four-ruled-four-open.md` | `HO/HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-four-ruled-four-open.md` (R-OBS-SC-2's follow-ups: round 1's rulings and round 2's questions, verbatim) |\n"
     "| `…five-prs-validated-opening-next.md` | `HO/HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-five-prs-validated-opening-next.md` (the five PRs of 2026-11-13) |\n"
@@ -117,7 +117,7 @@ _DOCS_NEW = (
 # --- Overview -------------------------------------------------------------------------------------------------------
 _OV_CUT_OLD = "and no consumer has cut a release from the new locks."
 #: Overview 2's exposure line sits at 407 characters, so the releases and the pin it names fit in 105 more.
-_OV_CUT_NEW = "and only cascor and canopy have one (0.14.0 and 0.10.0, 2026-11-15), pinned by deploy#278; its stack's restart is the owner's (v1.15.16)."
+_OV_CUT_NEW = "and only cascor and canopy have one (0.14.0 and 0.10.0, 2026-11-15), pinned by deploy#278; its stack's restart is the Overtoad's (v1.15.16)."
 
 _OV_TOOLS_OLD = "since 2026-11-09 (v1.15.15); the data fix-forward is still owed"
 _OV_TOOLS_NEW = "since 2026-11-09 (v1.15.15), and juniper-ml 0.11.5's `[tools]` floors both since 2026-11-14 (v1.15.16); the data fix-forward is still owed"
@@ -146,8 +146,8 @@ _P12_OLD = "juniper-ml 0.11.0–0.11.4 carry the floors"
 _P12_NEW = "juniper-ml 0.11.0–0.11.5 carry the floors"
 
 # --- XC-SENTRY -------------------------------------------------------------------------------------------------------
-_PASS_OLD = "the session's recorded test pass, then the owner's restart (§4 Wave 1, Security step 5;"
-_PASS_NEW = "the session's recorded pass (since ruling 6 of 2026-11-13, the second lock round's per-lock probe, re-run per environment), then the owner's restart on P3-05 with blank DSNs (§4 Wave 1, Security step 5;"
+_PASS_OLD = "the session's recorded test pass, then the Overtoad's restart (§4 Wave 1, Security step 5;"
+_PASS_NEW = "the session's recorded pass (since ruling 6 of 2026-11-13, the second lock round's per-lock probe, re-run per environment), then the Overtoad's restart on P3-05 with blank DSNs (§4 Wave 1, Security step 5;"
 
 _ENVS_OLD = "while `JuniperCascor1` imports 0.4.2's and 0.7.2's code from the juniper-ml primary (§4 Wave 1, Security step 5).\n"
 _ENVS_NEW = (
@@ -155,13 +155,13 @@ _ENVS_NEW = (
     "On 2026-11-15 that is `eeb5c694` on `main`: observability 0.4.2's code, and service-core 0.7.2's plus ml#2531, #2534, #2547 and #2557, bound for 0.8.0, while pip reports 0.4.1 and 0.7.1 (v1.15.16).\n"
 )
 
-_PROBE_OLD = "- Whether the per-lock probe may stand in for S0.11's relay run at the restart is the owner's (§6, mid-wave sitting).\n"
+_PROBE_OLD = "- Whether the per-lock probe may stand in for S0.11's relay run at the restart is the Overtoad's (§6, mid-wave sitting).\n"
 _PROBE_NEW = (
-    "- Whether the per-lock probe may stand in for S0.11's relay run at the restart was the owner's: **ruled 2026-11-13** (\"Probe per environment\", ruling 6 of 2026-11-13). "
-    "After the owner's upgrade a session re-runs the probe in each environment and records it, and the restart proceeds on that record, on P3-05 and with blank DSNs (v1.15.16).\n"
+    "- Whether the per-lock probe may stand in for S0.11's relay run at the restart was the Overtoad's: **ruled 2026-11-13** (\"Probe per environment\", ruling 6 of 2026-11-13). "
+    "After the Overtoad's upgrade a session re-runs the probe in each environment and records it, and the restart proceeds on that record, on P3-05 and with blank DSNs (v1.15.16).\n"
     "  - That settles (b) for the trio: blank DSNs at its restart. (a), and (b) for the other services, stay open.\n"
     "- R-OBS-SC-3's design goes to its own thread (ruling 4 of 2026-11-13). Its start prompt, " + _PROMPT + ", landed with ml#2568. "
-    "No design is on `main` yet, and the owner launches the session that writes it (v1.15.16).\n"
+    "No design is on `main` yet, and the Overtoad launches the session that writes it (v1.15.16).\n"
 )
 
 _SENTRY_PROBED_OLD = "Whether the running services actually send to Sentry was not probed.\n"
@@ -179,9 +179,9 @@ _CANOPY_620_NEW = "with a daily juniper-data schema-drift check; neither is in a
 _CANOPY_630_OLD = "Canopy `main` still reads 0.9.0, so no release carries it yet.\n"
 _CANOPY_630_NEW = "Canopy `main` still reads 0.9.0, so no release carries it yet (v1.15.16: canopy 0.10.0 does, published 2026-11-15).\n"
 
-_O13_OLD = "who may pull the canopy primary stays open under O13 (the owner's answer of 09:40:25Z to session `0b8fa86a`'s question).\n"
+_O13_OLD = "who may pull the canopy primary stays open under O13 (the Overtoad's answer of 09:40:25Z to session `0b8fa86a`'s question).\n"
 _O13_NEW = (
-    "who may pull the canopy primary stays open under O13 (the owner's answer of 09:40:25Z to session `0b8fa86a`'s question). "
+    "who may pull the canopy primary stays open under O13 (the Overtoad's answer of 09:40:25Z to session `0b8fa86a`'s question). "
     "**Extended 2026-11-13** (ruling 7 of 2026-11-13; v1.15.16): guarded pulls of the juniper-ml primary too, only when it is on `main` and clean, and never a branch switch (below, R-OBS-SC-2's follow-ups).\n"
 )
 
@@ -200,10 +200,10 @@ _XCP12_NEW = (
     "  - Sessions never switch its branch. For this primary only, it lifts the pull half of the handoffs' \"never pull or switch a primary checkout\"; "
     "the branch half stands, and who may pull the canopy primary stays open.\n"
     "  - Its reflog (`juniper-ml/.git/logs/HEAD`) shows six fast-forward pulls of `main` since the ruling, the last `4a786c81` → `eeb5c694` at 2026-11-15 02:04:55Z. "
-    "None appears in a session transcript written since 2026-11-13 10:00Z, so none is a session pull recorded under ruling 7 of 2026-11-13; the owner's own moves stay free. "
+    "None appears in a session transcript written since 2026-11-13 10:00Z, so none is a session pull recorded under ruling 7 of 2026-11-13; the Overtoad's own moves stay free. "
     "`JuniperCascor1` imports that `eeb5c694` (XC-SENTRY).\n"
     "- **The parent `Juniper/AGENTS.md`** (unversioned) names juniper-ml 0.11.5 as the latest on PyPI, with observability 0.4.2 and service-core 0.7.2, since 2026-11-14 23:54:29Z: "
-    "`util/ad-hoc/2026-11-14_parent_agents_released_paragraph_0_11_5.py` (ml#2568) made the edit on the owner's \"Edit it (Recommended)\" (22:59:11Z, session `1b4fec84`), sha256 `90df2783…` → `f3f69b34…`.\n"
+    "`util/ad-hoc/2026-11-14_parent_agents_released_paragraph_0_11_5.py` (ml#2568) made the edit on the Overtoad's \"Edit it (Recommended)\" (22:59:11Z, session `1b4fec84`), sha256 `90df2783…` → `f3f69b34…`.\n"
     "  - `util/ad-hoc/2026-11-07_parent_agents_released_paragraph_reprobe.py` ran first (exit 0, " + _HO_1115 + "). "
     "The prior copy is " + _BACKUP + " (sha256 `90df2783…`), copied there on 2026-11-15 from worktree `buzzing-growing-whale`'s `tmp/s2/`.\n"
     "  - **Edited again 2026-11-15** for cascor 0.14.0 and canopy 0.10.0 (ruling 3 of 2026-11-15, \"Edit it once both publish (Recommended)\"; v1.15.16): " + _PARENT_TOOL + " wrote it at 05:49:09Z (its mtime), "
@@ -255,36 +255,36 @@ _STEP5_O13_NEW = "O13 did not name the juniper-ml primary. **Ruled 2026-11-13** 
 
 _STEP5_OLD = (
     "   - The restart waits for a recorded pass of S0.11's relay tests, which are unwritten: canopy's needs no A1 ruling, while the data-client and cascor parts wait on A1's open limbs. "
-    "A pass for cascor and canopy may also need those fixes or 0.4.3, since 0.4.2 does not scrub exception values. Whether the per-lock probe may stand in is the owner's (§6).\n"
+    "A pass for cascor and canopy may also need those fixes or 0.4.3, since 0.4.2 does not scrub exception values. Whether the per-lock probe may stand in is the Overtoad's (§6).\n"
     "\n**F-S10 delivery**"
 )
 _STEP5_NEW = (
     "   - Until ruling 6 of 2026-11-13, the restart waited for a recorded pass of S0.11's relay tests, which are unwritten: canopy's needs no A1 ruling, while the data-client and cascor parts wait on A1's open limbs. "
     "A pass for cascor and canopy might also have needed those fixes or 0.4.3, since 0.4.2 does not scrub exception values. It now waits for the per-lock probe's recorded pass in each environment (next bullet).\n"
-    "   - **Ruled 2026-11-13** (ruling 6 of 2026-11-13, \"Probe per environment\", 02:40:52Z; v1.15.16): after the owner upgrades the three environments, a session re-runs the per-lock probe in each and records the result, "
+    "   - **Ruled 2026-11-13** (ruling 6 of 2026-11-13, \"Probe per environment\", 02:40:52Z; v1.15.16): after the Overtoad upgrades the three environments, a session re-runs the per-lock probe in each and records the result, "
     "and the restart proceeds on that record, on P3-05, and with the six Sentry DSNs blank. F-S10's relays stay untested until S0.11's tests exist.\n"
     "     - The ruling names only what stands in for the relay tests, so the rest of this step holds: record the commit the editable installs run, not pip's version. "
     "On 2026-11-15 the trio was still stopped, `JuniperData` and `JuniperCanopy1` still held observability 0.4.0 and service-core 0.5.0 (read in place), and `JuniperCascor1` imported the primary at `eeb5c694` (XC-SENTRY).\n"
     "6. **The consumer releases** (ruling 5 of 2026-11-13, \"cascor + canopy now (Recommended)\", 02:28:23Z; v1.15.16). This is the image path: it follows step 4 and runs beside step 5, the trio's. "
     "juniper-cascor 0.14.0 and juniper-canopy 0.10.0 were cut from `main` on 2026-11-15, each raising its floors in its release PR (round 1's ruling 1). "
-    "The owner approved both `pypi` gates, and PyPI serves canopy's wheel since 05:17Z and cascor's since 05:24Z. 0.14.0 is not R-CASCOR, whose gates stand.\n"
+    "The Overtoad approved both `pypi` gates, and PyPI serves canopy's wheel since 05:17Z and cascor's since 05:24Z. 0.14.0 is not R-CASCOR, whose gates stand.\n"
     "   - **Pinned 2026-11-15** (v1.15.16): cascor's gate was approved on ruling 1 of 2026-11-15, whose file-by-file check passed at 05:41:45Z. juniper-deploy#278 then moved cascor to 0.14.0 and canopy to 0.10.0, "
-    "and `util/safe_merge.py` squash-merged it at 05:48:57Z (`db7b7cb4`) under the owner's merge approval, once its required checks were green (" + _FNOTE + ").\n"
-    "     - The owner restarts the juniper-deploy stack (ruling 6 of 2026-11-13 governs only the trio's restart).\n"
+    "and `util/safe_merge.py` squash-merged it at 05:48:57Z (`db7b7cb4`) under the Overtoad's merge approval, once its required checks were green (" + _FNOTE + ").\n"
+    "     - The Overtoad restarts the juniper-deploy stack (ruling 6 of 2026-11-13 governs only the trio's restart).\n"
     "     - data waits for 0.18.0 (R-DATA-2), and recurrence for its next release. #278 left `docker-compose.yml:598` at `juniper-recurrence:0.8.0` while 0.8.1 is published (PyPI since 2026-11-06, and GHCR), "
-    "so juniper-deploy's `scripts/verify_published_images.py --fail-on-stale` still exits 1 on it. Whether recurrence's pin moves is the owner's.\n"
+    "so juniper-deploy's `scripts/verify_published_images.py --fail-on-stale` still exits 1 on it. Whether recurrence's pin moves is the Overtoad's.\n"
     "\n**F-S10 delivery**"
 )
 
 # --- §4 Wave 1: Cascor and Canopy --------------------------------------------------------------------------------------
 _CASCOR_ANCHOR = (
     "- cascor 0.12.0 and 0.13.0 shipped on locks that pin observability 0.4.1 and service-core 0.7.1, so a cascor image carries R-OBS-SC-2 only from a later cascor release; "
-    "whether a fix-forward is owed stays the owner's (v1.15.15).\n"
+    "whether a fix-forward is owed stays the Overtoad's (v1.15.15).\n"
 )
 _CASCOR_NEW = (
     _CASCOR_ANCHOR
     + "- That later release is cascor 0.14.0 (v1.15.16): cascor#758 (2026-11-15 01:14:13Z, `bf6f0108`) raised the floors, and Release `v0.14.0` (01:28:19Z) was cut on ruling 5 of 2026-11-13, again ahead of P3-05 and P3-08. "
-    "Its image is on GHCR, and its wheel is on PyPI since 05:24Z, the owner having approved the `pypi` gate on ruling 1 of 2026-11-15 (run 43663237489). "
+    "Its image is on GHCR, and its wheel is on PyPI since 05:24Z, the Overtoad having approved the `pypi` gate on ruling 1 of 2026-11-15 (run 43663237489). "
     "Its notes name no F-S10 fix and `src/api/secrets.py` is unchanged from `v0.13.0`, so the fix-forward question stands, now for 0.12.0 to 0.14.0.\n"
     "  - juniper-deploy pins it since deploy#278 (2026-11-15 05:48:57Z).\n"
 )
@@ -293,15 +293,15 @@ _CANOPY_OLD = "the second cut P4 D-4 contemplates. D-4 is not ruled (v1.15.15).\
 _CANOPY_NEW = (
     "the second cut P4 D-4 contemplates. D-4 was not ruled then (v1.15.15).\n"
     "- That second cut is canopy 0.10.0 (v1.15.16), and ruling 5 of 2026-11-13 answers D-4. canopy#818 (2026-11-15 01:19:38Z, `57d90dec`) raised the floors, and Release `v0.10.0` was cut at 01:41:30Z. "
-    "Its image is on GHCR, and its wheel is on PyPI since 05:17Z, the owner having approved the `pypi` gate (run 43664277663).\n"
+    "Its image is on GHCR, and its wheel is on PyPI since 05:17Z, the Overtoad having approved the `pypi` gate (run 43664277663).\n"
     "  - Like 0.9.0, it was cut without P3-06's validation, the O3 wording fix and A4's asks (S0.5 open): its `[0.10.0]` section mentions none of #685, O3 or APD-ECO-009..012.\n"
     "  - juniper-deploy pins it since deploy#278 (2026-11-15 05:48:57Z).\n"
 )
 
 # --- §5: rows ----------------------------------------------------------------------------------------------------------
-_SC3_OLD = "| Designed and validated on its own (the owner's ruling); then its own lock round | XC-SENTRY's end; the trio's restart, if S0.11's pass needs it |"
+_SC3_OLD = "| Designed and validated on its own (the Overtoad's ruling); then its own lock round | XC-SENTRY's end; the trio's restart, if S0.11's pass needs it |"
 _SC3_NEW = (
-    "| Designed and validated on its own (the owner's ruling), in a session the owner launches (ruling 4 of 2026-11-13; prompt in ml#2568); then its own lock round "
+    "| Designed and validated on its own (the Overtoad's ruling), in a session the Overtoad launches (ruling 4 of 2026-11-13; prompt in ml#2568); then its own lock round "
     "| XC-SENTRY's end (the trio's restart waits no longer: ruling 6 of 2026-11-13) |"
 )
 
@@ -314,9 +314,9 @@ _RCASCOR_ROW2_NEW = "Bypassed in part by 0.12.0 (cascor#712), 0.13.0 and 0.14.0 
 _ROW_ANCHOR = "| `pip install -U juniper-ml[recurrence]` moves an environment off recurrence 0.8.0, and so off model-core 0.2.0 |\n"
 _ROW_NEW = (
     _ROW_ANCHOR
-    + "| **R-ML-TOOLS-2** (shipped as juniper-ml 0.11.5, 2026-11-14, cut on the owner's rulings of 2026-11-09 and 2026-11-13; note below) "
+    + "| **R-ML-TOOLS-2** (shipped as juniper-ml 0.11.5, 2026-11-14, cut on the Overtoad's rulings of 2026-11-09 and 2026-11-13; note below) "
     "| `[tools]`'s `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (ml#2555), the floors on R-OBS-SC-2 "
-    "| R-OBS-SC-2 on PyPI (met 2026-11-09); proposal ml#2558, archive ml#2561; the owner approved the gate (run 43408809021) "
+    "| R-OBS-SC-2 on PyPI (met 2026-11-09); proposal ml#2558, archive ml#2561; the Overtoad approved the gate (run 43408809021) "
     "| `pip install -U juniper-ml[tools]` moves an environment off observability 0.4.1 and service-core 0.7.1 |\n"
 )
 
@@ -340,8 +340,8 @@ _IMAGE_NEW = (
     "The fix reaches a running image only through that repository's next release, juniper-deploy's pin and a restart (§9):\n"
 )
 
-_CASCOR_SUB_OLD = "so R-OBS-SC-2 needs a later cascor release; whether a fix-forward is owed is the owner's (§6, mid-wave sitting);\n"
-_CASCOR_SUB_NEW = "so R-OBS-SC-2 needs a later cascor release; whether a fix-forward is owed is the owner's (§6, mid-wave sitting). That release is 0.14.0, cut and published 2026-11-15 on ruling 5 of 2026-11-13 (v1.15.16);\n"
+_CASCOR_SUB_OLD = "so R-OBS-SC-2 needs a later cascor release; whether a fix-forward is owed is the Overtoad's (§6, mid-wave sitting);\n"
+_CASCOR_SUB_NEW = "so R-OBS-SC-2 needs a later cascor release; whether a fix-forward is owed is the Overtoad's (§6, mid-wave sitting). That release is 0.14.0, cut and published 2026-11-15 on ruling 5 of 2026-11-13 (v1.15.16);\n"
 
 _CANOPY_SUB_OLD = "the second cut P4 D-4 contemplates (§4 Wave 1, Canopy);\n"
 _CANOPY_SUB_NEW = "the second cut P4 D-4 contemplates (§4 Wave 1, Canopy). That cut is 0.10.0 (2026-11-15; v1.15.16);\n"
@@ -353,7 +353,7 @@ _TRIO_SUB_NEW = (
 )
 
 _FOLLOW_OLD = "- **Follow-ups**, asked at §6's mid-wave sitting (none acted on):\n"
-_FOLLOW_NEW = "- **Follow-ups**, asked at §6's mid-wave sitting (none acted on by 2026-11-09; the owner ruled the first three on 2026-11-09, and they were carried out by 2026-11-15: the next note):\n"
+_FOLLOW_NEW = "- **Follow-ups**, asked at §6's mid-wave sitting (none acted on by 2026-11-09; the Overtoad ruled the first three on 2026-11-09, and they were carried out by 2026-11-15: the next note):\n"
 
 _TOOLS_OLD = "  - juniper-ml's `[tools]` floors `juniper-observability>=0.4.1`; raising it to `>=0.4.2` needs a meta-package release (0.11.5).\n"
 _TOOLS_NEW = (
@@ -386,22 +386,22 @@ _TEL_NEW = (
 # --- §5: the new note, before R-DC-PATCH's ---------------------------------------------------------------------------------
 _N_HEAD = (
     "**R-OBS-SC-2's follow-ups, 2026-11-09 to 2026-11-15** (v1.15.16; sessions `a4e1e914`, `6e3bdef0`, `218ff61e`, `7d425759`, `1b4fec84` and `b9dfa450`). "
-    "Option labels are quoted verbatim, \"(Recommended)\" markers included, and each answer is dated from its transcript (`util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py`).\n"
+    "Option labels are quoted verbatim, \"(Recommended)\" markers included, and each answer is dated from its transcript (`util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py`).\n"
     "`util/ad-hoc/2026-11-15_r_obs_sc_2_followups_record_reprobe.py` re-checked the facts the Validation record lists (0 FAIL); the memory records and the option texts were read by hand. "
-    "Each Release below was cut by a session on the owner's rulings, where §5's rules have the owner cut.\n\n"
+    "Each Release below was cut by a session on the Overtoad's rulings, where §5's rules have the Overtoad cut.\n\n"
 )
 _N_ROUND1 = (
     "- **Round 1** (session `a4e1e914`, asked 2026-11-09 14:27:13Z, answered 14:48:41Z; " + _HO_RULED + "):\n"
     "  1. Floor PRs, \"In release PRs (Recommended)\": each consumer's next `release/` bump PR raises `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2`, since the lock regen skips `release/` branches. "
     "This answers P3 D-03's third part (P3-17, now done).\n"
-    "  2. 0.11.5, \"Floor PR, then 0.11.5 (Recommended)\": the `[tools]` floor PR, then a patch cut, with the owner's `pypi` gate.\n"
+    "  2. 0.11.5, \"Floor PR, then 0.11.5 (Recommended)\": the `[tools]` floor PR, then a patch cut, with the Overtoad's `pypi` gate.\n"
     "  3. The forks' `RateLimiter`, \"Row + fix all three (Recommended)\": file `APD-ECO-016`, one fix PR per fork, and a fork-drift guard naming the row (a check in `tests/test_service_fork_drift.py` that every copy keeps the fix).\n"
     "  4. Telemetry, \"Port to both now (Recommended)\": data#454's opt-out in cascor and canopy.\n"
     "  - Round 2 asked four questions at 14:49:42Z: Q1, when the 0.4.3 design starts; Q2, which releases carry the new locks; Q3, whether the per-lock probe may stand in for S0.11's relay tests at the trio's restart; "
     "Q4, who may move the juniper-ml primary. They came back on 2026-11-12 at 00:20:11Z with \"The user wants to clarify these questions.\" and no text, and session `218ff61e` re-asked them.\n"
 )
 _N_PRS = (
-    "- **The five PRs of 2026-11-13** (session `6e3bdef0`, under the owner's grant of 2026-11-12 00:39:16Z, \"approval granted for merging and related git operations for this work arc.\"; "
+    "- **The five PRs of 2026-11-13** (session `6e3bdef0`, under the Overtoad's grant of 2026-11-12 00:39:16Z, \"approval granted for merging and related git operations for this work arc.\"; "
     "`…five-prs-validated-opening-next.md`), each one GitHub-signed commit, squash-merged: ml#2555, the `[tools]` floors (00:49:00Z, `26ea0ecb`); "
     "cascor#755 (00:27:18Z, `5834709a`) and canopy#816 (00:34:13Z, `b9417b2f`), the telemetry opt-outs.\n"
     "  - cascor#757 (01:07:08Z, `66b39a5c`) and canopy#817 (01:02:07Z, `55ac2168`), whose `Retry-After` and `X-RateLimit-Reset` round up and are never 0.\n"
@@ -409,29 +409,29 @@ _N_PRS = (
     "the session line that disposes of the fourth Cursor-fleet flood (" + _FLOOD4 + ").\n"
 )
 _N_ROUND2 = (
-    "- **The owner's rulings of 2026-11-13** (session `218ff61e`, numbered as " + _HO_1113 + " numbers them; 4 to 7 answer round 2's Q1 to Q4):\n"
-    "  1. 0.11.5 (01:57:00Z), \"Yes, as patch 0.11.5 (Recommended)\": session `218ff61e` cuts it as a patch, and the owner approves the `pypi` gate.\n"
+    "- **The Overtoad's rulings of 2026-11-13** (session `218ff61e`, numbered as " + _HO_1113 + " numbers them; 4 to 7 answer round 2's Q1 to Q4):\n"
+    "  1. 0.11.5 (01:57:00Z), \"Yes, as patch 0.11.5 (Recommended)\": session `218ff61e` cuts it as a patch, and the Overtoad approves the `pypi` gate.\n"
     "  2. Worktrees (01:57:00Z), \"Remove after checks (Recommended)\": the four merged fork worktrees, each after its checks. Carried out on 2026-11-13; by the ruling, "
     "the never-opened juniper-data worktree and the two juniper-ml session worktrees stay.\n"
     "  3. How to re-ask round 2 (01:57:00Z), \"One at a time, with background\".\n"
-    "  4. Q1, the 0.4.3 design (02:14:33Z), \"Now, in its own thread (Recommended)\": a start prompt for a fresh session, which writes the design to `notes/`, runs its rounds and brings it to the owner.\n"
+    "  4. Q1, the 0.4.3 design (02:14:33Z), \"Now, in its own thread (Recommended)\": a start prompt for a fresh session, which writes the design to `notes/`, runs its rounds and brings it to the Overtoad.\n"
     "  5. Q2, lock cuts (02:28:23Z), \"cascor + canopy now (Recommended)\": a cascor and a canopy release from `main`, each raising its floors in its release PR, then juniper-deploy's pins and its stack's restart. "
     "cascor is cut ahead of P3-05 and P3-08 again; data waits for 0.18.0, and recurrence for its next release. It answers P4 D-4, and D-5 for this cut (§6 A5).\n"
     "  6. Q3, the restart gate (02:40:52Z), \"Probe per environment\": the per-lock probe, re-run in each upgraded environment and recorded, stands in for S0.11's relay tests at the trio's restart (§4 Wave 1, Security step 5).\n"
     "  7. Q4, the juniper-ml primary (asked 02:41:20Z, answered 10:10:51Z), \"Guarded session pulls (Recommended)\": O13 extends to it (XC-P12).\n"
-    "  - `…_owner_answers.py` prints `answered None` for ruling 7 of 2026-11-13 and for session `7d425759`'s dialog: a later copy of each result, an `api-request-blob` entry, has no timestamp and overwrites the first. "
+    "  - `…_Overtoad_answers.py` prints `answered None` for ruling 7 of 2026-11-13 and for session `7d425759`'s dialog: a later copy of each result, an `api-request-blob` entry, has no timestamp and overwrites the first. "
     "The `user` entries that carry them are stamped 10:10:51.412Z and 2026-11-14 22:10:39.373Z (a tool defect: the findings, below).\n"
 )
 _N_1114 = (
-    "- **2026-11-14.** Session `7d425759` asked four questions at 10:20:43Z. The owner sent them back to clarify (22:10:39Z), asked for an update to " + _HO_1113 + " (22:12:40Z), "
+    "- **2026-11-14.** Session `7d425759` asked four questions at 10:20:43Z. The Overtoad sent them back to clarify (22:10:39Z), asked for an update to " + _HO_1113 + " (22:12:40Z), "
     "and wrote at 22:37:55Z: \"the four open questions should be handled by the session working from the updated handoff.\"\n"
-    "  - Session `1b4fec84` took them up, reading the owner's opening instruction (22:53:41Z) as the answer to the first, the arc's scope (" + _HO_1115 + ").\n"
+    "  - Session `1b4fec84` took them up, reading the Overtoad's opening instruction (22:53:41Z) as the answer to the first, the arc's scope (" + _HO_1115 + ").\n"
     "  - Its three answers: parent docs, \"Edit it (Recommended)\" (22:59:11Z); cascor's version, \"0.14.0 (Recommended)\" (23:36:54Z); canopy's, \"0.10.0 (Recommended)\" (23:42:13Z).\n"
 )
 _N_0115 = (
     "- **juniper-ml 0.11.5** (R-ML-TOOLS-2, above): proposal ml#2558 (2026-11-13 10:08:14Z, `48b66130`), whose co-change commit took out of `docs/REFERENCE.md` the two clauses ml#2555 had added "
     "to say `main`'s new floors were unreleased; Release `v0.11.5` at 10:24:18Z on `48b66130`; archive ml#2561 (10:38:29Z, `7ae846b6`).\n"
-    "  - Run 43408809021: the owner approved its `pypi` gate (\"approved for pypi\"), and `Publish to PyPI` ran 2026-11-14 00:16:06Z–00:16:27Z. "
+    "  - Run 43408809021: the Overtoad approved its `pypi` gate (\"approved for pypi\"), and `Publish to PyPI` ran 2026-11-14 00:16:06Z–00:16:27Z. "
     "PyPI serves the wheel from 00:16:22Z and the sdist from 00:16:23Z, with the sha256 TestPyPI took; `requires_dist` carries `juniper-observability>=0.4.2; extra == \"tools\"` "
     "and `juniper-service-core<0.8.0,>=0.7.2; extra == \"tools\"`.\n"
     "  - After it: `docs/QUICK_START.md`'s sample (ml#2568, 2026-11-15 02:15:25Z, `7ce8d365`), and the unversioned parent `Juniper/AGENTS.md`'s paragraph, edited 2026-11-14 23:54:29Z outside any PR "
@@ -446,16 +446,16 @@ _N_ECO016 = (
     "    - Round 2 also proposed an optional tripwire, a test that fails once canopy gains a `FailedAuthThrottle` so that its sites get added. It was not built; `APD-ECO-010`'s row carries a note of 2026-11-15 instead.\n"
 )
 _N_CUTS = (
-    "- **juniper-cascor 0.14.0** (ruling 5 of 2026-11-13; its version, the owner's ruling in session `1b4fec84`): cascor#758 (2026-11-15 01:14:13Z, `bf6f0108`) raised `juniper-observability>=0.4.2` "
+    "- **juniper-cascor 0.14.0** (ruling 5 of 2026-11-13; its version, the Overtoad's ruling in session `1b4fec84`): cascor#758 (2026-11-15 01:14:13Z, `bf6f0108`) raised `juniper-observability>=0.4.2` "
     "and `juniper-service-core>=0.7.2,<0.8.0`; Release `v0.14.0` at 01:28:19Z on `bf6f0108`; archive ml#2570 (03:03:56Z, `bb600136`).\n"
-    "  - Publish run 43663237489 (created 01:28:21Z): `Publish to TestPyPI` succeeded. On ruling 1 of 2026-11-15 (below) the owner approved the `pypi` gate as it stood (\"approved for deployment to pypi\"): "
+    "  - Publish run 43663237489 (created 01:28:21Z): `Publish to TestPyPI` succeeded. On ruling 1 of 2026-11-15 (below) the Overtoad approved the `pypi` gate as it stood (\"approved for deployment to pypi\"): "
     "the deployment left `waiting` at 05:23:36Z, and `Publish to PyPI` ran 05:23:37Z–05:24:10Z. Image run 43663237432 succeeded, and GHCR serves `0.14.0` and `0.14`.\n"
     "  - **Published 2026-11-15** (v1.15.16): PyPI serves the wheel from 05:24:05Z and the sdist from 05:24:07Z. The run has no shared build job, so each is a second build whose sha256 differs from TestPyPI's "
     "(the wheel's `b70f3d39…` against `c5c9a5dc…`), as 0.13.0's did, while every member is identical (207 in the wheel, 113 in the sdist).\n"
     "  - This corrects " + _HO_1115 + "'s \"each wheel's sha256 equals TestPyPI's\" for cascor: only canopy's run shares one build between the two uploads.\n"
     "- **juniper-canopy 0.10.0** (the same): canopy#818 (01:19:38Z, `57d90dec`) raised `juniper-observability>=0.4.2,<0.5.0` and `juniper-service-core>=0.7.2,<0.8.0`, "
     "and moved its three hard-coded fallback versions (two `__version__` values and `resolve_app_version`'s default) to 0.10.0; Release `v0.10.0` at 01:41:30Z on `57d90dec`; archive ml#2572 (01:57:40Z, `eeb5c694`).\n"
-    "  - Publish run 43664277663 (created 01:41:32Z): Build and Validate and `Publish to TestPyPI` succeeded. The owner approved the `pypi` gate (\"approved for pypi\") while the dialog of 05:17:06Z was open: "
+    "  - Publish run 43664277663 (created 01:41:32Z): Build and Validate and `Publish to TestPyPI` succeeded. The Overtoad approved the `pypi` gate (\"approved for pypi\") while the dialog of 05:17:06Z was open: "
     "the deployment left `waiting` at 05:17:31Z, and `Publish to PyPI` ran 05:17:33Z–05:17:58Z. Image run 43664277607 succeeded, and GHCR serves `0.10.0` and `0.10`.\n"
     "  - **Published 2026-11-15** (v1.15.16): PyPI serves the wheel from 05:17:51Z and the sdist from 05:17:53Z, each with the sha256 TestPyPI took.\n"
     "  - Like 0.9.0, it was cut without P3-06's validation, the O3 wording fix and A4's asks (S0.5 open; §4 Wave 1, Canopy).\n"
@@ -464,15 +464,15 @@ _N_CUTS = (
     "  - Each release's `Requires-Dist` floors observability 0.4.2 and service-core 0.7.2, and its limiter holds the round-up.\n"
     "  - Both images were pulled by index digest (cascor `sha256:6b3e64bd…`, canopy `sha256:d9a966ff…`; revision labels `bf6f0108` and `57d90dec`) and run with no network: "
     "each installs observability 0.4.2 and service-core 0.7.2 on Python 3.14.10 (`util/ad-hoc/2026-11-15_probe_published_images_cascor_0_14_0_canopy_0_10_0.py`, 03:33Z, exit 0).\n"
-    "- **2026-11-15: the owner's directive and three rulings** (session `b9dfa450`). The owner wrote at 05:14:10Z, after hearing that cascor's PyPI job rebuilds its files: " + _DIRECTIVE + "\n"
-    "  - The dialog was asked at 05:17:06Z and answered at 05:24:49Z (the labels from `…_owner_answers.py b9dfa450 --full`, the option texts from the transcript):\n"
+    "- **2026-11-15: the Overtoad's directive and three rulings** (session `b9dfa450`). The Overtoad wrote at 05:14:10Z, after hearing that cascor's PyPI job rebuilds its files: " + _DIRECTIVE + "\n"
+    "  - The dialog was asked at 05:17:06Z and answered at 05:24:49Z (the labels from `…_Overtoad_answers.py b9dfa450 --full`, the option texts from the transcript):\n"
     "    1. cascor 0.14.0, \"Approve as is, verify after (Recommended)\": \"You approve the gate when you choose; PyPI gets a rebuild of the same commit. "
     "Before juniper-deploy pins anything, I compare PyPI's wheel and sdist with TestPyPI's file by file and stop if any file differs (for 0.13.0 every file was identical; only the archives' timestamps differed). "
     "The fix applies from cascor's next release.\"\n"
     "    2. Fix scope, \"cascor, then every other (Recommended)\": \"The cascor PR first. Then one PR per repo: the same change wherever the audit finds a per-job rebuild, and the hash check in every publish workflow, "
     "canopy's included (it shares one build but compares no hashes, so a stale TestPyPI upload could still slip through). I merge each once green, under this session's merge approval.\"\n"
     "    3. Parent docs, \"Edit it once both publish (Recommended)\": \"I re-probe the paragraph, keep a backup copy in juniper-ml/tmp/, make the edit, and record the before and after sha256. No PR: the file is unversioned.\"\n"
-    "  - **The publish-artifact fix is in progress, a session's work and not an owner item**: one build shared by both publish jobs, plus an identical-hash check against TestPyPI after its upload and again before PyPI's, "
+    "  - **The publish-artifact fix is in progress, a session's work and not an Overtoad item**: one build shared by both publish jobs, plus an identical-hash check against TestPyPI after its upload and again before PyPI's, "
     "for juniper-cascor first, with an audit of every Juniper publish workflow (the dialog's second question); then one PR per repo (ruling 2 of 2026-11-15). No juniper-cascor PR for it was open at 06:05Z.\n"
     "- **juniper-deploy#278** (v1.15.16): one GitHub-signed commit, `a79b3640`, on base `6c9e57f8`, made by `util/ad-hoc/2026-11-15_deploy_pin_cascor_0_14_0_canopy_0_10_0.py` and uploaded by `util/open_signed_pr.py`. "
     "`util/safe_merge.py` squash-merged it at 05:48:57Z (`db7b7cb4`) once its required checks were green.\n"
@@ -483,13 +483,13 @@ _N_CUTS = (
     "    - The text scan (the PR body and the commit body) found 0, the masked `--names` read of the 40 added lines listed 0, and the canary found 32 of 32 planted classes. "
     "The first run stopped on the open finding, and the second on its acceptance list, which the third confined to the files scan.\n"
     "  - On deploy `main` (`db7b7cb4`), `scripts/verify_published_images.py --fail-on-stale` finds all 6 refs on both architectures and cascor and canopy current, "
-    "and still exits 1 for `juniper-recurrence:0.8.0` (0.8.1 published), which #278 left alone. Whether recurrence's pin moves is the owner's.\n"
+    "and still exits 1 for `juniper-recurrence:0.8.0` (0.8.1 published), which #278 left alone. Whether recurrence's pin moves is the Overtoad's.\n"
     "- **The release bodies** were each reviewed twice by an independent Opus reader. Round 1 found 2 BLOCKERs, 4 MAJORs and 5 smaller items in cascor's, and 5 BLOCKERs and 10 smaller items in canopy's, "
     "most of them statements true when their PR merged and false at the release head; 25 of the 26 were applied, and canopy's item 15, the order of its categories, was left as is.\n"
     "  - Round 2 found 24 of the 25 resolved; the 25th (canopy's item 10), whose new wording raised a MINOR, was reworded.\n"
     "- **The reviews are archived** with their briefs in " + _REVIEWS + " (its `README.md`): the guard's two, the bodies' two, this draft's two (the Validation record), "
     "and the five PRs' validation fix pass, `five-prs-validation-fixpass-round-1.md`.\n"
-    "- **The 0.4.3 design's start prompt** (ruling 4 of 2026-11-13): " + _PROMPT + " (ml#2568). No design is on `main` yet, and the owner launches its session (R-OBS-SC-3, above; §7.1).\n"
+    "- **The 0.4.3 design's start prompt** (ruling 4 of 2026-11-13): " + _PROMPT + " (ml#2568). No design is on `main` yet, and the Overtoad launches its session (R-OBS-SC-3, above; §7.1).\n"
 )
 _N_FIND1 = (
     "- **Findings, open unless a line says otherwise.** Each one's cited lines were re-read on `main` on 2026-11-15 (the two CHANGELOG lines at the release tags); the behaviour each states is its source's, not re-run here. "
@@ -499,20 +499,20 @@ _N_FIND1 = (
     "  - The ported telemetry tests skip below FastAPI 0.142 (`importorskip(\"fastapi.telemetry\")`: data `test_api_app.py:64`, cascor `test_api_app.py:44`, canopy `test_main_import_and_lifespan.py:330`). "
     "A test that reads `app.extra[\"telemetry\"]` would run there too; one PR could add it to all three. Source: the fix pass, A-4. Next: Hygiene (T6).\n"
     "  - A wall clock stepped backwards makes the wait read above the window in all four limiter copies, which read `time.time()` (data `security.py:257`, cascor `:234`, canopy `:273`, service-core `:250`). "
-    "Source: the fix pass, B-8. Next: the owner (its candidate fix is `time.monotonic()` in all four).\n"
+    "Source: the fix pass, B-8. Next: the Overtoad (its candidate fix is `time.monotonic()` in all four).\n"
     "    - canopy's `_evict_expired` (`:234`) then answers differently from cascor's and service-core's, whose prunes are identical; data's `TTLCache` path was not compared. Source: the fix pass, B-9. Next: with B-8.\n"
     "  - cascor's `docs/api/JUNIPER_CASCOR_API_REFERENCE.md:113` (\"Exempt paths\") still lists `/docs`, `/openapi.json` and `/redoc`, while `src/api/middleware.py`'s `EXEMPT_PATHS` exempts only health and `/metrics`, "
     "a choice its comment ties to `APD-DATA-024` (data's \"securing the service deletes `/openapi.json`\"). Source: the fix pass, B-10. Next: Hygiene (T6).\n"
     "  - The WebSocket control `retry_after` and `HandshakeCooldown.get_block_remaining` round to one decimal, so a wait under 50 ms reads `0.0`: "
-    "cascor `src/api/websocket/control_security.py:81` and `:154`, service-core `websocket/control_security.py:112` and `:185`. Source: the fix pass. Next: the owner.\n"
-    "    - Still open: flood-4's owner answer of 2026-11-12 23:34:04Z (session `f2b4e7c3`) chose \"WebSocket gaps beside N-4\" (N-4 is flood-4's service-core WebSocket fix, not P1's N-4), "
+    "cascor `src/api/websocket/control_security.py:81` and `:154`, service-core `websocket/control_security.py:112` and `:185`. Source: the fix pass. Next: the Overtoad.\n"
+    "    - Still open: flood-4's Overtoad answer of 2026-11-12 23:34:04Z (session `f2b4e7c3`) chose \"WebSocket gaps beside N-4\" (N-4 is flood-4's service-core WebSocket fix, not P1's N-4), "
     "whose option names other gaps (an unserialisable broadcast, `/ws/control` after a server close, a per-IP slot freed early), not these.\n"
 )
 _N_FIND2 = (
     "  - juniper-ml's `tests/test_release_train_registry.py` walks the checkout for `pyproject.toml` without skipping `tmp/` (`:178`, `:180`), so 3 tests fail locally whenever `tmp/` holds any `pyproject.toml`; "
-    "they pass in CI. The owner's 2026-10-26 rulings have a scan choose its scope (`notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`). Source: the fix pass. Next: the owner.\n"
+    "they pass in CI. The Overtoad's 2026-10-26 rulings have a scan choose its scope (`notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`). Source: the fix pass. Next: the Overtoad.\n"
     "  - juniper-ml#2507's tests, a Cursor draft's, make the compatibility matrix's current row track `pyproject.toml` between a floor PR and its release, "
-    "and nothing checks that the paragraph above the matrix in `docs/REFERENCE.md` says so. Source: the fix pass (its item 6). Next: flood-4's session, which takes it to the owner.\n"
+    "and nothing checks that the paragraph above the matrix in `docs/REFERENCE.md` says so. Source: the fix pass (its item 6). Next: flood-4's session, which takes it to the Overtoad.\n"
     "    - Carried on 2026-11-15 under flood-4's ruling 14 (" + _FLOOD4 + " §8 item 14, \"Carry + extend propose.py\"): ml#2579 (04:25:56Z, `11cac1af`) makes `util/release_train/propose.py` "
     "render the four `docs/REFERENCE.md` sites those tests pin, ml#2581 (05:29:07Z, `4f53e69a`) carries the tests, and #2507 closed at 05:30:31Z. "
     "Whether a check of the paragraph came with them was not re-read here.\n"
@@ -529,16 +529,16 @@ _N_FIND3 = (
     "so the CHANGELOGs that cite it agree: cascor `:244` at `v0.14.0`, canopy `:156` and `:221` at `v0.10.0`.\n"
     "    - What is left: " + _FLOOD4 + "'s §8 stops at ruling 14. Source: " + _HO_1115 + ". Next: flood-4's session, in the record's next update.\n"
     "  - ml#2576's body names three plan passages its filing made stale: this plan's \"with no register row\" (the R-OBS-SC-2 note, above) and \"a second passage near its §6 A1 follow-ups\" (the mid-wave sitting's R-OBS-SC-2 follow-ups), both made current here, "
-    "and the v2 draft's \"has no APD-ECO-016\" (its line 153; the body gives no line). Source: ml#2576's body. Next: the owner, on whether the v2 draft gets a pointer to the rulings.\n"
+    "and the v2 draft's \"has no APD-ECO-016\" (its line 153; the body gives no line). Source: ml#2576's body. Next: the Overtoad, on whether the v2 draft gets a pointer to the rulings.\n"
     "    - v1.15.16 leaves the v2 draft unedited, though more of it is stale: `:110`, `:150` (\"being carried out by session `6e3bdef0`\"), `:153`, `:315`, `:322`, `:357`, `:358`, `:398-399` (round 2's Q1 to Q4 as open), "
     "`:409`, `:455` (\"No session moves it (Q4)\") and `:480` (H-26, \"Never pull one\"); rulings 4 to 7 of 2026-11-13 contradict the last four.\n"
     "    - The body also names two stale texts it left: the register's §2.3 compare row (\"latest published wheel, 0.7.0 … still short-circuits\") and `docs-full-check.yml`'s \"THIS is where that gate actually bites\". Next: Hygiene (T6).\n"
-    "  - `util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py` keeps the last entry carrying each answer, so it prints `answered None` when that entry is an untimed `api-request-blob` copy "
+    "  - `util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py` keeps the last entry carrying each answer, so it prints `answered None` when that entry is an untimed `api-request-blob` copy "
     "(ruling 7 of 2026-11-13; `7d425759`'s dialog). Source: this record, whose re-probe reads the first timestamped entry. Next: Hygiene (T6), a dated successor, since the script is retained as provenance.\n"
 )
 _N_OPEN = (
-    "- **Still open with the owner** (§6):\n"
-    "  - the juniper-deploy stack's restart. juniper-deploy's pins after the gates are done: deploy#278 merged at 05:48:57Z under the owner's merge approval "
+    "- **Still open with the Overtoad** (§6):\n"
+    "  - the juniper-deploy stack's restart. juniper-deploy's pins after the gates are done: deploy#278 merged at 05:48:57Z under the Overtoad's merge approval "
     "(granted to session `b9dfa450` on 2026-11-15 at 03:14:03Z). Ruling 6 of 2026-11-13 governs only the trio's restart;\n"
     "    - whether juniper-deploy's `juniper-recurrence:0.8.0` (`docker-compose.yml:598`) moves to 0.8.1, published since 2026-11-06: #278 left it, so `--fail-on-stale` still exits 1;\n"
     "  - launching the 0.4.3 design session from " + _PROMPT + " (ruling 4 of 2026-11-13; §7.1);\n"
@@ -547,10 +547,10 @@ _N_OPEN = (
     "  - who may pull the canopy primary (O13), and whether a fix-forward is owed for cascor 0.12.0 to 0.14.0, all cut ahead of P3-05 and P3-08;\n"
     "  - A1's open limbs: the data-client and cascor F-S10 fixes, P6 OD-2, canopy#685 call (a), and whether host recurrence legs take a port of W1.14 (§6 A1);\n"
     "  - whether the v2 draft gets a pointer to the rulings (above);\n"
-    "  - the worktree housekeeping, worktree by worktree on the owner's word, as " + _HO_1113 + " (item 6) and " + _HO_1115 + " (item 7) list it. "
+    "  - the worktree housekeeping, worktree by worktree on the Overtoad's word, as " + _HO_1113 + " (item 6) and " + _HO_1115 + " (item 7) list it. "
     "The parent's prior copy is safe in " + _BACKUP + " before `buzzing-growing-whale` goes.\n"
     "- **Done, so no longer open** (v1.15.16): juniper-deploy's pins after the gates (deploy#278, above) and the parent `Juniper/AGENTS.md`'s second edit (ruling 3 of 2026-11-15; XC-P12). "
-    "Not the owner's: the publish-artifact fix (above), a session's work under ruling 2 of 2026-11-15.\n"
+    "Not the Overtoad's: the publish-artifact fix (above), a session's work under ruling 2 of 2026-11-15.\n"
 )
 _NOTE_ANCHOR = "\n**R-DC-PATCH's branch.** "
 _NOTE_NEW = "\n" + _N_HEAD + _N_ROUND1 + _N_PRS + _N_ROUND2 + _N_1114 + _N_0115 + _N_ECO016 + _N_CUTS + _N_FIND1 + _N_FIND2 + _N_FIND3 + _N_OPEN + "\n**R-DC-PATCH's branch.** "
@@ -580,12 +580,12 @@ _ORDER3_NEW = (
 _ORDER6_OLD = "6. R-ML-b: shipped with R-ML-a. R-ML-TOOLS followed as 0.11.1 (2026-10-25).\n"
 _ORDER6_NEW = "6. R-ML-b: shipped with R-ML-a. R-ML-TOOLS followed as 0.11.1 (2026-10-25), and R-ML-TOOLS-2 as 0.11.5 (2026-11-14; v1.15.16).\n"
 
-_SECOND_CUT_OLD = "The owner may accept that for canopy's P0 (§6 A5, P4 D-4).\n"
-_SECOND_CUT_NEW = "The owner may accept that for canopy's P0 (§6 A5, P4 D-4). Canopy's second cut is 0.10.0 (2026-11-15; v1.15.16).\n"
+_SECOND_CUT_OLD = "The Overtoad may accept that for canopy's P0 (§6 A5, P4 D-4).\n"
+_SECOND_CUT_NEW = "The Overtoad may accept that for canopy's P0 (§6 A5, P4 D-4). Canopy's second cut is 0.10.0 (2026-11-15; v1.15.16).\n"
 
 # --- §6 ------------------------------------------------------------------------------------------------------------------
-_A5_O13_OLD = "the canopy primary stays open, the owner's answer of 2026-11-06, v1.15.13)"
-_A5_O13_NEW = "the canopy primary stays open, the owner's answer of 2026-11-06, v1.15.13; the juniper-ml primary ruled 2026-11-13: guarded session pulls, ruling 7 of 2026-11-13, v1.15.16)"
+_A5_O13_OLD = "the canopy primary stays open, the Overtoad's answer of 2026-11-06, v1.15.13)"
+_A5_O13_NEW = "the canopy primary stays open, the Overtoad's answer of 2026-11-06, v1.15.13; the juniper-ml primary ruled 2026-11-13: guarded session pulls, ruling 7 of 2026-11-13, v1.15.16)"
 
 _A5_D45_OLD = "and D-5 (cascor cut timing; = P6 OD-14, P7 D7's cascor half) |"
 _A5_D45_NEW = (
@@ -611,7 +611,7 @@ _FF_NEW = (
 
 _TRIO_OLD = "and `JuniperCascor1` imports the juniper-ml primary's code (Security step 5).\n- **R-OBS-SC-2's follow-ups** (v1.15.15; §5, the note on R-OBS-SC-2):\n"
 _TRIO_NEW = (
-    "and `JuniperCascor1` imports the juniper-ml primary's code (Security step 5). The upgrade is still the owner's on 2026-11-15, and the restart's condition is that of ruling 6 of 2026-11-13 (v1.15.16).\n"
+    "and `JuniperCascor1` imports the juniper-ml primary's code (Security step 5). The upgrade is still the Overtoad's on 2026-11-15, and the restart's condition is that of ruling 6 of 2026-11-13 (v1.15.16).\n"
     "- **R-OBS-SC-2's follow-ups** (v1.15.15; §5, the note on R-OBS-SC-2), **all ruled** by 2026-11-13 (v1.15.16; " + _FNOTE + "):\n"
 )
 
@@ -625,20 +625,20 @@ _FU3_OLD = "data#454's telemetry opt-out for cascor and canopy, and when R-OBS-S
 _FU3_NEW = (
     "data#454's telemetry opt-out for cascor and canopy, and when R-OBS-SC-3 (0.4.3) is designed: all ruled, and the first two done. `APD-ECO-016` is filed FIXED (ml#2576), "
     "the opt-outs merged (cascor#755, canopy#816), and the design goes to its own thread (ruling 4 of 2026-11-13), whose start prompt landed with ml#2568.\n"
-    "- **Left with the owner by R-OBS-SC-2's follow-ups** (v1.15.16; " + _FNOTE + "): the juniper-deploy stack's restart (deploy#278 pinned both images) and whether its recurrence pin moves; "
+    "- **Left with the Overtoad by R-OBS-SC-2's follow-ups** (v1.15.16; " + _FNOTE + "): the juniper-deploy stack's restart (deploy#278 pinned both images) and whether its recurrence pin moves; "
     "launching the 0.4.3 design session; the trio's upgrade, then its restart on ruling 6 of 2026-11-13's condition; "
     "the canopy primary (O13); cascor 0.12.0–0.14.0's fix-forward (above); A1's open limbs (§6 A1); the v2 draft's pointer; and the worktree housekeeping.\n"
     "  - Done since: juniper-deploy's pins (deploy#278) and the parent `Juniper/AGENTS.md`'s second edit (ruling 3 of 2026-11-15).\n"
 )
 
-_XCS_OLD = "the owner's environment upgrade and the session's recorded pass (Wave 1's Security step 5;"
-_XCS_NEW = "the owner's environment upgrade and the session's recorded pass, which ruling 6 of 2026-11-13 makes the per-lock probe re-run in each environment, on P3-05 and with blank DSNs (Wave 1's Security step 5;"
+_XCS_OLD = "the Overtoad's environment upgrade and the session's recorded pass (Wave 1's Security step 5;"
+_XCS_NEW = "the Overtoad's environment upgrade and the session's recorded pass, which ruling 6 of 2026-11-13 makes the per-lock probe re-run in each environment, on P3-05 and with blank DSNs (Wave 1's Security step 5;"
 
 # --- §7.1 ------------------------------------------------------------------------------------------------------------------
 _S71_OLD = "Next, the ledger's Phase 12, in its own rounds (`…phase12-owed.md`)\n"
 _S71_NEW = (
     "Next, the ledger's Phase 12, in its own rounds (`…phase12-owed.md`)\n"
-    "19. R-OBS-SC-3's 0.4.3 design (ruling 4 of 2026-11-13): its own session, which the owner launches from " + _PROMPT + ", writes it and runs its rounds (v1.15.16) **S**\n"
+    "19. R-OBS-SC-3's 0.4.3 design (ruling 4 of 2026-11-13): its own session, which the Overtoad launches from " + _PROMPT + ", writes it and runs its rounds (v1.15.16) **S**\n"
 )
 
 # --- §8, §9, §12, Appendix A -----------------------------------------------------------------------------------------------
@@ -654,7 +654,7 @@ _S8_NEW = (
     _S8_ANCHOR
     + "**Since v1.15.16**: the `JuniperCascor1` row's \"Owner-only\" covers environment changes. Pulls of the primaries its editable installs map follow O13: guarded session pulls for cascor, data, data-client and recurrence "
     "and, since ruling 7 of 2026-11-13, juniper-ml (on `main` and clean, never a branch switch); canopy's is open.\n"
-    "In the juniper-deploy `docker-compose.yml` row: deploy#278 moved cascor and canopy (2026-11-15) and left `:598` at `juniper-recurrence:0.8.0` while 0.8.1 is published (2026-11-06); whether it moves is the owner's.\n\n"
+    "In the juniper-deploy `docker-compose.yml` row: deploy#278 moved cascor and canopy (2026-11-15) and left `:598` at `juniper-recurrence:0.8.0` while 0.8.1 is published (2026-11-06); whether it moves is the Overtoad's.\n\n"
 )
 
 _DEP_IMAGE_OLD = "and canopy's after R-CANOPY-A's 0.9.0 |\n"
@@ -669,10 +669,10 @@ _CUTAHEAD_NEW = "and canopy#740 proposed canopy 0.9.0 (open). Since: cascor 0.13
 _RISK_OLD = "each consumer's next release, pin and restart |\n"
 _RISK_NEW = "each consumer's next release, pin and restart (cascor's and canopy's are published, 2026-11-15; v1.15.16) |\n"
 
-_RISK2_OLD = "image published 20:56Z, PyPI at the gate) | §5's \"Ready when\"; the owner's fix-forward ruling (R-OBS-SC-2, R-DATA-2; cascor's at the mid-wave sitting) |\n"
+_RISK2_OLD = "image published 20:56Z, PyPI at the gate) | §5's \"Ready when\"; the Overtoad's fix-forward ruling (R-OBS-SC-2, R-DATA-2; cascor's at the mid-wave sitting) |\n"
 _RISK2_NEW = (
     "image published 20:56Z, PyPI at the gate); then cascor 0.13.0 and 0.14.0, cut ahead of P3-05 and P3-08, and canopy 0.9.0 and 0.10.0, cut without P3-06 (v1.15.16) "
-    "| §5's \"Ready when\"; the owner's fix-forward ruling (R-OBS-SC-2, R-DATA-2; cascor's at the mid-wave sitting) |\n"
+    "| §5's \"Ready when\"; the Overtoad's fix-forward ruling (R-OBS-SC-2, R-DATA-2; cascor's at the mid-wave sitting) |\n"
 )
 
 _SENTRY_SUPPORT_OLD = "Phase C status, the trio, whether running services send to Sentry,"
@@ -703,14 +703,14 @@ _DONE_NEW = (
 _VALIDATION_ANCHOR = "They found 1 BLOCKER (the draft read as if 0.4.2 ended the Sentry exposure), 8 MAJORs, 9 MINORs and 7 NITs, some found by both; this version applies them.\n"
 _VALIDATION_NEW = (
     _VALIDATION_ANCHOR
-    + "  - v1.15.16 is a record of R-OBS-SC-2's follow-ups (2026-11-09 to 2026-11-15). No round checks it (owner ruling 2026-10-24). "
-    "Its rulings are dated from seven sessions' transcripts, the arc's six (`b9dfa450` among them) and flood-4's `f2b4e7c3` (`util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py`; "
-    "the two answers it prints as `None` are dated from the `user` entries that carry them), and the owner's directive of 2026-11-15 from `b9dfa450`'s.\n"
+    + "  - v1.15.16 is a record of R-OBS-SC-2's follow-ups (2026-11-09 to 2026-11-15). No round checks it (Overtoad ruling 2026-10-24). "
+    "Its rulings are dated from seven sessions' transcripts, the arc's six (`b9dfa450` among them) and flood-4's `f2b4e7c3` (`util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py`; "
+    "the two answers it prints as `None` are dated from the `user` entries that carry them), and the Overtoad's directive of 2026-11-15 from `b9dfa450`'s.\n"
     "    - `util/ad-hoc/2026-11-15_r_obs_sc_2_followups_record_reprobe.py` re-checked these on 2026-11-15 (0 FAIL): the PRs' states, merge commits, times and files; the canopy PRs' and the fixes' ancestry in `v0.10.0` and `v0.14.0`; "
     "the three Releases' tags; the three publish runs' jobs, approvals and `pending_deployments`, the two image runs, GHCR's tags and the images' revision labels; PyPI's and TestPyPI's files (cascor 0.13.0's and 0.14.0's member by member, canopy 0.10.0's by sha256);\n"
     "      - the floors (0.11.5's `[recurrence]` one among them), the caps and juniper-deploy's pins on `main` (`docker-compose.yml:598` among them, against GHCR's highest recurrence tag and the stale-pin check's lines); "
     "the register's `APD-ECO-016` rows; run 43669737463; the source lines each finding cites; "
-    "the service-core commits past `juniper-service-core-v0.7.2` at `eeb5c694`; the v2 draft's stale lines; the archived reviews' tallies and the archive's `--check`; and the owner's answers and directive.\n"
+    "the service-core commits past `juniper-service-core-v0.7.2` at `eeb5c694`; the v2 draft's stale lines; the archived reviews' tallies and the archive's `--check`; and the Overtoad's answers and directive.\n"
     "      - since the gates: deploy#278 and deploy `main`'s pins (cascor 0.14.0 twice, canopy 0.10.0 three times, both helm tags), GHCR's highest cascor and canopy tags against them, "
     "the parent `Juniper/AGENTS.md`'s sha256 and both 2026-11-15 copies', and the 2026-11-15 dialog's three labels and times.\n"
     "    - The two `pypi` gates and the recurrence pin move, so the probe accepts either state and prints the one it read: on its run of 2026-11-15 " + _GATE_READ + ", "
@@ -745,7 +745,7 @@ _LOCKS_NEW = (
 )
 
 _HANDOFFS_ANCHOR = (
-    "and the session's own, `HO/HANDOFF_2026-11-09_r-obs-sc-2-recorded-plan-v1-15-15-owner-items-next.md` (not this plan's).\n"
+    "and the session's own, `HO/HANDOFF_2026-11-09_r-obs-sc-2-recorded-plan-v1-15-15-Overtoad-items-next.md` (not this plan's).\n"
 )
 _HANDOFFS_NEW = (
     _HANDOFFS_ANCHOR
@@ -759,7 +759,7 @@ _CREATED_ANCHOR = (
 )
 _CREATED_NEW = (
     _CREATED_ANCHOR
-    + "  - by session `218ff61e` (2026-11-13), recorded with v1.15.16, the auto-memory file `reference_owner_dialog_blocks_the_session.md` (an owner dialog blocks the session until it is answered).\n"
+    + "  - by session `218ff61e` (2026-11-13), recorded with v1.15.16, the auto-memory file `reference_Overtoad_dialog_blocks_the_session.md` (an Overtoad dialog blocks the session until it is answered).\n"
 )
 
 _MEMORY_ANCHOR = (

@@ -17,9 +17,9 @@
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 #
 # Description:
-#     The owner's ruling of 2026-11-13 (R-OBS-SC-2 round 2, Q2: "cascor + canopy now") has a session cut
+#     The Overtoad's ruling of 2026-11-13 (R-OBS-SC-2 round 2, Q2: "cascor + canopy now") has a session cut
 #     juniper-cascor and juniper-canopy from main, "each raising its floors in the release PR" (round 1's
-#     ruling 1, 2026-11-09: juniper-observability>=0.4.2, juniper-service-core>=0.7.2). The owner chose the
+#     ruling 1, 2026-11-09: juniper-observability>=0.4.2, juniper-service-core>=0.7.2). The Overtoad chose the
 #     versions on 2026-11-14: cascor 0.14.0, canopy 0.10.0.
 #
 #     util/release_train/propose.py opens each proposal with the version bump, the CHANGELOG move and the

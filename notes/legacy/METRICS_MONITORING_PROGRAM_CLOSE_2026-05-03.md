@@ -678,7 +678,7 @@ calls; that resolved once agent prompts standardised on absolute paths.
 
 ## 6. Residual follow-ups
 
-Carrying forward into post-METRICS-MON work. Each item: name, owner repo,
+Carrying forward into post-METRICS-MON work. Each item: name, Overtoad repo,
 blocker/non-blocker, recommended action.
 
 | ID | Owner repo | Blocker? | Item |

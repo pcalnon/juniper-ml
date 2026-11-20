@@ -11,8 +11,8 @@ this session did and found.
 
 Continue phase 2 of the Python 3.15 migration: work through what the informational 3.15 legs show. The 3.15 legs
 stay INFORMATIONAL (green with a warning). Do not make any 3.15 check required (phase 3), and do not move
-`/usr/bin/python3` off 3.14 (phase 4). **The owner granted merge approval for this arc's PRs in this session
-(2026-11-15). It does not carry to a new session: confirm with the owner first.**
+`/usr/bin/python3` off 3.14 (phase 4). **The Overtoad granted merge approval for this arc's PRs in this session
+(2026-11-15). It does not carry to a new session: confirm with the Overtoad first.**
 
 ## Done this session
 
@@ -70,7 +70,7 @@ stay INFORMATIONAL (green with a warning). Do not make any 3.15 check required (
    0.4.1 (2026-01-19) is the newest, and its classifiers stop at 3.14. The fix is on dill's `master` only: commit
    `37d2bf71` (2026-05-23), "handle missing co_lntab in 3.15.0b1", which uses `getattr(obj, 'co_lnotab', b'')`.
    - Options: wait for dill 0.4.2 and raise the floor; or install dill from that commit on the 3.15 leg only, which
-     is CI-only and informational; or avoid dill on code objects in cascor-model. **That choice is the owner's;
+     is CI-only and informational; or avoid dill on code objects in cascor-model. **That choice is the Overtoad's;
      ask.**
    - Do not cite `uqfoundation/dill#NNN` in a PR body: it posts a backlink on the external project's timeline.
 4. **Pre-existing defects** (not 3.15), each worth its own PR, both still open:
@@ -85,7 +85,7 @@ stay INFORMATIONAL (green with a warning). Do not make any 3.15 check required (
    - the predecessor's nine `*python-3-15-informational*` and six `*python-3-15-green-legs*` worktrees;
    - `juniper-ml/.claude/worktrees/agent-a071c56ac10b0da13`.
 
-## Open owner questions
+## Open Overtoad questions
 
 1. **dill on 3.15.** Should we wait for a dill release and raise the floor, install dill from commit `37d2bf71` on
    the informational 3.15 leg only, or stop pickling code objects with dill in cascor and cascor-model?

@@ -22,17 +22,17 @@ The item IDs this file uses each resolve to one file:
 
 ## Continue
 
-**Phase D** (`…RECOVERY-PLAN.md` §6.4), interactively with the owner, in one sitting of about two hours. On 2026-10-29 the owner chose to run it in a fresh thread. The owner needs `sudo` and the passphrase from the printed sheet or the password manager, **not** the Dropbox copy.
+**Phase D** (`…RECOVERY-PLAN.md` §6.4), interactively with the Overtoad, in one sitting of about two hours. On 2026-10-29 the Overtoad chose to run it in a fresh thread. The Overtoad needs `sudo` and the passphrase from the printed sheet or the password manager, **not** the Dropbox copy.
 
-1. **Run the verify block below.** If any line differs from its comment, stop and show the owner; do not start step 0 until the owner rules. If a tool, path or flag is not where this file, `…RECOVERY-PLAN.md` or `…INTEGRATED-DESIGN.md` says, stop and report it; never substitute one. Where this file departs from D on purpose, this file wins. The departures include:
+1. **Run the verify block below.** If any line differs from its comment, stop and show the Overtoad; do not start step 0 until the Overtoad rules. If a tool, path or flag is not where this file, `…RECOVERY-PLAN.md` or `…INTEGRATED-DESIGN.md` says, stop and report it; never substitute one. Where this file departs from D on purpose, this file wins. The departures include:
    - the probe's spec;
    - step 0(b)'s target;
    - the `TMPDIR` added to D's command lines;
    - the freeze date: `…RECOVERY-PLAN.md` §6.4 step 5's `$(date +%F)`, not D's `2026-09-22`.
 2. **Read `…RECOVERY-PLAN.md` §6.4 in full**, and `…INTEGRATED-DESIGN.md` §8 wherever a step says "as D says".
-3. **Before step 0, design with the owner the two commands no document gives**, and validate both (`…RECOVERY-PLAN.md` §6.7): step 0(b)'s trial, and Procedure A's key write (both in Remaining §1). The key write is needed only on a probe match, but designing it later would stall the sitting between steps 6 and 9.
-4. **Then take the owner through steps 0 to 14**, with the deltas in Remaining §1.
-5. **Who runs what.** The owner runs every step that changes the host or reaches the server, in the shell Key context's "Two shells" names. The owner pastes the output, never a raw journal from a server start (Key context). The session checks each step read-only and keeps a running record.
+3. **Before step 0, design with the Overtoad the two commands no document gives**, and validate both (`…RECOVERY-PLAN.md` §6.7): step 0(b)'s trial, and Procedure A's key write (both in Remaining §1). The key write is needed only on a probe match, but designing it later would stall the sitting between steps 6 and 9.
+4. **Then take the Overtoad through steps 0 to 14**, with the deltas in Remaining §1.
+5. **Who runs what.** The Overtoad runs every step that changes the host or reaches the server, in the shell Key context's "Two shells" names. The Overtoad pastes the output, never a raw journal from a server start (Key context). The session checks each step read-only and keeps a running record.
 6. **Land the record** in `…RECOVERY-PLAN.md` in one signed PR at the end. If the record changes a §6.4 step, run one narrow validation lane on it first (`…RECOVERY-PLAN.md` §6.7).
 
 Merge approval covered this session's PRs only. Ask again.
@@ -40,11 +40,11 @@ Merge approval covered this session's PRs only. Ask again.
 ## Completed, 2026-10-28 and 10-29 (record: `…RECOVERY-PLAN.md` §6.3.1, juniper-ml#2385)
 
 - **`…10-28…md`'s verify block held**, every line (2026-10-28, 21:00 CDT).
-- **AC-11 passed** (10-28 21:01–21:02 CDT; the session ran it on the owner's instruction).
+- **AC-11 passed** (10-28 21:01–21:02 CDT; the session ran it on the Overtoad's instruction).
   - Tier 3's `backups` archive decrypted with the **3c** key (subkey `57E275E9F67430CE`, card 24955114; `GOODMDC`).
   - It matched the live tree under `diff -rq`: 226 files, 142 directories and 536,520,981 bytes on each side.
   - The restored copy was removed.
-- **The transcript count read 0** (the owner, as root, 10-29). `util/ad-hoc/2026-10-28_transcript_secret_count.py` exited 0 over 10,768 files. **Phase D step 9 may now shred the service `.env`.**
+- **The transcript count read 0** (the Overtoad, as root, 10-29). `util/ad-hoc/2026-10-28_transcript_secret_count.py` exited 0 over 10,768 files. **Phase D step 9 may now shred the service `.env`.**
   - The zero covers only verbatim and JSON-escaped copies.
   - It covers only `~pcalnon/.claude`, `~pcalnon/.claude.json` and juniper-ml's primary `tmp/`: no worktree's `tmp/` is in its roots.
   - The 08-25 and 09-21 transcripts that `…RECOVERY-PLAN.md` §6.3.1 finding 3 and I-31 name are gone from `~pcalnon/.claude`, as Claude Code's 30-day cleanup predicts (the documented default; `cleanupPeriodDays` is unset). The oldest session transcript was last written 10-02.
@@ -54,7 +54,7 @@ Merge approval covered this session's PRs only. Ask again.
 
 ## Remaining, in order
 
-### 1. Phase D (`…RECOVERY-PLAN.md` §6.4, one owner sitting)
+### 1. Phase D (`…RECOVERY-PLAN.md` §6.4, one Overtoad sitting)
 
 Every delta in `…lines-0-8…md` Remaining §3 and `…10-28…md` Remaining §3 still applies, except where a bullet below or "Corrections to the predecessor" supersedes it. Collected by step:
 
@@ -75,7 +75,7 @@ Every delta in `…lines-0-8…md` Remaining §3 and `…10-28…md` Remaining �
 
     `Restart=no` is advisable. Without these overrides, a missing file or a bind failure reads as a directive the server cannot run under, which AC-12 would then remove. D's O-12 (`…INTEGRATED-DESIGN.md`, near its line 3313) is this trial's question.
 - **Step 1**: done (`…RECOVERY-PLAN.md` §6.3.1 Line 0). The timer stays disabled until step 13.
-- **Step 2**: the **owner** takes the AC-8 journal counts (a session never greps a log for values: `…RECOVERY-PLAN.md` §6.0 item 6). If they read 0, skip the `--rotate` and `--vacuum-time=1s` (ruled 10-28).
+- **Step 2**: the **Overtoad** takes the AC-8 journal counts (a session never greps a log for values: `…RECOVERY-PLAN.md` §6.0 item 6). If they read 0, skip the `--rotate` and `--vacuum-time=1s` (ruled 10-28).
 - **Step 3**: the session may re-run the stage gate (it writes nothing); expect `0 staged`. The gate, the installer and every Phase D tool run from a checkout at `origin/main`.
 - **Step 5**: "copy today's snapshot aside" is moot. The snapshot has held the empty server's database since 10-09; the recovery source is the freeze of `/usr/lib/duplicati/data`. Note the freeze directory's date, because A0's `YAMAGUCHI_JOB_DB` names it.
 - **Step 6**: after the `mv`, the service `.env` is at `/home/duplicati/.config/Duplicati.empty-2026-09-20/.env`, in a folder step 6 makes `0700`.
@@ -94,7 +94,7 @@ Every delta in `…lines-0-8…md` Remaining §3 and `…10-28…md` Remaining �
 
     The probe prints its counts and `key-hash match:` lines whatever candidates loaded, so those lines alone prove nothing.
 
-    Three mistakes fake a "no match". Each would send the owner to A0 wrongly, after which step 9 shreds the only holder of the 64-character key:
+    Three mistakes fake a "no match". Each would send the Overtoad to A0 wrongly, after which step 9 shreds the only holder of the 64-character key:
     - a terminal on stdin loads no `.env` candidate;
     - so does an empty pipe, such as a mistyped `cat`;
     - a spec naming `BMXWPAOGLP.sqlite`, the job index in the same folder, finds no blob.
@@ -133,7 +133,7 @@ Every delta in `…lines-0-8…md` Remaining §3 and `…10-28…md` Remaining �
 - **O-11** (rotate the TestPyPI token) is open. I-31 calls the transcript that captured it cloud-linked: it is gone from `~pcalnon/.claude`, not necessarily from wherever else it went. The token stays live until rotated.
 - **D-12** is unruled. juniper-recurrence runs no secret scan. juniper-data's `ARC_AGI_API` allowlist entry is unverified.
 - **Tier 2's capacity**: D-10 keeps every set, and `DFF3-2782` has 65 GiB free, about 75 weekly sets (`…RECOVERY-PLAN.md` §6.6 note (c)).
-- **The `.path` units cannot see fstab mounts** (`…RECOVERY-PLAN.md` §6.3.1 finding 15), so only the timers start a run. That is a design follow-up, if the owner wants a run to start when a drive is plugged in. A physical re-plug is untested.
+- **The `.path` units cannot see fstab mounts** (`…RECOVERY-PLAN.md` §6.3.1 finding 15), so only the timers start a run. That is a design follow-up, if the Overtoad wants a run to start when a drive is plugged in. A physical re-plug is untested.
 - **Optional: prove the 3a key on a real archive.**
   - Remove the 3c card (24955114) and insert the 3a card (26881335).
   - Decrypt Tier 3's `backups` archive with `gpg --status-fd 2 --output <a file in the session worktree's tmp/>`. Expect `DECRYPTION_KEY 81E94B831F84B6C1CF08DC1691E9A12F226780E2 25B6B4B192636FDA147AEBAC12B62E52C2F6B4E4`.
@@ -146,9 +146,9 @@ Every delta in `…lines-0-8…md` Remaining §3 and `…10-28…md` Remaining �
   - **Before step 9**, a reboot stops the running server (pid 1397393) and leaves a unit that cannot start. The installed `/usr/lib/systemd/system/duplicati.service` runs `/home/duplicati/bin/duplicati-wrapper.bash`, which Line 1 removed, under `Restart=always`.
   - **From step 9's install**, the boot link starts the new unit unwatched, before step 10's checks.
   - **During step 12's re-key**, a runtime drop-in sits under `/run`, and a reboot removes it. A reboot mid-re-key therefore re-encrypts under whatever key sits at the credential path.
-  - If mounts are lost, the owner runs, as root, `systemctl start snapd.mounts.target` plus the unit-file mounts (`…RECOVERY-PLAN.md` §6.3.1 finding 17).
+  - If mounts are lost, the Overtoad runs, as root, `systemctl start snapd.mounts.target` plus the unit-file mounts (`…RECOVERY-PLAN.md` §6.3.1 finding 17).
 - **The Tier 1 server stays up** (pid 1397393, since 2026-09-20) until step 6, its one stop. Steps 10 and 11 stop and start the new unit.
-- **Two shells.** In the owner's root shell `~` is `/root`.
+- **Two shells.** In the Overtoad's root shell `~` is `/root`.
   - **The `pcalnon` shell** is for anything that resolves `~` or calls the server API: the web credential (steps 10 and 11), `yamaguchi_server_api.py` (`expanduser`), the guard dry run, the watchdog deploy (`systemctl --user`), the re-key script (`SUDO_USER`), and the drills.
   - **A step that needs both root and the server API** runs as `sudo …` from the `pcalnon` shell.
   - **In the root shell**, write `~pcalnon` explicitly.
@@ -164,8 +164,8 @@ Every delta in `…lines-0-8…md` Remaining §3 and `…10-28…md` Remaining �
   - **At the end**, shred the files in both directories and remove them. They may hold the probe copy, A0's cleartext restore and step 13's copy.
 - **Journals.** A server start logs a sign-in URL whenever its password is autogenerated, whatever the token flag says (`…ROUND-4-RECORD.md`, near its line 728; `…RECOVERY-PLAN.md` §5's carried items).
   - On the planned path, no start should log one: step 0(a) sets the trial's password, and A0 and A keep the root-era one. The count guards against a step going off-plan.
-  - From step 0(b)'s trial on, the owner checks each start's journal with `grep -c` and pastes only the counts. For step 10 those strings are `Server has started` and `Unknown option supplied`.
-  - §6.4 step 10 names no string for "no encryption warning", so settle with the owner how to check that one.
+  - From step 0(b)'s trial on, the Overtoad checks each start's journal with `grep -c` and pastes only the counts. For step 10 those strings are `Server has started` and `Unknown option supplied`.
+  - §6.4 step 10 names no string for "no encryption warning", so settle with the Overtoad how to check that one.
   - At step 12, count before anything else (U1).
 - **Plugging in a drive starts nothing** while its fstab line exists (a physical re-plug is untested). The timers start runs, and only while the drive is mounted. Each window carries up to 15 minutes' random delay.
   - **Tier 2**, Sundays at 03:00: 11-01 skips; 11-08 is due. Detached, it reads `SKIPPED` until its last success is more than 21 days old, then `FAILED`, first at the 11-22 window.
@@ -182,8 +182,8 @@ Every delta in `…lines-0-8…md` Remaining §3 and `…10-28…md` Remaining �
   - `case` blocks that run `bash`;
   - `sed` with a computed program.
 - **Write and Edit cannot reach the primary checkout's `tmp/`**, and a worktree session's scratchpad may sit there. Write into the worktree's own `tmp/`, which `.git/info/exclude` ignores.
-- **The primary checkout can lag `main`.** On 10-28 it lacked that day's tools; another session pulled it to `c5350c98` on 10-29 at 15:48. Before the owner runs a tool from it, check that it is at `origin/main`.
-- **`pinentry` is `pinentry-gnome3`**, so a decrypt the session runs prompts on the owner's desktop. It does not prompt if the card still holds a PIN entry, as on 10-28.
+- **The primary checkout can lag `main`.** On 10-28 it lacked that day's tools; another session pulled it to `c5350c98` on 10-29 at 15:48. Before the Overtoad runs a tool from it, check that it is at `origin/main`.
+- **`pinentry` is `pinentry-gnome3`**, so a decrypt the session runs prompts on the Overtoad's desktop. It does not prompt if the card still holds a PIN entry, as on 10-28.
 - **G5** refuses a `/home/pcalnon` literal in a script: write `~pcalnon` in examples, and `Path.home()` or `$HOME` in code.
 - **`findmnt` given two paths** reads them as a source and a target; use `--mountpoint`.
 - **Merging**:
@@ -238,6 +238,6 @@ ls -d /home/pcalnon/Development/python/Juniper/juniper-ml/tmp/ac11-restore-2026-
 - no `git stash`; no interactive shells; no host actions.
 
 These bind the session and its lanes.
-- **The owner may direct a named action in person**, as with AC-11 on 10-28, a gpg decrypt and a diff. That releases that action only.
+- **The Overtoad may direct a named action in person**, as with AC-11 on 10-28, a gpg decrypt and a diff. That releases that action only.
 - **It never releases one of `…RECOVERY-PLAN.md` §6.0 item 6's absolutes**: no session runs a Duplicati binary, reads a secret file, or greps a log for values.
-- **Phase D's `sudo` steps, its server calls and its credential writes are the owner's.**
+- **Phase D's `sudo` steps, its server calls and its credential writes are the Overtoad's.**

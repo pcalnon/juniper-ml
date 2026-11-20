@@ -56,7 +56,7 @@ Evidence: `notes/JUNIPER_2026-08-14_…-R3-EA-RERUN-EVIDENCE.md` and
 - **cascor#509 is still OPEN** although both halves are merged and validated in the field.
   Issue direction (3) → #511, direction (1) → #512, and direction (2) (releasing the CUDA
   context inside the child) is unnecessary once the children actually exit. **Safe to close**,
-  citing the ml#1086 evidence — left open deliberately for the owner rather than closed
+  citing the ml#1086 evidence — left open deliberately for the Overtoad rather than closed
   unilaterally.
 - **cascor#505** — API `candidate_patience` / `candidate_convergence_threshold` never reach
   the candidate pool (workers run module defaults). Untouched by this arc.
