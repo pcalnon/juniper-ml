@@ -1,5 +1,39 @@
 #!/usr/bin/env bash
-
+########################################################################################################################
+# Author: Juniper ML Team
+# Email: overtoad.research@gmail.com
+# Date: 2026-11-21
+# Version: 0.1.0
+# Status: Development
+# Tags: util, conflict, resolve
+# Last Modified: 2026-11-21
+# Last Modified by: Juniper ML Team
+########################################################################################################################
+# Description:
+#     This script is used to resolve conflicts in the current branch.
+########################################################################################################################
+# Notes:
+#     The script will resolve conflicts in the current branch by checking out the their version of the file and adding it to the index.
+#     The script will then commit the changes and push them to the origin.
+#     The script will then exit.
+########################################################################################################################
+# Usage:
+#     ./util/conflicted_files.bash
+########################################################################################################################
+# Variables:
+#     CURRENT_DIR: The current directory.
+#     UTIL_DIR_NAME: The name of the util directory.
+#     UTIL_DIR_PATH: The path to the util directory.
+#     FILE_LIST_NAME: The name of the file list.
+#     FILE_LIST_FILE: The path to the file list.
+########################################################################################################################
+# Notes:
+#
+########################################################################################################################
+# References:
+#     https://www.atlassian.com/git/tutorials/git-merge/git-merge-strategy-ours
+#     https://www.atlassian.com/git/tutorials/git-merge/git-merge-strategy-theirs
+########################################################################################################################
 
 CURRENT_DIR=$(pwd)
 UTIL_DIR_NAME="util"
@@ -29,6 +63,7 @@ while read -r file < "${FILE_LIST_FILE}"; do
     # git checkout --ours "${file}"
     echo "git checkout --theirs \"${file}\""
     git checkout --theirs "${file}"
+
     echo "git add \"${file}\""
     git add "${file}"
 
@@ -38,5 +73,4 @@ while read -r file < "${FILE_LIST_FILE}"; do
     echo "git push origin ${CURRENT_BRANCH}"
     git push origin "${CURRENT_BRANCH}"
 
-    break
 done
