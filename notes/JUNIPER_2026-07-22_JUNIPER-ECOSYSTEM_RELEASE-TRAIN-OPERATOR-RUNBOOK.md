@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.2.5
+**Version**: 1.2.6
 **Last Updated**: 2026-11-15
 
 ---
@@ -725,8 +725,8 @@ python util/release_train/archive_guard.py --base origin/main --head HEAD --trai
   the Overtoad-gated `pypi` environment — GitHub reports that as run status `waiting`, which the train
   reports as **`PENDING_PYPI_APPROVAL`** (`ceremony.py:531`). **That terminal state is SUCCESS for the
   train** (plan §5.1). Terminal monitor returns are only
-  `PENDING_PYPI_APPROVAL` / `RELEASED` / `HALT_TESTPYPI` / `HALT_PUBLISH`
-  (`monitor_publish_run`, `ceremony.py:938-941`).
+  `PENDING_PYPI_APPROVAL` / `RELEASED` / `HALT_BUILD` / `HALT_TESTPYPI` / `HALT_PUBLISH`
+  (`monitor_publish_run` in `ceremony.py`).
   - **`NOT_FOUND` is not terminal.** Right after `gh release create`, the publish workflow is often
     invisible for a poll or two (`classify_publish_run(None) -> NOT_FOUND`, `ceremony.py:505`). The
     monitor **keeps polling** — it must never stamp `NOT_FOUND` onto the ceremony result (that would
@@ -792,34 +792,46 @@ invocation error (`ceremony.py:71-72`).
 | `archive-too-large` | the rendered archive, base64-encoded, exceeds the one-request signed-commit cap (default 1,000,000 B since 2026-10-26; `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides). Checked in the planner after the re-entry checks and **before** `create_branch`, so no empty `release-notes/<pkg>-v<ver>` branch is left behind (juniper-ml#2227). The cap is the GraphQL request body: a `FileAddition` replaces the whole file, so a large archive cannot be split across mutations | `ceremony.py` (`plan_ceremony` step 4b; `archive_b64_max`) | Condense the notes (`util/ad-hoc/2026-10-17_condense_release_notes_section.py`, the juniper-canopy 0.9.0 precedent) and re-run, or raise the env var. The default was 125,000 B, the figure measured from turing, until the runner-side measurement of 2026-10-26: a GitHub-hosted runner had every GraphQL body up to 16 MiB accepted (run 40410086979; `reports/2026-10-26_graphql-body-cap-probe/`), so the turing figure was that host's weak link (GitHub's GraphQL frontend drops a request that runs past about 7-10 s). The Overtoad then ruled the default up to 1,000,000 B. Never invent an archive body. |
 | `missing-declared-version` | manifest has no `declared_version` for a `BUMPED_NOT_RELEASED` pkg | `ceremony.py:711` | A malformed manifest — re-run detection (`report` mode) to regenerate it. |
 | `not-in-registry` | package is `BUMPED_NOT_RELEASED` in the manifest but absent from `registry.yaml` | `ceremony.py` (`_plans_for` / `ceremony.py:1152`) | Add the package to `util/release_train/registry.yaml` (registry lint gates it). Propose's parallel for `UNRELEASED_CHANGES` is a **skip stub** (`skipped_reason="package not in registry.yaml"`, §3.2) — not a HALT. |
-| `testpypi-verify-failed` | (during the monitor) the publish workflow's TestPyPI install-verify failed before Gate 2 | `ceremony.py:876` | The run is not healthy — inspect the publish run's TestPyPI job; fix and re-cut is idempotent. |
+| `testpypi-verify-failed` | (during the monitor) a job of the publish workflow whose name holds `testpypi` failed before Gate 2; its failed step names the cause (a publisher with no separate build job builds inside that job) | `execute_ceremony` (`ceremony.py`) | The run is not healthy — inspect the publish run's TestPyPI job; fix and re-cut is idempotent. |
+| `build-failed` | (during the monitor) the publish workflow's separate `Build and Validate` job failed, so that attempt published nothing (added 2026-11-15, juniper-ml#2592). 13 of the 18 publishers had that job before juniper-cascor#763 (canopy, juniper-ml's 7, recurrence's 3, cascor's protocol and model), and their build failures were a note with no issue until then; #763 gave cascor's main publisher one, and its ports give the last 4 one | `execute_ceremony` (`ceremony.py`) | The run is not healthy — inspect the build job; fix and re-cut is idempotent. |
 
 ### 4.1 Monitor terminals after the Release is cut
 
 After the archive PR + Release succeed, `monitor_publish` maps the publish workflow via
-`classify_publish_run` (`ceremony.py:497-532`) and `execute_ceremony` handles the two failure classes
-**asymmetrically** (`ceremony.py:1016-1028`; pinned by `tests/test_release_train_ceremony.py`):
+`classify_publish_run` and `execute_ceremony` handles the failure classes **asymmetrically** (both in
+`ceremony.py`; pinned by `tests/test_release_train_ceremony.py`):
+
+The run it reads (`publish_run_status`, `select_publish_run`; juniper-ml#2592): the Release's own runs
+(`--branch <tag>`), less any workflow not named `... to PyPI` (five repos also run `Publish Container Image`
+on the same Release, and before #2592 its run, often the newer, could be the one read) and any skipped one;
+then that publisher's `workflow_dispatch` runs on the tag, filtered by its workflow id. Of that set an
+unfinished run wins, then the run whose latest attempt started last (a re-run keeps its run id but
+restarts), then the newest run id. A republish dispatch (the owner's recovery ladder, rung 1: it
+copies TestPyPI's files to PyPI) skips the build and both publish jobs and runs `Republish the tested files
+(dispatch only)`, which classifies by the run's own status: `waiting` → `PENDING_PYPI_APPROVAL`, `success` →
+`RELEASED`, `failure` → `HALT_PUBLISH`.
 
 | Terminal | Classifier trigger | Dedup issue? | Operator response |
 |---|---|---|---|
-| `HALT_TESTPYPI` | any `*testpypi*` job `conclusion=failure` | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue` | Inspect TestPyPI install-verify; fix; re-cut (idempotent). |
-| `HALT_PUBLISH` | run `status=completed` and `conclusion` in `{failure, cancelled, timed_out}` **and** TestPyPI did **not** fail (so this is post-TestPyPI) | **No** — note only: `"the publish run failed before the pypi gate."` | Open the publish run UI; diagnose the non-TestPyPI failure (cancelled deploy, timed-out job, etc.). Do **not** wait for a GitHub issue. Archive + Release were already cut — re-entry resumes at the monitor and must not re-cut. |
+| `HALT_BUILD` | the job named `Build and Validate` has `conclusion=failure` (read first: it leaves the TestPyPI job skipped, not failed) | **Yes** — `reason_key=build-failed` via `upsert_halt_issue` | Inspect the build job; fix; re-cut (idempotent). |
+| `HALT_TESTPYPI` | any `*testpypi*` job `conclusion=failure` (the build job did not fail) | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue` | Inspect the TestPyPI job's failed step; fix; re-cut (idempotent). |
+| `HALT_PUBLISH` | run `status=completed` and `conclusion` in `{failure, cancelled, timed_out}` **and** no build or TestPyPI job has `conclusion=failure` (a cancelled build lands here too, as does a failed republish run) | **No** — note only: `"the publish run failed, was cancelled or timed out, with no failed build or TestPyPI job: open the run (no issue is filed for this class)."` | Open the publish run UI; diagnose the failure (cancelled deploy, timed-out job, a failed PyPI or republish job, etc.). Do **not** wait for a GitHub issue. Archive + Release were already cut — re-entry resumes at the monitor and must not re-cut. |
 | `PENDING_PYPI_APPROVAL` | run `waiting` / TestPyPI ok + pypi job parked | n/a (success for the train) | Approve Gate 2 when ready (§3.3). |
 | `RELEASED` | run completed `success` (both gates done) | n/a | The Overtoad already approved; nothing to do. |
 
-**Why the asymmetry.** `testpypi-verify-failed` is a named, recoverable §8 class with a stable
-`reason_key` for dedup. A generic post-TestPyPI failure has no single reason key worth filing — the
+**Why the asymmetry.** `testpypi-verify-failed` and `build-failed` are named, recoverable §8 classes with
+stable `reason_key`s for dedup. A generic failure outside the build and TestPyPI jobs has no single reason key worth filing — the
 step-summary note + Slack + the publish-run URL are the signal. Looking for a missing issue is the
 wrong recovery path.
 
 **HALT-issue degradation (Phase 4.3).** Filing the dedup issue is **best-effort**: if the `gh issue`
 API itself fails — most plausibly the cross-repo App token lacking the **Issues** permission — the
 upsert degrades gracefully to a loud log line + a step-summary flag (`halt_issue_failed`), and the
-package stays HALTED without crashing the run (`ceremony.py:_file_halt_issue`, `801`). When you see
+package stays HALTED without crashing the run (`ceremony.py:_file_halt_issue`). When you see
 "HALT issue could NOT be filed" in the ceremony step summary, **file the issue manually** (or grant the
 App the Issues permission — §8). The HALT itself is still surfaced in the summary and Slack. This
-degradation path applies only when the code *attempts* an upsert (`HALT_TESTPYPI` + precondition HALTs)
-— not to `HALT_PUBLISH`.
+degradation path applies only when the code *attempts* an upsert (`HALT_BUILD`, `HALT_TESTPYPI` and the
+precondition HALTs) — not to `HALT_PUBLISH`.
 
 ## 5. Rollback procedures
 
