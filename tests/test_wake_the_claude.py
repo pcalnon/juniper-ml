@@ -1824,6 +1824,26 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--effort", "1", "--prompt", "hello"])
         self.assertEqual(args, ["--resume", VALID_UUID, "--", "hello"])
 
+    def test_effort_true_sends_the_max_default(self) -> None:
+        """``--effort 0`` (true) sends the script default, ``EFFORT_DEFAULT``, which is ``max`` again.
+
+        juniper-ml#2396 had made the default ``auto``, which Claude Code 2.1.316-2.1.319 answers with "Unknown --effort
+        value 'auto'" and ignores. The owner ruled on 2026-11-08: restore ``max``, and send no flag for ``auto``.
+        """
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--effort", "0", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "max", "--", "hello"])
+
+    def test_effort_auto_sends_no_effort_flag(self) -> None:
+        """An explicit ``auto``, through every alias and in any case, sends no ``--effort``, so Claude Code uses its own default."""
+        cases = [(flag, "auto") for flag in ("-e", "--effort", "--effort-type", "--effort-level")] + [("--effort", "AUTO"), ("--effort", "Auto")]
+        for effort_flag, value in cases:
+            with self.subTest(effort_flag=effort_flag, value=value):
+                args = self._launch_and_get_args(["--resume", VALID_UUID, effort_flag, value, "--prompt", "hello"])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--", "hello"])
+        # max, the value auto used to replace, is still forwarded
+        args = self._launch_and_get_args(["--resume", VALID_UUID, "--effort", "max", "--prompt", "hello"])
+        self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "max", "--", "hello"])
+
     def test_missing_effort_value_fails_without_invoking_claude(self) -> None:
         """A bare ``--effort``, or one whose next token is a flag, must not launch claude."""
         cases = (

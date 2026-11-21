@@ -263,6 +263,9 @@ CRED_PATH_CASES = [
     ("cat ~/.s\\sh/config", CRED_BASH),
     ("cat ~/.$'\\x73'sh/config", CRED_BASH),
     ("cat ~/.{ssh,nothing}/config", CRED_BASH),
+    ("cat ~/.{r..t..1}sh/config", CRED_BASH),  # bash 4+'s stepped sequence: .rsh .ssh .tsh
+    ("cat ~/.{t..r..-1}sh/config", CRED_BASH),
+    ("ls ~/.{f..h..1}nupg", CRED_BASH),
     ("cat ~/.ss?/config", CRED_BASH),
     ("cat ~/.*/config", CRED_BASH),
     ("cd ~ && cat .*/config", CRED_BASH),
@@ -284,6 +287,7 @@ CRED_PATH_CASES = [
     ("ls -la .sshrc_backup", None),
     ("cat foo.ssh.txt", None),
     ("ls ~/.ssh.bak", None),
+    ("ls ~/.ss{h..h..1}.bak", None),  # a sequence keeps the component boundary: .ssh.bak
     ("ls .ssh-old", None),
     ("echo $GIT_SSH_COMMAND", None),
     ("GIT_SSH_COMMAND='ssh -o IdentitiesOnly=yes' git fetch origin", None),
@@ -321,6 +325,7 @@ SSH_PRIV_DEFAULTS_CASES = [
     ("doas ls", PRIV),
     ("SUDO ls", PRIV),
     ("{sudo,} ls", PRIV),
+    ("{s..s..1}udo ls", PRIV),
     ("timeout 5 sudo true", PRIV),
     ("nohup sudo true &", PRIV),
     ("xargs sudo rm < list.txt", PRIV),
@@ -341,6 +346,7 @@ SSH_PRIV_DEFAULTS_CASES = [
 GPG_CASES = [
     ("gpg --card-status", GPG_SECRET),
     ("gpg2 --card-status", GPG_SECRET),
+    ("gpg{2..2..1} --card-status", GPG_SECRET),
     ("gpg -K", GPG_SECRET),
     ("/usr/local/bin/gpg --with-colons -K", GPG_SECRET),
     ("gpg --list-secret-keys --keyid-format long", GPG_SECRET),
@@ -372,6 +378,30 @@ GPG_CASES = [
     ("gpg --sign x", GPG_SIGN),
     ("gpg -s x", GPG_SIGN),
     ("gpg --clearsign x", GPG_SIGN),
+    # GnuPG 2.4 runs these. A floor of 4 allowed every one.
+    ("gpg --cl", GPG_SIGN),
+    ("gpg --cle", GPG_SIGN),
+    ("echo t | gpg --cl", GPG_SIGN),
+    ("gpg --ls KEYID", GPG_SIGN),
+    ("gpg --lsi KEYID", GPG_SIGN),
+    ("gpg --det x", GPG_SIGN),
+    # The floor itself (GPG_MIN_ABBREV = 2). GnuPG 2.4.8 rejects every one-letter prefix of a denied option as
+    # ambiguous, so one letter stays allowed. Two letters or more are denied: --cl and --ls run (above), --clea
+    # runs clear-sign, and --li, --ex and --expo are denied although gpg rejects them as ambiguous. export is
+    # allowed only as the exact word.
+    ("gpg --s x", None),
+    ("gpg --c", None),
+    ("gpg --d secret.gpg", None),
+    ("gpg --l", None),
+    ("gpg --e KEYID", None),
+    ("gpg --li", GPG_SECRET),
+    ("gpg --ex KEYID", GPG_SECRET),
+    ("gpg --ca", GPG_SECRET),
+    ("gpg --expo KEYID", GPG_SECRET),
+    ("gpg --list=keys", GPG_SECRET),
+    ("gpg --LIST", GPG_SECRET),  # gpg compares case-sensitively and calls this invalid; the guard folds case and denies it
+    ("gpg --clea x", GPG_SIGN),
+    ("gpg --export KEYID", None),
     ("gpg -d secret.gpg", GPG_SIGN),
     ("unset GIT_CONFIG_COUNT; git commit -m x", GPG_SIGN),
     ("GIT_CONFIG_COUNT=0 git commit -m x", GPG_SIGN),
