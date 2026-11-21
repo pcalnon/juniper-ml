@@ -52,7 +52,7 @@ fi
 CURRENT_BRANCH=$(git branch | grep '^[[:space:]]*\*' | awk '{print $2}')
 echo "Resolving conflicts in branch ${CURRENT_BRANCH}"
 
-while read -r file < "${FILE_LIST_FILE}"; do
+while read -r file; do
     if [[ -f "${file}" ]]; then
         echo "File ${file} exists"
     else
@@ -73,4 +73,4 @@ while read -r file < "${FILE_LIST_FILE}"; do
     echo "git push origin ${CURRENT_BRANCH}"
     git push origin "${CURRENT_BRANCH}"
 
-done
+done < "${FILE_LIST_FILE}"
