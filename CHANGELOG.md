@@ -816,7 +816,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`juniper-service-core`: a `/ws/training` socket whose broadcast send fails or times out is closed 1011
   instead of being left open on a stream nothing is sent to** (owner ruling 11 in §8 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`). `broadcast` dropped such a socket
-  from the fan-out without closing it, so the client kept answering heartbeats, was never told it was missing
   frames, and held a socket that its released per-IP slot no longer counted. It is now closed **1011**
   `Broadcast send failed or timed out`, as juniper-cascor's copy closes it (F-CASCOR-004), and after any
   server-side close the receive loop drains until the disconnect instead of raising Starlette's `RuntimeError`
@@ -876,8 +875,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   when it cannot resolve the default. `tests/test_reap_pytest_orphans.py` gains 8 tests and redirects the legacy roots.
 
 ## [0.11.4] - 2026-11-06
-
-### Changed
 
 - **`[recurrence]` now floors `juniper-recurrence>=0.8.1`** (`<0.9.0`), the release that floors
   `juniper-model-core[crossval]>=0.3.0,<0.4.0` (juniper-recurrence#229). The pin was

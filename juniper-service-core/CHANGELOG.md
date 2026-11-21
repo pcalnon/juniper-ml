@@ -100,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `util/ad-hoc/2026-11-08_paused_fit_wedge_mutation_check.py`: the fix reverted, each new step or
   guard removed or replaced, the result recorded outside the guard, and the existing stop guard
   removed) are each killed by this file and by no other test.
+<<<<<<< HEAD
 - **A start sent while a stopped run's `fit` is still running is refused, so that `fit` sees its
   stop** (the stop-then-start race; §8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, "Fix all four now").
@@ -313,6 +314,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Python 3.12 and 3.13. The three that survive are recorded there with the reason: one is the
     alternative of holding the slot until the handler returns, which the slot test does not
     exclude on purpose, and two change nothing that a real socket can show.
+=======
+>>>>>>> 7b3b91b7 (fix(service-core): a fit that returns while paused settles COMPLETED instead of wedging the lifecycle (the paused-fit wedge) (#2531))
 
 ## [0.7.2] - 2026-11-08
 
