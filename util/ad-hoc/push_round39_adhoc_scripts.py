@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-15
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#1947
 
 A script rather than a shell loop because a worktree-isolated session refuses a command that builds
@@ -65,7 +65,7 @@ for name in NESTED:
 # the merge of juniper-ml#1947. The pattern is worth restructuring away from rather than
 # suppressing: on the one occasion it really IS a missing comma, two arguments silently become one,
 # the subprocess call is wrong, and nothing about the failure points at the list.
-COMMIT_BODY = """Eighteen scripts, retained as provenance of record per the owner policy of 2026-08-25.
+COMMIT_BODY = """Eighteen scripts, retained as provenance of record per the Overtoad policy of 2026-08-25.
 
 Three are worth naming. 2026-09-15_compare_outlier_basis_designs.py is the only instrument that
 separates the three candidate outlier bases -- the real cache cannot, and

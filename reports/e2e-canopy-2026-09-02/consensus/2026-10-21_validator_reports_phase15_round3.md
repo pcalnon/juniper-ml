@@ -232,9 +232,9 @@ One comment is stale. The release line says the output "means item 7 is still ow
 3. items 18–21;
 4. item 27;
 5. items 25, 28 and 29;
-6. item 33 (the owner's);
+6. item 33 (the Overtoad's);
 7. item 26's second step (on O17);
-8. the canopy release (the owner's, after item 34);
+8. the canopy release (the Overtoad's, after item 34);
 9. cleanup;
 10. the parent's items 5 and 7, and O1–O17.
 
@@ -320,7 +320,7 @@ And the consensus record, `:13203-13204`:
 
 **D8. Handoff item 6, `:104-109` (ledger item 33, `:13243-13248`, likewise).** After "(that venv, a system-site venv over the conda env, holds the editable canopy; pip takes the newest dash 4.x with `comm` and `janus`).", add:
 
-> "Once the owner has pulled the canopy primary to `main`, `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py canopy --phase all` does the re-sync, that install (with the `[test,juniper-cascor,observability]` extras) and the lanes the E2 record cites in one run. On this route the conda env itself keeps dash 3.3.0, shadowed by the venv."
+> "Once the Overtoad has pulled the canopy primary to `main`, `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py canopy --phase all` does the re-sync, that install (with the `[test,juniper-cascor,observability]` extras) and the lanes the E2 record cites in one run. On this route the conda env itself keeps dash 3.3.0, shadowed by the venv."
 
 **D9. Handoff item 4, `:97-98`.**
 

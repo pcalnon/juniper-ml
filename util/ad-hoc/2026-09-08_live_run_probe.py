@@ -326,7 +326,7 @@ def main() -> int:
                 # canopy's SERVER-side view of the same instant (/api/state, what the
                 # training-state stores are filled from). Lets a blank phase-duration or an
                 # 'Inactive' badge be attributed: either the canopy server never learned the
-                # state, or it did and the browser store never applied it -- different owners.
+                # state, or it did and the browser store never applied it -- different Overtoads.
                 try:
                     cs = _w3.http_get("/api/state", timeout=8)[1] or {}
                     sample["canopy_state"] = {k: cs.get(k) for k in ("status", "phase", "candidate_pool_status", "candidate_pool_phase", "candidate_pool_size", "phase_started_at", "current_epoch", "is_running")}

@@ -31,7 +31,7 @@ Successor to
 >
 > | §1 item | state on 2026-09-22 |
 > |---|---|
-> | **1 — six owner decisions, "put them to the owner"** | **DONE, on 2026-09-11, hours after this file was written.** All six RULED: [`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](../../../notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md) (`juniper-ml#1927`). Per-decision status in the table below. **Do not re-ask the owner.** |
+> | **1 — six Overtoad decisions, "put them to the Overtoad"** | **DONE, on 2026-09-11, hours after this file was written.** All six RULED: [`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](../../../notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md) (`juniper-ml#1927`). Per-decision status in the table below. **Do not re-ask the Overtoad.** |
 > | **2 — a micro cut on an idle host** | **STILL BLOCKED (5th session), and the recipe below is now BROKEN** — see the `0003` block in §1 item 2. |
 > | **3 — three narrowed ICV residuals** | **UNTOUCHED.** Still open, still optional. The 09-16 sweep closed a *different* residual (its own draft's), not these. |
 >
@@ -39,7 +39,7 @@ Successor to
 >
 > | D | ruling (2026-09-11) | state 2026-09-22 |
 > |---|---|---|
-> | **D1** cascor thread-pin defect | measure later output passes at widths > 2 first | **The WIDTH question is answered** — [`…THREAD-WIDTH-SWEEP.md`](../../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md): widths 2–8 indistinguishable, keep 2 (16 is 4.97–7.42× worse across both runs — see ⚠ 2 for the mechanism qualifier). **The DEFECT is not repaired and the repair is still an open owner item** — see the ⚠ below. |
+> | **D1** cascor thread-pin defect | measure later output passes at widths > 2 first | **The WIDTH question is answered** — [`…THREAD-WIDTH-SWEEP.md`](../../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md): widths 2–8 indistinguishable, keep 2 (16 is 4.97–7.42× worse across both runs — see ⚠ 2 for the mechanism qualifier). **The DEFECT is not repaired and the repair is still an open Overtoad item** — see the ⚠ below. |
 > | **D2** `runtime:` block via the env route | implement, **gated** on a two-phase cap sweep | **route half measured** — it binds, and capping helps (the published −33% is measured on a contaminated column and **understates** it, ⚠ 3 below); **epoch-count half never delivered** — see ⚠ below. **IMPLEMENTED 2026-09-22**, this session. |
 > | **D3** PF-3 | unblock via D2, then a quiet host | **still blocked** — D2's code has only just landed, and the host has never been quiet. |
 > | **D4** PF-2 retarget | retarget at the candidate phase + 2 axes | **SPEC'd**; axis 3 calibrated (viable, gate on *accuracy*, sample 2,3,4,5). **Axis 2 needs an OWNER CALL** — 250 → 500,000 is unreachable, juniper-data caps `n_points_per_spiral` at 10,000. |
@@ -54,11 +54,11 @@ Successor to
 > worker_thread_count * 2))` inside `_init_multiprocessing`, which binds only the constructing
 > thread — so the training thread still runs the initial output pass unpinned at 16.
 > `…ICV-INSTRUMENT.md` and `…BURST-LIBRARY-ATTRIBUTION.md` both still call the repair an open
-> owner decision, and the 09-16 sweep never retracts them. D2's environment route is a
+> Overtoad decision, and the 09-16 sweep never retracts them. D2's environment route is a
 > **workaround available to the experiment harness**, not a fix to cascor.
 >
 > **2. "16 is 5–7× worse" needs its mechanism qualifier.** That penalty is the `thread`
-> mechanism's. On the `env` route — the one the owner actually ruled for — width 16 costs about
+> mechanism's. On the `env` route — the one the Overtoad actually ruled for — width 16 costs about
 > **1%** (later-pass medians 1.574 vs ~1.55 at width 2). "5–7×" is also loose: the true span
 > across both runs is **4.97–7.42×**. The 09-16 note itself calls `thread`
 > w16 "an artificial worst case that no production configuration produces". Quoting the 5–7×
@@ -94,7 +94,7 @@ Successor to
 > - **D2 IMPLEMENTED.** `runtime:` no longer binds nothing. See the §1 item 1 D2 block below.
 > - **D6 DISCHARGED** from a committed instrument. Its 09-17 predecessor is **not lost** — the
 >   instrument and a note both exist, UNCOMMITTED, in `.claude/worktrees/optimized-giggling-koala`
->   (that worktree is locked; do not remove it). Committing them is the owner's call.
+>   (that worktree is locked; do not remove it). Committing them is the Overtoad's call.
 >
 > **Changed by this session, by filename**: `util/experiments/run_suite.py`,
 > `util/experiment_stack.bash`, `tests/test_run_suite.py`,
@@ -122,12 +122,12 @@ was that libgomp's **per-thread** `nthreads-var` ICV is readable through `ctypes
 (`omp_get_max_threads()` returns the *calling thread's* width), which is the quantity the whole arc
 had been inferring from thread counts and core totals. `juniper-ml#1896` is merged (see §2 for the
 squash sha). Item 2 remains host-bound — the four evidence files record one-minute loads of 9.20 /
-10.86 / 11.71 / 12.10, and the host was at 20.30 when the session opened — and item 1's six owner
-decisions remain owner-gated, unchanged in substance.
+10.86 / 11.71 / 12.10, and the host was at 20.30 when the session opened — and item 1's six Overtoad
+decisions remain Overtoad-gated, unchanged in substance.
 
 ### Work list, in order
 
-1. ~~**Six owner decisions are open — put them to the owner; do NOT take them yourself.**~~
+1. ~~**Six Overtoad decisions are open — put them to the Overtoad; do NOT take them yourself.**~~
    **ALL SIX RULED 2026-09-11** (`juniper-ml#1927`). The table below is kept because each row
    still names where a decision's *substance* lives, which the ruling note cites rather than
    restates. **Do not re-ask.** Current status per decision is in the re-probe block at the top.
@@ -138,7 +138,7 @@ decisions remain owner-gated, unchanged in substance.
    > measured one configuration N times. `eval_metrics_enabled` was worst — `service:` rejects it
    > with *"belongs in runtime: (process env)"*, herding authors into a key that did nothing.
    >
-   > Implemented as the owner ruled it, via the environment route: `run_suite.runtime_block_env`
+   > Implemented as the Overtoad ruled it, via the environment route: `run_suite.runtime_block_env`
    > resolves the block before the first `--up` (fail-closed — a bad value refuses the suite,
    > D5's lesson), and `experiment_stack.bash` exports and **records** the variables at cascor
    > bring-up, so `env/launch.env` finally states the width the service actually ran at.
@@ -363,7 +363,7 @@ interpretable**. Fix the checkpoint before quoting anything.
 ## 7. What this handoff does NOT cover
 
 The predecessor's §7, and the arcs it names (backup, canopy E2E, defect register, P5, soak,
-partition, service-core) have other owners. The ICV note's §7 lists four residuals; the first three
+partition, service-core) have other Overtoads. The ICV note's §7 lists four residuals; the first three
 are in §1 item 3 above.
 
 ## Git state at hand-off

@@ -2,7 +2,7 @@
 
 **Date**: 2026-11-08 (UTC; written ~11:45Z)
 
-**Arc**: the Cursor flood-4 disposition, session 2. It started as `joyful-dancing-kahan` and ran in `humming-stargazing-papert` via EnterWorktree once session 1 (pid 2311382) exited. It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-08_flood4-round1-carriers-landed-record-next.md` (the round-1 handoff), on the owner's "merge approval granted".
+**Arc**: the Cursor flood-4 disposition, session 2. It started as `joyful-dancing-kahan` and ran in `humming-stargazing-papert` via EnterWorktree once session 1 (pid 2311382) exited. It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-08_flood4-round1-carriers-landed-record-next.md` (the round-1 handoff), on the Overtoad's "merge approval granted".
 
 **Host**: the Linux host.
 
@@ -16,7 +16,7 @@
   - M-3: `.claude/worktrees/agent-a2a3d94543b707549` (deliverables and validator findings in `tmp/flood4-fix/m3/`);
   - M-4/M-7: `.claude/worktrees/agent-a552a50a3a9e32041` (`tmp/flood4-fix/m4m7/`);
   - M-1: `/home/pcalnon/Development/python/Juniper/worktrees/juniper-data--fix--gitleaks-pr-commit-pagination--20261108-0340--4f04fc8d` (`tmp/flood4-fix/m1/`).
-- **The primary checkout** is on the owner's branch `feat/article-draft_backup-fix-notes` (#2520). Do not touch it.
+- **The primary checkout** is on the Overtoad's branch `feat/article-draft_backup-fix-notes` (#2520). Do not touch it.
 
 ---
 
@@ -29,10 +29,10 @@ HANDOFF_2026-11-08_flood4-record-validated-fixes-built-round2-triaged.md. Read i
 (uncommitted). Once session 2 has exited (lock: `git worktree list --porcelain`), EnterWorktree(path=<that worktree>).
 Run the Verification block first. If an invariant fails, stop, re-derive it from GitHub, and report.
 
-FIRST ask the owner for THIS session's merge approval (auto-memory feedback_headless_merge_approval_policy.md: a handoff
+FIRST ask the Overtoad for THIS session's merge approval (auto-memory feedback_headless_merge_approval_policy.md: a handoff
 cannot carry it). Ask it as "Merge, update, close", covering the record PR, the defect-fix PRs, the M-1 fan-out PRs and
 the round-2 carriers. Also ask the open question: #2507 (CI-gate REFERENCE's version cell, pins sentence and matrix row
-against pyproject, which needs propose.py extended: carry it or not?). The owner's rulings 1-11 below stand as decisions.
+against pyproject, which needs propose.py extended: carry it or not?). The Overtoad's rulings 1-11 below stand as decisions.
 
 Remaining work, in landing order (strict rulesets; shared files: CHANGELOG.md, docs/REFERENCE.md and the doc stamps):
 
@@ -109,7 +109,7 @@ Remaining work, in landing order (strict rulesets; shared files: CHANGELOG.md, d
 
 ---
 
-## The owner's rulings of 2026-11-08 (AskUserQuestion; option labels verbatim)
+## The Overtoad's rulings of 2026-11-08 (AskUserQuestion; option labels verbatim)
 
 | # | Question | Answer |
 |---|---|---|

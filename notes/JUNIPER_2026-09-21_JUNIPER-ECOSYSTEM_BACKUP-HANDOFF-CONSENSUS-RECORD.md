@@ -10,7 +10,7 @@
 
 ## Why this file exists
 
-The owner asked for the handoff to be validated by consensus before it was archived and merged. Three
+The Overtoad asked for the handoff to be validated by consensus before it was archived and merged. Three
 independent agents reviewed the handoff's first draft (Lane A re-derived every concrete claim against the
 repository and the host; two Lane B lenses attacked completeness/fidelity and actionability); their
 corrections were folded in, a fourth agent checked the corrected text (round 2), and a fifth checked round 2's
@@ -93,7 +93,7 @@ Entry point: worktree `atomic-sauteeing-truffle` (HEAD `3ee84ebb`) + live host a
 3. **F15 second half:** delete "the unit row's `NeedDaemonReload` sentence is wrong (see §0)" — §4.1's unit row already reads "A systemd reload at 03:23:44 **armed** the edited `ExecStart` …; the running process used the older form". Only the three-wave copy dating remains to apply.
 4. **A1 specifier split:** "of the 22 `Failed to resolve specifiers` lines, 4 are on 09-18 (21:15:40, 21:16:10, 21:17:54, 21:29:51) and 18 on 09-19; the single `Failed to resolve unit specifiers` line is 09-18 21:23:25, so 09-18 carries 5 `Invalid slot` lines and 09-19 18."
 5. **A1 Repair times:** "the `.backup` ErrorLog holds nine `Failed while executing Repair "Ubuntu"` entries on 08-25 (02:05:17, 02:13:57, 02:14:42, 02:15:31, 02:16:17, 02:17:03, 02:17:50, 02:18:37, 02:19:24) and `Verify` failures at 02:13:07 and 02:19:46; nothing at 02:19:19."
-6. **`.dropbox-dist`:** "a Dropbox client (270.4.3312) owned `duplicati:duplicati`; the directory was created 09-15 15:26:22 (birth), its content mtime is 09-14 20:49:31 (the distribution's own timestamp), and its ownership/mode last changed 09-18 20:30:49 (ctime) — the 'since 09-14 20:49' date is the mtime, not the chown."
+6. **`.dropbox-dist`:** "a Dropbox client (270.4.3312) owned `duplicati:duplicati`; the directory was created 09-15 15:26:22 (birth), its content mtime is 09-14 20:49:31 (the distribution's own timestamp), and its Overtoadship/mode last changed 09-18 20:30:49 (ctime) — the 'since 09-14 20:49' date is the mtime, not the chown."
 7. **B2 D22 "§12 lists the PR's files":** "§12 names the consensus record and the two B1 instruments only; the step-reports record, `…forensics.py`, `…env_file_shape.py`, `…lint_design_snippets.py`, `…wrap_long_markdown_lines.py` and this handoff are still unlisted (§1.3 must add them)."
 8. **"§0's alias table":** "the alias list in the design's header (**Companions**, L9–14)".
 9. **B3 F-1/F-3:** drop "`InaccessiblePaths=` for the pcalnon profile" or mark it as the orchestrator's addition; B3's list is `-/etc/shadow -/etc/gshadow -/etc/ssh -/etc/credstore -/etc/credstore.encrypted -/var/lib/docker -/var/log -/root`.
@@ -108,7 +108,7 @@ Entry point: worktree `atomic-sauteeing-truffle` (HEAD `3ee84ebb`) + live host a
 - The 2026-08-25 journal window (journal retention starts 09-05; syslog day files start 09-12) — the Repair/Verify times come only from the `.backup` ErrorLog.
 - `duplicati-cli list … --time=2026-09-18T14:00:00Z` (A0's premise) — needs the passphrase; not run. `duplicati-server --version` starts a server — not run, by rule.
 - All source citations (`path.c`, `EncryptedFieldHelper.cs`, `RepairHandler.cs`, `DatabaseUpgrader.cs`, `WipeEncryption.cs`, `Program.cs` exit 102) — not re-fetched.
-- Owner quotes, "no live system state was changed", the `feat/…` → `main` history of the wrapper target between 02:15 and 03:14.
+- The Overtoad quotes, "no live system state was changed", the `feat/…` → `main` history of the wrapper target between 02:15 and 03:14.
 - The pinned markdownlint run (hook carries `--fix`; no local binary).
 
 ## 4. Instrument adequacy
@@ -194,13 +194,13 @@ A3 #7 is moot (no schema-directory path remains in §5.3). Residual not in eithe
 7. **§2 trap "there is no `--server-datafolder`"** — false (fidelity 1); **§2 trap "`PathChanged=` does not (per source, not man page)"** — reword per fidelity 2.
 8. **§5 "Dropbox Rewind … not evaluated"** vs B3 F-13, which makes Rewind/version history a design item (sole recovery from a mass delete; a new set must delete-forever the old). Record as dissent, not scope.
 9. **§1.6 "Appendix C items 1–8 are unchanged"** — item 2 was rewritten by A2 #8 (l. 1221). Say "not yet applied to YAM / the 09-07 handoff / the snapshot script".
-10. **§1.5 owner actions omit** O-10 (live `duplicati` shells), O-6 (primary `.env` `PASSPHRASE=` count), B1 O4 (08-25 Repair actor), and the D-2 re-decision (B3 top-1).
+10. **§1.5 Overtoad actions omit** O-10 (live `duplicati` shells), O-6 (primary `.env` `PASSPHRASE=` count), B1 O4 (08-25 Repair actor), and the D-2 re-decision (B3 top-1).
 11. **§0 "data folder `/home/duplicati/.config/Duplicati/`"** stated as fact; A1 T4 says `/proc/1397393` is unreadable and the folder is inferred. Add "(inferred — A1)".
 
 ## 5. Five most consequential
 
 1. Fidelity 1: a ✔-marked "no `--server-datafolder`" that A3's own capture refutes — it rewrites a correct P0 step, poisons §2 and the STOP block, and hides an A3-vs-B2 conflict.
-2. Sixteen drops, four of them owner-time-critical: O-10 (shell history appends on exit), O-6 (a possibly world-readable `PASSPHRASE=` since 08-25), A1 Q1 (Slack tokens in the 0664 `.env`), the D-2 re-decision.
+2. Sixteen drops, four of them Overtoad-time-critical: O-10 (shell history appends on exit), O-6 (a possibly world-readable `PASSPHRASE=` since 08-25), A1 Q1 (Slack tokens in the 0664 `.env`), the D-2 re-decision.
 3. Fidelity 6: "values never printed" understates a TestPyPI token that transited a cloud-linked transcript.
 4. Contradiction 1: the handoff asserts a merged PR that does not exist; its own §3 cannot pass.
 5. Fidelity 2/3/4: three dispositions (D1 man page, F1 "≠ the literal", F2 `DELETE FROM Schedule`) misstate what the lanes said in exactly the places round 2 will re-check.
@@ -234,7 +234,7 @@ All probes are in; nothing further to request. Deliverable follows.
 4. **§1.4 item 2 — "re-run the key-hash probe … candidate in a 0600 file".** The probe has no candidate-file argument: argv[1] = wrapper (literal `L`), argv[2] = pcalnon credential file (`PASSPHRASE`/`PASSPHRASE_OLD=` lines), argv[3:] = `label=dbcopy`; stdin lines matching `SETTINGS_ENCRYPTION_KEY=` become `ENV_ACTIVE_KEY`. A fresh thread would write a new script or put the value on argv. Replacement: "write one line `SETTINGS_ENCRYPTION_KEY=<value>` into a 0600 file; `cat <file> | python3 util/ad-hoc/2026-09-21_duplicati_settings_key_hash_probe.py scripts/duplicati-wrapper.bash ~/.config/duplicati-backup/env snap=<copy>` (the `.env` may be concatenated on the same stdin)".
 5. **§1.5 item 5 — "Decisions D-1 … D-13 (§10)".** §10 holds D-1…D-12 (`grep -c D-13` → 0); D-13 is created by B2 A8 at reconciliation. Replacement: "D-1 … D-12, plus D-13 (Dropbox root policy) once §1.1 A8 lands".
 6. **§1.5 item 3 — "`duplicati.service~`/`.swp`/drop-in" with no directory.** The loaded unit is the **vendor** file `/usr/lib/systemd/system/duplicati.service` (`FragmentPath`; `DropInPaths=` empty; edited in place), which the design's §7.3 block (`# file: etc/systemd/system/duplicati.service`) will shadow, not replace. Replacement: "`sudo ls -la /usr/lib/systemd/system/ | grep -i duplicati` (look for `.duplicati.service.swp`, `duplicati.service~`), `sudo ls /etc/systemd/system/duplicati.service.d/ 2>/dev/null`; `sudo grep -c ENCRYPTION /root/.bash_history` before reading".
-7. **§1.5 item 1 — TestPyPI token.** The owner is not told where the value lives: `~/.bashrc` is the only startup file naming `TEST_TWINE_*` (grep -l; values unread), and both are in this session's environment. Replacement: "revoke at test.pypi.org → API tokens, mint a new one, replace the value in `~/.bashrc`; CI is OIDC, nothing in `.github/` changes".
+7. **§1.5 item 1 — TestPyPI token.** The Overtoad is not told where the value lives: `~/.bashrc` is the only startup file naming `TEST_TWINE_*` (grep -l; values unread), and both are in this session's environment. Replacement: "revoke at test.pypi.org → API tokens, mint a new one, replace the value in `~/.bashrc`; CI is OIDC, nothing in `.github/` changes".
 8. **§1.5 item 4 — `duplicati-cli list …`.** Largely right: `list` is an accepted alias (`help list` prints the `find` usage: *"list shows only the latest version by default"*), `--time` takes absolute ISO, `--no-local-db` exists ("when listing contents … the local database can be skipped"), `PASSPHRASE` maps to `--passphrase`. Sharpen: the 09-18 14:00Z fileset **is** the latest (9 dlists, newest `20260918T140000Z`), so `--version=0` removes the `Z`-parsing doubt; add `--no-local-db=true`; keep `--dbpath` (without it Duplicati consults the orphan profile's `dbconfig.json`); load the passphrase with `set -a; . ~/.config/duplicati-backup/env; set +a` in a subshell, never `export PASSPHRASE=…` in a history-enabled shell.
 9. **§1.2 — pool and done-criterion.** "Two or three fresh validators (one Lane A …; one Lane B …)" names two lanes and leaves the third unspecified; procedure §3's top-right cell (document of record, instrument previously wrong, universal quantifiers, a fix hangs on it) prescribes 3+ Lane A with distinct entry points + 2+ Lane B; termination is only by reference. Replacement: "Round 2 = Lane A ×2 (host: re-run §3 and every §4/§5 count that changed; product: 2.4.0.0 `help` + DLL-name scan for every option the reconciled P0 uses) + Lane B ×2 (actionability of reconciled §8; security of the P0.5 bucket), briefed only on the change list and dissent; archive verbatim to `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`; done when a round changes no number, disposition or action; ≤3 subagents at once."
 10. **§1.1 D22 dissent — "§0's alias table binds each alias to a filename".** No such table exists in §0 or anywhere; PLAN/YAM are bound in the header's source list (design lines 10–11, prose). 41 short-name references (29 `YAM §`, 9 `PLAN §`, 3 `CON §`). Also: **the shim refuses any command containing the word "alias"** (git-alias guard) — grep it from a script. Replacement: "the header source list (lines 8–16) binds PLAN/YAM/CON; write the dissent against that".
@@ -289,7 +289,7 @@ Also tested and held: DOWN-since (dlist mtime 09:12:00 CDT = 14:12Z), 877 files,
 2. §3/§4 commands are refused or fragile in a worktree session (`cd`, `git fetch`, `git -C`, `--limit 5`, the word "alias").
 3. §1.2 round-2 pool is below procedure §3 and has no explicit done/archive criterion.
 4. §1.4 item 2 cannot be executed as written (probe input format).
-5. Owner items 1/3/5 lack their "where" (`~/.bashrc`; `/usr/lib/systemd/system/`; D-13 absent).
+5. The Overtoad items 1/3/5 lack their "where" (`~/.bashrc`; `/usr/lib/systemd/system/`; D-13 absent).
 
 ## 6. What I could not determine
 
@@ -351,14 +351,14 @@ All re-measurement was read-only (host, journal counts/timestamps only, scratch 
 10. **§1.1 D1 / §2 trap** "verify against the 259 source": verified — append "verified (round 2): v259 `path.c` `path_spec_check_good` → `good = !initial && !from_trigger_notify && b != s->previous_exists` for `PATH_CHANGED`/`PATH_MODIFIED`, and `path_trigger_notify_impl` re-checks with `from_trigger_notify=true`, so `PathChanged=/run/media/pcalnon` is a sound fix; the udev rule is an alternative, not a requirement."
 11. **§1.2 Lane A product entry** "scan of `Duplicati.Server.Implementation.dll`" misses `startup-delay`/`usage-reporter-level` (`Duplicati.Library.RestAPI.dll`), `secret-provider*` (`Duplicati.Library.Main.dll`) and the tools' `--server-datafolder`. Replace with "a UTF-16 option-name scan of every `/usr/lib/duplicati/*.dll` (549 files, seconds)".
 12. Design §7.3.2: "neither of which this design uses" → "none of which this design uses" (three alternatives now).
-13. **§1.5 item 4**: `sudo` is unnecessary for `ls -la /usr/lib/systemd/system/`, and `.duplicati.service.swp` is world-readable (root 0644, 12 KiB, 01:45) — `grep -c ENCRYPTION` = 0 today. Append: "(the swap file is world-readable — 0 `ENCRYPTION` lines at 15:05 CDT; no `duplicati.service~`, no `duplicati.service.d/`; only root's history/viminfo need the owner)".
+13. **§1.5 item 4**: `sudo` is unnecessary for `ls -la /usr/lib/systemd/system/`, and `.duplicati.service.swp` is world-readable (root 0644, 12 KiB, 01:45) — `grep -c ENCRYPTION` = 0 today. Append: "(the swap file is world-readable — 0 `ENCRYPTION` lines at 15:05 CDT; no `duplicati.service~`, no `duplicati.service.d/`; only root's history/viminfo need the Overtoad)".
 14. §4 "Branch … is opened … and … merged as" → "will be opened … and merged as" (§0 already says "To be merged").
 15. §1.1 B3 transcript sentence: the count matches pattern MENTIONS (every validator's own `grep` command text counts — 48 now). Append "(an upper bound: the pattern also matches the validators' own command text)".
 16. §1.1 D9 nit: "`-wal`/`-shm` appear" → "the header flips to WAL (the `-wal`/`-shm` pair exists only while the tool runs) and the sha256 changes".
 
 ### (3) Verdict
 
-**Yes — round 2 changes dispositions, actions and numbers**, so by §1.2's own done-criterion this is not the terminating round: (i) disposition — B1 F12 vs B2 D5 settled for B1 from source (R9); (ii) disposition — D1's `PathChanged=` behaviour verified from `path.c`, udev becomes optional (R10); (iii) action — §1.4's throwaway-server test narrows to B3 O-2 only (R9); (iv) numbers — alias-only references 46 not 41–42 (R5); token-shaped lines in two subagent transcripts (1 + 3), not one (item 6); (v) fact — `--webservice-password-init` is a value-taking option (R8); (vi) actionability — candidate must be alone on the probe's stdin (R2); (vii) consistency — exception lists and the §4/§12 file list (R1, R7). No §0 number, no root-cause leg and no owner action other than the narrowed F12/D5 test changes.
+**Yes — round 2 changes dispositions, actions and numbers**, so by §1.2's own done-criterion this is not the terminating round: (i) disposition — B1 F12 vs B2 D5 settled for B1 from source (R9); (ii) disposition — D1's `PathChanged=` behaviour verified from `path.c`, udev becomes optional (R10); (iii) action — §1.4's throwaway-server test narrows to B3 O-2 only (R9); (iv) numbers — alias-only references 46 not 41–42 (R5); token-shaped lines in two subagent transcripts (1 + 3), not one (item 6); (v) fact — `--webservice-password-init` is a value-taking option (R8); (vi) actionability — candidate must be alone on the probe's stdin (R2); (vii) consistency — exception lists and the §4/§12 file list (R1, R7). No §0 number, no root-cause leg and no Overtoad action other than the narrowed F12/D5 test changes.
 
 ### (4) Could not determine
 
@@ -416,7 +416,7 @@ Read-only throughout; scratch `…/scratchpad/hvalR3/` (the R16 copy was 0600 in
 
 ### (3) Verdict
 
-**Yes.** Numbers: 46 → 44 (three sites), "three places" → four, "two record files" → three. Action/mechanism: the init-password file channel is `--parameters-file`, not `--settings-file`. No disposition changes; no §0 fact, root-cause leg or owner action changes.
+**Yes.** Numbers: 46 → 44 (three sites), "three places" → four, "two record files" → three. Action/mechanism: the init-password file channel is `--parameters-file`, not `--settings-file`. No disposition changes; no §0 fact, root-cause leg or Overtoad action changes.
 
 ### (4) Could not determine
 

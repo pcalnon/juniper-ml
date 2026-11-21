@@ -17,7 +17,7 @@ Repo root: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktree
 
 - **Tests pass.** At `53d05121`, `python3 -m unittest tests/test_safe_merge.py tests/test_wait_for_checks.py` gives `Ran 124 tests … OK`.
 - **The refreshed spans catch the stale budgets.** In a scratch copy with data / data-client / deploy set back to 2400 / 2400 / 700, the run gives `FAILED (failures=6)`. That is exactly those three repos, at both pin sites (`KillResilienceTest` and `TimeoutSizingTest`).
-- **The raises follow the owner-ratified rule.** Data's window is (2589, 6604] and data-client's is (2565, 6180], both clamped to 3300. Deploy's is (965, 1800], mid 1382, so 1400.
+- **The raises follow the Overtoad-ratified rule.** Data's window is (2589, 6604] and data-client's is (2565, 6180], both clamped to 3300. Deploy's is (965, 1800], mid 1382, so 1400.
 - **No caller relied on the old 1800 s default.** Every script that runs the waiter passes `--timeout` explicitly: `util/safe_merge.py:802`, `util/ad-hoc/2026-08-24_bot_pr_merge_sweep.py:124`, `util/ad-hoc/watch_prs_until_terminal.bash:75`. Loading `safe_merge.py` from the waiter is safe: its signal and ctypes calls sit inside functions.
 - **The docs match the code.** `docs/REFERENCE.md`'s spans and budgets rows agree with `REPO_TIMEOUTS` and `MEASURED_SPANS`.
 
@@ -39,8 +39,8 @@ Repo root: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktree
 
 `readjudicate_soak_findings.py` rebuilt each flagged file at the flagged head and at the base named in that run's own annotation; all 30 findings reproduced. `window_structure_replay.py` replayed the 57 commits merged to main since 2026-09-18.
 
-- **A (major): the proposed C4 repair would fail its own backtest.** The handoff (§1, non-owner item 1) says C4 should accept a heading "whose old text survives inside a renamed one". The old text survives only for #1973 and for 2 of #2009's 5 headings. For example:
-  - #1976: `### 0.5 \`JuniperCascor1\` environment repair — owner has not ruled, asked 3+ times` became `### 0.5 ~~…environment repair~~ — **MOOT, CLOSED 2026-09-21**`.
+- **A (major): the proposed C4 repair would fail its own backtest.** The handoff (§1, non-Overtoad item 1) says C4 should accept a heading "whose old text survives inside a renamed one". The old text survives only for #1973 and for 2 of #2009's 5 headings. For example:
+  - #1976: `### 0.5 \`JuniperCascor1\` environment repair — Overtoad has not ruled, asked 3+ times` became `### 0.5 ~~…environment repair~~ — **MOOT, CLOSED 2026-09-21**`.
   - #1983: `…two of three copies` became `…three of four copies`.
   - #1992 and #2009's `## 3.` heading had their endings replaced the same way.
 
@@ -49,7 +49,7 @@ Repo root: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktree
   - `ci.yml:1628` says to drop "the `|| true` below", but the step contains no `|| true`.
   - The walkthrough (`…CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md` §7 item 2) says to drop the trailing `exit 0`. That leaves an `if` as the last command, and it returns 0.
 
-  `soak_step_tail_sim.py` ran the real step under `bash -eo pipefail` with a stand-in screen that exits 1. With the `exit 0` removed, the step still exits 0 and only emits the warning. Fix: end the step with `exit "$rc"`, and put this in the owner's promotion decision.
+  `soak_step_tail_sim.py` ran the real step under `bash -eo pipefail` with a stand-in screen that exits 1. With the `exit 0` removed, the step still exits 0 and only emits the warning. Fix: end the step with `exit "$rc"`, and put this in the Overtoad's promotion decision.
 - **C (minor): one finding is counted twice.** The two #1973 entries are the same lost heading, split only because the detail text reads `31 -> 38` in one run and `31 -> 39` in another. The correct tally is 9 distinct findings, 2 true and 7 false, with the C4 false positives spread across 5 PRs. Also, #1983 is a content correction, not a status rename. Its in-file link (`…DEFECT-REGISTER.md:23`) was already updated at the first flagged head (`b9377f64`, read via the API) and in the squash commit `78e36d8e`.
 - **D (confirmed): "would have failed 7 PRs" is correct, and understated.** All 7 false-positive PRs were flagged at their final head, and every squash commit reproduces the finding, so a required check would have blocked the merge itself. No waiver exists: neither the checker nor `util/markdown_structure_delta.py` reads any `Allow-` trailer. About 48 PRs that touched markdown merged in the window, so roughly 15% would have been blocked falsely. #1999 was red only at intermediate heads; its final head `be82d281` was clean.
 - **The denominators hold.**

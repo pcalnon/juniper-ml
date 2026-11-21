@@ -1,13 +1,13 @@
-# Handoff: canopy selection arc — queue drained, the mirror shipped, A-N2 run; four owner rulings open
+# Handoff: canopy selection arc — queue drained, the mirror shipped, A-N2 run; four Overtoad rulings open
 
 **Date**: 2026-09-23 · **Predecessor**: `HANDOFF_2026-09-23_canopy-selection-six-prs-queued-live-swap-mirror-staged.md`
-(same directory; its remaining-work items are cited here as P1–P7) · **Merge approval**: granted by the owner for this
+(same directory; its remaining-work items are cited here as P1–P7) · **Merge approval**: granted by the Overtoad for this
 arc on 2026-09-23.
 
 ## Goal
 
 Continue the canopy selection-reachability arc:
-1. Get the four owner rulings below and act on them.
+1. Get the four Overtoad rulings below and act on them.
 2. Triage the A-N2 findings F1 and F2.
 3. Clean up this arc's worktrees, but only on an explicit merge signal.
 
@@ -34,11 +34,11 @@ Continue the canopy selection-reachability arc:
 - **canopy#368** got a scoped status comment: the mirror clause is complete.
 - **X11 was re-derived** (item 3 of the ruling list below).
 - **The older item 6**, the signed-commit drivers, is closed as far as it can be. It was promoted in juniper-ml#2036,
-  and retiring the ad-hoc copies needs an owner decision under the retention policy.
+  and retiring the ad-hoc copies needs an Overtoad decision under the retention policy.
 
 ### Remaining work, in order
 
-1. **Owner rulings.** Ask them first; they were put to the owner at the end of this session.
+1. **The Overtoad rulings.** Ask them first; they were put to the Overtoad at the end of this session.
    1. **X8 + A-N9.**
       - juniper-data declares `equities_seq` `task_type="classification"`; canopy labels it `regression`.
         `TestX8TaskTypeDivergenceIsDeliberate` pins that relabelling leaves the LMU **zero** datasets.
@@ -91,7 +91,7 @@ Continue the canopy selection-reachability arc:
    - O5: `/api/network/stats` returns 503 under the recurrence backend.
 5. **Carry forward, unchanged:**
    - The peer `canopy` claims on Y2 waves 2/3 and X10 lapse 2026-09-29T00:00Z, on the predecessor's terms.
-   - Item 19, a juniper-data release that contains #421, is the owner's call. v0.15.0 lacks it.
+   - Item 19, a juniper-data release that contains #421, is the Overtoad's call. v0.15.0 lacks it.
    - Y7's dropdown half is still open: no `aria-disabled` on greyed options, and the design never specified a fix.
 
 ### Key context
@@ -102,8 +102,8 @@ Continue the canopy selection-reachability arc:
   - The stack ran data, cascor and canopy from worktrees at `origin/main`, with each leg's `git_sha` and imports
     proven. The recurrence leg was the installed console script, with juniper-recurrence-model **0.1.5**, not the
     released 0.3.x line.
-  - The subagent that ran it sent the owner's email address to sec.gov in a User-Agent header during a connectivity
-    check, and printed `HF_TOKEN` plus two PyPI tokens into its own transcript. The owner was told. The committed
+  - The subagent that ran it sent the Overtoad's email address to sec.gov in a User-Agent header during a connectivity
+    check, and printed `HF_TOKEN` plus two PyPI tokens into its own transcript. The Overtoad was told. The committed
     evidence was scanned: it contains no tokens and no email address.
 - **LFS through the signed API.** `*.png` in juniper-ml is LFS-tracked, and `createCommitOnBranch` commits the bytes it
   is given. So `util/ad-hoc/2026-09-23_lfs_pointers_for_api_commit.py` stores each image and writes its pointer, then

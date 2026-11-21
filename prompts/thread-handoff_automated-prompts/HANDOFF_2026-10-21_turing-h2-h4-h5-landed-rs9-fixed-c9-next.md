@@ -1,17 +1,17 @@
-# Handoff — turing bring-up: H2, H4 and H5 landed (plan v1.4.4), main's R-S9 flake fixed; C9 next, owner decisions pending
+# Handoff — turing bring-up: H2, H4 and H5 landed (plan v1.4.4), main's R-S9 flake fixed; C9 next, Overtoad decisions pending
 
-- **Superseded (2026-10-25, plan v1.4.6).** C9 landed (juniper-ml#2322) and H6's audit ran. The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md`. What follows is this file's state before C9.
+- **Superseded (2026-10-25, plan v1.4.6).** C9 landed (juniper-ml#2322) and H6's audit ran. The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-Overtoad-decides.md`. What follows is this file's state before C9.
 
 - **From:** the 2026-10-20/21 session on turing named "code signing" (ae687e; worktree `.claude/worktrees/linked-floating-sprout`). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-g1-landed-g4-promoted-h2-next.md`.
-- **This file supersedes** this session's earlier `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-landed-c9-next.md`. That one was written before H5, plan v1.4.4 and the R-S9 fix. The "mac dev" session's `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-audit-landed-owner-decides.md` stays the authority on H5's state and the removal commands. **Since plan v1.4.5** the owner has chosen H5's option B (keep, hardened), and the authority on H5 is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md`.
+- **This file supersedes** this session's earlier `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-landed-c9-next.md`. That one was written before H5, plan v1.4.4 and the R-S9 fix. The "mac dev" session's `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-audit-landed-Overtoad-decides.md` stays the authority on H5's state and the removal commands. **Since plan v1.4.5** the Overtoad has chosen H5's option B (keep, hardened), and the authority on H5 is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-Overtoad-b4-b5.md`.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.4.
-  - §18.1 holds the owner's two rulings of 2026-10-21: the split, and Serena's edit tools leading to C9.
+  - §18.1 holds the Overtoad's two rulings of 2026-10-21: the split, and Serena's edit tools leading to C9.
   - §18.2 holds the H2, H4, C9 and H5 rows.
   - §18.3 holds errata E-SPLIT, E-H4-WHEEL, E-SERENA-EDIT and E-H5.
   - Task IDs below are the plan's.
-- **Standing approval:** the owner granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
+- **Standing approval:** the Overtoad granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
 - **Coordination.**
-  - "mac dev" (37a935) took H5 and owns its follow-up. Once the owner decides on removal, it writes v1.4.5.
+  - "mac dev" (37a935) took H5 and owns its follow-up. Once the Overtoad decides on removal, it writes v1.4.5.
   - "canopy" reported the R-S9 flake. Run `ListAgents` before starting, and check `gh pr list --repo pcalnon/juniper-ml --state all --search "<task>"` before taking a task.
   - `main` moved every 10–20 minutes on 2026-10-21. Two PRs refreshed together go BEHIND each other, so agree a merge order by message (E-LAND-3).
 
@@ -24,7 +24,7 @@
 | juniper-ml#2297 | `d9b29f38` | Plan v1.4.3, `util/ad-hoc/2026-10-21_turing_h2_h4_record.py`, and the superseded handoff |
 | juniper-ml#2299 | `be0ab745` | That handoff's correction: the expected `MISSING`, and H5's record being "mac dev"'s |
 | juniper-ml#2300 | `2f831b60` | **H5** ("mac dev"): `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md`, which recommends REMOVE for both servers (3 blockers) |
-| juniper-ml#2302 | `cf70e259` | Plan v1.4.4 ("mac dev"): the H5 row, with the owner's decision pending, and erratum E-H5 |
+| juniper-ml#2302 | `cf70e259` | Plan v1.4.4 ("mac dev"): the H5 row, with the Overtoad's decision pending, and erratum E-H5 |
 | juniper-ml#2304 | `fcaf5e0c` | **R-S9 flake fix.** Post-merge main verification failed `test_r_s9_never_opens_credentials_never_runs_gpg_and_writes_only_its_files` on 4 of 5 heads. A runner whose Python 3.12.15 toolcache lacked `encodings/__pycache__/utf_8_sig`'s .pyc wrote one, and the audit hook counted it. The audited child now runs with `-B`. Main verification run 39564516111 is green |
 | this handoff's PR | — | this file |
 
@@ -35,10 +35,10 @@
   - `~/.claude/agents` holds the 6 older agents, and the primary checkout still has 6. It has not been fast-forwarded.
   - The three SME agents *are* usable today as project agents in any session whose working directory is a juniper-ml checkout at or after `b16121ac`. Claude Code loads `.claude/agents/` from the checkout.
 - **C8 is not installed:** `~/.claude/hooks/juniper_agent_guard.py` is absent.
-- **H5:** both `~/.claude/mcp-servers/adaptive-graph-of-thoughts` and `~/.claude/mcp-servers/agi-mcp-server` are still present. The owner's decision is pending.
+- **H5:** both `~/.claude/mcp-servers/adaptive-graph-of-thoughts` and `~/.claude/mcp-servers/agi-mcp-server` are still present. The Overtoad's decision is pending.
 - **E-H4-WHEEL:** rustup holds no toolchain at 1.83 or later. The default `stable` is 1.71.0, beside 1.49.0, 1.56.0 and 1.56.1. So Serena v1.7.0 still cannot build on turing.
 
-## Owner decisions and steps
+## The Overtoad decisions and steps
 
 1. **E-H4-WHEEL: Serena on turing.** Choose one:
    - (a) install a Rust 1.83+ toolchain beside 1.71 and build once (the command is in plan §18.3);
@@ -55,27 +55,27 @@
    - the network (F2, A6);
    - F3 node mode;
    - commit signing (§19): no YubiKey into turing until C8 and K12 are installed and K13 is done;
-   - the rest of Owner block 1.
+   - the rest of The Overtoad block 1.
 
    After each block, run `python3 util/host_state_check.py`.
 
 ## Agent next
 
-1. **C9** (owner ruling 2026-10-21; H3 waits on it): extend `util/claude_agent_guard.py` to MCP file-writing tools (E-SERENA-EDIT).
+1. **C9** (Overtoad ruling 2026-10-21; H3 waits on it): extend `util/claude_agent_guard.py` to MCP file-writing tools (E-SERENA-EDIT).
    - **The matcher.** The installed settings matcher is `Bash|Read|Write|Edit|MultiEdit|NotebookEdit|Grep|Glob`. `util/install_claude_agent_guard.bash` writes it, so it must also name Serena's tools (`mcp__serena__<tool>`).
    - **The tools.** At v1.7.0 they are `replace_content`, `replace_symbol_body`, `insert_after_symbol`, `insert_before_symbol`, `rename_symbol`, `replace_in_files`, the optional `delete_lines` / `replace_lines` / `insert_at_line`, and the memory writers.
    - **The paths.** Serena's `relative_path` resolves against its `--project` root, the checkout. Deny a call that reaches `.git/` (hooks, config), `~/.ssh`, `~/.gnupg` or the Claude settings. Keep the guard's contract: an unknown tool passes silently.
-   - **Tests and install.** Add cases in `tests/test_claude_agent_guard.py`, plus a mutation check on the C8 and K12 pattern. The owner re-installs the guard.
+   - **Tests and install.** Add cases in `tests/test_claude_agent_guard.py`, plus a mutation check on the C8 and K12 pattern. The Overtoad re-installs the guard.
    - **H5 found** that neither unvetted server has file-writing tools, so C9 does not cover them. Their DB and network tools would need `permissions.deny` rules instead (H5-X1).
-   - C9 can be built and landed before C8 is installed. Only its installation is the owner's.
-   - **Widened by plan v1.4.5 (owner, RR-10):** C9 also denies MCP registration: the `mcp add*` subcommands whatever the command word, writes to `~/.claude.json` and any `.mcp.json` (H4's `util/mcp_setup.bash` must keep working), and settings writes that set `enabledMcpjsonServers` or `enableAllProjectMcpServers`. The plan's §18.2 C9 row has the detail.
+   - C9 can be built and landed before C8 is installed. Only its installation is the Overtoad's.
+   - **Widened by plan v1.4.5 (Overtoad, RR-10):** C9 also denies MCP registration: the `mcp add*` subcommands whatever the command word, writes to `~/.claude.json` and any `.mcp.json` (H4's `util/mcp_setup.bash` must keep working), and settings writes that set `enabledMcpjsonServers` or `enableAllProjectMcpServers`. The plan's §18.2 C9 row has the detail.
 2. **H3**, after C8 is installed, C9 has landed and H2's agents are installed. Each agent runs one scripted task on turing, compared with a `util/host_state_probe.bash --json` run taken within ±10 minutes, plus one negative test. The task prompts go through `prompt-validator`.
 3. **H4's live check**, once E-H4-WHEEL is resolved:
    - `bash util/mcp_setup.bash` in the primary checkout;
    - pre-warm with `uvx --from git+https://github.com/oraios/serena@949a27ef1e5fda1a6e7b561e777bcece345c6ffd serena --version`;
    - then `timeout 30 claude mcp list`.
-4. **Plan revisions.** "mac dev" writes v1.4.5 for the owner's H5 decision, and C9's landing needs its own record. Before numbering, check for an open turing plan PR: `gh pr list --repo pcalnon/juniper-ml --state open --search "turing in:title"`.
-5. F3 node mode follows its owner step. E5 waits on A6. D2-upg and D4 still need re-planning under the D6 ruling.
+4. **Plan revisions.** "mac dev" writes v1.4.5 for the Overtoad's H5 decision, and C9's landing needs its own record. Before numbering, check for an open turing plan PR: `gh pr list --repo pcalnon/juniper-ml --state open --search "turing in:title"`.
+5. F3 node mode follows its Overtoad step. E5 waits on A6. D2-upg and D4 still need re-planning under the D6 ruling.
 6. **Post-merge check (E-LAND-2).** Done at `036e53e2` for H2, H4 and v1.4.3: every edit present after three concurrent PRs. After any later merge that touches the shared files, re-run the dry-runs below. Three deviations are expected, none of them a revert:
    - `util/ad-hoc/2026-10-20_turing_g1_g4_record.py` reports its Version-line edit `MISSING`, because v1.4.3 replaced the line;
    - `util/ad-hoc/2026-10-21_turing_h2_h4_record.py` does the same, because v1.4.4 replaced it. Each script's other edits stay `present`;
@@ -118,4 +118,4 @@ python3 -I util/ad-hoc/2026-10-18_turing_link_gate.py                 # the link
 - **Host changes:** none persistent. A failed `uvx` build left Serena v1.7.0's dependencies in uv's cache. The test `.mcp.json` was removed.
 - **Memory notes:**
   - updated: `turing-host-profile`, `duplicate-handoff-pickup`;
-  - new: `serena-intel-mac-cryptography`, `c8-guard-misses-mcp-tools`, `owner-question-latency` and `audit-hook-tests-need-dash-b`.
+  - new: `serena-intel-mac-cryptography`, `c8-guard-misses-mcp-tools`, `Overtoad-question-latency` and `audit-hook-tests-need-dash-b`.

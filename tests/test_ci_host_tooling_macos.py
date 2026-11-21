@@ -19,7 +19,7 @@ fixed by the plan:
   runs on main, it joined ``required-checks.needs`` with its own ``!= success`` arm, never as a separate
   ruleset context. ``test_the_job_is_required_through_the_quality_gate`` pins that.
 
-The list also holds every suite of the agent guard (``tests/test_claude_agent_guard*.py``), by the owner's
+The list also holds every suite of the agent guard (``tests/test_claude_agent_guard*.py``), by the Overtoad's
 ruling of 2026-11-12: ``util/claude_agent_guard.py`` is the hook the macOS host runs, and only its first suite
 ran here. The eight added start no shell and no git. What this job adds for them is the guard on macOS itself: the
 runner's Python build, temporary homes under ``/var`` (a symlink to ``/private/var``) and its filesystem.
@@ -63,7 +63,7 @@ SUITES = {
     "host_state_probe",  # G1
     "host_state_check",  # G1
     "mcp_setup",  # H4
-    # The agent guard's other suites (the owner's ruling of 2026-11-12): the hook runs on the macOS host.
+    # The agent guard's other suites (the Overtoad's ruling of 2026-11-12): the hook runs on the macOS host.
     "claude_agent_guard_brace_cap",
     "claude_agent_guard_git_sign_abbrev",
     "claude_agent_guard_push_signed_abbrev",
@@ -127,7 +127,7 @@ class JobShapeTest(unittest.TestCase):
             self.assertTrue((REPO_ROOT / "tests" / f"test_{suite}.py").is_file(), suite)
 
     def test_every_agent_guard_suite_on_disk_is_listed(self) -> None:
-        # The owner's ruling of 2026-11-12. Eight guard suites ran in the Linux step alone until then.
+        # The Overtoad's ruling of 2026-11-12. Eight guard suites ran in the Linux step alone until then.
         listed = set(self.job["env"]["HOST_TOOLING_SUITES"].split())
         on_disk = {path.stem[len("test_") :] for path in (REPO_ROOT / "tests").glob("test_claude_agent_guard*.py")}
         self.assertLessEqual({"claude_agent_guard", "claude_agent_guard_brace_cap"}, on_disk, "the glob no longer finds the guard's suites")

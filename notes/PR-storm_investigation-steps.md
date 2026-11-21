@@ -11,7 +11,7 @@ It will run the following:
 
 Until then, the standing items are unchanged:
 
-- the plan's owner-side probes when you get a moment (naming bypass integrations 1236702/1276151; the three Cursor automation configs behind the dashboard UUIDs),
+- the plan's Overtoad-side probes when you get a moment (naming bypass integrations 1236702/1276151; the three Cursor automation configs behind the dashboard UUIDs),
 - the recurrence auth-on smoke at your next stack bring-up,
 - a merge queue (or strict=true) on main
   - the plan's P1 proposal formalizes this.

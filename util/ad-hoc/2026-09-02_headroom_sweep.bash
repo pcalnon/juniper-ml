@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-09-02
 # Status:     ad-hoc -- investigation (perf lane P3)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/ad-hoc/2026-09-01_contention_load.bash (the load generator this drives)
 #             util/ad-hoc/2026-09-02_pf1_drive_extract.py (the analysis that reads the output)
 #

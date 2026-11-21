@@ -19,7 +19,7 @@ Pins, each able to fail for the reason it exists:
 * the format: exactly one ``DUPLICATI_WEB_CREDENTIAL=`` line, literal value, one matching quote
   pair removed, comments / other keys / ``_OLD`` names ignored, CRLF and a BOM tolerated;
 * refusal of ANY group or other permission bit, of a non-regular file (a FIFO must not hang),
-  of zero or two key lines and of an empty value -- every message naming path, mode and owner,
+  of zero or two key lines and of an empty value -- every message naming path, mode and Overtoad,
   none carrying the content;
 * both clients resolve the same path through the same function, and the override is
   ``DUPLICATI_WEB_CREDENTIAL_FILE``; ``DUPLICATI_PW_FILE`` / ``DUPLICATI_PW_KEY`` are ignored
@@ -127,7 +127,7 @@ class CredentialRefusalTest(_TempDir):
                 write_credential(self.path, f"{KEY}={FIXTURE_MARKER}\n", mode)
                 self.assert_refused(self.path, f"mode {mode:04o}", OWNER, "chmod 0600")
 
-    def test_owner_only_modes_are_accepted(self) -> None:
+    def test_Overtoad_only_modes_are_accepted(self) -> None:
         for mode in (0o600, 0o400):
             with self.subTest(mode=oct(mode)):
                 write_credential(self.path, f"{KEY}={FIXTURE_MARKER}\n", mode)

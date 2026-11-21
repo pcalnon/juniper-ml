@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-04
-# Status      : ad-hoc — investigation; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — investigation; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """F-CANOPY-058 census v2, live: does a mid-request re-enable of canopy#613's guarded lane evict, and cascade?
 

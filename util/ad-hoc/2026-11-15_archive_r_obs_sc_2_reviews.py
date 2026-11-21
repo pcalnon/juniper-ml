@@ -6,10 +6,10 @@ Sub-Project: ad-hoc tooling (consolidated plan record)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- single-use archiver, with a re-check mode
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md v1.15.16 (which decides this archive);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-15_r-obs-sc-2-cascor-0-14-0-canopy-0-10-0-at-pypi-gates-guard-pr-plan-v1-15-16-next.md
-         (its item 6, "Archive the reviews"); util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py (the same transcript lookup)
+         (its item 6, "Archive the reviews"); util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py (the same transcript lookup)
 
 Why
 ---

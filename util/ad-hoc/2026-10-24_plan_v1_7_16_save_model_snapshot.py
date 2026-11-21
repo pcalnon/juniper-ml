@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-24
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.15 -> v1.7.16);
          juniper-ml#2316 (the #2211 fix it records), util/ad-hoc/2026-10-24_apply_save_model_snapshot_docs.py;
          util/ad-hoc/2026-10-21_plan_v1_7_15_juniper_ml_0_11_0_published.py (the revision this follows)
@@ -48,18 +48,18 @@ SAVED = (
 )
 
 NEXT_OLD = (
-    "  - **Next**: the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; the owner's, since that file is not on turing). "
-    "A juniper-config-tools 0.2.0 cut (the owner's call) no longer needs a hand co-change; its `[Unreleased]` needs backfilling first. The driver follow-ups are juniper-ml#2211 "
+    "  - **Next**: the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; the Overtoad's, since that file is not on turing). "
+    "A juniper-config-tools 0.2.0 cut (the Overtoad's call) no longer needs a hand co-change; its `[Unreleased]` needs backfilling first. The driver follow-ups are juniper-ml#2211 "
     "(`save_model` persists the scored model through `POST /v1/model/snapshots` with `expect_operation_id`, juniper-recurrence#192) and juniper-ml#2210 (`per_run_timeout_seconds` "
-    "against the summed driver budgets). The juniper-recurrence-client 0.3.1 release (owner's cut) carries the embargo fix. juniper-data's next release carries W5.7 (owner's cut). "
+    "against the summed driver budgets). The juniper-recurrence-client 0.3.1 release (Overtoad's cut) carries the embargo fix. juniper-data's next release carries W5.7 (Overtoad's cut). "
     "The W0.1 service-core half and the W1.12 / W1.11 smokes (owed on the 0.8.0 image, on a host whose Docker reaches GHCR) stay open."
 )
 
 NEXT_NEW = (
-    "  - **Next**: the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; the owner's, since that file is not on turing). "
+    "  - **Next**: the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; the Overtoad's, since that file is not on turing). "
     "juniper-ml#2210 is the next driver task: `per_run_timeout_seconds` against the summed driver budgets, where `save_model` is now one `max_wall`-bounded HTTP call on the "
-    "snapshot path and the 600 s re-fit only for a pre-W1.5 service. A juniper-config-tools 0.2.0 cut (the owner's call) needs its `[Unreleased]` backfilled first. "
-    "The juniper-recurrence-client 0.3.1 release (owner's cut) carries the embargo fix. juniper-data's next release carries W5.7 (owner's cut). The W0.1 service-core half "
+    "snapshot path and the 600 s re-fit only for a pre-W1.5 service. A juniper-config-tools 0.2.0 cut (the Overtoad's call) needs its `[Unreleased]` backfilled first. "
+    "The juniper-recurrence-client 0.3.1 release (Overtoad's cut) carries the embargo fix. juniper-data's next release carries W5.7 (Overtoad's cut). The W0.1 service-core half "
     "and the W1.12 / W1.11 smokes (owed on the 0.8.0 image, on a host whose Docker reaches GHCR) stay open, and the next real recurrence run with `save_model` enabled is the "
     "snapshot path's first live exercise."
 )
@@ -90,7 +90,7 @@ def row(recheck_sha: str, save_pr: str, save_sha: "str | None") -> str:
     return (
         f"| 2026-10-24 | 1.7.16 | **save_model saves the scored model**: {saved}. "
         "Updated: Status line, the Progress block (session 10 bullet, Next rewritten). "
-        f"Owed: {owed_fix}the parent AGENTS.md paragraph; juniper-ml#2210; the client 0.3.1 release; juniper-data's next release (W5.7); juniper-config-tools 0.2.0 (owner); "
+        f"Owed: {owed_fix}the parent AGENTS.md paragraph; juniper-ml#2210; the client 0.3.1 release; juniper-data's next release (W5.7); juniper-config-tools 0.2.0 (Overtoad); "
         "W0.1's service-core half; the W1.12 / W1.11 smokes on the 0.8.0 image. | Paul Calnon |\n"
     )
 

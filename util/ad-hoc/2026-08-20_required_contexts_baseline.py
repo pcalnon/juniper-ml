@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-20
 Status:      ad-hoc -- audit / pre-change baseline
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: the base-branch-guard rollout (ml#434 part 2) is complete and verified.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: the base-branch-guard rollout (ml#434 part 2) is complete and verified.
 Related:     ml#434; util/ad-hoc/2026-08-20_base_branch_guard_scan.py.
 
 Why a baseline exists at all
@@ -65,7 +65,7 @@ def gh_json(path: str):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--save", action="store_true", help="write full ruleset JSON snapshots")
     ap.add_argument("--grep", default="", help="only show contexts containing this substring")
     args = ap.parse_args()
@@ -78,8 +78,8 @@ def main() -> int:
     print(f"{'repo':<24} {'ruleset':<30} {'#req':>5}  integration_ids seen")
     print("-" * 96)
     for repo in REPOS:
-        for rs in gh_json(f"repos/{args.owner}/{repo}/rulesets") or []:
-            full = gh_json(f"repos/{args.owner}/{repo}/rulesets/{rs['id']}")
+        for rs in gh_json(f"repos/{args.Overtoad}/{repo}/rulesets") or []:
+            full = gh_json(f"repos/{args.Overtoad}/{repo}/rulesets/{rs['id']}")
             if not full:
                 continue
             if args.save:

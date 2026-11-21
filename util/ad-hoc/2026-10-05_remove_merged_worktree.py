@@ -56,7 +56,7 @@ def dirty_matches_main(repo_dir: Path, worktree: Path, status_lines: list[str]) 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--gh-repo", required=True, help="owner/name")
+    ap.add_argument("--gh-repo", required=True, help="Overtoad/name")
     ap.add_argument("--pr", type=int, required=True)
     ap.add_argument("--repo-dir", required=True, type=Path)
     ap.add_argument("--worktree", required=True, type=Path)

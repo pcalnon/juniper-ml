@@ -19,25 +19,25 @@ Short names used below: HANDOFF is the frozen `…/round1/HANDOFF_frozen_round1.
 - **Why it matters:** the 09-09 original guarded exactly this case for #1862 ("Until it merges … NOT closed"). The re-evaluation dropped that guard.
 - **Fix:** add `gh pr view 2017 --json state,mergeCommit` to PREFLIGHT. If it has not merged, item 10 and the re-pins are still open, and landing ml#2017 (with Paul's approval) becomes step 0. Reword "closed by" as "closes when ml#2017 merges".
 
-### 2. MAJOR (critical if the owner says yes) — owner decision 2 has no mechanism, and both written mechanisms produce a check that can never fail
+### 2. MAJOR (critical if the Overtoad says yes) — Overtoad decision 2 has no mechanism, and both written mechanisms produce a check that can never fail
 - **Where:** block 1, OWNER 2; the sentence "Promoted as it stands, it would have failed 7 PRs".
 - **What is wrong:**
   - `.github/workflows/ci.yml:1627-1628` says to promote by "dropping the `|| true` below". The step contains no `|| true`.
   - WALKTHROUGH §7 item 2 (lines 277-279) says to drop the trailing `exit 0` (`ci.yml:1700`). The step would still exit 0: its last command is the `if [ "$rc" -ne 0 ]; then echo …; fi` at `ci.yml:1695`, which returns 0 whichever way it goes.
   - Promoted by either recipe, the check fails zero PRs, not seven.
-- **Fix:** before the owner is asked, correct both recipes to `exit "$rc"`. Decide how the refusal code 2 and the early `exit 0` paths behave.
+- **Fix:** before the Overtoad is asked, correct both recipes to `exit "$rc"`. Decide how the refusal code 2 and the early `exit 0` paths behave.
 
 ### 3. MAJOR — the spec for NON-OWNER item 1 cannot meet its own acceptance test
 - **Where:** "C4 must accept a heading whose old text survives inside a renamed one … drop the 8 false ones."
 - **What the merge diffs show:**
-  - #1973 does survive: "0.6 Owner decisions still owed" became "… — NONE, as of 2026-09-21".
-  - #1976 (`739a233c`) does not: "…environment repair — owner has not ruled, asked 3+ times" became "~~…environment repair~~ — MOOT…".
+  - #1973 does survive: "0.6 The Overtoad decisions still owed" became "… — NONE, as of 2026-09-21".
+  - #1976 (`739a233c`) does not: "…environment repair — Overtoad has not ruled, asked 3+ times" became "~~…environment repair~~ — MOOT…".
   - #1992 (`3b656b57`) does not: the heading's claim was rewritten.
   - #1983 (`78e36d8e`) does not: "two of three copies" became "three of four", a factual correction rather than a status marker.
   - #2009 (`c4a67481`): 3 of its 5 headings do not survive ("DECISION REQUIRED" became "RULED", and "(recommended)" was dropped twice).
 - **Result:** the spec clears 2 of the 6 false C4 findings.
 - **Cause the HANDOFF leaves out:** these findings come from ml#1944's own C4 fix, which compares heading texts. #1976's heading count rose from 23 to 30 and C4 still reported 2 LOST. So item 4's "CLOSED" fix created the largest class of false positives.
-- **Ownership:** loosening C4 trades against the owner's Decision E, so this item may need an owner ruling rather than being session work.
+- **Ownership:** loosening C4 trades against the Overtoad's Decision E, so this item may need an Overtoad ruling rather than being session work.
 - **Fix:** restate the spec (for example, match on heading level plus section number or ID, ignoring strike-through). List all 8 false findings with their heads. Flag the Decision E trade-off.
 
 ### 4. MAJOR — the evidence cited for item 10 cannot tell fixed from unfixed
@@ -64,12 +64,12 @@ Short names used below: HANDOFF is the frozen `…/round1/HANDOFF_frozen_round1.
 - **`TIMEOUT_CEILING`:** round 1 on 09-09 had to restore this after it was cut, and it is cut again.
   - canopy, cascor-client, data and data-client now all sit at 3300, so "raise mid-window" is used up for those four.
   - "cascor-worker is the thinnest" is true only of the margin to its budget.
-- **Fix:** add both to NON-OWNER 2. Flag ceiling saturation as a future owner decision. The strict-policy audit's C-4/M-4 (batching merges) was the dropped reading for this.
+- **Fix:** add both to NON-OWNER 2. Flag ceiling saturation as a future Overtoad decision. The strict-policy audit's C-4/M-4 (batching merges) was the dropped reading for this.
 
 ### 7. MAJOR — the banner contradicts the prompt
-- **Where:** banner, "Three items remain, all the owner's."
-- **What is wrong:** block 1 and "What remains outstanding" each list two non-owner items. "All ten … closed or ruled" is also wrong for row 3, which the HANDOFF itself marks "Informational".
-- **Fix:** say five items remain (three owner, two non-owner), plus landing ml#2017.
+- **Where:** banner, "Three items remain, all the Overtoad's."
+- **What is wrong:** block 1 and "What remains outstanding" each list two non-Overtoad items. "All ten … closed or ruled" is also wrong for row 3, which the HANDOFF itself marks "Informational".
+- **Fix:** say five items remain (three Overtoad, two non-Overtoad), plus landing ml#2017.
 
 ### 8. MAJOR — no git status and no staleness anchor (breaks `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` Step 3.3 and CLAUDE.md)
 - **What the HANDOFF says:** §4 still reads branch `docs/handoff-2026-09-09-…`, "Five PRs open", and "~106 … ~128" worktrees.
@@ -97,7 +97,7 @@ Short names used below: HANDOFF is the frozen `…/round1/HANDOFF_frozen_round1.
     - The script's docstring omits `rerun-split` and `settings`.
 12. **Naming rule.** These role references in the foot section have no filename: lines 384, 401, 421, 479-481 ("walkthrough", "workflow header", "Both texts") and 526 ("the backup arc").
 13. **Useful guidance left in the wrong block.** The relocation traps "remain correct" but now live only in the block marked "do not act on it". Block 1 also drops the `md_`/`markdown_` warning and the v1 warning.
-14. **"Tight by owner decision" list changed without evidence.** "data and cascor-worker" silently drops data-client.
+14. **"Tight by Overtoad decision" list changed without evidence.** "data and cascor-worker" silently drops data-client.
 15. **Stale test count.** `AGENTS.md:69` says 165 suites. `ci.yml`, `docs/REFERENCE.md` and disk all have 166 (`2026-09-10_agents_md_test_list_drift.py`), so the second half of item 10 still leaves a stale count.
 16. **No 09-22 "cannot support" line** (required by the consensus procedure §7). The soak's per-PR denominator is not reported; `prs_examined`=13 is a lower bound.
 17. **Older loss this method could not see.** Flood-2 §3 item 11's "22 harvestable PRs whose production half is absent" (flood-2 disposition analysis §8) was never carried forward or closed. `grep "production half"` finds it only in the 09-05 and 09-07 documents.

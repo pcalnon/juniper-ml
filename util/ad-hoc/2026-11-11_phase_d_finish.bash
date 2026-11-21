@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-11-11
 # Status:     ad-hoc — recovery (Phase D sitting, step 14)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/ad-hoc/2026-11-11_phase_d_finish.py (every verb and every decision lives there);
 #             notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md (section 6.4 step 14);
 #             tests/test_phase_d_finish.py

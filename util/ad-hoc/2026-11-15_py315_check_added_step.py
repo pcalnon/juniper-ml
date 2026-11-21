@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- verification helper (phase 2 of the ecosystem's Python 3.15 migration)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_py315_h5py_hdf5_headers.py (the edits this checks)
 
 Takes a WORKTREE, not a workflow path, so the calling command never spells the workflow directory (this host's

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (R-OBS-SC-2 follow-ups)
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc -- written for the fork PRs of the R-OBS-SC-2 follow-ups, whose bases moved five times in a day
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/open_signed_pr.py (uploads WHOLE files, so an upload from a stale base reverts whatever main gained);
          util/ad-hoc/2026-11-12_upload_set_hashes.py (records the set this script changes: re-record after it)
 

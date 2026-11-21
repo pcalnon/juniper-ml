@@ -6,15 +6,15 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
 Status: ad-hoc -- migration (phase 1 of the ecosystem's Python 3.15 migration)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-14_py315_informational_edits.py (juniper-data#538, the reference implementation);
-         tmp/py315/ROLLOUT_BRIEF.md (the rollout brief: the owner's request and rulings of 2026-11-14);
+         tmp/py315/ROLLOUT_BRIEF.md (the rollout brief: the Overtoad's request and rulings of 2026-11-14);
          tmp/py315-informational-2026-11-14/survey-ci-2026-11-14.md and survey-local-2026-11-14.md (the surveys)
 
 Why this exists
 ---------------
-The owner's request of 2026-11-14 adds Python 3.15 to the tested versions, with the 3.15 checks reporting results
-but blocking no commit, merge or deployment. The owner ruled the same day that juniper-deploy, whose `tests` job ran
+The Overtoad's request of 2026-11-14 adds Python 3.15 to the tested versions, with the 3.15 checks reporting results
+but blocking no commit, merge or deployment. The Overtoad ruled the same day that juniper-deploy, whose `tests` job ran
 on 3.12 alone, gets a version matrix 3.12-3.15.
 
 juniper-deploy is the one repo where a plain matrix would stop every merge. Ruleset 14715370 requires the
@@ -28,8 +28,8 @@ others `Unit Tests (Python 3.13)`, `(Python 3.14)` and `(Python 3.15)`. The rule
   `continue-on-error: ${{ matrix.experimental == true }}`, the pattern juniper-data#538 measured (run 43655144734).
 - The job's three repository lints (workflow script paths, the juniper-ci-tools install, the AGENTS.md header)
   run on the 3.12 leg only, so the required `Unit Tests` context runs exactly the steps it ran before.
-- `Pre-commit` and every other job stay on `env.PYTHON_VERSION` (3.12). The owner ruled out a 3.15 pre-commit in
-  phase 1; whether `Pre-commit` should get 3.13 and 3.14 is open for the owner. `Dockerfile.test` and the images
+- `Pre-commit` and every other job stay on `env.PYTHON_VERSION` (3.12). The Overtoad ruled out a 3.15 pre-commit in
+  phase 1; whether `Pre-commit` should get 3.13 and 3.14 is open for the Overtoad. `Dockerfile.test` and the images
   are untouched.
 
 Every edit is an exact-substring replacement that must match exactly once, so the set can be re-applied onto a moved
@@ -85,14 +85,14 @@ CI_JOB_OLD = """\
 
 CI_JOB_NEW = """\
   tests:
-    # One leg per Python version: the owner ruled on 2026-11-14 that juniper-deploy gets a 3.12-3.15
+    # One leg per Python version: the Overtoad ruled on 2026-11-14 that juniper-deploy gets a 3.12-3.15
     # matrix (phase 1 of the ecosystem's Python 3.15 migration). This job alone has one; every other
     # job runs on `env.PYTHON_VERSION`. Ruleset 14715370 requires the VERSION-LESS context
     # `Unit Tests`. A static name would post `Unit Tests (3.12)` and so on, the required context
     # would never report, and every pull request would wait for it forever. A name that references
     # `matrix` is used verbatim, with no values appended: the 3.12 leg posts exactly `Unit Tests`,
     # and the others `Unit Tests (Python 3.13)`, `(Python 3.14)` and `(Python 3.15)`. The ruleset
-    # requires none of those three; requiring 3.13 and 3.14 is the owner's call.
+    # requires none of those three; requiring 3.13 and 3.14 is the Overtoad's call.
     name: ${{ matrix.python-version == '3.12' && 'Unit Tests' || format('Unit Tests (Python {0})', matrix.python-version) }}
     runs-on: ubuntu-latest
     # 3.13 and 3.14 BLOCK all the same: a failure there fails this job, and so the Quality Gate,
@@ -101,7 +101,7 @@ CI_JOB_NEW = """\
     # true on it alone: a failure there leaves the job's result, and so `needs.tests.result`, at
     # `success`. Measured on juniper-data#538 (run 43655144734), where that repo's gate printed
     # "Unit Tests: success" with its 3.15 leg failed on purpose. Its context is in no ruleset. Keep
-    # both until the owner makes 3.15 a required version (phase 3 of the migration).
+    # both until the Overtoad makes 3.15 a required version (phase 3 of the migration).
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: false
@@ -163,7 +163,7 @@ CHANGELOG_NEW = """\
 ### Added
 
 - **CI runs the unit tests on Python 3.12, 3.13, 3.14 and 3.15, and the 3.15 leg blocks nothing.**
-  Phase 1 of the ecosystem's Python 3.15 migration: the owner's request of 2026-11-14 that 3.15
+  Phase 1 of the ecosystem's Python 3.15 migration: the Overtoad's request of 2026-11-14 that 3.15
   checks report results without blocking commits, merges or deployments, and the ruling the same
   day that juniper-deploy gets a 3.12-3.15 matrix. `ci.yml`'s `tests` job, which ran on 3.12 alone,
   becomes a matrix:
@@ -178,7 +178,7 @@ CHANGELOG_NEW = """\
   - The workflow script-path lint, the juniper-ci-tools install and the AGENTS.md header lint check
     the repository, not the interpreter, so they run on the 3.12 leg only.
   - Unchanged: `Pre-commit` and every other job, which still run on `env.PYTHON_VERSION` (3.12; no
-    3.15 pre-commit in phase 1, by the owner's ruling), `Dockerfile.test` (`python:3.12-slim`, what
+    3.15 pre-commit in phase 1, by the Overtoad's ruling), `Dockerfile.test` (`python:3.12-slim`, what
     `make test` runs) and every image.
   - `docs/testing/TESTING_QUICK_START.md` describes the matrix.
 

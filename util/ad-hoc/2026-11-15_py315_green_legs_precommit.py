@@ -7,7 +7,7 @@ Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (the pre-commit gate for juniper-data-client#262, juniper-cascor-client#197 and
         juniper-deploy#275)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tmp/py315/GREEN_LEGS_BRIEF.md step 4 ("/opt/miniforge3/bin/pre-commit run --files <changed>")
 
 Why this exists

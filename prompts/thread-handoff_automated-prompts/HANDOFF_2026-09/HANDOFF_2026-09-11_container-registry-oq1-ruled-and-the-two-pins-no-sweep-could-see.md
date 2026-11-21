@@ -1,9 +1,9 @@
 # HANDOFF 2026-09-11 — Container registry: OQ-1 ruled, Wave 3 prepared, and two pins no sweep could see
 
-**Session**: container-registry rollout — the owner-gated tail, plus a defect found by running the
+**Session**: container-registry rollout — the Overtoad-gated tail, plus a defect found by running the
 predecessor's own verification command
-**Predecessor**: `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`
-**Status**: **SUPERSEDED** by `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md`; the arc's current tip is `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`. Do not act on the remaining-work list below. Since this was written, Wave 3 completed, a post-#179 worker image exists, and Wave 4 moved to a `dockerhub` environment (Option B of §3 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`, juniper-ml#2009). Re-checked 2026-09-22 from `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`'s status banner.
+**Predecessor**: `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`
+**Status**: **SUPERSEDED** by `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md`; the arc's current tip is `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`. Do not act on the remaining-work list below. Since this was written, Wave 3 completed, a post-#179 worker image exists, and Wave 4 moved to a `dockerhub` environment (Option B of §3 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`, juniper-ml#2009). Re-checked 2026-09-22 from `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`'s status banner.
 
 ---
 
@@ -12,10 +12,10 @@ predecessor's own verification command
 ---
 
 Continue the **container-registry rollout**. **Wave 3 is now prepared but not cut**: both blocking
-Releases have open proposal PRs awaiting the owner, and **OQ-1 is ruled — Docker Hub is in**. What
-remains is items 1, 3, 4, 5 and 7 of the design of record, every one owner-gated. Merge approval for
+Releases have open proposal PRs awaiting the Overtoad, and **OQ-1 is ruled — Docker Hub is in**. What
+remains is items 1, 3, 4, 5 and 7 of the design of record, every one Overtoad-gated. Merge approval for
 this arc is **per-session** — obtain your own before merging anything. Predecessor:
-`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`;
+`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`;
 the design of record is
 `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md` (refreshed this
 session — read its `Status:` line first, it is now accurate).
@@ -23,7 +23,7 @@ session — read its `Status:` line first, it is now accurate).
 **Ecosystem root**: `/home/pcalnon/Development/python/Juniper/`. Paths beginning `notes/`, `prompts/`
 or `util/` are inside `juniper-ml/`. **Times are UTC**; worktree names carry LOCAL time (CDT, UTC−5).
 
-### What the owner ruled this session
+### What the Overtoad ruled this session
 
 - **juniper-cascor-worker releases as 0.6.0 (minor), not 0.5.1.** Reasoning recorded in worker#184.
 - **OQ-1 — Docker Hub is in; Wave 4 is committed.** Recorded in the plan's §6 and its wave table.
@@ -87,7 +87,7 @@ was version skew and a maintenance hazard, not a live failure.
 holds only `dispatch-*`, and canopy's `tags/list` still answers **`NAME_UNKNOWN`**. So both repos now
 declare `0.6.0` / `0.8.0` in `pyproject.toml`, `CHANGELOG.md` and `AGENTS.md` while the newest tag is
 the previous version — the normal intermediate state, but it means **Wave 3 is exactly as blocked as
-before**. Cutting the two Releases is the owner's step and nothing else substitutes for it: it is the
+before**. Cutting the two Releases is the Overtoad's step and nothing else substitutes for it: it is the
 only event that fires `publish-image.yml`.
 
 Both proposals were hand-verified to the exact three-file shape (`pyproject.toml`, `CHANGELOG.md`,
@@ -118,7 +118,7 @@ deterministically from `util/release_train/notes_render.py --final`.
 > of plan D-1 and will recur whenever an image input moves without a library change. Worth an OQ if
 > it happens twice.
 
-### Remaining work — all owner-gated
+### Remaining work — all Overtoad-gated
 
 - **Item 4 (Wave 3)**: the proposals are merged; **cut both Releases and approve both `pypi` gates**.
   Then `juniper-deploy`'s `docker-compose.yml` repin, its `Dockerfile.test` runner image, and the
@@ -127,7 +127,7 @@ deterministically from `util/release_train/notes_render.py --final`.
 - **Item 3 (Pi pull)**: **no post-#179 image exists.** The registry holds only `dispatch-3d81f2c` /
   `dispatch-8673396` / `dispatch-9890a23`, all pre-torch-2.14.0. Cutting worker v0.6.0 mints the
   first valid target — do not pull `dispatch-9890a23` and call it done.
-- **Item 5 (Wave 4)**: committed. **Blocked on the owner registering `DOCKERHUB_TOKEN` +
+- **Item 5 (Wave 4)**: committed. **Blocked on the Overtoad registering `DOCKERHUB_TOKEN` +
   `DOCKERHUB_USERNAME` (Read & Write, not Admin) in all five image repos.** Adding the second
   login+push first would fail every release.
 - **Item 7**: OQ-1 **CLOSED**. OQ-2 / OQ-3 / OQ-4 still open — surface, do not guess. Note OQ-1's
@@ -145,7 +145,7 @@ is `steps=0` **plus** a named runner: a merely queued job has `started_at: null`
 pair means "assigned and not executing", not "slow". What cleared it was **appending a commit** — a new
 head SHA supersedes the run, and checks started on the new SHA within seconds. Prefer that to fighting
 the cancel; `gh --version` here is **2.46.0**, so `gh pr edit` is broken and a PR body/title update must
-go through `gh api -X PATCH repos/<owner>/<repo>/pulls/<n>`.
+go through `gh api -X PATCH repos/<Overtoad>/<repo>/pulls/<n>`.
 
 **And the canopy timing-flake class recurred, on a PR that changes three literal strings.**
 canopy#620's `UI Sub-suite (Playwright)` failed
@@ -259,7 +259,7 @@ spawning subagents unasked. Author-verified only. Where that is strong and where
   package — confirm the package page's visibility afterwards rather than assuming it inherits the
   repo's.
 - **A correction made late, worth the warning**: this document first recorded the two proposals as
-  "awaiting the owner" and, when they merged, the tempting reading was that Wave 3 had advanced. It
+  "awaiting the Overtoad" and, when they merged, the tempting reading was that Wave 3 had advanced. It
   had not — `gh release list` and `tags/list` were both unchanged. A merged release-*proposal* moves
   three version strings; only a Release moves the registry. Re-probe the registry, never infer it from
   a merge.

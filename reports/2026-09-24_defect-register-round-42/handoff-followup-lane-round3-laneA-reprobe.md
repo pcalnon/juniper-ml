@@ -8,10 +8,10 @@ I re-derived all 12 items you listed, and every one holds against primary source
 - **Text:** "At 20:25Z the register lane said it would forward them to the canopy E2E session … No forward has been confirmed."
 - **What is true:**
   - The 20:25:20Z message covers only the "Nothing was loaded" copies ("send me the exact file:lines … I'll forward them").
-  - The other three items were already filed. The canopy E2E handoff reserves F-CANOPY-060 for the `:8410` cut, 061 for LOW 3 and 062 for LOW 4. It is `graceful-sprouting-panda/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md:53-66`, saved 19:40:55Z.
-  - The `:8381`/`:42` copies have no id. They sit in `bubbly-meandering-pie/…/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md:165-170`, saved 20:43:56Z.
+  - The other three items were already filed. The canopy E2E handoff reserves F-CANOPY-060 for the `:8410` cut, 061 for LOW 3 and 062 for LOW 4. It is `graceful-sprouting-panda/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md:53-66`, saved 19:40:55Z.
+  - The `:8381`/`:42` copies have no id. They sit in `bubbly-meandering-pie/…/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md:165-170`, saved 20:43:56Z.
   - The register lane's 00:25Z handoff says "The canopy E2E session has exited" and that 060's fix is unowned.
-- **Corrected text:** "060–062 hold the `:8410` item, LOW3 and LOW4 (untracked, in the canopy E2E handoff). #685 fixes 061 and 062; 060 has no owner. The `:8381`/`:42` copies sit, with no id, in the canopy-combined handoff. The canopy E2E session has exited."
+- **Corrected text:** "060–062 hold the `:8410` item, LOW3 and LOW4 (untracked, in the canopy E2E handoff). #685 fixes 061 and 062; 060 has no Overtoad. The `:8381`/`:42` copies sit, with no id, in the canopy-combined handoff. The canopy E2E session has exited."
 
 **LOW-2. The juniper-data serve recipe leaves out the fixture the probes need (L68-70).**
 - **Text:** "Serve juniper-data by hand, with … scratch storage and import dirs".

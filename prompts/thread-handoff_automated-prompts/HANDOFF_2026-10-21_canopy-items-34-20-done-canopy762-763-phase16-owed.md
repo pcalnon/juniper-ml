@@ -1,13 +1,13 @@
-# HANDOFF 2026-10-21 — P2 canopy Lane A: items 34 and 20 are DONE in canopy (canopy#762: the 1-D Patch Weights parse takes spaces, as the manual says; canopy#763: F-CANOPY-065, the WS leg's partition reaches the apply toast, verified live). Phase 16, recording both, is owed. Next: Phase 16, then items 18, 19 and 21, item 27, the Linux host's 25, 28 and 29, the owner's 33 and 26
+# HANDOFF 2026-10-21 — P2 canopy Lane A: items 34 and 20 are DONE in canopy (canopy#762: the 1-D Patch Weights parse takes spaces, as the manual says; canopy#763: F-CANOPY-065, the WS leg's partition reaches the apply toast, verified live). Phase 16, recording both, is owed. Next: Phase 16, then items 18, 19 and 21, item 27, the Linux host's 25, 28 and 29, the Overtoad's 33 and 26
 
 **Written**: 2026-10-21 by the session in juniper-ml worktree `.claude/worktrees/serene-splashing-wozniak` on host
 turing (macOS; no trio; throwaway legs from copies of the E2 tree), at a phase boundary, as its PR was opened.
 **Consensus**: none. This handoff and its records were NOT validated by consensus; they are the input to Phase 16's
 rounds, which validate them.
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, authoritative for P2.
-Its items 5 and 7 and the owner batch O1–O17 carry over. This file supersedes
+Its items 5 and 7 and the Overtoad batch O1–O17 carry over. This file supersedes
 `HANDOFF_2026-10-21_canopy-phase15-items-31-32-done-f069-f028-fixed.md`.
-**Merge approval**: the owner granted it for this session ("merge approval granted", 2026-10-21): its two canopy PRs
+**Merge approval**: the Overtoad granted it for this session ("merge approval granted", 2026-10-21): its two canopy PRs
 and this PR. It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
@@ -19,8 +19,8 @@ commands first. Merge approval is not carried: ask before the first merge. First
 `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`: item 34 (canopy#762) and item 20 (canopy#763,
 F-CANOPY-065), with their own consensus rounds. Then items 18, 19 and 21 (canopy fixes for F-CANOPY-064, -067, -060,
 -063 and -066); item 27, a demo leg serving canopy `main`, extended to click through the Live Switch modal; items 25,
-28 and 29 on the Linux host; item 33 (the owner's); item 26's second step after O17; the canopy release
-(owner-gated) now carries canopy#760 to #763.
+28 and 29 on the Linux host; item 33 (the Overtoad's); item 26's second step after O17; the canopy release
+(Overtoad-gated) now carries canopy#760 to #763.
 
 **Completed:**
 
@@ -62,7 +62,7 @@ F-CANOPY-065), with their own consensus rounds. Then items 18, 19 and 21 (canopy
 **Remaining, in order:**
 
 1. **Land this session's PR** if it has not merged: `python3 util/wait_for_checks.py --pr N`, query
-   `reviewThreads(isResolved:false)`, ask the owner, then `python3 util/safe_merge.py --pr N --execute`.
+   `reviewThreads(isResolved:false)`, ask the Overtoad, then `python3 util/safe_merge.py --pr N --execute`.
 2. **Phase 16 of the ledger** (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`), through the
    consensus procedure (`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`; Phase 15
    is the model: freeze a local commit, then validator lanes, a replayable `…_phase16_ledger_round<R>_corrections.py`
@@ -71,7 +71,7 @@ F-CANOPY-065), with their own consensus rounds. Then items 18, 19 and 21 (canopy
      filed. Re-check that the manual's Patch Weights bullet still says "commas or spaces" at the merge commit.
    - Record item 20: F-CANOPY-065 fixed by canopy#763, and decide its disposition. FIXED moves triage to
      80 / 64 / 1 / 2 / 13 with 3 open P1 (F-CANOPY-064, F-CASCOR-001, -002). The triage reads `FIXED` only in a
-     header's last 170 characters. The rating question (O17's first limb) stays the owner's, but it no longer moves an
+     header's last 170 characters. The rating question (O17's first limb) stays the Overtoad's, but it no longer moves an
      open count.
    - Record item 19's partial: the sweep's N5 WS-ack fake is corrected (by canopy#763). N6's fixture (item 18),
      F-CANOPY-060's fixture and F-CANOPY-063's quote remain.
@@ -94,10 +94,10 @@ F-CANOPY-065), with their own consensus rounds. Then items 18, 19 and 21 (canopy
    `bash util/ad-hoc/2026-10-20_f069_fix_leg.bash up 8062 ~/.local/state/juniper/turing-e2/venvs/JuniperCanopy1-dash44/bin/python ~/.local/state/juniper/turing-e2/trees/juniper-canopy-main-e30010c9/src +tree-main e30010c92c0763788c2095c03e23ea66b7d657f3`.
    The driver recipe is unchanged; see the predecessor's item 4.
 5. **Items 25 and 28** on the Linux host, against the trio (ledger Phase 12). **Item 29**, the Linux host.
-6. **Item 33** (owner): bring turing's E2 canopy env to canopy's floor (`dash>=4.0.0`); the predecessor's item 6 has
+6. **Item 33** (Overtoad): bring turing's E2 canopy env to canopy's floor (`dash>=4.0.0`); the predecessor's item 6 has
    the recipe.
-7. **Item 26's second step** once the owner rules (O17).
-8. **The canopy release** (owner-gated, P4). It now ships canopy#760 (F-CANOPY-069), #761 (F-CANOPY-028), #762
+7. **Item 26's second step** once the Overtoad rules (O17).
+8. **The canopy release** (Overtoad-gated, P4). It now ships canopy#760 (F-CANOPY-069), #761 (F-CANOPY-028), #762
    (item 34) and #763 (F-CANOPY-065). Item 34 no longer holds it. PyPI's canopy 0.9.0 (2026-10-17) has none of them.
    Check with `gh release list --repo pcalnon/juniper-canopy --limit 2`.
 9. **Cleanup on turing**, after Phase 16 has cited them: the trees `~/.local/state/juniper/turing-e2/trees/juniper-canopy-item34`
@@ -106,7 +106,7 @@ F-CANOPY-065), with their own consensus rounds. Then items 18, 19 and 21 (canopy
    `sequential-coalescing-boot` still holds three local unsigned freeze commits: never push its branch; remove it
    through `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`. canopy deleted the fix branches on
    merge.
-10. Then the parent's items 5 and 7, and the owner batch O1–O17.
+10. Then the parent's items 5 and 7, and the Overtoad batch O1–O17.
 
 **Traps learned (this session):**
 

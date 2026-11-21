@@ -85,7 +85,7 @@ helper and five tests landed). But:
 >
 > | # | bullet | status |
 > |---|---|---|
-> | 1 | `h2h_wide_nrot3.yaml` **durability risk / relocation** | **STILL OPEN — owner decision.** Untouched deliberately. Exposure re-counted 2026-08-24: **7 suite YAMLs plus `util/ad-hoc/2026-08-16_h2h_preflight.py`**. |
+> | 1 | `h2h_wide_nrot3.yaml` **durability risk / relocation** | **STILL OPEN — Overtoad decision.** Untouched deliberately. Exposure re-counted 2026-08-24: **7 suite YAMLs plus `util/ad-hoc/2026-08-16_h2h_preflight.py`**. |
 > | 2 | that file's **arm-equalisation taxonomy** | **CLOSED** — ml#1316 (`2a914f7bc`). |
 > | 3 | cascor **`_resolve_cli_overrides` docstring** | **CLOSED** — cascor#580 (`b3819e343`). |
 > | 4 | **L-item ledger** not updated by either T5 PR | **CLOSED** — ml#1316 added **§10** to the F-P1-3 doc. |
@@ -118,7 +118,7 @@ helper and five tests landed). But:
 > **§0.1 (T3) is untouched.** All three of its residuals remain open, including the unreleased
 > `install_hint`. **§1 (T6 itself) is untouched** — the re-baseline was never run; see the banner there.
 
-- **`util/ad-hoc/2026-08-16_h2h_wide_nrot3.yaml` — durability risk, still an owner decision.**
+- **`util/ad-hoc/2026-08-16_h2h_wide_nrot3.yaml` — durability risk, still an Overtoad decision.**
   Predecessor §1.6 raised it 2026-08-17 ("Relocating it is a **Paul decision**"). Exposure has since
   grown from 5 shipped suites to **7** (ml#1278 added `p4/e-m-h2h-paired-cap64.yaml` and
   `p4/e-n-profile-cap4.yaml` onto the same base). A routine ad-hoc cleanup would silently re-point
@@ -181,10 +181,10 @@ candidate pool, and `spiral-baseline.yaml` sets `candidate_patience: 100`. R-5 �
 (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-R5-SERVICE-VS-CLI-EVIDENCE.md`,
 grep `not directly comparable`) records that every published spiral figure was measured with the pool
 at patience 50, and that a re-run must **either pin the pre-#514 code or re-baseline the grid**. The
-owner chose re-baseline. Separately E-C's published surface is cap-bound — grep `KNOWINGLY STALE` in
+Overtoad chose re-baseline. Separately E-C's published surface is cap-bound — grep `KNOWINGLY STALE` in
 `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P4-STUDIES-EVIDENCE.md`.
 
-**Do not re-litigate R-4.** The owner decided E-C's spiral rows get an E-A-class budget rather than
+**Do not re-litigate R-4.** The Overtoad decided E-C's spiral rows get an E-A-class budget rather than
 reducing E-C to a moon-only study; the suite already encodes it.
 
 ### 1.1 Attempt 1 (2026-08-23) — E-A 10/12, then killed. Reference only.
@@ -232,7 +232,7 @@ suites from scratch at one SHA. Treat attempt 1 as reference data only.**
 
 ### 1.4 Remaining work
 
-1. **Wait for a genuinely quiet host** (owner instruction, 2026-08-23). Criteria and pre-flight in §2.1.
+1. **Wait for a genuinely quiet host** (Overtoad instruction, 2026-08-23). Criteria and pre-flight in §2.1.
 2. **Re-derive the cascor gap yourself** (§2.3) and record the SHA you pin. Do not reuse this
    document's answer — it will be stale by the time you read it.
 3. **Run all three suites detached, via the campaign driver** (§2.2). It pins and re-checks the SHA
@@ -356,12 +356,12 @@ find ~/.local/state/juniper-experiments /tmp/juniper-e2e -maxdepth 3 -name '*.pi
   -exec grep -l "^<PID>$" {} +
 ```
 
-**Then branch on WHICH root matched — they are different stacks with different owners:**
+**Then branch on WHICH root matched — they are different stacks with different Overtoads:**
 
 - Under the experiment run root → `RUN_ID` is `basename "$(dirname "<matched-path>")"`, and the tool
   is `JUNIPER_EXP_PROJECT_DIR=$J bash util/experiment_stack.bash --down <RUN_ID>`.
 - Under **`/tmp/juniper-e2e`** → this is the isolated E2E trio, **not** an experiment run. There is no
-  RUN_ID (`basename $(dirname …)` yields the literal `juniper-e2e`), and its owner is
+  RUN_ID (`basename $(dirname …)` yields the literal `juniper-e2e`), and its Overtoad is
   `bash util/isolated_stack.bash --down`, which stops by port and takes no argument. Per §3 that
   stack may be **another session's live work** — confirm before stopping it.
 
@@ -495,7 +495,7 @@ Relevant suites: `python3 -m unittest tests.test_experiment_suite_yamls tests.te
   (the *requirements* plan, not the CLI-experimentation one) for its own pass.
 - **T2's permanent residual** — `experiment.resolved.yaml` carries an explicit `_meta.scope`
   "NOT COVERED" line for app-level `Settings`. Option (1), a read-only settings surface in cascor and
-  recurrence, was **declined**, not deferred; reviving it is a new owner decision.
+  recurrence, was **declined**, not deferred; reviving it is a new Overtoad decision.
 - **T7's remaining JR-REC coverage items** — the plan's Wave 7.6 minimum listed the experiment-config
   layer, **G-5** (plotting gap), **W-5/W-7** (bench `--results-dir` / `ar_p` registration), **G-4**
   (missing Grafana dashboard) and **G-17** (absent `performance` marker). The predecessor carried only G-17
@@ -514,6 +514,6 @@ Relevant suites: `python3 -m unittest tests.test_experiment_suite_yamls tests.te
 ## 7. Approval
 
 **This document makes no standing-approval claim.** Merge approval is per-session and does not carry
-across handoffs. The re-baseline itself is owner-approved (2026-08-23, "full post-#514 re-baseline"),
+across handoffs. The re-baseline itself is Overtoad-approved (2026-08-23, "full post-#514 re-baseline"),
 as is the deferral until the host is quiet — but ask before spending GPU hours on anything beyond the
 three suites named here, and before acting on any §0.1 / §0.2 residual.

@@ -1,9 +1,9 @@
-# Handoff — turing bring-up: G1 landed, G4 promoted; H2 next (the owner splits the arc first)
+# Handoff — turing bring-up: G1 landed, G4 promoted; H2 next (the Overtoad splits the arc first)
 
 - **From:** the 2026-10-20 session on turing named "code signing". It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-session-3-final-e2-validated-g1-next.md`.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.2. This session's record is in §18.2 (the G1 and G4 rows) and §18.3 (errata E-G1 and E-DUP). Task IDs below are the plan's.
-- **Standing approval:** the owner granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
-- **Coordination.** Two sessions picked up the previous handoff (E-DUP). The "mac dev env" session closed its G1 PR, juniper-ml#2288, as superseded. It has stood down on this arc and is waiting for the owner to split the remaining items between the sessions. **Ask the owner which session takes H2, H4 and H5 before starting any of them.**
+- **Standing approval:** the Overtoad granted merge approval for the work arc, merging only after green. It does not cover the `pypi` deployment gate.
+- **Coordination.** Two sessions picked up the previous handoff (E-DUP). The "mac dev env" session closed its G1 PR, juniper-ml#2288, as superseded. It has stood down on this arc and is waiting for the Overtoad to split the remaining items between the sessions. **Ask the Overtoad which session takes H2, H4 and H5 before starting any of them.**
 
 ## Landed (squash-merged to `main` after green)
 
@@ -19,12 +19,12 @@
 
 | Gate | Fails on | Task |
 |---|---|---|
-| G-ALIAS | the juniper-k8s and juniper-recurrence origins | A1 (owner) |
-| G-SIGN | no I-SIGN record | signing plan K10 after B2/B3 (owner), recorded by K11 |
-| G-SEC | SIP in a custom configuration, firewall off, 15 key-export files | C1, C2, C3 (owner) |
+| G-ALIAS | the juniper-k8s and juniper-recurrence origins | A1 (Overtoad) |
+| G-SIGN | no I-SIGN record | signing plan K10 after B2/B3 (Overtoad), recorded by K11 |
+| G-SEC | SIP in a custom configuration, firewall off, 15 key-export files | C1, C2, C3 (Overtoad) |
 | G-TOOLS | kubectl v1.22.4 | D4 (re-plan under D6) |
-| G-ENV | the parent `AGENTS.md` is absent | E4 (owner) |
-| G-NET | en7 with no carrier, no reserved address, no iperf3 record | F2, A6 (owner) |
+| G-ENV | the parent `AGENTS.md` is absent | E4 (Overtoad) |
+| G-NET | en7 with no carrier, no reserved address, no iperf3 record | F2, A6 (Overtoad) |
 | G-MEM | memory headroom, swap, Docker Desktop running | F3 node mode, D7 |
 
 A `null` record in `expected.yaml` is filled in by the PR that closes its task:
@@ -36,7 +36,7 @@ A `null` record in `expected.yaml` is filled in by the PR that closes its task:
 
 Each `record` path points at a file under `reports/`, which the check confirms exists.
 
-## Owner steps (unchanged from the previous handoff, plus the records)
+## The Overtoad steps (unchanged from the previous handoff, plus the records)
 
 1. **C8:** fast-forward the primary checkout (`git pull --ff-only origin main`), then run `bash util/install_claude_agent_guard.bash --apply`. That installs guard 1.1.0 with K12's rules.
 2. **A1:** rewrite the juniper-k8s and juniper-recurrence remotes, then confirm that `python3 util/git_remote_alias_check.py` exits 0. Then opt in with `pre-commit install --hook-type pre-push`.
@@ -45,17 +45,17 @@ Each `record` path points at a file under `reports/`, which the check confirms e
 5. **The network:** the open-security radio, roaming or `en7` (F2), and A6.
 6. **F3 node mode:** quit the desktop apps and Docker Desktop, with no VM running, then say so.
 7. **Commit signing (§19):** no YubiKey goes into turing until C8 and K12 are installed and K13 is done.
-8. **The rest of Owner block 1:** C0, A2, A3, B2–B6, C1–C3, C5, C7, E4, A6, F1 and F2.
+8. **The rest of The Overtoad block 1:** C0, A2, A3, B2–B6, C1–C3, C5, C7, E4, A6, F1 and F2.
 9. **After each block:** run `python3 util/host_state_check.py`.
 
-## Agent next (after the owner's split)
+## Agent next (after the Overtoad's split)
 
 1. **H2:** the three SME agents of plan §11 (`macos-host-sme`, `signing-auth-sme`, `k8s-node-sme`).
    - Each needs `tests/test_agents_frontmatter.py` to stay green and its own `tests/test_<agent>_contract.py`, on the pattern of `tests/test_fleet_supervisor_contract.py`.
    - After the merge, re-run `util/install_agents.bash` from a clean `main` to get 9 symlinks.
    - `macos-host-sme` measures with `util/host_state_check.py --json`.
 2. **H4** (`util/mcp_setup.bash`, Serena pinned, D10) and **H5** (the `auditor` agent on the two unvetted `~/.claude/mcp-servers/` entries).
-3. **F3 node mode**, after owner step 6.
+3. **F3 node mode**, after Overtoad step 6.
 4. **E5** waits on A6. D2-upg and D4 still need re-planning under the D6 ruling.
 5. **Post-merge check (E-LAND-2).** About an hour after the last merge, re-run these against `main`:
    - `python3 -I util/ad-hoc/2026-10-20_turing_g1_apply.py --dry-run`;
@@ -68,7 +68,7 @@ Each `record` path points at a file under `reports/`, which the check confirms e
 
 ```bash
 git fetch origin && git log -5 --oneline origin/main
-gh search prs --owner pcalnon --state open --json repository,number,title
+gh search prs --Overtoad pcalnon --state open --json repository,number,title
 python3 util/host_state_check.py                                  # the readiness report (0 of 7 on 2026-10-20)
 python3 -I util/ad-hoc/2026-10-20_turing_g1_apply.py --dry-run     # every edit present
 python3 -I util/ad-hoc/2026-10-20_turing_g4_promote_apply.py --dry-run

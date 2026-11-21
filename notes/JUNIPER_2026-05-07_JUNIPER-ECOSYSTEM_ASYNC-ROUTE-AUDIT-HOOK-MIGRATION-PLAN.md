@@ -137,7 +137,7 @@ ruff check --select ASYNC --exit-zero --output-format=concise . > .audit/async-r
 - `notes/ASYNC_ROUTE_VIOLATIONS_2026-05-05.md` (juniper-ml) consolidating per-repo lists.
 - For each repo: a one-line summary of count + top file by violation density.
 
-**Goal**: enumerate the cleanup surface so each repo's owner can scope the work.
+**Goal**: enumerate the cleanup surface so each repo's Overtoad can scope the work.
 
 ### Phase 1 — Document and pin (1 PR per repo)
 
@@ -182,7 +182,7 @@ async-route-audit:
 
 > **Lesson learned (2026-05-06, juniper-data PR #94 first run)**: the original plan command omitted `--exit-zero`. Without it, ruff exits 1 when violations are present, the step fails, and the `async-route-audit` job displays as red on the PR — even with `continue-on-error: true` on the job. The job-level flag prevents the workflow from failing as a whole, but does not suppress the visual red indicator on the step. Adding `--exit-zero` makes the step exit 0 (so the job stays green) while `--output-format=github` still renders the violations as PR annotations. Belt and suspenders alongside `continue-on-error: true`. Phase 4 will drop both flags simultaneously to flip enforcement on.
 
-### Phase 3 — Cleanup PRs (per repo, owner-scoped)
+### Phase 3 — Cleanup PRs (per repo, Overtoad-scoped)
 
 For each Phase-0 violation:
 
@@ -258,7 +258,7 @@ The decorator approach matters because some routes intentionally make sync calls
 
 | Risk | Severity | Mitigation |
 |---|---|---|
-| **False positives create review noise** | MED | Phase 0 enumerates the cleanup surface so we know the volume before enforcement; soft-fail CI lane (Phase 2) lets owners see violations without churn. |
+| **False positives create review noise** | MED | Phase 0 enumerates the cleanup surface so we know the volume before enforcement; soft-fail CI lane (Phase 2) lets Overtoads see violations without churn. |
 | **Per-repo cleanup is large in juniper-cascor** | MED | Cascade across multiple PRs; don't enforce until `0` count is reached. The Phase 0 report sets expectations. |
 | **Custom deny-list rots as APIs evolve** | LOW | Tie deny-list to a single source of truth (a docstring marker `Blocking: true` on store methods) and have the script read those markers rather than a hardcoded list. Phase 5 work; not blocking. |
 | **Ruff version drift across repos** | LOW | Pin in pre-commit + CI; Dependabot updates the pin uniformly across the ecosystem. |
@@ -271,12 +271,12 @@ The decorator approach matters because some routes intentionally make sync calls
 
 Per repo:
 
-| Phase | Effort | Owner |
+| Phase | Effort | The Overtoad |
 |---|---|---|
 | Phase 0 (discovery) | 30 min | One person, one shell session |
 | Phase 1 (wiring) | 1 hr | One PR per repo, mechanical |
 | Phase 2 (CI lane on, soft-fail) | 1 hr | One PR per repo |
-| Phase 3 (cleanup) | varies — 1 hr to 1 day depending on Phase 0 count | Repo owner |
+| Phase 3 (cleanup) | varies — 1 hr to 1 day depending on Phase 0 count | Repo Overtoad |
 | Phase 4 (enforce) | 30 min | One PR per repo |
 
 **Total ecosystem effort** (4 in-scope repos × phases 0–2 + 4 cleanup tracks + 4 enforce PRs): roughly 1–3 person-days, spread over 2–3 weeks if work is parallelised across repos. The dominant variable is Phase 3 cleanup volume, which Phase 0 quantifies before any commitment is made.

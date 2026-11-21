@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (the Cursor flood-4 round-2 "ml-propose" carrier, second build after validation)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: juniper-ml#2507; owner ruling "Carry + extend propose.py"; the round-2 validators' findings
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: juniper-ml#2507; Overtoad ruling "Carry + extend propose.py"; the round-2 validators' findings
          (claims lens F2-F4, code lens F1, F2, F5, F7); util/ad-hoc/2026-11-08_flood4r2_ml-propose_mutation_check.py
 
 A fix's tests must fail on the code it fixes. This swaps ``--old`` in for ``<worktree>/util/release_train/propose.py``

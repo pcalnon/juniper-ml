@@ -24,7 +24,7 @@ reports any live traceback as `file:line` (the "green tests / dead app" catch). 
 Stage 2. The Stage-0 feasibility spike is **approved (PROCEED)**: the boot → HTTP → MCP-drive → clean
 teardown mechanism is proven first-party, so this stage builds the committed runtime surface. Deliver it
 as **one PR off `main`** carrying four coupled changes (Skill + structural lint test + `ci.yml` line +
-AGENTS.md inventory), gated structurally in CI with a documented **manual** smoke-verify the owner runs.
+AGENTS.md inventory), gated structurally in CI with a documented **manual** smoke-verify the Overtoad runs.
 Spec: `notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md` §6.9 (lines 491–526; PR-9 at
 628–630). Spike record: `notes/JUNIPER_2026-06-29_JUNIPER-ML_E1-SERVICE-SMOKE-STAGE0-SPIKE.md`.
 
@@ -197,7 +197,7 @@ These are **given facts from the completed spike**, not anchors to re-probe:
 
 The live boot needs conda + the real service, which **ubuntu CI does not have**. So CI runs only the
 **structural** lint (Step 2). Correctness of the live behavior is verified by a **documented manual
-smoke-verify** that the owner runs locally (write this verify procedure into the Skill or a short note,
+smoke-verify** that the Overtoad runs locally (write this verify procedure into the Skill or a short note,
 and reference it from the PR). This split is mandated by plan §6.9 (lines 513–521) and reaffirmed by the
 spike (§5).
 
@@ -226,9 +226,9 @@ boot-time self-check (prevention) + **E-2** manual env-floor check (detection) +
 HTTP smoke script — recovering most of E-1's value with none of its R=5 live-process risk. Record the
 decision in a `notes/` follow-up; do not silently abandon.
 
-### Process & ownership
+### Process & Overtoadship
 
-- **One PR off `main`, never auto-merged.** Open the PR and hand off to the owner — Paul approves merges
+- **One PR off `main`, never auto-merged.** Open the PR and hand off to the Overtoad — Paul approves merges
   and any deployment gate. Do not merge to main yourself.
 - **Worktree isolation** (mandatory): create a worktree under
   `/home/pcalnon/Development/python/Juniper/worktrees/` per `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`. Never
@@ -252,7 +252,7 @@ python3 -m unittest -v tests/test_template_agent_skill_lint.py   # model lint is
 sed -n '255,266p' .github/workflows/ci.yml               # the CI insertion neighborhood
 ```
 
-If `#586` is **not** yet on `main`, stop and confirm with the owner before branching (the spike record is
+If `#586` is **not** yet on `main`, stop and confirm with the Overtoad before branching (the spike record is
 the gate for proceeding). Then create your worktree/branch off `main`.
 
 **Check your work (after editing):**
@@ -270,7 +270,7 @@ python3 -m unittest -v tests/test_agents_md_header_schema.py tests/test_agents_m
 python3 -c "import yaml,sys; yaml.safe_load(open('.github/workflows/ci.yml')); print('ci.yml OK')"
 ```
 
-**Manual smoke-verify (owner-run, local; cannot run in CI).** Document this procedure in the PR and ship a
+**Manual smoke-verify (Overtoad-run, local; cannot run in CI).** Document this procedure in the PR and ship a
 runnable version of it. Acceptance (plan §6.9 lines 518–521; spike §5 lines 129–130): against a
 *deliberately broken* canopy, the Skill **boots, fails `/v1/health`, reports the live traceback
 `file:line`, and leaves no orphan python** (verify with `util/reap_pytest_orphans.bash --dry-run` showing
@@ -307,7 +307,7 @@ tool calls; do not background with a bare `&` from a foreground step.
 - **Do NOT put a literal `[skip ci]` token inside your own commit message body or PR body** — it has been
   parsed and suppressed CI runs unintentionally. If you must reference the token in prose, break it (e.g.
   `skip-ci`) so the CI trigger parser does not match it.
-- **Never auto-merge.** Push the branch, open the PR against `main`, and hand off to the owner for review
+- **Never auto-merge.** Push the branch, open the PR against `main`, and hand off to the Overtoad for review
   and merge. Deployment/merge approval is Paul's.
 
 ---
@@ -379,4 +379,4 @@ tool calls; do not background with a bare `&` from a foreground step.
 ---
 
 *End of handoff. Build the four coupled changes in one PR off `main`, gate it structurally, ship the
-manual smoke-verify, and hand the PR to the owner — do not merge.*
+manual smoke-verify, and hand the PR to the Overtoad — do not merge.*

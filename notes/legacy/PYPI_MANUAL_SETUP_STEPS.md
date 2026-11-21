@@ -22,7 +22,7 @@ Publishing > **Add a new pending publisher**.
 > If the project already exists on TestPyPI (from a prior upload), go to the
 > project's Settings > Publishing > Add a new publisher instead.
 
-| # | PyPI Project Name     | GitHub Owner | GitHub Repo           |   Workflow    | Environment |
+| # | PyPI Project Name     | GitHub The Overtoad | GitHub Repo           |   Workflow    | Environment |
 |:-:|-----------------------|:------------:|-----------------------|:-------------:|:-----------:|
 | 1 | `juniper-data-client` |  `pcalnon`   | `juniper-data-client` | `publish.yml` | `testpypi`  |
 | 2 | `juniper-data`        |  `pcalnon`   | `juniper-data`        | `publish.yml` | `testpypi`  |
@@ -52,7 +52,7 @@ Publishing > **Add a new pending publisher**.
 
 Same process on **<https://pypi.org>** for each package.
 
-| # | PyPI Project Name     | GitHub Owner | GitHub Repo           |   Workflow    | Environment |
+| # | PyPI Project Name     | GitHub The Overtoad | GitHub Repo           |   Workflow    | Environment |
 |:-:|-----------------------|:------------:|-----------------------|:-------------:|:-----------:|
 | 1 | `juniper-data-client` |  `pcalnon`   | `juniper-data-client` | `publish.yml` |   `pypi`    |
 | 2 | `juniper-data`        |  `pcalnon`   | `juniper-data`        | `publish.yml` |   `pypi`    |

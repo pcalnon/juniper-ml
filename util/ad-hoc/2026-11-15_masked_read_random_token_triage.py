@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (R-OBS-SC-2 follow-ups)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (the masked read of reports/2026-11-15_r-obs-sc-2-follow-ups-reviews/ before plan v1.15.16's push)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-05_masked_finding_shape.py (whose random_looking() and regexes this uses);
          util/ad-hoc/2026-11-15_pre_push_gate_run.bash (the two scans and the --names read)
 

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-13
 Status: ad-hoc -- one-off (the juniper-ml 0.11.5 release proposal)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-06_juniper_ml_0_11_4_cut_cochanges.py (the 0.11.4 cut this follows);
          util/ad-hoc/2026-10-25_juniper_ml_0_11_1_cut_cochanges.py (the last cut that moved a matrix column's floor);
          util/ad-hoc/2026-11-12_tools_floors_observability_0_4_2_service_core_0_7_2.py (the floor PR, juniper-ml#2555,
@@ -23,7 +23,7 @@ compatibility lead-in, and moves ``[Unreleased]``. This cut owes more, and no te
 
 * the "Package Overview" Version cell, which 0.11.4's cut set to ``0.11.4``;
 * the "Ecosystem Compatibility" sentence. 0.11.5 ships the ``[tools]`` floors ``juniper-observability>=0.4.2`` and
-  ``juniper-service-core>=0.7.2,<0.8.0`` (owner ruling 2026-11-09; juniper-ml#2555). That PR moved the matrix's
+  ``juniper-service-core>=0.7.2,<0.8.0`` (Overtoad ruling 2026-11-09; juniper-ml#2555). That PR moved the matrix's
   ``0.11.x`` observability cell at once, because ``main``'s row tracks ``pyproject.toml``, and added two clauses that
   call both floors "unreleased; first in juniper-ml 0.11.5". With the cut they are released, so the clauses go, and
   the sentence records the two moves as 0.11.5's. The sentence stays on ONE physical line, with its
@@ -182,8 +182,8 @@ _REWORDS = (
     ),
     (
         "the paused-fit entry's race that 'gets its own fix' (juniper-ml#2557 is that fix)",
-        "  shared pause gate, and a start is then accepted beside it. The owner has ruled that this race gets\n" "  its own fix, in its own PR (§8, ruling 11 of\n" "  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).\n",
-        "  shared pause gate, and a start is then accepted beside it. The owner has ruled that this race gets\n"
+        "  shared pause gate, and a start is then accepted beside it. The Overtoad has ruled that this race gets\n" "  its own fix, in its own PR (§8, ruling 11 of\n" "  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).\n",
+        "  shared pause gate, and a start is then accepted beside it. The Overtoad has ruled that this race gets\n"
         "  its own fix, in its own PR (§8, ruling 11 of\n"
         "  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`); that fix is the\n"
         "  stop-then-start entry below, with which such a start is refused while the stopped `fit` still runs.\n",
@@ -206,7 +206,7 @@ _UNRELEASED = "## [Unreleased]\n\n"
 #: CHANGELOG.md, inside [0.11.5]: the category repair's landmarks.
 _CHANGED = "### Changed\n\n"
 _FIRST_OF_2360 = "- **Fixed temp paths instead of the system temp dir** (the 2026-10-26 repo `tmp/` rule).\n"
-_SECOND_OF_2360 = "- **The owner's 2026-10-26 rulings on `tmp/`**, quoted in section 1 of\n"
+_SECOND_OF_2360 = "- **The Overtoad's 2026-10-26 rulings on `tmp/`**, quoted in section 1 of\n"
 _FIRST_DISPLACED = "- **`HARCOT` joins the `notes/` repository tokens (2026-11-10).**"
 _LAST_DISPLACED = "- **The Cursor flood-4 disposition record, with its render inputs and provenance scripts (round 1 complete).**"
 _LAUNCHERS = "- **`-v` reports Claude Code's version in both launchers,"

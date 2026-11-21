@@ -1,6 +1,6 @@
 # HANDOFF 2026-07-31 — CLI Experimentation Program: continue with Wave 2.5 (recurrence plot set)
 
-Continue executing the CLI test/validation/experimentation program for juniper-cascor + juniper-recurrence (plan of record: `notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`; owner ratified all Q-1..Q-12).
+Continue executing the CLI test/validation/experimentation program for juniper-cascor + juniper-recurrence (plan of record: `notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`; Overtoad ratified all Q-1..Q-12).
 
 ## Completed so far
 
@@ -17,9 +17,9 @@ Continue executing the CLI test/validation/experimentation program for juniper-c
 
 - **Read the memory file first**: `project_cascor_recurrence_cli_experimentation_plan.md` — Wave-2.2/2.3/2.4 paragraphs carry the implementation truths (envelope vs raw models, real boundary payload keys, plots-module file-path loading, skip-vs-fail semantics, `RequestTimeout` budget, no-`--params` CLI constraint, nested recurrence repo layout).
 - Driver test idiom: scripted stub `http.server` plays all services (`_artifact_npz_bytes` pattern for NPZ endpoints — a 3-D sequence variant is needed for 2.5); `RedactedEnv` for subprocess arms; PNG-magic + size assertions for plots.
-- Headless commits: `git -c commit.gpgsign=false commit`. Owner merges via admin bypass (unsigned commits leave PRs OPEN/BLOCKED under `required_signatures`).
+- Headless commits: `git -c commit.gpgsign=false commit`. The Overtoad merges via admin bypass (unsigned commits leave PRs OPEN/BLOCKED under `required_signatures`).
 - CI test job installs pyyaml/packaging/numpy/matplotlib — no new deps expected for 2.5.
-- Owner decision still pending (not urgent): recurrence namespace alignment. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
+- The Overtoad decision still pending (not urgent): recurrence namespace alignment. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
 
 ## Verification for the new thread
 

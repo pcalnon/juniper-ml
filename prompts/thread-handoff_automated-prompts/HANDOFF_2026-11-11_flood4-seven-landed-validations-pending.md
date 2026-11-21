@@ -1,4 +1,4 @@
-# Handoff: flood-4 session 4 — seven fixes landed; validations, two carriers and the owner's open decisions pending
+# Handoff: flood-4 session 4 — seven fixes landed; validations, two carriers and the Overtoad's open decisions pending
 
 **Date**: 2026-11-11 (written 2026-11-12 00:25Z UTC)
 
@@ -6,7 +6,7 @@
 
 **Host**: the Linux host.
 
-**Why the session stopped**: the account's **weekly API limit** was hit around 16:15Z on 2026-11-09. It "resets Nov 11, 9pm (America/Chicago)", which is 2026-11-12 03:00Z. Five background agents died mid-task (listed under Goal), and their work is on disk only. The owner then rejected a batched question (decisions D1–D4 below) because they wanted to **clarify** those questions, and asked for this handoff.
+**Why the session stopped**: the account's **weekly API limit** was hit around 16:15Z on 2026-11-09. It "resets Nov 11, 9pm (America/Chicago)", which is 2026-11-12 03:00Z. Five background agents died mid-task (listed under Goal), and their work is on disk only. The Overtoad then rejected a batched question (decisions D1–D4 below) because they wanted to **clarify** those questions, and asked for this handoff.
 
 ---
 
@@ -21,7 +21,7 @@
   - `tmp/` is ignored.
 - **The running log** is `tmp/flood4/STATE.txt`; read its "== SESSION 4" section first.
 - **The landing evidence** is in `tmp/flood4/session4/land/<item>/`: freeze, scans, texts, safe_merge logs and close logs.
-- **The primary checkout** is on the owner's branch. Do not touch it.
+- **The primary checkout** is on the Overtoad's branch. Do not touch it.
 
 ---
 
@@ -48,8 +48,8 @@ EnterWorktree(path=/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/w
 Run the Verification block first; if an invariant fails, stop, re-derive it from GitHub, and report.
 
 FIRST:
-(1) Ask the owner for THIS session's merge approval (a handoff cannot carry it).
-(2) The owner asked to CLARIFY decisions D1-D4 before answering. Ask what they want clarified, then present D1-D9 (this
+(1) Ask the Overtoad for THIS session's merge approval (a handoff cannot carry it).
+(2) The Overtoad asked to CLARIFY decisions D1-D4 before answering. Ask what they want clarified, then present D1-D9 (this
     file's "Open decisions") with their context.
 (3) Confirm the weekly API limit has reset (it reset 2026-11-12 03:00Z). Agents died on it once; launch a few, not ten.
 
@@ -71,7 +71,7 @@ FIRST:
         F6, text and stamps.
       - Apply tmp/flood4r2-val/ml-code-claims-lens/findings.json: 1 BLOCKER, 1 MAJOR, 9 MINOR.
       - NOT F3/F4: they wait for D1.
-      - Then a final check, then land. Tell the owner to reinstall guard 1.3.0 after the merge.
+      - Then a final check, then land. Tell the Overtoad to reinstall guard 1.3.0 after the merge.
    d. Ruling 17, cascor stop-then-start. The builder died while writing the PR body, in
       worktrees/juniper-cascor--fix--stop-then-start-race--20261109-0944--96cf891b, tmp/flood4-fix/r17-cascor-stop-start/.
       Finish it, validate it with two lenses, and land it after N-3.
@@ -127,7 +127,7 @@ FIRST:
 
 ---
 
-## Open decisions (the owner's; none answered — the owner asked to clarify D1–D4 first)
+## Open decisions (the Overtoad's; none answered — the Overtoad asked to clarify D1–D4 first)
 
 | # | Decision | Context | Options (recommended first) |
 |---|---|---|---|
@@ -141,13 +141,13 @@ FIRST:
 | D8 | **Guard suites missing from host-tooling-macos** | Found by the ml-tests builder: the guard's suites are not wired into the macOS host-tooling workflow. | Wire them in the ml-tests carrier (orchestrator may decide) or as a follow-up. |
 | D9 | canopy `docs/ci_cd/CICD_MANUAL.md:796` | It says the workflow comment claims the `[dependabot skip]` tag keeps Dependabot from rebasing, but `lockfile-update.yml:176-177` now says the opposite. The text is pre-existing. Source: `tmp/flood4r2-fix/canopy-docs/manifest.json` `open_questions`. | A one-line follow-up; record only. |
 
-**Orchestrator decisions taken in session 4** (record them; the owner may overrule):
+**Orchestrator decisions taken in session 4** (record them; the Overtoad may overrule):
 - ml-propose lands immediately **before** ml-tests.
 - M-1's R3-02 fix was kept as code: the `remerge` git filter. The quick check recommended KEEP: its output is byte-identical to git's and it fails closed.
 - The canopy guard covers 8050–8059, 8200–8202 and 8210–8211, not just :8050.
 - canopy#807's py3.13 failure (`test_x7_sites_outside_main_gate.py::…test_relay_cascade_add_does_not_block_the_loop`, a 0.875 s loop stall) was treated as a flake and rerun. It ran on the same runner image as main's green run, and the rerun passed.
 
-## The owner's rulings
+## The Overtoad's rulings
 
 - Session 4's opening message: "approval granted for merging and related PR operations". It is per session and does not carry.
 - **Ruling 18** (AskUserQuestion, label verbatim). The question was where the escape gap `cat ~/.ss{h,b\}c}/config` should be fixed. Answer: "Own PR, right after (Recommended)". ml-code lands at its current scope, and one quote/escape-aware brace-expansion PR follows it.

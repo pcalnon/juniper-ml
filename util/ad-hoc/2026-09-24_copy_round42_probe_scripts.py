@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use copier
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Every round-42 validation report names the probe scripts behind its measurements by their path in
 a session scratchpad under /tmp, which is tmpfs and is reaped when the session or machine goes.

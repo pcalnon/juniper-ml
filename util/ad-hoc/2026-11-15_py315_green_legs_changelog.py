@@ -6,14 +6,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- migration (phase 1 of the ecosystem's Python 3.15 migration, the green-legs follow-up)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_py315_informational_green_legs.py (juniper-ml#2578; it makes the workflow edits this
          entry describes); util/ad-hoc/2026-11-14_py315_informational_juniper-data-client.py (the phase-1 script whose
          checks and structure this follows); tmp/py315/GREEN_LEGS_BRIEF.md (the rollout brief)
 
 Why this exists
 ---------------
-The owner's report of 2026-11-15: the Python 3.15 checks "are supposed to produce an informational message without
+The Overtoad's report of 2026-11-15: the Python 3.15 checks "are supposed to produce an informational message without
 affecting the ability of code to commit, push, PR, or merge". juniper-ml#2578 makes each informational 3.15 leg
 conclude green and report its failures as a warning; ``2026-11-15_py315_informational_green_legs.py`` applies that to
 these three repos' workflows, and this script adds the matching ``[Unreleased]`` / ``### Fixed`` entry to each one's
@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 CLIENT_ENTRY = """\
-- **The informational Python 3.15 legs no longer show as failed checks when they fail** (the owner's report of
+- **The informational Python 3.15 legs no longer show as failed checks when they fail** (the Overtoad's report of
   2026-11-15: the 3.15 checks "are supposed to produce an informational message without affecting the ability of
   code to commit, push, PR, or merge"). {pr}'s job-level `continue-on-error` keeps the Quality Gate green, but a
   failing 3.15 leg's own check still concluded `failure`: a red X and "Some checks were not successful" on the pull
@@ -58,7 +58,7 @@ CLIENT_ENTRY = """\
 
 DEPLOY_ENTRY = """\
 - **The informational Python 3.15 leg no longer shows as a failed check when it fails** (the
-  owner's report of 2026-11-15: the 3.15 checks "are supposed to produce an informational message
+  Overtoad's report of 2026-11-15: the 3.15 checks "are supposed to produce an informational message
   without affecting the ability of code to commit, push, PR, or merge"). #274's job-level
   `continue-on-error` keeps the Quality Gate green, but a failing `Unit Tests (Python 3.15)` check
   still concluded `failure`: a red X and "Some checks were not successful" on the pull request, a

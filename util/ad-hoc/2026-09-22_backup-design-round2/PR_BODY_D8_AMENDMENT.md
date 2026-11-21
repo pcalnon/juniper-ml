@@ -4,16 +4,16 @@
 
 **Landed on 2026-10-03 as Phase A of `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` (§6.1).** The change was paused mid-round-8 on 2026-09-24 as three local-only commits; this session folded round 8's corrections into the edit script and the record (the consolidated handoff's sub-steps 1a–1h), rebuilt the design from `6c23fdde`, ran the gates, and validated the delta with one narrow lane (below). Nothing on `main` had touched the nine files since that base. Merging the record discharges the release's second limit: every validation round of this arc is now archived verbatim on `main`, so the transcript sink may be purged.
 
-This change records three owner rulings of 2026-09-24 in the backup design of record,
+This change records three Overtoad rulings of 2026-09-24 in the backup design of record,
 `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`. It also repairs text
 the 2026-09-22 rulings left stale, corrects two defects of fact, adds the six §12 rows that were owed, and
-adopts the owner's SMART-script refactor that closing ml#2045 dropped. Together those discharge items 3, 4
+adopts the Overtoad's SMART-script refactor that closing ml#2045 dropped. Together those discharge items 3, 4
 and 5 of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_backup-arc-seven-decisions-ruled-smart-passed-p0-is-next.md`.
 Items 1 and 2 were done before this session: ml#2067 merged as `dcfc024f`, and ml#2073 archived the handoff.
 
 Validating the first draft found **defects in §8's procedure itself**. Three were re-derived from source as
 high severity. An operator following §8 literally could re-lock the recovered database, pass the pre-backup
-guard without its `TargetURL` check, or copy a cleartext database into the backup Source. The owner ruled
+guard without its `TargetURL` check, or copy a cleartext database into the backup Source. The Overtoad ruled
 that this change stays narrow: it puts **§8 behind a STOP** that lists the defects, and a follow-up change
 fixes the procedure.
 
@@ -46,7 +46,7 @@ item 4.
 - **Two limits on the release**: no history file is wiped before P0 step 3 has tested the key candidates it
   may hold, and no transcript is purged before this arc's reports are archived.
 
-**Two readings for the owner to confirm or widen.** Validation found two of the ruling's phrases wider than
+**Two readings for the Overtoad to confirm or widen.** Validation found two of the ruling's phrases wider than
 they look, and the design now reads both narrowly, saying so in note 10.1g:
 
 - **"Only reads"** means reads that write nothing and run no Duplicati binary. P0 step 0(c) calls itself
@@ -91,13 +91,13 @@ trigger events, and the lower-severity items the record lists.
 - **§6.** S-2's value *is* the live passphrase, so the settings-key re-key does not retire its lines. New
   note S-3c names two exposures D-2 does not reach: the frozen 811-volume copy and `PASSPHRASE_OLD`.
 - **Host state that moved during the session.** Both `su - duplicati` shells and the root `vim` had
-  exited, so §6's rows for them are overtaken. Note sink-b gives the owner a count-only check of
+  exited, so §6's rows for them are overtaken. Note sink-b gives the Overtoad a count-only check of
   `/home/duplicati/.bash_history` — case-insensitive, never wiped on the count.
 - **"All 877 dindex volumes".** The destination holds 434 dindex, 434 dblock and 9 dlist files. The ">30
   minutes" figure was ml#1268's, measured against the old `Ubuntu` archive.
 - **§11 and §12.** §11's "15 defects, all applied" becomes 13 of 15 (D11 and D13), in the round-2 record
   too. §12 gets its six owed rows, and note 10.2b moves ahead of 10.2c (one of ml#2045's changes).
-- **The SMART script** keeps the owner's `b0223f18` refactor, with one `date` call instead of two, since
+- **The SMART script** keeps the Overtoad's `b0223f18` refactor, with one `date` call instead of two, since
   two calls can straddle midnight. The header drops the dead `SC2034` directive and no longer calls the
   device palette an inventory. It stays `100644` (`createCommitOnBranch` carries no mode), so run it with
   `sudo bash`. ml#2045's re-padding of four tables is declined.
@@ -143,11 +143,11 @@ No tagged block is touched, so no staged artifact changes.
 
 ## Validation
 
-One narrow lane on the round-8 delta (the SOP applies because the owner's sweeper arms open PRs), briefed to refute, 53 tool uses, pins matched on entry and exit. Four checks, all re-derived from source:
+One narrow lane on the round-8 delta (the SOP applies because the Overtoad's sweeper arms open PRs), briefed to refute, 53 tool uses, pins matched on entry and exit. Four checks, all re-derived from source:
 
 1. **Rebuild identity** — from `6c23fdde` on a scratch tree: 64 edits applied, the rebuilt design and round-2 record byte-identical to this branch's (sha256 `5d875ed9…`, `5dc7b533…`); a second run `no change … idempotent`; `--self-test` 8 of 8. CONFIRMED.
 2. **Verbatim reports** — all eleven re-extracted independently from the transcripts with the archiver's own definition of "final assistant text": character counts and sha256 match for every one; every final record is `end_turn` with no API-error flag (round 6's two lanes carry a mid-run session-limit record, then a resume, then a genuine report); the archiver re-run from the pinned header reproduces the record byte-for-byte; credential, email, agent-id and session-id screens all zero. CONFIRMED.
-3. **The owner's words** — the STOP block's Held and Two-limits bullets and note 10.1g quote the ruling as both handoffs carry it; the Released bullet and the front-matter bullet paraphrase, and each marks the design's narrower reading as a reading. CONFIRMED. The lane found the record's **round-7 disposition preamble** still naming `"only reads"` and `"this arc's validation reports"` as the ruling's phrases — REFUTED, record-only; corrected in the header before landing (the round-8 paragraph had it right, so the two had contradicted each other).
+3. **The Overtoad's words** — the STOP block's Held and Two-limits bullets and note 10.1g quote the ruling as both handoffs carry it; the Released bullet and the front-matter bullet paraphrase, and each marks the design's narrower reading as a reading. CONFIRMED. The lane found the record's **round-7 disposition preamble** still naming `"only reads"` and `"this arc's validation reports"` as the ruling's phrases — REFUTED, record-only; corrected in the header before landing (the round-8 paragraph had it right, so the two had contradicted each other).
 4. **The round-8 disposition table** — every row's disposition re-found in the design as rebuilt; no round-8 finding without a row; the three round-7 rows round 8 called false (A6, B13, B18) say so. One row REFUTED on wording: B1's disposition claimed a "count by value from a 0600 file" method that the design's note sink-c does not give (it says the method is follow-up) — corrected in the header before landing. The table's intro also now says the three out-of-scope items are follow-up, not applied.
 
 Both corrections are in `ROUND4_RECORD_HEADER.md.in`; the record was regenerated from it and the pins re-taken. The lane also noted that the consolidated handoff's "two narrow readings" bullets still quote the pre-round-8 phrases — that file is UNVERIFIED-labelled there and is corrected separately.

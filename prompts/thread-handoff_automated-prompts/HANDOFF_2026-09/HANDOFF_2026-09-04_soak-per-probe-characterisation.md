@@ -1,6 +1,6 @@
 # HANDOFF 2026-09-04 — soak per-probe characterisation
 
-**UNVERIFIED.** Written under context pressure at the owner's instruction; nothing
+**UNVERIFIED.** Written under context pressure at the Overtoad's instruction; nothing
 below was re-checked before writing. Verify every number and state claim before
 acting. Commands to do that are in *Verify first*.
 
@@ -12,7 +12,7 @@ ambiguous probes toward n≈8–10 to resolve which stratum each belongs to.
 The pooled verdict is **BET-FAILING** (terminal), so
 `util/soak_run_probe.py` **refuses to run** — pass `--force`. This is expected and
 sanctioned: §8.3 of the design conversation flagged that guard as keyed on a
-pooled verdict the owner's purpose demoted, and the per-probe question is
+pooled verdict the Overtoad's purpose demoted, and the per-probe question is
 untouched by it.
 
 ```bash
@@ -68,7 +68,7 @@ The other 10 probes are follow-dominant and not the priority.
   detector only catches explicit mentions — **a floor, not an estimate.** If rung 1
   works by making facts resident, it will never appear as a follow.
 
-## Open owner decisions (do not decide these)
+## Open Overtoad decisions (do not decide these)
 
 1. Whether **index-recovery** becomes a scored outcome (registry + ledger change).
 2. Whether **BET-FAILING** feeds back into relocation policy — "safe, but not for
@@ -107,6 +107,6 @@ Worktree `.claude/worktrees/nifty-tinkering-wave`, branch
 `feat/soak-bet-failing-and-channel-fix`, pushed, PR **ml#1644 OPEN and RED**.
 Earlier work this session merged: ml#1616, #1602, #1581, #1576, #1566.
 
-Merge policy: owner approval granted for PRs in this session/arc; still use
+Merge policy: Overtoad approval granted for PRs in this session/arc; still use
 `util/wait_for_checks.py --pr N`, arm `--auto` only after green, and drive
 `update-branch` when BEHIND.

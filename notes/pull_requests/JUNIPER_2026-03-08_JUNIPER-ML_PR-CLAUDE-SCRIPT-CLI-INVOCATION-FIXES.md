@@ -23,7 +23,7 @@ Additionally, the script always launched Claude via `nohup ... &` (headless mode
 
 ## Priority & Work Status
 
-| Priority | Work Item                                                | Owner       | Status   |
+| Priority | Work Item                                                | The Overtoad       | Status   |
 |----------|----------------------------------------------------------|-------------|----------|
 | P1       | Fix CLI argument passing for flag+value pairs            | Paul Calnon | Complete |
 | P1       | Fix prompt string character escaping                     | Paul Calnon | Complete |

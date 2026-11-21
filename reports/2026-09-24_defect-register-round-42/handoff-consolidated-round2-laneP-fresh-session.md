@@ -21,7 +21,7 @@
 **M1. First action 2 can stall the consolidation PR, gives "silent" no time limit, and treats "nothing in flight" as given without a check.**
 - **Quotes:**
   - L45: "Ask whether it is still doing any item or still writes in its worktree, and that it launch and ship nothing more. Start no item it names."
-  - L46: "ask the owner to close it first: with nothing in flight, that is safe."
+  - L46: "ask the Overtoad to close it first: with nothing in flight, that is safe."
   - L70: "**In flight:** nothing."
 - **What goes wrong:**
   - Suppose `[24f8d8]` replies that it was about to open the consolidation PR. The successor has just told it to ship nothing, and may not itself start an item `[24f8d8]` names. Then nobody opens the PR, and a document-2 successor waits for it (L53).
@@ -32,15 +32,15 @@
   - Closing a session kills its subagents (`reference_subagents_killed_by_session_limit_resume_with_sendmessage.md`), so an unfinished validation round would be lost.
 - **Replace L45-L46 with:**
   - "- **Listed:** message it first, with your name and `[ref]`. Say you are its successor; the lane split is settled at First action 3. Ask (1) whether it has opened, or will open, the consolidation PR, and when; (2) whether any of its subagents is still running; (3) whether it still writes in its worktree. If it will open the PR, let it, and wait for the PR. Otherwise ask it to launch and ship nothing more. Start no item it says it is doing."
-  - "- **Listed but silent** (no reply by your next turn): carry on. Before asking the owner to close it (needed only to ship its files yourself), check that no subagent of it is running: `ls -lt /home/pcalnon/.claude/projects/*/2fba4397-7d9b-4929-8ca2-375b8168e1c8/subagents/ | head -4` must show no transcript written in the last 15 minutes."
+  - "- **Listed but silent** (no reply by your next turn): carry on. Before asking the Overtoad to close it (needed only to ship its files yourself), check that no subagent of it is running: `ls -lt /home/pcalnon/.claude/projects/*/2fba4397-7d9b-4929-8ca2-375b8168e1c8/subagents/ | head -4` must show no transcript written in the last 15 minutes."
 
 **M2. Lane R's inputs exist only in fizzy, and the document cites them by relative path.** r1-P L8 was applied to Lane F's #2097 files, but not to Lane R's.
 - **Quotes:**
   - L72: "archived as `reports/…/data438-fixforward-round1-fix-report.md`"
   - L327: "The final draft is `reports/…/data438-fixforward-pr-draft.md`"
   - L581: "Check it against both round-1 reports and the executor's disposition report"
-  - L216 cites `owner-ruling-key-leaks-verbatim.md`; L243 and L248 cite `handoff-2fba4397-round{2,3}-laneF-reprobe.md`.
-- **Evidence:** my `paths_probe.py` found none of the following on `origin/main`, on #2097's branch or on #2089's branch: `data438-fixforward-round1-{laneA-reprobe,laneB-refute,fix-report}.md`, `data438-fixforward-pr-draft.md`, `owner-ruling-key-leaks-verbatim.md`, every `handoff-2fba4397-*` report, and the stall probe. They exist only untracked in fizzy.
+  - L216 cites `Overtoad-ruling-key-leaks-verbatim.md`; L243 and L248 cite `handoff-2fba4397-round{2,3}-laneF-reprobe.md`.
+- **Evidence:** my `paths_probe.py` found none of the following on `origin/main`, on #2097's branch or on #2089's branch: `data438-fixforward-round1-{laneA-reprobe,laneB-refute,fix-report}.md`, `data438-fixforward-pr-draft.md`, `Overtoad-ruling-key-leaks-verbatim.md`, every `handoff-2fba4397-*` report, and the stall probe. They exist only untracked in fizzy.
 - **What goes wrong:** every one of these paths is missing from the successor's own worktree. Work 1's lanes need them first, and so does the `gh pr create --body-file` step.
 - **Add after L185:** "**Until the consolidation PR merges, these files exist ONLY in fizzy.** Read them with `cat`, and give your lanes their paths, as `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fizzy-hugging-dream/<path>`. Once the PR is open, `git show origin/docs/handoff-round42-consolidated:<path>` also works. #2089's probes can be read the same way from `origin/chore/round42-probe-provenance-session-2fba4397`."
 
@@ -51,7 +51,7 @@
   - Its four required flags are not given. No title, commit headline or PR body is drafted anywhere: at 02:32Z, `hc1/dry_body.md` and `hc1/dry_commit_body.txt` hold only "placeholder".
   - The refusal is misdescribed. The code refuses a file only when the copy at fizzy's HEAD differs from `origin/main`'s. The archiver and the extractor are both on `main`, and both pass.
 - **My dry run** (from fizzy): 22 files, base `main @ 3055a892`, "(nothing written)", exit 0.
-- **Replace L186's first sentence with:** "run the opener from fizzy BY ABSOLUTE PATH, dry run first: `python3 /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fizzy-hugging-dream/util/ad-hoc/2026-09-24_open_round42_consolidated_handoff_pr.py --title '<title>' --message '<headline>' --commit-body-file <f> --body-file <f> --dry-run`, then again without `--dry-run`. It ships fizzy's files, because it finds the repo from its own location. It refuses a missing file, any of #2089's paths, a file whose copy at fizzy's HEAD differs from `origin/main`'s, any path an open juniper-ml PR carries, and the owner's email address. Write the title and both bodies yourself, and list every shipped file by name (Appendix G)."
+- **Replace L186's first sentence with:** "run the opener from fizzy BY ABSOLUTE PATH, dry run first: `python3 /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fizzy-hugging-dream/util/ad-hoc/2026-09-24_open_round42_consolidated_handoff_pr.py --title '<title>' --message '<headline>' --commit-body-file <f> --body-file <f> --dry-run`, then again without `--dry-run`. It ships fizzy's files, because it finds the repo from its own location. It refuses a missing file, any of #2089's paths, a file whose copy at fizzy's HEAD differs from `origin/main`'s, any path an open juniper-ml PR carries, and the Overtoad's email address. Write the title and both bodies yourself, and list every shipped file by name (Appendix G)."
 
 **M4. The archiver in the successor's worktree lacks the 15 `MISSING` entries that ride the consolidation PR.**
 - **Quote, L124:** "Add your session's full UUID … to `SESSION_IDS`, and each report to `MISSING`."
@@ -128,7 +128,7 @@
 ### NIT
 
 - **N1.** L44: replace "Its header names you" with "`ListAgents`' header line names your own session and `[ref]`".
-- **N2.** The canopy-ledger fallback is stated two ways. L147 says "or to the owner"; L234 says "or record it in the ledger yourself". Pick one.
+- **N2.** The canopy-ledger fallback is stated two ways. L147 says "or to the Overtoad"; L234 says "or record it in the ledger yourself". Pick one.
 - **N3.** L274 tags #2097's CodeQL question [R], but #2097 is Lane F's PR. Tag it [R/F], or write "Lane R asks for both".
 - **N4.** L282: MEMORY.md is not a question; mark it FYI. L285 never defines D-B.
 - **N5.** L454's scratch-root recipe lacks the `fetch origin main` that L398 has. The shared clones' `origin/main` are current today (`0fbb447a`, `dc5ea02e`, `26491531`), but will fall behind.
@@ -146,7 +146,7 @@
 | First action 2 | AMBIGUOUS | The "Listed" branch can stall the consolidation PR, "silent" has no time limit, and "nothing in flight" is never checked (M1). |
 | First action 3 | EXECUTABLE | Document 2's Step 0 (its L21-L28) will message you. L4 gives the path to send, and L48 reconciles which document governs. |
 | First action 4 | EXECUTABLE | About 11 questions. MEMORY.md is not one (N4). |
-| First action 5 | AMBIGUOUS | The fallback's relative path and flags are missing (M3). CodeQL is gated on the owner by design. |
+| First action 5 | AMBIGUOUS | The fallback's relative path and flags are missing (M3). CodeQL is gated on the Overtoad by design. |
 | Work 1 | AMBIGUOUS | Inputs exist only in fizzy (M2). Lane B's probes need adapting (L3). No brief template (L4). "Round 2" is ambiguous (L10). No archive vehicle (L11). |
 | Work 2 | EXECUTABLE | The #2097 `git show` recipe works. All five harnesses and the serve script are on `origin/docs/handoff-round42-followup-lane`. |
 | Work 3 | EXECUTABLE | — |

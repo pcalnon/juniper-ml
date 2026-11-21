@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-16
 Status:      ad-hoc -- investigation (found while porting juniper-recurrence's `changes` detector to juniper-cascor#771)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-11-16_cascor_model_gate_logic_check.py (measured the fail-open with a 200,000-line list)
 
 Why this exists

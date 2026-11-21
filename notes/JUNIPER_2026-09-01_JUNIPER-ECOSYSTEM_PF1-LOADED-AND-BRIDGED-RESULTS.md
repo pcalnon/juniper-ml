@@ -12,14 +12,14 @@
 > [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md`](JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md)
 > §3, §4.2 and §4.3. The `metrics_scraped` finding is unaffected and stands.
 
-**Executes** the two runs the owner approved in the P3 decisions on
+**Executes** the two runs the Overtoad approved in the P3 decisions on
 [`JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PF1-VARIANCE-RESULTS.md`](JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PF1-VARIANCE-RESULTS.md) §6:
 the **loaded-repeat test** (decision 2) and the **bridged re-run** (decision 4, which rejected
 dropping step duration). Decision 1 ratified `timings.drive` as the metric; decision 3 deferred the
 threshold to this analysis.
 
 **Still not a ratification.** Candidate thresholds are derived below under P1 §5's rule; ratifying
-them remains the owner's.
+them remains the Overtoad's.
 
 ---
 
@@ -162,7 +162,7 @@ UTC) fully containing run B (02:21–02:24 UTC).
 
 ---
 
-## 7. For the owner
+## 7. For the Overtoad
 
 1. **Ratify or adjust the 0.5% candidate** on `timings.drive` for PF-1-class scenarios — §2.
     - Response: i concur. a 0.5% regression threshold strikes a good balance between sensitivity and noise tolerance. this is a design choice that we should come back and verify after this gate goes live.

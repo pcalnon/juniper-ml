@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author:      Paul Calnon
 Created:     2026-08-26
 Status:      ad-hoc -- one-off (cascor#569 fork-safety audit of the trainer's import closure)
-Retire when: RETAINED (owner policy 2026-08-25 -- no retirement deadline). Previously: cascor#569 is
+Retire when: RETAINED (Overtoad policy 2026-08-25 -- no retirement deadline). Previously: cascor#569 is
              merged with the audit recorded on the issue; delete then.
 Related:     cascor#569 (F3 preload set), cascor#570 (forkserver route), handoff
              prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-25_perf-lane-closeout-563-attributed-586-570-568.md

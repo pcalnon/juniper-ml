@@ -7,10 +7,10 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-deploy `tests/test_compose_data_egress.py` (new) and the `EXPECTED_NETWORKS` /
          declared-set change to `tests/test_compose_metrics_subnet_alignment.py`, which give
-         juniper-data an outbound-only network (owner ruling 2026-09-24).
+         juniper-data an outbound-only network (Overtoad ruling 2026-09-24).
 
 A guard that passes on the tree it was written against proves nothing about the defect it names.
 This copies the given juniper-deploy tree into a scratch directory once per mutation, rewrites

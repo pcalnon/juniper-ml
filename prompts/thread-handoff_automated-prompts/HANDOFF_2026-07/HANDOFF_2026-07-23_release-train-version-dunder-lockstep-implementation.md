@@ -2,9 +2,9 @@
 
 **Origin**: session "release-train pin-fix" (juniper-ml), after the SEC-F01 / loose-ends / recurrence-parity arcs completed and the design doc + drift heal merged (ml#701 + ml#702).
 **Target**: a fresh Claude Code session started in `/home/pcalnon/Development/python/Juniper/juniper-ml`.
-**Scope**: one repo (juniper-ml), one implementation PR (plus the standard owner-merge ceremony). Design of record: `notes/JUNIPER_2026-07-23_JUNIPER-ML_RELEASE-TRAIN-VERSION-DUNDER-LOCKSTEP-FOLLOWUP.md` (read it FIRST — this handoff orients; the doc specifies).
+**Scope**: one repo (juniper-ml), one implementation PR (plus the standard Overtoad-merge ceremony). Design of record: `notes/JUNIPER_2026-07-23_JUNIPER-ML_RELEASE-TRAIN-VERSION-DUNDER-LOCKSTEP-FOLLOWUP.md` (read it FIRST — this handoff orients; the doc specifies).
 
-Every `file:line` below was verified 2026-07-23 at juniper-ml main `69efc9c` and spot-rechecked at `17c9975`. Release-train Phase 4.x work is landing concurrently and `util/release_train/` moves often — **re-verify each anchor at your HEAD before editing; treat any drifted anchor as a stop-and-re-ground signal, not something to power through.** Do not invent paths, flags, registry fields, or test names: if a needed signal does not exist, stop and ask the owner.
+Every `file:line` below was verified 2026-07-23 at juniper-ml main `69efc9c` and spot-rechecked at `17c9975`. Release-train Phase 4.x work is landing concurrently and `util/release_train/` moves often — **re-verify each anchor at your HEAD before editing; treat any drifted anchor as a stop-and-re-ground signal, not something to power through.** Do not invent paths, flags, registry fields, or test names: if a needed signal does not exist, stop and ask the Overtoad.
 
 ---
 
@@ -16,12 +16,12 @@ Every `file:line` below was verified 2026-07-23 at juniper-ml main `69efc9c` and
 
 ## Remaining work
 
-### Item 0 — Decision gate (ask ONLY if the owner is present at dispatch; otherwise default to Option A)
+### Item 0 — Decision gate (ask ONLY if the Overtoad is present at dispatch; otherwise default to Option A)
 
 The doc names two paths.
 **Option A (design of record — DEFAULT)**: teach `propose.py` to emit the dunder as a lockstep `FileEdit` + hermetic tests + a generic gate.
-**Option B (alternative the owner may weigh)**: flip the five static packages to `dynamic = ["version"]`, dissolving the class — but note B is heavier than it reads: each package needs `[tool.setuptools.dynamic]` version wiring, `util/release_train/registry.yaml` `version_source` flips for five entries, and `tests/test_release_train_registry.py`'s dynamic-version-set assertions move.
-Implement A unless the owner explicitly picks B.
+**Option B (alternative the Overtoad may weigh)**: flip the five static packages to `dynamic = ["version"]`, dissolving the class — but note B is heavier than it reads: each package needs `[tool.setuptools.dynamic]` version wiring, `util/release_train/registry.yaml` `version_source` flips for five entries, and `tests/test_release_train_registry.py`'s dynamic-version-set assertions move.
+Implement A unless the Overtoad explicitly picks B.
 
 ### Item 1 — propose.py lockstep FileEdit (Option A)
 
@@ -45,7 +45,7 @@ Surface the co-change in the proposal body / co-change checklist the same way th
 
 - **Concurrent sessions are the norm here** (release-train Phase 4.x is active; this arc collided once already). Before opening the PR: `gh pr list` in juniper-ml as a dup-guard AND re-check `git log origin/main` freshness. The codeql-duplicate incident happened because a session skipped exactly this.
 - House worktree procedure: centralized `worktrees/` dir, `<repo>--<branch-with-slashes-as-double-dash>--<YYYYMMDD-HHMM>--<hash8>` naming; never work in the primary checkout.
-- Headless commits MUST use `-c commit.gpgsign=false` (owner's YubiKey config otherwise hangs). juniper-ml main enforces `required_signatures`, so the PR will show BLOCKED even when green — the owner's merge handles it; never use `--admin`.
+- Headless commits MUST use `-c commit.gpgsign=false` (Overtoad's YubiKey config otherwise hangs). juniper-ml main enforces `required_signatures`, so the PR will show BLOCKED even when green — the Overtoad's merge handles it; never use `--admin`.
 - One tidy commit per PR (squash-merge first-commit-only convention). PR body: reference the design doc + ml#701, list the acceptance criteria as a checklist, and include the standard `## Requirements` JR-ID section (omit with the no-tracked-ID note if none applies).
 - `tests/redacted_env.py` exists — if any new test spawns a subprocess with an env mapping, build it with `RedactedEnv` or `tests/test_env_repr_safety.py` fails the build (this gate has already caught one live violation).
 - `python3 -m unittest discover -s tests` shows ~12 pre-existing order-dependent failures in a single process on clean main (ci-tools drift family) — **CI runs each file in its own process and is green**; verify per-file, not via discover. Do NOT add `tests/__init__.py` to "fix" this (it changes discover semantics; mypy is handled via `explicit_package_bases` in pyproject).
@@ -76,7 +76,7 @@ If any package prints `DRIFT`, a release landed between handoffs — heal it in 
 2. `tests/test_release_train_propose.py` covers the three shapes and the full suite passes at your HEAD.
 3. The generic pyproject==dunder gate runs in CI (per-file unittest battery) and is green — with ci.yml + AGENTS.md registration co-changes if a new test file was created.
 4. `util/release_train/` docstrings + the release-train plan doc's co-change inventory mention the dunder artifact (grep `propose.py`'s module docstring and the S5.4 references; extend, don't rewrite).
-5. One owner-merge PR, standard gates green (pre-commit + the repo's unittest battery), no self-merge.
+5. One Overtoad-merge PR, standard gates green (pre-commit + the repo's unittest battery), no self-merge.
 
 ## Validation record
 

@@ -6,7 +6,7 @@ Validation of the re-evaluation of
 [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md).
 
 **This directory is evidence, not the conclusion.** The reconciliation — what each round
-changed, the dissent and the owner's ruling, and what the evidence cannot support — is the
+changed, the dissent and the Overtoad's ruling, and what the evidence cannot support — is the
 handoff's § Validation record 2026-09-22 and its "Corrections from consensus round N"
 subsections. The files here are each lane's final message, copied verbatim from the lane's own
 session transcript by `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round4-fix/archive_round_reports.py`,
@@ -41,7 +41,7 @@ Each round after the first was briefed on the previous round's corrections only.
 
 ## Two things the record says that the reports alone do not
 
-- **ml#2017 merged while round 3 was running** (2026-09-23 01:17 UTC, by the owner, every
+- **ml#2017 merged while round 3 was running** (2026-09-23 01:17 UTC, by the Overtoad, every
   required check green). Rounds 3 and later were recorded, and their fixes landed, in ml#2035.
 - **Round 4's two lanes were cut off by the session usage limit** and resumed in place after it
   reset; each kept its own reading, and neither saw the other's report.

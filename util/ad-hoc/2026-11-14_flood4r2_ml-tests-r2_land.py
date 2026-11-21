@@ -17,7 +17,7 @@ In --dest, a worktree whose HEAD is the main the pull request will be based on, 
      carrier's spec.json (ci.yml's list and docs/REFERENCE.md's run list and Test Suite Reference); then the
      battery tool derives, from ci.yml's order and main's main-verify.yml, where each of the spec's suites goes in
      main-verify.yml's Regression Battery, the wiring tool writes those lines, and the battery tool checks them
-     (all fifteen, by the owner's ruling of 2026-11-14); then the shared-edits tool (suite count = main's + the
+     (all fifteen, by the Overtoad's ruling of 2026-11-14); then the shared-edits tool (suite count = main's + the
      carrier's; docs/REFERENCE.md version = main's plus one patch; every date = --landing-date; the macOS list's
      totals from the files);
   4. the texts are rendered from the carrier's templates with those values, and the CHANGELOG entry is inserted;
@@ -56,7 +56,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier, its session-8 fix-up)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-12_flood4r2_ml-tests-r2_land.py (the version it supersedes), util/ad-hoc/2026-11-14_flood4r2_ml-tests-r2_battery.py
 """
 

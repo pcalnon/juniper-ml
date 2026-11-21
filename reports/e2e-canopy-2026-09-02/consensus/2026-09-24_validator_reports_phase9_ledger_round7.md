@@ -14,7 +14,7 @@ Round 7 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 
 | Claim | Re-derived value | Verdict | Evidence |
 |---|---|---|---|
-| 1a. Asked 03:34:45Z, answered 07:32:48Z | Question: L4227 `AskUserQuestion` at 03:34:45.231Z. Answer: L4260 `tool_result` at 07:32:48.582Z, "Mine: fix forward" | MATCH | `owner_answer_extract.py <bc31e993.jsonl> 4227 4260`. A record-shape scan of 03:33–07:34Z shows no other answer. "Four minutes after round 5's artifact": `07aef715` was committed at 07:28:28Z, so the gap is 4 min 20 s. |
+| 1a. Asked 03:34:45Z, answered 07:32:48Z | Question: L4227 `AskUserQuestion` at 03:34:45.231Z. Answer: L4260 `tool_result` at 07:32:48.582Z, "Mine: fix forward" | MATCH | `Overtoad_answer_extract.py <bc31e993.jsonl> 4227 4260`. A record-shape scan of 03:33–07:34Z shows no other answer. "Four minutes after round 5's artifact": `07aef715` was committed at 07:28:28Z, so the gap is 4 min 20 s. |
 | 1b. Four PRs named; three were drafts readied then armed 4–7 s later; canopy#678 never a draft and never armed | The question names data#428, ml#2032, ml#2059 and canopy#678. data#428: ready 22:29:55, armed 22:29:59 (4 s). ml#2032: 22:27:20 → 22:27:27 (7 s). ml#2059: 21:47:22 → 21:47:26 (4 s). Each had an earlier `ConvertToDraftEvent`. canopy#678 has only a `MergedEvent` (22:29:21Z) | MATCH | `gh api graphql -F query=@prs.graphql`, reading `timelineItems` for ready, draft, auto-squash/auto-merge and merge events. Actors are logins only, all `pcalnon`. |
 | 1c. Other five PRs: #676, data#431, data#434 share the pattern (4–8 s); ml#2066 and data-client#212 do not | #676: 22:28:04 → 22:28:12 (8 s). data#431: 22:50:54 → 22:50:58 (4 s). data#434: 22:51:07 → 22:51:12 (5 s). All three were drafted first. ml#2066: armed 22:27:08, no draft events. data-client#212: `MergedEvent` only | MATCH | Same query. |
 | 2a. `96e7b105` is on the branch, its parent is `6c4ad9a9` (canopy#679), and #679 changed `CHANGELOG.md` | `96e7b105 6c4ad9a9 fix(idle-cuts)…`. #679's merge commit is `6c4ad9a97185…`, and its `--stat` shows `CHANGELOG.md \| 14 ++`. `ls-remote --heads origin fix/idle-cuts-round3-wording` returns nothing, so "not yet pushed" holds | MATCH | Note, not a finding: canopy `origin/main` is now `5907713b` (canopy#680, 09:08:39Z). That is before `129f4880` was frozen (09:17:17Z), and #680 also changed `CHANGELOG.md` (+15). The branch reads "ahead 1, behind 1". The ledger's sentence is a true record of the rebase; the brief's "origin/main has since moved to 6c4ad9a9" is out of date. |
@@ -79,7 +79,7 @@ Round 7 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 
 4. **LOW: the answer extractor's bare `sk-` shape was narrowed, not widened.**
    - Quoted:
-     - `util/ad-hoc/2026-09-24_owner_answer_extract.py:17-19`: "these token shapes redacted: … sk- keys (sk-ant-, sk-proj-) … A shape not in that list is printed";
+     - `util/ad-hoc/2026-09-24_Overtoad_answer_extract.py:17-19`: "these token shapes redacted: … sk- keys (sk-ant-, sk-proj-) … A shape not in that list is printed";
      - `…E2E-VALIDATION-EVIDENCE.md:9249`: "Round 6 widened its secret shapes";
      - `util/ad-hoc/README.md:746-747`: "Round 6 widened all three".
    - Evidence: round 5's `sk-[A-Za-z0-9]{20,}` became `(?<![A-Za-z0-9])sk-[A-Za-z0-9_-]{32,}` (`:35`).
@@ -102,7 +102,7 @@ Round 7 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
    - The round-6 archive itself is clean. It regenerates byte-identically, and its only PEM-shaped text is the inline quote at `2026-09-24_validator_reports_phase9_ledger_round6.md:113`.
 
 **CORRECTIONS YOU COULD NOT REFUTE**
-- **The owner exchange.** Before printing, I counted secret and e-mail shapes on transcript lines 4227 and 4260 (0 and 0), then printed them through the redacting extractor.
+- **The Overtoad exchange.** Before printing, I counted secret and e-mail shapes on transcript lines 4227 and 4260 (0 and 0), then printed them through the redacting extractor.
   - The question is at 03:34:45.231Z and the answer at 07:32:48.582Z, 4 min 20 s after `07aef715` (07:28:28Z).
   - The question names data#428, ml#2032, ml#2059 and canopy#678, and says "cascor#678 was armed the same way earlier".
   - The chosen option reads: "The sweeper is yours and the merges are intended. I keep validating after the merge and fix forward with follow-up PRs."
@@ -138,7 +138,7 @@ Round 7 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 **WHAT YOU COULD NOT CHECK**
 - I did not run the follow-up's tests ("13 passed"). The file imports canopy's `DashboardManager` and spawns node, so I only counted its test functions.
 - Canopy `main` moved to `5907713b` (canopy#680, merged 09:08:40Z) 8.5 minutes before the pass was committed (09:17:17Z). #680 touches `CHANGELOG.md` about 40 lines from the follow-up's hunks. Item 13's statement is true as history. I did not test a re-rebase, because `merge-tree` writes objects.
-- Actors off this host, and what the owner meant beyond the option text.
+- Actors off this host, and what the Overtoad meant beyond the option text.
 - Whether any key in real use here has a bare `sk-` body of 20–31 characters, which would make finding 4 more than latent.
 - The push tool and the F-058 census, which were off-limits.
 

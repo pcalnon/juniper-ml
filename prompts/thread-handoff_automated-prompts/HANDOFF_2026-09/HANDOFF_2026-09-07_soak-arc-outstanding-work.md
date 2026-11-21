@@ -37,7 +37,7 @@ all three. From `notes/JUNIPER_2026-09-04_JUNIPER-ML_SOAK-HANDOFF-CONSENSUS-VALI
 document shows the n≈8–10 campaign cannot resolve its targets: P21 needs **n≥16**, P23
 **n≥31**, and inside 8–10 the Wilson resolving threshold never leaves `k≤1`, so runs 9 and 10
 *lower* the chance of an answer (power at p=0.25: 0.3671 → 0.3003 → 0.2440, rising to 0.4552
-only at n=11). Whether that campaign runs at all is owner decision §7.6.
+only at n=11). Whether that campaign runs at all is Overtoad decision §7.6.
 
 ## 1. What to do first
 
@@ -47,13 +47,13 @@ every timer firing"; three validators independently refuted that — the systemd
 `not-found`; no unit files; `logs/soak_probe_failures.log` does not exist). Item A is
 dormant.
 
-The arc is blocked on **owner decisions (§7)**, not on engineering. If work proceeds before
+The arc is blocked on **Overtoad decisions (§7)**, not on engineering. If work proceeds before
 those are settled, this order is defensible and costs no sessions:
 
 1. **Item E's evidence recovery** — the only thing that can move the headline rate (§3.E).
 2. **§8's three untested predictors** — the design doc of record calls this *"the actual
    blocker to decision support"*, not a fallback.
-3. **Item C's era parameter**, built but *not wired* (§3.C — wiring it is owner decision §7.3
+3. **Item C's era parameter**, built but *not wired* (§3.C — wiring it is Overtoad decision §7.3
    and re-arms spend).
 4. **Item J** (`docs/REFERENCE.md` is actively wrong, §3.J) — cheap, operator-facing.
 5. **Item A**, when the unattended path is next enabled.
@@ -156,7 +156,7 @@ is **0.591**, already below the 0.75 boundary, and
 corpus makes `refuses_terminal_verdict("IN-PROGRESS", …)` return False: **the spend control
 stops refusing, with no `--force`, for ~27 further billed runs** (35 − 8) on a campaign §0
 says cannot resolve anything. §15.4's "do not pool" makes that corpus look like the *correct*
-choice, which is what makes this dangerous. Choosing the corpus **is** owner decision §7.3.
+choice, which is what makes this dangerous. Choosing the corpus **is** Overtoad decision §7.3.
 
 ### C. `analyse()` has no era filter
 
@@ -165,7 +165,7 @@ choice, which is what makes this dangerous. Choosing the corpus **is** owner dec
 `["rows","bad_lines"]` **and enumerates `since|until|after|split|cutoff|ts` as forbidden
 names**, so any era parameter requires rewriting that pin.
 
-**Building it is safe; wiring it is the owner's call.** A parameter with a default is inert
+**Building it is safe; wiring it is the Overtoad's call.** A parameter with a default is inert
 until a caller passes it, and `cmd_status` (`:758-762`) is the only path the stopper reads —
 so "fix C" either ships nothing or *is* §7.3. Say which you did.
 
@@ -230,14 +230,14 @@ than the source rule (P15)* — of which item H covers only one instance.
 
 ### I. BET-FAILING's prescribed action has never been carried out — and the tool says so on every run
 
-`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md:189`: **"Revisit owner
+`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md:189`: **"Revisit Overtoad
 decision #7. Never re-inline."** Decision #7 is at
 `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md:654`, deferred *"revisit
 only if the P3 soak shows a real pointer-follow problem."* **That trigger has fired.** Neither
 document has been touched; ml#1644 records the verdict without citing decision #7.
 
 Unlike item A this is live: every `soak_ledger.py status` prints
-`-> the relocation bet is failing; revisit owner decision 7. NEVER re-inline.`
+`-> the relocation bet is failing; revisit Overtoad decision 7. NEVER re-inline.`
 
 ### J. `docs/REFERENCE.md` on main is actively wrong about the soak — NEW
 
@@ -380,7 +380,7 @@ because a successor who does not read it will re-derive false confidence:
   label-shuffle gives p ≈ 0.0002–0.0006. The conclusion survives; the label is wrong and
   uncorrected in the surviving document.
 
-## 7. Owner decisions — DO NOT DECIDE THESE
+## 7. The Overtoad decisions — DO NOT DECIDE THESE
 
 1. Whether **index-recovery** becomes a scored outcome (registry + ledger change; see item F's
    authoring rule first).
@@ -390,7 +390,7 @@ because a successor who does not read it will re-derive false confidence:
    is item B/C's second half and it re-arms ~27 billed runs.
 4. **P06's discriminator** (item H).
 5. Whether to **`--force`** past a terminal verdict at all — §10.5 of the design conversation
-   records this as owner-facing and open. The 09-04 handoff decided it unilaterally; that was
+   records this as Overtoad-facing and open. The 09-04 handoff decided it unilaterally; that was
    a finding.
 6. **Whether the per-probe campaign runs at all**, given §0. Upstream of 1–5.
 
@@ -410,7 +410,7 @@ adjudicated it against the pre-registration.
 > to decision support**, and no number of additional runs at the pooled level removes it.
 
 It names three candidate predictors, *"none tested yet"*: grep-findability from the task's own
-vocabulary; completable-without-the-fact; contradicts-a-plausible-default. They need no owner
+vocabulary; completable-without-the-fact; contradicts-a-plausible-default. They need no Overtoad
 decision and spend no sessions — they run over the 15-probe registry and its tasks (**not**
 over the 43 ledger rows; the first draft said otherwise). Any such analysis inherits whichever
 retrieval standard item E settles on.
@@ -420,7 +420,7 @@ retrieval standard item E settles on.
 - `notes/JUNIPER_2026-09-04_JUNIPER-ML_SOAK-HANDOFF-CONSENSUS-VALIDATION.md` — verdict and
   corrections. **§4.1** campaign arithmetic, **§4.5** one-observation margin, **§4.6** both
   §15.4 breaches, **§4.7** retention provenance, **§4.8** the two standards, **§6** dissent
-  and the reconciler's own errors, **§7** what the evidence cannot support, **§8** owner
+  and the reconciler's own errors, **§7** what the evidence cannot support, **§8** Overtoad
   decisions.
 - `notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md` — protocol of record.
   §4 FOLLOW definition, §6 rule table, §7 scoring + priming rule, §15.3 pre-registration,
@@ -430,7 +430,7 @@ retrieval standard item E settles on.
   the per-probe table.
 - `notes/JUNIPER_2026-09-02_JUNIPER-ML_SOAK-SESSION-ROLE-AUTOMATION-ANALYSIS.md` — automation
   boundaries.
-- `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md` — owner decision #7 at
+- `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md` — Overtoad decision #7 at
   `:654`.
 - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-23_memory-budget-soak-and-side-findings.md`
   — still the only home for the registry-leak authoring rule, the three-ways-invalid taxonomy,

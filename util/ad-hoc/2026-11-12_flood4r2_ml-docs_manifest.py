@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc -- one-off (Cursor flood-4 round-2 docs-carrier build)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (round 2)
 
 The per-draft decisions and the claims table are data in this file: they were made by reading each draft's own
@@ -63,7 +63,7 @@ CARRIED = [
         ],
         "fixes": [
             "Entry-point table: the column was 'What reaches wake_the_claude.bash' and listed a bare --worktree. claudey hands wake `--worktree 0` and a `--` spacer (probe case E1), so the column now says what Claude Code is handed, read from a stub claude; the model and effort are named as the script's DEFAULT_MODEL / DEFAULT_EFFORT (opus / max as of juniper-ml#2554), because the model default is switched from time to time (tests/test_claude_interactive.py, shipped_defaults docstring).",
-            "Added '### Effort' (owner ruling 3; landed by juniper-ml#2554): max is the default, `0` sends max, `auto` in any case and `1` send no --effort flag, anything else is refused (probe cases F1-F6). The triage asked for it.",
+            "Added '### Effort' (Overtoad ruling 3; landed by juniper-ml#2554): max is the default, `0` sends max, `auto` in any case and `1` send no --effort flag, anything else is refused (probe cases F1-F6). The triage asked for it.",
             "Added what juniper-ml#2554 carried from drafts #2504 and #2505: an exported empty CLAUDE_PROMPT_FILE / CLAUDE_PROMPT_PATH is refused (P4, P4b, P4c), and a later --file / --path that does not resolve drops the file an earlier one resolved (P11, P11b). The triage asked for both.",
             "stderr table: added the row for a prompt file that cannot be read or holds only whitespace (S8) and the row for the repo tmp/ that cannot be created (scripts/wake_the_claude.bash:1849-1851, from juniper-ml#2360, after the draft); the refused line names the flag AS TYPED (`-f`, `-c`: S3b, S9b).",
             "'An unknown flag ... nothing on stderr' holds only with the debug log off (S7); with it on, stderr carries the debug log (S7b). Qualified.",
@@ -166,11 +166,11 @@ CARRIED = [
             "Its three index pointers, rewritten: the 'Agent-guard brace cap' bullet of docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md, the brace row of docs/DOCUMENTATION_OVERVIEW.md, and the 'Agent-guard brace cap' bullet of docs/QUICK_START.md",
         ],
         "fixes": [
-            "Each pointer said 'alternative 65 is allowed'. It now states the refusal: a word whose brace expansion needs more than 64 alternatives ends the hook with exit 2 (owner ruling 8, 'Fail closed'; guard 1.3.0), while a list of exactly 64 is still expanded and judged (guard probe: 64 -> CRED-PATH-BASH, 65 -> exit 2, `{1..64}` allowed, `{1..65}` refused, `for i in {1..100}` refused, `$(seq 1 100)` allowed).",
+            "Each pointer said 'alternative 65 is allowed'. It now states the refusal: a word whose brace expansion needs more than 64 alternatives ends the hook with exit 2 (Overtoad ruling 8, 'Fail closed'; guard 1.3.0), while a list of exactly 64 is still expanded and judged (guard probe: 64 -> CRED-PATH-BASH, 65 -> exit 2, `{1..64}` allowed, `{1..65}` refused, `for i in {1..100}` refused, `$(seq 1 100)` allowed).",
             "The pointers link to the Utility Script Reference, where the guard's entry holds juniper-ml#2554's 1.3.0 bullets, because the draft's own section is not carried.",
         ],
         "dropped": [
-            "docs/REFERENCE.md '## A Brace List of 64 Alternatives Still Names .ssh' with its three subsections, its Table of Contents entry and its Version History row 0.6.88. The section documents the expander before 1.3.0: alternative 65 dropped and the command allowed, `_brace_range` slicing a range to 64, and the constraint 'Leave the cap at 64 ... A .ssh or .gnupg component that exists only as alternative 65 is allowed'. The owner's ruling replaced that behaviour, and none of that text is restored. What is still true of it is already on main: a 64-alternative list keeps its last slot (the Test Suite Reference entry of tests/test_claude_agent_guard_brace_cap.py) and a range is sized before anything is built (the guard's 1.3.0 bullets).",
+            "docs/REFERENCE.md '## A Brace List of 64 Alternatives Still Names .ssh' with its three subsections, its Table of Contents entry and its Version History row 0.6.88. The section documents the expander before 1.3.0: alternative 65 dropped and the command allowed, `_brace_range` slicing a range to 64, and the constraint 'Leave the cap at 64 ... A .ssh or .gnupg component that exists only as alternative 65 is allowed'. The Overtoad's ruling replaced that behaviour, and none of that text is restored. What is still true of it is already on main: a 64-alternative list keeps its last slot (the Test Suite Reference entry of tests/test_claude_agent_guard_brace_cap.py) and a range is sized before anything is built (the guard's 1.3.0 bullets).",
             "Its stamp hunks in the four docs.",
         ],
         "outcome": "rewritten",
@@ -218,7 +218,7 @@ CLAIMS = [
     {"draft": 2479, "section": "Entry points", "claim": "claudey hands wake --worktree 0, which wake sends bare; --no-worktree / --no-remote-control and CLAUDE_WORKTREE=1 / CLAUDE_REMOTE_CONTROL=1 turn them off; dates 2026-11-04 and 2026-11-06", "evidence": f"{LP} E1 (stdout line), E8, E9; {CLAUDEY}:119-123, :215, :219, :281; {WAKE}:1019-1025; {DEFAULT_SESSION}:21"},
     {"draft": 2479, "section": "Entry points", "claim": "-s is --id (needs a value) on claudey and --dangerously-skip-permissions on wake", "evidence": f"{LP} E10, E10b; {CLAUDEY}:205; {WAKE}:364"},
     {"draft": 2479, "section": "Entry points", "claim": "claudey exits with wake's status after the Closed line; it used to exit 0; the default-session script already returned wake's status", "evidence": f"{LP} E11, E4c; {CLAUDEY}:306-312 (and its comment); {DEFAULT_SESSION}:44-48"},
-    {"draft": 2479, "section": "Effort", "claim": "EFFORT_DEFAULT is max again (owner ruling 2026-11-08); the flag aliases are -e, --effort, --effort-type, --effort-level", "evidence": f"{WAKE}:258-262, :361; {LP} F2"},
+    {"draft": 2479, "section": "Effort", "claim": "EFFORT_DEFAULT is max again (Overtoad ruling 2026-11-08); the flag aliases are -e, --effort, --effort-type, --effort-level", "evidence": f"{WAKE}:258-262, :361; {LP} F2"},
     {"draft": 2479, "section": "Effort", "claim": "0 -> --effort max; auto in any case -> no flag; 1 -> no flag; a valid value is sent; anything else or no value -> exit 1 with the refused line; ./claudey -e auto launches with no --effort", "evidence": f"{LP} F1-F6; {WAKE}:928-946, :1783-1787; tests/test_wake_the_claude.py test_effort_true_sends_the_max_default, test_effort_auto_sends_no_effort_flag, test_effort_false_omits_the_effort, test_missing_effort_value_fails_without_invoking_claude"},
     {"draft": 2479, "section": "Effort", "claim": "Claude Code has no auto value", "evidence": f"{WAKE}:258-259 (the comment the sentence cites); notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md section 4, first row"},
     {"draft": 2479, "section": "Version flags", "claim": "wake 1.1.0, claudey 0.2.0; -v / -V / --version / --claude-version run `claude --version`, print '<path> <output>', exit 0, start no session; claudey execs wake --version and drops other arguments", "evidence": f"{LP} V1 (four flags), V2 (four flags), V2b, V2c; {WAKE}:123, :356, :1390-1408; {CLAUDEY}:49, :177-180, :189-190, :201"},
@@ -364,7 +364,7 @@ def main(argv: list[str]) -> int:
         ],
         "texts_that_quote_a_stamp": ["CHANGELOG.md, this carrier's entry: '`docs/REFERENCE.md` 0.6.69'", "pr_body.txt: the stamp list", "changelog_entry.txt (the same text as the CHANGELOG entry)"],
         "not_stamped": [".claude/agents/fleet-supervisor.md (no stamp)", "CHANGELOG.md (no stamp)", "AGENTS.md (not touched: its **Last Updated** stays as main has it)"],
-        "dates_in_carried_text_that_are_history_not_stamps": ["2026-11-04, 2026-11-06, 2026-11-08 (owner rulings and launcher changes)", "2026-08-07 (juniper-ml#1004), 2026-09-05 (juniper-ml#1740), 2026-10-05 (the Actions outage)"],
+        "dates_in_carried_text_that_are_history_not_stamps": ["2026-11-04, 2026-11-06, 2026-11-08 (Overtoad rulings and launcher changes)", "2026-08-07 (juniper-ml#1004), 2026-09-05 (juniper-ml#1740), 2026-10-05 (the Actions outage)"],
     }
     manifest = {
         "repo": "juniper-ml",

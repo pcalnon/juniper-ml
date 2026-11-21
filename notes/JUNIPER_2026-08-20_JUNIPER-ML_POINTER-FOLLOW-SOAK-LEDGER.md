@@ -186,7 +186,7 @@ rate of exactly 0.90 it printed `BET-HOLDS` only 55.4% of the time.
 | `IN-PROGRESS` | < 35 runs or < 15 distinct probes | Keep running probes |
 | `INCONCLUSIVE` | the interval spans 0.75, **or** the hazard stratum is empty | Rung 1 — add index rows. The cheap no-regret action when the data cannot decide |
 | `HOLDS-AT-0.75` | lower bound ≥ 0.75 | The strongest claim this study size supports |
-| `BET-FAILING` | upper bound < 0.75 | Revisit owner decision #7. **Never re-inline** |
+| `BET-FAILING` | upper bound < 0.75 | Revisit Overtoad decision #7. **Never re-inline** |
 
 **0.75 is not a lowered ambition, it is the reachable claim.** `LB ≥ 0.80` needs ~62
 clean runs; `LB ≥ 0.90` needs an observed 0.96+. 0.90 survives here only as a
@@ -590,7 +590,7 @@ little **because the source is the real reference**, not because pointers are fo
 that holds up, the honest conclusion is about where facts should live, not about how well
 `AGENTS.md` points at them. At n=35 the facts most often source-recovered appeared to be
 the ones with a nearby test or an obvious owning script, with follows clustered where the
-fact was a *policy* with no single code owner — **but that explanation was refuted on
+fact was a *policy* with no single code Overtoad — **but that explanation was refuted on
 2026-09-09; see the box in §14.** The source-vs-prose observation stands; the account of
 which facts fall which way does not.
 
@@ -642,7 +642,7 @@ the relocated prose* rather than from the code and its tests. The other 31.4% we
 | P14 timeout ordering | 3 | 0 | fact is pinned by a fatal gate test |
 | P23 reaper asymmetry | 2 | 0 | fact is *also* in the resident `## Hazards` |
 | P15 worktree converge | 3 | 0 | discriminator contested — see §13 |
-| P02, P07, P08, P16, P18, P20, P22, P24, P25 | 24 | 24 | policy facts with no single code owner |
+| P02, P07, P08, P16, P18, P20, P22, P24, P25 | 24 | 24 | policy facts with no single code Overtoad |
 
 > **REFUTED 2026-09-09. Do not carry this explanation forward.** The table above is the
 > 2026-08-22 snapshot at n=35 and stands as a record. The *explanation* drawn from it does
@@ -679,7 +679,7 @@ answer** on a hazard-severity probe — an artifact of scoring source-recovery a
 which is the conservative direction chosen in §12. They are **not** discharged. Resolving
 an escalation to make the dashboard green is precisely the rationalisation §6 forbids, and
 the honest reading is that the conservative scoring choice has a visible cost. Whether to
-re-score source-recovery as its own outcome is an owner decision, not a scorer's.
+re-score source-recovery as its own outcome is an Overtoad decision, not a scorer's.
 
 ### What the run cost, honestly
 
@@ -722,8 +722,8 @@ and see whether the follow rate on those moves.
 
 ## 15. Rung 1 EXECUTED — 2026-08-31, widened to all four facts
 
-**Owner decision, taken twice.** The recommendation in §14 narrows rung 1 to the *policy*
-facts. The owner chose to **widen it to all four never-retrieved facts** instead, and
+**The Overtoad decision, taken twice.** The recommendation in §14 narrows rung 1 to the *policy*
+facts. The Overtoad chose to **widen it to all four never-retrieved facts** instead, and
 reaffirmed that after this session presented evidence arguing the experiment will not move
 the number. Both the decision and the objection are recorded here so the result is readable
 either way.
@@ -830,16 +830,16 @@ inverted)".
 So the hazard was never mishandled, and the ladder's own text governs what
 follows:
 
-> *If the miss was a CORRECT answer scored conservatively, that is an owner
+> *If the miss was a CORRECT answer scored conservatively, that is an Overtoad
 > decision about SCORING, not a discharge.*
 > *Do NOT run [resolve] to make `status` exit 0 — exiting 1 here is the design.*
 
 Discharging these would be exactly the prohibited move: using `resolve` to clear
-a signal rather than to record a remedy. **The decision is the owner's**, and it
+a signal rather than to record a remedy. **The decision is the Overtoad's**, and it
 is the same question C.1 left open — whether source-recovery should be re-scored
 as its own outcome rather than as a miss. It is presented, not taken.
 
-**If the owner does discharge them**, the refs are the gates above, not this
+**If the Overtoad does discharge them**, the refs are the gates above, not this
 note — a discharge should point at the artifact that makes the hazard impossible,
 which in all three cases already exists and already runs.
 
@@ -913,7 +913,7 @@ discoverability.
 
 ---
 
-## 18. SOURCE-RECOVERED re-scored as its own outcome — owner decision, 2026-08-31
+## 18. SOURCE-RECOVERED re-scored as its own outcome — Overtoad decision, 2026-08-31
 
 ### 18.1 The decision and what it changed
 

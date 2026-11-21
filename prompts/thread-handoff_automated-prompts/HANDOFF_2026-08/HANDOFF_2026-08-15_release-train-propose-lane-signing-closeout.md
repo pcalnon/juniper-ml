@@ -24,7 +24,7 @@ re-lands) always apply.
   Full chain: propose → signed merge → ceremony → archive PR ml#1108 (auto-merged) → Release
   v0.9.0 → publish success → **PyPI serves juniper-cascor 0.9.0**.
 
-## Remaining — both owner-decision, no code work
+## Remaining — both Overtoad-decision, no code work
 
 - **#1011 promote Sequence Safety to required.** Soak ends ~2026-08-21. Apply in the **ruleset**,
   never the Quality Gate `needs:` (its `pull_request`-only skip must not fail pushes).
@@ -37,7 +37,7 @@ re-lands) always apply.
 ## Key context
 
 - **Read #1012's scope before reasoning about "bypass."** It removes only the cursor/claude
-  *Integration* grants and KEEPS `RepositoryRole id=5` (owner) + `Integration 4362741`
+  *Integration* grants and KEEPS `RepositoryRole id=5` (Overtoad) + `Integration 4362741`
   (release-train App, `bypass_mode: pull_request`). Conflating them gives the wrong answer.
 - **Integration IDs cannot be mapped to App names from the CLI** — `GET /user/installations`
   403s for a user token and there is no public app-by-id endpoint. The unidentified `1276151`

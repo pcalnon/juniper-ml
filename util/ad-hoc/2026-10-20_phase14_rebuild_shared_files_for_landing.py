@@ -6,8 +6,8 @@ Sub-Project:  juniper-ml (ad-hoc)
 Application:  canopy E2E validation arc -- Phase 14 landing from turing
 Author:       Paul Calnon
 Created:      2026-10-20
-Status:       ad-hoc -- one-off landing helper; RETAINED as provenance (owner policy 2026-08-25)
-Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status:       ad-hoc -- one-off landing helper; RETAINED as provenance (Overtoad policy 2026-08-25)
+Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:      util/ad-hoc/2026-10-20_phase14_item30_apply.py, util/ad-hoc/2026-10-20_phase14_ledger_round*_corrections.py;
               util/open_signed_pr.py; util/ad-hoc/2026-10-17_push_signed_with_retry.py
 License:      MIT License

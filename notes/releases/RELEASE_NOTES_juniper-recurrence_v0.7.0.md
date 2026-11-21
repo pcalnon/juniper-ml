@@ -28,7 +28,7 @@
 - **`POST /v1/train` and every fold of `POST /v1/crossval` report the hyperparameters the fit
   resolved** (W5.10 of juniper-ml
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
-  the response half of F-S7; accepted by the owner 2026-10-18). A new `diagnostics` block
+  the response half of F-S7; accepted by the Overtoad 2026-10-18). A new `diagnostics` block
   (`ReadoutDiagnostics`) on `TrainResponse` and on each `CrossValFoldModel` carries `readout`,
   `theta` (the data-driven median per-window elapsed time a `theta=None` request became -- per
   fold, since each fold resolves its own), `ridge_mode` (`fixed` / `gcv` / null for mlp),
@@ -50,7 +50,7 @@
 - **The service's `default_ridge` is `"gcv"`; the floor is `juniper-recurrence-model>=0.5.0`**
   (W5.8 (B) of juniper-ml
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
-  accepted by the owner 2026-10-18, gated on W5.10 above). A linear-readout request that omits
+  accepted by the Overtoad 2026-10-18, gated on W5.10 above). A linear-readout request that omits
   `ridge` -- a bare `POST /v1/train` or `POST /v1/crossval`, canopy's registry seed (no `readout`,
   no `ridge`), the `train` CLI without `--ridge` -- used to get `0.0`, the raw min-norm solve, which
   extrapolates on a non-stationary input (the W5.1 cause of record). It now gets closed-form GCV on

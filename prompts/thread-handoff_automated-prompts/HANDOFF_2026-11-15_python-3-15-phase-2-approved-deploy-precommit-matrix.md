@@ -9,16 +9,16 @@ It is on `main` through juniper-ml#2575 and #2580, and holds:
 - the measured design;
 - the pre-existing defects found.
 
-Read it first. This file adds only the owner's two new directives and the plan for them.
+Read it first. This file adds only the Overtoad's two new directives and the plan for them.
 
-## The owner's directives (2026-11-15, verbatim)
+## The Overtoad's directives (2026-11-15, verbatim)
 
 > deploy's pre-commit job should also run on 3.13 and 3.14, with these checks treated the same as the existing 3.12
 > check.
 > approval for phase 2 granted.
 
-**Merge approval does not carry to a new session.** The owner's memory policy is
-`feedback_headless_merge_approval_policy.md`. Confirm with the owner that "approval for phase 2 granted" covers
+**Merge approval does not carry to a new session.** The Overtoad's memory policy is
+`feedback_headless_merge_approval_policy.md`. Confirm with the Overtoad that "approval for phase 2 granted" covers
 merging the phase-2 PRs before you merge any.
 
 ## Task 1: juniper-deploy `Pre-commit` on 3.12, 3.13 and 3.14, all blocking and required
@@ -51,14 +51,14 @@ new contexts:
 - verify afterwards: the context count goes up by 2, and no surviving context's id drifted.
 
 Adding them before the merge would block every open deploy PR, because none of those posts the new names. Ask the
-owner before the ruleset PUT if in doubt, since it is a repo-settings change.
+Overtoad before the ruleset PUT if in doubt, since it is a repo-settings change.
 
 **Still unanswered:** whether deploy's `Unit Tests (Python 3.13)` / `(Python 3.14)` should also become required.
 Today they block only through the Quality Gate. Do not change that unasked.
 
 ## Task 2: phase 2 -- work through the 3.15 problems (approved)
 
-Phase 2 is the owner's "working through identified problems with the juniper code base on python3.15". The 3.15 legs
+Phase 2 is the Overtoad's "working through identified problems with the juniper code base on python3.15". The 3.15 legs
 stay INFORMATIONAL (green, with a warning): do not make any 3.15 check required (phase 3), and do not move
 `/usr/bin/python3` off 3.14 (phase 4). Each leg's warning annotation and job summary name the failing steps; the
 local helper reproduces them on this host:
@@ -95,7 +95,7 @@ Known problems, in priority order:
   `gh pr merge --match-head-commit` after `wait_for_checks.py --anchor observed`.
 - Before merging a CHANGELOG-touching PR, check for an open `release/*` PR, and let it land first. If it does, move
   the entry back with `util/ad-hoc/2026-11-15_py315_cascor_changelog_relocate.py`.
-- The owner's PR sweeper arms auto-merge on open PRs, and re-armed one this session had disarmed. A PR you open may
+- The Overtoad's PR sweeper arms auto-merge on open PRs, and re-armed one this session had disarmed. A PR you open may
   merge as soon as its required checks pass, so make it right before you open it.
 - **Peer hold:** the Cursor flood-4 session asked other sessions not to merge juniper-ml PRs that touch `ci.yml`,
   `CHANGELOG.md`, `docs/REFERENCE.md`, `AGENTS.md` or `main-verify.yml` until it sends "flood-4 sitting done"

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc — one-off (finishing round 3 of the ml-propose carrier, flood-4 session 6)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md §8 ruling 14;
          util/ad-hoc/2026-11-12_flood4r2_ml-propose-r3_assemble.py (the rebuild and the stamp rules; run unchanged)
 

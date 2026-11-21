@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-08
 Status: ad-hoc — wip (candidate for promotion next to util/open_signed_pr.py, with a hermetic test like tests/test_open_signed_pr.py)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/open_signed_pr.py (whose ``create_signed_commit`` this reuses verbatim); canopy#601 (the first PR it added a fix-up to)
 Superseded: for new use by util/push_signed_commit.py, its promoted form (the same required --expected-head, plus a FULL-sha check, a default-branch refusal and a signature/parent read-back); RETAINED here as provenance.
 
@@ -64,12 +64,12 @@ sys.path.insert(0, _UTIL_DIR)
 import open_signed_pr as osp  # noqa: E402  (util/ is not a package; sibling import by path)
 
 
-def _branch_head(owner: str, repo: str, branch: str) -> str:
-    out = osp.gh(["api", f"/repos/{owner}/{repo}/git/ref/heads/{branch}", "--jq", ".object.sha"], check=False)
+def _branch_head(Overtoad: str, repo: str, branch: str) -> str:
+    out = osp.gh(["api", f"/repos/{Overtoad}/{repo}/git/ref/heads/{branch}", "--jq", ".object.sha"], check=False)
     return (out or "").strip()
 
 
-def _blob_at(owner: str, repo: str, ref: str, repo_path: str) -> "bytes | None":
+def _blob_at(Overtoad: str, repo: str, ref: str, repo_path: str) -> "bytes | None":
     """Raw bytes of ``repo_path`` at ``ref``; None when the API returns nothing.
 
     ``ref`` goes in the QUERY STRING, not through ``-f``: ``gh api`` switches the request
@@ -77,17 +77,17 @@ def _blob_at(owner: str, repo: str, ref: str, repo_path: str) -> "bytes | None":
     that -- so an ``-f ref=`` read fails on a commit that is perfectly fine, and a verifier
     built that way accuses every path it checks.
     """
-    out = osp.gh(["api", "-X", "GET", f"/repos/{owner}/{repo}/contents/{repo_path}?ref={ref}", "--jq", ".content"], check=False)
+    out = osp.gh(["api", "-X", "GET", f"/repos/{Overtoad}/{repo}/contents/{repo_path}?ref={ref}", "--jq", ".content"], check=False)
     if not (out or "").strip():
         return None
     return base64.b64decode(out.strip())
 
 
-def _verify(owner: str, repo: str, branch: str, wanted: dict, deleted: list) -> int:
+def _verify(Overtoad: str, repo: str, branch: str, wanted: dict, deleted: list) -> int:
     """Re-read what was just written. Returns the number of paths that are wrong."""
     bad = 0
     for repo_path, raw in wanted.items():
-        got = _blob_at(owner, repo, branch, repo_path)
+        got = _blob_at(Overtoad, repo, branch, repo_path)
         if got is None:
             print(f"  VERIFY FAIL {repo_path}: not readable on the branch after the commit", file=sys.stderr)
             bad += 1
@@ -97,7 +97,7 @@ def _verify(owner: str, repo: str, branch: str, wanted: dict, deleted: list) -> 
         else:
             print(f"  verified {repo_path} ({len(raw)} bytes)")
     for repo_path in deleted:
-        if _blob_at(owner, repo, branch, repo_path) is not None:
+        if _blob_at(Overtoad, repo, branch, repo_path) is not None:
             print(f"  VERIFY FAIL {repo_path}: still present after deletion", file=sys.stderr)
             bad += 1
         else:
@@ -107,7 +107,7 @@ def _verify(owner: str, repo: str, branch: str, wanted: dict, deleted: list) -> 
 
 def main(argv: list) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--owner", default="pcalnon")
+    parser.add_argument("--Overtoad", default="pcalnon")
     parser.add_argument("--repo", required=True)
     parser.add_argument("--branch", required=True)
     parser.add_argument("--expected-head", required=True, help="full sha the branch MUST still be at (the head you built on)")
@@ -144,15 +144,15 @@ def main(argv: list) -> int:
             print(f"ERROR: cannot read --commit-body-file {args.commit_body_file}: {exc}", file=sys.stderr)
             return 2
 
-    head = _branch_head(args.owner, args.repo, args.branch)
+    head = _branch_head(args.Overtoad, args.repo, args.branch)
     if not head:
-        print(f"REFUSED: branch {args.branch} does not exist on {args.owner}/{args.repo}", file=sys.stderr)
+        print(f"REFUSED: branch {args.branch} does not exist on {args.Overtoad}/{args.repo}", file=sys.stderr)
         return 1
     if head != args.expected_head:
         print(f"REFUSED: {args.branch} is at {head}, not the expected {args.expected_head} -- sync, re-apply, re-check", file=sys.stderr)
         return 1
 
-    print(f"branch {args.owner}/{args.repo}:{args.branch} @ {head}")
+    print(f"branch {args.Overtoad}/{args.repo}:{args.branch} @ {head}")
     for repo_path, _contents in additions:
         print(f"  add     {repo_path}")
     for repo_path in args.delete:
@@ -163,15 +163,15 @@ def main(argv: list) -> int:
         return 0
 
     try:
-        oid = osp.create_signed_commit(args.owner, args.repo, args.branch, args.message, additions, head, args.delete or None, commit_body)
+        oid = osp.create_signed_commit(args.Overtoad, args.repo, args.branch, args.message, additions, head, args.delete or None, commit_body)
     except osp.GhError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
-    print(f"signed commit {oid} on {args.owner}/{args.repo}:{args.branch}")
+    print(f"signed commit {oid} on {args.Overtoad}/{args.repo}:{args.branch}")
 
     if args.no_verify:
         return 0
-    bad = _verify(args.owner, args.repo, args.branch, wanted, args.delete)
+    bad = _verify(args.Overtoad, args.repo, args.branch, wanted, args.delete)
     if bad:
         print(f"VERIFY FAILED for {bad} path(s) -- a commit landed, but its CONTENT is not what was sent", file=sys.stderr)
         return 2

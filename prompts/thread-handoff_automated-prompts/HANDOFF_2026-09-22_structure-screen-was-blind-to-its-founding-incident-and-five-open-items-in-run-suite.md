@@ -101,7 +101,7 @@ Key context:
   tree -- the seq-safety patcher, the row restorer, the relocation script, the row
   adjudicator. A refusal from any of them is proof the repair landed, not a fault.
 - CHECK util/ad-hoc/retired/ BEFORE CONCLUDING A TOOL IS GONE. Ad-hoc scripts are
-  provenance of record (owner policy 2026-08-25) and are RENAMED, not deleted:
+  provenance of record (Overtoad policy 2026-08-25) and are RENAMED, not deleted:
   2026-09-11_seqsafety_fanout_arm_merge.py moved there in ml#1919.
 - A GUARD BESIDE A DEFECT MAY BE VACUOUS. declared_floors' `isinstance(data, dict)`
   can never be False, because tomllib.load always returns a dict. It read as evidence
@@ -121,8 +121,8 @@ Key context:
 | markdown structure debt | **ZERO** — denominator drifts (1084 on 09-15, 1119 and 1127 on 09-22). Re-run; do not quote a total |
 | falsy-guard population | **take a floor from ONE tool.** `next_batch` → **75 guards / 18 files** (non-ad-hoc); `triage --blind-spot` → **73 + 7 = 80** on its own criterion. They differ by 2 (`util/release_train/propose.py:918`, `:1070`). Do **not** add across them |
 | open PRs authored here | none |
-| the five open items | **FILED as `APD-ML-002`–`-006`** (ml#2026) — UNPARKED, and per §1 of the register **not thereby actionable**; they need an owner decision before code |
-| `MEMORY.md` | compaction ATTEMPTED and **REVERTED** — it deleted hazard hooks the owner's rule protects. Back at ~26 KB; closing the gap needs an owner call (§7) |
+| the five open items | **FILED as `APD-ML-002`–`-006`** (ml#2026) — UNPARKED, and per §1 of the register **not thereby actionable**; they need an Overtoad decision before code |
+| `MEMORY.md` | compaction ATTEMPTED and **REVERTED** — it deleted hazard hooks the Overtoad's rule protects. Back at ~26 KB; closing the gap needs an Overtoad call (§7) |
 
 ### Verification commands
 
@@ -309,7 +309,7 @@ ml#2010: that same predecessor handoff again and
   `APD-ML-002`–`-006` in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`
   §4.9 (ml#2026, `370c51eb`).** They are **UNPARKED but NOT thereby actionable**: §1 of that
   register is explicit that *"Unparked ≠ actionable"* and that *"the set of rows a session
-  may action without asking the owner first is empty"*. **They need an owner decision before
+  may action without asking the Overtoad first is empty"*. **They need an Overtoad decision before
   code is written.** Validation of the filing corrected three counts in §2 that went stale
   the moment the rows landed — "thirty filed", "twelve are open", **"27 open in all,
   15 primer + 12 post-primer"** — and removed `juniper-ml` from the "no open row at all"
@@ -341,7 +341,7 @@ ml#2010: that same predecessor handoff again and
   **STILL OUTSTANDING, and it needs YOU**: the index is back over target and the
   non-destructive levers are spent — retirement is 1 unreachable of 288, and moving detail
   to topic files is done. Closing the gap means deciding which *linked, closed-arc* entries
-  may retire, which the owner memory warns is a false-positive machine when automated
+  may retire, which the Overtoad memory warns is a false-positive machine when automated
   (a "closed" marker anywhere on a grouped line tags every entry on it).
 - **The `env_floor_drift_check` reason string was not reworked.** A malformed pyproject now
   correctly exits 2, but says *"no juniper-\* version floors declared"* — true, yet it

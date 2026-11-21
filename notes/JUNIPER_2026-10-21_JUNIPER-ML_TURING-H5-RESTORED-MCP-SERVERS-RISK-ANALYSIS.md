@@ -8,7 +8,7 @@
 - **Scope**: the two MCP-server trees as restored on 2026-10-21 after their removal, and every host surface that could activate them. It covers security risks and every other issue the restored state carries: operational, records, supply chain and backup.
 - **Builds on**: [`JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md`](JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md) (the H5 audit, juniper-ml#2300). Its finding IDs (AGOT-*, AGI-*, H5-X1) are cited, not repeated.
   - This register's risk IDs are `RR-n`. The prefix keeps them apart from the signing plan's `R-S` test IDs, such as the "rs9" in a handoff file name.
-- **Plan task**: H5 of [`JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`](JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md). In v1.4.4, §18.2's H5 row says the owner's decision is pending, and §18.3 carries erratum E-H5.
+- **Plan task**: H5 of [`JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`](JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md). In v1.4.4, §18.2's H5 row says the Overtoad's decision is pending, and §18.3 carries erratum E-H5.
 - **Evidence**, all in `reports/2026-10-21_turing-h5-restore/` (§10):
   - [`util/ad-hoc/2026-10-21_turing_h5_restore_check.py`](../util/ad-hoc/2026-10-21_turing_h5_restore_check.py), read-only, with its output in `restore-check.json`;
   - the March baselines;
@@ -21,7 +21,7 @@
 
 ## 1. Summary
 
-- **What happened.** The owner chose REMOVE after the H5 audit, and the agent deleted both trees and their parent. The owner then asked to reconsider, and the trees were restored.
+- **What happened.** The Overtoad chose REMOVE after the H5 audit, and the agent deleted both trees and their parent. The Overtoad then asked to reconsider, and the trees were restored.
   - The source came back by `git clone --revision` at the audited commits.
   - agi-mcp-server's npm install was rebuilt to its March state: offline, from npm's cache as the March install left it, with install scripts off (§2, §3).
 - **Parity.** The restored state matches the pre-removal state wherever that is safe and reproducible (§3.2, §4).
@@ -46,7 +46,7 @@
   - the C8 guard not installed;
   - IDE auto-approval (K13 pending);
   - no backup today, while plan task C0 would back the trees up (RR-11, O-8).
-- **Recommendation.** The H5 audit's REMOVE recommendation stands, strengthened. If the owner keeps the trees, option B (§7) gives five reversible steps that close RR-2, RR-9 and RR-6's fetch path, and close RR-1 for every session mode except bypass. **The decision is the owner's.**
+- **Recommendation.** The H5 audit's REMOVE recommendation stands, strengthened. If the Overtoad keeps the trees, option B (§7) gives five reversible steps that close RR-2, RR-9 and RR-6's fetch path, and close RR-1 for every session mode except bypass. **The decision is the Overtoad's.**
 
 ## 2. Timeline (UTC)
 
@@ -60,9 +60,9 @@
 | 2026-10-21T05:31:39Z, 05:31:50Z | the H5 auditor captures the March lockfile pairs (270) and installed pairs (174), before any removal | the transient source files, with sha256 values in §10 |
 | 2026-10-21T06:46:51Z | the H5 audit lands: juniper-ml#2300, `2f831b60` | GitHub |
 | 2026-10-21T07:10:57Z | plan v1.4.4 lands, with the decision pending: juniper-ml#2302, `cf70e259` | GitHub |
-| after 07:10:57Z | the owner chooses "remove both; you run it". The agent confirms neither is configured, runs `rm -rf` on both trees and `rmdir` on the parent, and the H5 evidence script then exits 2 | this session |
-| (same) | the owner's "let's pause and reconsider" arrives after all three removal commands had completed | this session |
-| before 08:33Z | the owner's own `!` restore fails, with its output withheld; it created nothing | `ls` |
+| after 07:10:57Z | the Overtoad chooses "remove both; you run it". The agent confirms neither is configured, runs `rm -rf` on both trees and `rmdir` on the parent, and the H5 evidence script then exits 2 | this session |
+| (same) | the Overtoad's "let's pause and reconsider" arrives after all three removal commands had completed | this session |
+| before 08:33Z | the Overtoad's own `!` restore fails, with its output withheld; it created nothing | `ls` |
 | 2026-10-21T08:33:07Z to 08:33:14Z | both trees re-cloned with `git clone --revision=<audited commit>`. The parent is born 08:33:07Z; the reflogs read 08:33:09Z and 08:33:14Z | `stat`; reflogs |
 | 2026-10-21T08:53:55Z | `npm config get registry` returns the default registry | npm log (rotated) |
 | 2026-10-21T08:54:26Z | an online `npm install --package-lock-only --before=2026-03-01T06:41:56Z --ignore-scripts --fetch-timeout=60000 --fetch-retries=1` stalls at its first packument fetch. No exit is logged, and the run is stopped before 09:03:13Z. A separate `node` `fetch` probe gets `UND_ERR_CONNECT_TIMEOUT` while `curl` gets HTTP 200 in 0.53 s | `npm-logs/2026-10-21T08_54_26_942Z-debug-0.log`; this session |
@@ -139,7 +139,7 @@ rm -rf ~/.claude/mcp-servers/agi-mcp-server/node_modules/fsevents
 | npm-lock | PASS: 0 extra and 0 missing against the 270 March lockfile pairs |
 | npm-tree | PASS: 175 package directories and 174 distinct versions; 0 extra and 0 missing against the March install |
 | no-scripts | PASS: all three `esbuild/bin/esbuild` are node shims (`#!`); no native copy; no node-gyp `build/config.gypi` |
-| configured | PASS: no client config checked names either server or points into `~/.claude/mcp-servers/`, and every config that exists parses. The project `.mcp.json` search covers `~/Development/python/Juniper` only. The check reads `~/.claude.json` by key name, so only the owner's account can reproduce it |
+| configured | PASS: no client config checked names either server or points into `~/.claude/mcp-servers/`, and every config that exists parses. The project `.mcp.json` search covers `~/Development/python/Juniper` only. The check reads `~/.claude.json` by key name, so only the Overtoad's account can reproduce it |
 | processes | PASS: no command line names either tree, and `lsof +D` finds no process holding a file or working directory under the root |
 | agot-claude (reported) | `.claude/settings.local.json` present: 41 allow, 0 deny, its only key is `permissions`, no `hooks`, no `disableAllHooks` |
 | advisories (reported) | 89 active for the installed npm set: 3 critical, 29 high, 53 medium, 4 low (4 withdrawn excluded). That is identical to the H5 audit's count for the March install (AGI-P3), as an identical set should give |
@@ -150,7 +150,7 @@ Reviewers reproduced these results by other means (§9):
 
 ### 4.2 Host checks (2026-10-21)
 
-- **File modes.** Nothing in either tree is group- or world-writable, nothing is setuid or setgid, and every file belongs to the owner. The sizes are 24 MiB (adaptive-graph-of-thoughts) and 100 MiB (agi-mcp-server).
+- **File modes.** Nothing in either tree is group- or world-writable, nothing is setuid or setgid, and every file belongs to the Overtoad. The sizes are 24 MiB (adaptive-graph-of-thoughts) and 100 MiB (agi-mcp-server).
 - **Listeners and Docker.** Nothing listens on 8000, 7474, 7687 or 5432 (`lsof -nP -iTCP -sTCP:LISTEN`, this user's sockets only). No Neo4j, Postgres, pgvector, AGoT or Hexis image or container exists.
 - **Claude Desktop.** `/Applications/Claude.app` exists (`com.anthropic.claudefordesktop` 1.1.4498). Its `Info.plist` declares the `dxt` and `mcpb` types, and `mdls` reports a `.dxt` as kind "Desktop Extension". `~/Library/Application Support/Claude` does not exist, so the app has never been launched under this account.
 - **Guards and agent history.** The C8 guard is not installed: `~/.claude/hooks/` does not exist. No `~/.claude/projects/` directory exists for either tree path, so no Claude Code session has ever run in one.
@@ -178,7 +178,7 @@ Reviewers reproduced these results by other means (§9):
 - **Medium:** plausible in routine work.
 - **High:** expected.
 
-Impact runs from **Low** through **Moderate** and **High** to **Severe**; Severe means arbitrary code as the owner, or the owner's credentials. Ratings come from this matrix:
+Impact runs from **Low** through **Moderate** and **High** to **Severe**; Severe means arbitrary code as the Overtoad, or the Overtoad's credentials. Ratings come from this matrix:
 
 | Likelihood \ Impact | Low | Moderate | High | Severe |
 | --- | --- | --- | --- | --- |
@@ -188,7 +188,7 @@ Impact runs from **Low** through **Moderate** and **High** to **Severe**; Severe
 | High | Medium | High | High | Critical |
 
 **Assets.**
-- The owner's GitHub token, through `gh`.
+- The Overtoad's GitHub token, through `gh`.
 - The SSH deploy-key aliases and the GPG configuration.
 - The Juniper repositories.
 - Claude Code's own configuration (`~/.claude.json`, settings) and the IDE configurations.
@@ -198,8 +198,8 @@ Impact runs from **Low** through **Moderate** and **High** to **Severe**; Severe
 
 | ID | Risk | Trigger | Likelihood | Impact | Rating | Controls today | Recommendation |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| RR-1 | A Claude Code session whose project is the adaptive-graph-of-thoughts tree. Its tracked `.claude/settings.local.json` allows `Bash(python3:*)`, `Bash(node:*)`, `Bash(npx:*)`, `Bash(timeout:*)`, `Bash(rm:*)`, `Bash(chmod:*)`, `Bash(cp:*)`, `Bash(npm install:*)`, `Bash(./install-dxt.sh:*)`, `Bash(claude mcp add:*)` and `Bash(claude mcp:*)` (AGOT-A2). The list pre-approves those commands in default and accept-edits sessions. In auto mode, allow rules approve calls without the classifier (the binary's own string). A bypass-permissions session, which is how turing's agent sessions run, approves every command that no deny rule or hook blocks; there the exposure is steering by the tree's content | anyone, or any agent, starting Claude Code inside the tree | Low (it has never happened) | Severe: arbitrary code as the owner, and MCP registration | Medium | none installed (C8 is pending). The handoff says "never open Claude Code inside that tree", and E-H5 says "Never open Claude Code inside an untrusted clone". The folder-trust dialog is not counted (CNV) | A. Otherwise B.1, which closes the allow-list path for default, accept-edits and auto sessions. A bypass session in the tree stays exposed |
-| RR-2 | A bundle installed into Claude Desktop. The three `.dxt` files are bound to Claude Desktop, so opening one, by double-click or `open x.dxt` from the owner or an agent, starts the installer. An installed bundle runs its vendored `server/node_modules` (1,237 entries, including `form-data` 4.0.3 with critical CVE-2025-7783) with `"sandbox": false`, at every Desktop start, on Desktop's own runtime, which RR-12's `node` hold does not cover (own knowledge). The three `.dxt` servers fabricate their results (AGOT-A1). The `.zip` opens in Archive Utility instead, extracting a second tree that proxies to `localhost:8000` and needs a manual install (AGOT-P1) | opening a `.dxt` and confirming the install | Low | High. That is a floor, which assumes the vendored code is benign | Medium | Claude Desktop has never been launched; nothing is installed | A. Otherwise B.2. This corrects AGOT-P1's fix note: the app is present (O-1) |
+| RR-1 | A Claude Code session whose project is the adaptive-graph-of-thoughts tree. Its tracked `.claude/settings.local.json` allows `Bash(python3:*)`, `Bash(node:*)`, `Bash(npx:*)`, `Bash(timeout:*)`, `Bash(rm:*)`, `Bash(chmod:*)`, `Bash(cp:*)`, `Bash(npm install:*)`, `Bash(./install-dxt.sh:*)`, `Bash(claude mcp add:*)` and `Bash(claude mcp:*)` (AGOT-A2). The list pre-approves those commands in default and accept-edits sessions. In auto mode, allow rules approve calls without the classifier (the binary's own string). A bypass-permissions session, which is how turing's agent sessions run, approves every command that no deny rule or hook blocks; there the exposure is steering by the tree's content | anyone, or any agent, starting Claude Code inside the tree | Low (it has never happened) | Severe: arbitrary code as the Overtoad, and MCP registration | Medium | none installed (C8 is pending). The handoff says "never open Claude Code inside that tree", and E-H5 says "Never open Claude Code inside an untrusted clone". The folder-trust dialog is not counted (CNV) | A. Otherwise B.1, which closes the allow-list path for default, accept-edits and auto sessions. A bypass session in the tree stays exposed |
+| RR-2 | A bundle installed into Claude Desktop. The three `.dxt` files are bound to Claude Desktop, so opening one, by double-click or `open x.dxt` from the Overtoad or an agent, starts the installer. An installed bundle runs its vendored `server/node_modules` (1,237 entries, including `form-data` 4.0.3 with critical CVE-2025-7783) with `"sandbox": false`, at every Desktop start, on Desktop's own runtime, which RR-12's `node` hold does not cover (own knowledge). The three `.dxt` servers fabricate their results (AGOT-A1). The `.zip` opens in Archive Utility instead, extracting a second tree that proxies to `localhost:8000` and needs a manual install (AGOT-P1) | opening a `.dxt` and confirming the install | Low | High. That is a floor, which assumes the vendored code is benign | Medium | Claude Desktop has never been launched; nothing is installed | A. Otherwise B.2. This corrects AGOT-P1's fix note: the app is present (O-1) |
 | RR-3 | adaptive-graph-of-thoughts enabled. Its results are fabricated (AGOT-A1), and no standard client can use its Python stdio server (AGOT-A6). Starting `mcp-server` gives an HTTP server on `0.0.0.0:8000` with fail-open Basic auth, unauthenticated `/mcp`, and every-origin CORS with credentials that spends the LLM key (AGOT-A3). Starting a compose file publishes Neo4j with a well-known password (AGOT-E2) | an MCP config entry, `mcp-server`, or `docker compose up` | Low | High, compounded by RR-11 | Medium | not configured; not running | A. The H5 audit §8.3 offers no enable path |
 | RR-4 | Database-wide Neo4j deletes from pipeline stage 5 (AGOT-A5) | RR-3's trigger, plus a Neo4j the host lacks, plus a stage loader that likely loads nothing (AGOT-A7) | Remote | High | Low | no Neo4j present | None beyond RR-3's |
 | RR-5 | agi-mcp-server enabled. Its persistent memory store returns stored text to the model in later sessions, a cross-session prompt-injection channel (AGI-A1). It ships a persona prompt (AGI-A2), and uses default database credentials with no TLS (AGI-A3) | an MCP config entry, plus the Postgres, pgvector and AGE stack (`QuixiAI/Hexis`, not on the host) | Low | High for agent integrity | Medium | not configured; no database stack | A. Otherwise the H5 audit §8.3's eight conditions |
@@ -207,17 +207,17 @@ Impact runs from **Low** through **Moderate** and **High** to **Severe**; Severe
 | RR-7 | Known-vulnerable dependencies: 89 active npm advisories, dormant unless code runs | running the server, `npm test` (vitest pulls `tinypool`: 2 critical RCE gadgets), or `vite` | Low | Moderate | Low | nothing runs | A. Before any use, take `drizzle-orm` 0.45.2 or later and re-run the advisory query |
 | RR-8 | Native binaries on disk: three `@esbuild/darwin-x64` versions and `@rollup/rollup-darwin-x64` | running `drizzle-kit`, `vite`, `vitest` or rollup | Low | Moderate | Low | npm verified them (SHA-512); nothing has run them since the restore | Covered by RR-9's control |
 | RR-9 | Install-time code on a future `npm install` or `npm rebuild` in the tree: esbuild's postinstall hooks, fsevents' registry-declared `node-gyp rebuild`, and anything else npm decides to run | anyone running npm there without `--ignore-scripts` | Low | Moderate | Low | none in the tree | B.3 |
-| RR-10 | **MCP-registration paths with no guard.** The C8 guard is not installed. Once installed it would not see MCP tools (H5-X1), and **no rule covers any registration path**: `claude mcp add`, `add-json` and `add-from-claude-desktop` (which write `~/.claude.json`); a direct write of `~/.claude.json`; or a project `.mcp.json` pre-approved through `enabledMcpjsonServers` or `enableAllProjectMcpServers` in that worktree's `.claude/settings.local.json`. SELF-PROTECT-FILE blocks only `disableAllHooks` there (`util/claude_agent_guard.py:188`, `:1615`). Both files are gitignored (`.gitignore:166-167`, `:170`), so neither shows in `git status` or a PR. A rule keyed on the `claude` command word also misses the direct versions path, because the guard compares basenames, and script internals stay invisible (guard gap 1). RR-1's allow list pre-approves exactly `claude mcp add` | a prompt-injected or mistaken agent action | Low | High | Medium | Claude Code's permission prompts, which bypass-permissions sessions never show. In practice, only the owner's review | A C8 extension, as a C9 candidate (owner decision). It would deny (a) the `mcp add*` subcommands, whatever the command word, (b) writes to `~/.claude.json` and to any `.mcp.json`, and (c) project-settings writes that set either approval key. Gap 1 still bypasses it. Also install C8 |
-| RR-11 | Host posture amplifies RR-1, RR-3, RR-5 and RR-13. The application firewall is off, so any listener a server opens is on the LAN, and possibly within reach of anyone in radio range (plan §16.3 E-NET records an unidentified open radio broadcasting the owner's network name). AGOT-A3's every-origin CORS reaches `localhost:8000` from any web page whatever the firewall says. C2, as worded, auto-allows downloaded signed software, so Docker's signed backend would keep publishing compose ports. SIP's protections are off, which matters after a compromise | any of RR-1, RR-3, RR-5 or RR-13 | as for the triggering risk (Low) | High | Medium | Little Snitch, which also supports inbound rules (own knowledge) | C2 with "block all incoming connections" while nothing inbound is needed, or per-app inbound denies for `com.docker.backend`, `node` and the env Pythons. C1 for containment. Never run the compose files |
+| RR-10 | **MCP-registration paths with no guard.** The C8 guard is not installed. Once installed it would not see MCP tools (H5-X1), and **no rule covers any registration path**: `claude mcp add`, `add-json` and `add-from-claude-desktop` (which write `~/.claude.json`); a direct write of `~/.claude.json`; or a project `.mcp.json` pre-approved through `enabledMcpjsonServers` or `enableAllProjectMcpServers` in that worktree's `.claude/settings.local.json`. SELF-PROTECT-FILE blocks only `disableAllHooks` there (`util/claude_agent_guard.py:188`, `:1615`). Both files are gitignored (`.gitignore:166-167`, `:170`), so neither shows in `git status` or a PR. A rule keyed on the `claude` command word also misses the direct versions path, because the guard compares basenames, and script internals stay invisible (guard gap 1). RR-1's allow list pre-approves exactly `claude mcp add` | a prompt-injected or mistaken agent action | Low | High | Medium | Claude Code's permission prompts, which bypass-permissions sessions never show. In practice, only the Overtoad's review | A C8 extension, as a C9 candidate (Overtoad decision). It would deny (a) the `mcp add*` subcommands, whatever the command word, (b) writes to `~/.claude.json` and to any `.mcp.json`, and (c) project-settings writes that set either approval key. Gap 1 still bypasses it. Also install C8 |
+| RR-11 | Host posture amplifies RR-1, RR-3, RR-5 and RR-13. The application firewall is off, so any listener a server opens is on the LAN, and possibly within reach of anyone in radio range (plan §16.3 E-NET records an unidentified open radio broadcasting the Overtoad's network name). AGOT-A3's every-origin CORS reaches `localhost:8000` from any web page whatever the firewall says. C2, as worded, auto-allows downloaded signed software, so Docker's signed backend would keep publishing compose ports. SIP's protections are off, which matters after a compromise | any of RR-1, RR-3, RR-5 or RR-13 | as for the triggering risk (Low) | High | Medium | Little Snitch, which also supports inbound rules (own knowledge) | C2 with "block all incoming connections" while nothing inbound is needed, or per-app inbound denies for `com.docker.backend`, `node` and the env Pythons. C1 for containment. Never run the compose files |
 | RR-12 | The node rule in Little Snitch. The stopped online attempt may have left an alert pending for `/usr/local/Cellar/node/25.8.1_1/bin/node`; whether one is pending was not checked. Its scope matters. An allow for `registry.npmjs.org` alone would not open `npx -y github:`, which needs `github.com` or `codeload.github.com`. A blanket deny breaks pre-commit's node hook environments (the markdownlint hook at `.pre-commit-config.yaml:233-239`). A rule on the Cellar path lapses at the next `brew upgrade node` | answering an alert, or a later `brew upgrade` | Medium | Moderate | Medium | the alert holds the connection | B.4 |
-| RR-13 | **An IDE agent on a tree.** Suppose the owner opens a tree in VS Code (Copilot agent mode, Amp) or Cursor and asks the agent to set it up or run it. VS Code auto-approves every terminal command (`"/.*/": true` under `chat.tools.terminal.autoApprove`, `settings.json:1083`). Amp has two unconditional `Bash` allow rules (28, 39), and Cursor's Auto-review can allow unsandboxed calls ([`JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`](JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md), K13 pending). The agent would follow the tree's own steps: `install-dxt.sh`, `docker compose up`, `npx -y github:...`. AGoT's `.devcontainer` offers a `poetry install` under the running Docker Desktop. A reviewer reads the user-level run-on-save as running `<nearest ancestor holding util>/util/last_mod_update.bash`. None exists in or above the trees today, but a pulled `util/` (RR-6) would turn saving a file into running tree code. The `.claude/settings.local.json` plays no part | opening a tree folder in VS Code or Cursor, trusting it, and prompting the IDE agent | Low | Severe: unprompted code as the owner | Medium | the VS Code Workspace Trust prompt (not overridden; whether a trusted parent covers `~/.claude` is CNV); no auto-run file in either tree | A. Otherwise never open the trees in an IDE, and finish K13 (owner) |
+| RR-13 | **An IDE agent on a tree.** Suppose the Overtoad opens a tree in VS Code (Copilot agent mode, Amp) or Cursor and asks the agent to set it up or run it. VS Code auto-approves every terminal command (`"/.*/": true` under `chat.tools.terminal.autoApprove`, `settings.json:1083`). Amp has two unconditional `Bash` allow rules (28, 39), and Cursor's Auto-review can allow unsandboxed calls ([`JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`](JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md), K13 pending). The agent would follow the tree's own steps: `install-dxt.sh`, `docker compose up`, `npx -y github:...`. AGoT's `.devcontainer` offers a `poetry install` under the running Docker Desktop. A reviewer reads the user-level run-on-save as running `<nearest ancestor holding util>/util/last_mod_update.bash`. None exists in or above the trees today, but a pulled `util/` (RR-6) would turn saving a file into running tree code. The `.claude/settings.local.json` plays no part | opening a tree folder in VS Code or Cursor, trusting it, and prompting the IDE agent | Low | Severe: unprompted code as the Overtoad | Medium | the VS Code Workspace Trust prompt (not overridden; whether a trusted parent covers `~/.claude` is CNV); no auto-run file in either tree | A. Otherwise never open the trees in an IDE, and finish K13 (Overtoad) |
 | RR-14 | **Tree text reaching agents through searches.** A Grep or `grep -r` rooted at `~/.claude`, where agents look for agents, skills and settings, returns tree text, including `prompt.md`'s persona lines (AGI-A2). In a bypass session any steering acts unprompted | a routine search under `~/.claude` | Low | Moderate. A reviewer's grep of both trees' documents found no other agent-directed text; a pull could change that | Low | Spotlight does not index the trees. Once installed, C8 denies searches rooted at home or above, but not at `~/.claude` | A. Otherwise narrow search roots |
 
 ## 6. Other issues
 
 - **O-1. The H5 audit's AGOT-P1 fix note is incomplete.** It says the bundle hazard needs Claude Desktop and that turing has no extensions directory. In fact the app is installed, bound to `.dxt` and `.mcpb`, and never launched (§4.2). RR-2 carries the corrected view. The audit file itself is left as written.
-- **O-2. The plan records the decision as pending.** Plan v1.4.4's H5 row is accurate, but it predates the removal, the restore and this analysis. The next turing plan revision should fold them in with the owner's decision. It should also point §18 at the arc's current main handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md` (juniper-ml#2305).
-- **O-3. The owner's `!` commands failed here.** The restore the owner ran through `!` created nothing, and its error detail was withheld.
+- **O-2. The plan records the decision as pending.** Plan v1.4.4's H5 row is accurate, but it predates the removal, the restore and this analysis. The next turing plan revision should fold them in with the Overtoad's decision. It should also point §18 at the arc's current main handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md` (juniper-ml#2305).
+- **O-3. The Overtoad's `!` commands failed here.** The restore the Overtoad ran through `!` created nothing, and its error detail was withheld.
   - The likeliest cause is the session's worktree guard (CNV). It refuses any git aimed outside the worktree; it also refused this analysis' scratch-directory pull experiment (RR-6).
   - Owner-run git on host trees belongs in a separate terminal.
 - **O-4. The restored trees are pinned at the audited commits, not the upstream tips.**
@@ -231,10 +231,10 @@ Impact runs from **Low** through **Moderate** and **High** to **Severe**; Severe
   - `~/Library/Caches/node-gyp` is empty, with an mtime of 2026-03-01T21:24:03Z, which is the second npm operation's time. Which operation touched it is unconfirmed.
 - **O-8. Backups.** No Time Machine destination is configured, and the only local snapshots are OS-update ones, so no backup holds the trees today. `~/.claude/mcp-servers`, `~/.claude` and `~/.npm` are not excluded.
   - Plan task C0's encrypted Time Machine backup would therefore copy kept trees, and a later restore from it would bring back removed ones.
-  - Choose option A before C0, or have the owner exclude the path.
+  - Choose option A before C0, or have the Overtoad exclude the path.
 - **O-9. §4.3's binary reading belongs to one Claude Code version.** Re-run it, and §4.1's configured check, after each update.
 
-## 7. Options for the owner
+## 7. Options for the Overtoad
 
 | Option | What it does | Residual risk |
 | --- | --- | --- |
@@ -252,15 +252,15 @@ Option B's steps, each with its reversal:
 
   Reverse it with the opposite `mv`. Never move the file into another project's `.claude/`, which would transplant the allow list. It closes the allow-list path for default, accept-edits and auto sessions; a bypass session in the tree stays exposed.
 - **B.2** (RR-2): rename the four bundles in place to extensions nothing opens, for example `mv <bundle> <bundle>.h5-disabled` for `adaptive-graph-of-thoughts-v1.0.2-final.dxt`, `adaptive-graph-of-thoughts-v1.0.1-submission.dxt`, `Adaptive-Graph-of-Thoughts-MCP-server.dxt` and `adaptive-graph-of-thoughts-dxt-v1.0.0-production.zip`. Or delete them.
-  - Reverse it with the opposite `mv`. For deleted bundles, use `git checkout -- <path>` in the tree. That is safe for the owner to run, because the trees have no command-running git config key and no live hook (§4.1).
+  - Reverse it with the opposite `mv`. For deleted bundles, use `git checkout -- <path>` in the tree. That is safe for the Overtoad to run, because the trees have no command-running git config key and no live hook (§4.1).
   - Do not move the bundles to another Finder-visible folder, which would make opening one more likely.
 - **B.3** (RR-9): `printf 'ignore-scripts=true\n' > ~/.claude/mcp-servers/agi-mcp-server/.npmrc`. Reverse it by deleting the file.
 - **B.4** (RR-12): write a standing Little Snitch rule for the Cellar `node`. Allow `registry.npmjs.org` only if npm is needed, and deny `github.com` and `codeload.github.com`. Answer any pending alert with "Deny once". Reverse it by deleting the rule.
-- **B.5** (RR-6): the owner runs `git -C ~/.claude/mcp-servers/<tree> remote remove origin` for each tree. It is safe for the same reason as B.2. A bare fetch or pull then has nowhere to go. Reverse it with `git -C <tree> remote add origin <URL from §3.1>`.
+- **B.5** (RR-6): the Overtoad runs `git -C ~/.claude/mcp-servers/<tree> remote remove origin` for each tree. It is safe for the same reason as B.2. A bare fetch or pull then has nowhere to go. Reverse it with `git -C <tree> remote add origin <URL from §3.1>`.
 
 After B, the restore check's provenance FAILs by design. The renamed files show as missing locally, `.npmrc` as local-only, and `origin` as absent. The reverse steps return it to PASS.
 
-**Recommendation: A**, as the H5 audit concluded, and more firmly with RR-13 and O-8 in view. Neither server offers the plan anything (H5 audit §8). If the owner keeps them, B. **The decision is the owner's.**
+**Recommendation: A**, as the H5 audit concluded, and more firmly with RR-13 and O-8 in view. Neither server offers the plan anything (H5 audit §8). If the Overtoad keeps them, B. **The decision is the Overtoad's.**
 
 ## 8. Method
 
@@ -275,7 +275,7 @@ After B, the restore check's provenance FAILs by design. The renamed files show 
   - one `curl` and the `node` `fetch` probes to `registry.npmjs.org`;
   - the stalled online npm run.
 - **Client configs:** server names and transport type only. No command, argument, URL, header or environment value was read.
-- **Likelihoods** are judgments about this host's routine: one owner, and agent sessions in Juniper worktrees. Impacts follow the H5 audit's findings.
+- **Likelihoods** are judgments about this host's routine: one Overtoad, and agent sessions in Juniper worktrees. Impacts follow the H5 audit's findings.
 
 ## 9. Validation record
 
@@ -360,5 +360,5 @@ After B, the restore check's provenance FAILs by design. The renamed files show 
   - `2026-10-21T09_04_55_207Z-debug-0.log`
 
 **Handoffs.**
-- `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-audit-landed-owner-decides.md`: H5's handoff, updated with this analysis in the same PR.
+- `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-audit-landed-Overtoad-decides.md`: H5's handoff, updated with this analysis in the same PR.
 - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md`: the arc's main handoff (juniper-ml#2305).

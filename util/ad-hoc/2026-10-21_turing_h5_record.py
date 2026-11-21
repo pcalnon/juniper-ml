@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-21
 Status: ad-hoc — one-off (the H5 record PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18, §18.2, §18.3);
          juniper-ml#2300 (H5: notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md);
          util/ad-hoc/2026-10-20_turing_g1_g4_record.py (the pattern)
@@ -19,7 +19,7 @@ upload (E-LAND-2). Each edit reports `present`, `applied` or `MISSING`; if any a
 The edits, all in the plan:
   1. the Version line, 1.4.3 -> 1.4.4. Only from 1.4.3: another version is reported and left alone;
   2. §18's opening paragraph names the session H5 landed in and its handoff;
-  3. §18.2's H5 row (landed; the owner's decision pending);
+  3. §18.2's H5 row (landed; the Overtoad's decision pending);
   4. §18.3 gains erratum E-H5 (D10's "disabled until audited", against what the audit found).
 
 Exit 0 = every edit is present or applied (or would be, under --dry-run); 1 = an anchor is missing.
@@ -34,7 +34,7 @@ import sys
 PLAN = "notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md"
 HANDOFF_DIR = "prompts/thread-handoff_automated-prompts/"
 PREVIOUS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h2-h4-landed-c9-next.md"
-THIS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h5-audit-landed-owner-decides.md"
+THIS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h5-audit-landed-Overtoad-decides.md"
 AUDIT = "notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md"
 EVIDENCE = "util/ad-hoc/2026-10-21_turing_h5_mcp_server_inventory.py"
 H5_PR, H5_SHA = "juniper-ml#2300", "2f831b60"
@@ -52,7 +52,7 @@ INTRO_NEW = (
 
 H5_PREFIX = '| H5 | with the "mac dev" session |'
 H5_ROW = (
-    f"| H5 | landed; **the owner's decision is pending** | {H5_PR} (`{H5_SHA}`), in the \"mac dev\" session (E-SPLIT). "
+    f"| H5 | landed; **the Overtoad's decision is pending** | {H5_PR} (`{H5_SHA}`), in the \"mac dev\" session (E-SPLIT). "
     f"The `auditor` agent's static audit, `{AUDIT}`, with its read-only evidence script `{EVIDENCE}`, which compares "
     "each tree with its upstream at HEAD blob by blob (305 of 305 and 33 of 33 identical). 25 findings: 3 blocker, 9 "
     "major and 13 minor. **It recommends removing both.** adaptive-graph-of-thoughts: its one standard-MCP entry point, "
@@ -62,7 +62,7 @@ H5_ROW = (
     "squatted `cognitivecomputations` namespace (AGI-P1), and its 24 tools are a cross-session memory store (AGI-A1). "
     "Neither exposes a file-writing or command-running tool, so C9 does not attach; their database and network tools "
     "would still run outside C8 (H5-X1). Neither is configured in any client config checked, and neither is running. "
-    "The owner's commands for each choice are in the audit's §8 (E-H5) |"
+    "The Overtoad's commands for each choice are in the audit's §8 (E-H5) |"
 )
 
 ERRATA_ANCHOR = "\n\n## 19. Commit signing for the terminal and the IDEs"

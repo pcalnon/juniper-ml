@@ -7,7 +7,7 @@
 # Author:     Paul Calnon
 # Created:    2026-11-15
 # Status:     ad-hoc -- one-off (opened juniper-cascor#759 and juniper-cascor-worker#228)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/open_signed_pr.py; util/ad-hoc/2026-11-15_py315_freshness_check.bash (run it first: the tool
 #             uploads WHOLE files) and 2026-11-15_py315_readback.bash (run it after)
 #

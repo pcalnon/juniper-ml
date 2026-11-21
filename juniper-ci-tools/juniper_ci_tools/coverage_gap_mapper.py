@@ -16,7 +16,7 @@ An opt-in ``--enforce`` mode (work-unit C-0 of the per-file coverage rollout,
 ``notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md``)
 turns findings into a blocking gate -- exit ``1`` when any source file or
 sub-module is under its floor -- but promoting a *specific repo's CI* to the
-blocking gate stays a separate, per-repo, owner-signed decision.
+blocking gate stays a separate, per-repo, Overtoad-signed decision.
 
 The two enforcing bases (deliberately different from the advisory display)
 ------------------------------------------------------------------------

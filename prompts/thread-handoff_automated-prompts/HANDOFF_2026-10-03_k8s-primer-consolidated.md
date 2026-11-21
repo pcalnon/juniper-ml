@@ -15,14 +15,14 @@ Completed:
   Per its PR body, three validators (Kubernetes/OS/hardware, networking/storage/monitoring, Juniper
   grounding) ran four rounds; round 4 found 0 defects.
 - Its handoff PR, juniper-ml#2098 (docs/k8s-primer-handoff), merged 2026-09-25 01:47Z.
-- The owner then deleted the primer from juniper-ml: juniper-ml#2104, merged 2026-09-26 10:20Z as
+- The Overtoad then deleted the primer from juniper-ml: juniper-ml#2104, merged 2026-09-26 10:20Z as
   4b5227e3. Its commit message: "move all Juniper K8S code, documentation, and resources to a
   dedicated, private git repo: juniper-k8s".
 - pcalnon/juniper-k8s (PRIVATE) holds notes/JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_KUBERNETES-PRIMER.md
   plus inventory/, raspi/ and util/. Its last push was 2026-10-01 (PR #7, longhorn and kubelet installs).
 
 Remaining work: none in juniper-ml. Any Kubernetes work happens in juniper-k8s under its own
-AGENTS.md. The parent Juniper/CLAUDE.md does not list juniper-k8s yet. Adding it is an owner
+AGENTS.md. The parent Juniper/CLAUDE.md does not list juniper-k8s yet. Adding it is an Overtoad
 decision, and that file is unversioned.
 ```
 
@@ -50,7 +50,7 @@ git ls-tree origin/main notes/ | grep -ci kubernetes   # expect 0
 |---|---|---|---|
 | 1–7: worktree, grounding, hardware probe, currency checks, draft, consensus, PR + merge | k8s handoff, "Remaining work" | Done | juniper-ml#2101, merged as `b82d12d7` |
 | Handoff PR `docs/k8s-primer-handoff` not merged | k8s handoff, "Git state" | Merged | juniper-ml#2098 |
-| Primer location | — | Moved to `juniper-k8s` by the owner | juniper-ml#2104, `4b5227e3` |
+| Primer location | — | Moved to `juniper-k8s` by the Overtoad | juniper-ml#2104, `4b5227e3` |
 
 ## Git state
 

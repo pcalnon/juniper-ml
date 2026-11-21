@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-21
 Status:      ad-hoc -- audit
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: the DeployKey bypass disposition is decided and recorded.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: the DeployKey bypass disposition is decided and recorded.
 Related:     HANDOFF_2026-08-19 section 2.5;
              notes/JUNIPER_2026-08-20_JUNIPER-ECOSYSTEM_BYPASS-ACTOR-CENSUS.md
 
@@ -34,7 +34,7 @@ Trap this tool exists to avoid
 juniper-ml key reported `last_used: 2026-08-17` immediately after a successful `ssh -T`
 authentication AND after roughly thirty pushes that same day. Do not conclude a key is
 dormant from that field. The authoritative probe is `ssh -T` against the host alias:
-GitHub answers `Hi <owner>/<repo>!` for a deploy key and `Hi <user>!` for a user key.
+GitHub answers `Hi <Overtoad>/<repo>!` for a deploy key and `Hi <user>!` for a user key.
 
 Usage
 -----
@@ -119,7 +119,7 @@ def local_pubkeys() -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--local-keys", action="store_true",
                     help="match repo deploy keys against this host's ~/.ssh/*.pub")
     args = ap.parse_args()
@@ -135,14 +135,14 @@ def main() -> int:
     failures = []
     for repo in REPOS:
         try:
-            sets = gh_json(f"repos/{args.owner}/{repo}/rulesets")
+            sets = gh_json(f"repos/{args.Overtoad}/{repo}/rulesets")
             has_row = False
             for rs in sets:
-                full = gh_json(f"repos/{args.owner}/{repo}/rulesets/{rs['id']}")
+                full = gh_json(f"repos/{args.Overtoad}/{repo}/rulesets/{rs['id']}")
                 for b in (full or {}).get("bypass_actors", []):
                     if b.get("actor_type") == "DeployKey":
                         has_row = True
-            keys = gh_json(f"repos/{args.owner}/{repo}/keys")
+            keys = gh_json(f"repos/{args.Overtoad}/{repo}/keys")
         except ProbeError as exc:
             # Named loudly and counted, never rendered as a zero.
             print(f"{repo:<24} {'PROBE FAILED':<12} {'?':>5} {'?':>9}  {exc}")
@@ -177,7 +177,7 @@ def main() -> int:
         print()
         print("`==<file>` marks a deploy key whose public half is present on THIS host --")
         print("i.e. the 'unidentified' bypass actor is this workstation's own push identity.")
-        print("Confirm with: ssh -T git@<host-alias>   ->  'Hi owner/repo!' means deploy key.")
+        print("Confirm with: ssh -T git@<host-alias>   ->  'Hi Overtoad/repo!' means deploy key.")
     return 0
 
 

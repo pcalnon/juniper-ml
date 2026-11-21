@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-05
 Status: ad-hoc — classification aid for the consolidated development plan's validation rounds
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-04_gitleaks_zero_rule_probe.py (the gate whose KEYs this reads);
          util/ad-hoc/2026-10-08_line_read_mutation_run.py (the mutation run that checks the contract below is pinned);
          notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (XC-PRESERVE);
@@ -106,7 +106,7 @@ symlink is), and a KEY path with a trailing slash (``a.env/`` reads ``a.env``) (
 prints a file's name as it is, unmasked, so a name holding a control character (a CR, an escape sequence) can
 overprint or erase a terminal's lines; the control is the PR's own changed-file list (round 14: R14B-10).
 
-Limits of the checks, not of the read (round 14: R14B-01..07; listed limits by the owner's rulings of 2026-10-10 and
+Limits of the checks, not of the read (round 14: R14B-01..07; listed limits by the Overtoad's rulings of 2026-10-10 and
 2026-10-24). The read does what clauses 1 to 4 say, but the checks hold these parts of them by form only, so an edit
 that broke one would still pass: the numeric fields (``random-looking=``, ``offset=``, the summary's counts) are held
 to digits, not to their values; a refusal is held by its reason's first words, and the planted-value test looks for

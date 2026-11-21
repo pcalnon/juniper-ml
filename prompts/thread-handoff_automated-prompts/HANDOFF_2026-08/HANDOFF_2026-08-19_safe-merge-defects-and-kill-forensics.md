@@ -2,14 +2,14 @@
 
 Successor to
 [`HANDOFF_2026-08-15_ruleset-bypass-and-branch-protection-register.md`](HANDOFF_2026-08-15_ruleset-bypass-and-branch-protection-register.md).
-That register's two owner decisions (ml#1011, ml#1012) are now **closed**; this document takes over the
+That register's two Overtoad decisions (ml#1011, ml#1012) are now **closed**; this document takes over the
 register role for what remains.
 
 **Validated by two independent agents** before archiving — one re-derived every checkable claim against
 live state (34/36 confirmed, 0 refuted), one audited for omissions. Corrections from both are folded
 in; the errors they caught are noted where they matter.
 
-Continue the branch-protection / merge-tooling arc in **juniper-ml**. The owner decisions are closed.
+Continue the branch-protection / merge-tooling arc in **juniper-ml**. The Overtoad decisions are closed.
 What remains is **documented, unfixed defects** plus one **time-critical experiment**. Except where an
 issue number is given, **nothing below is tracked anywhere else** — this handoff is the record.
 
@@ -17,18 +17,18 @@ issue number is given, **nothing below is tracked anywhere else** — this hando
 
 ## 1. Completed — do not redo
 
-- **Three owner decisions closed.** ml#1011 (`Sequence Safety` required on all 9), ml#1012 (bypass
-  actors), ml#1128 (merge queue — **not possible**, requires org ownership).
+- **Three Overtoad decisions closed.** ml#1011 (`Sequence Safety` required on all 9), ml#1012 (bypass
+  actors), ml#1128 (merge queue — **not possible**, requires org Overtoadship).
 - **`Sequence Safety` required on all 9**, and renamed to drop `(Advisory)` on the 8 siblings.
 - **Direct pushes to `main` BLOCKED on all 9** via a second, no-bypass ruleset
-  (`juniper-no-direct-push`). Binds the owner too — everything goes through a PR.
+  (`juniper-no-direct-push`). Binds the Overtoad too — everything goes through a PR.
 - **`allow_auto_merge` enabled on all 9** — a safety fix: where false, `--auto` silently merged instead
   of arming.
 - **`util/safe_merge.py`** built (R4) and hardened (ml#1183); `util/wait_for_checks.py` pre-existed.
 - Merged: ml#1134, #1166, #1168, #1169, #1170, #1171, #1173, #1183, #1184, **#1189**.
 
-> **Caveat on "required".** `RepositoryRole 5` (owner) holds `always` bypass on all 9, so a required
-> check does **not** constrain the owner's own merges. ml#1011 was never the fix for that failure mode.
+> **Caveat on "required".** `RepositoryRole 5` (Overtoad) holds `always` bypass on all 9, so a required
+> check does **not** constrain the Overtoad's own merges. ml#1011 was never the fix for that failure mode.
 > `safe_merge` is discipline, not enforcement, for the same reason.
 >
 > **ml#1011 landed 2026-08-18, ahead of its own ~2026-08-21 A5.2 soak gate.** Whether the four-check
@@ -103,14 +103,14 @@ both `Sequence Safety` (08-18) and `Memory Budget` (08-20).
 Tracks the `76e4513b` content loss, **healed by ml#1165** (merged 08-18T08:16:03Z). main-verify is green
 ×6. Verify, then close.
 
-### 2.5 Owner decision — bypass actors (open)
+### 2.5 The Overtoad decision — bypass actors (open)
 
 **The roster is five rows on every repo**, not two:
 
 | Actor                       | Mode           | Disposition                                                                                                                                                 |
 |-----------------------------|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `DeployKey` (null)          | `always`       | **IDENTIFY-FIRST, unresolved** — the widest entitlement in the roster (push / force-push / **delete** `main` past all checks). Tracked in no other handoff. |
-| `RepositoryRole 5` (owner)  | `always`       | **KEEP** — load-bearing (§1 caveat)                                                                                                                         |
+| `RepositoryRole 5` (Overtoad)  | `always`       | **KEEP** — load-bearing (§1 caveat)                                                                                                                         |
 | `29110` dependabot          | `always`       | **candidate for removal**                                                                                                                                   |
 | `1143301` Copilot SWE Agent | `always`       | **candidate for removal**                                                                                                                                   |
 | `4362741` release-train App | `pull_request` | **DO NOT TOUCH** — see below                                                                                                                                |
@@ -120,7 +120,7 @@ the rulesets target `~DEFAULT_BRANCH` only — the same structural argument that
 Amp / Copilot-code-review.
 
 > **"Never exercised a bypass" is an INFERENCE, not a finding.** A 300-suite sample across ml/cascor/data
-> shows only `pcalnon`, but no full 9-repo census was run. Run one before the owner decides.
+> shows only `pcalnon`, but no full 9-repo census was run. Run one before the Overtoad decides.
 >
 > **`4362741` is a trap.** Its recorded justification was the `code_quality` deadlock, which is now
 > refuted — so it *looks* removable by exactly the argument above. But the bypass-actor research still
@@ -159,12 +159,12 @@ required context on juniper-ml (**15 → 16**) with `integration_id: null`, usin
 That is the exact operation that made `main` unmergeable on five repos this session. Therefore:
 
 - **Re-read the live ruleset immediately before any PUT.** Three tools now edit it.
-- **Ruleset edits are owner-gated — do not apply unilaterally.**
+- **Ruleset edits are Overtoad-gated — do not apply unilaterally.**
 - `integration_id: null` means "any integration", which is permissive and *not* the failure mode that
   bit this session (a wrong *specific* id). It is not itself a defect.
 
 Merging is via `python util/safe_merge.py --pr N [--repo R] --execute`. Direct pushes to `main` are
-blocked, so **there is no fallback path**. Merge only on the owner's explicit per-PR approval. The
+blocked, so **there is no fallback path**. Merge only on the Overtoad's explicit per-PR approval. The
 tools live **only in juniper-ml** — from a sibling repo, run them from a juniper-ml checkout with
 `--repo <sibling>`.
 
@@ -183,7 +183,7 @@ tools live **only in juniper-ml** — from a sibling repo, run them from a junip
 
 ## 5. Do NOT relitigate
 
-- **Merge queues are unavailable** — require org ownership; these repos are User-owned (ml#1128).
+- **Merge queues are unavailable** — require org Overtoadship; these repos are User-owned (ml#1128).
 - **`code_quality` is INERT** — 779/785 and 399/399 pass, 0 fail. The real July blocker was the
   **`update` rule**, removed 08-10. **Do not remove or "fix" `code_quality`** — the audit says *"Do not
   drop the rule."*

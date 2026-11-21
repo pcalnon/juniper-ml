@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (executed by Claude Code, consensus Lane A2)
 Created: 2026-09-23
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: canopy#670 (F-CANOPY-054); main script 2026-09-23_f054_r2_laneA2_slot_contention_pause.py (its docstring,
          sha256 118e13f4ee28f72426fdc8fce1671c93522d0c8cf28e790444c12dde697e863b, holds the pre-registered arms A1-A8)
 

@@ -37,12 +37,12 @@ None.
 **LOW-2. L283 lists five parked rows, but the register parks nine.**
 - Quote: "**[R] The register's five parked rows.** Its §4 notes (about L1626-L1630) park `APD-DATA-054`, `-055` and `-056`, and `APD-ML-007` and `-008` …"
 - Evidence:
-  - In the register, "awaiting an owner ruling" also parks `APD-ECO-009`, `-010` and `-011` (L1619) and `APD-ECO-012` (L1632). Their rows are at L1298-L1300 and L1306.
+  - In the register, "awaiting an Overtoad ruling" also parks `APD-ECO-009`, `-010` and `-011` (L1619) and `APD-ECO-012` (L1632). Their rows are at L1298-L1300 and L1306.
   - r4 never names ECO-009 to ECO-012 (grep finds nothing).
   - No open handoff PR mentions them: #2096, #2097 and #2100 all have 0 hits.
   - The 09-23 handoff only filed ECO-009 to ECO-011 as awaiting a ruling.
-  - Neither owner-ruling record mentions them (0 hits).
-- Replace with: "**[R] The register's nine parked rows.** Its §4.9 notes (about L1619-L1634) park `APD-ECO-009`, `-010` and `-011` (L1619), `APD-DATA-054`, `-055` and `-056` (L1626), `APD-ML-007` and `-008` (L1629), and `APD-ECO-012` (L1632) as awaiting an owner ruling, do not action. No round-42 handoff records asking any of them. This file carries `-055`'s `If-Match` half and `-008`'s remedy (above). Ask all nine together, each with its row's own question (the rows are at about L1298-L1306)."
+  - Neither Overtoad-ruling record mentions them (0 hits).
+- Replace with: "**[R] The register's nine parked rows.** Its §4.9 notes (about L1619-L1634) park `APD-ECO-009`, `-010` and `-011` (L1619), `APD-DATA-054`, `-055` and `-056` (L1626), `APD-ML-007` and `-008` (L1629), and `APD-ECO-012` (L1632) as awaiting an Overtoad ruling, do not action. No round-42 handoff records asking any of them. This file carries `-055`'s `If-Match` half and `-008`'s remedy (above). Ask all nine together, each with its row's own question (the rows are at about L1298-L1306)."
 
 **LOW-3. `handoff-frozen/` does not hold every copy the reports cite by line (L19, L508, README).**
 - Quotes:
@@ -65,7 +65,7 @@ None.
   - `handoff-2fba4397-round2-laneO` cites r1 as "R1 L21, L22, L35, L45-51, L73, L118-119".
   - `handoff-consolidated-round3-laneF` cites doc1 r2 as "document 1 L41, L168, L176, L278, L368". I checked L41 against the copy.
   - Add each report to its row. Change "match a report to its copy by the sha256 prefix it quotes" to "…by the sha256 prefix it quotes, or the scratch path it names".
-- **NIT-4 (L291):** the rest of P3's N14 is still open: the "[R] The next juniper-data release" row asks no question. Add: "Ask: cut it once the data fix-forward merges and validates? (yes or no; the owner cuts it)."
+- **NIT-4 (L291):** the rest of P3's N14 is still open: the "[R] The next juniper-data release" row asks no question. Add: "Ask: cut it once the data fix-forward merges and validates? (yes or no; the Overtoad cuts it)."
 - **NIT-5 (L72 against L314):** "finished at 01:49Z: one signed commit, `94ce8b1f`" reads as the executor's whole output, while L314 says it pushed both commits. Use: "finished at 01:49Z: its round-1 fixes are one signed commit, `94ce8b1f` (it pushed the branch's first commit, `d1c66a11`, at 20:45Z), and it opened no PR."
 
 ## Corrections table (round 3 to r4)
@@ -88,7 +88,7 @@ None.
 | P3 L4 | 99 | 98 | APPLIED | "Validate every FIX … Evidence-only commits … need only the archiver's `--check` and CI." |
 | P3 L5 | 593 | 604 | APPLIED | "**If round 2 refutes, or returns corrections you apply before the PR** …" |
 | P3 L6 | 45 | 47 | APPLIED | "send the message with `notify_when_idle: true` …" |
-| P3 L7 | 128 | 127 | APPLIED, in another form | "Fizzy's copy names an email match "owner-email" …". The archiver itself was fixed (fizzy's copy, :220-221). Adequate: both verification lines only count lines with `grep -c` |
+| P3 L7 | 128 | 127 | APPLIED, in another form | "Fizzy's copy names an email match "Overtoad-email" …". The archiver itself was fixed (fizzy's copy, :220-221). Adequate: both verification lines only count lines with `grep -c` |
 | P3 N1 | 169 | 168 | APPLIED | "53 in fizzy at 03:05Z; 34 in a worktree at origin/main …" |
 | P3 N2 | 46 | 48 | APPLIED | "`find … -name '*.jsonl' -mmin -15` must print nothing" |
 | P3 N3 | 140 | 139 | APPLIED | "a heredoc inside a compound command (write the file with the Write tool instead)" |
@@ -126,7 +126,7 @@ Totals: 31 findings. 26 APPLIED (2 of them incomplete), 1 in another form, 2 wit
   - All 242 untracked files are on `main` apart from those 4, so no work would be lost.
 - **#2089 (L68, L188, L252, L507):** at `669b2c75`, 216 files in 14 lane directories (8 of them handoff-validation directories), all 216 byte-identical in fizzy. The round-3 `probe_{data,cascor,primer}.py` are present.
 - **L285:** partly wrong (LOW-1).
-- **L36, L127:** fizzy's archiver has `SESSION_IDS` and exits "not in SESSION_IDS". It has the narrowed patterns and labels an email hit "owner-email". `main`'s copy prints `p.pattern`.
+- **L36, L127:** fizzy's archiver has `SESSION_IDS` and exits "not in SESSION_IDS". It has the narrowed patterns and labels an email hit "Overtoad-email". `main`'s copy prints `p.pattern`.
 - **L168, L170:** fizzy gives 53 OK, 0 DIFFER and 0 REFUSE; `main`'s copy, in a scratch root, gives 34 OK. The report count is 21.
 - **L47, L48:**
   - `notify_when_idle` is in SendMessage's schema. I loaded the schema only and sent nothing.

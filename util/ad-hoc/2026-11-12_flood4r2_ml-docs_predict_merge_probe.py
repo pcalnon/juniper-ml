@@ -8,7 +8,7 @@ Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc -- investigation (claim evidence for the Cursor flood-4 round-2 docs carrier: draft juniper-ml#2494,
         draft juniper-ml#2484's scratch paragraph, and the stale fleet-triage documentation the triage calls defect 4)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (round 2);
          tests/test_predict_merge.py (whose fixture helpers this copies)
 

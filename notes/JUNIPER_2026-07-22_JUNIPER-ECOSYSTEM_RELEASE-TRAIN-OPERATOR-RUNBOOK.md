@@ -24,8 +24,8 @@ describes behavior the code does not implement.
 1. **`RELEASE_TRAIN_MODE=off` is the instant kill switch.** Set the repo variable to `off` (or dispatch
    with `mode=off`) and the next run is a green no-op: detection is skipped and both write jobs are
    unreachable (release-train plan §11; `release-train.yml:182-190` quiesce step).
-2. **The owner still holds both gates.** The train never bumps a version without the owner-approved
-   proposal PR (Gate 1) and never deploys to PyPI without the owner approving the `pypi` environment
+2. **The Overtoad still holds both gates.** The train never bumps a version without the Overtoad-approved
+   proposal PR (Gate 1) and never deploys to PyPI without the Overtoad approving the `pypi` environment
    (Gate 2). The train automates only the middle arc (plan §5.3; `ceremony.py:1-11`).
 
 ## 1. The four modes and exactly what each writes
@@ -43,7 +43,7 @@ Mode is resolved once by the detect job's `id: mode` step (`release-train.yml:16
 Notes:
 
 - `report` is the **only** mode the daily cron ever runs (`RELEASE_TRAIN_MODE` defaults to `report`;
-  `propose`/`ceremony` are opt-in via `workflow_dispatch` or an owner-set repo variable). An unknown
+  `propose`/`ceremony` are opt-in via `workflow_dispatch` or an Overtoad-set repo variable). An unknown
   value warns and degrades to `report` (`release-train.yml:173-176`).
 - Both write jobs carry job-level `permissions: {contents: write, pull-requests: write}` and **nothing
   broader** — no `id-token`, no `environments`, no `deployments` (`release-train.yml:388-389`,
@@ -201,8 +201,8 @@ gh workflow run release-train.yml -f mode=propose -f packages=juniper-observabil
 
 - The `packages` input is whitespace/comma-separated `pypi_name`s with a hard charset reject (see
   below). Empty = all eligible.
-- The resulting PRs are **standard-gated**: the owner reviews and merges them. This is **Gate 1** (the
-  version bump only ships with owner approval; plan §5.3).
+- The resulting PRs are **standard-gated**: the Overtoad reviews and merges them. This is **Gate 1** (the
+  version bump only ships with Overtoad approval; plan §5.3).
 - **In-repo pilot vs cross-repo**: `--cross-repo` is emitted **only** when the App token is non-empty
   (see below / §7). On the degraded no-App path only juniper-ml packages are proposed and siblings
   are skipped with a clear reason.
@@ -223,7 +223,7 @@ operator-facing markdown:
 | Summary signal | What it means | Operator action |
 |---|---|---|
 | `N proposal PR(s) opened, M skipped.` | count of `opened:` / `skip:` lines | Follow the **Opened** links for Gate 1 review |
-| `### Opened (standard-gated -- owner reviews & merges)` | each opened package + PR URL | Review / merge (Gate 1); never auto-merged |
+| `### Opened (standard-gated -- Overtoad reviews & merges)` | each opened package + PR URL | Review / merge (Gate 1); never auto-merged |
 | `### Skipped` | each skip reason (e.g. duplicate open PR, `--cross-repo required…`) | Expected on re-dispatch / no-App path — do **not** re-open by hand |
 | `**propose.py produced no output**` | `propose-output.txt` empty / missing | Treat as a crash — read the run log; do **not** assume zero eligible packages |
 | Counts `0` / `0` **without** the crash banner | non-empty no-op output (e.g. no `UNRELEASED_CHANGES`) | Healthy idle — nothing to propose |
@@ -478,7 +478,7 @@ often carry links relative to the **owning** repo's tree. Archived verbatim, tho
 read outside that repo (the canopy v0.6.0 archive class).
 
 `notes_render.rewrite_relative_links` prefixes relative inline-markdown targets with a `link_base`
-URL (`https://github.com/<owner>/<repo>/blob/<ref>`, no trailing slash). Callers set it as follows
+URL (`https://github.com/<Overtoad>/<repo>/blob/<ref>`, no trailing slash). Callers set it as follows
 (also overridable via CLI `--link-base`):
 
 | Caller | Default `link_base` | Source |
@@ -582,8 +582,8 @@ since 2026-09-23; the Release **creates** the tag, so deliberately **no** `--ver
   identity is **GitHub-signed / Verified**, so the exempt archive PR satisfies the juniper-ml ruleset's
   `required_signatures` rule and the armed `--auto` merge **completes with zero clicks**. (A plain
   runner-side `git commit` is unsigned and left an all-green archive PR BLOCKED behind that rule until an
-  owner admin one-click — 2026-07-23 run 30051952226 / ml#707; the API commit removes that block with no
-  security-posture change.) **Owner one-click is now only the degraded/manual fallback** — e.g. if
+  Overtoad admin one-click — 2026-07-23 run 30051952226 / ml#707; the API commit removes that block with no
+  security-posture change.) **The Overtoad one-click is now only the degraded/manual fallback** — e.g. if
   `allow_auto_merge` is off (a graceful degrade, not a HALT) or the auto-merge never lands.
 
 - **The armed auto-merge was blocked (2026-07-29) — resolved via App bypass actor.**
@@ -635,7 +635,7 @@ The ceremony arms `--auto` behind `ci.yml`'s PR-only `release-train-archive-guar
 | `SKIP` | pass | Diff does **not** touch `notes/releases/` — not an archive PR | None. Normal PRs always SKIP so the required check never blocks them. |
 | `OK` | pass | Pure `A` adds of well-formed `notes/releases/RELEASE_NOTES_*.md`; all four rules hold | Auto-merge proceeds (with the signed archive commit, above). |
 | `WAIVED` | pass (exit 0) | Path-confined + single-purpose, and the only non-add change(s) are in-place archive edits waived by an `Allow-Archive-Edit:` commit trailer (see below) | None — the correction PR is mergeable. The waived paths are named in the check log; carry the trailer into the squash message. |
-| `FAIL` | fail (exit 1) | One or more **unwaived** rule violations | The PR **falls back to the standard owner gate** and **never auto-merges** (`archive_guard.py:371`). Fix or close; do not force-merge a dirty archive PR onto the exempt path. |
+| `FAIL` | fail (exit 1) | One or more **unwaived** rule violations | The PR **falls back to the standard Overtoad gate** and **never auto-merges** (`archive_guard.py:371`). Fix or close; do not force-merge a dirty archive PR onto the exempt path. |
 
 `touches_releases` inspects **every** path on a change — including **both** sides of a rename/copy
 (`archive_guard.py:169-171`). That is the load-bearing contract against destination-only blindness:
@@ -665,7 +665,7 @@ Rule 1 is add-only, so **any** PR that MODIFIES (or deletes / renames-within) an
 dead-link repair). While the guard was advisory that red was cosmetic; now that
 `Release-Train Archive Guard` is a **REQUIRED** status check, a FAIL makes the correction PR
 **unmergeable**. Issue #1013 asked for the policy; the answer shipped is a narrow, auditable,
-owner-authored escape rather than a widened lane.
+Overtoad-authored escape rather than a widened lane.
 
 Put an **`Allow-Archive-Edit:`** trailer in the PR's commit message(s):
 
@@ -709,7 +709,7 @@ so an `Allow-*` trailer that lives only in a branch commit is **lost on `main`**
 into the squash commit body in the merge dialog whenever you squash a waived PR. Two reasons it
 matters: the post-merge `main-verify` (G3) docs screen re-reads the same range and would flag the
 archive-note deletions as an unwaived `Allow-Docs-Rewrite` finding, and the trailer is the only
-durable audit record of *which* archived file the owner approved editing. Related recorded gotcha:
+durable audit record of *which* archived file the Overtoad approved editing. Related recorded gotcha:
 never *quote* an `Allow-*` marker in prose inside a commit message — the parsers read the whole body
 and will treat the quotation as a real waiver.
 
@@ -722,7 +722,7 @@ python util/release_train/archive_guard.py --base origin/main --head HEAD --trai
 
 - The monitor polls a bounded ~15-minute wall clock (`--monitor-timeout 900`,
   `release-train.yml:732-740`; `DEFAULT_MONITOR_TIMEOUT_SECONDS`, `ceremony.py:137`) until the run parks at
-  the owner-gated `pypi` environment — GitHub reports that as run status `waiting`, which the train
+  the Overtoad-gated `pypi` environment — GitHub reports that as run status `waiting`, which the train
   reports as **`PENDING_PYPI_APPROVAL`** (`ceremony.py:531`). **That terminal state is SUCCESS for the
   train** (plan §5.1). Terminal monitor returns are only
   `PENDING_PYPI_APPROVAL` / `RELEASED` / `HALT_BUILD` / `HALT_TESTPYPI` / `HALT_PUBLISH`
@@ -750,7 +750,7 @@ python util/release_train/archive_guard.py --base origin/main --head HEAD --trai
     when live PyPI already serves the target version before any archive/Release actions
     (`ceremony.py:863-866`). `RELEASED` is a **monitor-time** terminal after the ceremony cut (or resumed)
     a Release and watched the publish workflow finish successfully.
-- **Gate 2 is yours**: the publish workflow's `pypi`-environment deploy job waits for the owner to
+- **Gate 2 is yours**: the publish workflow's `pypi`-environment deploy job waits for the Overtoad to
   approve. The train never approves it (§7). Approve it in the run's environment-review UI when ready.
   If the monitor already returned `RELEASED`, Gate 2 was approved earlier — no further click.
 - **Re-entry is a named plan state, not a full re-ceremony.** When the Release tag already exists,
@@ -763,12 +763,12 @@ python util/release_train/archive_guard.py --base origin/main --head HEAD --trai
   coverage: juniper-ml#726). Distinct from `ALREADY_RELEASED` (PyPI already serves the target — pure
   no-op, `ceremony.py:864-866`). See §5.5.
 
-### 3.4 The two owner gates (never automated)
+### 3.4 The two Overtoad gates (never automated)
 
 | Gate | What it guards | Who | Where |
 |---|---|---|---|
-| **Gate 1** | the version bump (+ static `_version.py` dunder lockstep when present) **and** any D6 ceiling-bump follow-on | owner reviews + merges each standard-gated PR | the upstream `propose` PR **and** any `deps/<upstream>-ceiling-*` follow-on in a consumer repo |
-| **Gate 2** | the PyPI deploy | owner approves the `pypi` environment | the publish run's environment review |
+| **Gate 1** | the version bump (+ static `_version.py` dunder lockstep when present) **and** any D6 ceiling-bump follow-on | Overtoad reviews + merges each standard-gated PR | the upstream `propose` PR **and** any `deps/<upstream>-ceiling-*` follow-on in a consumer repo |
+| **Gate 2** | the PyPI deploy | Overtoad approves the `pypi` environment | the publish run's environment review |
 
 Neither gate is ever a release-train identity action (plan §9.3; enforced in code by
 `ceremony.py:_assert_gh_allowed`, §7 below).
@@ -779,17 +779,17 @@ Each **precondition** is checked **per package** before the ceremony proceeds; *
 package, open/update a deduplicated GitHub issue, never proceed** — and a halt on one package does not
 block the others (plan §8; `ceremony.py:22-31`). A HALT is a **normal green outcome** of the run (it does
 not turn the run red); it is surfaced in the ceremony step summary, a dedup issue (when one is filed),
-and Slack. The `ceremony.py` exit is `1` when any package HALTED (owner attention), `2` only on an
+and Slack. The `ceremony.py` exit is `1` when any package HALTED (Overtoad attention), `2` only on an
 invocation error (`ceremony.py:71-72`).
 
 | `reason_key` | Trigger | Code | Operator response |
 |---|---|---|---|
-| `main-ci-not-green` | newest **completed** run of the package's own main-CI workflow (registry `main_ci_workflow`, default `ci.yml`; the 3 recurrence packages → their path-scoped `ci-recurrence-*.yml` lane) on `main` has conclusion ≠ `success` | `ceremony.py:893` (probe `654-664`) | Fix `main` CI (owner rule: check main green before blaming a red PR); re-run ceremony. **Self-observation class FIXED (2026-08-08):** pre-fix the probe read the newest run of ANY workflow on `main`, so a `workflow_dispatch` ceremony read the in-progress release-train run ITSELF (empty conclusion → HALT) and dispatched ceremonies self-halted deterministically on a fully-green `main` (run 31257045597 / issue #855; the 2026-07-29 #854–#857 batch was this class). The probe is now `--workflow <name> --status completed`-scoped, so an in-progress self-run can no longer be read; a genuine red `main` (or a brand-new repo with zero completed runs of that workflow) still HALTs fail-closed (correct). |
+| `main-ci-not-green` | newest **completed** run of the package's own main-CI workflow (registry `main_ci_workflow`, default `ci.yml`; the 3 recurrence packages → their path-scoped `ci-recurrence-*.yml` lane) on `main` has conclusion ≠ `success` | `ceremony.py:893` (probe `654-664`) | Fix `main` CI (Overtoad rule: check main green before blaming a red PR); re-run ceremony. **Self-observation class FIXED (2026-08-08):** pre-fix the probe read the newest run of ANY workflow on `main`, so a `workflow_dispatch` ceremony read the in-progress release-train run ITSELF (empty conclusion → HALT) and dispatched ceremonies self-halted deterministically on a fully-green `main` (run 31257045597 / issue #855; the 2026-07-29 #854–#857 batch was this class). The probe is now `--workflow <name> --status completed`-scoped, so an in-progress self-run can no longer be read; a genuine red `main` (or a brand-new repo with zero completed runs of that workflow) still HALTs fail-closed (correct). |
 | `declared-lt-released-anomaly` | declared version < the version PyPI already serves (yank/rollback) | `ceremony.py:724` | Investigate the PyPI yank/rollback manually; do NOT release. Reconcile the declared version. |
 | `pypi-truth-missing` | manifest said released, but PyPI now returns no version | `ceremony.py:726` | A first-publish/yank a human must resolve — confirm the trusted-publisher config (procedure §3.3) before re-running. |
 | `changelog-section-missing` | no non-empty `CHANGELOG [<version>]` section to source the notes | `ceremony.py:741` | The proposal PR (Gate 1) should have created it — merge the proposal first, or add the section, then re-run. |
 | `notes-render-failed` | `notes_render.render_notes` raises `OSError` (missing/unreadable `notes/templates/TEMPLATE_RELEASE_NOTES.md` or the security template) while building the central archive content | `ceremony.py:887-890` | Restore the template under `notes/templates/` in the **central** juniper-ml checkout the ceremony uses as `repo_root`; do not invent archive body by hand. Re-run ceremony — it re-plans from CHANGELOG truth (coverage: `PreconditionHaltTest.test_notes_render_failed_halts`, juniper-ml#741). |
-| `archive-too-large` | the rendered archive, base64-encoded, exceeds the one-request signed-commit cap (default 1,000,000 B since 2026-10-26; `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides). Checked in the planner after the re-entry checks and **before** `create_branch`, so no empty `release-notes/<pkg>-v<ver>` branch is left behind (juniper-ml#2227). The cap is the GraphQL request body: a `FileAddition` replaces the whole file, so a large archive cannot be split across mutations | `ceremony.py` (`plan_ceremony` step 4b; `archive_b64_max`) | Condense the notes (`util/ad-hoc/2026-10-17_condense_release_notes_section.py`, the juniper-canopy 0.9.0 precedent) and re-run, or raise the env var. The default was 125,000 B, the figure measured from turing, until the runner-side measurement of 2026-10-26: a GitHub-hosted runner had every GraphQL body up to 16 MiB accepted (run 40410086979; `reports/2026-10-26_graphql-body-cap-probe/`), so the turing figure was that host's weak link (GitHub's GraphQL frontend drops a request that runs past about 7-10 s). The owner then ruled the default up to 1,000,000 B. Never invent an archive body. |
+| `archive-too-large` | the rendered archive, base64-encoded, exceeds the one-request signed-commit cap (default 1,000,000 B since 2026-10-26; `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides). Checked in the planner after the re-entry checks and **before** `create_branch`, so no empty `release-notes/<pkg>-v<ver>` branch is left behind (juniper-ml#2227). The cap is the GraphQL request body: a `FileAddition` replaces the whole file, so a large archive cannot be split across mutations | `ceremony.py` (`plan_ceremony` step 4b; `archive_b64_max`) | Condense the notes (`util/ad-hoc/2026-10-17_condense_release_notes_section.py`, the juniper-canopy 0.9.0 precedent) and re-run, or raise the env var. The default was 125,000 B, the figure measured from turing, until the runner-side measurement of 2026-10-26: a GitHub-hosted runner had every GraphQL body up to 16 MiB accepted (run 40410086979; `reports/2026-10-26_graphql-body-cap-probe/`), so the turing figure was that host's weak link (GitHub's GraphQL frontend drops a request that runs past about 7-10 s). The Overtoad then ruled the default up to 1,000,000 B. Never invent an archive body. |
 | `missing-declared-version` | manifest has no `declared_version` for a `BUMPED_NOT_RELEASED` pkg | `ceremony.py:711` | A malformed manifest — re-run detection (`report` mode) to regenerate it. |
 | `not-in-registry` | package is `BUMPED_NOT_RELEASED` in the manifest but absent from `registry.yaml` | `ceremony.py` (`_plans_for` / `ceremony.py:1152`) | Add the package to `util/release_train/registry.yaml` (registry lint gates it). Propose's parallel for `UNRELEASED_CHANGES` is a **skip stub** (`skipped_reason="package not in registry.yaml"`, §3.2) — not a HALT. |
 | `testpypi-verify-failed` | (during the monitor) a job of the publish workflow whose name holds `testpypi` failed before Gate 2; its failed step names the cause (a publisher with no separate build job builds inside that job) | `execute_ceremony` (`ceremony.py`) | The run is not healthy — open the publish run's TestPyPI job and read its failed step. Transient (TestPyPI not yet serving the upload, a network error): "Re-run failed jobs" on the run, within 30 days, never "Re-run all jobs". A broken package (a real install-check failure): fix it and cut a new patch version, never the republish dispatch, which would copy the broken files to PyPI. Do not re-cut the Release ([PyPI publish procedure §11.8](JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi)). |
@@ -806,7 +806,7 @@ The run it reads (`publish_run_status`, `select_publish_run`; juniper-ml#2592): 
 on the same Release, and before #2592 its run, often the newer, could be the one read) and any skipped one;
 then that publisher's `workflow_dispatch` runs on the tag, filtered by its workflow id. Of that set an
 unfinished run wins, then the run whose latest attempt started last (a re-run keeps its run id but
-restarts), then the newest run id. A republish dispatch (the owner's recovery ladder, rung 1: it
+restarts), then the newest run id. A republish dispatch (the Overtoad's recovery ladder, rung 1: it
 copies TestPyPI's files to PyPI) skips the build and both publish jobs and runs `Republish the tested files
 (dispatch only)`, which classifies by the run's own status: `waiting` → `PENDING_PYPI_APPROVAL`, `success` →
 `RELEASED`, `failure` → `HALT_PUBLISH`.
@@ -817,7 +817,7 @@ copies TestPyPI's files to PyPI) skips the build and both publish jobs and runs 
 | `HALT_TESTPYPI` | any `*testpypi*` job `conclusion=failure` (the build job did not fail) | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue` | Inspect the TestPyPI job's failed step. Transient (TestPyPI not yet serving the upload): "Re-run failed jobs" on the run, within 30 days. A broken package (a real install-check failure): fix it and cut a new patch version, never the republish dispatch (procedure §11.8). |
 | `HALT_PUBLISH` | run `status=completed` and `conclusion` in `{failure, cancelled, timed_out}` **and** no build or TestPyPI job has `conclusion=failure` (a cancelled build lands here too, as does a failed republish run) | **No** — note only: `"the publish run failed, was cancelled or timed out, with no failed build or TestPyPI job: open the run (no issue is filed for this class)."` | Open the publish run UI; diagnose the failure (cancelled deploy, timed-out job, a failed PyPI or republish job, etc.). Do **not** wait for a GitHub issue. Archive + Release were already cut — re-entry resumes at the monitor and must not re-cut. |
 | `PENDING_PYPI_APPROVAL` | run `waiting` / TestPyPI ok + pypi job parked | n/a (success for the train) | Approve Gate 2 when ready (§3.3). |
-| `RELEASED` | run completed `success` (both gates done) | n/a | Owner already approved; nothing to do. |
+| `RELEASED` | run completed `success` (both gates done) | n/a | The Overtoad already approved; nothing to do. |
 
 **Why the asymmetry.** `testpypi-verify-failed` and `build-failed` are named, recoverable §8 classes with
 stable `reason_key`s for dedup. A generic failure outside the build and TestPyPI jobs has no single reason key worth filing — the
@@ -857,7 +857,7 @@ gh variable set RELEASE_TRAIN_MODE --body report     # detection continues; prop
 ### 5.3 Undo a bad Release (and its tag)
 
 The ceremony's Release **creates** the sub-package tag (`ceremony.py:201-202`; procedure §11.4). To
-recover a Release that should not have been cut — **before** the owner approves Gate 2 (nothing has
+recover a Release that should not have been cut — **before** the Overtoad approves Gate 2 (nothing has
 reached PyPI yet, since the deploy job is parked at the `pypi` environment):
 
 ```bash
@@ -888,7 +888,7 @@ branch); the dup-guard means a corrected re-dispatch will open a fresh one rathe
 (plan §8 "Idempotent re-entry", citing `publish-service-core.yml:139,185`) until the one-artifact publish dropped
 it: in juniper-ml's seven publishers on 2026-11-15, and in each other repository's as its port lands. juniper-cascor's
 publishers, whose #763 / #767 are the template, never set it. A TestPyPI upload that skips an existing file lets the
-install check test an earlier build than the one PyPI takes. A release that did not reach PyPI follows the owner's
+install check test an earlier build than the one PyPI takes. A release that did not reach PyPI follows the Overtoad's
 recovery ladder: the republish dispatch, then (within 30 days) "Re-run failed jobs", then a new patch version. The
 first two rungs apply only when the release run's TestPyPI job, install check included, succeeded or failed only for
 a transient index lag; a real install-check failure is a broken package, which ships fixed as a new patch version and
@@ -914,9 +914,9 @@ Consequences for recovery:
 - Only **one train runs at a time** (`concurrency: group: release-train, cancel-in-progress: false`,
   `release-train.yml`), so two runs never race the same immutable index (plan §8).
 
-## 6. Owner setup actions (one-time, provisioning)
+## 6. The Overtoad setup actions (one-time, provisioning)
 
-These are **not** train actions — they are owner console/CLI actions the train depends on:
+These are **not** train actions — they are Overtoad console/CLI actions the train depends on:
 
 | Item | What | Why |
 |---|---|---|
@@ -941,7 +941,7 @@ These are **not** train actions — they are owner console/CLI actions the train
 through `ceremony.py:_assert_gh_allowed` (`197`), which permits **exactly**
 `{pr create, pr merge --auto, release create, run list/view, issue create/edit}`
 (`GH_MUTATING_SURFACE`, `ceremony.py:150`) — **plus the archive lane's two GitHub-signed-commit calls**
-(a `repos/<owner>/<repo>/git/refs` POST and a `createCommitOnBranch` GraphQL mutation) — and rejects any
+(a `repos/<Overtoad>/<repo>/git/refs` POST and a `createCommitOnBranch` GraphQL mutation) — and rejects any
 `environment` / `deployment` / `review` / `--admin` token (`GH_FORBIDDEN_TOKENS`, `ceremony.py:177`), a
 bare `pr merge` without `--auto`, or a `release create --verify-tag`. `api` **stays forbidden for the
 general surface**; the sole carve-out is those two archive-lane calls, dispatched to the sibling
@@ -951,7 +951,7 @@ pre-#770 only rejected a *present* non-heads value and deferred an omitted `ref=
 or a `createCommitOnBranch` body with `repoWithOwner` bound. Every other `gh api` (a different path, a
 different mutation, a non-POST ref write, an out-of-allowlist repo) raises `SeamViolation`. Every `--repo`
 — and both archive-lane calls' repo bind — is bounded to the 8 publishing repos. **The identity is never
-a `pypi` environment reviewer and never approves/mutates a deployment** — PyPI approval stays owner-only
+a `pypi` environment reviewer and never approves/mutates a deployment** — PyPI approval stays Overtoad-only
 (Gate 2). The workflow-level `contents: read` plus the two mode-gated write jobs are pinned by
 `tests/test_release_train_workflow_guard.py`; the archive-lane api carve-out and its negative cases
 (including missing/empty `ref=`) are pinned by `tests/test_release_train_ceremony.py`.
@@ -1010,7 +1010,7 @@ tree; sibling checkouts remain **read-only** inputs.
 **repository-ruleset bypass actor** in `pull_request` mode — the narrowest scope that lets the armed
 archive-lane auto-merge clear the strict up-to-date policy on serial archive PRs. The bypass applies
 **only to merging PRs on juniper-ml**; it grants nothing on the `pypi` environments (Gate 2 stays
-owner-only) and nothing outside pull-request merges.
+Overtoad-only) and nothing outside pull-request merges.
 
 > **The stated justification is void, and the row is still KEEP — do not conflate the two.** The
 > original wording said the bypass existed to clear the *"unsatisfiable `code_quality` rule"*; that
@@ -1033,7 +1033,7 @@ owner-only) and nothing outside pull-request merges.
    > **Observed 2026-09-22 on the same token path** (juniper-ml's 18 `GITHUB_TOKEN` lockfile PRs,
    > census in `HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`
    > § Re-evaluation 2026-09-22): all ran zero jobs at opening, but in two shapes. 5 got no
-   > `pull_request` run when opened (one, #1139, got runs only after the owner pushed main into
+   > `pull_request` run when opened (one, #1139, got runs only after the Overtoad pushed main into
    > its branch), and 13 had their runs **created and parked at `action_required`**.
    > For a parked PR the cheapest re-trigger is re-running those runs from the Actions tab, which is
    > how 12 of the 13 were released.
@@ -1051,11 +1051,11 @@ owner-only) and nothing outside pull-request merges.
    when recovering by hand, **cut a Release** (or delete Release + tag together, §5.3) — never push a
    bare `juniper-<pkg>-v*` tag, which would trigger the tag/`release`-driven publish workflow against a
    tag the Release did not create.
-4. **Cross-repo pilot is owner-triggered.** The first live cross-repo `propose` dispatch
+4. **Cross-repo pilot is Overtoad-triggered.** The first live cross-repo `propose` dispatch
    (run 30040138774, `packages=juniper-cascor-worker`) failed at the commit step with
    `Author identity unknown` — **nothing was pushed** (worker repo stayed clean). Fixed by
    juniper-ml#705 (`git config --global` on both write jobs; §7). A successful cross-repo write
-   (propose PR opened in a sibling, or ceremony cutting a sibling Release) still needs an owner
+   (propose PR opened in a sibling, or ceremony cutting a sibling Release) still needs an Overtoad
    re-dispatch to prove. Hermetic tests + `--dry-run` cover the logic
    (`tests/test_release_train_ceremony.py`).
 5. **Archive-PR signature gate (RESOLVED 2026-07-23).** The juniper-ml ruleset's `required_signatures`
@@ -1063,9 +1063,9 @@ owner-only) and nothing outside pull-request merges.
    signed. It now is: the archive branch + commit are created through the GitHub API (`git/refs` POST +
    `createCommitOnBranch`), yielding a **GitHub-signed / Verified** commit under the App / `GITHUB_TOKEN`
    identity (§3.3). Previously the commit was a plain unsigned runner-side `git commit`, so an all-green
-   archive PR stayed BLOCKED behind that rule until an owner admin one-click (2026-07-23 run 30051952226
-   / ml#707). Owner one-click is now only the degraded/manual fallback (e.g. `allow_auto_merge` off). No
-   security-posture change — the PyPI deploy still waits at the owner-gated `pypi` environment (Gate 2).
+   archive PR stayed BLOCKED behind that rule until an Overtoad admin one-click (2026-07-23 run 30051952226
+   / ml#707). The Overtoad one-click is now only the degraded/manual fallback (e.g. `allow_auto_merge` off). No
+   security-posture change — the PyPI deploy still waits at the Overtoad-gated `pypi` environment (Gate 2).
    The **live proof** (an archive PR auto-merging with zero clicks) rides the next real ceremony dispatch.
 6. **Summary / Slack `<<'PY'` late-failure class (RESOLVED #708 + #723).** Detect / propose / ceremony
    step-summary and Slack payload steps embed Python via `python - <<'PY' … PY`. A duplicated or missing
@@ -1105,7 +1105,7 @@ owner-only) and nothing outside pull-request merges.
    watch**, not to drop the rule and not to do all nine at once. (Tracked as CQ-9.)
 
    Still accurate: PRs with **unsigned** runner-side commits are held by `required_signatures` (by
-   design — owner YubiKey flow; the archive lane avoids it via API-created, GitHub-signed commits).
+   design — Overtoad YubiKey flow; the archive lane avoids it via API-created, GitHub-signed commits).
 
 ## 9. Quick reference
 
@@ -1118,7 +1118,7 @@ gh run view <run-id>                         # step summary + artifacts
 gh variable set RELEASE_TRAIN_MODE --body off      # quiesce entirely
 gh variable set RELEASE_TRAIN_MODE --body report   # detection only, no writes
 
-# Opt-in write runs (owner)
+# Opt-in write runs (Overtoad)
 gh workflow run release-train.yml -f mode=propose  -f packages=juniper-observability   # Gate 1 PRs
 gh workflow run release-train.yml -f mode=ceremony -f packages=juniper-observability   # archive PR + Release -> Gate 2
 

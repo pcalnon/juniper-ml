@@ -7,7 +7,7 @@ Author:      Paul Calnon
 Created:     2026-10-08
 Version:     1.0.0
 Status:      ad-hoc -- fixture generator (Phase B round-4 fold-in, lane C1; R4A D-2)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     tests/fixtures/duplicati_2.4.0.0_server_options.txt (what it writes)
              tests/test_duplicati_wrapper_contract.py (WrapperEnvContract pins the wrapper's lists to it)
 

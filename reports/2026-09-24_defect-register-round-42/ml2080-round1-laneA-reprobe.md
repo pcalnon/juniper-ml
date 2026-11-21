@@ -55,7 +55,7 @@
 | 22 | B13: `APD-ML-007` | `ceremony.py:462` and `:1011` confirmed. The release was published 08:52:14Z at `39d1cab2`, and the next main commit is at 08:57:15Z. The notes equal the `[0.16.0]` section's 244 non-blank lines in order, with 15 bullets and 4 blanks dropped. `--target-sha` is opt-in, nothing checks the root, and the first heading is used. | REPRODUCED (NIT N4) |
 | 23 | B14: `docs/REFERENCE.md` and the §5.1 `APD-ECO-008` row | `docs-full-check.yml` has no `if:` anywhere, and its link check (`:125`) runs before the drift step (`:256`). `release-train.yml` clones siblings. `ci.yml:500` runs the test without them. On a synthetic root with canopy missing: `FAILED (failures=2)`. | REPRODUCED |
 | 24 | A-nit: `APD-ML-008`, "would skip only those forks' sites: `OK (skipped=3)`" (L1305) | The count is right, but every fork site is skipped, canopy's included. | **PARTLY REFUTED** (L1) |
-| 25 | Owner rulings "verbatim" (L1494-1504) | Labels, sessions and times all match the transcripts (07:32:48Z `bc31e993`, 07:53:26Z `8f86dec2`). Both descriptions are truncated. | REPRODUCED (NIT N5) |
+| 25 | The Overtoad rulings "verbatim" (L1494-1504) | Labels, sessions and times all match the transcripts (07:32:48Z `bc31e993`, 07:53:26Z `8f86dec2`). Both descriptions are truncated. | REPRODUCED (NIT N5) |
 | 26 | The rejection reasons | B12 holds: the checksum already differed from served bytes at `v0.15.0`. B15 holds. The APD-ML-008 A-nit's reason is imprecise. | Mixed (NIT N6) |
 | 27 | "all 26 archived reports equal their agents' last messages" | Not re-derived. | NO ARTIFACT |
 
@@ -152,7 +152,7 @@ Fix, same line with no move: L5838 → `assert first.headers["etag"] == second.h
 - **N2**, L997: "until juniper-ml#2059 (`APD-ECO-008`, closed 2026-09-24)". #2059 merged 2026-09-23 22:57Z; 2026-09-24 is the row's close date (#2074).
 - **N3**, L766: "it is the only commit to touch the primer since" has been false since #2075, which merged 7 minutes later but moved no line. Say "to move a line".
 - **N4**, L1304: "juniper-ml#2071 then added `--target-sha`". #2071 merged 52 s *before* the cut.
-- **N5**, L1496-1500: both owner-ruling descriptions are silently truncated; the first is presented as what it "reads". The omitted sentences are "This extends your 'follows the loaded data' ruling to each partition…" and "Smallest change, never under-reports…". The full text is in `owner-rulings-verbatim.md`. Add "…".
+- **N5**, L1496-1500: both Overtoad-ruling descriptions are silently truncated; the first is presented as what it "reads". The omitted sentences are "This extends your 'follows the loaded data' ruling to each partition…" and "Smallest change, never under-reports…". The full text is in `Overtoad-rulings-verbatim.md`. Add "…".
 - **N6**, `ml_register_fixforward_pr_body.md`: the rejection "the sentence is about CI, where the step never runs" is wrong about CI as a whole. `ci.yml:500` runs the file, so `SharedPackageGuardTest` runs in CI; only `docs-full-check.yml`'s step never runs. The fix-forward's own `docs/REFERENCE.md` L2975 says this.
 - **N7**, L182: "round 42 added `APD-DATA-055` and `APD-DATA-057`". `-057` was filed by the fix-forward, as L177 says.
 - **N8**, L766 (context only, not false): `68f62f5b` had deleted the four-line block that #1098 restored. So the creation anchors are three short relative to #1080 too, which the note does not explain.
@@ -193,7 +193,7 @@ Written for this lane:
   - `laneA_drift_skip_probe.py`
   - `laneA_data057_interleave.py`
   - `laneA_served_bytes_vs_checksum.py`
-- **Transcripts:** `laneA_owner_rulings.py`
+- **Transcripts:** `laneA_Overtoad_rulings.py`
 - **Primer:**
   - `laneA_primer_invariance.py`
   - `laneA_primer_classify2.py`

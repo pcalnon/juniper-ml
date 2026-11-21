@@ -2,7 +2,7 @@
 """
 Run CI's two sequence-safety screens on the carrier's uncommitted tree, through a `git commit-tree` probe.
 
-The carrier is never committed by its builder (a signed commit needs the owner's key), but both screens compare
+The carrier is never committed by its builder (a signed commit needs the Overtoad's key), but both screens compare
 two commits. So the working tree is written as a tree object through a THROWAWAY index (the checkout's own index
 and HEAD are not touched), and `git commit-tree` makes one unsigned, never-pushed, unreferenced commit of it on
 top of --base. The screens then run exactly as ci.yml runs them:
@@ -24,7 +24,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier, round 2 of its build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: .github/workflows/ci.yml (the two screens); auto-memory reference_sequence_safety_local_repro.md
 """
 

@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-10-08
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `util/open_signed_pr.py` (whose `create_branch` / `create_signed_commit` this reuses),
          `2026-09-08_push_signed_commit.py` (APPENDS to a branch; this REPLACES its history)
 
@@ -58,13 +58,13 @@ sys.modules["open_signed_pr"] = osp
 _SPEC.loader.exec_module(osp)
 
 
-def branch_tip(owner: str, repo: str, branch: str) -> str:
-    return osp.gh(["api", f"repos/{owner}/{repo}/git/ref/heads/{branch}", "--jq", ".object.sha"]).strip()
+def branch_tip(Overtoad: str, repo: str, branch: str) -> str:
+    return osp.gh(["api", f"repos/{Overtoad}/{repo}/git/ref/heads/{branch}", "--jq", ".object.sha"]).strip()
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", required=True)
     ap.add_argument("--pr", type=int, required=True)
     ap.add_argument("--expect-tip", required=True, help="the PR branch's current tip (full sha)")
@@ -76,20 +76,20 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args(argv)
 
-    owner, repo = args.owner, args.repo
-    pr = osp.json.loads(osp.gh(["api", f"repos/{owner}/{repo}/pulls/{args.pr}"]))
+    Overtoad, repo = args.Overtoad, args.repo
+    pr = osp.json.loads(osp.gh(["api", f"repos/{Overtoad}/{repo}/pulls/{args.pr}"]))
     if pr["state"] != "open":
         print(f"REFUSED: {repo}#{args.pr} is {pr['state']}")
         return 1
-    if pr["head"]["repo"]["full_name"] != f"{owner}/{repo}":
+    if pr["head"]["repo"]["full_name"] != f"{Overtoad}/{repo}":
         print("REFUSED: head branch lives in another repository")
         return 1
     branch, base = pr["head"]["ref"], pr["base"]["ref"]
-    tip = branch_tip(owner, repo, branch)
+    tip = branch_tip(Overtoad, repo, branch)
     if tip != args.expect_tip:
         print(f"REFUSED: {branch} tip is {tip}, expected {args.expect_tip} (PR object says {pr['head']['sha']})")
         return 1
-    base_sha = osp.resolve_base_sha(owner, repo, base)
+    base_sha = osp.resolve_base_sha(Overtoad, repo, base)
     if args.base_sha and base_sha != args.base_sha:
         print(f"REFUSED: {base} is at {base_sha}, expected {args.base_sha}")
         return 1
@@ -111,23 +111,23 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     tmp = f"flood3-tmp/{repo}-pr{args.pr}-{int(time.time())}"
-    osp.create_branch(owner, repo, tmp, base_sha)
+    osp.create_branch(Overtoad, repo, tmp, base_sha)
     try:
-        oid = osp.create_signed_commit(owner, repo, tmp, args.message, additions, base_sha, deletions=args.delete or None, commit_body=body)
-        now = branch_tip(owner, repo, branch)
+        oid = osp.create_signed_commit(Overtoad, repo, tmp, args.message, additions, base_sha, deletions=args.delete or None, commit_body=body)
+        now = branch_tip(Overtoad, repo, branch)
         if now != args.expect_tip:
             print(f"REFUSED: {branch} moved to {now} while the commit was being built; new commit {oid} left unreferenced")
             return 1
-        osp.gh(["api", "-X", "PATCH", f"repos/{owner}/{repo}/git/refs/heads/{branch}", "-f", f"sha={oid}", "-F", "force=true"])
+        osp.gh(["api", "-X", "PATCH", f"repos/{Overtoad}/{repo}/git/refs/heads/{branch}", "-f", f"sha={oid}", "-F", "force=true"])
     except osp.GhError as exc:
         print(f"FAILED: {exc}")
         return 2
     finally:
         try:
-            osp.gh(["api", "-X", "DELETE", f"repos/{owner}/{repo}/git/refs/heads/{tmp}"])
+            osp.gh(["api", "-X", "DELETE", f"repos/{Overtoad}/{repo}/git/refs/heads/{tmp}"])
         except osp.GhError as exc:
             print(f"warning: could not delete temporary branch {tmp}: {exc}")
-    after = branch_tip(owner, repo, branch)
+    after = branch_tip(Overtoad, repo, branch)
     print(f"RESET {repo}#{args.pr}: {branch} now {after} (signed commit {oid}; base {base_sha[:10]})")
     return 0 if after == oid else 2
 

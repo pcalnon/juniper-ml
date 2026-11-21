@@ -6,7 +6,7 @@
 # Author: Paul Calnon
 # Created: 2026-08-25
 # Status: ad-hoc — investigation (Yamaguchi drill 2 session watcher)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related: util/ad-hoc/duplicati_drill_fresh.py
 #
 # Exists because the worktree-isolation hook refuses compound inline shell, and the

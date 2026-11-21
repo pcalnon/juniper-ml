@@ -33,7 +33,7 @@ listener sits on 8230–8259.
   confirmation "under load". It is not: all 23 teardown SIGTERMs landed **2.0–6.9 s AFTER
   `Training ended`** (`util/ad-hoc/2026-08-26_t6_stop_evidence_scan.py`), `shut down (0.00s)`, zero
   warnings — idle stops. T6 proves the fix is HARMLESS on the idle path; it never exercised the
-  defect path. The T6 owner (`t6 rebaseline [144e1d]`) **accepted the correction in full** and
+  defect path. The T6 Overtoad (`t6 rebaseline [144e1d]`) **accepted the correction in full** and
   reworked their evidence/handoff/PR text.
 - **Landed ml#1397** (MERGED, squash `6c647d43`): §6.6 of the characterisation note, the T6 scan
   tool, the repro's new `candidate_round` trigger + engine-log-signature block + safe
@@ -55,7 +55,7 @@ server-side `gh pr merge --auto` (which **survives the ~3600 s bg-worker lease t
 waiters** — that lease killed two of my `wait_for_checks` runs this session), runs a **bounded**
 update-branch → wait → merge loop, and refuses rather than bypassing. The admin bypass is the class
 of merge (`fresh-but-untested head`) that reddened main in ml#932/#924 (cited in safe_merge's own
-docstring). Do not reach for `--admin` without an explicit owner instruction for that specific PR.
+docstring). Do not reach for `--admin` without an explicit Overtoad instruction for that specific PR.
 
 ---
 

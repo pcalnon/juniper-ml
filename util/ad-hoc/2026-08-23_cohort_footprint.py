@@ -2,7 +2,7 @@
 Aggregate the snapshot archive's disk footprint by classification cohort.
 
 Answers the "how much is actually at stake?" half of the §6.4 retention decision:
-the owner is being asked whether cohort B (truncated writes) may be deleted, and
+the Overtoad is being asked whether cohort B (truncated writes) may be deleted, and
 that question is easier to answer with the byte counts beside the file counts.
 
 Reads only the gitignored ``snapshots_classification.jsonl`` sidecar, which already
@@ -13,7 +13,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-23
 Status: ad-hoc -- one-off (investigation)
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: the §6.4 retention policy is ratified and any retention tool reports
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: the §6.4 retention policy is ratified and any retention tool reports
              its own footprint numbers.
 Related: notes/JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_SNAPSHOT-LIFECYCLE-MANAGEMENT-DESIGN.md
          section "6.4 Phase 4 -- Retention policy"

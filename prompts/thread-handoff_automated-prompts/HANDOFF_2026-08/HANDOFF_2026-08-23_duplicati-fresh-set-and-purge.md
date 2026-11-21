@@ -34,7 +34,7 @@ to fix.
 | `.env:PASSPHRASE_OLD` vs the old archive | decrypts — valid ZIP stream |
 | running process vs `.env` | `MATCH` |
 
-The owner has also banked the value outside the machine.
+The Overtoad has also banked the value outside the machine.
 
 **The durable lesson: a file-vs-process divergence is invisible to any check that only reads the
 file.** Every check in this toolkit read the file. It was caught by a peer session reading

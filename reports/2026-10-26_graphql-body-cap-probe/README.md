@@ -4,7 +4,7 @@
 base64 exceeds `ARCHIVE_B64_MAX_DEFAULT`, because the archive travels inside one `createCommitOnBranch` request
 (juniper-ml#2227). The default was 125,000 B, the figure measured from turing on 2026-10-17 (130,000 B accepted,
 131,000 B refused with HTTP 499). It was later re-diagnosed as turing's weak link: GitHub's GraphQL frontend drops a
-request that runs past about 7-10 s. The owner ruled on 2026-10-18 to keep that conservative default until a
+request that runs past about 7-10 s. The Overtoad ruled on 2026-10-18 to keep that conservative default until a
 runner-side measurement settled the real cap. This directory is that measurement.
 
 ## Result
@@ -24,7 +24,7 @@ There was no boundary to bisect. A variable-padded body is answered with HTTP 20
 "Variable $pad is declared by anonymous query but not used". That is the expected answer, and it proves the whole
 body was received and parsed.
 
-**Consequence.** The owner ruled on 2026-10-26 to raise the default to 1,000,000 B. That is 16x below the largest body
+**Consequence.** The Overtoad ruled on 2026-10-26 to raise the default to 1,000,000 B. That is 16x below the largest body
 the runner was seen to accept, and about 8x the largest archive so far: juniper-ml 0.11.0's 122,032 B came within 7 KB
 of the old cap, and juniper-canopy 0.9.0's 103 KB notes had to be condensed under it.
 
@@ -37,7 +37,7 @@ of the old cap, and juniper-canopy 0.9.0's 103 KB notes had to be condensed unde
   unmerged and both branches were deleted. `runner-run-40410086979.log` is the job's full log. GitHub masks the
   token as `***`, and a scan for token patterns found none.
 - **Host side**: `python3 -I util/ad-hoc/2026-10-26_graphql_body_cap_probe.py --mode both --bisect --json …`, with
-  the owner's `gh` token.
+  the Overtoad's `gh` token.
 
 ## Files
 

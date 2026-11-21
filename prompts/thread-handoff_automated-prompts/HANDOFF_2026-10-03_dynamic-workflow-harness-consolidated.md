@@ -1,6 +1,6 @@
 # HANDOFF 2026-10-03 — dynamic-workflow harness design (CONSOLIDATED): v3 sits UNTRACKED in one worktree, round 2 never relaunched, no PR
 
-> **UPDATE 2026-10-03 — item 0 is DONE.** At the owner's request, the six files went to `main` as v3, still DRAFT. They are byte-for-byte except for two lint fixes CI required. The grounding-inventories record's three site-relative `/docs/en/` links now point at `https://code.claude.com/docs/en/`, and the round-2 record ends with one newline instead of two. They arrived in the signed PR that also added this note. Search `gh pr list --search "dynamic-workflow harness v3"` for the PR, and see the git log of the six paths. The files are therefore no longer a sole copy.
+> **UPDATE 2026-10-03 — item 0 is DONE.** At the Overtoad's request, the six files went to `main` as v3, still DRAFT. They are byte-for-byte except for two lint fixes CI required. The grounding-inventories record's three site-relative `/docs/en/` links now point at `https://code.claude.com/docs/en/`, and the round-2 record ends with one newline instead of two. They arrived in the signed PR that also added this note. Search `gh pr list --search "dynamic-workflow harness v3"` for the PR, and see the git log of the six paths. The files are therefore no longer a sole copy.
 >
 > What changes for the rest of this file:
 >
@@ -11,7 +11,7 @@
 
 **Consolidated sources**:
 
-- `HANDOFF_2026-09-24_dynamic-workflow-harness-design-round-2-relaunch-and-pr.md` — self-declared "**Written without verification** at the owner's request; every fact below is as the predecessor left it, not re-probed." It is the arc's first handoff, so it has no predecessor. It reached `main` via juniper-ml#2090, merged 2026-09-25T02:02:04Z `[VERIFIED 2026-10-03: gh pr list]`.
+- `HANDOFF_2026-09-24_dynamic-workflow-harness-design-round-2-relaunch-and-pr.md` — self-declared "**Written without verification** at the Overtoad's request; every fact below is as the predecessor left it, not re-probed." It is the arc's first handoff, so it has no predecessor. It reached `main` via juniper-ml#2090, merged 2026-09-25T02:02:04Z `[VERIFIED 2026-10-03: gh pr list]`.
 
 **Supersedes**: the source above.
 **Live probe**: 2026-10-03T08:34:45Z (UTC), from worktree `snappy-strolling-waterfall` after `git fetch origin`; `origin/main` = `afb02801`.
@@ -43,7 +43,7 @@ Continue the dynamic-workflow harness design arc (juniper-ml). The design is a l
 
 **Completed so far** (as of 2026-09-23; nothing has moved since):
 
-- Design **v3** at `notes/JUNIPER_2026-09-22_JUNIPER-ML_DYNAMIC-WORKFLOW-HARNESS-DESIGN.md`. Header verified: "Document Version: v3"; "Status: DRAFT — consensus round 1 complete … round 2 on the corrections pending; owner decisions D-1..D-12 (§10) open"; "Measured at: juniper-ml `25b78f55` (#2013); Claude Code `2.1.280`" `[VERIFIED 2026-10-03: head of file]`. Round 1 ran Lane A ×3 and Lane B ×2.
+- Design **v3** at `notes/JUNIPER_2026-09-22_JUNIPER-ML_DYNAMIC-WORKFLOW-HARNESS-DESIGN.md`. Header verified: "Document Version: v3"; "Status: DRAFT — consensus round 1 complete … round 2 on the corrections pending; Overtoad decisions D-1..D-12 (§10) open"; "Measured at: juniper-ml `25b78f55` (#2013); Claude Code `2.1.280`" `[VERIFIED 2026-10-03: head of file]`. Round 1 ran Lane A ×3 and Lane B ×2.
   Every finding was either applied or recorded: Appendix D maps Lane A (29 rows) and Appendix E maps Lane B (30 rows). The v3 changes are the controller (timer plus one `-p` child per cycle), worktrees created by code in the task's repo, and V3's B3 gate amended to a patch-id test (D-12). D-7 is retired. `[UNVERIFIED — from
   HANDOFF_2026-09-24_dynamic-workflow-harness-design-round-2-relaunch-and-pr.md, which was not validated]`
 - `notes/JUNIPER_2026-09-23_JUNIPER-ML_DYNAMIC-WORKFLOW-HARNESS-CONSENSUS-ROUND-1-RECORD.md`: five reports (A1, A2, A3, B2, B1) plus Lane A and Lane B reconciliation sections `[VERIFIED 2026-10-03: grep "^## " headings]`. That the reports are verbatim copies is `[UNVERIFIED — from HANDOFF_2026-09-24_dynamic-workflow-harness-design-round-2-relaunch-and-pr.md, which was not validated]`.
@@ -54,14 +54,14 @@ Continue the dynamic-workflow harness design arc (juniper-ml). The design is a l
 
 **Remaining work** (ordered):
 
-0. **Secure the sole copy** (agent-doable; no blocker). This runs before any agent launch. Open the PR as a draft or WIP **now** with the six files, using `util/open_signed_pr.py` (item 4's mechanics). Alternatively, if the owner prefers, push the files to a backup branch through the signed API path. Either way the content gets a remote copy. Then iterate v4 onto that branch. If the owner wants no
-   PR until v4 exists, then at minimum copy the six files to a durable non-`/tmp` location the owner names. **Do not move or delete them from the worktree.** `[VERIFIED 2026-10-03: sole copy, see banner]`
+0. **Secure the sole copy** (agent-doable; no blocker). This runs before any agent launch. Open the PR as a draft or WIP **now** with the six files, using `util/open_signed_pr.py` (item 4's mechanics). Alternatively, if the Overtoad prefers, push the files to a backup branch through the signed API path. Either way the content gets a remote copy. Then iterate v4 onto that branch. If the Overtoad wants no
+   PR until v4 exists, then at minimum copy the six files to a durable non-`/tmp` location the Overtoad names. **Do not move or delete them from the worktree.** `[VERIFIED 2026-10-03: sole copy, see banner]`
 1. **Relaunch round 2** (agent-doable; blocked only by account usage limits). Launch two `general-purpose` agents together, never more than three at once. They are read-only with respect to the repo and `~/.claude`, write scratch only under the session scratchpad, and the artifact stays frozen while they run. Both briefs are reproduced in full under *Context → Round-2 briefs* below. If a launch
    dies with `You've hit your session limit · resets HH:MM`, wait for the reset and `SendMessage` the **same** agent ids ("continue from where you stopped, deliver the FINAL REPORT"). Do not relaunch within the session. The predecessor's dead round-2 ids cannot be resumed from a new session. `[UNVERIFIED — from HANDOFF_2026-09-24_dynamic-workflow-harness-design-round-2-relaunch-and-pr.md, which
    was not validated]`
 2. **Archive and reconcile** (agent-doable). Command: `python3 util/ad-hoc/2026-09-23_archive_subagent_reports.py --session-dir ~/.claude/projects/<slug>/<session-id> --out notes/JUNIPER_2026-09-23_JUNIPER-ML_DYNAMIC-WORKFLOW-HARNESS-CONSENSUS-ROUND-2-RECORD.md --agent <id>="A — round 2 — execution" --agent <id>="B — round 2 — refutation of the corrections"`. **`[CHANGED SINCE HANDOFF: slug]`**
    The source said a worktree session's slug is `-home-pcalnon-Development-python-Juniper-juniper-ml--claude-worktrees-<name>`. The predecessor's own worktree session transcript actually lives under the **main-repo** slug `-home-pcalnon-Development-python-Juniper-juniper-ml/bb39e9fe-…`. So `ls -d ~/.claude/projects/*/<session-id>` to find it rather than constructing it. Next, add a
-   "Reconciliation" section that follows `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` §5: re-derive every lone load-bearing finding by opening the artifact, and record dissent. Then apply all accepted findings **in one pass** as **v4**, with an **Appendix F** map. Update the design header (Version; Status → "DRAFT — rounds 1–2 applied; awaiting owner rulings
+   "Reconciliation" section that follows `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` §5: re-derive every lone load-bearing finding by opening the artifact, and record dissent. Then apply all accepted findings **in one pass** as **v4**, with an **Appendix F** map. Update the design header (Version; Status → "DRAFT — rounds 1–2 applied; awaiting Overtoad rulings
    D-1..D-12"), the design's §0 round table and §12: add a round-2 row plus the §7 minimum record of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` (instruments, sample size, agents/entry points, iterations and what the last one changed, unresolved dissent, what the evidence cannot support). **Run round 3 only if round 2 changed a number, a disposition or an
    action** (`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` §4).
 3. **Gates before un-drafting the PR** (agent-doable):
@@ -70,13 +70,13 @@ Continue the dynamic-workflow harness design arc (juniper-ml). The design is a l
    - §6.2 script wrapped-parse with `node --check`. The predecessor's checker lived in a dead scratchpad, so recreate it: regex-extract the ```javascript fence, wrap it as `async function run(args, agent, pipeline, parallel, log) { … }`, and turn `export const meta` into `const meta`. Node v24.13.1 and jq 1.8.1 are present `[VERIFIED 2026-10-03: --version]`.
    - `juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude pull_requests --exclude releases --exclude analysis --exclude fixes --exclude development --exclude CHANGELOG.md --cross-repo skip` (binary under `/opt/miniforge3/envs/JuniperCascor1/bin/`).
    - `notes/` is exempt from markdownlint.
-4. **Open the design PR** (agent-doable; merge is owner-gated). Run `util/open_signed_pr.py` from `origin/main`; local commits hang on signing. Args: `--repo juniper-ml --branch design/dynamic-workflow-harness --add <local>:<repo path>` for the six files, `--title "docs(design): dynamic-workflow harness — limit-paced, goal-driven agent dispatch (consensus rounds 1-2)"`, `--body-file <scratch>/body.md`.
+4. **Open the design PR** (agent-doable; merge is Overtoad-gated). Run `util/open_signed_pr.py` from `origin/main`; local commits hang on signing. Args: `--repo juniper-ml --branch design/dynamic-workflow-harness --add <local>:<repo path>` for the six files, `--title "docs(design): dynamic-workflow harness — limit-paced, goal-driven agent dispatch (consensus rounds 1-2)"`, `--body-file <scratch>/body.md`.
    - **The branch must not already exist**: `open_signed_pr.py` refuses an existing branch, and `--append`, `--reuse` and `--expect-base` do not exist. If item 0 already opened that branch, later uploads need another path, e.g. a GraphQL `createCommitOnBranch` commit. `[VERIFIED 2026-10-03: grep open_signed_pr.py — find_open_pr at :175, called :251; no --append/--reuse/--expect-base]` `design/dynamic-workflow-harness` does not exist locally or on origin `[VERIFIED 2026-10-03: git branch -a]`.
    - The **handoff no longer needs uploading**. **`[CHANGED SINCE HANDOFF]`** It is already on main via #2090.
-   - Body contents: summary; the twelve decisions D-1..D-12 as the ask; **name every document** (the design, three records, both scripts, plus the source handoff and this consolidated handoff as context); note that the seed branch `design/dynamic-workflow` (`27ea09a1`) is superseded by Appendix A and can be deleted after merge (owner's call); `## Requirements`: no JR id identified, and say so rather than invent one; end with the attribution lines in force.
+   - Body contents: summary; the twelve decisions D-1..D-12 as the ask; **name every document** (the design, three records, both scripts, plus the source handoff and this consolidated handoff as context); note that the seed branch `design/dynamic-workflow` (`27ea09a1`) is superseded by Appendix A and can be deleted after merge (Overtoad's call); `## Requirements`: no JR id identified, and say so rather than invent one; end with the attribution lines in force.
    - **Do not merge; do not delete any branch.**
-5. **After the PR** (agent-doable): rewrite memory `project_dynamic_workflow_harness_design_2026-09-23.md` and its `MEMORY.md` line. **`[CHANGED SINCE HANDOFF: memory is staler than the source says]`** The memory still records "**v2**" and "Ten owner decisions D-1..D-10", but the design is v3 with D-1..D-12 `[VERIFIED 2026-10-03: read memory file]`. Update both to the PR number and v4. Leave the worktree in place until the PR merges, then follow the cleanup procedure.
-6. **Owner rulings D-1..D-12** (owner-gated; not agent work). D-10 is go/no-go after P0 measures tokens-per-percent (`k`), because the weekly window bounds throughput and `k` has never been measured (memory file); the source's Lane A brief asserts §0 of `JUNIPER_2026-09-22_JUNIPER-ML_DYNAMIC-WORKFLOW-HARNESS-DESIGN.md` states P0's exemption. `[UNVERIFIED — from HANDOFF_2026-09-24_dynamic-workflow-harness-design-round-2-relaunch-and-pr.md and memory, not validated]`
+5. **After the PR** (agent-doable): rewrite memory `project_dynamic_workflow_harness_design_2026-09-23.md` and its `MEMORY.md` line. **`[CHANGED SINCE HANDOFF: memory is staler than the source says]`** The memory still records "**v2**" and "Ten Overtoad decisions D-1..D-10", but the design is v3 with D-1..D-12 `[VERIFIED 2026-10-03: read memory file]`. Update both to the PR number and v4. Leave the worktree in place until the PR merges, then follow the cleanup procedure.
+6. **The Overtoad rulings D-1..D-12** (Overtoad-gated; not agent work). D-10 is go/no-go after P0 measures tokens-per-percent (`k`), because the weekly window bounds throughput and `k` has never been measured (memory file); the source's Lane A brief asserts §0 of `JUNIPER_2026-09-22_JUNIPER-ML_DYNAMIC-WORKFLOW-HARNESS-DESIGN.md` states P0's exemption. `[UNVERIFIED — from HANDOFF_2026-09-24_dynamic-workflow-harness-design-round-2-relaunch-and-pr.md and memory, not validated]`
 
 **Key context**: see the sections below. Do not re-derive the design facts listed there.
 
@@ -99,7 +99,7 @@ Continue the dynamic-workflow harness design arc (juniper-ml). The design is a l
 
    List undefined identifiers. Judge whether §6.4's "⌈launched/2⌉+… concretely 2 of 3, or 1 of 1" is a computable rule.
 2. Implement §8.1–§8.2 exactly as written, and list every invented detail. Fixtures:
-   - (a) `u5=23.5 r5=4h, u7=41.2 r7=3d, k=100000`, tasks S,S,M,L, `m=1.2`, timer 600 s, 40 ticks with no owner consumption: find the first S/M dispatch tick.
+   - (a) `u5=23.5 r5=4h, u7=41.2 r7=3d, k=100000`, tasks S,S,M,L, `m=1.2`, timer 600 s, 40 ticks with no Overtoad consumption: find the first S/M dispatch tick.
    - (f) A 5-hour reset between ticks: is "`A_w := 0` then accrue only from `resets_at_old`" unambiguous?
    - (g) `u7=92, r7=26h` and `u7=100` must both give exit 3 `weekly_wall`.
    - (h) A stale odometer with a future fallback reset: is "that window is at its wall until then" computable?
@@ -142,8 +142,8 @@ Continue the dynamic-workflow harness design arc (juniper-ml). The design is a l
 3. Code-created worktrees plus `dispatch-executor` without isolation: where a relative-path habit writes into the main checkout or tests the wrong tree; regression vs v2's isolation for juniper-ml tasks.
 4. The docs-branch model (§6.5) across the first squash merge: conflicts; the docs screen and Sequence Safety on the reopened PR; who resets the branch; `one_pr_per_work_unit`; PR-storm lessons (`notes/JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`).
 5. §4.3 case 2 vs case 3 liveness: is case 2 dead code, and can a human produce the suffix accidentally?
-6. `VERIFY_PENDING` plus one refuter in the docs pilot: a single false refutation blocks a task, so what does the owner see?
-7. Own-token debit vs account-wide `H_w`: construct the case where `A_w` exceeds true headroom after heavy owner use; post-reset front-loading; jitter for 5-hour resets.
+6. `VERIFY_PENDING` plus one refuter in the docs pilot: a single false refutation blocks a task, so what does the Overtoad see?
+7. Own-token debit vs account-wide `H_w`: construct the case where `A_w` exceeds true headroom after heavy Overtoad use; post-reset front-loading; jitter for 5-hour resets.
 8. Calibration resolution: what `k` range can a 250 K burst resolve, given the status line's decimal granularity (`23.5` observed)? Does D-10's threshold fall inside it?
 9. Is "loses the `/workflows` live view" over- or under-claimed (stream-json subagent messages, `parent_tool_use_id`)?
 10. Appendix E rows 2, 4, 14, 16, 19 and 27 vs the text.
@@ -219,6 +219,6 @@ As probed 2026-10-03T08:34Z:
 - Worktree `structured-inventing-fairy`: branch `worktree-structured-inventing-fairy` at `25b78f55`. It holds the six untracked files listed in the banner, plus `util/ad-hoc/2026-09-22_archive_consensus_reports.py` (identical to main) and a copy of the 09-24 handoff (on main via #2090). Running `git status` was not possible from this isolated session, and file content was inferred via
   `ls`/`find`/`diff`, so the next thread should run `git status --short` there. Nothing was ever staged or committed per the source.
 - `design/dynamic-workflow` at `27ea09a1`, local and origin: the seed, untouched.
-- `origin/docs/handoff-dynamic-workflow-harness-round-2` at `5085cfba`: #2090's merged head. It is deletable by the owner; it is not this arc's design branch.
+- `origin/docs/handoff-dynamic-workflow-harness-round-2` at `5085cfba`: #2090's merged head. It is deletable by the Overtoad; it is not this arc's design branch.
 - `design/dynamic-workflow-harness`: does **not** exist (item 4 will create it).
 - This consolidation: worktree `snappy-strolling-waterfall`, branch `docs/handoff-consolidation-2026-10-03`. It is uncommitted; the coordinator owns its commit.

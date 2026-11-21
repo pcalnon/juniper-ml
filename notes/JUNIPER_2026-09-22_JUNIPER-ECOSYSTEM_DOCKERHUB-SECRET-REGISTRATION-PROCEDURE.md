@@ -1,13 +1,13 @@
-# Docker Hub Secret Registration — Owner Procedure (Wave 4 unblock)
+# Docker Hub Secret Registration — The Overtoad Procedure (Wave 4 unblock)
 
 **Project:** Juniper (ecosystem-wide)
 **Author:** Paul Calnon
 **Date:** 2026-09-22
-**Status:** READY TO EXECUTE — owner action. **§3 RULED 2026-09-22: Option B**, a dedicated
+**Status:** READY TO EXECUTE — Overtoad action. **§3 RULED 2026-09-22: Option B**, a dedicated
 `dockerhub` environment, so §5.2B is the path and §5.2A is not used. **§5.2B steps 1–2 DONE
 2026-09-22 in all five repos**: each `dockerhub` environment exists, admits tags `v*` and
 `juniper-*-v*` only, and has no reviewer, no wait timer and no secrets yet (verified under §6). The
-owner actions still outstanding, in order. Run every command in **your own terminal**, never through
+Overtoad actions still outstanding, in order. Run every command in **your own terminal**, never through
 a Claude session. A `!` command there has no terminal for the hidden prompts, and any workaround
 puts the token in the session transcript.
 
@@ -36,7 +36,7 @@ Wave 4 adds `docker.io` as a **second** push target beside GHCR (plan D-2 phase 
 words on sequencing, as they read before its 2026-09-22 amendment, which changed "repository
 secret" to "secret":
 
-> **Owner action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
+> **The Overtoad action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
 > `DOCKERHUB_USERNAME`) repository secret in each of the five image repos […] **Until those
 > exist the second login+push cannot be added, and adding it early would fail every release.**
 
@@ -54,7 +54,7 @@ the Release has already been cut.
 
 ---
 
-## 2. Preconditions the owner must supply
+## 2. Preconditions the Overtoad must supply
 
 These are **not** discoverable from the repos. A sweep for `docker.io/`, `dockerhub` and
 `DOCKERHUB_` across all six image-bearing repos (2026-09-22) found **no existing Docker Hub
@@ -63,10 +63,10 @@ integration at all** — the only `docker.io` hit is buildx error text quoted in
 
 | precondition | why it matters | status |
 | --- | --- | --- |
-| A Docker Hub account exists | the namespace `docker.io/<user>/<image>` is derived from it | **UNKNOWN — owner must confirm** |
+| A Docker Hub account exists | the namespace `docker.io/<user>/<image>` is derived from it | **UNKNOWN — Overtoad must confirm** |
 | Its **username**, exactly as Docker Hub spells it | becomes `DOCKERHUB_USERNAME`; Docker Hub usernames are lowercase and this is the push namespace, not a display name | **UNKNOWN** |
 | The account tier | Personal (free) is sufficient — see §9 | assumed Personal |
-| Five repositories exist or can be auto-created on first push | Personal allows **unlimited public** repos. A first push creates the repository with the namespace's **default privacy** | **owner: confirm the default is Public** (note below), or pre-create the five as public |
+| Five repositories exist or can be auto-created on first push | Personal allows **unlimited public** repos. A first push creates the repository with the namespace's **default privacy** | **Overtoad: confirm the default is Public** (note below), or pre-create the five as public |
 
 > **Where the default lives** (Docker's Hub *Settings* page,
 > <https://docs.docker.com/docker-hub/settings/>, read 2026-09-23): sign in to
@@ -81,7 +81,7 @@ integration at all** — the only `docker.io` hit is buildx error text quoted in
 
 ## 3. RULED 2026-09-22 — Option B: environment secrets in a dedicated `dockerhub` environment
 
-> **Owner ruling, 2026-09-22: Option B.** The credential lives in a `dockerhub` environment in
+> **The Overtoad ruling, 2026-09-22: Option B.** The credential lives in a `dockerhub` environment in
 > each of the five repositories, restricted to release tags, with no reviewer and no wait timer.
 > Register it with §5.2B; §5.2A is not used. This supersedes the plan's *"repository secret"*
 > (plan §6 OQ-1, amended the same day).
@@ -92,7 +92,7 @@ integration at all** — the only `docker.io` hit is buildx error text quoted in
 > still holds, because the correction changes **where** Wave 4 names the environment, not what
 > the environment protects. See *Cost — corrected 2026-09-22* under Option B.
 
-The plan said *"repository secret"*. This procedure recommended against that, and the owner
+The plan said *"repository secret"*. This procedure recommended against that, and the Overtoad
 agreed. Both options stay written out below as the record of what was weighed.
 
 ### The problem with a repository secret
@@ -131,7 +131,7 @@ No workflow change beyond the eventual login step. Registration: §5.2A.
 
 Create an environment named `dockerhub` with a **branch policy of tags only** (`v*` plus the
 `juniper-*-v*` family, mirroring `pypi`), and **no required reviewer and no wait timer** — the
-Release is already an owner action, so a second manual gate on every image publish buys nothing
+Release is already an Overtoad action, so a second manual gate on every image publish buys nothing
 and delays every publish by 5 minutes.
 
 **Cost — corrected 2026-09-22.** This paragraph first said the Wave 4 change would add
@@ -614,7 +614,7 @@ The plan's OQ-1 table was read on 2026-09-11. Re-checked today against
 | *a pull is counted once per **architecture*** | plan asserts this | **confirmed 2026-09-22** on the pulls page (quoted below) |
 
 This table's last row said *"NOT confirmed"* until round 2 of the validation recorded in
-`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_worker-0-6-1-shipped-equities-joins-the-data-image-lock-and-wave-4-waits-on-the-owner-token.md`.
+`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_worker-0-6-1-shipped-equities-joins-the-data-image-lock-and-wave-4-waits-on-the-Overtoad-token.md`.
 Only the usage page had been read, and the pulls page answers it: *"A pull for a multi-arch image
 will count as one pull for each different architecture."* Two more points:
 
@@ -658,10 +658,10 @@ can be rotated independently.
 | ~~Create the five `dockerhub` environments and their tag rules (§5.2B steps 1–2)~~ | **DONE 2026-09-22**; read back under §6 |
 | Where Wave 4 names the environment (§3, §7) | Wave 4 design: a release-only job (shape 1), or a conditional name once proven (shape 2) |
 | ~~A drift gate for `dockerhub` (§6)~~ | **DONE 2026-09-23**: `tests/test_publish_env_policy_drift.py` checks §5.1's five with their own tag set, the repository scope, and every other repository. It is a local gate; §6 has the command |
-| The Docker Hub account, its username, and public-by-default repositories (§2) | owner — not discoverable from the repos |
-| `DOCKERHUB_USERNAME`: variable or secret (§5.2B step 3a) | owner, before step 3. A variable is recommended; Wave 4 reads `vars.` or `secrets.` to match |
-| CI token expiry date (§4) | **not set yet**. The owner tells the working session, which records it here by PR, or edits this row |
-| Whether `juniper-deploy-test` should also publish to Docker Hub (§5.1) | owner — it is a test runner, not a service image |
+| The Docker Hub account, its username, and public-by-default repositories (§2) | Overtoad — not discoverable from the repos |
+| `DOCKERHUB_USERNAME`: variable or secret (§5.2B step 3a) | Overtoad, before step 3. A variable is recommended; Wave 4 reads `vars.` or `secrets.` to match |
+| CI token expiry date (§4) | **not set yet**. The Overtoad tells the working session, which records it here by PR, or edits this row |
+| Whether `juniper-deploy-test` should also publish to Docker Hub (§5.1) | Overtoad — it is a test runner, not a service image |
 | Pi-node `docker login` (§9) | deployment work, tracked against OQ-3, using a **separate read-only** token, never the CI one. Its expiry goes here too |
 
 ---

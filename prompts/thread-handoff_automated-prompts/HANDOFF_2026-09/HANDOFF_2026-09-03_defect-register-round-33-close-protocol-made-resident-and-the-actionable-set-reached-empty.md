@@ -1,4 +1,4 @@
-# HANDOFF 2026-09-03 — round 33: the close protocol had no residency, "parked" had three definitions, and the actionable-without-the-owner set reached empty
+# HANDOFF 2026-09-03 — round 33: the close protocol had no residency, "parked" had three definitions, and the actionable-without-the-Overtoad set reached empty
 
 The standing mandate is unchanged: keep closing entries in the ecosystem defect register
 (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`, ml#1092), one small reviewable PR
@@ -23,17 +23,17 @@ were both mis-scoped, and that the protocol governing the whole mandate had stop
 ## 0. Remaining work
 
 1. **Successor, first — validate this document (§7).** Then read §1.
-2. **Every remaining decision is the owner's. There is no code a session may write unasked.** This
+2. **Every remaining decision is the Overtoad's. There is no code a session may write unasked.** This
    is the round's headline and it is a *finding*, not a blocker: 78 of 96 rows are closed, and what
    is left is 16 parked rows plus 2 unparked ones that still need a decision before any code. The
-   four asks are in §3, already put to the owner in-session. **Do not "make progress" by picking
+   four asks are in §3, already put to the Overtoad in-session. **Do not "make progress" by picking
    one.** The register records this at its § *"Parked" has three shapes*.
-3. **If the owner answers `APD-DATA-018`** (rows-vs-bytes **and** rejection-vs-truncation for the
+3. **If the Overtoad answers `APD-DATA-018`** (rows-vs-bytes **and** rejection-vs-truncation for the
    `csv_import` cap): note the equities sub-case is **not** one constant.
    `juniper-data/juniper_data/generators/equities/generator.py:264` is a bare slice that silently
    truncates, so a finite `EQUITIES_DEFAULT_MAX_SYMBOLS` needs a reject-or-report path beside it. A
    *rejecting* cap adds a status code, which entangles parked `APD-DATA-022`.
-4. **If the owner answers `APD-ECO-003`**: the row has **two halves**, and only the second was ever
+4. **If the Overtoad answers `APD-ECO-003`**: the row has **two halves**, and only the second was ever
    worked. `notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md:378`
    prescribes *"Set a timeout, and split it"* (connect / read / write / pool) — untouched in **all
    three** clients, the "already shipped" recurrence arm included. And `juniper-cascor-client` has
@@ -42,11 +42,11 @@ were both mis-scoped, and that the protocol governing the whole mandate had stop
    can take the kwarg. `juniper-data-client` is already the recurrence shape (`client.py:302`).
 5. **Carried, all verified live 2026-09-03, none actioned** — `juniper-observability` is at `0.4.0`
    with four `### Fixed` bullets unreleased (content-determined bump: **PATCH 0.4.1**; a release is
-   an owner approval); `juniper-data#317` is an **open duplicate** of the `arc_agi` finding, filed
+   an Overtoad approval); `juniper-data#317` is an **open duplicate** of the `arc_agi` finding, filed
    ~54 min before data#318 was created, and #318 does not reference it; the worktree
    `worktrees/juniper-cascor-client--fix--503-branch-unreachable--20260821-1619--8a34b3a1` is 13
    days stale with local **and** origin branches extant (PR#124 merged) — untouched because
-   `git worktree remove` deletes ignored files porcelain cannot see, and there is no owner signal.
+   `git worktree remove` deletes ignored files porcelain cannot see, and there is no Overtoad signal.
 6. **Carried from the predecessor's §5.6, with corrections**: two of its carries are themselves
    stale — `recurrence app/model py.typed` has been **fixed since 2026-06-25** (markers on disk
    *and* declared in `[tool.setuptools.package-data]`), carried as missing for ~10 weeks; and the
@@ -114,7 +114,7 @@ recorded as **§9 of the predecessor**, not only here.
   rankings need re-reading after a close; grep will never route you to them.
 - **Both nominated "cheap" rows were mis-scoped** (§0.3, §0.4 above).
 
-**The four owner asks, put in-session:** `APD-DATA-018` (rows-vs-bytes **and**
+**The four Overtoad asks, put in-session:** `APD-DATA-018` (rows-vs-bytes **and**
 rejection-vs-truncation); `APD-DATA-019` (`total` estimated, cached or absent — the last is a
 response-shape change for existing clients); `APD-ECO-003` (is the split-the-timeout half in scope,
 and which of cascor-client's 30 / data-client's 20 public methods warrant the kwarg);
@@ -190,5 +190,5 @@ Attack in this order:
 - [x] Handoff document generated (this file)
 - [ ] PR opened for this document
 - [ ] **Consensus validation of THIS document** (§6) — the successor's first work
-- [ ] **Owner answers pending on four rows** — `APD-DATA-018`, `APD-DATA-019`, `APD-ECO-003`,
+- [ ] **The Overtoad answers pending on four rows** — `APD-DATA-018`, `APD-DATA-019`, `APD-ECO-003`,
       `APD-ECO-001`. Until one lands, there is no register work a session may do unasked.

@@ -7,7 +7,7 @@ Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- investigation (the "CI result" of juniper-data-client#262, juniper-cascor-client#197 and
         juniper-deploy#275)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_py315_pr_ci_result.py (phase 1's collector, which this extends);
          tmp/py315/GREEN_LEGS_BRIEF.md step 6 (what to verify on the PR's own run)
 
@@ -106,9 +106,9 @@ def main(repo: str, pr: str) -> int:
     print("\n== workflow runs on head ==")
     for w in gh_json("api", f"repos/{full}/actions/runs?head_sha={sha}&per_page=100")["workflow_runs"]:
         print(f"  {w['status']:<11} {str(w['conclusion']):<9} {w['name']}  (run {w['id']}, {w['event']})")
-    owner, name = full.split("/")
-    q = "query($o:String!,$n:String!,$p:Int!){repository(owner:$o,name:$n){pullRequest(number:$p){reviewThreads(first:50){nodes{isResolved comments(first:1){nodes{author{login} path body}}}}}}}"
-    threads = gh_json("api", "graphql", "-f", f"query={q}", "-f", f"o={owner}", "-f", f"n={name}", "-F", f"p={pr}")
+    Overtoad, name = full.split("/")
+    q = "query($o:String!,$n:String!,$p:Int!){repository(Overtoad:$o,name:$n){pullRequest(number:$p){reviewThreads(first:50){nodes{isResolved comments(first:1){nodes{author{login} path body}}}}}}}"
+    threads = gh_json("api", "graphql", "-f", f"query={q}", "-f", f"o={Overtoad}", "-f", f"n={name}", "-F", f"p={pr}")
     nodes = threads["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"]
     print(f"\n== review threads: {len(nodes)} ({sum(1 for t in nodes if not t['isResolved'])} unresolved) ==")
     for t in nodes:

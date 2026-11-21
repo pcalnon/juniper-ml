@@ -6,10 +6,10 @@
   - ml#2534: `CHANGELOG.md` and `docs/REFERENCE.md`. It also makes service-core's next release a minor, 0.8.0 (step 5).
   - ml#2538: `AGENTS.md` and `CHANGELOG.md`.
   - ml#2536: `.github/workflows/lockfile-update.yml`. This file lands in its own PR through `util/open_signed_pr.py` (branch `docs/handoff-r-obs-sc-2-follow-ups-2026-11-12`), which this session merges under its own approval. If that PR is still open, merging it is yours, under your approval.
-**Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-09_r-obs-sc-2-recorded-plan-v1-15-15-owner-items-next.md` (session `09366253`). Its step 1 (post-merge re-check) passed here. Its step 2 (owner items) went to the owner in two rounds: round 1 ruled four items, and round 2's four came back unanswered (both below).
+**Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-09_r-obs-sc-2-recorded-plan-v1-15-15-Overtoad-items-next.md` (session `09366253`). Its step 1 (post-merge re-check) passed here. Its step 2 (Overtoad items) went to the Overtoad in two rounds: round 1 ruled four items, and round 2's four came back unanswered (both below).
 **Already continued, from a draft. `6e3bdef0` owns this arc while it is live.**
 - **Who.** Session `6e3bdef0`: worktree `logical-percolating-sparkle`; it appears as `r-obs-sc-2-follow-ups-four-ruled-four-open` in `ListAgents`.
-- **Grant.** It started at 2026-11-12 00:38:29Z with the owner's grant "approval granted for merging and related git operations for this work arc" (00:39:16Z).
+- **Grant.** It started at 2026-11-12 00:38:29Z with the Overtoad's grant "approval granted for merging and related git operations for this work arc" (00:39:16Z).
 - **What it read.** At 00:40:05Z it took this file's **first, unvalidated draft** from this worktree.
 - **What it started.** By 00:43:54Z it had cut five worktrees under `Juniper/worktrees/` from `origin/main`: `fix/fastapi-telemetry-opt-out` in cascor and canopy (step 3), and `fix/rate-limit-retry-after-round-up` in cascor, canopy and data (step 4).
 - **Un-blanked runs.** Before the corrections reached it, it ran cascor's `src/tests/unit/api/test_api_app.py` twice without blanking the Sentry DSNs (00:48:37Z and 00:48:55Z). Its own probe found that this path never imports `main` and starts no Sentry client, so nothing was sent (its message of 00:52:45Z).
@@ -20,10 +20,10 @@
 
 Continue R-OBS-SC-2's follow-ups. They are recorded in `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` (below, "the plan"), at §5's note on R-OBS-SC-2 ("Follow-ups", "What it leaves open", "No running image carries it yet") and §6's mid-wave sitting ("R-OBS-SC-2's follow-ups").
 
-1. **Your first turn asks the owner three things.** `6e3bdef0` already holds a group grant for this work arc, so for it the first is settled and the other two are not.
+1. **Your first turn asks the Overtoad three things.** `6e3bdef0` already holds a group grant for this work arc, so for it the first is settled and the other two are not.
    - Merge approval for a **named group**: the two telemetry PRs, the three fork RateLimiter PRs, the juniper-ml register-and-guard PR, the `[tools]` floor PR, 0.11.5's proposal and archive PRs, the plan v1.15.16 PR, and this handoff's own PR if it is still open. Approvals are per-session, and this session's ("approval granted for merging and related PR operations", 2026-11-09) does not carry (`feedback_headless_merge_approval_policy.md`).
    - Whether you may cut v0.11.5. Ruling 2 below names "this session" (`a4e1e914`) as the one that cuts.
-   - **What the owner wants clarified about round 2.** On 2026-11-12 the owner sent round 2 back to clarify, then asked for this handoff.
+   - **What the Overtoad wants clarified about round 2.** On 2026-11-12 the Overtoad sent round 2 back to clarify, then asked for this handoff.
 2. Carry out round 1's rulings.
    - Until the plan edit (step 7), they are recorded only here, in this session's transcript, and in the memory file named under "Documents".
    - This session did nothing on them. `6e3bdef0` began steps 3 and 4 at 00:43Z (header).
@@ -37,18 +37,18 @@ Continue R-OBS-SC-2's follow-ups. They are recorded in `notes/JUNIPER_2026-10-04
   - the plan reads `Version**: 1.15.15`;
   - `util/ad-hoc/2026-11-09_r_obs_sc_2_record_reprobe.py` reads 0 FAIL, on 2026-11-09 and again on 2026-11-12.
 - **Peer check, to 2026-11-12 00:48Z.**
-  - `util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py` was run over every transcript written since 2026-11-09 11:00Z: `09366253`, `d0da1827`, `6290230e`, `da0ef143`, `4d06bd18`, `aee58c29`, `07e7105d`, `fbb54863`, `d730b17b` (the backup arc) and `6e3bdef0`.
-  - None asked the owner about these items. Only `6e3bdef0`, this arc's successor (header), acts on them.
+  - `util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py` was run over every transcript written since 2026-11-09 11:00Z: `09366253`, `d0da1827`, `6290230e`, `da0ef143`, `4d06bd18`, `aee58c29`, `07e7105d`, `fbb54863`, `d730b17b` (the backup arc) and `6e3bdef0`.
+  - None asked the Overtoad about these items. Only `6e3bdef0`, this arc's successor (header), acts on them.
   - `4d06bd18`'s O13 ruling (2026-11-09 14:13:29Z, "Date rule, stated") settles which pulls O13 *lists*, not who may move the juniper-ml primary.
   - `07e7105d` (canopy E2E arc, worktree `distributed-giggling-clarke`) has had a question open since 2026-11-12 00:36:37Z: should juniper-ml#2360 land before Phase 16 or stay last? #2360's head `684c9751` is what the juniper-ml primary has checked out (Q4).
   - Open PRs on 2026-11-12: none in juniper-cascor, -canopy, -recurrence, -deploy or -data-client.
     - juniper-data has only Cursor drafts #520–#524. Of them, **data#521** documents the throttle's current `Retry-After` formula, "`max(1, int(window_seconds - elapsed))`", which ruling 3 replaces (step 4).
     - juniper-ml has #2360, #2545 (flood-4's handoff, opened 00:29:06Z) and 40 Cursor drafts. Of the drafts, **#2507** touches `tests/test_pyproject_extras.py`, a co-change file of the floor PR (step 5).
 - **Round 1** was asked at 2026-11-09 14:27:13Z and answered at 14:48:41Z, after each option was checked against the code.
-- **Round 2** was asked at 14:49:42Z. The owner sent it back at 2026-11-12 00:20:11Z ("wants to clarify"), then asked for this handoff, with the open questions documented in it.
+- **Round 2** was asked at 14:49:42Z. The Overtoad sent it back at 2026-11-12 00:20:11Z ("wants to clarify"), then asked for this handoff, with the open questions documented in it.
 - No PR, code change or plan edit besides this file. The memory file is updated (see "Documents").
 
-## Round 1: the owner's rulings (2026-11-09 14:48:41Z; label and option text verbatim)
+## Round 1: the Overtoad's rulings (2026-11-09 14:48:41Z; label and option text verbatim)
 
 1. **Floor PRs** — "In release PRs (Recommended)": "Each consumer's next release/<pkg>-v<ver> bump PR raises the floors: the regen skips release/ branches, and the locks already satisfy the floors. Nothing opens now. Recurrence, which has no regen workflow, follows the same rule." This answers P3 D-03's third part (P3-17). The floors are `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2`, in data, cascor, canopy and recurrence.
 2. **0.11.5** — "Floor PR, then 0.11.5 (Recommended)": "This session opens the floor PR (observability>=0.4.2; service-core>=0.7.2,<0.8.0, whose only module change is the throttle round-up) and merges it once green. Then it proposes and cuts v0.11.5 as a patch, as for 0.11.4, and you approve the pypi gate."
@@ -57,7 +57,7 @@ Continue R-OBS-SC-2's follow-ups. They are recorded in `notes/JUNIPER_2026-10-04
 
 ## Remaining work, in order
 
-1. **First turn**: the three questions in Goal 1, then the verification block below. As soon as the owner says what to clarify, clarify it and re-ask round 2 (next section). That does not wait for steps 2–7.
+1. **First turn**: the three questions in Goal 1, then the verification block below. As soon as the Overtoad says what to clarify, clarify it and re-ask round 2 (next section). That does not wait for steps 2–7.
 2. **How to change a fork.** Never pull a primary checkout or switch its branch.
    - **Get a tree**:
      - **A worktree** under `/home/pcalnon/Development/python/Juniper/worktrees/`, made with exactly two commands:
@@ -107,7 +107,7 @@ Continue R-OBS-SC-2's follow-ups. They are recorded in `notes/JUNIPER_2026-10-04
      - **service-core's `[Unreleased]` says its next release is a minor, 0.8.0** (ml#2534). That is outside ruling 2's `<0.8.0` and every consumer's service-core cap. Those caps widen before that Release (§5: "Cap PRs land before the Release"); record it in v1.15.16.
      - Add a `CHANGELOG.md` `[Unreleased]` entry.
      - juniper-ml's `lockfile-update.yml` runs on schedule or dispatch only, so this PR fires no regen.
-   - **Coordinate with the flood-4 arc** (now session `fbb54863`, worktree `humming-stargazing-papert`). Its ruling 14 on Cursor draft juniper-ml#2507 is "Carry + extend propose.py (Recommended)", the owner's answer to session `d0da1827` at 2026-11-09 00:10:24Z (`notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` §8, "Open items", item 14).
+   - **Coordinate with the flood-4 arc** (now session `fbb54863`, worktree `humming-stargazing-papert`). Its ruling 14 on Cursor draft juniper-ml#2507 is "Carry + extend propose.py (Recommended)", the Overtoad's answer to session `d0da1827` at 2026-11-09 00:10:24Z (`notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` §8, "Open items", item 14).
      - That pins four `docs/REFERENCE.md` sites to `pyproject.toml`, `:184` and `:192` among them, and makes `util/release_train/propose.py` edit them.
      - Before the cut, check whether its carrier has landed.
    - **The cut** follows §11 of `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` (§11.7: "Run it from a clean checkout at `origin/main`": your own worktree, never the primary) and 0.11.4's record.
@@ -115,7 +115,7 @@ Continue R-OBS-SC-2's follow-ups. They are recorded in `notes/JUNIPER_2026-10-04
      - Write a 0.11.5 co-change tool. Its template is `util/ad-hoc/2026-10-25_juniper_ml_0_11_1_cut_cochanges.py`, which rewrites the matrix's `0.11.x` row when a column floor moves ("The matrix is one row per minor").
      - 0.11.4's `util/ad-hoc/2026-11-06_juniper_ml_0_11_4_cut_cochanges.py` cannot serve: it asserts that row is unchanged and stops if it is not.
      - 0.11.1's floor-only precedent was ml#2314 (floor), ml#2319 (proposal) and ml#2321 (archive).
-   - **Gates**: cut only after the owner confirms that you may (Goal 1). The owner approves the `pypi` gate; no session does. After publish, an edit to the parent `Juniper/AGENTS.md`'s released paragraph (unversioned) is the owner's to approve, as 0.11.4's was.
+   - **Gates**: cut only after the Overtoad confirms that you may (Goal 1). The Overtoad approves the `pypi` gate; no session does. After publish, an edit to the parent `Juniper/AGENTS.md`'s released paragraph (unversioned) is the Overtoad's to approve, as 0.11.4's was.
 6. **Floors**: nothing now (ruling 1).
 7. **Plan v1.15.16.**
    - Check first that `origin/main`'s plan still reads 1.15.15.
@@ -125,7 +125,7 @@ Continue R-OBS-SC-2's follow-ups. They are recorded in `notes/JUNIPER_2026-10-04
 
 ## Round 2: the open questions (asked 2026-11-09 14:49:42Z; sent back 2026-11-12 00:20:11Z)
 
-Ask what the owner wants clarified first. `owner_answers.py` prints questions only, never options, so they are reproduced here **verbatim as asked** (the dates in them are 2026-11-09's), followed by what has moved since.
+Ask what the Overtoad wants clarified first. `Overtoad_answers.py` prints questions only, never options, so they are reproduced here **verbatim as asked** (the dates in them are 2026-11-09's), followed by what has moved since.
 
 **Q1 — "0.4.3 design".** *Asked*: "R-OBS-SC-3 (juniper-observability 0.4.3, owed under your 2026-11-08 ruling) covers what 0.4.2 left open: - query strings (canopy's ?api_key=, sent under the default send_pii=False); - a Sentry Logs policy (enable_logs=True has no before_send_log); - request bodies, breadcrumbs, exception values and list-shaped headers. Until it ships, XC-SENTRY's interim mitigations (a: a Sentry-side scrubbing rule; b: blank DSNs at the next restart) stay in force. When should its design start?"
 - "Now, own thread (Recommended)": "A fresh session writes the design to notes/ and runs its validation rounds; implementation, a cut and a third lock round follow your ruling on it."
@@ -171,13 +171,13 @@ Ask what the owner wants clarified first. `owner_answers.py` prints questions on
   - Its reflog shows pulls of `main` (2026-11-09 21:57:12Z; 2026-11-10 11:56:31Z and 22:45:00Z) and two short branches with one commit each: 2026-11-10 21:19:59–21:27:50Z, the branch that became ml#2542, and 2026-11-11 23:43:51–23:45:03Z, `fix/gitignore-update`.
   - From there it went straight to `fix/repo-tmp-dir-2026-10-26` (#2360's branch) and pulled it to `684c9751` at 23:45:39Z. It was back on `main` from 00:00:27Z to 00:02:37Z, and has sat on #2360's branch since.
     - So `JuniperCascor1` imports that branch's code now. Its `juniper-observability/` and `juniper-service-core/` trees equal `origin/main`'s (`git diff --stat origin/main 684c9751 --` on both is empty).
-  - `07e7105d` reports that this head fails six launcher tests, and asks the owner whether #2360 lands before Phase 16.
-  - Who may pull the canopy primary is open too (O13, the owner's answer of 2026-11-06).
+  - `07e7105d` reports that this head fails six launcher tests, and asks the Overtoad whether #2360 lands before Phase 16.
+  - Who may pull the canopy primary is open too (O13, the Overtoad's answer of 2026-11-06).
 
-**Owner items carried from the plan's §6, not asked this session**:
+**The Overtoad items carried from the plan's §6, not asked this session**:
 - cascor's fix-forward, and P4 D-4 and D-5 (all under Q2);
 - A1's open limbs: the data-client and cascor F-S10 fixes;
-- the trio's environment upgrade (Security step 5, an owner action).
+- the trio's environment upgrade (Security step 5, an Overtoad action).
 
 ## Not this arc's
 
@@ -214,8 +214,8 @@ git fetch origin
 git log -1 --format='%h %s' origin/main
 git show origin/main:notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md | command grep -c 'Version\*\*: 1.15.15'   # 1 until v1.15.16
 python3 util/ad-hoc/2026-11-09_r_obs_sc_2_record_reprobe.py          # 0 FAIL before this arc's PRs land (see below)
-python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py a4e1e914   # round 1 answered 14:48:41Z; round 2 sent back 2026-11-12 00:20:11Z
-find ~/.claude/projects -maxdepth 2 -name '*.jsonl' -newermt '2026-11-12T00:45:00Z'   # sessions written since this peer check; then run owner_answers.py over their prefixes
+python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py a4e1e914   # round 1 answered 14:48:41Z; round 2 sent back 2026-11-12 00:20:11Z
+find ~/.claude/projects -maxdepth 2 -name '*.jsonl' -newermt '2026-11-12T00:45:00Z'   # sessions written since this peer check; then run Overtoad_answers.py over their prefixes
 python3 -c "import os; [print(n, 'UNSET' if n not in os.environ else ('EMPTY' if not os.environ[n] else 'SET')) for n in ('SENTRY_SDK_DSN','SENTRY_DSN','JUNIPER_CASCOR_SENTRY_DSN','JUNIPER_DATA_SENTRY_DSN','CANOPY_SENTRY_DSN','JUNIPER_CANOPY_SENTRY_DSN')]"
 git show origin/main:notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md | command grep -c 'APD-ECO-016'   # 0 until filed
 gh pr list -R pcalnon/juniper-cascor --state open                    # empty on 2026-11-12
@@ -235,7 +235,7 @@ The re-probe records the pre-fix state. After this arc's PRs merge, its throttle
 - **Scratch**, kept under the retention rule, in `/home/pcalnon/Development/python/Juniper/juniper-ml/tmp/harmonic-yawning-pancake-2026-11-09/`:
   - the fork files fetched from `main` on 2026-11-09;
   - the re-probe outputs of 2026-11-09 and 2026-11-12;
-  - the owner-answers outputs: one taken before round 1, and one of this session taken after round 2 (`owner_answers_a4e1e914_2026-11-12.txt`).
+  - the Overtoad-answers outputs: one taken before round 1, and one of this session taken after round 2 (`Overtoad_answers_a4e1e914_2026-11-12.txt`).
 - **The predecessors' evidence stays where it is**, all present on 2026-11-12: `bright-giggling-metcalfe`'s `tmp/lr2/`, `enchanted-foraging-rocket`'s and `fizzy-enchanting-deer`'s `tmp/`, and `groovy-petting-fiddle`'s `tmp/v1-15-15/`. Archive or delete them only under the retention rule.
 
 ## Documents referenced / changed

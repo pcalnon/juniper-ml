@@ -26,7 +26,7 @@ here, two of them as **hazards**.
    ships** — mitigated only by its default loopback bind. Once published: pass
    `explorers_enabled=not settings.api_keys` at `juniper_recurrence/app.py:86-91`, and invert
    `tests/test_app_smoke.py::test_docs_reachable_and_exempt`, which currently asserts the defect as
-   correct. One small PR. **Publishing is an owner gate** (memory
+   correct. One small PR. **Publishing is an Overtoad gate** (memory
    `feedback_deploy_approvals_paul_manages`).
 3. **Paul — `delete_branch_on_merge` is `false` in seven repos.** juniper-data was set 2026-08-28;
    **juniper-ml is the only other `true`**. Still false: cascor (≥100 branches), canopy,
@@ -119,12 +119,12 @@ that rule does not cover. Fixed per data#295 option (a): three paths out of `EXE
 
 | Repository | Open | Assessment status |
 |---|---:|---|
-| `juniper-data` | 13 | the **ten**-row REST group is owner-routed (§4.1); `-016`/`-018`/`-019` are design-shaped and were re-read this arc |
+| `juniper-data` | 13 | the **ten**-row REST group is Overtoad-routed (§4.1); `-016`/`-018`/`-019` are design-shaped and were re-read this arc |
 | `juniper-service-core` | 7 | filed latent — **by the rule that failed this arc**; re-derive before trusting |
 | `APD-ECO-*` | 5 | `-001`/`-004`/`-007` have real per-row rationale; **`-003` and `-006` do not** |
 | `juniper-recurrence-client` | 2 | `-004` deferred (§4.6), `-005` three-name identity, Low conf |
 | `juniper-cascor-client` | 1 | `-008` envelope sniffing — design-shaped, belongs beside `-031` |
-| `juniper-cascor` | 1 | `-005` owner decision |
+| `juniper-cascor` | 1 | `-005` Overtoad decision |
 | `juniper-ml` | 1 | `-001` — release-train question first |
 
 **What I did not do: individually re-read all 30.** Three were closed because an adversarial lens
@@ -199,7 +199,7 @@ single commands, or a `util/ad-hoc/` script. Fall back to Write/Edit when a here
 17/17 required contexts GREEN and still unmergeable: two CodeQL threads on ad-hoc scripts (an
 unclosed `open()`, a bare `except: pass`). **Fix the code, never suppress** — the threads
 auto-resolve as *outdated*. Query them:
-`gh api graphql -f query='{repository(owner:"pcalnon",name:"juniper-ml"){pullRequest(number:N){mergeStateStatus reviewThreads(first:10){nodes{isResolved path}}}}}'`
+`gh api graphql -f query='{repository(Overtoad:"pcalnon",name:"juniper-ml"){pullRequest(number:N){mergeStateStatus reviewThreads(first:10){nodes{isResolved path}}}}}'`
 
 ### 5.5 `gh pr edit --body-file` fails SILENTLY behind a deprecation warning
 

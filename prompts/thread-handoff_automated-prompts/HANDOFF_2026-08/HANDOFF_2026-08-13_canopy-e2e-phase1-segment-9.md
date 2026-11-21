@@ -43,7 +43,7 @@ its tools are absent, use the drivers.
 
 1. **Remaining global chrome (§2.x)**, then **W5-30 + the DEMO lane** (each demo arm must 501 and render
    `❌ Operation not supported in this mode`).
-2. **W6-16..20 — the owner gate is now CHEAP, because the restart already cost what it was guarding.**
+2. **W6-16..20 — the Overtoad gate is now CHEAP, because the restart already cost what it was guarding.**
    `#restart-confirm-button` POSTs `/api/train/restart` with `reset` **hard-coded True**
    (`dashboard_manager.py:5447`) regardless of the start-fresh switch. That gate existed to protect the
    live 10-unit segment-6/7 network — which the cascor leg restart has already dropped, so there is no
@@ -163,7 +163,7 @@ spinner arrows snap to the step grid. Marker removed, docstring corrected. Side 
 `selenium`+`multiprocess`+`chromedriver` / `make test-ui-dash` follow-up is unnecessary for this — real
 keystrokes hit the same grid.
 
-**MERGED 2026-08-14T09:51Z as `d11bfcd`** (owner approved merging this arc's PRs). Merge-commit diff
+**MERGED 2026-08-14T09:51Z as `d11bfcd`** (Overtoad approved merging this arc's PRs). Merge-commit diff
 verified: all **8 files, 481 insertions / 110 deletions** — the full change, not first-commit-only. The
 worktree and branch are cleaned up; canopy `main` is at `d11bfcd`.
 

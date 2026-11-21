@@ -39,7 +39,7 @@
 | Edit script: 58 edits, all-or-nothing | Replay on base: 58 `ok`; register and REFERENCE.md byte-identical to head; a rerun refuses and writes nothing | REPRODUCED |
 | 44 tests OK (skipped=3) | Reproduced on the head extraction | REPRODUCED |
 | The 14 archived reports equal each agent's last message | My own extraction (split on `"\n"`, same-id records merged), all 14: body = `"\n"` + message + `"\n"` exactly (the header ends in a blank line, plus one trailing newline) | REPRODUCED |
-| The four owner-ruling quotes | "let's do option 1 now, and document this as a gap to be addressed in future work" is verbatim (free-text answer, `bc31e993` line 2300, 19:38:04.764Z). The other three are verbatim option labels; the recorded answers add " (Recommended)". "Keep while any split is fetched" is at `8f86dec2` line 562, 2026-09-24T07:53:26Z. All four question paraphrases are faithful | REPRODUCED |
+| The four Overtoad-ruling quotes | "let's do option 1 now, and document this as a gap to be addressed in future work" is verbatim (free-text answer, `bc31e993` line 2300, 19:38:04.764Z). The other three are verbatim option labels; the recorded answers add " (Recommended)". "Keep while any split is fetched" is at `8f86dec2` line 562, 2026-09-24T07:53:26Z. All four question paraphrases are faithful | REPRODUCED |
 
 ## Findings
 

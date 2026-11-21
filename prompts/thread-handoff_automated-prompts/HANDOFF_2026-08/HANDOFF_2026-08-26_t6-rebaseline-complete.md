@@ -37,7 +37,7 @@ control arm exists. E-C's moon curve: 1.0 / 1.0 / 1.0 / 0.975.
 1. **E-C's spiral rows are `max_iterations`-bound at 12 units** (the inherited `spiral-baseline`
    cap), so their flat ≈0.63–0.66 curve is a capacity artifact — the same reading F-6 gave for the
    old 2-unit smoke cap, one cap up. A spiral noise-robustness curve needs those four cells at an
-   E-I-class `max_iterations` (≥ 64). **Owner decision**; the closed R-4 disposition is not
+   E-I-class `max_iterations` (≥ 64). **The Overtoad decision**; the closed R-4 disposition is not
    reopened by noting it.
 2. **`run_experiment.py` tears a `timed_out` / `stalled` cell down with a plain SIGTERM** —
    `preempt_training` (`POST /v1/training/stop` + wait) is only used for a 409 on start. Meant to
@@ -67,7 +67,7 @@ announcement**. Nothing is owed to any peer.
   fired.** The drain watch fired 19:33 and the session was re-invoked 02:30; the campaign completed
   03:58 and was acted on at 12:30. Peers were released 8.5 h late. The ledger's terminal line is
   the authoritative completion signal (the performance-lane session correctly resumed on it);
-  peers should be told to read it, and a `PushNotification` at launch/completion is the owner's
+  peers should be told to read it, and a `PushNotification` at launch/completion is the Overtoad's
   wake-up, not the session's.
 - **Looping the full orphan reaper beside a campaign is unsafe**: a freshly launched cell service
   is reparented to `systemd --user` before its health gate writes the protecting pidfile. The
@@ -90,7 +90,7 @@ clause; plan §12.2 items 1 and 3; PF-4 / PF-8. None was touched here.
 Worktree `juniper-ml/.claude/worktrees/dazzling-swimming-stroustrup`, branch
 `worktree-dazzling-swimming-stroustrup`, at `main` `c36bc886` plus the uncommitted publish
 (three `notes/` files, the renderer, this document) — carried to `main` by the closing PR via
-`util/open_signed_pr.py`. ml#1389 merged 07:39Z under the owner's merge approval for this session's
+`util/open_signed_pr.py`. ml#1389 merged 07:39Z under the Overtoad's merge approval for this session's
 arc PRs (granted 2026-08-26 ~02:35 CDT; **session-scoped** — a successor re-asks).
 
 ## 6. Verification (one stanza per Bash call — the worktree hook refuses compound lines)

@@ -193,7 +193,7 @@ Validity notes: E1/E5 are exact asserts; E4 uses a fixed **real-time** delay tar
 ## 11. Open questions for Paul
 
 1. **Is the star-free / no-count ceiling acceptable for the intended use (bounded-horizon time-series regression)?** If yes, ARM A (P4-FIR) is the low-risk pick and the OQ-4 hinge resolves toward "horizon mechanism, not counting machine." If no, none of P1/P3/P4 suffice — only P2's (recipe-less) group units do.
-2. **Δt ownership for P4**: feed `Δt` as a feature (Approach A) at the model boundary, or commit to the variable-step LMU (Approach C) for genuine grid-invariance? P4 alone is not Δt-aware.
+2. **Δt Overtoadship for P4**: feed `Δt` as a feature (Approach A) at the model boundary, or commit to the variable-step LMU (Approach C) for genuine grid-invariance? P4 alone is not Δt-aware.
 3. **Cap on `K`** given the ×K frozen-feature inflation — is ~35 acceptable as the embedding dimension, or should it be tunable/smaller on deeper cascades?
 4. **If feedback is desired**, prefer P1 (single self-loop, cheapest) or P4-IIR (multi-tap, richer memory, heavier)? They are the `K=1` and `K>1` ends of the same axis.
 

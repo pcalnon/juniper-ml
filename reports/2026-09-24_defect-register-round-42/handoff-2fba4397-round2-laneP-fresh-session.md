@@ -35,7 +35,7 @@ Four MEDIUM findings should also be applied. None needs a factual rewrite.
 | Remaining 5 / Appendix E (fork-drift) | Wait for data#440 and cascor#689 (both OPEN); add the Guard; run with `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` | All anchors resolve: service-core `:88`/`:91`; canopy `:52`/`:137`/`:300`; csrf `:91`/`:97`; data#440 `:118`; cascor#689 `:87`; test `:174-182`/`:199-203`/`:205-209`; `ci.yml:500` (cron Monday 06:00) | The bare-word marker proves nothing (M4). The guard count is stated four times, not two (L1) |
 | Remaining 6 (two candidates) | Read data `app.py:187-212` and cascor `:856`; start both services on free ports with DSNs `""`; POST a lone surrogate | The anchors resolve: primer 2662, 2686, 2687 and 4742-4743; data L191 "byte-identical" | Where to file each is unstated (L7) |
 | Remaining 7 (PATCH #2080) | `gh pr view 2080 --json body`; read N6 in `ml2080-round1-laneA-reprobe.md:156`; `gh api -X PATCH` | The target is in the body: "Rejected, with reasons" at L65, the A-nit at L69. The PATCH was not run (forbidden) | No replacement text (L7) |
-| Remaining 8 / Appendix B | Confirm each decision is still open; ask the owner with verbatim options | Yes. The later-arc ids are all open; MEMORY.md is 24,929 characters; `pr-63` and `pr-683` both point at `4caf9389` | #2089's CodeQL decision is missing (M2) |
+| Remaining 8 / Appendix B | Confirm each decision is still open; ask the Overtoad with verbatim options | Yes. The later-arc ids are all open; MEMORY.md is 24,929 characters; `pr-63` and `pr-683` both point at `4caf9389` | #2089's CodeQL decision is missing (M2) |
 | Appendix C | Byte-compare the durable copy with the tmpfs drafts; re-copy after the executor; check the anchors at `d1c66a11` | The copy equals `# ` + title + `\n\n` + body (18,454 B). The tmpfs drafts are unchanged since 20:46Z. All 8 anchors resolve | Re-copy order and mechanism (M3, L6) |
 | Appendix D | Diff against the predecessor's L21-52 | The item mapping is correct | How #2081's CodeQL block was cleared is not carried (M2) |
 | Appendix F | `git show --stat 5af9d722`; #2089's files; the memory files | Accurate. 14 of 14 files match. #2089's 132 files are byte-identical to the local copies. The new memory file exists and is linked | None |
@@ -54,9 +54,9 @@ Four MEDIUM findings should also be applied. None needs a factual rewrite.
   - L22: "Message `defect reg [24f8d8]`". That is this old session.
   - L25: "If `[24f8d8]` is gone, ask the user which handoff governs."
   - L13 and L192: its PR will be on branch `docs/handoff-round42-followup-lane`. No such PR exists yet; #2089 is the only open juniper-ml PR.
-  - So Remaining 0 (the owner's consolidation) and Appendix A's gates wait on a message addressed to a session that will be gone.
+  - So Remaining 0 (the Overtoad's consolidation) and Appendix A's gates wait on a message addressed to a session that will be gone.
 - **Replace L19 with:** "3. **Re-route the peer lane.** Load `ListAgents` and `SendMessage` with ToolSearch if they are deferred, then run `ListAgents`; its header names your own session as `<name> [<ref>]`. The peer is handing off too. Its handoff (`/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/happy-skipping-hollerith/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_round-42-follow-up-lane-four-prs-await-validation-and-the-observability-release.md`, L3 and L22-25) calls `defect reg [042116]` the session handing off, says "Never message it", and tells ITS successor to message `defect reg [24f8d8]` (the session that wrote this file), or to ask the user if that one is gone. So:
-   - Message the peer's SUCCESSOR, the session working that handoff, and not `[042116]`. If you cannot tell which session that is, ask the owner. Tell it you replace `[24f8d8]`, and give it your name and `[ref]`.
+   - Message the peer's SUCCESSOR, the session working that handoff, and not `[042116]`. If you cannot tell which session that is, ask the Overtoad. Tell it you replace `[24f8d8]`, and give it your name and `[ref]`.
    - If `[042116]` is still listed, message it too, so it can pass your name on.
    - Never wait on a message for the peer's PR. `gh pr list --repo pcalnon/juniper-ml --head docs/handoff-round42-followup-lane --state all --json number,state,mergeCommit` finds it."
 - **L57:** replace "it sends the path and PR number" with "take it from its PR on branch `docs/handoff-round42-followup-lane` (the command in First action 3); do not wait for a message."
@@ -65,19 +65,19 @@ Four MEDIUM findings should also be applied. None needs a factual rewrite.
 
 **H2. The liveness rule reads a live executor as dead, and the recovery step then launches a second executor on the same worktree.**
 - **Quotes:**
-  - L49: "If that file was written in the last ~10 minutes, the old session is still running … wait, or ask the owner to close that session."
+  - L49: "If that file was written in the last ~10 minutes, the old session is still running … wait, or ask the Overtoad to close that session."
   - L51: "If it died, the worktree is dirty and the ref is still `d1c66a11…`: … launch a new `task-executor` on the same worktree".
 - **Evidence:**
   - In `agent-a46e715a6801b98ca.jsonl`, the executor went silent while alive for 10.0 min (20:21:04 to 20:31:04Z) and 9.7 min (20:31:33 to 20:41:13Z), each during a single tool call.
   - It then sat idle for 181.2 min (20:47:35 to 23:48:49Z), and the live parent resumed it by SendMessage.
   - "Dirty, ref at `d1c66a11`" is exactly the state of the live executor now: 12 dirty files, last record 00:44:52Z. So the mtime rule is the only discriminator, and it misfires.
-  - Asking the owner to close the old session kills the executor (L46's own heading).
+  - Asking the Overtoad to close the old session kills the executor (L46's own heading).
   - `ListAgents` shows each peer session's state ("defect reg [042116] · interactive · busy", 19:03:13Z), but the rule does not use it.
 - **Replace L49 with:** "**Is it alive?** Any one of these means yes: do not touch the juniper-data worktree, and do not launch a second executor.
   - `ListAgents` still lists `defect reg [24f8d8]` in any state but offline. A live parent can resume a stopped executor, as this one was at 23:48:49Z after 181 idle minutes.
   - `find /home/pcalnon/.claude/projects/*/2fba4397-7d9b-4929-8ca2-375b8168e1c8/subagents/ -name agent-a46e715a6801b98ca.jsonl -mmin -30` prints the file. It went silent for 10.0 and 9.7 minutes while alive, so ten minutes is no margin.
   - Its last assistant record is a `tool_use`, not the text-only disposition report.
-  - Wait for it. Do not ask the owner to close the old session while it runs: that kills the executor, and its in-context state goes with it."
+  - Wait for it. Do not ask the Overtoad to close the old session while it runs: that kills the executor, and its in-context state goes with it."
 - **L18:** append "…or if `ListAgents` still lists `defect reg [24f8d8]`."
 
 ### MEDIUM
@@ -101,17 +101,17 @@ Four MEDIUM findings should also be applied. None needs a factual rewrite.
   - Dirty or ahead, with the ref still `d1c66a112e4bc70ee97496a14265f7b90e10fb88`: extract both briefs to your scratchpad with a script. Launch a new `task-executor` in your session on that worktree, with both briefs, both round-1 reports and the drafts. Tell it to review `git diff origin/fix/conditional-requests-round4-followups` first, and to push with that full `--expected-head`."
 - **L121:** change `status --short` to `status -sb`, annotated "`[ahead N]` = an unsigned scratch commit; never push it".
 
-**M2. #2089 cannot go green without an owner decision, and the snapshot does not say so.**
+**M2. #2089 cannot go green without an Overtoad decision, and the snapshot does not say so.**
 - **Quotes:**
   - L31: "CodeQL may flag the probes, as it did #2081's."
   - L61: "Merge #2089 once it is green".
   - L288: "#2081's CodeQL block: resolved".
 - **Evidence:**
   - `gh pr checks 2089`: CodeQL **fail**, "33 new alerts including 4 high severity". The four highs are alerts 843-846, `py/overly-permissive-file`, all in `util/ad-hoc/2026-09-24_round42_probes/data438-fixforward-round1-laneB/stripe_probe.py`. All other required checks pass.
-  - The predecessor (L25) called #2081's identical block "**the owner's decision**". #2081 merged only after its two highs were dismissed as "mitigated" (22:43:46Z and 22:44:26Z). No dismissal call appears in session 2fba4397's transcript.
-  - The peer's handoff L29 says commits land on open PRs from the owner's account (for example `095a2108`, "improve file handling with context managers"). A commit like that on #2089 would break the byte-identity its README claims.
-- **Replace L31 with:** "**CodeQL FAILED:** 33 new alerts, 4 high (`py/overly-permissive-file`, alerts 843-846, all in `…/data438-fixforward-round1-laneB/stripe_probe.py`). Clearing them is the owner's decision, as #2081's was: its two highs were dismissed 'mitigated' before it merged. Surface it (Appendix B). Re-check the branch for owner-account commits before merging."
-- **L61:** "…once the owner has cleared its CodeQL alerts and it is green…".
+  - The predecessor (L25) called #2081's identical block "**the Overtoad's decision**". #2081 merged only after its two highs were dismissed as "mitigated" (22:43:46Z and 22:44:26Z). No dismissal call appears in session 2fba4397's transcript.
+  - The peer's handoff L29 says commits land on open PRs from the Overtoad's account (for example `095a2108`, "improve file handling with context managers"). A commit like that on #2089 would break the byte-identity its README claims.
+- **Replace L31 with:** "**CodeQL FAILED:** 33 new alerts, 4 high (`py/overly-permissive-file`, alerts 843-846, all in `…/data438-fixforward-round1-laneB/stripe_probe.py`). Clearing them is the Overtoad's decision, as #2081's was: its two highs were dismissed 'mitigated' before it merged. Surface it (Appendix B). Re-check the branch for Overtoad-account commits before merging."
+- **L61:** "…once the Overtoad has cleared its CodeQL alerts and it is green…".
 - **Appendix B:** add "#2089's CodeQL block (`paths-ignore`, dismissal, or a tarball)".
 - **Verification commands:** add `gh pr checks 2089 --repo pcalnon/juniper-ml`, annotated `# CodeQL fail at handoff`.
 
@@ -158,7 +158,7 @@ Four MEDIUM findings should also be applied. None needs a factual rewrite.
 - **N5.** L102 says "This session's venv is on tmpfs" but gives no path. Name it. CPython 3.13.13 is the `JuniperCanopy1` interpreter.
 - **N6.** L71 "PR CI runs only `SharedPackageGuardTest` (`ci.yml:500`)". Line 500 runs the whole file; `ci.yml:496-499` says the sibling-site assertions skip there. Write "PR CI skips the sibling-site assertions".
 - **N7.** L165 quotes F9's FIX wording as if it were the defect. `juniper-service-core/CHANGELOG.md:57-58` says the handshake "closes 4001". The rewording is "rejected: ASGI close 4001, HTTP 403 on the wire". "Not data#440" is correct: its diff and head commit never mention 4001.
-- **N8.** Appendix B lists MEMORY.md under "owner decisions" while also saying the compaction is this lane's. Write: "Compact by retiring entries (`feedback_memory_index_target_is_20kb.md`); only a structural change is the owner's."
+- **N8.** Appendix B lists MEMORY.md under "Overtoad decisions" while also saying the compaction is this lane's. Write: "Compact by retiring entries (`feedback_memory_index_target_is_20kb.md`); only a structural change is the Overtoad's."
 
 ## Round-1 HIGH fixes
 
@@ -181,7 +181,7 @@ Four MEDIUM findings should also be applied. None needs a factual rewrite.
 
 - Who `ListAgents` will list when a successor starts, and the name of the peer's successor. I did not call it.
 - How the executor ends: its disposition report, whether it updates the drafts, and whether it leaves a local scratch commit.
-- Who dismissed #2081's highs. The `pcalnon` account is shared by the owner and every session.
+- Who dismissed #2081's highs. The `pcalnon` account is shared by the Overtoad and every session.
 - Harness 62/62 and mutation check 12/12, which need the tmpfs venv. Round-1 lane F (`handoff-2fba4397-round1-laneF-reprobe.md`) reproduced them.
 - Whether a session's scratchpad (drafts, spec files, venv) is deleted when the session ends.
 - Whether `SENTRY_SDK_DSN` is exported (not printed, per the rules), the 0.16.0 notify-consumers 403, and canopy#685's validation status.

@@ -3,9 +3,9 @@
 **Written**: 2026-10-08 ~18:35Z by session `1d83ae70`, at the round-12 boundary, because the thread was long (a handoff instead of compaction).
 **Supersedes**: `HANDOFF_2026-10-08_consolidated-development-plan-finish-round-10-reconcile-then-round-11-and-pr.md`, which the same session consumed (it gets a CONSUMED banner in the PR).
 
-> **CONSUMED 2026-10-08 to 2026-10-10 by session `3e8595eb`.** It reconciled round 12 into v1.12.0 (frozen 2026-10-08T22:56Z), ran round 13 (1 BLOCKER, 16 MAJOR), and at the owner's request handed off before reconciling it.
-> Its handoff is `HANDOFF_2026-10-10_consolidated-development-plan-reconcile-round-13-rebaseline-drift-then-pr.md`, on `main` through ml#2207. On 2026-10-10 the owner ruled to land the plan first as a record and re-baseline it as v1.13.0 after.
-> Session `560c1ec5` landed v1.12.1, a record of v1.12.0 with round 13 unreconciled, in one PR that it opened and merged on the owner's approval given in that session. This file is kept as the archived mid-arc handoff.
+> **CONSUMED 2026-10-08 to 2026-10-10 by session `3e8595eb`.** It reconciled round 12 into v1.12.0 (frozen 2026-10-08T22:56Z), ran round 13 (1 BLOCKER, 16 MAJOR), and at the Overtoad's request handed off before reconciling it.
+> Its handoff is `HANDOFF_2026-10-10_consolidated-development-plan-reconcile-round-13-rebaseline-drift-then-pr.md`, on `main` through ml#2207. On 2026-10-10 the Overtoad ruled to land the plan first as a record and re-baseline it as v1.13.0 after.
+> Session `560c1ec5` landed v1.12.1, a record of v1.12.0 with round 13 unreconciled, in one PR that it opened and merged on the Overtoad's approval given in that session. This file is kept as the archived mid-arc handoff.
 
 Continue the consolidated-development-plan arc in worktree
 `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/unified-orbiting-fountain`
@@ -13,7 +13,7 @@ Continue the consolidated-development-plan arc in worktree
 
 ## Merge approval
 
-The owner granted merge approval in session `1d83ae70`. **It does not carry over: ask the owner again before running `util/safe_merge.py`.**
+The Overtoad granted merge approval in session `1d83ae70`. **It does not carry over: ask the Overtoad again before running `util/safe_merge.py`.**
 
 ## Completed so far
 

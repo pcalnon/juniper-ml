@@ -1,4 +1,4 @@
-# Defect-register round 42 -- the owner's "Key leaks" ruling, verbatim
+# Defect-register round 42 -- the Overtoad's "Key leaks" ruling, verbatim
 
 Extracted by `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py --topic key-leaks` from the session transcripts. It
 selects every AskUserQuestion call with a question headed "Key leaks" and keeps the WHOLE call. The questions and options

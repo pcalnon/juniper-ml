@@ -21,7 +21,7 @@
 ## Requirements
 
 - Partially closes JR-CAS-TEST-006 — performance testing infrastructure with reproducible baselines (plan §12 reuses the existing 5-phase perf suite + baselines; CI integration explicitly deferred).
-- Partially closes JR-CAS-OBS-004 — define performance targets for latency/throughput (§12.3 scenario list + §7 Grafana surface provide the measurement harness; targets themselves stay an owner decision, Q-8).
+- Partially closes JR-CAS-OBS-004 — define performance targets for latency/throughput (§12.3 scenario list + §7 Grafana surface provide the measurement harness; targets themselves stay an Overtoad decision, Q-8).
 - References JR-CAS-TEST-018 — E2E pipeline spun up for real (cascor → juniper-data → artifact → training) as an operator-invoked program, not automated tests.
 - References JR-CAS-OBS-002 (shipped) — §12.1 consumes the shipped `juniper_cascor_training_step_duration_seconds` buckets.
 - References JR-CAS-PERF-004, JR-CAS-PERF-005 — in-repo profiling used instead of py-spy; continuous profiling noted as a possible later phase.
@@ -35,7 +35,7 @@
 - `juniper-check-doc-links` (CI-equivalent invocation: same excludes, `--cross-repo skip`, 547 files) — PASS, all links valid.
 - Adversarial citation verification: ~330 claims re-probed against the live repos — 0 refuted, 0 hallucinated artifacts (3 line-number drifts corrected).
 - Mechanical/design verification: 61 claims — 1 blocker + 9 majors + 16 minors, all folded in (plan §2.4 record).
-- Requirements-coverage audit: owner requirements R1–R10 graded COVERED after corrections.
+- Requirements-coverage audit: Overtoad requirements R1–R10 graded COVERED after corrections.
 - Docs-only change — no code, no CI-workflow, no config edits.
 
 ## Process notes (for future archaeology)

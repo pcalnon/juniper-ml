@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use copier
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 The sibling util/ad-hoc/2026-09-24_copy_round42_probe_scripts.py (juniper-ml#2081) preserved the probes
 of session 8f86dec2's lanes and is hard-coded to that session's scratchpad. Session 2fba4397 ran six

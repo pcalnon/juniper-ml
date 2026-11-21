@@ -1,8 +1,8 @@
-# Handoff: Cursor flood-3 arc, the owner's second continuation. Every 2026-10-27 row is fixed or resolved; owner calls and a cleanup remain
+# Handoff: Cursor flood-3 arc, the Overtoad's second continuation. Every 2026-10-27 row is fixed or resolved; Overtoad calls and a cleanup remain
 
 **Date**: 2026-10-30 (UTC)
 
-**Arc**: The Cursor flood-3 disposition and its follow-ups. This stretch is the owner's request of 2026-10-29: "continue with handoff", with merge approval for this session's PRs.
+**Arc**: The Cursor flood-3 disposition and its follow-ups. This stretch is the Overtoad's request of 2026-10-29: "continue with handoff", with merge approval for this session's PRs.
 
 **Record**: `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, cited below as `…FLOOD-3-DISPOSITION.md`. This handoff's PR makes the record's ninth update: the header, §4, §6, §7, §8 and §9.
 
@@ -17,11 +17,11 @@
 
 ## Goal
 
-Nothing is owed unless the owner asks. What remains:
-- the owner's calls (Remaining work, item 1);
+Nothing is owed unless the Overtoad asks. What remains:
+- the Overtoad's calls (Remaining work, item 1);
 - two watch items (items 2 and 3);
 - low rows (item 4);
-- a cleanup that needs an owner signal (item 5).
+- a cleanup that needs an Overtoad signal (item 5).
 
 ## Completed (verified on GitHub, PyPI or the host)
 
@@ -43,8 +43,8 @@ Nothing is owed unless the owner asks. What remains:
 - **New rows found and fixed:**
   - juniper-canopy#780 (`18a49c85`): canopy's `ci.yml` installed bare `bandit` and uploaded no SARIF.
   - juniper-cascor#736 (`d042de23`): cascor's conftest forced `os._exit(0)` over pytest's exit status.
-- **The owner's rulings of 2026-10-29:**
-  - Codecov: the owner chose to add the token, and had already done so: "token has already been added to all repos via github gui".
+- **The Overtoad's rulings of 2026-10-29:**
+  - Codecov: the Overtoad chose to add the token, and had already done so: "token has already been added to all repos via github gui".
   - cascor's SARIF upload: "Fail on PRs".
   - cascor's performance tests: "Nightly smoke, no timing", then "Cap pytest in that job".
   - cascor's forced exit: "Fix now, own PR".
@@ -58,9 +58,9 @@ Nothing is owed unless the owner asks. What remains:
 
 ## Remaining work
 
-1. **Owner calls.** A session never acts on these without the owner's word.
+1. **The Overtoad calls.** A session never acts on these without the Overtoad's word.
    0. **Close the duplicate continuation, or tell it to stand down, before answering it.**
-      - **Who:** session `0f840224`, forked as `2fc3f4e1` (pid 4148734, worktree `.claude/worktrees/iridescent-sniffing-snail`, ListAgents `[901969]`). The owner started it on 2026-10-28 around 10:14Z with the same request: "continue from handoff: …HANDOFF_2026-10-28_flood3-continuation-cascor-0-13-0-at-pypi-gate.md. merge approval granted."
+      - **Who:** session `0f840224`, forked as `2fc3f4e1` (pid 4148734, worktree `.claude/worktrees/iridescent-sniffing-snail`, ListAgents `[901969]`). The Overtoad started it on 2026-10-28 around 10:14Z with the same request: "continue from handoff: …HANDOFF_2026-10-28_flood3-continuation-cascor-0-13-0-at-pypi-gate.md. merge approval granted."
       - **What it is waiting on:** since 2026-10-28 20:58Z, a question dialog asking about cascor's SARIF upload, Codecov and the cleanup. This pass has since ruled on and done all three.
       - **The risk:** if it is answered, it acts on stale state with merge approval. Its local branch `fix/flood3-backlog-3` has the name that #735, #779 and #500 used as their remote head ref.
       - **Inbox:** five messages wait there unread.
@@ -69,7 +69,7 @@ Nothing is owed unless the owner asks. What remains:
         - Answering its dialog delivers all five, and it may act on them.
    1. **Decide whether to add `CODECOV_TOKEN` to the Dependabot stores** of juniper-data and juniper-canopy, the only two that upload.
       - It is in all nine repositories' Actions secrets (added 2026-10-29 22:08-22:16Z) and in no Dependabot store, so a Dependabot PR's upload stays tokenless.
-      - Only the owner can add it, because no session can read the value.
+      - Only the Overtoad can add it, because no session can read the value.
    2. **Decide whether the other repositories' SARIF uploads also fail on PRs**, as cascor's now does. `continue-on-error: true` stands at these lines of each `ci.yml` on `origin/main` (2026-10-30): juniper-data `:606`, juniper-canopy `:581`, juniper-data-client `:611`, juniper-cascor-client `:529` and juniper-cascor-worker `:590`.
       - In data, data-client, cascor-client and cascor-worker, `Bandit` is a required context, so a failed upload already leaves a PR waiting with Security Scans green. data and data-client skip the upload when the SARIF is missing (a `hashFiles` guard).
       - canopy requires `Security Scans` but not `Bandit`, so its broken upload was silent (`…FLOOD-3-DISPOSITION.md` §4).
@@ -79,7 +79,7 @@ Nothing is owed unless the owner asks. What remains:
       - The cascor one holds the uncommitted drain fix to `src/tests/performance/test_concurrency_scaling.py`, which juniper-cascor#735 verified and adopted. It also holds an ignored 7 MB `logs/juniper_cascor.log` and `src/tests/performance/baselines/baseline_20261028.json`.
       - Each local branch, `fix/flood3-backlog-3`, has no commits.
       - Settle item 1.0 first.
-   4. **Register row `APD-ML-002`** (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`) is the owner's five-touch close.
+   4. **Register row `APD-ML-002`** (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`) is the Overtoad's five-touch close.
       - No run has filled `test_accuracy` yet.
       - A stack launched from the canonical checkout serves cascor#731, since the cascor primary moved to `e8e8bf4d` (2026-10-29 20:48:58Z, actor unrecorded, under the live `:8202` stack). `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-29_recurrence-equities-mnist-schema-probe-canopy-778-parent-agents-cascor-0-13-0.md` surfaced the move.
       - juniper-deploy still pins 0.12.0.
@@ -88,24 +88,24 @@ Nothing is owed unless the owner asks. What remains:
       - `JuniperCascor1`'s editable install still reports juniper-cascor 0.11.0, so cascor's `test_version_matches_pyproject` fails locally.
 2. **Watch: drop the pytest cap.** Drop `pytest<9.2` from cascor's `performance-smoke` job (`.github/workflows/scheduled-tests.yml`) once a pytest-benchmark release supports pytest 9.2.
    - 5.3.0 and 5.2.3 both error at setup on 9.2.0: `'Function' object has no attribute '_nodeid'`.
-   - Before proposing it, a session reruns a one-line `benchmark` test on the new release. Merging needs the owner's approval in that session.
+   - Before proposing it, a session reruns a one-line `benchmark` test on the new release. Merging needs the Overtoad's approval in that session.
 3. **Watch: the first scheduled cascor nightly after #735 and #736.** Cron is 03:00Z daily; the run must be at `d042de23` or later.
    - **Expected**, matching the dispatch run 40985597827 on #735's head:
      - smoke: `153 passed`;
      - slow integration: 15 passed, 5 golden skipped;
      - long: `1 xfailed`;
      - slow unit: 15 passed.
-   - **If red:** a smoke error naming `_nodeid` means the cap was lost. A red `check_junit_executed.py` step means a lane executed nothing or hid a failure. Report either to the owner; never deselect tests to turn it green.
-4. **Open §4 rows (low).** A session may fix them on the owner's word.
+   - **If red:** a smoke error naming `_nodeid` means the cap was lost. A red `check_junit_executed.py` step means a lane executed nothing or hid a failure. Report either to the Overtoad; never deselect tests to turn it green.
+4. **Open §4 rows (low).** A session may fix them on the Overtoad's word.
    - juniper-data#500's leftovers, listed in that PR's body;
    - five cascor docs that still name `pytest.ini`, listed in juniper-cascor#735's body.
-5. **Cleanup inventory (this pass).** Nothing here is removed. Each needs an owner signal, then the four gates in the header of `REMOVED.tsv`:
+5. **Cleanup inventory (this pass).** Nothing here is removed. Each needs an Overtoad signal, then the four gates in the header of `REMOVED.tsv`:
    1. no process holds it (`util/ad-hoc/2026-10-29_worktree_holder_check.py`, with a positive control);
    2. its PR is MERGED and its head branch is gone on GitHub;
    3. its HEAD is an ancestor of `origin/main`, or of the PR's final head for a squash;
    4. every changed file is SAME on `main` or in its history, or else preserved, with a `diff -rq` of the preserved tree. This includes the image and PDF suffixes the classifier skips.
 
-   **Every centralized worktree below is dirty** (the lanes uploaded through the API and never committed locally). Removal needs `--force`, which also deletes its ignored `tmp/`. Those `tmp/` folders hold the lanes' scripts and logs, about 51 scripts in all, behind claims in the record. **Preserve each `tmp/` under `juniper-ml/tmp/worktree-cleanup-<date>/` before removal.** Promoting the claim-backing scripts to each repository's `util/ad-hoc/` is the owner's call.
+   **Every centralized worktree below is dirty** (the lanes uploaded through the API and never committed locally). Removal needs `--force`, which also deletes its ignored `tmp/`. Those `tmp/` folders hold the lanes' scripts and logs, about 51 scripts in all, behind claims in the record. **Preserve each `tmp/` under `juniper-ml/tmp/worktree-cleanup-<date>/` before removal.** Promoting the claim-backing scripts to each repository's `util/ad-hoc/` is the Overtoad's call.
    - **Centralized worktrees:**
      - `juniper-cascor--fix--flood3-backlog-3-20261029--20261029-1726--e8e8bf4d` (#735): `tmp/flood3-backlog-3/` (logs, scripts, probe venvs).
      - `juniper-cascor--fix--conftest-forced-exit-keeps-status--20261029-2017--e8e8bf4d` (#736's first head, superseded): `tmp/conftest-exit/` (139M). It holds #736's old-versus-fixed exit-status proof (`prove_old_fails.bash`, `exit-status-old.log`, `exit-status-fixed.log`), which the re-sync did not copy.
@@ -119,7 +119,7 @@ Nothing is owed unless the owner asks. What remains:
      - It is **clean**, so a plain `git worktree remove` succeeds without asking, and deletes its ignored `tmp/` with it.
      - That `tmp/` holds six work folders (17 files, 384K). At least one file there, `tmp/issue2064-fix/cascor_eval_fixtures.py` (blob `9517d689`), is found nowhere in `main`'s history.
      - Preserve that `tmp/` before any removal.
-   - **Keep until the owner says otherwise:**
+   - **Keep until the Overtoad says otherwise:**
      - `juniper-ml/tmp/release-cascor-0.13.0/`, where `eco/README.txt` replaces the dangling symlink;
      - `tmp/worktree-cleanup-2026-10-26/`, `-27/` and `-29/`;
      - `tmp/flood3-deleted-branches.tsv`;
@@ -139,7 +139,7 @@ Nothing is owed unless the owner asks. What remains:
   - `sudo`.
 
   Isolation also refuses Write and Edit into the primary checkout, so session files go in this worktree's `tmp/`.
-- **`util/safe_merge.py` and `util/wait_for_checks.py` take a bare `--repo` name** (`juniper-canopy`); they add the owner. Read the `MERGED` line, not the exit status.
+- **`util/safe_merge.py` and `util/wait_for_checks.py` take a bare `--repo` name** (`juniper-canopy`); they add the Overtoad. Read the `MERGED` line, not the exit status.
 - **The blob classifier skips image and PDF suffixes everywhere.** Run `util/ad-hoc/2026-10-29_cleanup_skipped_suffix_sweep.py` and a `diff -rq` before any removal (`…FLOOD-3-DISPOSITION.md` §6).
 - **`git worktree remove` without `--force` is no dirty test** for a worktree whose unique files are all ignored: it removes them without asking.
 - **On this host a pip torch needs `env -u LD_LIBRARY_PATH -u LIBTORCH`.** Without it, rust_mudgeon's libtorch is loaded first.
@@ -154,7 +154,7 @@ gh pr view 736 --repo pcalnon/juniper-cascor --json state,mergeCommit --jq '"\(.
 gh pr view 779 --repo pcalnon/juniper-canopy --json state,mergeCommit --jq '"\(.state) \(.mergeCommit.oid[0:8])"'    # MERGED d5b73321
 gh pr view 780 --repo pcalnon/juniper-canopy --json state,mergeCommit --jq '"\(.state) \(.mergeCommit.oid[0:8])"'    # MERGED 18a49c85
 gh pr view 500 --repo pcalnon/juniper-data --json state,mergeCommit --jq '"\(.state) \(.mergeCommit.oid[0:8])"'      # MERGED 4c3b044c
-python3 -I util/ad-hoc/2026-10-29_codecov_token_secret_census.py     # actions=<date> in all nine rows; dependabot=- until the owner adds it
+python3 -I util/ad-hoc/2026-10-29_codecov_token_secret_census.py     # actions=<date> in all nine rows; dependabot=- until the Overtoad adds it
 gh run list --repo pcalnon/juniper-cascor --workflow scheduled-tests.yml --event schedule --limit 1 --json conclusion,createdAt,headSha
 #   first post-fix nightly: createdAt >= 2026-10-30T03:00Z and headSha d042de23 or later; the 2026-10-29T03:00:36Z run is pre-fix
 git worktree list --porcelain | grep -A3 'iridescent-sniffing-snail$'    # a "locked claude session … (pid P start S)" line: the duplicate (item 1.0) may be alive
@@ -163,13 +163,13 @@ cut -d' ' -f22 /proc/4148734/stat    # alive only if this prints the lock line's
 
 ## Residue: the remaining work of `HANDOFF_2026-10-28_…pypi-gate.md`, item by item
 
-1. **The `pypi` gate:** approved by the owner; 0.13.0 has been on PyPI since 2026-10-28 11:43Z.
+1. **The `pypi` gate:** approved by the Overtoad; 0.13.0 has been on PyPI since 2026-10-28 11:43Z.
 2. **juniper-ml#2376, then the update-branch and merge of #2378, #2379 and that handoff's PR (#2380):** all merged on 2026-10-28.
-3. **Owner decisions:**
+3. **The Overtoad decisions:**
    - Codecov: resolved (token added), except item 1.1.
    - cascor `ci.yml:659`: ruled, and fixed in #735.
 4. **ml#2064 = juniper-ml#2381:** merged at 03:23Z.
-   - Its owner-facing points stand: the stats schema is `juniper-experiment-stats/2`; `test_*` columns fill only when the final block's split is `test`; `APD-ML-002` is left to the owner (item 1.4).
+   - Its Overtoad-facing points stand: the stats schema is `juniper-experiment-stats/2`; `test_*` columns fill only when the final block's split is `test`; `APD-ML-002` is left to the Overtoad (item 1.4).
    - Its re-sync point against juniper-ml#2360 is carried under Key context.
 5. **After 0.13.0 reached PyPI:** the JSON returned 200 and the import probe passed. `test_accuracy` waits on a run (item 1.4).
 6. **The open §4 rows of 2026-10-27:** all fixed or resolved, as listed above.

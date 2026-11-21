@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-List every AskUserQuestion call in the named sessions' transcripts, with the owner's answer and when it was given.
+List every AskUserQuestion call in the named sessions' transcripts, with the Overtoad's answer and when it was given.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling (consolidated plan record)
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc -- single-use extractor
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md v1.15.15 (R-OBS-SC-2's record);
          util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py (the pattern)
 
 Why
 ---
-Plan v1.15.15 records the owner's rulings on R-OBS-SC-2, given across four sessions (e97264c3, f58cf63e, b4208d23,
+Plan v1.15.15 records the Overtoad's rulings on R-OBS-SC-2, given across four sessions (e97264c3, f58cf63e, b4208d23,
 e21d1414). Their handoffs paraphrase the answers, and one of them says P3 D-03 had no recorded answer while an earlier
 one records it. The plan dates an answer from the transcript's ``tool_result`` timestamp, the moment the answer
 reached the session, so this reads the transcripts rather than the handoffs.
@@ -30,7 +30,7 @@ on U+0085 and U+2028, which occur inside JSON string values.
 
 Usage
 -----
-    python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py e97264c3 f58cf63e b4208d23 e21d1414 [--full]
+    python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py e97264c3 f58cf63e b4208d23 e21d1414 [--full]
 """
 
 from __future__ import annotations

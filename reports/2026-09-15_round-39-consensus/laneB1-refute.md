@@ -111,7 +111,7 @@ observed scale error above it."*
   ×2 at ~7.5e10. **The smallest demonstrated typo in the cache is MAA's 74,776,229,000 (7.48e10)**,
   not AIZ's 1.168e11.
 
-The populations **overlap across the bound**. The owner was being asked to ratify 1e11 against two
+The populations **overlap across the bound**. The Overtoad was being asked to ratify 1e11 against two
 numbers that are both wrong.
 
 ---

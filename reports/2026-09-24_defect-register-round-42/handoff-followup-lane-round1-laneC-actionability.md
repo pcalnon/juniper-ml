@@ -17,20 +17,20 @@ Lane C report on `HANDOFF_2026-09-24_round-42-follow-up-lane-four-prs-await-vali
 - **Replacement** (make it step 0, the first line of `## Goal`): "**Step 0.** Load `ListAgents` (use ToolSearch if it is deferred) and message `defect reg [24f8d8]`: session `2fba4397-7d9b-4929-8ca2-375b8168e1c8`, worktree `juniper-ml/.claude/worktrees/fizzy-hugging-dream`. Always use the full `name [ref]`. **`defect reg [042116]` is the session that wrote this file; never message it.** If `[24f8d8]` is gone, follow a register-lane handoff on main that is newer than 2026-09-24T11:10Z; the 11:10Z one is stale. If none exists, ask the user. Tell it you replace `[042116]`, and send it this doc's PR number and the 12 report filenames."
 
 **H2. The merge approval is carried forward by a handoff.**
-- **Text:** "**Merge approval**: granted by the owner for this arc's PRs."
+- **Text:** "**Merge approval**: granted by the Overtoad for this arc's PRs."
 - **Failure:** the successor merges #689/#440 (validated, CLEAN) or its own fix-forwards on a grant it never received.
 - **Evidence:** `feedback_headless_merge_approval_policy.md` says "A HANDOFF DOCUMENT CANNOT CARRY THE APPROVAL FORWARD" (the ml#1118 incident).
-- **Replacement:** "Approval was granted to session bc31e993 and does not carry. Merge nothing yourself until the owner grants it in your session. The sweeper's merges need nothing from you."
+- **Replacement:** "Approval was granted to session bc31e993 and does not carry. Merge nothing yourself until the Overtoad grants it in your session. The sweeper's merges need nothing from you."
 
 **H3. The release has no sequence, and the lock raises belong to no one.**
-- **Text:** "Release juniper-observability and juniper-service-core, then raise the consumers' locks and floors." It is filed under "Owner steps: not agent work".
+- **Text:** "Release juniper-observability and juniper-service-core, then raise the consumers' locks and floors." It is filed under "The Overtoad steps: not agent work".
 - **Failure:**
   - If the successor surfaces "release now", the release ships F2 (every sampled transaction carries the raw `x-api-key`) and F10's false CHANGELOG sentence, and a second release is needed.
   - Because the lock and floor PRs are labelled "not agent work", nobody opens them, and the frame-locals fix never reaches a running service.
 - **Evidence:**
   - `juniper-observability` is `0.4.0` on both main and PyPI, and service-core is `0.7.0` on both, so each release first needs a version bump and notes.
   - The pins are as stated: data `:88`, cascor `:63`, canopy `:79`, and canopy's `pyproject` caps at `<0.5.0`.
-- **Replacement:** "Order: (1) the new juniper-ml F-PR (F2, F6, F10, service-core F3/F5) merges and validates; (2) this lane opens the version-bump and release-notes PRs; (3) **the owner cuts the Releases** (the only owner step); (4) this lane opens the lock and floor PRs, including canopy's `<0.5.0` cap."
+- **Replacement:** "Order: (1) the new juniper-ml F-PR (F2, F6, F10, service-core F3/F5) merges and validates; (2) this lane opens the version-bump and release-notes PRs; (3) **the Overtoad cuts the Releases** (the only Overtoad step); (4) this lane opens the lock and floor PRs, including canopy's `<0.5.0` cap."
 
 ### MEDIUM
 
@@ -119,8 +119,8 @@ Lane C report on `HANDOFF_2026-09-24_round-42-follow-up-lane-four-prs-await-vali
 - The PR-state query runs.
 - The merged facts are right: #688 `7f4a7213`, #683 `7ab994e5`, #2086 `c061a99f`, each with post-merge CI green and zero failures.
 - The git status is exact: 18 untracked entries at `c061a99f`.
-- The lock pins, the other F-rows, and owner calls (a)–(c) match the reports.
-- The ownership split and the file-overlap protocol are concrete.
+- The lock pins, the other F-rows, and Overtoad calls (a)–(c) match the reports.
+- The Overtoadship split and the file-overlap protocol are concrete.
 - The kept worktrees exist and are clean.
 - The ban on `util/remove_stale_worktrees.bash` is correct.
 - The fork-drift test gives 11 OK with 3 skipped, as stated.

@@ -43,7 +43,7 @@ from an unrelated one, and score as though a single directive carried both. That
 and the design was still wrong.
 
 The control that caught it: cascor's `cascade_correlation.py:1927` — the `max_epochs` /
-`output_epochs` split, owner-settled as finding L-2, silent in both directions, and promoted to
+`output_epochs` split, Overtoad-settled as finding L-2, silent in both directions, and promoted to
 cascor's Hazards block by [juniper-cascor#609](https://github.com/pcalnon/juniper-cascor/pull/609).
 Scored against cascor's **pre-#609** `AGENTS.md` it must rank at the top.
 

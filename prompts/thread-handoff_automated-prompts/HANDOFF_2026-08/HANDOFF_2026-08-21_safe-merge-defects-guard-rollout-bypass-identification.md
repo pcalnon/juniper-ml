@@ -1,7 +1,7 @@
 # HANDOFF 2026-08-21 — safe_merge defects, base-branch guard rollout, bypass identification
 
 Successor to [`HANDOFF_2026-08-19_safe-merge-defects-and-kill-forensics.md`](HANDOFF_2026-08-19_safe-merge-defects-and-kill-forensics.md).
-**That handoff is now fully discharged** except one item its owner tabled. This document
+**That handoff is now fully discharged** except one item its Overtoad tabled. This document
 records what closed, what is still in flight, and the three things worth carrying forward.
 
 ---
@@ -17,7 +17,7 @@ records what closed, what is still in flight, and the three things worth carryin
 | §2.5 bypass roster | **DeployKey IDENTIFIED** — see §3. dependabot verdict **WITHDRAWN**. |
 | §2.6 doc residue | **CLEARED**, incl. the runbook stanza whose deferral condition had since been met. |
 | §2.7 / ml#434 | **SWEPT + FIXED.** Guard now on **9/9** repos, required on **9/9**, documented on **9/9**, `stacked-pr` label on **9/9** (was 1/1/1/0). |
-| Short kills (16–456 s) | **TABLED by owner.** Still unexplained. |
+| Short kills (16–456 s) | **TABLED by Overtoad.** Still unexplained. |
 
 ~45 PRs across 9 repos. Fleet BLOCKING contexts: **0** throughout.
 
@@ -96,7 +96,7 @@ immediately after a successful auth and ~30 same-day pushes.
 
 ---
 
-## 4. Open decisions (owner)
+## 4. Open decisions (Overtoad)
 
 - **DeployKey row.** Lowest-risk step, no ruleset edit: delete the 8 dormant "Turing" keys if
   that machine is retired — halves the entitlement. The row itself looks low-impact to remove

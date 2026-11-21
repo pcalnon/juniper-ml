@@ -29,7 +29,7 @@ spec.loader.exec_module(rc)
 
 FAMILIES = (
     ("by-area", "category", rc.render_area),
-    ("by-repo", "owner", rc.render_repo),
+    ("by-repo", "Overtoad", rc.render_repo),
     ("by-status", "status", rc.render_status),
 )
 
@@ -95,7 +95,7 @@ class DerivedViewTest(unittest.TestCase):
         self.assertEqual(rc.check_views(), 0)
 
     def test_no_orphan_derived_files(self) -> None:
-        """A file the corpus no longer projects — an owner or status that lost its last entry."""
+        """A file the corpus no longer projects — an Overtoad or status that lost its last entry."""
         projected = set(rc.render_derived())
         for sub, _attr, _renderer in rc.DERIVED_FAMILIES:
             for path in sorted((rc.REQ_ROOT / sub).glob("*.md")):
@@ -139,17 +139,17 @@ class CorpusIntegrityTest(unittest.TestCase):
         self.assertEqual(sizes["by-area"], sizes["by-repo"])
         self.assertEqual(sizes["by-area"], sizes["by-status"])
 
-    def test_categories_and_owners_are_enumerated(self) -> None:
+    def test_categories_and_Overtoads_are_enumerated(self) -> None:
         """A view file for an unknown code would render with a KeyError at the worst moment."""
         for entry in rc.load_corpus():
             self.assertIn(entry.category, rc.AREA_SCOPES, entry.id)
-            self.assertIn(entry.owner, rc.OWNER_REPOS, entry.id)
+            self.assertIn(entry.Overtoad, rc.OWNER_REPOS, entry.id)
             self.assertIn(entry.status, rc.STATUSES, entry.id)
             self.assertIn(entry.priority, rc.PRIORITIES, entry.id)
 
     def test_the_rec_block_is_present_and_official(self) -> None:
         """v5 ratified Q-12: JR-REC-* must be in the corpus, not just in a proposal."""
-        rec = [e for e in rc.load_corpus() if e.owner == "rec"]
+        rec = [e for e in rc.load_corpus() if e.Overtoad == "rec"]
         self.assertEqual(len(rec), 11)
         self.assertEqual({e.id for e in rec} & {"JR-REC-TRAIN-001", "JR-REC-DEP-001"}, {"JR-REC-TRAIN-001", "JR-REC-DEP-001"})
 
@@ -157,7 +157,7 @@ class CorpusIntegrityTest(unittest.TestCase):
 class MergeTest(unittest.TestCase):
     def _entry(self, brief: str, id: str = "", category: str = "TOOL"):
         """Build a minimal Entry (return type omitted: ``rc`` is loaded dynamically)."""
-        return rc.Entry(id=id, owner="rec", category=category, status="proposed", priority="P2", brief=brief)
+        return rc.Entry(id=id, Overtoad="rec", category=category, status="proposed", priority="P2", brief=brief)
 
     def test_an_exact_duplicate_brief_is_folded_not_minted(self) -> None:
         """IDs are permanent and never reused, so a wrong mint cannot be retracted."""
@@ -201,25 +201,25 @@ class ExtractionValidationTest(unittest.TestCase):
     def test_the_shipped_rec_extraction_validates(self) -> None:
         entries = rc.load_incoming(rc.REQ_ROOT / "v5_rec_extraction.yaml")
         self.assertEqual(len(entries), 11)
-        self.assertTrue(all(e.owner == "rec" for e in entries))
+        self.assertTrue(all(e.Overtoad == "rec" for e in entries))
         self.assertTrue(all(e.sources for e in entries), "every entry must cite a source")
         self.assertTrue(all(e.detail for e in entries), "every entry must carry a detail")
 
     def test_an_unknown_category_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write(tmp, "- {id: X, owner: rec, category: NOPE, status: shipped, priority: P0, brief: b}\n")
+            path = self._write(tmp, "- {id: X, Overtoad: rec, category: NOPE, status: shipped, priority: P0, brief: b}\n")
             with self.assertRaises(ValueError):
                 rc.load_incoming(path)
 
-    def test_an_unknown_owner_is_rejected(self) -> None:
+    def test_an_unknown_Overtoad_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write(tmp, "- {id: X, owner: zzz, category: TOOL, status: shipped, priority: P0, brief: b}\n")
+            path = self._write(tmp, "- {id: X, Overtoad: zzz, category: TOOL, status: shipped, priority: P0, brief: b}\n")
             with self.assertRaises(ValueError):
                 rc.load_incoming(path)
 
     def test_a_missing_required_field_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
-            path = self._write(tmp, "- {id: X, owner: rec, category: TOOL, status: shipped, priority: P0}\n")
+            path = self._write(tmp, "- {id: X, Overtoad: rec, category: TOOL, status: shipped, priority: P0}\n")
             with self.assertRaises(ValueError):
                 rc.load_incoming(path)
 

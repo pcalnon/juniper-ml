@@ -6,7 +6,7 @@
 
 **By category**: SEC=13 | OBS=9 | API=4 | DATA=2 | TRAIN=2 | WS=2 | ARCH=2 | PERF=2 | DEP=2 | UI=1 | TEST=1
 
-**By owner**: ml=31 | cas=4 | dat=3 | dep=1 | rec=1
+**By Overtoad**: ml=31 | cas=4 | dat=3 | dep=1 | rec=1
 
 ---
 
@@ -329,7 +329,7 @@ Settled position C-24 from R3-03 table; cross-round consensus consolidation
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor-worker · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor-worker · **Status:** deferred
 
 **Notes**:
 
@@ -514,4 +514,4 @@ remove legacy spiral generator from spiral_problem.py.
 
 **Detail**:
 
-Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an owner call; nothing blocks on it.
+Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an Overtoad call; nothing blocks on it.

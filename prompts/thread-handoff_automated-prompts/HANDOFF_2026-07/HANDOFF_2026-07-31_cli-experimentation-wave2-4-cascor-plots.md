@@ -1,6 +1,6 @@
 # HANDOFF 2026-07-31 — CLI Experimentation Program: continue with Wave 2.4 (cascor plot set)
 
-Continue executing the CLI test/validation/experimentation program for juniper-cascor + juniper-recurrence (plan of record: `notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`; owner ratified all Q-1..Q-12).
+Continue executing the CLI test/validation/experimentation program for juniper-cascor + juniper-recurrence (plan of record: `notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`; Overtoad ratified all Q-1..Q-12).
 
 ## Completed so far
 
@@ -17,9 +17,9 @@ Continue executing the CLI test/validation/experimentation program for juniper-c
 
 - **Read the memory file first**: `project_cascor_recurrence_cli_experimentation_plan.md` — the Wave-2.2/2.3 paragraphs record the implementation truths (cascor envelope vs recurrence raw models, ports.json contract, `RequestTimeout` budget semantics, staged-Literal aliases, the no-`--params` CLI constraint, nested recurrence repo layout).
 - Driver test idiom: scripted stub `http.server` plays all services; `RedactedEnv` for subprocess arms; `sys.path.insert(REPO_ROOT/"util")` + `from experiments import run_experiment`.
-- Headless commits need `git -c commit.gpgsign=false commit`. Merging: unsigned commits leave PRs OPEN/BLOCKED under the `required_signatures` ruleset — the owner merges with the admin bypass (`gh pr merge --squash --admin` completed the owner-stated merges of ml#878/#879 this session).
+- Headless commits need `git -c commit.gpgsign=false commit`. Merging: unsigned commits leave PRs OPEN/BLOCKED under the `required_signatures` ruleset — the Overtoad merges with the admin bypass (`gh pr merge --squash --admin` completed the Overtoad-stated merges of ml#878/#879 this session).
 - CI already installs numpy for the driver tests; matplotlib will need the same treatment in the tests job when Wave 2.4 lands (mirror the numpy install-comment pattern).
-- Owner decision still pending (not urgent): recurrence `namespace="juniper_recurrence"` alignment vs shipped generic-family scoping. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
+- The Overtoad decision still pending (not urgent): recurrence `namespace="juniper_recurrence"` alignment vs shipped generic-family scoping. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
 
 ## Verification for the new thread
 

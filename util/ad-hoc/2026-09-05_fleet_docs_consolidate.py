@@ -21,7 +21,7 @@ NOTE THE NEIGHBOUR. `util/ad-hoc/2026-09-05_markdown_structure_check.py` and
 first is the screen `util/markdown_structure_delta.py` imports and is wired into CI; the
 second is a separate verifier with known blind spots. Neither is this file.
 
-Retained as provenance of record (owner policy 2026-08-25), not as a usable tool.
+Retained as provenance of record (Overtoad policy 2026-08-25), not as a usable tool.
 
 Project: juniper-ml
 Sub-Project: fleet triage / Cursor-fleet PR-flood remediation (round 2)

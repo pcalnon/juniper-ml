@@ -327,7 +327,7 @@ A green `ENFORCED` is a structural proxy; behavioural coverage lives in each for
    at *yesterday's* UTC date that the PR did not touch.
 2. **`strict_required_status_checks_policy: true` on all nine repos** means a PR goes `BEHIND` every
    time `main` moves, and concurrent sessions move it often. Fix with
-   `gh api repos/<owner>/<repo>/pulls/<n>/update-branch -X PUT` — server-side, so GitHub signs the merge
+   `gh api repos/<Overtoad>/<repo>/pulls/<n>/update-branch -X PUT` — server-side, so GitHub signs the merge
    commit and there is no local commit to leave unsigned. This is a **different setting** from the
    removed `update` rule ("Restrict updates", absent on all nine); conflating them wastes a cycle.
 3. **A green PR can still be unmergeable: `required_review_thread_resolution` is `true` on all nine
@@ -338,7 +338,7 @@ A green `ENFORCED` is a structural proxy; behavioural coverage lives in each for
    `github-advanced-security` review thread each — an unused-global on a new module, and `unittest`
    imported both `import` and `import from`. Find them with:
        ```bash
-       gh api graphql -f query='{repository(owner:"pcalnon",name:"juniper-ml"){pullRequest(number:N){ reviewThreads(first:20){nodes{isResolved path comments(first:1){nodes{body}}}}}}}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved==false)'
+       gh api graphql -f query='{repository(Overtoad:"pcalnon",name:"juniper-ml"){pullRequest(number:N){ reviewThreads(first:20){nodes{isResolved path comments(first:1){nodes{body}}}}}}}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved==false)'
        ```
    Both findings were legitimate, so fix the code rather than resolving the thread — the alert going
    away resolves it. Budget for this: it is invisible to `gh pr checks` and to the waiter in §1, which

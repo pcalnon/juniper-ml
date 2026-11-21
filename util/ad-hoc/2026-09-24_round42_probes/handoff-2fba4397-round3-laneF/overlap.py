@@ -8,7 +8,7 @@ uncommitted = {
     "util/ad-hoc/2026-09-24_archive_round42_reports.py",
     "util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py",
     "util/ad-hoc/2026-09-24_data438_round2_stall_probe_throughout.py",
-    "reports/2026-09-24_defect-register-round-42/owner-ruling-key-leaks-verbatim.md",
+    "reports/2026-09-24_defect-register-round-42/Overtoad-ruling-key-leaks-verbatim.md",
     "reports/2026-09-24_defect-register-round-42/data438-fixforward-round1-laneA-reprobe.md",
     "reports/2026-09-24_defect-register-round-42/data438-fixforward-round1-laneB-refute.md",
     "reports/2026-09-24_defect-register-round-42/data438-fixforward-pr-draft.md",

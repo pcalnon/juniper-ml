@@ -17,7 +17,7 @@ Every "L" number refers to the named document.
 
 ### HIGH
 
-**H1. CodeQL blocks #2097, but C treats it as landable and leaves its block out of the owner decisions.** This is new state that no source could have recorded.
+**H1. CodeQL blocks #2097, but C treats it as landable and leaves its block out of the Overtoad decisions.** This is new state that no source could have recorded.
 - **C says:**
   - L51-54: "**Land the three handoff PRs, with your grant:** - #2097 (Lane F's evidence); … - juniper-ml#2089 (Lane R's probes), which is blocked by CodeQL".
   - L175 comments `gh pr view 2097`: "OPEN at writing".
@@ -30,9 +30,9 @@ Every "L" number refers to the named document.
 - **Consequence:**
   - The successor asks for a grant to land a PR that cannot merge.
   - Appendix B's decision set is incomplete.
-  - The closes PR's "Cite Lane F's archived reports (#2097) by filename" (L256) cites files that stay off `main` until the owner rules.
+  - The closes PR's "Cite Lane F's archived reports (#2097) by filename" (L256) cites files that stay off `main` until the Overtoad rules.
 - **Change:**
-  - L52 to: "#2097 (Lane F's evidence), which CodeQL also blocks: 45 new alerts, 3 high (`py/clear-text-logging-sensitive-data` in `…/bytes-compare-ml2086-data440-cascor689-vbytes/surrogate_config_probe.py:29`, `sentry_deep_probe.py:196` and `:201`), failed 01:23:44Z on `2e4917c2`; the owner's call (Appendix B);"
+  - L52 to: "#2097 (Lane F's evidence), which CodeQL also blocks: 45 new alerts, 3 high (`py/clear-text-logging-sensitive-data` in `…/bytes-compare-ml2086-data440-cascor689-vbytes/surrogate_config_probe.py:29`, `sentry_deep_probe.py:196` and `:201`), failed 01:23:44Z on `2e4917c2`; the Overtoad's call (Appendix B);"
   - L175's comment to "OPEN, BLOCKED (CodeQL) at writing", and add `gh pr checks 2097 --repo pcalnon/juniper-ml | grep -i codeql   # fail at writing`.
   - Appendix B L287 to "**#2089's and #2097's CodeQL blocks, and #2081's.**", with a sub-bullet: "#2097: 45 new alerts, 3 high (above); the same options and the same prohibition."
   - L256: append "they reach `main` only when #2097 does."
@@ -60,12 +60,12 @@ Every "L" number refers to the named document.
 - **C L115-117** keeps "files move under you", but its steps rebuild only from `origin/main`.
 - **Why it matters:**
   - Work 2 and Work 4 push whole-file fixups to OPEN PRs (#689, #440, #690).
-  - C L37 itself says the owner's account adds commits to open PRs, and the sweeper update-branches them.
+  - C L37 itself says the Overtoad's account adds commits to open PRs, and the sweeper update-branches them.
   - Appendix F says the HEADs of the #689 and #440 worktrees are local copies (`24103c23`, `5bd5eec5`).
   - A fixup rebuilt from `origin/main` or from a worktree HEAD reverts whatever landed on the PR head.
-- **Add under L116:** "- On an OPEN PR, also re-read the PR head's copy of each file you overwrite (`gh api 'repos/pcalnon/<repo>/contents/<path>?ref=<headRefOid>'`): update-branch merges and the owner's commits land there (#2077's `095a2108`, canopy#685's two), and a fixup rebuilt from `origin/main` or a worktree HEAD reverts them."
+- **Add under L116:** "- On an OPEN PR, also re-read the PR head's copy of each file you overwrite (`gh api 'repos/pcalnon/<repo>/contents/<path>?ref=<headRefOid>'`): update-branch merges and the Overtoad's commits land there (#2077's `095a2108`, canopy#685's two), and a fixup rebuilt from `origin/main` or a worktree HEAD reverts them."
 
-**M3. The owner questions lost their per-lane owner, so after a split the owner is asked twice** (D1-131).
+**M3. The Overtoad questions lost their per-lane Overtoad, so after a split the Overtoad is asked twice** (D1-131).
 - **D1 L263:** "**The peer lane asks these; record the answers here.** … Do not ask them again." That covers the releases, #685's calls (a)-(c) and the Sentry purge.
 - **D2 L109-127 (OPEN 5)** gives Lane F the releases, #685's calls, the stray branches, the Sentry project and cleanup.
 - **D1 L251-261** gives Lane R #437, APD-ML-008, the CodeQL blocks, the next data release, MEMORY.md and the FYI. It also lists the stray branches.
@@ -105,7 +105,7 @@ Every "L" number refers to the named document.
   - juniper-ml#2096 was opened at 01:19:18Z (canopy combined, head `00e9eb2d`).
   - It carries the canopy E2E handoff as its predecessor A, in `reports/2026-09-24_canopy-combined-handoff-consensus/r1/predecessors/…followup-684.md`.
   - Its F10 says "canopy#685 exists now … Record FIXED-BY #685". Its draft's A2(a) holds the fourth item.
-  - C L243-249 cites only the untracked copies and says 060 "has no owner".
+  - C L243-249 cites only the untracked copies and says 060 "has no Overtoad".
   - Add: "canopy combined [577a1c] now carries all four in juniper-ml#2096 (its F9, F10, A2(a)); send it #685's validation outcome, because its ledger records 061/062 as FIXED-BY #685."
 - **L2. The stale canopy comment moved out of Lane F's fix-forward** (D2-032).
   - D2 L82 (OPEN 2): "A stale comment, at canopy `test_cascor_service_adapter_gate_coverage.py:49-50` … can ride any later canopy PR."
@@ -138,7 +138,7 @@ Every "L" number refers to the named document.
   - Restore the fields.
 - **L9. Nothing checks the inventory of the files that must ship** (D1-081).
   - D1 L154: `git status --short   # 17 entries`. C dropped it.
-  - The sandbox refuses `git -C` there, so add: `ls /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fizzy-hugging-dream/reports/2026-09-24_defect-register-round-42/ | grep -c -e data438-fixforward -e handoff-2fba4397 -e handoff-consolidated -e owner-ruling-key-leaks`, with the count at writing.
+  - The sandbox refuses `git -C` there, so add: `ls /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fizzy-hugging-dream/reports/2026-09-24_defect-register-round-42/ | grep -c -e data438-fixforward -e handoff-2fba4397 -e handoff-consolidated -e Overtoad-ruling-key-leaks`, with the count at writing.
 - **L10. Appendix I does not map "every item of all three"** (C L16).
   - The D3 table has no rows for D3's Completed, Verification commands, Git status or Appendix, and none of S's items are mapped.
   - I checked them: all are done or overtaken (tables below).
@@ -167,7 +167,7 @@ Every "L" number refers to the named document.
 - **N15.** The pkill trap lost "and run pkill as its own command" (D2 L177).
 - **N16.** C L207 says `happy-skipping-hollerith` is "clean". It holds untracked files, all of which are on `main` or in #2097 (checked by name).
 - **N17.** The reason for the `git show … | diff` form was dropped: "`git diff origin/main -- <untracked>` fakes deletions" (D3 L55).
-- **N18.** L237 cites "the ruling" without naming its file, `owner-rulings-verbatim.md` (D3 L15, S L45).
+- **N18.** L237 cites "the ruling" without naming its file, `Overtoad-rulings-verbatim.md` (D3 L15, S L45).
 - **N19.** `util/ad-hoc/2026-09-24_verify_data_0_16_0_notes_match_tag.py` (D3 L18, on `main`) could serve Appendix C's "[0.16.0] stays byte-identical" check.
 - **N20.** S L58's "codeql.yml = advanced setup, +security-and-quality, no config/paths-ignore" bears on the paths-ignore option.
 - **N21.** S L33-34: the peer's juniper-ml PR "will report any other REFERENCE.md / root CHANGELOG.md sections it touches". That promise is not carried.
@@ -184,7 +184,7 @@ Every "L" number refers to the named document.
 | Whether to message [042116] | Never (D2) | Yes, but unstated (N1) |
 | D1 "Never merge another lane's PRs" | One successor, or a split by lane | Yes |
 | Recurrence lock path | D2's full path `:70/:74` | Yes |
-| Who asks the owner questions | Nobody named (M3) | No |
+| Who asks the Overtoad questions | Nobody named (M3) | No |
 
 ## Item tables
 
@@ -251,7 +251,7 @@ P = PRESENT, A = ALTERED, L = LOST, R = RETIRED. Ranges group consecutive items 
 | D2-009 | Step 0.1 messaging | L31, L47-49 | A (N11) |
 | D2-010 | No successor → ask the user | — | R |
 | D2-011 | Own grant; ml#1118 | L39 | A (N11) |
-| D2-012–023 | Sweeper; owner commits; timing; split; scopes; merged table | L13-38, L58-60, App H | P |
+| D2-012–023 | Sweeper; Overtoad commits; timing; split; scopes; merged table | L13-38, L58-60, App H | P |
 | D2-024 | #690, not armed | L89 | A (N12) |
 | D2-025–029 | #690 what, how, probes, then; #685 target | L89, L235, L390-403 | P |
 | D2-030 | What #685 closes | L223, L404-407 | A (N13) |
@@ -286,7 +286,7 @@ P = PRESENT, A = ALTERED, L = LOST, R = RETIRED. Ranges group consecutive items 
 | D3-011–013 | Peer in flight; validate #438; second fix-forward | App I; #2088 (spot-checked register L527, L1737, L1302 on main) | R |
 | D3-014–015 | Closes PR; canopy nit | App A; the fix is in the canopy E2E handoff `:53-66` | P |
 | D3-016 | Four reports | #2084 (file list checked) | R |
-| D3-017–018 | Owner decisions; strict | App B, L128 | P |
+| D3-017–018 | The Overtoad decisions; strict | App B, L128 | P |
 | D3-019 | Whole-file trap reason | L116 | A (N17) |
 | D3-020–022 | §2 line; /tmp; `gh pr edit` | L133, L155, L130 | P |
 | D3-023–024 | Verification commands; hazy-beaming-map | overtaken; L10 | R |
@@ -330,7 +330,7 @@ P = PRESENT, A = ALTERED, L = LOST, R = RETIRED. Ranges group consecutive items 
 - Appendix E's anchors (lane F re-verifies them).
 - The primer harness counts, which need the tmpfs venv.
 - The four turn-ending reports' bytes against their transcripts.
-- Whether canopy combined accepts ownership of F-060–062.
+- Whether canopy combined accepts Overtoadship of F-060–062.
 
 **Side effects.** In this worktree I ran `git fetch origin` (which added a remote-tracking ref for `docs/handoff-data-0-16-0-egress-guards-fail-closed`), plus the read-only register checks and archiver `--check`. My scratch files in `hc1/laneO/` are deleted; `/tmp` is at 82% of its inodes.
 

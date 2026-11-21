@@ -1,7 +1,7 @@
 # Handoff: canopy selection arc — six PRs queued, the live-swap / restart mirror staged
 
-**Date**: 2026-09-23 · **Predecessor**: `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md`
-(same directory; items 1–23 below are its numbering) · **Merge approval**: granted by the owner for this arc.
+**Date**: 2026-09-23 · **Predecessor**: `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md`
+(same directory; items 1–23 below are its numbering) · **Merge approval**: granted by the Overtoad for this arc.
 
 ## Goal
 
@@ -15,14 +15,14 @@ and run item 18.
 |---|---|---|
 | juniper-cascor#676 | 09-23 | the status payload carries `current_dataset`: `None` / `{"dataset_type": None}` / the config it was loaded from |
 | juniper-canopy#662 (`2f973ca2`) | 02:18 | design PR 2: mount hydration on **both** axes, `GET /api/selection`, G7 + Y3 |
-| juniper-ml#2037 (`91da4b0e`) | 05:47 | design docs; the **item-22 owner ruling**: the restart modal keeps its `enabled[0]` swap as a recorded OQ-6 exception (§5.6.1 point 4 of `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`) |
+| juniper-ml#2037 (`91da4b0e`) | 05:47 | design docs; the **item-22 Overtoad ruling**: the restart modal keeps its `enabled[0]` swap as a recorded OQ-6 exception (§5.6.1 point 4 of `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`) |
 | juniper-canopy#665 (`7950bf9e`) | 06:17 | registry repairs, items 7, 10, 11, 12, 14 (G11 over every seed; equities re-measured at 5.0.0) |
 | juniper-ml#2036 (`afcd9e2d`) | 06:21 | `util/push_signed_commit.py`: a pinned signed commit onto an existing branch |
 | juniper-canopy#664 (`39ee09f8`) | 06:54 | WS connect-ordering test; three loop tests poll instead of timing the runner |
 
-**Item 19** (owner ruled "add the equities extra"): juniper-data#421 merged 00:56Z (`68c3cd7c`). **No release
+**Item 19** (Overtoad ruled "add the equities extra"): juniper-data#421 merged 00:56Z (`68c3cd7c`). **No release
 contains it**: v0.15.0 lacks yfinance, and juniper-ml#2033 floors the meta-package at `>=0.15.0`. A juniper-data
-release is the owner's call (deploys are owner-approved).
+release is the Overtoad's call (deploys are Overtoad-approved).
 
 ### Remaining work, in order
 
@@ -52,7 +52,7 @@ release is the owner's call (deploys are owner-approved).
    Re-derive line numbers, which drift. Confirm M6 ("§4.5 has no test") before stating it.
 5. **Item 18 (A-N2)**: generate → stage → train → render, through canopy, once per §12-seeded generator. It has
    never been run; see the traps for the stack.
-6. **Ask the owner: item 15 (X8)**, and A-N9 with it. juniper-data's `equities_seq` emits **both** `y`
+6. **Ask the Overtoad: item 15 (X8)**, and A-N9 with it. juniper-data's `equities_seq` emits **both** `y`
    (one-hot next-day direction) and `y_reg` (the regression target), and declares `task_type="classification"`
    (`juniper_data/api/routes/generators.py`). canopy labels it `regression`. Relabelling leaves the LMU **zero**
    datasets (pinned by `TestX8TaskTypeDivergenceIsDeliberate`). Options:

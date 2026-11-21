@@ -37,7 +37,7 @@ pip install juniper-data[api]        # Installs the dataset generation service
 pip install juniper-cascor[all]      # Installs the CasCor backend with all extras
 ```
 
-Additionally, transfer all packages to the **Overtoad Research** GitHub organization for long-term ownership and branding.
+Additionally, transfer all packages to the **Overtoad Research** GitHub organization for long-term Overtoadship and branding.
 
 ---
 
@@ -61,7 +61,7 @@ Additionally, transfer all packages to the **Overtoad Research** GitHub organiza
 
 ### Repository Locations
 
-| Package | Repository | Owner |
+| Package | Repository | The Overtoad |
 |---------|-----------|-------|
 | `juniper-ml` | `pcalnon/juniper` | pcalnon |
 | `juniper-data` | `pcalnon/juniper-data` | pcalnon |
@@ -345,7 +345,7 @@ Transfer all Juniper repositories and PyPI packages from `pcalnon` to the `Overt
 - [ ] Create the `OvertoadResearch` organization on GitHub
   - Settings > Organizations > New organization
   - Choose a plan (Free tier is sufficient for public repos)
-  - Add `pcalnon` as owner
+  - Add `pcalnon` as Overtoad
 
 - [ ] Create the `OvertoadResearch` organization on PyPI
   - PyPI > Account Settings > Organizations > Create organization
@@ -358,9 +358,9 @@ Transfer all Juniper repositories and PyPI packages from `pcalnon` to the `Overt
 
 For each repository:
 
-1. **Transfer repository ownership**
-   - GitHub > Repository > Settings > Danger Zone > Transfer ownership
-   - New owner: `OvertoadResearch`
+1. **Transfer repository Overtoadship**
+   - GitHub > Repository > Settings > Danger Zone > Transfer Overtoadship
+   - New Overtoad: `OvertoadResearch`
    - GitHub automatically creates a redirect from `pcalnon/<repo>` to `OvertoadResearch/<repo>`
    - **Warning**: This changes the repository URL. All git remotes, CI references, and trusted publisher configs must be updated.
 
@@ -379,13 +379,13 @@ For each repository:
 
 ### 5.3 PyPI Package Transfer
 
-PyPI does not support transferring ownership between accounts the same way GitHub does. Options:
+PyPI does not support transferring Overtoadship between accounts the same way GitHub does. Options:
 
 #### Option A: Add Organization as Maintainer (Recommended)
 
 1. On PyPI, go to each project > Settings > Collaborators
 2. Add the `OvertoadResearch` organization (or its members) as **Owner**
-3. Optionally remove `pcalnon` as sole owner (keep as collaborator)
+3. Optionally remove `pcalnon` as sole Overtoad (keep as collaborator)
 4. Repeat for TestPyPI
 
 #### Option B: Re-publish Under Organization
@@ -393,7 +393,7 @@ PyPI does not support transferring ownership between accounts the same way GitHu
 If PyPI organization accounts become available:
 1. Create the organization on PyPI
 2. Configure trusted publishing from the new `OvertoadResearch/<repo>` GitHub repos
-3. Publish new versions — the package name stays the same; ownership transfers via collaborator settings
+3. Publish new versions — the package name stays the same; Overtoadship transfers via collaborator settings
 
 ### 5.4 Update Trusted Publishing Configuration
 

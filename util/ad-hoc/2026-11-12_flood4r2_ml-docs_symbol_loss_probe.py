@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc -- investigation (claim evidence for the Cursor flood-4 round-2 docs carrier, draft juniper-ml#2483)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (round 2);
          juniper-ci-tools/juniper_ci_tools/symbol_loss_check.py (``classify_file``)
 

@@ -34,7 +34,7 @@ base. Land it or commit it before anything else.
 
 ## 1. Shipped — do NOT redo
 
-**Merged: 1 cascor + 6 juniper-ml.** `ml#1357` is open. ⚠ Other sessions also have PRs open (e.g. #1356, #1359 at handoff time) — they are NOT this arc's; check ownership before assuming.
+**Merged: 1 cascor + 6 juniper-ml.** `ml#1357` is open. ⚠ Other sessions also have PRs open (e.g. #1356, #1359 at handoff time) — they are NOT this arc's; check Overtoadship before assuming.
 
 | PR | what |
 |---|---|
@@ -332,7 +332,7 @@ another loss. Four such nudges produced four wasted runs and zero progress.
 Working pattern (merge queues are settled-unavailable). ⚠ **Check the two preconditions first** —
 the safety guarantee below is conditional, and `util/safe_merge.py` (~:56, :388-398) documents why:
 where `allow_auto_merge` is false, `--auto` **does not arm at all — it silently falls back to an
-immediate merge**, which with the owner's `always` ruleset bypass can land a PR whose checks never
+immediate merge**, which with the Overtoad's `always` ruleset bypass can land a PR whose checks never
 finished.
 
 ```bash

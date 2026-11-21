@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Remove two rescore appends that were made without the owner ruling that authorises them.
+"""Remove two rescore appends that were made without the Overtoad ruling that authorises them.
 
 Project:     Juniper
 Sub-Project: juniper-ml
@@ -8,14 +8,14 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-09-16
 Status:      ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md Sec 7
 
 Why
 ---
-Section 7 of that note lists three owner questions. Item 1 is WHICH RETRIEVAL STANDARD BINDS;
+Section 7 of that note lists three Overtoad questions. Item 1 is WHICH RETRIEVAL STANDARD BINDS;
 item 2 is WHETHER THE SECTION 4 ROWS ARE RE-SCORED, and it says in terms that a downward
-re-score "is a schema change, not a data edit". On 2026-09-15 the owner ruled item 1
+re-score "is a schema change, not a data edit". On 2026-09-15 the Overtoad ruled item 1
 (MECHANISM-CHECKED). I made the schema change AND the data edit on that authority. Only the
 schema change was authorised.
 

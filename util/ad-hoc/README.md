@@ -2,7 +2,7 @@
 
 This directory is the home for scripts that:
 
-- Will run once (or a handful of times) and then be **retained as provenance** of the work they produced (retention policy, owner decision 2026-08-25 — see Lifecycle below).
+- Will run once (or a handful of times) and then be **retained as provenance** of the work they produced (retention policy, Overtoad decision 2026-08-25 — see Lifecycle below).
 - Are work-in-progress and not yet ready for promotion to `util/` proper.
 - Support a one-off investigation, migration, or analysis tied to a specific PR / incident.
 
@@ -27,7 +27,7 @@ Sub-Project: ad-hoc tooling
 Author: <name>
 Created: YYYY-MM-DD
 Status: ad-hoc — <intent: one-off | wip | migration | investigation>
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: <PR #, incident, or notes/ doc>
 """
 ```
@@ -43,7 +43,7 @@ Related: <PR #, incident, or notes/ doc>
 # Author:     <name>
 # Created:    YYYY-MM-DD
 # Status:     ad-hoc — <one-off | wip | migration | investigation>
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    <PR #, incident, notes/ doc>
 set -euo pipefail
 ```
@@ -82,8 +82,8 @@ An unresolved CodeQL review thread blocks the merge even when the `Analyze (pyth
 | **Created**                           | Place here. Include the header above; under the retention policy the `Retire when:` field reads `RETAINED`.       |
 | **Used for its purpose**              | Commit any non-trivial output / log alongside the script (e.g., in `notes/`) so the artifact survives the script. |
 | **Graduates to permanent utility**    | Move to `util/<name>` (drop `ad-hoc` from the header `Status:`). Update any docs that referenced the old path.    |
-| **Retained (the default)**            | **Owner decision 2026-08-25: ad-hoc scripts carry no retirement deadline.** They are kept in place as the provenance of how evidence, migrations, and one-off analyses were produced, even after their purpose completes. Pre-policy `Retire when:` conditions were rewritten to `RETAINED (…) Previously: <condition>` so the historical trigger stays readable. |
-| **Retired (exceptional, owner-directed only)** | Only on an explicit owner decision — never as routine cleanup. Move to `util/ad-hoc/retired/` with the retirement date in the filename; do not plain-delete. |
+| **Retained (the default)**            | **The Overtoad decision 2026-08-25: ad-hoc scripts carry no retirement deadline.** They are kept in place as the provenance of how evidence, migrations, and one-off analyses were produced, even after their purpose completes. Pre-policy `Retire when:` conditions were rewritten to `RETAINED (…) Previously: <condition>` so the historical trigger stays readable. |
+| **Retired (exceptional, Overtoad-directed only)** | Only on an explicit Overtoad decision — never as routine cleanup. Move to `util/ad-hoc/retired/` with the retirement date in the filename; do not plain-delete. |
 
 **Example (juniper-ml#928):** the seven `2026-07-28_flood_census_*` / `docs_census_*` / `fp_transition_c2` investigation scripts were moved to `util/ad-hoc/retired/` with a `_RETIRED-2026-08-05` suffix once the flood-remediation analysis landed and `util/sequence_safety/` + `util/fleet_triage/predict_merge.py` became the live screens. Keeping the retired files in-repo preserves notes/ appendix and provenance comments that still name the old paths.
 
@@ -254,7 +254,7 @@ Operator contract: [`docs/REFERENCE.md` § Worktree Divergence](../../docs/REFER
 `e2e_finding_triage.py` is the mechanical P0/P1 open-count for Phase 2's exit criterion. It reads only line-starting `**F-<AREA>-<NNN> — …**` headers in the evidence ledger.
 
 - `FIXED` / `HEALED` in the last 170 characters of the header → closed. Wins over `ACCEPTED` and `WITHDRAWN` in that same tail.
-- `ACCEPTED` in that tail, and not also FIXED → owner-deferred. Third disposition: not FIXED, not OPEN. Wins over `WITHDRAWN`.
+- `ACCEPTED` in that tail, and not also FIXED → Overtoad-deferred. Third disposition: not FIXED, not OPEN. Wins over `WITHDRAWN`.
 - `WITHDRAWN` in that tail, and neither of the above → the finding was wrong. Fourth disposition: prints `WITHDR`. Not open, not fixed, not accepted. The word only counts inside the tail (`F-CANOPY-050` repeats it there; the copy at the start of its 383-character header does not count).
 - `--open-only` hides FIXED, ACCEPTED, and WITHDRAWN rows; the totals block still counts every finding, including `withdrawn`.
 - Always exits 0. A green shell is not "no open P0/P1".
@@ -760,9 +760,9 @@ The ledger's Phase 9.
   applied by hand, so a replay onto a moved `main` must re-apply that bullet.
 - **`2026-09-24_phase9_ledger_round2_corrections.py`** to **`…_round10_corrections.py`**: the round-2 to
   round-9 fix passes, and round 10's record of the review's termination, with no hand edit to the ledger.
-- **`2026-09-24_owner_answer_extract.py`**: prints chosen records of a session transcript, by line number, with
+- **`2026-09-24_Overtoad_answer_extract.py`**: prints chosen records of a session transcript, by line number, with
   e-mail addresses and the token shapes its docstring lists redacted; any other shape is printed. Round 5 used
-  it for the owner's answer to the sweeper question.
+  it for the Overtoad's answer to the sweeper question.
 - **`2026-09-24_secret_shape_check.py`**: tests the secret and e-mail shapes of the answer extractor, the launch
   scan, the round-2 archive tool and the report archiver (`2026-09-23_archive_consensus_reports_by_round.py`,
   whose `--allow-shape` gate it also tests) against constructed fake values, both ways, printing labels only.

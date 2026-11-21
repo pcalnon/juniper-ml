@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-21
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor#659, juniper-ml#1974, and 2026-09-21_register_close_cascor005.py
 
 THIS SCRIPT IS THE PROTOCOL WORKING. The close protocol says: run a whole-file
@@ -16,7 +16,7 @@ skimmed past). Both fixes below were found that way, and the first is a defect t
 itself introduced.
 
 1. §4.3's routing note. The close prepended a SUPERSEDED marker anchored on a phrase in the
-   MIDDLE of the paragraph, so the note still OPENED with "This row is an **owner decision, not a
+   MIDDLE of the paragraph, so the note still OPENED with "This row is an **Overtoad decision, not a
    task**" as present fact, and the marker then said "The routing below was correct" while
    pointing at text ABOVE it. A reader scanning for the row's status would have read the stale
    first sentence and stopped. The marker moves to the head of the note, and the mid-paragraph
@@ -45,7 +45,7 @@ _ML_PR = "[juniper-ml#1974](https://github.com/pcalnon/juniper-ml/pull/1974)"
 
 # --- 1a: revert the mid-paragraph insert back to the sentence it displaced -----------------
 MIDPARA_OLD = (
-    "**SUPERSEDED 2026-09-21.** The routing below was correct while the row awaited a ruling. The owner "
+    "**SUPERSEDED 2026-09-21.** The routing below was correct while the row awaited a ruling. The Overtoad "
     "ruled on 2026-09-09 (port the `matched`-flag loop; rejected: accept and document the residual leak) "
     f"and it shipped as {_CASCOR_PR} + "
     f"{_ML_PR}. Note also that \"the three copies\" "
@@ -55,16 +55,16 @@ MIDPARA_OLD = (
 MIDPARA_NEW = "**Do not unify the three copies unilaterally.**"
 
 # --- 1b: put the marker where a reader meets it first --------------------------------------
-HEAD_OLD = "**`APD-CASCOR-005` routing.** This row is an **owner decision, not a task**."
+HEAD_OLD = "**`APD-CASCOR-005` routing.** This row is an **Overtoad decision, not a task**."
 HEAD_NEW = (
-    "**`APD-CASCOR-005` routing — SUPERSEDED 2026-09-21. The row is FIXED.** The owner ruled on "
+    "**`APD-CASCOR-005` routing — SUPERSEDED 2026-09-21. The row is FIXED.** The Overtoad ruled on "
     f"2026-09-09 (port juniper-data's explicit `matched`-flag loop; rejected: accept and document the "
     f"residual leak) and it shipped as {_CASCOR_PR} + {_ML_PR}. Two things in the note below are now "
     "known wrong and are kept because they are what the ruling overrode: it routes the row as a decision "
     "rather than a task, and it says \"the three copies\" when there are **four** — "
     "`juniper-canopy/src/security.py` is a fourth, still unfixed, and "
     "`juniper-ml/tests/test_service_fork_drift.py` cannot express a canopy guard at all. **The routing as "
-    "written:** This row is an **owner decision, not a task**."
+    "written:** This row is an **Overtoad decision, not a task**."
 )
 
 # --- 2: follow the strikethrough convention already used in the same sentence --------------

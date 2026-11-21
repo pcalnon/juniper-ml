@@ -11,7 +11,7 @@
 
 ## THE GOAL — paste this into the new thread
 
-> **Continue the decision-11 release arc. Only owner actions and optional follow-ups remain.**
+> **Continue the decision-11 release arc. Only Overtoad actions and optional follow-ups remain.**
 >
 > **Completed so far**
 >
@@ -52,7 +52,7 @@
 >    First, `cryptic-juggling-truffle`: its session looks ended (unlocked, still at `f4795f17`), but check
 >    that no process runs from it and that its staged copies are on `main` (§A, last row). Second, this
 >    session's `wiggly-imagining-pine`, but only after this handoff's PR merges. §D lists what it holds.
-> 5. Carried unchanged, all owner or design questions: juniper-data#409 (the equities defaults),
+> 5. Carried unchanged, all Overtoad or design questions: juniper-data#409 (the equities defaults),
 >    juniper-cascor#582 (tier parity), Decision 12 (juniper-data#423; a v1 spec that round 1 rated
 >    unsound, and zero code) and the model-core cap (`juniper-model-core>=0.1.0,<0.4.0`, kept
 >    deliberately). All still stand. #409, #582 and #423 are OPEN, last active 09-21, 08-29 and 09-23
@@ -115,7 +115,7 @@
 | 3. token scope + notify-consumers | **Blocked on Paul.** No new run since 35808713744. | `gh run list -R pcalnon/juniper-data --workflow notify-consumers.yml` |
 | 4. ml#2046 `_force_kill` | Fixed in ml#2061, and widened, because the issue named 2 of 10 copies and missed a broken one. | census before/after; 5/5 mutants |
 | 5a. wheel-contract probe re-run | Done in ml#2063: 39/39 PASS, 0 UNCOVERED. The scoring is fixed, and ML-2 (which compared nothing) is fixed. | `reports/2026-09-23_decision11-wheel-contract-probe-0.10.0/` |
-| 5b. data#409, cascor#582 | Untouched; still OPEN. Both are owner/design questions. | `gh issue view` |
+| 5b. data#409, cascor#582 | Untouched; still OPEN. Both are Overtoad/design questions. | `gh issue view` |
 | 5c. cascor-client `[Unreleased]` lockfile bullet | **Dispositioned: no release needed**, the same as data-client. Since `v0.8.0` nothing under `juniper_cascor_client/` changed. The only packaged-metadata delta is `pyyaml>=6.0.1` in the `[test]` extra. | `gh api …/compare/v0.8.0...main` (13 files, no package code) |
 | 5d. the other §3 "known and bounded" items | Unchanged, with no action implied: the 0.15.0 wheel ships its tests; the stale conda pins (do not sweep shared envs); `NPZ_SPLITS` lives in `.constants`. | predecessor's predecessor §3 |
 | C-4 Decision 12 | Unchanged. juniper-data#423 is OPEN. Its only activity today is the 14:15Z comment announcing the v1 spec, which predates this session. There is still zero code. | `gh issue view 423 -R pcalnon/juniper-data` |
@@ -185,7 +185,7 @@ Written from `gh`, `git ls-tree` and `git hash-object` output after both merges,
 - **Validation is incomplete.** Three round-1 lanes ran: a fact-check, a residue-loss audit and a
   fresh-session procedure audit. Their accepted findings are applied. The single round-2 lane, which
   was to check those corrections, **died at the weekly usage limit (HTTP 429) before reporting**, and
-  by the owner's instruction the document was archived without re-validation. Treat the round-1
+  by the Overtoad's instruction the document was archived without re-validation. Treat the round-1
   corrections as unchecked: Remaining work items 4–6, Key context's release-cut cautions, the §A rows
   for C-4, C-5 and UNRELEASED_CHANGES, and this section.
 - **Nothing is running.** The session's CI watchers and merge nets have all completed. The scratch

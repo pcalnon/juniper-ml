@@ -20,7 +20,7 @@ the lineage where the validation's own output needed validating.
 
 ## 0. Remaining work
 
-Ordered so the successor-actionable items come first. The predecessor buried three owner-gated items
+Ordered so the successor-actionable items come first. The predecessor buried three Overtoad-gated items
 at the top and its own §17 said to fix that; this does.
 
 1. Successor, first — validate this document (§8). No round has been run on it.
@@ -119,11 +119,11 @@ notes archived (ml#1464). Consumer ceilings raised to <0.7.0 in cascor#596, data
 
 | Repository | Open | Assessment |
 |---|---:|---|
-| `juniper-data` | 13 | the **ten**-row REST group is owner-routed (§4.1); `-016`/`-018`/`-019` design-shaped |
-| `APD-ECO-*` | 4 | `-001`/`-004`/`-007` owner decisions; **`-003` is the cheap one** |
+| `juniper-data` | 13 | the **ten**-row REST group is Overtoad-routed (§4.1); `-016`/`-018`/`-019` design-shaped |
+| `APD-ECO-*` | 4 | `-001`/`-004`/`-007` Overtoad decisions; **`-003` is the cheap one** |
 | `juniper-recurrence-client` | 2 | `-004` deferred, `-005` Low conf |
 | `juniper-cascor-client` | 1 | `-008` envelope sniffing — design-shaped, belongs beside `-031` |
-| `juniper-cascor` | 1 | `-005` owner decision |
+| `juniper-cascor` | 1 | `-005` Overtoad decision |
 | `juniper-ml` | 1 | `-001` — release-train question first |
 
 APD-ECO-003 is the best remaining candidate and its facts are verified (two independent agents,
@@ -277,7 +277,7 @@ the lineage's estimates have been wrong by 20–30% every recorded time.
 1. Its §3 refusal to claim "nothing cheap remains" was honest in wording but its ROUTING was not.
    It filed the seven juniper-service-core rows under "Nobody yet — latent". All seven are now
    closed, and they were the cheapest rows in the register — juniper-ml's own repo, one PR each, no
-   owner gate, no release. Latency is a claim about exposure, not about cost.
+   Overtoad gate, no release. Latency is a claim about exposure, not about cost.
 2. But round 1's proposed correction was ALSO wrong. Its consequence lens said cascor's forks make
    those rows live and the latent filing is mis-scoped. A round-2 lens refuted it: §4.2's rule is
    explicitly about importers of the shared package and re-derives as true; the register already
@@ -336,20 +336,20 @@ predicted from the previous round.
    an anchor at all; `APD-ML-001` and `APD-RCLIENT-005` are alive. True figure: **15** carry at least
    one dead anchor, **13** are wholly dead. The directional advice (re-read source first) stands.
 7. **§3 "APD-ECO-003 is the cheap one" is unsupported and self-contradicting** — the same paragraph
-   calls it medium cost, and register:960 routes its method-scoping into the row as an owner decision.
+   calls it medium cost, and register:960 routes its method-scoping into the row as an Overtoad decision.
 
 ### Round 1's own errors, refuted by round 2
 
 - Round 1 said the propose.py fix was urgent because doc-tools' `0.2.0` is imminent. **False.**
   doc-tools' `[Unreleased]` is a `Fixed` plus a `Changed` whose last sentence is *"No runtime or
   behavioral change"* — a patch (`0.1.2`) that does not escape `<0.2.0`. `minor` is the detector's
-  changelog-heading heuristic, and the release-train plan states bumps are *"proposals the owner may
+  changelog-heading heuristic, and the release-train plan states bumps are *"proposals the Overtoad may
   override"*. The gap is real; the urgency was not.
 - Round 1 said `APD-RCLIENT-005` was the cheapest remaining register work. **False and hazardous.**
   `juniper-recurrence-client` is a sub-package of the `juniper-recurrence` monorepo, so
   `[project.urls] -> pcalnon/juniper-recurrence` is **correct**; changing it would make the metadata
   wrong. The register already carries that note three times (lines 182, 887, 933), the row has no §3
-  detail entry, and §0 item 5 parks it with the owner. Acting on it would have taken an owner
+  detail entry, and §0 item 5 parks it with the Overtoad. Acting on it would have taken an Overtoad
   decision unilaterally on a row that may not be a defect.
 
 ### Survived

@@ -215,7 +215,7 @@ exception hierarchy (7 exception classes), design patterns (context manager, cal
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents have no guidance on codebase structure / Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
+[v3 xrepo fuzzy merge: Overtoads=ccl,dcl, n=2] High severity: agents have no guidance on codebase structure / Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
 
 ### JR-CCL-DOC-006 — Add Directory Layout section to AGENTS.md documenting complete directory tree with annotations.
 
@@ -286,7 +286,7 @@ CHANGELOG.md, docs/ (4 files), scripts/ (2 files), notes/, .env.example, .pre-co
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents cannot orient themselves or find major code components / Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
+[v3 xrepo fuzzy merge: Overtoads=ccl,dcl, n=2] High severity: agents cannot orient themselves or find major code components / Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
 and juniper-canopy). Agents working on this codebase are unaware of its existence when omitted from AGENTS.md.
 Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2).
 
@@ -302,7 +302,7 @@ Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2)
 
 **Notes**:
 
-[v2 ARCH→TEST re-bucket] [v3 xrepo fuzzy merge: owners=ccl,cwk,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
+[v2 ARCH→TEST re-bucket] [v3 xrepo fuzzy merge: Overtoads=ccl,cwk,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
 
 ### JR-CCL-ARCH-002 — Refactor testing/fake_client.py to use testing constants (~40 replacements of hardcoded values).
 
@@ -316,7 +316,7 @@ Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2)
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=ccl,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
+[v3 xrepo fuzzy merge: Overtoads=ccl,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
 
 ### JR-CCL-TEST-005 — Run full test suite validation after constants refactor to ensure scenario outputs and behaviors unchanged.
 

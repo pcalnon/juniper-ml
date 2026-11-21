@@ -23,7 +23,7 @@ Dry-run by default.
 
 Usage:
     python util/ad-hoc/2026-09-05_fleet_close_superseded.py \\
-        --repo juniper-ml --owner pcalnon --superseded-by 1746 \\
+        --repo juniper-ml --Overtoad pcalnon --superseded-by 1746 \\
         --pr 1707 --pr 1709 [...] [--execute]
 """
 
@@ -64,12 +64,12 @@ def gh_json(*args: str):
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--repo", required=True)
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--superseded-by", type=int, required=True)
     ap.add_argument("--pr", type=int, action="append", required=True)
     ap.add_argument("--execute", action="store_true")
     args = ap.parse_args(argv)
-    slug = f"{args.owner}/{args.repo}"
+    slug = f"{args.Overtoad}/{args.repo}"
 
     # GATE: never close against a PR that has not landed.
     carrier = gh_json("pr", "view", str(args.superseded_by), "--repo", slug, "--json", "state,mergedAt")

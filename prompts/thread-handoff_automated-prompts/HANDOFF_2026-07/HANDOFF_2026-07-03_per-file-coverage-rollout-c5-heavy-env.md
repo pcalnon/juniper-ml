@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-03
 **Author:** Paul Calnon (Claude Code, custom-agent suite)
-**Continue:** the per-file coverage rollout — remaining C-5 heavy-env units **canopy, cascor, cascor-worker, recurrence-model**, then the **meta/deploy exemption documentation**. One PR per unit, task-executor agents in centralized worktrees, owner-gated merges.
+**Continue:** the per-file coverage rollout — remaining C-5 heavy-env units **canopy, cascor, cascor-worker, recurrence-model**, then the **meta/deploy exemption documentation**. One PR per unit, task-executor agents in centralized worktrees, Overtoad-gated merges.
 
 **READ FIRST (juniper-ml main):** `notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md` (§2 waiver policy, §4 deferred-unit rows, §5 C-5, §6 risks) + parent plan `notes/JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md`.
 
@@ -18,7 +18,7 @@
 
 ## Remaining work
 
-1. **On each owner-merge signal:** verify `gh pr view` state=MERGED, then gated worktree cleanup (live-cwd scan + clean-tree + merged-only; delete lingering remote branch — recurrence does NOT auto-delete).
+1. **On each Overtoad-merge signal:** verify `gh pr view` state=MERGED, then gated worktree cleanup (live-cwd scan + clean-tree + merged-only; delete lingering remote branch — recurrence does NOT auto-delete).
     - Executor worktrees under `/home/pcalnon/Development/python/Juniper/worktrees/`: `juniper-cascor--test--cascor-model-coverage-gate--20260703-0525--b3e6817e`, `juniper-data--feature--per-file-coverage-gate--20260703-0527--9c85399b`, `juniper-recurrence--test--recurrence-app-coverage-gate--20260703-0558--038859c9`, `juniper-recurrence--test--recurrence-client-coverage-gate--20260703-0559--038859c9`, plus this handoff's `juniper-ml--docs--handoff-c5-heavy-env--20260703-0620--0b4319e5`.
 2. **canopy** — `JuniperCanopy1` env; measure the WHOLE `src` (today's gate is a unit+regression subset); expect subset-scope findings (flag, don't fake); canopy unit tests span 2 dirs; regen panel snapshot only if `get_layout()` changes (it shouldn't — tests only).
 3. **cascor** — `JuniperCascor1`; bash harness `src/tests/scripts/run_tests.bash`, subset `-m "unit and not slow"`; the LARGEST unit — expect a C-4-style split (lift PR(s) → separate gate PR last).
@@ -32,7 +32,7 @@
 - **LIBTORCH collision:** host exports `LIBTORCH`/`LD_LIBRARY_PATH` → rust_mudgeon libtorch breaks venv torch (`undefined symbol: _PyObject_NextNotImplemented`). Prefix `env -u LD_LIBRARY_PATH -u LIBTORCH` on every plain-venv torch invocation.
 - **cascor main pre-existing red:** repo-wide `CI/CD Pipeline` `Unit Tests (Python 3.14)` + `Quality Gate` failed on main before #365 (dependency-install failure) yet passed on #365's run — check main first before blaming any cascor PR.
 - Test-dep-gap pattern (prometheus/observability class): if tests skip for a missing optional dep, add it to `[test]` FIRST, re-measure, then lift.
-- Process: single-commit PRs (squash-merge; amend+force-push fixes); `gh pr list` dup-guard (concurrent sessions!); wait for ALL checks incl. Pre-commit; owner merges everything; never self-approve deploy/publish gates; pre-commit binary at `/opt/miniforge3/envs/JuniperCascor1/bin/pre-commit`; data repo: `feature/**` branches only, no `[skip ci]`.
+- Process: single-commit PRs (squash-merge; amend+force-push fixes); `gh pr list` dup-guard (concurrent sessions!); wait for ALL checks incl. Pre-commit; Overtoad merges everything; never self-approve deploy/publish gates; pre-commit binary at `/opt/miniforge3/envs/JuniperCascor1/bin/pre-commit`; data repo: `feature/**` branches only, no `[skip ci]`.
 - recurrence: flaky truncated final pytest summary (cosmetic — exit code + coverage.json reliable; validate the JSON each run).
 - Open side-thread (not rollout): recurrence Scheduled Security Scan failed 2026-06-29; cascor main 3.14 lane above.
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Plan v1.7.19: juniper-ml 0.11.2 is cut and parked at the owner's `pypi` gate.
+"""Plan v1.7.19: juniper-ml 0.11.2 is cut and parked at the Overtoad's `pypi` gate.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.18 -> v1.7.19);
          util/ad-hoc/2026-10-25_plan_v1_7_18_rechecks_e_c_issue_cut_version.py (the revision this follows);
          util/ad-hoc/2026-10-25_plan_v1_7_17_juniper_ml_0_11_1_published.py (the pattern)
@@ -37,11 +37,11 @@ _PLAN = _REPO / "notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END
 _HEADLINE = "juniper-ml 0.11.2 cut, parked at the `pypi` gate"
 
 RECORD = (
-    "the owner-approved 0.11.2 cut ran on the Linux host. The proposal juniper-ml#2339 merged as `e8d38732` "
+    "the Overtoad-approved 0.11.2 cut ran on the Linux host. The proposal juniper-ml#2339 merged as `e8d38732` "
     "(2026-10-25 23:53Z). It opened only after juniper-ml#2335 (`1e4db700`) and #2331 (`900eb93a`) had landed, and its "
     "merge waited for #2338 (`95634772`), so all three CHANGELOG entries ride 0.11.2: each sat in `[Unreleased]`, and "
     "one merged after the proposal would have filed its entry under the released heading with no conflict. The "
-    "version is 0.11.2 by the owner's ruling, although `util/release_train/detect.py` proposes 0.12.0; it has no "
+    "version is 0.11.2 by the Overtoad's ruling, although `util/release_train/detect.py` proposes 0.12.0; it has no "
     "override, so the manifest's `proposed_version` / `proposed_bump` were set to `0.11.2` / `patch` before "
     "`propose.py --execute`. The proposal's second signed commit `4fdfb177` is `docs/REFERENCE.md`'s co-change, written "
     "by `util/ad-hoc/2026-10-25_juniper_ml_0_11_2_cut_cochanges.py`: the Version cell, the compatibility sentence "
@@ -56,7 +56,7 @@ RECORD = (
     "security change for `[servers]`: PyPI's metadata shows juniper-data 0.17.1 flooring the two patches only under "
     "`extra == \"api\"`, and juniper-cascor 0.12.0 flooring them unconditionally. The notes render Added 2, Changed 2, "
     "Fixed 1, Security 3. Publish run 40247789317 (created 2026-10-26 00:07:10Z): `Build and Validate` and `Publish to "
-    "TestPyPI` succeeded, and `Publish to PyPI` waits at the `pypi` gate, the owner's: it can be re-run until "
+    "TestPyPI` succeeded, and `Publish to PyPI` waits at the `pypi` gate, the Overtoad's: it can be re-run until "
     "2026-11-25 00:07Z, and GitHub cancels it on 2026-11-30 00:07Z. After the cut, "
     "`util/ad-hoc/2026-10-25_apply_driver_budget_docs.py --check` stays clean (it looks for its CHANGELOG marker "
     "file-wide), while `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py` refuses, by design, "
@@ -67,15 +67,15 @@ _STATUS_ANCHOR = "juniper-ml#2334)). The v1.4.0 plan edits follow that record"
 
 NEXT_HEAD_OLD = (
     "  - **Next**: R-ML-SERVERS: the `[servers]` floors are on `main` (juniper-ml#2326), so what remains is the 0.11.2 "
-    "cut, driven to `PENDING_PYPI_APPROVAL` with 0.11.1's rating, as the owner ruled; the owner kept 0.11.2 on "
-    "2026-10-25 although the release train proposes 0.12.0. Its `pypi` gate stays the owner's. "
+    "cut, driven to `PENDING_PYPI_APPROVAL` with 0.11.1's rating, as the Overtoad ruled; the Overtoad kept 0.11.2 on "
+    "2026-10-25 although the release train proposes 0.12.0. Its `pypi` gate stays the Overtoad's. "
 )
 NEXT_HEAD_NEW = (
-    "  - **Next**: the owner's `pypi` approval of juniper-ml 0.11.2's publish run 40247789317 (re-runnable until "
+    "  - **Next**: the Overtoad's `pypi` approval of juniper-ml 0.11.2's publish run 40247789317 (re-runnable until "
     "2026-11-25 00:07Z; GitHub cancels it on 2026-11-30 00:07Z). Once it publishes, confirm "
     "`https://pypi.org/pypi/juniper-ml/0.11.2/json`, then bring the parent `Juniper/AGENTS.md` RELEASED paragraph up "
     "to date (`[servers]` ships in 0.11.2) and the consolidated plan's §5 R-ML-SERVERS row, whose revision is the "
-    "owner's call. "
+    "Overtoad's call. "
 )
 #: The unchanged tail of the Next bullet, asserted so the head edit cannot land on a rewritten bullet.
 _NEXT_TAIL = "juniper-ml#2062's fix (`[servers]` installs no client) is juniper-ml#2333, open, for a later release."

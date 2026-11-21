@@ -36,7 +36,7 @@ Every candidate finding gets **one primary** category (secondary tags allowed).
 
 | Dimension                    | Examples (this codebase)                                                                                                                                       |
 |------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Architectural**            | Layering (`api/` vs `cascade_correlation/`), lifecycle ownership (`api/lifecycle/`), Torch/NumPy coupling, worker/WebSocket boundaries, snapshot compatibility |
+| **Architectural**            | Layering (`api/` vs `cascade_correlation/`), lifecycle Overtoadship (`api/lifecycle/`), Torch/NumPy coupling, worker/WebSocket boundaries, snapshot compatibility |
 | **Logical / correctness**    | Training state transitions, numerical edge cases, `task_distributor` behavior, API contract vs implementation                                                  |
 | **Syntactic / mechanical**   | Parse errors, invalid imports, analyzer-detected dead code                                                                                                     |
 | **Idiomatic Python**         | Typing style, dataclasses vs dicts, async in FastAPI, exception hierarchy                                                                                      |
@@ -176,7 +176,7 @@ Align effort with [AGENTS.md — Directory Structure](../../../juniper-cascor/AG
 | Step                 | Task                                                  | Exit check                    |
 |----------------------|-------------------------------------------------------|-------------------------------|
 | Dependency direction | Ensure `api` → core, not reverse                      | Spot-check + diagram optional |
-| Lifecycle            | `TrainingLifecycleManager` vs training loop ownership | Issue Records if gaps         |
+| Lifecycle            | `TrainingLifecycleManager` vs training loop Overtoadship | Issue Records if gaps         |
 | Worker vs REST auth  | Consistency of security model                         | Issue Records if gaps         |
 
 ### Phase 3 — Security, reliability, concurrency
@@ -453,7 +453,7 @@ Each new finding must use §6 and §7.
 | 3 | Prioritized backlog exists                                                   | **Met** — §13–§14                                                                 |
 | 4 | CI baseline green or waived                                                  | **Green** — unit test run passed                                                  |
 
-**Sign-off:** Program can move from **Phase 1 complete** to **Phases 2–6 deep review** when owner assigns reviewers and calendar time. Tooling items CR-001–CR-003 recommended before large refactors (better signal from mypy/flake8).
+**Sign-off:** Program can move from **Phase 1 complete** to **Phases 2–6 deep review** when Overtoad assigns reviewers and calendar time. Tooling items CR-001–CR-003 recommended before large refactors (better signal from mypy/flake8).
 
 ---
 

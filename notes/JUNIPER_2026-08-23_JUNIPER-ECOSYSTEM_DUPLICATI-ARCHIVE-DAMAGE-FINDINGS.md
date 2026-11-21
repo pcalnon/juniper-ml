@@ -312,7 +312,7 @@ Three specific controls were applied because of it:
 Two defects from the predecessor handoff are now closed:
 
 - **§1 `Backup.DBPath`** — was pointing at the 479 KB *server* database; now correctly
-  `/home/pcalnon/.config/Duplicati/SJTCQIIZSJ.sqlite`. Corrected in the UI by the owner without a
+  `/home/pcalnon/.config/Duplicati/SJTCQIIZSJ.sqlite`. Corrected in the UI by the Overtoad without a
   restart (pid unchanged).
 - **§2 schedule** — the `Schedule` table now holds **0 rows** and `ProposedSchedule` is empty, so no
   further runs are enqueued.

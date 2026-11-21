@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- investigation (independent-agent consensus, round 2, Lane B2)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: canopy#670 v2 = local commit 85415f3c; util/ad-hoc/2026-09-23_f054_r2_laneB2_node_repro.py
 
 THE CHANGE (two statements in REPLAY_CONTROLS_JS, applied textually to the git object's source):

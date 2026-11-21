@@ -238,7 +238,7 @@ Phase 0-cascor is the cascor-server-only prerequisite phase carved out from Phas
 
 Single PR, squash-merged. The 10 commits are tightly coupled (resume handler depends on replay buffer depends on seq field) and splitting forces multiple cross-repo windows.
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P1** | `phase-0-cascor-seq-replay-resume` | `feat(ws): seq numbers, replay buffer, resume protocol, state coalescer` | backend-cascor | `juniper-cascor` main |
 
@@ -246,7 +246,7 @@ Branch naming follows the Juniper centralized worktree convention (**D-60**).
 
 **In parallel** (independent PR in a separate repo):
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P2** | `phase-a-sdk-set-params` | `feat(sdk): CascorControlStream.set_params with command_id correlation` | SDK | `juniper-cascor-client` main |
 
@@ -392,7 +392,7 @@ Phase B-pre-a is explicitly split from B-pre-b per **D-23**. B-pre-a is ~0.5 day
 
 Two PRs, P3 must merge before P4 (canopy's origin helper is a copy of cascor's; cascor reference is the canonical source).
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P3** | `phase-b-pre-a-cascor-security` | `feat(security): origin allowlist + max_size + per-IP cap on /ws/training (M-SEC-03/04/01b)` | backend-cascor + security | `juniper-cascor` main |
 | **P4** | `phase-b-pre-a-canopy-security` | `feat(security): origin + max_size on /ws/training + audit logger skeleton (M-SEC-03/07 skeleton)` | backend-canopy + security | `juniper-canopy` main |
@@ -571,7 +571,7 @@ The P0 win. Canopy browser drains `/ws/training` into a bounded Dash store, rend
 
 Three-PR sequence. Merge order enforced.
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P5** | `phase-b-cascor-residual` | `feat(cascor): audit-event Prometheus counters + canopy_ws_backend_relay_latency_ms (deferred from B-pre-a)` | backend-cascor | `juniper-cascor` main |
 | **P6** | `phase-b-canopy-drain-wiring` | `feat(canopy): ws_dash_bridge drain callbacks, Plotly extendTraces, connection indicator, latency beacons (flag off)` | backend-canopy + frontend | `juniper-canopy` main |
@@ -732,7 +732,7 @@ Runs **in parallel** with Phase B (not in series). Does not gate Phase B (which 
 
 ### 5.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P8** | `phase-b-pre-b-cascor-control-security` | `feat(security): /ws/control origin, rate limit, idle timeout, HMAC adapter auth (M-SEC-01/01b/05/10/11)` | backend-cascor + security | `juniper-cascor` main |
 | **P9** | `phase-b-pre-b-canopy-csrf-audit` | `feat(security): cookie session + CSRF first-frame + audit Prometheus + log injection escaping (M-SEC-02/06/07)` | backend-canopy + security | `juniper-canopy` main |
@@ -838,7 +838,7 @@ Canopy adapter splits parameter updates into hot (learning rate, candidate LR, c
 
 ### 6.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P10** | `phase-c-canopy-set-params-adapter` | `feat(canopy): set_params hot/cold split, ws transport behind flag` | backend-canopy | `juniper-canopy` main |
 
@@ -933,7 +933,7 @@ Route browser `start/stop/pause/resume/reset` through `/ws/control` with `comman
 
 ### 7.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P11** | `phase-d-cascor-control-commands` | `feat(cascor): /ws/control command dispatch + per-command timeouts` | backend-cascor | `juniper-cascor` main |
 | **P12** | `phase-d-canopy-button-ws-routing` | `feat(canopy): training-control buttons via /ws/control with REST fallback` | frontend + backend-canopy | `juniper-canopy` main |
@@ -1013,7 +1013,7 @@ Phase E is optional — ships only if Phase B production telemetry shows RISK-04
 
 ### 8.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P13** | `phase-e-cascor-backpressure-pump-tasks` | `feat(cascor): per-client pump tasks + bounded queues + policy matrix` | backend-cascor | `juniper-cascor` main |
 
@@ -1069,7 +1069,7 @@ Application-level ping/pong heartbeat for dead-connection detection. Jitter form
 
 ### 9.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P14** | `phase-f-heartbeat-jitter` | `feat(ws): application-level heartbeat, uncapped reconnect, jitter formula` | backend-cascor + frontend | cross-repo |
 
@@ -1130,7 +1130,7 @@ Cascor-side integration tests via `TestClient.websocket_connect()` (no SDK depen
 
 ### 10.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P15** | `phase-g-cascor-set-params-integration` | `test(cascor): /ws/control set_params integration suite + contract lane` | backend-cascor | `juniper-cascor` main |
 
@@ -1180,14 +1180,14 @@ Lock in dual metric format with regression test + CODEOWNERS hard merge gate (**
 
 ### 11.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | **P16** | `phase-h-normalize-metric-audit` | `docs(audit): normalize_metric consumer audit + CODEOWNERS hard gate + regression` | backend-canopy | `juniper-canopy` main |
 
 ### 11.5 Exit gate
 
 1. Regression tests green
-2. CODEOWNERS rule enforced via branch protection (test PR touching `normalize_metric.py` without owner review → blocked)
+2. CODEOWNERS rule enforced via branch protection (test PR touching `normalize_metric.py` without Overtoad review → blocked)
 3. Consumer audit document merged
 4. Shape hash golden file committed
 
@@ -1420,7 +1420,7 @@ Consolidated from R2-01 §15 with R2-04 decision cross-references. Each row is t
 
 - **Sev/Lik**: Medium / Medium
 - **Phase**: all
-- **Owner**: canopy-backend lead (observability owner)
+- **Owner**: canopy-backend lead (observability Overtoad)
 - **Mitigation**: CCC-02 "metric-before-behavior" rule; **D-37** metrics-presence CI test; R2-03 §4.5 item 4 test-fired alerts as hard gate
 - **Signal**: metrics-presence test failure
 - **Kill switch**: n/a (pre-merge)
@@ -1447,14 +1447,14 @@ Consolidated from R2-01 §15 with R2-04 decision cross-references. Each row is t
 
 - **Sev/Lik**: Medium / Medium
 - **Phase**: B, G
-- **Owner**: backend-cascor lead (schema evolution owner)
+- **Owner**: backend-cascor lead (schema evolution Overtoad)
 - **Mitigation**: CCC-05 §7.3 item 4 inline-literal rule; PR review check; grep in CI for cross-repo imports in contract test files
 - **Signal**: review audit
 - **Kill switch**: n/a
 
 ### Risk compact matrix
 
-| ID | Phase | Owner | Kill switch | TTF |
+| ID | Phase | The Overtoad | Kill switch | TTF |
 |---|---|---|---|---|
 | 01 | H | backend-canopy | `git revert` | 10 min |
 | 02 | B | frontend+ops | `disable_ws_bridge=true` | 5 min |
@@ -1482,7 +1482,7 @@ Consolidated from R2-01 §15 with R2-04 decision cross-references. Each row is t
 
 ## 15. Resolved observability plan
 
-Per R2-03 §4 and §13 matrix, applied as the single source of truth. Ownership is binding per R2-03 §14.12 meta-assignment: **CCC-02 owner = canopy-backend lead**; **schema evolution owner = backend-cascor lead**; **kill switch owner = security lead**; **documentation owner = project lead**.
+Per R2-03 §4 and §13 matrix, applied as the single source of truth. Ownership is binding per R2-03 §14.12 meta-assignment: **CCC-02 Overtoad = canopy-backend lead**; **schema evolution Overtoad = backend-cascor lead**; **kill switch Overtoad = security lead**; **documentation Overtoad = project lead**.
 
 ### 15.1 Metric-before-behavior rule (binding)
 
@@ -1524,7 +1524,7 @@ All others are ticket severity. Every page alert **must be synthetically test-fi
 
 ### 15.5 Per-phase observability matrix
 
-| Phase | New metrics | New alerts | New dashboards | Owner |
+| Phase | New metrics | New alerts | New dashboards | The Overtoad |
 |---|---|---|---|---|
 | **0-cascor** | 11 (`cascor_ws_*` seq/replay/pending/broadcast/coalescer/broadcast_from_thread) | `WSSeqCurrentStalled` (page), `WSReplayBufferFull` (ticket), `WSBroadcastTimeout` (ticket) | None new | backend-cascor |
 | **A-SDK** | 1 (`juniper_cascor_client_ws_set_params_total{status}`) | None | None | SDK |

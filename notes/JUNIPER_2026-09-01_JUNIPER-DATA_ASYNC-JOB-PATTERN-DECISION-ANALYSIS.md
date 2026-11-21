@@ -457,7 +457,7 @@ should not be read as though both were.
   *work*: a retry while the first attempt is still generating starts a second identical external
   fetch. Any documented recovery must be "GET the id", not "POST again".
 - **Declare the status set.** juniper-data declares no `responses={...}` anywhere
-  (`APD-DATA-022`, parked, owner-routed), so today a new code would not appear in the OpenAPI at
+  (`APD-DATA-022`, parked, Overtoad-routed), so today a new code would not appear in the OpenAPI at
   all. Any option that adds a status code needs that row unblocked, or it ships invisible to every
   generated client.
 - **Anything stateful must be shared-backend from the first commit,** with the single-worker-only
@@ -477,7 +477,7 @@ should not be read as though both were.
   (§1.6): Class B on 2026-09-02, `arc_agi` re-measured after juniper-data#318, and `csv_import`
   scaling on 2026-09-03. No generator timing gap remains.
 - ~~**Not measured, and now the nearest open question:** whether `csv_import`'s cap should be rows or
-  bytes.~~ — **SETTLED by the owner, 2026-09-04: bytes.** Exceeding the cap **truncates** rather than
+  bytes.~~ — **SETTLED by the Overtoad, 2026-09-04: bytes.** Exceeding the cap **truncates** rather than
   rejecting outright, but only against two non-optional obligations: a *blocking* notification to
   the caller, and a *permanent* truncated annotation on the dataset. Shipped in
   [juniper-data#326](https://github.com/pcalnon/juniper-data/pull/326) (`cf387a82`) — 128 MiB from a

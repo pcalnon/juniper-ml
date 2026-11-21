@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (builder session, flood-4 round 2, fix N-1 round 3)
 Created: 2026-11-09
 Status: ad-hoc — one-off (adapted from round 2's tmp/flood4-fix/n1-r2/probes/new_tests_on_other_lifecycle.py)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md §8 ruling 11 (juniper-cascor's paused-fit wedge)
 
 Usage: python3 <this> (--ref <git ref> | --dir <tree root>)

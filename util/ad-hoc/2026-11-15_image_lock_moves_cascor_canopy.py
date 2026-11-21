@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (R-OBS-SC-2 follow-ups)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (the lock half of the juniper-deploy pin PR's CHANGELOG entry)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-deploy#266 (the precedent's entry lists cascor 0.13.0's lock moves);
          util/ad-hoc/2026-11-15_deploy_pin_cascor_0_14_0_canopy_0_10_0.py (the pin edits)
 

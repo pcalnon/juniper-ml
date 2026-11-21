@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # Created     : 2026-10-21
 # Status      : ad-hoc -- investigation
-# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : util/ad-hoc/2026-10-20_turing_canopy_leg.bash (the launcher this wraps);
 #               util/ad-hoc/2026-10-20_f069_fix_leg.bash (the demo-mode wrapper this mirrors);
 #               util/ad-hoc/2026-10-20_turing_cascor_leg.bash (the cascor leg a service leg points at);

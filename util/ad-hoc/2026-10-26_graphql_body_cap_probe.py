@@ -8,7 +8,7 @@ Author:       Paul Calnon
 Created:      2026-10-26
 License:      MIT License
 Status:       ad-hoc — investigation (a single-use measurement)
-Retire when:  RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when:  RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:      juniper-ml#2227; reports/2026-10-26_graphql-body-cap-probe/ (runner run 40410086979)
 
 Why this exists
@@ -17,7 +17,7 @@ Why this exists
 exceeds ``ARCHIVE_B64_MAX_DEFAULT`` (125,000 B), because the archive travels inside ONE
 ``createCommitOnBranch`` request. That default is the figure measured from turing on 2026-10-17
 (130,000 B accepted, 131,000 B refused with HTTP 499), later re-diagnosed as turing's link: GitHub's
-GraphQL frontend drops a request that runs past about 7-10 s. The owner ruled on 2026-10-18 to keep the
+GraphQL frontend drops a request that runs past about 7-10 s. The Overtoad ruled on 2026-10-18 to keep the
 conservative figure as the default, and to let ``JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX`` override it
 "once a runner-side measurement settles the real cap". This is that measurement's instrument. It runs
 the same way on a workstation and on a GitHub-hosted runner, so the two can be compared.

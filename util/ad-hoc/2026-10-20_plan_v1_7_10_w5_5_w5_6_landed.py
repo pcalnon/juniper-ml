@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-20
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.9 -> v1.7.10);
          juniper-ml#2273 (W5.5 + W5.6); util/ad-hoc/2026-10-19_plan_v1_7_9_w5_7_opened.py (the revision this follows)
 
@@ -78,12 +78,12 @@ def edits(state: str) -> list[tuple[str, str]]:
         # Roadmap P5 row.
         (
             "| **P5** | Target summary, shared cache, producer guards (W5.5–W5.7) | **In progress** (W5.7 built 2026-10-19, juniper-data#486, merged as `58c013e3`; W5.5 / W5.6 planned) | 5 | — |",
-            f"| **P5** | Target summary, shared cache, producer guards (W5.5–W5.7) | **Done in code** (W5.7 built 2026-10-19, juniper-data#486, merged as `58c013e3`; W5.5 / W5.6 built 2026-10-20, {PR}, {state}; juniper-data's release carrying W5.7 is the owner's cut) | 5 | — |",
+            f"| **P5** | Target summary, shared cache, producer guards (W5.5–W5.7) | **Done in code** (W5.7 built 2026-10-19, juniper-data#486, merged as `58c013e3`; W5.5 / W5.6 built 2026-10-20, {PR}, {state}; juniper-data's release carrying W5.7 is the Overtoad's cut) | 5 | — |",
         ),
         # Progress block: a W5.5 / W5.6 bullet before Next, and Next updated.
         (
-            "  - **Next**: the `pypi` gate on model 0.6.0, then juniper-recurrence#215 (re-run its failed lanes), recurrence 0.8.0, then juniper-recurrence#219; the extras / Compose pins follow 0.8.0 (recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`, image `0.8.0`); juniper-data's next release carries W5.7 (owner's cut). W5.5 / W5.6 (juniper-ml) are the remaining P5 rows. The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes (now on the 0.7.0 image) and the client-docstring follow-up stay open.",
-            f"  - **W5.5 / W5.6 built (turing session 4, 2026-10-20)**: {PR} ({state}) — W5.5: {W55}. W5.6: {W56}. {TESTED}. P5 is complete in code; juniper-data's next release (the owner's cut) carries W5.7. The model 0.6.0 `pypi` gate (run 39197693617) was still parked at the end of the session, so #215, 0.8.0, #219 and the 0.8.0 pins still wait on it.\n  - **Next**: the `pypi` gate on model 0.6.0, then juniper-recurrence#215 (re-run its failed lanes), recurrence 0.8.0, then juniper-recurrence#219; the extras / Compose pins follow 0.8.0 (recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`, image `0.8.0`); juniper-data's next release carries W5.7 (owner's cut). The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes (now on the 0.7.0 image) and the client-docstring follow-up stay open.",
+            "  - **Next**: the `pypi` gate on model 0.6.0, then juniper-recurrence#215 (re-run its failed lanes), recurrence 0.8.0, then juniper-recurrence#219; the extras / Compose pins follow 0.8.0 (recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`, image `0.8.0`); juniper-data's next release carries W5.7 (Overtoad's cut). W5.5 / W5.6 (juniper-ml) are the remaining P5 rows. The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes (now on the 0.7.0 image) and the client-docstring follow-up stay open.",
+            f"  - **W5.5 / W5.6 built (turing session 4, 2026-10-20)**: {PR} ({state}) — W5.5: {W55}. W5.6: {W56}. {TESTED}. P5 is complete in code; juniper-data's next release (the Overtoad's cut) carries W5.7. The model 0.6.0 `pypi` gate (run 39197693617) was still parked at the end of the session, so #215, 0.8.0, #219 and the 0.8.0 pins still wait on it.\n  - **Next**: the `pypi` gate on model 0.6.0, then juniper-recurrence#215 (re-run its failed lanes), recurrence 0.8.0, then juniper-recurrence#219; the extras / Compose pins follow 0.8.0 (recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`, image `0.8.0`); juniper-data's next release carries W5.7 (Overtoad's cut). The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes (now on the 0.7.0 image) and the client-docstring follow-up stay open.",
         ),
     ]
 

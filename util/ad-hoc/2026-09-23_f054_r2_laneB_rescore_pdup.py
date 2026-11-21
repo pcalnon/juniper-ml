@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy canopy#670 round 2 (Lane B); util/ad-hoc/2026-09-23_f054_pdup_cleanroom_v1_v2.py
 
 Its rule scores HELD when a 'paused' state appears within 8 s of the pause click. A double

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3 rebuild)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_rebuild.py (writes the merges this resolves); validator findings
          ml-code-port-lens F6 and ml-code-claims-lens F1 / F10 (the stamp collision; keep both CHANGELOG entries).
 

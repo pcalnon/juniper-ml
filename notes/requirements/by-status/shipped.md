@@ -6,7 +6,7 @@
 
 **By category**: TRAIN=35 | API=25 | TEST=22 | SEC=20 | OBS=17 | UI=14 | DATA=9 | TOOL=9 | DOC=7 | LOCK=5 | DEP=5 | WS=5 | OPS=3 | PERF=1
 
-**By owner**: cas=41 | ml=37 | can=34 | dat=27 | ccl=14 | cwk=12 | rec=9 | dep=2 | dcl=1
+**By Overtoad**: cas=41 | ml=37 | can=34 | dat=27 | ccl=14 | cwk=12 | rec=9 | dep=2 | dcl=1
 
 ---
 
@@ -76,7 +76,7 @@ DATA-017 complete. security.py confirmed.
 
 **Detail**:
 
-**Severity:** P1 (soft-blocker) · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P1 (soft-blocker) · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
@@ -91,7 +91,7 @@ DATA-017 complete. security.py confirmed.
 
 **Detail**:
 
-**Severity:** P1 · **Owner repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
+**Severity:** P1 · **The Overtoad repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
 
 **Notes**:
 
@@ -1590,7 +1590,7 @@ Comprehensive test remediation addressing 54 ERROR tests (missing pytest-mock), 
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
 
 **Notes**:
 
@@ -1741,7 +1741,7 @@ Phase 3 supplementary content (medium priority): (3.1) Expand Key Files table (a
 
 **Detail**:
 
-**Severity:** P1 (operational — dashboards mislead operators) · **Owner repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
+**Severity:** P1 (operational — dashboards mislead operators) · **The Overtoad repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
 
 **Notes**:
 
@@ -2200,7 +2200,7 @@ Naming convention: <repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>. Al
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** deferred
 
 **Notes**:
 
@@ -2226,7 +2226,7 @@ Naming convention: <repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>. Al
 
 **Detail**:
 
-**Severity:** P3 (user-discretion) · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 (user-discretion) · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Notes**:
 

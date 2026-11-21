@@ -84,7 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     lines, WARN on small in-place swaps, with an `Allow-Docs-Rewrite:`
     commit-trailer waiver. `--min-run` is tunable.
 - `--scope GLOB` — a new, repeatable POSIX-path-glob argument on both screens
-  (owner-decided scope-delivery design; plan D2). With no `--scope`, each screen
+  (Overtoad-decided scope-delivery design; plan D2). With no `--scope`, each screen
   reproduces its historical hard-coded predicate **verbatim** (symbol:
   `tests/*.py` + `util/**`; docs: `AGENTS.md` + `docs/**` + `notes/**`), so a
   default run is byte-identical to the pre-migration util scripts; a caller may
@@ -228,7 +228,7 @@ Adds the advisory per-file coverage-gap mapper as a fifth console script
   build on coverage findings. Exit `2` is reserved for structural / usage
   errors (no input, an unreadable or malformed `coverage.json`, a dotted
   `--package`). Promotion to a blocking per-file gate is a separate, per-repo,
-  owner-signed decision.
+  Overtoad-signed decision.
 - **numpy-2.x dotted-`--cov` shim (documented):** `package_cov_pytest_args`
   builds coverage invocations with the **package-form** `--cov=<package>` and
   scopes any narrowing through a `[report] include=` config written by

@@ -6,14 +6,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- migration (the Python 3.15 migration arc; this is not a 3.15 change)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-14_py315_informational_juniper-deploy.py (juniper-deploy#274, which gave the `tests`
          job the same version-less-name matrix); prompts/thread-handoff_automated-prompts/
          HANDOFF_2026-11-15_python-3-15-phase-2-approved-deploy-precommit-matrix.md (Task 1, the plan)
 
 Why this exists
 ---------------
-The owner asked on 2026-11-15: "deploy's pre-commit job should also run on 3.13 and 3.14, with these checks treated
+The Overtoad asked on 2026-11-15: "deploy's pre-commit job should also run on 3.13 and 3.14, with these checks treated
 the same as the existing 3.12 check." Every other Juniper repo already runs its pre-commit on 3.12-3.14;
 juniper-deploy's ran on `env.PYTHON_VERSION` (3.12) alone.
 
@@ -27,7 +27,7 @@ for `Unit Tests`): the 3.12 leg posts exactly `Pre-commit`, the others `Pre-comm
   Quality Gate's hard check of `needs.pre-commit.result`.
 - setup-python and the hook-cache key use `matrix.python-version`: pre-commit builds the Python hook environments
   with the interpreter it runs under, so one cache per version.
-- No pre-commit leg runs 3.15 (the owner's phase-1 ruling of 2026-11-14).
+- No pre-commit leg runs 3.15 (the Overtoad's phase-1 ruling of 2026-11-14).
 - The ruleset is NOT edited here. "Treated the same" makes the two new contexts required too, but adding them before
   `main` posts them would block every open pull request; that PUT is a separate, later step.
 
@@ -85,7 +85,7 @@ CI_JOB_OLD = """\
 
 CI_JOB_NEW = """\
   pre-commit:
-    # One leg per Python version. The owner asked on 2026-11-15 that this job "also run on 3.13 and
+    # One leg per Python version. The Overtoad asked on 2026-11-15 that this job "also run on 3.13 and
     # 3.14, with these checks treated the same as the existing 3.12 check", so all three legs BLOCK:
     # no leg is `experimental` and the job has no `continue-on-error`, so a failure on any leg fails
     # this job, and so the Quality Gate, which reads `needs.pre-commit.result`. Ruleset 14715370
@@ -93,7 +93,7 @@ CI_JOB_NEW = """\
     # and so on, the required context would never report, and every pull request would wait for it
     # forever. A name that references `matrix` is used verbatim, as in the `tests` job below: the
     # 3.12 leg posts exactly `Pre-commit`, and the others `Pre-commit (Python 3.13)` and
-    # `Pre-commit (Python 3.14)`. No pre-commit leg runs 3.15 (the owner's ruling of 2026-11-14,
+    # `Pre-commit (Python 3.14)`. No pre-commit leg runs 3.15 (the Overtoad's ruling of 2026-11-14,
     # phase 1 of the ecosystem's Python 3.15 migration).
     name: ${{ matrix.python-version == '3.12' && 'Pre-commit' || format('Pre-commit (Python {0})', matrix.python-version) }}
     runs-on: ubuntu-latest
@@ -144,14 +144,14 @@ CI_TESTS_COMMENT_NEW = """\
 
 CHANGELOG_UNCHANGED_OLD = """\
   - Unchanged: `Pre-commit` and every other job, which still run on `env.PYTHON_VERSION` (3.12; no
-    3.15 pre-commit in phase 1, by the owner's ruling), `Dockerfile.test` (`python:3.12-slim`, what
+    3.15 pre-commit in phase 1, by the Overtoad's ruling), `Dockerfile.test` (`python:3.12-slim`, what
     `make test` runs) and every image.
 """
 
 CHANGELOG_UNCHANGED_NEW = """\
   - Unchanged: every other job, which still runs on `env.PYTHON_VERSION` (3.12), `Dockerfile.test`
     (`python:3.12-slim`, what `make test` runs) and every image. `Pre-commit` has since gained 3.13
-    and 3.14 legs (the next entry); no pre-commit leg runs 3.15 in phase 1, by the owner's ruling.
+    and 3.14 legs (the next entry); no pre-commit leg runs 3.15 in phase 1, by the Overtoad's ruling.
 """
 
 CHANGELOG_ENTRY_OLD = """\
@@ -163,7 +163,7 @@ CHANGELOG_ENTRY_NEW = """\
   - `docs/testing/TESTING_QUICK_START.md` describes the matrix.
 
 - **CI's `Pre-commit` job runs on Python 3.12, 3.13 and 3.14, and every leg blocks merges.** The
-  owner asked on 2026-11-15 that it "also run on 3.13 and 3.14, with these checks treated the same
+  Overtoad asked on 2026-11-15 that it "also run on 3.13 and 3.14, with these checks treated the same
   as the existing 3.12 check"; every other Juniper repository already runs its pre-commit on
   3.12-3.14. `ci.yml`'s `pre-commit` job, which ran on `env.PYTHON_VERSION` (3.12) alone, becomes a
   three-leg matrix:
@@ -175,7 +175,7 @@ CHANGELOG_ENTRY_NEW = """\
   - Each leg sets up its own Python and keys its hook cache on that version, because pre-commit
     builds the Python hook environments (pre-commit-hooks, shellcheck-py, yamllint) with the
     interpreter it runs under.
-  - No pre-commit leg runs 3.15 (the owner's phase-1 ruling of 2026-11-14). `AGENTS.md` § CI/CD
+  - No pre-commit leg runs 3.15 (the Overtoad's phase-1 ruling of 2026-11-14). `AGENTS.md` § CI/CD
     Pipeline names the three contexts.
 
 - **An AppArmor-interface preflight runs before every bring-up"""

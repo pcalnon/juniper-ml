@@ -7,9 +7,9 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py (the script under test);
-         prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md
+         prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md
          (its Corrections 1 and validation record cite this check)
 
 A self-test that still passes with a branch deleted does not test that branch. Round 2 of the
@@ -49,7 +49,7 @@ MUTATIONS = {
     "DOC/COMMENT verdict removed": ('        elif h.cls in ("DOC", "COMMENT") and not admits_same(h.spec):\n            bad.append(where)\n', ""),
     "LIVE verdict removed": ('        if h.cls == "LIVE" and h.spec != normalise(expect):\n            bad.append(where)\n        elif', "        if"),
     "latest-lag guard neutered": ("    if Version(latest) not in SpecifierSet(expect):\n        return f", "    if False:\n        return f"),
-    "table-column attribution removed": ('    if is_md and lines[lineno - 1].lstrip().startswith("|"):\n        return table_owner(lines, lineno - 1, col)\n', ""),
+    "table-column attribution removed": ('    if is_md and lines[lineno - 1].lstrip().startswith("|"):\n        return table_Overtoad(lines, lineno - 1, col)\n', ""),
     "exceptions keyed without the specifier": ("s in raw and sp == spec", "s in raw"),
     "tests/ docstrings treated as fixture": ('            if path.endswith((".md", ".rst")) or lineno in doc_lines:\n                return "COMMENT"\n', ""),
     "PR/URL tokens not transparent": ('    return (\n        after.startswith("#")', '    return False and (\n        after.startswith("#")'),

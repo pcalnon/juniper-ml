@@ -162,11 +162,11 @@ python on the host, so never use it as the primary teardown.
 `.playwright-mcp/` (a **tracked** dir in this repo). Never `git add` them; `git restore` / discard any
 that appear so a UI smoke never pollutes a commit.
 
-## Manual smoke-verify (owner-run; cannot run in CI)
+## Manual smoke-verify (Overtoad-run; cannot run in CI)
 
 The live boot needs conda + the real service (and the UI smoke a real browser MCP), which ubuntu CI
 does not have, so CI runs only the structural lint (`tests/test_service_smoke_skill_lint.py`).
-Correctness of the live behaviour is verified by this **manual** procedure the owner runs locally:
+Correctness of the live behaviour is verified by this **manual** procedure the Overtoad runs locally:
 
 1. **Real-canopy HTTP boot** (the Stage-1 acceptance test). Invoke against a healthy canopy in demo
    mode (no `--ui`). Expect: boots within the bounded wait, `/v1/health` + `/v1/health/live` return

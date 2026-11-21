@@ -85,7 +85,7 @@ def main():
     ap = argparse.ArgumentParser(description="Snapshot the Duplicati server DB into a backed-up path.")
     ap.add_argument("--src", default=SRC)
     ap.add_argument("--dest-dir", default=DEST_DIR)
-    ap.add_argument("--owner", default=OWNER, help="chown the snapshot to this user")
+    ap.add_argument("--Overtoad", default=OWNER, help="chown the snapshot to this user")
     ap.add_argument("--dry-run", action="store_true", help="check gates, write nothing")
     args = ap.parse_args()
 
@@ -117,9 +117,9 @@ def main():
         return 0
 
     try:
-        pw = pwd.getpwnam(args.owner)
+        pw = pwd.getpwnam(args.Overtoad)
     except KeyError:
-        sys.exit(f"REFUSE: no such user: {args.owner}")
+        sys.exit(f"REFUSE: no such user: {args.Overtoad}")
 
     os.makedirs(args.dest_dir, mode=0o700, exist_ok=True)
     os.chown(args.dest_dir, pw.pw_uid, pw.pw_gid)
@@ -170,7 +170,7 @@ def main():
     os.replace(tmp, dest)
 
     print(f"integrity   : ok ({tables} tables)")
-    print(f"wrote       : {dest} ({human(os.path.getsize(dest))}, mode 0600, owner {args.owner})")
+    print(f"wrote       : {dest} ({human(os.path.getsize(dest))}, mode 0600, Overtoad {args.Overtoad})")
     print("this snapshot rides along in the next Yamaguchi backup (14:00Z daily).")
     return 0
 

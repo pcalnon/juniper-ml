@@ -8,11 +8,11 @@
 ## Goal statement
 
 Phase 2 of the Python 3.15 migration ("work through the 3.15 problems") is done: every identified problem is fixed
-and merged. The next step is **phase 3, making a 3.15 check required, which is the owner's decision. Do not start
+and merged. The next step is **phase 3, making a 3.15 check required, which is the Overtoad's decision. Do not start
 it unasked, and do not move `/usr/bin/python3` off 3.14 (phase 4).** Merge approval for this arc was granted in this
-session by the owner; **it does not carry to a new session.**
+session by the Overtoad; **it does not carry to a new session.**
 
-## Owner rulings this session (2026-11-15, from the dialog)
+## The Overtoad rulings this session (2026-11-15, from the dialog)
 
 1. dill on 3.15: **"safe=True in the helper"** (over pinning dill's `master` on the 3.15 legs, switching the helper to
    stdlib pickle, or waiting for dill 0.4.2).
@@ -40,13 +40,13 @@ session by the owner; **it does not carry to a new session.**
   `gh workflow run scheduled-tests.yml --ref <pr-branch>`, since PR checks never run that workflow. The template
   `notes/templates/ci/scheduled-tests.yml` TODO 2 now warns.
 - **The cascor-model drift** was caught on #687 itself (2026-09-24, its `Test (Python 3.12)` failed), but no ruleset
-  requires that context, so `main` stayed red seven weeks. See Open owner question 1.
+  requires that context, so `main` stayed red seven weeks. See Open Overtoad question 1.
 - **Cleanup**: the predecessor's 18 worktrees plus `agent-a071c56ac10b0da13` were removed (both liveness probes clear;
   every PR merged; every uncommitted file proven equal to its merged PR head, or for two CHANGELOGs, every added line
   present in it), their local branches deleted, and juniper-harcot's two leftover remote branches deleted (and the
   stale tracking refs pruned in harcot, data-client and cascor-client). This session's own six worktrees went the same
   way once their PRs merged; none is left. Evidence from all 25 removals is in
-  `juniper-ml/tmp/worktree-cleanup-2026-11-15/` (PRIMARY), under the owner's 2026-10-30 "evidence only" ruling.
+  `juniper-ml/tmp/worktree-cleanup-2026-11-15/` (PRIMARY), under the Overtoad's 2026-10-30 "evidence only" ruling.
   Final `MANIFEST.tsv` totals: 85 COPIED rows (83 files, plus 2 symlinks: `agent-a071c56ac10b0da13`'s
   `tmp/py315-local/shim/python` and `python3`), 7.5 MB; 15 SKIPPED-REGEN trees (venvs, `pre-commit-home`, caches),
   counted; 17 EMPTY-DIR rows.
@@ -68,10 +68,10 @@ the same SHA, not failed. The newest run (`7802aef5`) passes every step. Read th
    and cascor-worker (`gh run list --repo pcalnon/<repo> --workflow scheduled-tests.yml --limit 1`).
 2. **dill floor**: dill 0.4.1 (2026-01-19) is still the newest release; its `master` handles 3.15 since 2026-05-23
    (commit `37d2bf71`). Raise cascor's and cascor-model's dill floors when a release ships. Do not cite the upstream
-   PR number in a PR body (it posts a backlink). Any PR for it needs the owner's merge approval again.
-3. **Phase 3**: the owner's go-ahead first.
+   PR number in a PR body (it posts a backlink). Any PR for it needs the Overtoad's merge approval again.
+3. **Phase 3**: the Overtoad's go-ahead first.
 
-## Open owner questions
+## Open Overtoad questions
 
 1. Should cascor's `CI — juniper-cascor-model` `Test (Python 3.12)` become a required context in ruleset 15081045?
    It caught #687's drift and was ignored because nothing requires it.

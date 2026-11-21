@@ -45,7 +45,7 @@ estimator. Do not "reconcile" them by loosening either.
 
 | PR      | Merge     | Item                                                                          |
 |---------|-----------|-------------------------------------------------------------------------------|
-| ml#1106 | `4afaf5e` | segment 9 — W6 owner gate driven, F-CANOPY-019's open question resolved       |
+| ml#1106 | `4afaf5e` | segment 9 — W6 Overtoad gate driven, F-CANOPY-019's open question resolved       |
 | ml#1113 | `dccd564` | segment 10 — second F-CANOPY-019 arm, first matrix bulk-fill (66 cells)       |
 | ml#1115 | `831c1ec` | segment 11 — three-source consolidation to 137/298, C2.2-04 mis-fill repaired |
 | ml#1117 | `1932479` | segment 11 follow-up — slash enumerations + rowlog bullets, 140/298           |
@@ -317,7 +317,7 @@ sprawl is not):
    `gh api -X PUT repos/pcalnon/juniper-ml/pulls/<N>/merge -f merge_method=squash` — which succeeds where
    `gh pr merge` stalls, because the squash commit GitHub creates is itself signed. The plan pre-authorizes
    headless merge for this arc's PRs (`…E2E-FRONTEND-VALIDATION-PLAN.md:689`); recent sessions have still
-   confirmed each merge with the owner. **Confirm.**
+   confirmed each merge with the Overtoad. **Confirm.**
 5. After merging, check `main-verify` is green on the merge SHA
    (`gh run list --workflow=main-verify.yml --limit 1`), then clean up your worktree and branch.
 

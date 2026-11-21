@@ -2,7 +2,7 @@
 """2026-09-08_repair_notes_tables.py -- repair the eight REAL table defects in live notes/.
 
 Project: juniper-ml
-Sub-Project: docs structure debt (owner decision: repair live notes/, ratify the rest)
+Sub-Project: docs structure debt (Overtoad decision: repair live notes/, ratify the rest)
 Application: ad-hoc repair (documentation integrity)
 Author: Paul Calnon
 License: MIT License

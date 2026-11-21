@@ -15,7 +15,7 @@ and `§N` only for a real **section heading** — the plan document is 1213 line
 |----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
 | [`HANDOFF_2026-08-15_wide-budget-head-to-head-campaign.md`](HANDOFF_2026-08-15_wide-budget-head-to-head-campaign.md) (ml#1122)                     | the wide-budget head-to-head **campaign** (64–128 units) — GPU work, a new suite, a new evidence note           |
 | [`HANDOFF_2026-08-15_api-primer-defect-register-outstanding-work.md`](HANDOFF_2026-08-15_api-primer-defect-register-outstanding-work.md) (ml#1121) | the **defect register** — 91 open defects, the throttle port, consolidation                                     |
-| **this one**                                                                                                                                       | what is left of the CLI-experimentation *plan*: two engineering items, and the owner-decision / parked register |
+| **this one**                                                                                                                                       | what is left of the CLI-experimentation *plan*: two engineering items, and the Overtoad-decision / parked register |
 
 All three were written by different sessions on the same day and are **siblings** — none supersedes
 another. ml#1122 was authored after this session's Q-6 work landed and cites ml#1120 / cascor#523
@@ -81,7 +81,7 @@ sites still record Q-6 as unresolved, and a successor reading any of them will r
 | plan:1093 (Wave 5.3 row)         | "**Explicitly depends on resolving Q-6** … Until Q-6 is resolved, 5.3 is scoped to concurrent runs in **distinct checkouts** only" |
 | plan:1145 (Q-table)              | "**Defer** for single-instance-per-checkout use"                                                                                   |
 | P4 studies note:189, :194-195    | "W-12/Q-7, F-P1-2, PF threshold ratification **and Q-6 are unchanged and still open**" … "Recommend resolving Q-6 **yes**"         |
-| **P2 matrix note:84** (also :65) | "Of this paragraph's other items, **F-P1-2 and Q-6 remain genuinely open owner calls.**"                                           |
+| **P2 matrix note:84** (also :65) | "Of this paragraph's other items, **F-P1-2 and Q-6 remain genuinely open Overtoad calls.**"                                           |
 
 - plan = `notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`
 - P4 studies note = `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P4-STUDIES-EVIDENCE.md`
@@ -89,7 +89,7 @@ sites still record Q-6 as unresolved, and a successor reading any of them will r
 
 **The P2 site is the sharpest lesson here: ml#1118 *created* it.** That PR's own update block —
 committed at 03:43, about 90 minutes before cascor#523 at 05:10 — added line 84 asserting Q-6 was
-still an open owner call, and its
+still an open Overtoad call, and its
 supersede block at :67-84 names only three stale F-P1-3b references, so it does not cover its own
 new claim. Line :65's "launcher multi-run + Q-6 log-dir class" is likewise untouched. A register-repair
 PR can plant the next stale register entry; **re-grep the finding ID after writing the fix, not just
@@ -122,7 +122,7 @@ you. `tests/test_run_suite.py:152` pins the `Q-6` ID in the message — keep it 
 
 Not urgent: sequential cascor suites work, and every campaign to date has used them.
 
-### 2.3 Also open, and not an owner decision
+### 2.3 Also open, and not an Overtoad decision
 
 The **§12 performance lane** (plan §12, heading at plan:895) remains open engineering. ml#1118's
 refresh of the P4 note records it explicitly: *"The perf lane remains open on the PF suites and the
@@ -132,7 +132,7 @@ not merge the two.
 
 ---
 
-## 3. Owner decisions and parked items
+## 3. The Overtoad decisions and parked items
 
 None is blocked on engineering. Do not "make progress" by guessing Paul's answer.
 
@@ -140,9 +140,9 @@ Sources in this table: **P3 rollup** = `notes/JUNIPER_2026-08-08_JUNIPER-ECOSYST
 
 | item                          | nature                                                                                                                                                                             | source                            |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| **F-P1-2**                    | Owner decision — a native Grafana v13.0.1 owns `:3000` (apt, systemd `active`+`enabled` since 2026-07-15, non-default creds, **binds `*:3000`**). Options package already written. | P3 rollup §3                      |
-| **Q-8**                       | Owner call — where run-level performance baselines live. Also gates the `JR-CAS-OBS-004` targets (plan:1160).                                                                      | plan:1147                         |
-| **Q-10**                      | Owner call — dedicated `JuniperRecurrence` conda env vs riding `JuniperCascor1`. Hygiene, explicitly *not* a blocker.                                                              | plan:1149                         |
+| **F-P1-2**                    | The Overtoad decision — a native Grafana v13.0.1 owns `:3000` (apt, systemd `active`+`enabled` since 2026-07-15, non-default creds, **binds `*:3000`**). Options package already written. | P3 rollup §3                      |
+| **Q-8**                       | The Overtoad call — where run-level performance baselines live. Also gates the `JR-CAS-OBS-004` targets (plan:1160).                                                                      | plan:1147                         |
+| **Q-10**                      | The Overtoad call — dedicated `JuniperRecurrence` conda env vs riding `JuniperCascor1`. Hygiene, explicitly *not* a blocker.                                                              | plan:1149                         |
 | **W-12 / Q-7**                | Parked — `csv_import` corpus. The plan's Q-7 row says "Defer until a corpus is defined". It has blocked nothing.                                                                   | plan:1095 (W-12), plan:1146 (Q-7) |
 | **PF threshold ratification** | The *thresholds* are Paul's. The lane itself is §2.3 above.                                                                                                                        | plan §12                          |
 | **F-P1-4**                    | Owner's to keep or delete — snapshot `.h5` debris.                                                                                                                                 | P1 smoke note:37 (§2 Findings)    |
@@ -303,7 +303,7 @@ python util/experiments/list_runs.py                        # NOT executable —
 - **Open PRs ml#1119** (release-train propose-lane signing closeout) and **ml#1123**
   (`docs/canopy-e2e-seg12-handoff`) belong to **other sessions** — leave both. Re-run
   `gh pr list --state open`; this set turns over in minutes.
-- ml open issues #1012, #1011, #588, #434, #358, #357 are pre-existing owner-decision / backlog
+- ml open issues #1012, #1011, #588, #434, #358, #357 are pre-existing Overtoad-decision / backlog
   items; **none is from this arc**.
 - `juniper-cascor`: `origin/main` at `3909d27` (#523), **zero open PRs, zero open issues**. The
   primary checkout was one commit behind at `3857d1e` — check before running anything against it.

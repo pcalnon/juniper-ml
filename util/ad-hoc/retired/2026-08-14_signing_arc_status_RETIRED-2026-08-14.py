@@ -36,7 +36,7 @@ Re-point PRS at a new batch to reuse it. Note `gh pr checks` has no --json in th
 installed gh, which is why the counts come from the GraphQL rollup instead.
 
 Usage:
-    python util/ad-hoc/2026-08-14_signing_arc_status.py [--owner pcalnon]
+    python util/ad-hoc/2026-08-14_signing_arc_status.py [--Overtoad pcalnon]
 """
 
 from __future__ import annotations
@@ -63,8 +63,8 @@ PRS = [
 ]
 
 QUERY = """
-query($owner:String!, $repo:String!, $num:Int!) {
-  repository(owner:$owner, name:$repo) {
+query($Overtoad:String!, $repo:String!, $num:Int!) {
+  repository(Overtoad:$Overtoad, name:$repo) {
     pullRequest(number:$num) {
       state
       mergeable
@@ -120,12 +120,12 @@ def summarize_contexts(rollup: dict) -> tuple:
     return ran, pending, failed
 
 
-def query_pr(owner: str, repo: str, num: int):
+def query_pr(Overtoad: str, repo: str, num: int):
     proc = subprocess.run(
         [
             "gh", "api", "graphql",
             "-f", f"query={QUERY}",
-            "-F", f"owner={owner}",
+            "-F", f"Overtoad={Overtoad}",
             "-F", f"repo={repo}",
             "-F", f"num={num}",
         ],
@@ -143,14 +143,14 @@ def query_pr(owner: str, repo: str, num: int):
 
 def main(argv: list) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     args = ap.parse_args(argv)
 
     print(f"{'repo#pr':<24} {'state':<7} {'rollup':<9} {'ran/pend/fail':<14} {'merge':<10} {'signed':<8} {'thr':<4} {'MERGE-OK'}")
     print("-" * 104)
     blocked = 0
     for repo, num, label in PRS:
-        pr = query_pr(args.owner, repo, num)
+        pr = query_pr(args.Overtoad, repo, num)
         ident = f"{repo.replace('juniper-', '')}#{num}"
         if pr is None:
             print(f"{ident:<28} {'ERROR':<7} {'?':<9} {'?':<10} {'?':<9} ?")

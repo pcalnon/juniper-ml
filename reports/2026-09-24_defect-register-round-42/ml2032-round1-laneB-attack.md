@@ -68,11 +68,11 @@ Quoted (L1363-1365): *"The set is consulted only immediately before a dataset re
 
 Suggested correction: limit "removes" to the staged-reload path, and require a separate state meaning "opt-in withheld because the generator list was unreachable", carried into the failure message.
 
-**4. [Medium] A sentence still says no row is awaiting an owner decision. Its subject changed in this PR, and it was left false.**
+**4. [Medium] A sentence still says no row is awaiting an Overtoad decision. Its subject changed in this PR, and it was left false.**
 
-Quoted (`APD-DATA-047` bullet, L1376-1377): *"With this ruling **no row in this register is awaiting an owner decision** — every open row is implementation work."*
+Quoted (`APD-DATA-047` bullet, L1376-1377): *"With this ruling **no row in this register is awaiting an Overtoad decision** — every open row is implementation work."*
 
-- The `APD-ML-002`…`-006` bullet says *"These five need an owner decision before code is written"*.
+- The `APD-ML-002`…`-006` bullet says *"These five need an Overtoad decision before code is written"*.
 - This PR removes two items (`APD-ECO-008`, and X-A's open question) from exactly the set this sentence describes, and leaves it standing.
 - Read as written, it gives a session licence to act on five rows the rest of the register parks.
 - The register's §1 ("The limit of the sweep") says to re-read any sentence that counts or ranks something.
@@ -111,7 +111,7 @@ Suggested correction: have the Gate cell name the two watched sites and say serv
 
 **7. [Medium-Low] A stale pointer.**
 
-Quoted (L1303-1304): *"**These five need an owner decision before code is written**, exactly as `APD-ECO-008` states for itself."*
+Quoted (L1303-1304): *"**These five need an Overtoad decision before code is written**, exactly as `APD-ECO-008` states for itself."*
 
 After this PR, the `APD-ECO-008` bullet opens *"RULED 2026-09-22"*. This line is one of five hits for `grep APD-ECO-008` (L255, L1228, L1278, L1304, L1422), and §1's close protocol ("Closing a row — the five touches") says to grep the whole file for the id and read every hit.
 
@@ -130,7 +130,7 @@ Quoted: *"The 2026-09-11 text did not say…"* and *"…the startup dependency t
 
 - `git log -S 'Derive the truncatable set from juniper-data'` finds `6ccf80fa`, dated 2026-09-09 (ml#1864). A search for the "design constraint" sentence finds the same commit.
 - The bullet sits under "OWNER RULINGS, 2026-09-09".
-- `APD-CASCOR-008` appears 3× in `util/ad-hoc/register_owner_rulings_2026-09-09.py` and 0× in `util/ad-hoc/register_owner_rulings_primer_2026-09-11.py`.
+- `APD-CASCOR-008` appears 3× in `util/ad-hoc/register_Overtoad_rulings_2026-09-09.py` and 0× in `util/ad-hoc/register_Overtoad_rulings_primer_2026-09-11.py`.
 - §2.4's 2026-09-11 block does not contain it.
 
 Change the date to 2026-09-09.

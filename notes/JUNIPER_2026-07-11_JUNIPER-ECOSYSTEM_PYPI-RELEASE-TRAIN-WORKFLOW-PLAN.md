@@ -4,7 +4,7 @@
 **Repository**: cross-repo (`ECOSYSTEM`) — authored in `pcalnon/juniper-ml`
 **Author**: planner agent (principal-engineer design author)
 **Document Type**: Design-of-record + implementation plan (`-PLAN`)
-**Status**: RATIFIED 2026-07-11 — all §14 owner decisions answered and ingested; Phases 0-4 green-lit (Phase 5 = deferred reevaluations)
+**Status**: RATIFIED 2026-07-11 — all §14 Overtoad decisions answered and ingested; Phases 0-4 green-lit (Phase 5 = deferred reevaluations)
 **Last Updated**: 2026-07-11
 
 ---
@@ -13,7 +13,7 @@
 
 This plan designs a **reusable, schedulable "PyPI release train"** for the Juniper ecosystem. Each run
 answers one question per package — *does this package have changes that need a PyPI deploy?* — and then
-performs the as-needed releases end-to-end under the owner's existing gate policy, stopping at exactly the
+performs the as-needed releases end-to-end under the Overtoad's existing gate policy, stopping at exactly the
 right guardrails.
 
 It builds directly on the companion audit
@@ -24,16 +24,16 @@ each (**7 UNRELEASED_CHANGES, 11 UP_TO_DATE, 0 BUMPED_NOT_RELEASED, 0 NEVER_RELE
 does **not** redo that inventory; it consumes the audit's §7 detection pipeline as its specification.
 
 The central design idea is a **two-gate, three-mode** machine that removes manual toil *between* the
-owner's two real decision points without ever removing the decision points themselves:
+Overtoad's two real decision points without ever removing the decision points themselves:
 
 - **Gate 1 (kept): the release-proposal PR.** The train never auto-bumps a version. When it finds
   release-worthy changes, it opens a *standard-gated* PR carrying the version bump, the CHANGELOG
-  `Unreleased`→versioned move, and the drafted release-notes content. The **owner reviews and merges**
-  it. This is a normal, owner-approved PR.
+  `Unreleased`→versioned move, and the drafted release-notes content. The **Overtoad reviews and merges**
+  it. This is a normal, Overtoad-approved PR.
 - **Gate 2 (kept, untouched): the `pypi` environment.** Every publish workflow's PyPI job runs inside
   the `pypi` GitHub environment, protected by a **5-minute wait_timer + required reviewer `pcalnon`**
   (audit §3.3, lines 126-136). The train **never** approves, bypasses, or weakens it. An automated run's
-  designed **terminal state is "N PyPI deployments PENDING owner approval."**
+  designed **terminal state is "N PyPI deployments PENDING Overtoad approval."**
 
 Between those two gates, the automated ceremony runs hands-free: it archives the release notes (the only
 PR permitted to auto-merge, and only behind a structural guard that proves the diff is *nothing but* new
@@ -42,7 +42,7 @@ bare tag), and lets the existing per-package publish workflow push to **TestPyPI
 verification. The run then halts at Gate 2.
 
 **Phase 0 alone is a deliverable**: a report-only scheduled run of the detection engine satisfies the
-owner's "investigate and analyze which modules need a deploy" requirement without taking any action.
+Overtoad's "investigate and analyze which modules need a deploy" requirement without taking any action.
 
 ---
 
@@ -58,9 +58,9 @@ owner's "investigate and analyze which modules need a deploy" requirement withou
   central `notes/releases/` archival, CHANGELOG `Unreleased`→section, SemVer derivation, and the
   Release-is-the-deploy ceremony (R3).
 - **G4** — A **gate-exempt path for the notes-archive PR only**, behind a structural guard, with every
-  other PR keeping the standard owner gate (R5).
+  other PR keeping the standard Overtoad gate (R5).
 - **G5** — A hands-free **happy path** per already-bumped package: notes → archive PR auto-merge → Release
-  → publish → TestPyPI verify, with **no owner action** up to the PyPI gate (R6).
+  → publish → TestPyPI verify, with **no Overtoad action** up to the PyPI gate (R6).
 - **G6** — **PyPI production gates preserved exactly** on all repos (R7).
 
 ### 2.2 Non-goals
@@ -68,11 +68,11 @@ owner's "investigate and analyze which modules need a deploy" requirement withou
 - **N1** — **Not** touching the `pypi` environment protection (wait_timer, required reviewer) on any repo.
   The train reads the gate; it never edits it (R7).
 - **N2** — **Not** auto-approving anything except the exempt notes-archive PR. Version bumps, CHANGELOG
-  edits, consumer ceiling-bump propagation PRs, and PyPI deployments all keep the standard owner gate.
+  edits, consumer ceiling-bump propagation PRs, and PyPI deployments all keep the standard Overtoad gate.
 - **N3** — **Not** a general CI/CD rewrite. The 18 existing `publish*.yml` workflows remain the publishers;
   the train orchestrates *around* them (it decides *when* to cut a Release; the Release still triggers the
   unchanged publish workflow).
-- **N4** — **Not** a versioning oracle. SemVer bumps are *proposals* the owner may override in the
+- **N4** — **Not** a versioning oracle. SemVer bumps are *proposals* the Overtoad may override in the
   proposal PR.
 - **N5** — **Not** in scope: `juniper-deploy` and `juniper-slacker` (audit §2, lines 89-95 — neither is a
   PyPI package).
@@ -158,7 +158,7 @@ For each registry entry, in this order (mirroring audit §7):
    whose stripped version equals `info.version` (audit §7.3: "prefer the tag that matches the current
    PyPI version").
 4. **Remote-authoritative diff.** Compute `<tag>..main` **remote-authoritatively** — default via
-   `gh api repos/<owner>/<repo>/compare/<tag>...main` (and `commits?path=&since=` for paging past the
+   `gh api repos/<Overtoad>/<repo>/compare/<tag>...main` (and `commits?path=&since=` for paging past the
    **300-file page cap**), *not* a local checkout, because local checkouts can be stale (F-6; the audit's
    own worktree was). Path-scope to `path`; for cascor the app scope is "repo minus the two subpkg dirs."
    A `--local-git` mode (fresh `git fetch` + `git log <tag>..origin/main`) exists for offline/dev use only.
@@ -214,7 +214,7 @@ analyzes* which modules and sub-modules need a deploy, with evidence, and takes 
 
 ## 5. Per-package release state machine
 
-The machine has **two entry paths into a release**, which is what keeps the owner in control while
+The machine has **two entry paths into a release**, which is what keeps the Overtoad in control while
 automating the toil.
 
 ### 5.1 States
@@ -222,7 +222,7 @@ automating the toil.
 | State                   | Meaning                                                 | Who acts                                                                       |
 |-------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------|
 | `UP_TO_DATE`            | No release-worthy change since the diff-base tag.       | Train: nothing.                                                                |
-| `UNRELEASED_CHANGES`    | Release-worthy commits, version **not** bumped.         | Train opens a **standard-gated proposal PR**; **owner** reviews/merges.        |
+| `UNRELEASED_CHANGES`    | Release-worthy commits, version **not** bumped.         | Train opens a **standard-gated proposal PR**; **Overtoad** reviews/merges.        |
 | `BUMPED_NOT_RELEASED`   | `declared > released`; no Release cut yet.              | Train runs the **automated ceremony** (exempt archive PR + Release + publish). |
 | `NEVER_RELEASED`        | Not on PyPI at all (0 today).                           | Train ceremony **after** a trusted-publisher-config precheck; else HALT.       |
 | `RELEASING`             | Ceremony in flight (concurrency-guarded).               | Train.                                                                         |
@@ -236,18 +236,18 @@ Phase 0 pre-work and the observability summary, not the ceremony.
 
 ```bash
 UP_TO_DATE ──(new substantive SHIP commit)──▶ UNRELEASED_CHANGES
-UNRELEASED_CHANGES ──(owner merges proposal PR: version bump + CHANGELOG move)──▶ BUMPED_NOT_RELEASED
+UNRELEASED_CHANGES ──(Overtoad merges proposal PR: version bump + CHANGELOG move)──▶ BUMPED_NOT_RELEASED
 BUMPED_NOT_RELEASED ──(train: exempt archive PR auto-merges + Release cut)──▶ RELEASING
 RELEASING ──(publish workflow: TestPyPI publish + install-verify OK)──▶ PENDING_PYPI_APPROVAL
-PENDING_PYPI_APPROVAL ──(owner approves `pypi` env)──▶ UP_TO_DATE  (declared == released again)
+PENDING_PYPI_APPROVAL ──(Overtoad approves `pypi` env)──▶ UP_TO_DATE  (declared == released again)
 any ──(precondition fails, §8)──▶ HALTED ──▶ issue
 ```
 
 ### 5.3 Why this reconciles R6 with R5/R7
 
 R6's hands-free happy path (`generate notes → archive PR auto-merges → Release cut → publish → TestPyPI
-verify → no owner action`) is precisely the **`BUMPED_NOT_RELEASED` → ceremony** arc. The version bump that
-*makes* a package `BUMPED_NOT_RELEASED` arrived earlier via the **owner-approved proposal PR** (Gate 1),
+verify → no Overtoad action`) is precisely the **`BUMPED_NOT_RELEASED` → ceremony** arc. The version bump that
+*makes* a package `BUMPED_NOT_RELEASED` arrived earlier via the **Overtoad-approved proposal PR** (Gate 1),
 and the PyPI deploy at the end still waits at the **`pypi` env gate** (Gate 2). So the automation touches
 only the middle — notes authoring/archival, Release cutting, TestPyPI verification — never a version bump
 without approval and never a PyPI deploy without approval. **The audit found 0 packages in
@@ -257,14 +257,14 @@ PR merges — which makes juniper-ml sub-packages the natural, safe Phase-3 pilo
 ### 5.4 Version + CHANGELOG handling (D2) — the proposal PR
 
 Because only the notes-archive PR is gate-exempt (§7), **all version + CHANGELOG changes ride the standard
-owner gate** inside one **release-proposal PR** per package, generated by the train from the manifest:
+Overtoad gate** inside one **release-proposal PR** per package, generated by the train from the manifest:
 
 - **`pyproject.toml` / `_version.py`** version bump to `proposed_version`.
 - **CHANGELOG**: move `[Unreleased]` bullets into a new `[<version>] - <date>` section, preserving the
   Keep-a-Changelog grouping (`CHANGELOG.md:5` declares KaC + SemVer; `:8` `[Unreleased]`; `:27`
   `[0.6.0] - 2026-05-23` is the section shape to emulate). A fresh empty `[Unreleased]` is left behind.
 - **Drafted release-notes content** (from the template, §6) included in the PR body / a draft file for the
-  owner to review — but **not** yet archived to `notes/releases/` (archival is the later exempt step).
+  Overtoad to review — but **not** yet archived to `notes/releases/` (archival is the later exempt step).
 - **Atomicity co-changes** the PR must carry so it lands green in one merge:
   - **AGENTS.md `**Version**` header** — kept in lockstep with `pyproject.toml` by
     `tests/test_agents_md_version_drift.py`; the meta-package bump must edit AGENTS.md in the same PR.
@@ -291,7 +291,7 @@ first") and refreshes rather than duplicates.
 
 ## 6. SemVer derivation (D3)
 
-Bumps are **proposals**; the owner may override in the proposal PR. Derivation combines two signals:
+Bumps are **proposals**; the Overtoad may override in the proposal PR. Derivation combines two signals:
 
 - **CHANGELOG `[Unreleased]` categories**: `Added`/`Changed`(non-breaking) ⇒ feature; `Fixed` ⇒ fix;
   `Security` ⇒ fix (or feature if it adds API surface); `Changed`(breaking) / `Removed` ⇒ breaking.
@@ -318,12 +318,12 @@ to the new floor minimums" note (`CHANGELOG.md:51-53`).
 ### 7.1 Verbatim-intent statement
 
 - **R5** — The PR that **archives the generated release notes and contains no other changes** is exempt
-  from the standard owner-approval gate and may auto-merge — **but only behind a structural guard job
+  from the standard Overtoad-approval gate and may auto-merge — **but only behind a structural guard job
   proving the diff is exactly new file(s) under `notes/releases/` matching the `RELEASE_NOTES_*` naming
-  pattern (no modifications, no deletions, no other paths).** Every other PR keeps the standard owner gate.
+  pattern (no modifications, no deletions, no other paths).** Every other PR keeps the standard Overtoad gate.
 - **R7** — The `pypi` environment's `wait_timer` (5 min) + required reviewer (`pcalnon`) stay exactly
   as-is on all repos; automation **never** approves, bypasses, or weakens them. The run ends with PyPI
-  deployments **PENDING owner approval** — the designed terminal state.
+  deployments **PENDING Overtoad approval** — the designed terminal state.
 
 ### 7.2 Structural-guard job design
 
@@ -341,20 +341,20 @@ the base and **passes only if all** hold:
 
 If the guard **passes** and required checks are green, the train enables merge via
 `gh pr merge --auto --squash`. If the guard **fails**, the PR is untouched and **falls back to the
-standard owner gate** — it never auto-merges. The guard is added to the target repo's **required status
+standard Overtoad gate** — it never auto-merges. The guard is added to the target repo's **required status
 checks** so `--auto` cannot complete until it passes (auto-merge honours required checks).
 
-### 7.3 Auto-merge preconditions (owner config, called out honestly)
+### 7.3 Auto-merge preconditions (Overtoad config, called out honestly)
 
 `gh pr merge --auto` needs three repo-level conditions the implementation must confirm (not assumed):
 
 - **"Allow auto-merge"** enabled in the target repo settings.
 - The **structural-guard job is a required status check** in the branch ruleset.
 - **No required human PR review** on `notes/releases/` paths that would block `--auto`. Since CODEOWNERS is
-  `@pcalnon` for all files, a repo-wide required-review ruleset would hold the exempt PR for owner review —
-  degrading "auto-merge" to "owner one-click merge."
+  `@pcalnon` for all files, a repo-wide required-review ruleset would hold the exempt PR for Overtoad review —
+  degrading "auto-merge" to "Overtoad one-click merge."
   **Decided (Q-RULESET, 2026-07-11): path-scope the required-review ruleset to exclude `notes/releases/`** —
-  true hands-free auto-merge for the guard-proven archive PR. The ruleset edit is an owner-console action,
+  true hands-free auto-merge for the guard-proven archive PR. The ruleset edit is an Overtoad-console action,
   landed and confirmed at Phase 3 step 3.3; until it lands, the exempt PR degrades gracefully to the
   one-click fallback. This plan still does **not** assert the current ruleset contents — step 3.3 verifies
   them before relying on `--auto`.
@@ -368,7 +368,7 @@ Auto-merging the archive PR **merges a Markdown file to `main`; it deploys nothi
 subsequent **Release cut**, which triggers the *unchanged* `publish*.yml`, whose PyPI job sits inside the
 `pypi` environment and **waits for `pcalnon`**. Even though a bot identity cuts the Release, that identity
 is **never added as a `pypi` environment reviewer** (a hard invariant, §9.3), so it cannot self-approve.
-TestPyPI (ungated by design, audit §3.3) is the smoke-test stage; PyPI is always owner-gated.
+TestPyPI (ungated by design, audit §3.3) is the smoke-test stage; PyPI is always Overtoad-gated.
 
 ---
 
@@ -379,7 +379,7 @@ package, open/update a GitHub issue, never proceed** (a halt on one package does
 
 | Precondition                           | Check                                                                                                                                                                          | Rationale / memory                                                                                                                                  |
 |----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Target main CI green**               | `gh run list --branch main --repo <repo>` latest = success.                                                                                                                    | Owner rule: "check main green before blaming a red PR." A red main means don't release.                                                             |
+| **Target main CI green**               | `gh run list --branch main --repo <repo>` latest = success.                                                                                                                    | The Overtoad rule: "check main green before blaming a red PR." A red main means don't release.                                                             |
 | **No open release PR for the package** | `gh pr list` dup-guard.                                                                                                                                                        | Concurrent Claude sessions are a real hazard (memory).                                                                                              |
 | **Remote freshness**                   | Remote-authoritative diff only (§4.2); no local-checkout truth.                                                                                                                | F-6: the ml worktree was stale and would under-count.                                                                                               |
 | **Declared ≥ released**                | §4.2 step 2.                                                                                                                                                                   | `declared < released` ⇒ yanked/rolled-back anomaly ⇒ HALT.                                                                                          |
@@ -405,14 +405,14 @@ gap fixed. Rationale:
   already trusted and reviewed (`docs-full-check.yml:63-106`).
 - juniper-ml is the ecosystem's tooling hub and the **central `notes/releases/` archive home** (procedure
   §11.3) — the exempt archive PR is *always* against juniper-ml, so the guard + auto-merge live in one
-  repo the owner already watches.
+  repo the Overtoad already watches.
 - The detector and its unittest gate live in juniper-ml's `util/` + `tests/`, consistent with every other
   drift checker.
 
 **Why GitHub Actions over a Claude Code scheduled routine (weighed, per D5):** a Claude Code routine could
 run the same driver, but Actions is preferred as the *primary* because (a) it is auditable and
 reproducible with pinned action SHAs (the fleet convention — see `publish.yml:48` pinned checkout), (b) it
-already holds the OIDC + environment plumbing, (c) it needs no always-on host, and (d) the owner's
+already holds the OIDC + environment plumbing, (c) it needs no always-on host, and (d) the Overtoad's
 "verify-before-first-cron" discipline (memory) applies cleanly to a `workflow_dispatch`. A Claude Code
 routine remains a viable **fallback operator** for ad-hoc re-runs and for the judgement-heavy proposal-PR
 *authoring* (release-notes prose), invoked manually — but the scheduled backbone is Actions.
@@ -467,7 +467,7 @@ tests/
 Mode is a **repo variable** `RELEASE_TRAIN_MODE ∈ {off, report, propose, ceremony}` (default `report`),
 plus a `workflow_dispatch` input override — this is also the **disable/rollback switch** (§11).
 
-Notifications use a repository secret **`SLACK_WEBHOOK_URL`** (owner-provisioned incoming webhook for the
+Notifications use a repository secret **`SLACK_WEBHOOK_URL`** (Overtoad-provisioned incoming webhook for the
 Juniper Slack channel; §11, Q-CHANNEL). It is the only secret the train adds; absence of the secret skips
 the notification step and never fails a run.
 
@@ -500,7 +500,7 @@ guard then only ever reasons about one repo's layout. Consequences:
   into the ceremony runner).
 - **App-repo local `notes/releases/`** practice (canopy/data/recurrence keep local copies today, audit
   F-3) is *permitted but non-canonical*: if a repo wants a local mirror, that copy is folded into its
-  **standard-gated proposal PR** (owner-gated), keeping the exempt path single-repo and pure.
+  **standard-gated proposal PR** (Overtoad-gated), keeping the exempt path single-repo and pure.
 
 **F-3 migration** (Phase 0): backfill the central archive for the 5 NOTES_MISSING packages (doc-tools,
 observability, cascor-protocol, canopy, cascor-worker — audit F-2) and the stale recurrence entries
@@ -513,12 +513,12 @@ observability, cascor-protocol, canopy, cascor-worker — audit F-2) and the sta
 
 - **Per-run summary** — a `GITHUB_STEP_SUMMARY` table of every package's classification + action, plus the
   release-manifest JSON as an uploaded **artifact** (the `docs-full-check.yml` reporting style). The
-  terminal announcement is explicit: **"N PyPI deployments PENDING owner approval at &lt;env URLs&gt;"**
+  terminal announcement is explicit: **"N PyPI deployments PENDING Overtoad approval at &lt;env URLs&gt;"**
   with the `pypi` environment URLs.
 - **Failure issues** — any HALT (§8) opens or updates a single deduplicated GitHub issue per package
   (title keyed on `pypi_name` + reason), never a flood.
 - **Slack notification (Q-CHANNEL, decided 2026-07-11)** — each run posts a compact summary to the
-  **Juniper Slack channel** via an owner-provisioned incoming-webhook secret (`SLACK_WEBHOOK_URL`, §9.4):
+  **Juniper Slack channel** via an Overtoad-provisioned incoming-webhook secret (`SLACK_WEBHOOK_URL`, §9.4):
   run mode, classification counts, packages newly `PENDING_PYPI_APPROVAL` (with their `pypi` env URLs),
   and any HALTs. The step is **non-blocking** (`if: always()` + `continue-on-error: true` — a notification
   failure or a missing secret never fails the train) and posts only the summary (no secrets, no diff
@@ -555,7 +555,7 @@ Each numbered step is a single, independently shippable, independently verifiabl
 - **0.3** Backfill the central archive (F-2/F-3): add the 5 missing `RELEASE_NOTES_*` files + the stale
   recurrence entries, normalize `-v`→`_v` (§10.2). Standard-gated PR in juniper-ml. **Verify**: every
   released version in the audit §1 table has a matching central archive file.
-- **0.4** (optional, owner-gated) Backfill the 3 TAG_ONLY Releases (F-1) or explicitly accept them as
+- **0.4** (optional, Overtoad-gated) Backfill the 3 TAG_ONLY Releases (F-1) or explicitly accept them as
   legacy in the audit's ledger. **Verify**: `gh release view <tag>` resolves, or a documented waiver.
 
 ### Phase 1 — Detection engine, report-only (delivers R1)
@@ -567,7 +567,7 @@ Each numbered step is a single, independently shippable, independently verifiabl
   UNRELEASED_CHANGES / 11 UP_TO_DATE / 0 BUMPED_NOT_RELEASED**, and the 4 notes-rename false-positives stay
   UP_TO_DATE.
 - **1.3** `.github/workflows/release-train.yml` in `report` mode only: cron `0 13 * * *` (Q-CADENCE: daily 13:00 UTC = 08:00 America/Chicago under CDT; GitHub cron is UTC-only, so winter runs land 07:00 CST — accepted drift) + `workflow_dispatch` + `concurrency` + clone-all (recurrence added), runs `detect.py`, emits the manifest artifact + step summary. No PRs, no Releases. **Verify**: immediate `gh workflow run` (verify-before-first-cron); manifest matches 1.2.
-- **1.4** Slack notification lane (Q-CHANNEL): add the non-blocking summary post (§11) to `release-train.yml`, keyed on the `SLACK_WEBHOOK_URL` secret. **Owner action**: create the incoming webhook for the Juniper Slack channel and add the repo secret. **Verify**: a manual dispatch posts the summary to the channel; with the secret absent the step skips and the run still succeeds.
+- **1.4** Slack notification lane (Q-CHANNEL): add the non-blocking summary post (§11) to `release-train.yml`, keyed on the `SLACK_WEBHOOK_URL` secret. **The Overtoad action**: create the incoming webhook for the Juniper Slack channel and add the repo secret. **Verify**: a manual dispatch posts the summary to the channel; with the secret absent the step skips and the run still succeeds.
 
 ### Phase 2 — Proposal-PR generation (standard-gated; delivers Gate 1 of R2/D2)
 
@@ -577,7 +577,7 @@ Each numbered step is a single, independently shippable, independently verifiabl
   well-formed PR without opening it.
 - **2.2** Wire `propose` mode into `release-train.yml` (opt-in via dispatch input / `RELEASE_TRAIN_MODE`).
   In-repo pilot uses `GITHUB_TOKEN`; cross-repo deferred to Phase 4. **Verify**: dispatch `propose` against
-  **one** juniper-ml sub-package; owner reviews the generated PR end-to-end.
+  **one** juniper-ml sub-package; Overtoad reviews the generated PR end-to-end.
 
 ### Phase 3 — Automated ceremony for ONE pilot family: juniper-ml sub-packages (delivers R5/R6)
 
@@ -589,9 +589,9 @@ Each numbered step is a single, independently shippable, independently verifiabl
   §11.4 lines 525-528), monitor the publish run, report `PENDING_PYPI_APPROVAL`. Assert the PyPI-untouched
   invariant (§9.3). **Verify**: end-to-end on a **real low-risk juniper-ml sub-package bump** (e.g. the next
   observability/ci-tools patch): archive PR auto-merges, Release fires the unchanged publish workflow,
-  TestPyPI verify passes, PyPI **waits for owner** — confirm the run halts at Gate 2.
-- **3.3** Confirm the auto-merge preconditions (§7.3) on juniper-ml and land the Q-RULESET decision: path-scope the required-review ruleset to exclude `notes/releases/` (owner console action). **Verify**: a guard-green synthetic archive PR completes `--auto` merge with no human click; document the resulting ruleset state here.
-  - **LANDED 2026-07-20 (API, owner-directed).** Resulting state of ruleset `juniper-ml-rules` (id 13805432, target main, active): (1) repo flag `allow_auto_merge=true`; (2) `Release-Train Archive Guard` appended as the 13th required status check (the ci.yml guard lane runs on every PR and passes with a SKIP verdict on non-archive diffs, so requiring it blocks nothing else); (3) **Q-RULESET path-scope is moot as configured** — inspection showed the ruleset contains NO `pull_request` required-review rule at all (only 13 required checks, `required_signatures`, deletion/non-FF/creation/update, CodeQL scanning), so there is no review requirement to path-scope and §7.3's CODEOWNERS-hold concern does not arise; (4) `required_signatures` is satisfied on the auto-merge path because GitHub signs its own squash/merge commits; (5) bypass_actors: repository admins + 3 integrations bypass `always` (pre-existing). **Live verify deliberately deferred**: a synthetic archive PR would merge a junk notes file into `notes/releases/` (and a name-valid one would pre-empt a real future archive), so the no-human-click `--auto` proof rides the next REAL archive PR — the Phase-4 cascor-client ceremony, whose exempt archive PR lands in juniper-ml. Rollback: pre-change ruleset JSON captured session-side; revert = PUT it back + `allow_auto_merge=false`.
+  TestPyPI verify passes, PyPI **waits for Overtoad** — confirm the run halts at Gate 2.
+- **3.3** Confirm the auto-merge preconditions (§7.3) on juniper-ml and land the Q-RULESET decision: path-scope the required-review ruleset to exclude `notes/releases/` (Overtoad console action). **Verify**: a guard-green synthetic archive PR completes `--auto` merge with no human click; document the resulting ruleset state here.
+  - **LANDED 2026-07-20 (API, Overtoad-directed).** Resulting state of ruleset `juniper-ml-rules` (id 13805432, target main, active): (1) repo flag `allow_auto_merge=true`; (2) `Release-Train Archive Guard` appended as the 13th required status check (the ci.yml guard lane runs on every PR and passes with a SKIP verdict on non-archive diffs, so requiring it blocks nothing else); (3) **Q-RULESET path-scope is moot as configured** — inspection showed the ruleset contains NO `pull_request` required-review rule at all (only 13 required checks, `required_signatures`, deletion/non-FF/creation/update, CodeQL scanning), so there is no review requirement to path-scope and §7.3's CODEOWNERS-hold concern does not arise; (4) `required_signatures` is satisfied on the auto-merge path because GitHub signs its own squash/merge commits; (5) bypass_actors: repository admins + 3 integrations bypass `always` (pre-existing). **Live verify deliberately deferred**: a synthetic archive PR would merge a junk notes file into `notes/releases/` (and a name-valid one would pre-empt a real future archive), so the no-human-click `--auto` proof rides the next REAL archive PR — the Phase-4 cascor-client ceremony, whose exempt archive PR lands in juniper-ml. Rollback: pre-change ruleset JSON captured session-side; revert = PUT it back + `allow_auto_merge=false`.
 
 ### Phase 4 — Fleet-wide + dependency ordering (delivers R2 at scale/D6)
 
@@ -637,31 +637,31 @@ apps:         cascor, canopy, data, recurrence
 meta:         juniper-ml  (depends on all via extras — STAYS MANUAL per Q-META; reevaluation tracked as §12 step 5.1)
 ```
 
-Ordering is **soft** for the deploy itself (both gates are owner-controlled), but **hard** for
+Ordering is **soft** for the deploy itself (both gates are Overtoad-controlled), but **hard** for
 **propagation**: a pre-1.0 MINOR bump that escapes a consumer's `<next-minor` pin produces a
 standard-gated ceiling-bump follow-on PR in that consumer — **never** part of the exempt path (§5.4). The
 2026-07-06 ci-tools incident is the canonical example the train must handle by construction.
 
 ---
 
-## 14. Owner decisions (questions answered 2026-07-11 — RESOLVED)
+## 14. The Overtoad decisions (questions answered 2026-07-11 — RESOLVED)
 
-All eight questions were answered by the owner on 2026-07-11 (verbatim answers preserved in §14.1; the
+All eight questions were answered by the Overtoad on 2026-07-11 (verbatim answers preserved in §14.1; the
 plan-text ingestion of each decision is mapped in §14.2). This section is the decision record; the
 sections named in §14.2 are the operative design text.
 
-| ID         | Question                                                                                                                                    | Planner recommendation                                                                                                                                    | Owner decision (2026-07-11)                                                                                                                     |
+| ID         | Question                                                                                                                                    | Planner recommendation                                                                                                                                    | The Overtoad decision (2026-07-11)                                                                                                                     |
 |------------|---------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | Q-CADENCE  | Cron cadence — weekly Monday `0 6 * * 1` like the other crons, or offset to avoid the 06:00 UTC pile-up with docs-full-check/security-scan? | Weekly Monday, **offset to `0 7 * * 1`** to not contend with the two existing 06:00 jobs.                                                                 | **Daily at 08:00 America/Chicago** → cron `0 13 * * *` UTC (07:00 CST winter drift accepted).                                                   |
 | Q-IDENTITY | Cross-repo write identity: fine-grained PAT vs GitHub App?                                                                                  | **GitHub App** for durability; PAT acceptable as Phase-3-pilot bootstrap (pilot is in-repo → neither needed yet).                                         | **As recommended** — GitHub App at the Phase-4 boundary; pilot uses `GITHUB_TOKEN` only.                                                        |
-| Q-PILOT    | Which package family pilots the ceremony (Phase 3)?                                                                                         | **juniper-ml sub-packages** — in-repo (no cross-repo identity), low blast radius, owner already watches the repo.                                         | **As recommended** — juniper-ml sub-packages.                                                                                                   |
+| Q-PILOT    | Which package family pilots the ceremony (Phase 3)?                                                                                         | **juniper-ml sub-packages** — in-repo (no cross-repo identity), low blast radius, Overtoad already watches the repo.                                         | **As recommended** — juniper-ml sub-packages.                                                                                                   |
 | Q-META     | Does the meta-package `juniper-ml` ride the train or stay manual?                                                                           | **Stay manual initially** — it depends on all others and its extras-resolution TestPyPI verify (`publish.yml:105-121`) is bespoke; revisit after Phase 4. | **Stays manual for now; revisit later** — reevaluation/implementation tracked as §12 step 5.1.                                                  |
-| Q-RULESET  | Path-scope the required-review ruleset to exclude `notes/releases/` (true auto-merge), or accept "owner one-click" fallback?                | **Path-scope exclude** for true hands-free R6; the structural guard already proves the diff inert. Owner's security-posture call.                         | **Path-scope exclude `notes/releases/`** — landed/confirmed at §12 step 3.3.                                                                    |
+| Q-RULESET  | Path-scope the required-review ruleset to exclude `notes/releases/` (true auto-merge), or accept "Overtoad one-click" fallback?                | **Path-scope exclude** for true hands-free R6; the structural guard already proves the diff inert. Owner's security-posture call.                         | **Path-scope exclude `notes/releases/`** — landed/confirmed at §12 step 3.3.                                                                    |
 | Q-NONSHIP  | Do NON-SHIP-only packages ever get an auto-proposed release (e.g. quarterly hygiene) or skip forever?                                       | **Skip forever** by default; surface TAG_ONLY/NOTES_MISSING hygiene in the summary, not as proposals. Optional quarterly hygiene sweep is a later toggle. | **As recommended** — skip; hygiene-sweep toggle considered later, tracked as §12 step 5.2.                                                      |
 | Q-CHANNEL  | Notification channel for the run summary + halt issues — step summary + issues only, or also a chat ping?                                   | **Step summary + dedup issues** (self-contained, auditable); no external channel dependency (slack MCP was removed 2026-06-15).                           | **Restore Slack** — webhook-based notifications to the Juniper Slack channel (§11, §9.4, step 1.4), additive to step summary + dedup issues.    |
 | Q-SEVERITY | Should a security-category release ever bypass the proposal-PR gate for speed?                                                              | **No** — security releases keep both gates; only the notes archival is exempt. Speed comes from automation, not from removing review.                     | **As recommended** — security-category releases keep the existing gates.                                                                        |
 
-### 14.1 Verbatim owner answers (2026-07-11)
+### 14.1 Verbatim Overtoad answers (2026-07-11)
 
 - **Q-CADENCE:** "cron should run daily at 8:00am CDT"
 - **Q-IDENTITY:** "concur with recommendation"
@@ -679,7 +679,7 @@ sections named in §14.2 are the operative design text.
 | Q-CADENCE  | §12 step 1.3 (cron `0 13 * * *` + DST note); §11 verify-before-first-cron wording ("daily cron").                          |
 | Q-IDENTITY | §9.2 (decision paragraph); §12 step 4.1.                                                                                   |
 | Q-PILOT    | Phase 3 already designed around this pilot — affirmed, no text change needed.                                              |
-| Q-META     | §13 DAG meta line; **new §12 step 5.1** (the owner-requested reevaluation/implementation tracking step).                   |
+| Q-META     | §13 DAG meta line; **new §12 step 5.1** (the Overtoad-requested reevaluation/implementation tracking step).                   |
 | Q-RULESET  | §7.3 (decision + graceful-degradation wording); §12 step 3.3 (landing + verification of the path-scope exclusion).         |
 | Q-NONSHIP  | **New §12 step 5.2** (hygiene-sweep toggle tracking; skip remains default).                                                |
 | Q-CHANNEL  | §11 (new Slack-notification bullet: non-blocking webhook design); §9.4 (`SLACK_WEBHOOK_URL` secret); **new §12 step 1.4**. |
@@ -696,7 +696,7 @@ sections named in §14.2 are the operative design text.
 - **R-DETECT-FN** — an under-documented `Unreleased` hides a real change (recurrence-model precedent).
   *Mitigation*: commit-diff wins over CHANGELOG; conflicts surfaced in the manifest for human review.
 - **R-AUTOMERGE-LEAK** — a bug lets a non-notes change ride the exempt path. *Mitigation*: the guard is
-  **add-only + path-confined + name-valid + single-purpose** (§7.2) and fails closed to the owner gate;
+  **add-only + path-confined + name-valid + single-purpose** (§7.2) and fails closed to the Overtoad gate;
   a synthetic negative test proves it bites.
 - **R-IDENTITY-SCOPE** — the write identity gains deploy-approval rights. *Mitigation*: hard invariant
   §9.3 + a guard test that the workflow makes no environment-mutating calls.

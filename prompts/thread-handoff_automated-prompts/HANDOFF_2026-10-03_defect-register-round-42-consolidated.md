@@ -12,7 +12,7 @@
 **Live probe:** 2026-10-03 08:34Z–08:55Z UTC, from worktree `snappy-strolling-waterfall` at `origin/main` `afb02801`, using `gh` (PR/branch/compare/contents/code-scanning APIs), `curl` against PyPI, and local `ls`/`cat`/`find`. No source claim was taken on trust where a cheap probe existed.
 
 **Headline of what changed since 2026-09-25 03:45Z** [VERIFIED 2026-10-03: gh pr list merged:>=2026-09-25 in ml/data/cascor/canopy/deploy]:
-- The three handoff/evidence PRs merged: juniper-ml#2102 (the governing source, `512a4b46`, 2026-09-25 03:51Z), #2089 (probes, `4d17ed59`, 09-26 09:28Z) and #2097 (Lane F evidence, `d941e99d`, 09-26 10:13Z). The owner's account added only `main` merges to #2089 and #2097.
+- The three handoff/evidence PRs merged: juniper-ml#2102 (the governing source, `512a4b46`, 2026-09-25 03:51Z), #2089 (probes, `4d17ed59`, 09-26 09:28Z) and #2097 (Lane F evidence, `d941e99d`, 09-26 10:13Z). The Overtoad's account added only `main` merges to #2089 and #2097.
 - CodeQL's 7 high alerts on #2089/#2097 (4 `py/overly-permissive-file` in `data438-fixforward-round1-laneB/stripe_probe.py`, 3 `py/clear-text-logging-sensitive-data` in `surrogate_config_probe.py`/`sentry_deep_probe.py`) were **dismissed "used in tests"** at 2026-09-26 09:28:16–22Z, by the shared `pcalnon` account.
 - **Nothing else in round 42 moved.** No data fix-forward PR was opened, there is no cascor#690 or canopy#685 validation report, no F fix-forward was made, there is no closes PR, the register is unchanged, and juniper-observability/service-core were not released. Since then every merge in data, cascor, canopy and deploy has been dependabot or a lockfile bump.
 
@@ -22,7 +22,7 @@ Continue defect-register round 42 for the Juniper ecosystem. The register is `no
 
 There are two lanes. One successor should own both. If two sessions split them, follow the split rules under "Context → Lanes".
 - **Lane R (register):** the register and its closes PR, the primer, the juniper-data fix-forward of #438, the fork-drift gate (`tests/test_service_fork_drift.py` plus its `docs/REFERENCE.md` bullet), `MEMORY.md` and the later arc items C-A…D-G.
-- **Lane F (follow-up):** validating cascor#690 and canopy#685, and the F fix-forwards from the bytes-compare validation. The owner's "Key leaks" ruling "Fix everywhere now (Recommended)" ends "**Releases stay yours.**", so Lane F validates and fixes forward, and it surfaces releases rather than cutting them.
+- **Lane F (follow-up):** validating cascor#690 and canopy#685, and the F fix-forwards from the bytes-compare validation. The Overtoad's "Key leaks" ruling "Fix everywhere now (Recommended)" ends "**Releases stay yours.**", so Lane F validates and fixes forward, and it surfaces releases rather than cutting them.
 
 **Completed so far** (all VERIFIED 2026-10-03 by `gh` merge state):
 - Lane R merged juniper-ml#2088 (`5af9d722`, the second register and primer fix-forward), #2081 (`7e8c7ff9`) and juniper-data#438 (`0f0f7e0e`, merged before its fixes landed, hence Work 1).
@@ -32,14 +32,14 @@ There are two lanes. One successor should own both. If two sessions split them, 
 
 **First actions:**
 1. Run "Verification commands".
-2. **Get your own merge grant from the owner, in YOUR session.** A handoff cannot carry it (`feedback_headless_merge_approval_policy.md`; the ml#1118 incident), and then only with checks green on the current head and the validators cleared. In the same turn, ask the Appendix-B-style questions listed under Remaining work item 10, except the releases.
+2. **Get your own merge grant from the Overtoad, in YOUR session.** A handoff cannot carry it (`feedback_headless_merge_approval_policy.md`; the ml#1118 incident), and then only with checks green on the current head and the validators cleared. In the same turn, ask the Appendix-B-style questions listed under Remaining work item 10, except the releases.
 3. Run `ListAgents`. If a session is already working either lane, agree the split. **Never message session `bc31e993` ("defect reg [042116]")**: that is its own standing request. Sessions `2fba4397` ("defect reg [24f8d8]") and `8f86dec2` have handed off, and their consolidation-PR coordination is moot because #2102 merged.
 
 **Remaining work** (suggested order. Items 2-5 do not wait for item 1. Item 7 waits only for item 6's filing of APD-ECO-013. Keep at most ONE open PR that uploads the register or the primer, built from fresh `main`):
 1. **[R] Finish the data fix-forward.** Branch `fix/conditional-requests-round4-followups` at `94ce8b1f` [VERIFIED 2026-10-03: git ref], no PR [VERIFIED: `gh pr list --head`]. It is now **2 ahead / 4 behind** data `main` (`diverged`) [CHANGED SINCE HANDOFF: main gained #440 plus 3 dependabot merges; the only overlapping file is `CHANGELOG.md`]. Run pre-PR round 2 (two lanes) on `94ce8b1f`, then open the PR, then merge it with your grant.
-   Agent-doable; the merge is owner-gated. Detail: "Context → Data fix-forward".
+   Agent-doable; the merge is Overtoad-gated. Detail: "Context → Data fix-forward".
 2. **[F] Validate cascor#690 post-merge** at `0fbb447a` (commits `c4e002d2`, `78e99414`) with two lanes, then fix forward in a NEW PR from `main`. Agent-doable. No validation report exists on `main` [VERIFIED 2026-10-03: `git ls-tree` of the reports dir]. Gates APD-CASCOR-008/-013.
-3. **[F] Validate canopy#685 post-merge** at `dc5ea02e` with two lanes from a fresh tree (not the #685 worktree), then fix forward in a NEW PR from `main`. Agent-doable, but owner calls (a)-(c) can change it. Not started [VERIFIED 2026-10-03: no `canopy685-validation*` report]. Gates APD-ECO-014, canopy's half of APD-ECO-013 and F-CANOPY-061/-062.
+3. **[F] Validate canopy#685 post-merge** at `dc5ea02e` with two lanes from a fresh tree (not the #685 worktree), then fix forward in a NEW PR from `main`. Agent-doable, but Overtoad calls (a)-(c) can change it. Not started [VERIFIED 2026-10-03: no `canopy685-validation*` report]. Gates APD-ECO-014, canopy's half of APD-ECO-013 and F-CANOPY-061/-062.
 4. **[F] The F fix-forwards** (table under "Context → Lane F"), as NEW PRs from fresh `main`: one juniper-ml PR (F2, F6, F9, F10, plus service-core's F3 and F5), one cascor PR (F3, F4, F5, F7, F9) and one data PR (F3, F5). Validate each with two lanes. **F2 and F4 must be validated BEFORE they reach a PR branch.** Agent-doable. None is fixed [VERIFIED 2026-10-03: `before_send_transaction` absent from `juniper-observability/juniper_observability/sentry.py`;
    F10's sentence at `juniper-observability/CHANGELOG.md:64`; cascor `src/tests/conftest.py` has no SENTRY line; the cascor and data `_ENCODING_PROBES` lack the surrogate pair; the cascor F7 test is still an AST match].
 5. **[R] Validate #2088's unvalidated delta** `990ef3f9..2439d049` with two lanes, archive, and fix forward. Agent-doable, independent of the other items. [NOT RE-PROBED — from `HANDOFF_2026-09-24_defect-register-round-42-consolidated-both-lanes-validations-and-closes-pr-owed.md`, validated in 4 rounds.]
@@ -47,12 +47,12 @@ There are two lanes. One successor should own both. If two sessions split them, 
 7. **[R] The fork-drift `surrogatepass` marker**, after item 6 files APD-ECO-013. Agent-doable.
 8. **[R] Verify on the real services, then file** (a) the 422-echo defect, (b) the primer toy's copy of it, and (c) primer lines 4742-4743, which are stale. Correct the primer IN PLACE. Agent-doable.
 9. **[R] PATCH the bodies of juniper-ml#2080 and #2088** with `gh api -X PATCH`. Not done [VERIFIED 2026-10-03: #2088's body still has "Extended beyond the lanes"; #2080's still has the "A-nit on" bullet and no "Applied by #2088" row]. Agent-doable.
-10. **[R/F] Owner decisions: surface them, decide none.** **[F]:** the observability and service-core releases (ask only after item 4's juniper-ml PR validates) and who opens the cap/lock/floor PRs; canopy#685 calls (a)-(c); the stray canopy branches `pr-63`/`pr-683` (both still at `4caf9389` [VERIFIED 2026-10-03]); whether to purge test events from live Sentry. **[R]:** #437's breaking marker; APD-DATA-055's `If-Match` half;
+10. **[R/F] The Overtoad decisions: surface them, decide none.** **[F]:** the observability and service-core releases (ask only after item 4's juniper-ml PR validates) and who opens the cap/lock/floor PRs; canopy#685 calls (a)-(c); the stray canopy branches `pr-63`/`pr-683` (both still at `4caf9389` [VERIFIED 2026-10-03]); whether to purge test events from live Sentry. **[R]:** #437's breaking marker; APD-DATA-055's `If-Match` half;
     APD-ML-008's silent-path remedy; the register's nine parked rows; whether the CodeQL `paths-ignore` question still matters now that the highs are dismissed; the next juniper-data release; when to start the later arc items; worktree and branch cleanup.
 11. **[R] Canopy-ledger hand-over** (`[ALSO P2]`). F-CANOPY-060…062 are still not in `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` (it stops at 059) [VERIFIED 2026-10-03: grep]. Send #685's validation outcome and the stale "Nothing was loaded" copies to the P2 (canopy) session. If there is none, record them yourself.
     **Update 2026-10-08, from P2** (no P3 session was running to tell): P2's side of this item is done. The canopy ledger's Phase 10
     (ml#2157, `200c1393`) filed:
-    - F-CANOPY-060 (P2, OPEN, no owner);
+    - F-CANOPY-060 (P2, OPEN, no Overtoad);
     - F-CANOPY-061 and -062, FIXED by canopy#685 without a live re-drive. Neither is observable through the page, and each is
       verified by #685's diff and tests;
     - the stale "Nothing was loaded" copies as **F-CANOPY-063** (P2, test only, OPEN). canopy's own alert sentence at `:8381` was
@@ -61,7 +61,7 @@ There are two lanes. One successor should own both. If two sessions split them, 
     Item 3's validation of #685 stays P3's. If it finds #685 wrong, tell P2, so that F-CANOPY-061/-062 can be reopened.
 
 **Key context:**
-- The PR sweeper belongs to the owner ("Mine: fix forward"). It un-drafts, arms and update-branches PRs as `pcalnon`, and its merges are intended. Do not draft or disarm to hold a PR.
+- The PR sweeper belongs to the Overtoad ("Mine: fix forward"). It un-drafts, arms and update-branches PRs as `pcalnon`, and its merges are intended. Do not draft or disarm to hold a PR.
 - An open PR can merge at any moment. When a validated merge matters, validate before the change reaches a PR branch.
 - Before any merge, re-read the PR's commits, merge with `util/safe_merge.py` and read its `MERGED` line.
 - The observability release gates the Sentry frame-locals fix reaching any running service: PyPI still serves juniper-observability **0.4.0** (2026-06-14) and juniper-service-core **0.7.0** (2026-08-31), and every consumer lock pins those [VERIFIED 2026-10-03: PyPI JSON and the lock lines].
@@ -69,11 +69,11 @@ There are two lanes. One successor should own both. If two sessions split them, 
 ## Dependencies on other paths
 
 - **P2 (canopy):** items 3 and 11. F-CANOPY-060/-061/-062 and the stale copies of the "Nothing was loaded" sentence belong in the canopy E2E ledger. The keeper of those records is now P2's source `HANDOFF_2026-09-24_canopy-combined-round-1-done-fix-pass-owed.md` (juniper-ml#2096, MERGED `5b1a7c28` 2026-09-26 [VERIFIED 2026-10-03: gh]); see its F9, F10 and A2(a).
-  Byte copies are on `main` at `reports/2026-09-24_canopy-combined-handoff-consensus/r1/predecessors/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md` (`:53-66`) and `…/r1/DRAFT_r1.md:165-170` [VERIFIED 2026-10-03: `git ls-tree`]. P2's F10 records 061/062 as FIXED-BY #685 only after item 3 validates. P2 also owns fixing F-CANOPY-060 (no owner yet).
+  Byte copies are on `main` at `reports/2026-09-24_canopy-combined-handoff-consensus/r1/predecessors/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md` (`:53-66`) and `…/r1/DRAFT_r1.md:165-170` [VERIFIED 2026-10-03: `git ls-tree`]. P2's F10 records 061/062 as FIXED-BY #685 only after item 3 validates. P2 also owns fixing F-CANOPY-060 (no Overtoad yet).
 - **P4 (release and distribution):** `[ALSO P4]`.
   - (i) The **next juniper-data release** (carrying #438, item 1, #440 and X8's `equities_seq` 6.0.0) waits on item 1 merging and validating. 0.16.0 is still the latest release [VERIFIED 2026-10-03: `gh release list`, PyPI].
   - (ii) The 0.16.0 notify-consumers job failed with a 403 on the dispatch token, so juniper-recurrence was never notified. That is P4's item, carried by `HANDOFF_2026-09-24_data-0-16-0-on-pypi-and-pinned-the-stack-generates-equities-wave-4-waits-on-the-token.md` item 2. The next data release fails the same way until the token is fixed.
-  - (iii) The observability/service-core releases are Lane F's owner question, but cutting them is release-train work.
+  - (iii) The observability/service-core releases are Lane F's Overtoad question, but cutting them is release-train work.
 - **P7 (logging redesign):** possible. Any juniper-observability release would bundle whatever P7 has landed under observability `[Unreleased]` by then. Today `[Unreleased]` holds only #2086's change and service-core holds #1974 and #2086 [VERIFIED 2026-10-03: `git log origin/main -- juniper-observability juniper-service-core`]. Coordinate release timing with P7.
 - **P5 (partition arc):** none direct. D-B…D-D share juniper-data `routes/datasets.py` with item 1's branch, so any P5 change to that file must sequence after item 1.
 
@@ -83,17 +83,17 @@ There are two lanes. One successor should own both. If two sessions split them, 
 
 ### Lanes, coordination, policy
 
-- **If two sessions split the lanes:** each merges only its own lane's PRs. They address each other by `ListAgents` name plus `[ref]`, since several sessions are named "defect reg". They exchange every PR number, merge SHA, validation summary, owner ruling (verbatim), and every juniper-ml `docs/REFERENCE.md` or root `CHANGELOG.md` section a PR touches.
+- **If two sessions split the lanes:** each merges only its own lane's PRs. They address each other by `ListAgents` name plus `[ref]`, since several sessions are named "defect reg". They exchange every PR number, merge SHA, validation summary, Overtoad ruling (verbatim), and every juniper-ml `docs/REFERENCE.md` or root `CHANGELOG.md` section a PR touches.
 - Lane F stays out of: the register; `tests/test_service_fork_drift.py`; `docs/REFERENCE.md`'s drift-gate section; `util/ad-hoc/2026-09-24_round42_probes/README.md`; `util/ad-hoc/2026-09-24_archive_round42_reports.py`; and Lane R's juniper-data branch.
 - Lane R stays out of `juniper_data/api/security.py` and Lane F's branches.
 - Lane F heads its reports with the archive header and sends Lane R their filenames, agent ids and its session's full UUID (for `SESSION_IDS`). Lane R adds the `MISSING` entries.
-- After a split, only the lane tagging an owner question asks it; the other lane records the answer verbatim.
-- Record every owner question, its options and the answer verbatim in the register.
+- After a split, only the lane tagging an Overtoad question asks it; the other lane records the answer verbatim.
+- Record every Overtoad question, its options and the answer verbatim in the register.
 
 ### Uploads, commits, merges (traps)
 
 - **Uploads are WHOLE-FILE.** Before every push: `git fetch`, `git log <base>..origin/main -- <paths>`, then rebuild each file from `origin/main`. Compare with `git show origin/main:<p> | diff - <p>`; note that `git diff origin/main -- <untracked>` fakes deletions.
-  - On an OPEN PR, re-read the PR head's copy first (`gh api 'repos/pcalnon/<repo>/contents/<path>?ref=<headRefOid>'`): owner commits and update-branch merges land there.
+  - On an OPEN PR, re-read the PR head's copy first (`gh api 'repos/pcalnon/<repo>/contents/<path>?ref=<headRefOid>'`): Overtoad commits and update-branch merges land there.
   - For a shared `CHANGELOG.md` `[Unreleased]`, prove `main`'s lines are a subset of yours.
 - **Signed commits have ONE parent** (GraphQL `createCommitOnBranch`), so a textual conflict cannot be merged away. Supersede from fresh `main`, as #686 → #688 did.
 - **Signed pushes:** `util/push_signed_commit.py --expected-head <FULL 40-hex sha from gh>`. Never pass `git rev-parse HEAD`, which in several worktrees is a local copy. A run can create nothing, so check the remote ref after; a re-run with the same head is safe. Prefer `--commit-body-file`.
@@ -124,8 +124,8 @@ There are two lanes. One successor should own both. If two sessions split them, 
 - **Archiving:** `util/ad-hoc/2026-09-24_archive_round42_reports.py`.
   - Add your session's full UUID to `SESSION_IDS` and each report to `MISSING`. Change the hard-coded 2026-09-24 `HEADER` for new reports.
   - Run `--check`, then run it without. Header: `<!-- Archived verbatim YYYY-MM-DD from subagent a<16 hex> of session <8 hex> (final message). -->` plus a blank line.
-  - It refuses credential-shaped text or the owner's email. A REFUSE can be a false positive: characterize a match without printing it (length, case, prefix), and never edit a report to pass the scan.
-  - [CHANGED SINCE HANDOFF] With #2102 merged, `main`'s copy is the one with the narrowed patterns and "owner-email" naming. fizzy's copy is byte-identical to `main`'s [VERIFIED 2026-10-03: cmp]. The "archive nothing into another PR until the consolidation PR merges" rule is moot: build on `main`.
+  - It refuses credential-shaped text or the Overtoad's email. A REFUSE can be a false positive: characterize a match without printing it (length, case, prefix), and never edit a report to pass the scan.
+  - [CHANGED SINCE HANDOFF] With #2102 merged, `main`'s copy is the one with the narrowed patterns and "Overtoad-email" naming. fizzy's copy is byte-identical to `main`'s [VERIFIED 2026-10-03: cmp]. The "archive nothing into another PR until the consolidation PR merges" rule is moot: build on `main`.
   - Four Lane F reports are headed "(turn-ending report k of 5 …)", and `--check` skipping them is expected: `cascor686-implementation-report.md`, `cascor686-fixup-implementation-report.md`, `cascor688-implementation-report.md` and `cascor690-implementation-report.md`. Byte-compare them by hand before citing.
   - Archive a report only if its transcript ENDS with it: the last record is an `assistant` text-only message, `stop_reason` `end_turn`, and not an `isApiErrorMessage` record.
 - **Agents:** a usage limit kills subagents; resume them with SendMessage from the spawning session only. An agent the USER stopped cannot be resumed: relaunch it fresh.
@@ -178,7 +178,7 @@ There are two lanes. One successor should own both. If two sessions split them, 
   - **Bar:** unit, coverage and api+integration; the harness plus an arm per new fix, and the counter; `juniper-symbol-loss-check --scope 'juniper_data/**' --base 0f0f7e0e` and the docs screen; lane B's probes against both heads; pre-commit on the changed files; the equivalence runs if `http_cache.py` is touched.
     - The preserved lane B probes (`util/ad-hoc/2026-09-24_round42_probes/data438-fixforward-round1-laneB/`) do not run as kept. `common.py` pins `S` to the author's tmpfs and starts servers via `S/scripts/run_in_tree.bash`, which was not kept.
     - To run them: re-point `S` at your scratch; build `head` and `main` trees with `git archive`; copy `serve.py` to `S/scripts/serve.py` (`common.py:44`); recreate `run_in_tree.bash`. The runner `cd`s into the tree; sets `PYTHONPATH`, `PYTHONDONTWRITEBYTECODE=1`, `JUNIPER_DATA_API_KEYS=""` and the six DSNs to `""`; checks that `juniper_data` imports from the tree; and execs JuniperData's python.
-  - **Out of scope:** data438's F8 (#437's marker, the owner's); L7 (a known issue); data428 round-3 A1 F2/F4 (the closes PR files or declines them); `juniper_data/api/security.py`.
+  - **Out of scope:** data438's F8 (#437's marker, the Overtoad's); L7 (a known issue); data428 round-3 A1 F2/F4 (the closes PR files or declines them); `juniper_data/api/security.py`.
 - **Ownership:** Lane R's branch owns data `http_cache.py`, `routes/datasets.py`, `storage/*`, `test_conditional_requests.py`, `api/app.py`, `docs/REFERENCE.md` and `docs/api/JUNIPER_DATA_API.md`, and it edits `CHANGELOG.md`. Lane F's data PR (F3, F5) also edits `CHANGELOG.md` `[Unreleased]`: open it after the fix-forward merges, or build on its head, and update-branch before merging.
 - **If round 2 refutes, or you apply corrections pre-PR:** brief a new `task-executor` in YOUR session on the data worktree. It makes one signed commit with `--expected-head` set to the branch's current head, opens no PR, and is followed by round 3. LOW and NIT findings may instead be disclosed in the PR body as residue rather than fixed pre-PR.
   - Inputs: the round-2 reports, both round-1 reports, the fix report, and `git diff 0f0f7e0e <head>`.
@@ -198,7 +198,7 @@ There are two lanes. One successor should own both. If two sessions split them, 
   - Probes in `util/ad-hoc/2026-09-24_round42_probes/{cascor686-v686,canopy683-v683,cascor688-v688,bytes-compare-ml2086-data440-cascor689-vbytes}/`. Read each one's arguments first: `make_nv1_tree.py` deletes its second argument, `fix_probe_pairs.py` rewrites a `compare_probe.py` in the working directory, and some write `work/`/`out/` beside themselves. Pass only fresh scratch paths.
   - Five harnesses: `util/ad-hoc/2026-09-24_cascor688_*.py` and `2026-09-24_cascor690_*.py`. Extract them into ONE directory, because one imports another by path.
   - Four scripts: `2026-09-24_copy_followup_lane_probe_scripts.py`, `…_archive_followup_handoff_validation.py`, `…_open_followup_handoff_pr.py` and `…_serve_scratch_juniper_data.bash`.
-- **Item 2, cascor#690:** #688's fix-forward answering `cascor688-validation.md` (2 MEDIUM, 3 LOW, 2 NIT). The owner's account merged `main` into it (`81154187`) and it squash-merged unvalidated at 02:06:36Z.
+- **Item 2, cascor#690:** #688's fix-forward answering `cascor688-validation.md` (2 MEDIUM, 3 LOW, 2 NIT). The Overtoad's account merged `main` into it (`81154187`) and it squash-merged unvalidated at 02:06:36Z.
   - The implementer's evidence is not independent: `cascor690-implementation-report.md` and `cascor690-fixup-implementation-report.md`.
   - Harnesses for `c4e002d2`: `2026-09-24_cascor688_fixforward_mutation_check.py` and `…_cascor688_realjd_error_texts.py`. For `78e99414`: `2026-09-24_cascor690_bool_stance_producer_table.py`, `…_realjd_probe.py` and `…_as_bool_stance_mutation_check.py`.
   - What it changed: shortfall detection keys on "Re-submit with allow_truncation=true", so a juniper-data 400 for a bad param is no longer shown as a shortfall. `_as_bool_stance` now parses strings like pydantic-core's `str_as_bool`; the old reader took `"f"` and `"n"` as true.
@@ -210,7 +210,7 @@ There are two lanes. One successor should own both. If two sessions split them, 
   - It closes APD-ECO-014, canopy's half of APD-ECO-013 (`str` `compare_digest` at `security.py:115`, `:273` and `csrf.py:91` became bytes at `:137`, `:300` and `csrf.py:97`), and `canopy683-validation.md` LOW3/LOW4 (F-CANOPY-061/-062).
   - Report: `canopy685-implementation-report.md`. The anonymous rate-limiter 500 needs `rate_limit_enabled`, which is off by default.
   - Fold in the stale comment at canopy **`src/tests/unit/backend/test_cascor_service_adapter_gate_coverage.py:49-50`**: "in CI, where only the stub client is installed" is false, because CI installs the real one. [CHANGED SINCE HANDOFF: the sources gave the path without `backend/`; the text is still present, VERIFIED 2026-10-03 via the contents API.]
-  - Fold in any of owner calls (a)-(c) that change behaviour.
+  - Fold in any of Overtoad calls (a)-(c) that change behaviour.
 - **Item 4, the F table.** F1 was fixed by canopy#685; F8 (a `break` after `matched = True`) is killed by F3.
 
 | Item | Sev. | Where | Fix |
@@ -236,7 +236,7 @@ The line anchors in the table are [VERIFIED 2026-10-03] for F4, F5 (cascor `:31`
   - Recurrence initialises no Sentry, so the frame-locals fix is moot there; it needs only the service-core release.
   - cascor#689 fixed only the CLI init (`main.py`), not the service path at `src/api/app.py:335`, which uses the shared `configure_sentry` and so needs the observability release.
   - Record why `surrogatepass` was chosen over `surrogateescape`, from `bytes-compare-…-validation.md`.
-  - The release question's options, verbatim: (1) the owner prepares and cuts both releases; or (2) an agent opens version-bump and release-notes PRs at versions the owner names, and the owner cuts the Releases. Ask separately who opens the cap, lock and floor PRs. Never approve a deploy gate (`feedback_deploy_approvals_paul_manages.md`). Ask only after the juniper-ml F-PR validates: an earlier release ships F2's leak and F10's false sentence.
+  - The release question's options, verbatim: (1) the Overtoad prepares and cuts both releases; or (2) an agent opens version-bump and release-notes PRs at versions the Overtoad names, and the Overtoad cuts the Releases. Ask separately who opens the cap, lock and floor PRs. Never approve a deploy gate (`feedback_deploy_approvals_paul_manages.md`). Ask only after the juniper-ml F-PR validates: an earlier release ships F2's leak and F10's false sentence.
     `canopy685-implementation-report.md` measured the gap: until then, any unhandled exception during a keyed request records the caller's key.
 
 ### The closes PR (item 6) — gates, rows, residue
@@ -253,23 +253,23 @@ The line anchors in the table are [VERIFIED 2026-10-03] for F4, F5 (cascor `:31`
     - Source: `bytes-compare-ml2086-data440-cascor689-validation.md`.
   - **APD-ECO-014 (S):** canopy's padded outbound keys leaked into client errors, logs, Sentry and API bodies: the 409 at `main.py:3712/:3714`, `recurrence_backend.py:219` → `:287`, and the adapter's `{"error": str(e)}`. That includes an ANONYMOUS read of the cascor key via `POST /api/train/start` with auth on. Fix: #685; close it once item 3 is cited.
   - **APD-CASCOR-014 (S), F4:** cascor tests that `import main` start the REAL Sentry SDK when a DSN is exported; 9 files sent 25 envelopes to a sink. The cause is `src/tests/unit/test_cfg_03_sentry_dsn_resolution.py:25` → `src/main.py:231`. #689's `include_local_variables=False` strips locals, but the events are still sent. Close it when F4 merges and validates.
-- **Update, do not close:** APD-DATA-055. #438 fixed its lock half (`batch_delete` and `delete_expired` go through `delete_under_lock`); its `If-Match` half awaits the owner.
-- **Quote** the "Key leaks" ruling verbatim from `reports/2026-09-24_defect-register-round-42/owner-ruling-key-leaks-verbatim.md`, extracted with `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py --topic key-leaks`. It was asked 10:22:00.792Z and answered 18:30:09.820Z: "Fix everywhere now (Recommended)".
+- **Update, do not close:** APD-DATA-055. #438 fixed its lock half (`batch_delete` and `delete_expired` go through `delete_under_lock`); its `If-Match` half awaits the Overtoad.
+- **Quote** the "Key leaks" ruling verbatim from `reports/2026-09-24_defect-register-round-42/Overtoad-ruling-key-leaks-verbatim.md`, extracted with `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py --topic key-leaks`. It was asked 10:22:00.792Z and answered 18:30:09.820Z: "Fix everywhere now (Recommended)".
 - **Residue to record:**
   - cascor shortfall messages: the flag-off 422 is no longer a shortfall (#688), and the bad-param 400 is fixed by #690 (pending item 2).
   - Auto-start binds wholesale (`cascor686-fixup-implementation-report.md` item 2; `pending-items-snapshot-2026-09-24T1110Z.md:40`).
-  - `current_dataset` after a partial inline start names the fetch, as `owner-rulings-verbatim.md` intends; canopy reads only `.dataset_type`. Record it, no row.
+  - `current_dataset` after a partial inline start names the fetch, as `Overtoad-rulings-verbatim.md` intends; canopy reads only `.dataset_type`. Record it, no row.
   - canopy#683 item 3: a whitespace-only env key makes `/docs` answer 200 (a disclosed change).
-  - canopy's `util/ad-hoc/2026-09-23_blank_api_key_warning_mutation_check.py` has met its retire condition. Record only; retiring it is the owner's call.
+  - canopy's `util/ad-hoc/2026-09-23_blank_api_key_warning_mutation_check.py` has met its retire condition. Record only; retiring it is the Overtoad's call.
   - F9's residue: #689's "4001 close" message reached `main` in `b9484fef` (cascor `CHANGELOG.md:594` still reads "closes 4001" [VERIFIED 2026-10-03]).
   - canopy#685's residue: the frame-locals gap until the release; calls (a)-(c); the rate-limiter 500 behind `rate_limit_enabled`; the stale comment (item 3).
   - data428 round 3 (`data428-round3-laneA1-security.md`): F3 is APD-DATA-056. F2 (the 8,192-byte cap parsed under `_version_lock`) and F4 (header limits) are recorded nowhere: file or decline each, with a reason.
   - Work 9's note that `2439d049`'s commit message ("which no lane named") is false.
-  - Every owner answer received so far.
+  - Every Overtoad answer received so far.
   - Cite Lane F's reports by filename; they are on `main` now.
   - Already recorded: cascor#678's stale squash message (register, about L1616).
 - **Canopy items** go to the canopy ledger, not the register (item 11).
-  - F-CANOPY-060: the refusal cut at `" The resulting dataset"` drops juniper-data's last sentence. Still at canopy `dashboard_manager.py:8410` [VERIFIED 2026-10-03]. The fix is to cut only at `" To accept it,"`. No owner.
+  - F-CANOPY-060: the refusal cut at `" The resulting dataset"` drops juniper-data's last sentence. Still at canopy `dashboard_manager.py:8410` [VERIFIED 2026-10-03]. The fix is to cut only at `" To accept it,"`. No Overtoad.
   - 061 and 062: LOW3 and LOW4, fixed by #685, pending item 3.
   - No id: canopy's copies of #687's "Nothing was loaded" sentence at `src/frontend/dashboard_manager.py:8381` [VERIFIED 2026-10-03] and `src/tests/unit/frontend/test_start_fresh_refusal_and_modal_text.py:42`. They have been stale since #690 reworded cascor's sentence (`manager.py:4766` → `:4841`).
 - **Validation of register PRs:** two lanes. A re-derives every filed row and residue item from source at `main`; B refutes. A PR that only files rows OPEN may be validated after it merges. A PR that CLOSES a row is validated BEFORE it reaches a branch. #2074 and #2080 were validated after merge and both refuted; #2088 was validated pre-PR.
@@ -316,7 +316,7 @@ Re-verify every anchor at `main` first.
 - juniper-ml#2088: in body L47, replace "**Extended beyond the lanes:**" with "**Named by round-2 lane B** (`register-fixforward2-round2-laneB-refute.md` N11, line 120):".
 - cascor#689: F9's body PATCH (it still says "4001" [VERIFIED 2026-10-03: grep count 2]).
 
-### Owner decisions (item 10), full text
+### The Overtoad decisions (item 10), full text
 
 Ask each as a question with its options (yes/no where none are listed), and record the question, the options and the answer verbatim in the register.
 - **[F] The releases:** see "Release facts" above.
@@ -329,12 +329,12 @@ Ask each as a question with its options (yes/no where none are listed), and reco
 - **[R] #437's breaking marker:** data `[Unreleased]` carries `equities_seq` 6.0.0 (a `dataset_id` change), and the notes renderer computes breaking = NO.
 - **[R] APD-DATA-055's `If-Match` half.**
 - **[R] APD-ML-008's silent-path remedy:** a variable only the drift step sets.
-- **[R] The nine parked rows** ("filed 2026-09-24; awaiting an owner ruling, do not action", register §4 notes about L1619-L1637; rows about L1298-L1306): APD-ECO-009, -010, -011; APD-DATA-054, -055, -056; APD-ML-007, -008; APD-ECO-012. No round-42 handoff records asking any of them. (APD-DATA-057's park bullet closes it at the closes-PR gate, item 6, instead.) This file carries -055's `If-Match` half and -008's remedy above; ask all nine together, each with its own question.
-- **[R] CodeQL** [CHANGED SINCE HANDOFF]: the 7 highs on #2089/#2097 were dismissed "used in tests" (alerts 843-846 and 876-878, 2026-09-26 09:28Z), and both PRs merged. The account is shared by the owner and every session, so record who dismissed them only if the owner says. (Source: `HANDOFF_2026-09-24_defect-register-round-42-consolidated-both-lanes-validations-and-closes-pr-owed.md`, Appendix B, CodeQL bullet.)
+- **[R] The nine parked rows** ("filed 2026-09-24; awaiting an Overtoad ruling, do not action", register §4 notes about L1619-L1637; rows about L1298-L1306): APD-ECO-009, -010, -011; APD-DATA-054, -055, -056; APD-ML-007, -008; APD-ECO-012. No round-42 handoff records asking any of them. (APD-DATA-057's park bullet closes it at the closes-PR gate, item 6, instead.) This file carries -055's `If-Match` half and -008's remedy above; ask all nine together, each with its own question.
+- **[R] CodeQL** [CHANGED SINCE HANDOFF]: the 7 highs on #2089/#2097 were dismissed "used in tests" (alerts 843-846 and 876-878, 2026-09-26 09:28Z), and both PRs merged. The account is shared by the Overtoad and every session, so record who dismissed them only if the Overtoad says. (Source: `HANDOFF_2026-09-24_defect-register-round-42-consolidated-both-lanes-validations-and-closes-pr-owed.md`, Appendix B, CodeQL bullet.)
   What remains: 207 open lesser alerts (121 note, 86 warning) on round-42 probe/ad-hoc paths [VERIFIED 2026-10-03: code-scanning API, path filter `round42_probes|2026-09-24`], and the never-ruled options (a `paths-ignore` config in `.github/workflows/codeql.yml`, which is advanced setup with `+security-and-quality` and no config file, or a tarball). Never dismiss alerts or edit preserved probes yourself.
-- **[R] The next juniper-data release** (yes/no; the owner cuts it): cut it once item 1 merges and validates?
+- **[R] The next juniper-data release** (yes/no; the Overtoad cuts it): cut it once item 1 merges and validates?
 - **[R] FYI: MEMORY.md** is 24,929 characters [VERIFIED 2026-10-03: `wc -m`], about 70 under the hard ~25,000 load limit. Every new row must be paid for by retiring entries (`feedback_memory_index_target_is_20kb.md`).
-- **[R] The later arc items**, all ruled; the order is §0 of `HANDOFF_2026-09-15_defect-register-round-39-thirty-rulings-taken-eight-implemented-and-the-arc-sequenced.md`, and the owner decides when.
+- **[R] The later arc items**, all ruled; the order is §0 of `HANDOFF_2026-09-15_defect-register-round-39-thirty-rulings-taken-eight-implemented-and-the-arc-sequenced.md`, and the Overtoad decides when.
   - D-B (caching) is under way via item 1.
   - D-C, the error surface (APD-DATA-030/-031/-022; RFC 9457 from all three sources; item 8(a) belongs here).
   - D-D, lists and pagination (APD-DATA-026/-027/-028/-008).
@@ -355,7 +355,7 @@ From a juniper-ml worktree fast-forwarded to `origin/main`:
 
 ```bash
 git fetch origin && git merge-base --is-ancestor d941e99d HEAD && echo has-2097   # #2097, #2089, #2102 all on main
-gh api graphql -f query='query { a: repository(owner:"pcalnon", name:"juniper-cascor") { p690: pullRequest(number:690) { state mergeCommit { oid } } } b: repository(owner:"pcalnon", name:"juniper-canopy") { p685: pullRequest(number:685) { state mergeCommit { oid } } } }'   # MERGED 0fbb447a / dc5ea02e
+gh api graphql -f query='query { a: repository(Overtoad:"pcalnon", name:"juniper-cascor") { p690: pullRequest(number:690) { state mergeCommit { oid } } } b: repository(Overtoad:"pcalnon", name:"juniper-canopy") { p685: pullRequest(number:685) { state mergeCommit { oid } } } }'   # MERGED 0fbb447a / dc5ea02e
 gh api repos/pcalnon/juniper-data/git/ref/heads/fix/conditional-requests-round4-followups --jq .object.sha   # 94ce8b1f… on 2026-10-03
 gh pr list --repo pcalnon/juniper-data --head fix/conditional-requests-round4-followups --state all   # [] on 2026-10-03
 gh api repos/pcalnon/juniper-data/compare/main...94ce8b1fa8e229c92e8674a1074d518e59142488 --jq '"ahead \(.ahead_by) behind \(.behind_by)"'   # ahead 2 behind 4 on 2026-10-03
@@ -404,7 +404,7 @@ In the Source column, "governing" means `HANDOFF_2026-09-24_defect-register-roun
 
 Probed 2026-10-03.
 - **juniper-ml:** `main` at `afb02801`. No open PR [VERIFIED]. Branch `docs/canopy-e2e-handoff-2026-09-24` still exists (`dd4413e5`, P2's) [VERIFIED].
-- **Session worktrees** (all exist [VERIFIED: ls]). Removal needs the owner's go-ahead (`feedback_worktree_cleanup_only_on_explicit_merge_2026-05-15.md`). Re-check `git status` first; never `--force`. `worktree remove` deletes ignored files.
+- **Session worktrees** (all exist [VERIFIED: ls]). Removal needs the Overtoad's go-ahead (`feedback_worktree_cleanup_only_on_explicit_merge_2026-05-15.md`). Re-check `git status` first; never `--force`. `worktree remove` deletes ignored files.
   - `juniper-ml/.claude/worktrees/fizzy-hugging-dream` (Lane R): holds 3 unsigned local scratch commits (`4c7c5b3e`, `1bfff3cd`, `ee0b9382`; content = #2088's) — never push them. Nothing written after #2102 is unshipped [VERIFIED: `find -newermt` lists only 4 files, all identical on `main`]. Now a cleanup candidate.
   - `…/happy-skipping-hollerith` (Lane F): nothing newer than #2097 [VERIFIED: find]. #2097 merged, so it is a cleanup candidate.
   - `…/hazy-beaming-map` (document 3, session `8f86dec2`): no work lost; a cleanup candidate.
@@ -417,6 +417,6 @@ Probed 2026-10-03.
 - **Remote branches:**
   - cascor `fix/shortfall-mixed-provenance-and-678-followups` still at `e452a660` (from closed #686; deleting it blocks reopening) [VERIFIED].
   - cascor `fix/shortfall-688-validation` and `fix/bytes-compare-no-500`, and data `fix/bytes-compare-no-500`, are deleted [VERIFIED: 404].
-  - canopy `pr-63` and `pr-683` at `4caf9389` [VERIFIED]; deleting them is the owner's call.
+  - canopy `pr-63` and `pr-683` at `4caf9389` [VERIFIED]; deleting them is the Overtoad's call.
   - Local cascor branches of the shortfall name and its `-v2` [NOT RE-PROBED].
 - **This consolidation:** written on branch `docs/handoff-consolidation-2026-10-03` (worktree `snappy-strolling-waterfall`), uncommitted. The only edits are this file and the SUPERSEDED banners in the two source files.

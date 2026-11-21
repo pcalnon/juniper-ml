@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round-4 fix pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phases 9 and (one pointer) 1;
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round4.md;
          util/ad-hoc/2026-09-24_phase9_ledger_round3_corrections.py (the pass this corrects)
@@ -64,23 +64,23 @@ SUBS = [
         added forms it had missed, and no launch of those forms was found (Lanes R4-A and R4-B). The only""",
     ),
     (
-        "A1-A4, A7, B1, B12: the owner evidence, bounded",
-        """    - **Commits signed locally with the owner's key landed in that window** (Lanes R2-B and R3-A; re-derived
+        "A1-A4, A7, B1, B12: the Overtoad evidence, bounded",
+        """    - **Commits signed locally with the Overtoad's key landed in that window** (Lanes R2-B and R3-A; re-derived
       from the commits API). `4c496443` on ml#2058 (committed 21:45:22Z, two minutes before the pass's first
       ready) and `c666403b` on ml#2045 (23:47:30Z, a minute before that PR's disarm and re-arm) are committed
       by "Paul Calnon", not by GitHub's web-flow, with valid PGP signatures. On this host a locally signed
-      commit needs a touch of the owner's hardware key (`util/push_signed_commit.py`'s docstring), and no Claude
+      commit needs a touch of the Overtoad's hardware key (`util/push_signed_commit.py`'s docstring), and no Claude
       Code session made a tool call then. R3-A also reads a rebase force-push to ml#2045 at 00:00:39Z from the
       push events. ml#2045 was drafted and readied again at 03:04:45Z and 03:05:02Z (its timeline).
     - **The same arming pattern that morning** (Lane R3-B; re-derived from the timelines). `pcalnon` armed
       ml#2032, ml#2045 and data#428 at 13:23:19Z, 13:26:23Z and 13:29:27Z, and no logged command names any of
       them between 13:15Z and 13:35Z. R3-B reads session `bc31e993`'s handoff that evening, titled
       "…four-prs-armed-by-an-unseen-actor…", as why it drafted two of them at 20:24Z.""",
-        f"""    - **Commits signed with the owner's key landed in that window** (Lanes R2-B, R3-A and R4-A; re-derived
+        f"""    - **Commits signed with the Overtoad's key landed in that window** (Lanes R2-B, R3-A and R4-A; re-derived
       from the commits API). `4c496443` on ml#2058 (committed 21:45:22Z, two minutes before the pass's first
       ready) and `c666403b` on ml#2045 (23:47:30Z, a minute before that PR's disarm and re-arm) are committed
       by "Paul Calnon", not by GitHub's web-flow, with valid PGP signatures, while no Claude Code session made a
-      tool call. On this host signing needs the owner's hardware key (`util/push_signed_commit.py`'s docstring
+      tool call. On this host signing needs the Overtoad's hardware key (`util/push_signed_commit.py`'s docstring
       says a touch; R4-A found five signatures stamped within one second, so one touch can cover a burst).
       ml#2045 also took a fast-forward push at 00:00:38Z of 29 more commits signed with that key between
       23:57:24Z and 00:00:07Z (R4-A, from the activity and compare APIs; R3-A had read it as a force-push).
@@ -128,13 +128,13 @@ SUBS = [
         """  F-CANOPY-056, whose controls it keeps off screen, and it leaves cascor refusing training. F-CANOPY-014, which
   disabled the same controls through a different fault (an empty base URL), was rated P1 and is fixed. This one
   is worse, since no session view appears at all, and §6.3's words give P0; which rating replay findings take
-  is an owner question (Still owed, item 15).""",
+  is an Overtoad question (Still owed, item 15).""",
         """  F-CANOPY-056, whose controls it keeps off screen, and it leaves cascor refusing training. F-CANOPY-014 broke
   the same workflow through a different fault: its controls were on screen but every one failed on an empty
   base URL, Stop included, so it too left cascor replaying (Phase 1 ended that session with a direct API stop).
   It was rated P1 and is fixed. What this one adds is that no session view appears at all. §6.3's words give
   P0 to a finding that blocks the workflow, which would cover F-CANOPY-014 too; which rating replay findings
-  take is an owner question (Still owed, item 15).""",
+  take is an Overtoad question (Still owed, item 15).""",
     ),
     # --- Instruments -------------------------------------------------------------------------------------------
     (
@@ -185,7 +185,7 @@ SUBS = [
     script is exact, and the REPLAYING lock-in, the Reset escape, #184, the dates, the line numbers and
     `800c20bb` held.
   - **What round 4 changed:**
-    - the owner question's evidence, stated with bounds: arms like the pass's ran twice earlier that day, on at
+    - the Overtoad question's evidence, stated with bounds: arms like the pass's ran twice earlier that day, on at
       least twelve PRs; ml#2045's 00:00Z push was a fast-forward of 29 signed commits, not a force-push; and one
       touch of the key can sign a burst;
     - F-CANOPY-014's precedent: it too left cascor replaying, so only the missing session view separates the
@@ -223,9 +223,9 @@ SUBS = [
     ),
     (
         "A1, B1, B2: item 15's evidence and the precedent",
-        """      process on this host did any of them ("Who", above), while commits signed locally with the owner's key
+        """      process on this host did any of them ("Who", above), while commits signed locally with the Overtoad's key
       landed at 21:45:22Z and 23:47:30Z, and the same arming pattern ran that morning at 13:23–13:29Z.""",
-        """      process on this host did any of them ("Who", above), while commits signed with the owner's key landed at
+        """      process on this host did any of them ("Who", above), while commits signed with the Overtoad's key landed at
       21:45:22Z, 23:47:30Z and 23:57–00:00Z, and arms like the pass's ran twice earlier that day (00:52–01:08Z
       and 13:17–13:32Z).""",
     ),
@@ -252,7 +252,7 @@ SUBS = [
     `stop_replay()` restores the earlier one, and `_auto_snap_best` is off by default (`:1472`). So a Replay
     discards an unsaved trained network, while canopy's Replay modal promises "a read-only playback session"
     (`hdf5_snapshots_panel.py:533`), as does the proxy route's docstring (`main.py:2985`). The canopy
-    follow-up's FAQ note warns of it. Triage it: canopy's wording, cascor's design, or both (the owner).
+    follow-up's FAQ note warns of it. Triage it: canopy's wording, cascor's design, or both (the Overtoad).
 """,
     ),
     (

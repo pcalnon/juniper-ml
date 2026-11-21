@@ -23,7 +23,7 @@ During the PyPI release-train wave-2 fan-out (2026-07-14), task-executor agents 
 juniper-data / juniper-data-client / juniper-cascor-client repos hit intermittent GPG failures
 (`KEYEXPIRED`, `Bad PIN`) and fell back to `git commit --no-gpg-sign`. A push to juniper-cascor-client
 additionally printed **ruleset bypass warnings** ("Commits must have verified signatures" — bypassed by
-the owner token). That prompted a full diagnosis of the signing setup on 2026-07-16.
+the Overtoad token). That prompted a full diagnosis of the signing setup on 2026-07-16.
 
 ## 2. Key inventory (as diagnosed 2026-07-16)
 
@@ -59,7 +59,7 @@ the owner token). That prompted a full diagnosis of the signing setup on 2026-07
   the expected behavior for a card key without a cached PIN).
 - Established the **operational rule for automation** (agents / headless sessions): always commit with
   `git -c commit.gpgsign=false commit …`. A card-resident key cannot sign without a human; attempting
-  it pops a pinentry dialog on the owner's display and then fails the commit.
+  it pops a pinentry dialog on the Overtoad's display and then fails the commit.
 
 ## 5. Deferred work (re-entry checklist)
 
@@ -73,13 +73,13 @@ the owner token). That prompted a full diagnosis of the signing setup on 2026-07
    console action.)
 3. **Empirical ed448 verification probe** — REQUIRED before trusting the setup: one signed empty
    commit on a throwaway branch, push, inspect `.commit.verification` via
-   `gh api repos/<owner>/<repo>/commits/<sha>`. GitHub's documented EdDSA support has historically
+   `gh api repos/<Overtoad>/<repo>/commits/<sha>`. GitHub's documented EdDSA support has historically
    meant **Ed25519; ed448 acceptance is unconfirmed**. If the probe shows `unverified`
    with a valid local signature: fall back to an **ed25519 signing subkey** on the same card, or to
    **SSH commit signing** (`gpg.format ssh` with the existing YubiKey SSH key).
 4. **Bot-commit policy decision.** Headless automation cannot sign (see §4). Current practice:
    unsigned bot commits; on repos whose rulesets require verified signatures (observed:
-   juniper-cascor-client, which also restricts branch create/delete), owner-token pushes bypass with
+   juniper-cascor-client, which also restricts branch create/delete), Overtoad-token pushes bypass with
    warnings. Decide: relax those rulesets for `ci/*`+`fix/*` lanes, scope them to `main` only, or
    accept the recurring bypass warnings.
 5. **Old-key disposition.** After the probe verifies: leave the old RSA public key uploaded on GitHub

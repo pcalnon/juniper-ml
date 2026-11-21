@@ -1,7 +1,7 @@
 # HANDOFF 2026-08-19 — snapshot arc closed; R3 resume is next
 
 Successor to
-[`HANDOFF_2026-08-15_q6-resolved-and-owner-decision-register.md`](HANDOFF_2026-08-15_q6-resolved-and-owner-decision-register.md).
+[`HANDOFF_2026-08-15_q6-resolved-and-the-overtoad-decision-register.md`](prompts/thread-handoff_automated-prompts/HANDOFF_2026-08/HANDOFF_2026-08-15_q6-resolved-and-the-overtoad-decision-register.md).
 
 **Nothing from this arc is in flight.** Fourteen PRs merged (9 juniper-ml, 3 juniper-cascor,
 2 juniper-deploy) plus one direct-to-main cascor commit. This document is the only deliverable
@@ -22,33 +22,33 @@ functions*, and no single offset recovered the set.
 
 ## 1. Shipped this arc — do NOT redo
 
-| PR | repo | what |
-|---|---|---|
-| ml#1129 | juniper-ml | Q-6 closure propagated into **10** stale register sites |
-| ml#1136 | juniper-ml | **F-P1-2 closed — premise refuted**; P1.6 + P3 criteria 6/8 evidenced |
-| ml#1137 | juniper-ml | snapshot-lifecycle design + §12 perf-lane phase gating + census script |
-| ml#1138 | juniper-ml | Grafana port configurability proven; corrected D-1 remedy |
-| ml#1144 → ml#1164 | juniper-ml | D-A demotion, then its **retraction** (§4) |
-| ml#1150 / ml#1172 | juniper-ml | ecosystem port registry; S-5 answer recorded |
-| ml#1181 | juniper-ml | cross-repo reference sweep preserved in `util/ad-hoc/` |
-| deploy#183 / #186 | juniper-deploy | `PROMETHEUS_HOST_PORT`; monitoring tier honours `BIND_HOST` |
+| PR                   | repo           | what                                                                                                                                                      |
+|----------------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ml#1129              | juniper-ml     | Q-6 closure propagated into **10** stale register sites                                                                                                   |
+| ml#1136              | juniper-ml     | **F-P1-2 closed — premise refuted**; P1.6 + P3 criteria 6/8 evidenced                                                                                     |
+| ml#1137              | juniper-ml     | snapshot-lifecycle design + §12 perf-lane phase gating + census script                                                                                    |
+| ml#1138              | juniper-ml     | Grafana port configurability proven; corrected D-1 remedy                                                                                                 |
+| ml#1144 → ml#1164    | juniper-ml     | D-A demotion, then its **retraction** (§4)                                                                                                                |
+| ml#1150 / ml#1172    | juniper-ml     | ecosystem port registry; S-5 answer recorded                                                                                                              |
+| ml#1181              | juniper-ml     | cross-repo reference sweep preserved in `util/ad-hoc/`                                                                                                    |
+| deploy#183 / #186    | juniper-deploy | `PROMETHEUS_HOST_PORT`; monitoring tier honours `BIND_HOST`                                                                                               |
 | cascor **`5f15a45`** | juniper-cascor | **optimizer restore fixed** — faithful class, state, lr. *(Landed on main via merge `cb8a30e`; `git show cb8a30e` shows the WRONG diff — use `5f15a45`.)* |
-| cascor#534 | juniper-cascor | logger creates its dir on demand; `.gitignore` stops ignoring the snapshots package |
-| cascor#536 | juniper-cascor | model constants re-extracted; **drift gate made to actually fire** |
-| cascor#537 | juniper-cascor | service snapshot destination moved **out of the importable package** |
+| cascor#534           | juniper-cascor | logger creates its dir on demand; `.gitignore` stops ignoring the snapshots package                                                                       |
+| cascor#536           | juniper-cascor | model constants re-extracted; **drift gate made to actually fire**                                                                                        |
+| cascor#537           | juniper-cascor | service snapshot destination moved **out of the importable package**                                                                                      |
 
 ---
 
-## 2. Open work — in the owner's stated priority order
+## 2. Open work — in the Overtoad's stated priority order
 
-> **The owner's order overrides the design's own sequencing.** The design
+> **The Overtoad's order overrides the design's own sequencing.** The design
 > (`SNAPSHOT-LIFECYCLE-MANAGEMENT-DESIGN.md` §8) and the prioritisation note put **D-B** in
-> Tier 1 ahead of everything and list no R3 item at all. The owner's 2026-08-19 instruction is
+> Tier 1 ahead of everything and list no R3 item at all. The Overtoad's 2026-08-19 instruction is
 > R3 → S-1/S-2 → D-B, and **that governs**. Do not "correct" back to the design's order.
 
 ### 2.1 FIRST — R3 resume follow-on
 
-**The owner's requirement, verbatim (2026-08-18):** *"restore a snapshotted network, observe
+**The Overtoad's requirement, verbatim (2026-08-18):** *"restore a snapshotted network, observe
 replay to gain insight into its training, edit the network based on that insight, and then
 resume training … an iterative, experimental approach … one of the key purposes of the Juniper
 project."*
@@ -65,12 +65,12 @@ the cascor repo root — `api/…` means `src/api/…`.)
   — `:1891` (initial pass in `fit`), `:4594` and `:4823` (per-round grow passes) — so a
   reuse-when-valid change lands on all three, not just the one the §5 grep anchors.
 
-**Two facts about the owner's workflow that reframe the whole item:**
+**Two facts about the Overtoad's workflow that reframe the whole item:**
 
 - **`resume_from_snapshot` re-reads the snapshot from disk.** `_load_snapshot_to_network`
   (`manager.py:4504`) globs `<snapshots_dir>/<id>.h5` and replaces the network (`:4515-4523`).
   So step 4 discards **all in-memory edits, not just the optimizer**, unless the operator
-  re-snapshots after editing. The owner's loop is therefore
+  re-snapshots after editing. The Overtoad's loop is therefore
   restore → replay → edit → **re-snapshot** → resume — which is exactly what cascor#225's
   round-trip test does. Confirm the intended loop before designing.
 - **`/restore` and `/resume` land in different FSM states.** `load_snapshot` →
@@ -173,9 +173,9 @@ Both are in the design's **§9** open-questions table.
   `util/ad-hoc/2026-08-16_snapshot_archive_census.py` (`--census` / `--sample`) is read-only,
   has no delete path, and is the cheapest progress available.
 
-### 2.3 THIRD — D-B (owner asked to DISCUSS before implementing)
+### 2.3 THIRD — D-B (Overtoad asked to DISCUSS before implementing)
 
-**Do not implement this. The owner asked for a discussion first.** Scoped here only so the
+**Do not implement this. The Overtoad asked for a discussion first.** Scoped here only so the
 discussion has facts, and deliberately kept thin — an earlier draft of this section read like a
 work order while containing a false premise.
 
@@ -322,7 +322,7 @@ can omit the `=== N passed ===` summary — key on the **exit code**.
   broken pipeline. Open the PR.
 - **`required_signatures` is live fleet-wide**: a headless local commit cannot land. Sign, or
   use `juniper-ml/util/open_signed_pr.py`.
-- **Merge queues are unavailable to Juniper** — they require org/enterprise ownership and every
+- **Merge queues are unavailable to Juniper** — they require org/enterprise Overtoadship and every
   repo is user-owned. Settled by policy validation 2026-08-18; **do not re-raise it**. The
   working technique is a merge-when-green watcher that re-issues
   `gh api -X PUT repos/OWNER/REPO/pulls/N/update-branch` on `BEHIND` and merges on `CLEAN`;

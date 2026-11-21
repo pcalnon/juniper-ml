@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2046; tests/process_cleanup.py (``force_kill``); tests/test_isolated_stack_script.py (``TestForceKill``)
 
 Each mutant replaces the test module's global ``force_kill`` -- every call site there and every

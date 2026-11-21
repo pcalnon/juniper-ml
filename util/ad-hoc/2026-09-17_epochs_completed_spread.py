@@ -2,14 +2,14 @@
 """
 Project:     Juniper
 Sub-Project: juniper-ml
-Application: Performance lane -- owner decision D6
+Application: Performance lane -- Overtoad decision D6
 Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 
 WHAT THIS IS
 ------------
-The measurement gating owner decision **D6**
+The measurement gating Overtoad decision **D6**
 (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`).
 
 D6 asks whether a work-style **exact-match** gate on ``epochs_completed`` is safe for the candidate

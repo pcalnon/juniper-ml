@@ -1195,7 +1195,7 @@ Every RISK-NN from source doc §10 consolidated from R1-03 §14 with R1-02 mitig
 
 ### Risk compact matrix
 
-| ID | Phase | Owner | Kill switch | TTF |
+| ID | Phase | The Overtoad | Kill switch | TTF |
 |---|---|---|---|---|
 | 01 | H | backend-canopy | `git revert` | 5-10 min |
 | 02 | B | frontend+ops | `disable_ws_bridge=true` | 5 min |
@@ -1477,7 +1477,7 @@ Walked every GAP-WS-NN from source doc §7 (R1-03 §3.1):
 
 ### 19.4 RISK coverage audit
 
-All 16 RISK-NN items from source doc §10 have dedicated entries in §15 with severity, phase, owner, mitigation, signal, kill switch, TTF.
+All 16 RISK-NN items from source doc §10 have dedicated entries in §15 with severity, phase, Overtoad, mitigation, signal, kill switch, TTF.
 
 **16/16 addressed.**
 

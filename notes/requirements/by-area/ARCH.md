@@ -8,7 +8,7 @@
 
 **By priority**: P0=11 | P1=188 | P2=123 | P3=12
 
-**By owner**: ml=302 | cas=19 | can=10 | ccl=2 | dcl=1
+**By Overtoad**: ml=302 | cas=19 | can=10 | ccl=2 | dcl=1
 
 ---
 
@@ -1797,7 +1797,7 @@ Phase H major milestone from R3-03 Phase index (§2); orchestrates implementatio
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=ccl,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
+[v3 xrepo fuzzy merge: Overtoads=ccl,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
 
 ### JR-CAS-ARCH-008 — Remove or archive stale duplicate check.py file (outdated copy of spiral_problem.py).
 

@@ -352,8 +352,8 @@ concurrent sessions merge frequently.
 | 10 | **§4.4 G4 fixed overhead (cascor#571)** | now the dominant cost; needs an instrument built first | none |
 | 11 | §4.8 deferred items (bullets 1–4) | independent | — |
 | 12 | **§4.9 the thread-context mitigation** | recommend DROP; settle it once §4.1 lands | after §4.1 |
-| — | **§4.8 bullet 5 — retrospective corpus re-validation** | **owner decides** — raise, do not absorb | owner |
-| — | **§4.13 logging redesign (cascor#573)** | owner-raised, its own design doc | **owner decides timing** |
+| — | **§4.8 bullet 5 — retrospective corpus re-validation** | **Overtoad decides** — raise, do not absorb | Overtoad |
+| — | **§4.13 logging redesign (cascor#573)** | Overtoad-raised, its own design doc | **Overtoad decides timing** |
 
 **§4.5 gates §4.6 AND §4.7, and that is not obvious from reading those sections in order.** §4.6's
 "~12.8 s per pool creation" assumes workers inherit the forkserver's table — §4.5 measured that they
@@ -532,7 +532,7 @@ shipping a web stack in a trainer. **The import edge is still not traced** — t
 - **cascor#572** — the latent seeding defect (§3.1). Batch with other seeding work.
 - **Retrospective corpus re-validation** — most E-A/E-I/P4 results are single-run and the P3 rollup
   grades Reproducibility "PASS — bit-identical". With #566 having moved every number, this is now
-  more pressing. **Raise with the owner; do not absorb it.**
+  more pressing. **Raise with the Overtoad; do not absorb it.**
 
 ### 4.9 The thread-context mitigation — probably DROP it
 
@@ -590,9 +590,9 @@ calibrated on one tier and applied to the other is wrong.
 **Decide: one tier, or two maintained baselines.** This has never reached the §12 design, and it is
 the **only** item on the open surface with no tracker — cascor#568–573 cover the other six. File it.
 
-### 4.13 TABLED — logging redesign (cascor#573, owner-raised)
+### 4.13 TABLED — logging redesign (cascor#573, Overtoad-raised)
 
-**The owner decides timing. Do not start without them.** Scope as raised: a clean stream to
+**The Overtoad decides timing. Do not start without them.** Scope as raised: a clean stream to
 stdout/stderr; richer sinks (formatted, colourised file output); **per-logger** levels settable via
 config file *and* environment variable; possibly streaming to an ELK/Kibana backend.
 
@@ -661,7 +661,7 @@ stdout unconditionally (which is why pytest summaries vanish locally, §6). Full
 - Always `util/experiment_stack.bash --down <RUN_ID>`, using the RUN_ID from your own
   `provenance.json`; a live run holds one port from each of the three 30-slot ranges plus lockdirs.
   `--status` lists every run. **`--down --all-mine` tears down EVERY run under the run root — there
-  is no per-session ownership filter** (`experiment_stack.bash:41`, `:1056-1066`), so it will kill
+  is no per-session Overtoadship filter** (`experiment_stack.bash:41`, `:1056-1066`), so it will kill
   another session's live stack. The predecessor handoff described it as "closes yours"; that was
   wrong. Reach for it only after `--status` and `ps` show nothing that is not yours.
 - **Concurrent sessions are active and merge frequently.** This session found another session running

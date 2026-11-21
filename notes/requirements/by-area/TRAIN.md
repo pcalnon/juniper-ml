@@ -8,7 +8,7 @@
 
 **By priority**: P0=22 | P1=55 | P2=70 | P3=9
 
-**By owner**: ml=106 | cas=35 | can=12 | rec=2 | ccl=1
+**By Overtoad**: ml=106 | cas=35 | can=12 | rec=2 | ccl=1
 
 ---
 
@@ -1889,7 +1889,7 @@ but sys.path mutation remains. Long-term: IPC or make Cascor installable package
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Notes**:
 

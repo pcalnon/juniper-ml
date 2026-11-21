@@ -122,14 +122,14 @@ class SigningAuthSmeContractTest(ContractMixin, unittest.TestCase):
                 flags = [tok for tok in call.split()[2:] if tok.startswith("-")]
                 self.assertTrue(set(flags) <= {"--jq"}, "a GET takes --jq and nothing else: %r" % call)
 
-    def test_body_ends_its_report_with_the_owner_command_list(self):
+    def test_body_ends_its_report_with_the_Overtoad_command_list(self):
         output = self.body.split("## Output", 1)[-1].split("## Must never", 1)[0]
         self.assertIn("Write exactly one file: `reports/<YYYY-MM-DD>_<host>-bringup/<YYYY-MM-DDTHHMMZ>_signing-auth-sme.md`", output)
         self.assertIn("never overwrite", output)
         self.assertIn("the OWNER command list, as one fenced `bash` block", output)
 
-    def test_owner_list_draws_on_the_plan_checklist(self):
-        self.assertIn("§14.1", self.body, "the owner-run operator checklist is the plan's §14.1")
+    def test_Overtoad_list_draws_on_the_plan_checklist(self):
+        self.assertIn("§14.1", self.body, "the Overtoad-run operator checklist is the plan's §14.1")
         for task in ("A2", "A3", "B3", "B4", "B5", "A1"):
             with self.subTest(task=task):
                 self.assertIn(task, self.body.split("**Write the OWNER command list.**", 1)[-1])

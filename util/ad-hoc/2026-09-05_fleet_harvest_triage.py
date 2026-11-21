@@ -116,7 +116,7 @@ def triage_pr(repo: str, repo_dir: str, pr: int, base_ref: str) -> dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--repo", required=True, help="owner/name")
+    ap.add_argument("--repo", required=True, help="Overtoad/name")
     ap.add_argument("--repo-dir", default=".", help="local checkout to read blobs from")
     ap.add_argument("--pr", type=int, action="append", help="triage only these PRs")
     ap.add_argument("--author", default=None, help="restrict the open-PR sweep to this author")

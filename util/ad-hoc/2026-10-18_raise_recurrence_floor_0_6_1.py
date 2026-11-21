@@ -6,19 +6,19 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-18
 Status: ad-hoc — migration
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: W1.13 / M1 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md;
          util/ad-hoc/2026-10-18_raise_recurrence_canopy_pins_w1_13.py (the W1.13 raise this follows, ml#2232);
          juniper-recurrence#206 (the floors fix 0.6.1 carries)
 
 Why this exists
 ---------------
-juniper-recurrence 0.6.0 shipped without the owner's 2026-10-10 floors ruling: its ranges still admitted
+juniper-recurrence 0.6.0 shipped without the Overtoad's 2026-10-10 floors ruling: its ranges still admitted
 juniper-recurrence-model ``>=0.3.0`` and juniper-data-client ``>=0.4.2``, so ``pip install -U
 juniper-recurrence`` over a 0.5.0 environment kept model 0.3.0 and data-client 0.5.0, ``pip check`` was
 clean, and the service started without the W1.4 rules or the W1.3 target checks. juniper-recurrence#206
 raised the floors (model ``>=0.4.0``, data-client ``>=0.6.0``), and 0.6.1 published them to PyPI on
-2026-10-18 (19:02Z). The owner ruled the same day that the meta-package's ``[recurrence]`` floor follows
+2026-10-18 (19:02Z). The Overtoad ruled the same day that the meta-package's ``[recurrence]`` floor follows
 to ``>=0.6.1``, so that ``pip install -U juniper-ml[recurrence]`` cannot resolve the stale pair either.
 
 The meta-package's own model (``>=0.3.0``) and data-client (``>=0.5.0``) floors stay, as the extras
@@ -72,8 +72,8 @@ _PLAN = "notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-A
 
 _ENTRY_MARKER = "`[recurrence]` now floors `juniper-recurrence>=0.6.1`"
 _CL_ENTRY = f"""- **{_ENTRY_MARKER}**, the release that carries the recurrence floors ruling
-  (M1 of `{_PLAN}`; owner ruling 2026-10-18 UTC). The floor was `>=0.6.0`.
-  - **Why 0.6.0 was not enough.** 0.6.0 shipped without the owner's 2026-10-10 floors ruling: it still
+  (M1 of `{_PLAN}`; Overtoad ruling 2026-10-18 UTC). The floor was `>=0.6.0`.
+  - **Why 0.6.0 was not enough.** 0.6.0 shipped without the Overtoad's 2026-10-10 floors ruling: it still
     admitted `juniper-recurrence-model>=0.3.0` and `juniper-data-client>=0.4.2`. Over a 0.5.0
     environment, `pip install -U juniper-recurrence` kept model 0.3.0 and data-client 0.5.0,
     `pip check` was clean, and the service started without the W1.4 rules (`float32`, finite `dt`,

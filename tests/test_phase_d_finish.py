@@ -108,7 +108,7 @@ DLISTS_2026_11_11 = [
 FIVE_PRE_RECOVERY = [f"duplicati-{stamp}.dlist.zip.aes" for stamp in ("20260912T140000Z", "20260915T085649Z", "20260916T183346Z", "20260917T221344Z", "20260918T140000Z")]
 # The three scheduled post-recovery filesets of that list that the off-schedule ones displace under a one-day interval.
 SCHEDULED_DISPLACED = ["duplicati-20261108T140001Z.dlist.zip.aes", "duplicati-20261109T140001Z.dlist.zip.aes", "duplicati-20261110T140000Z.dlist.zip.aes"]
-# The owner's 2026-10-08 policy, amended on 2026-11-14 (Q7) to finish.POLICY. The tests of the pass's mechanics keep it:
+# The Overtoad's 2026-10-08 policy, amended on 2026-11-14 (Q7) to finish.POLICY. The tests of the pass's mechanics keep it:
 # their fixtures were built on its one-day interval, which the amended two-week frame no longer has.
 POLICY_2026_10_08 = "2W:1D,6M:1W,2Y:1M,5Y:2M"
 AMENDED_POLICY = "2W:U,6M:1W,2Y:1M,5Y:2M"
@@ -562,7 +562,7 @@ class ShredVerbTest(unittest.TestCase):
     def shred(self, run_dir: Path) -> tuple[int, str]:
         buffer = io.StringIO()
         with redirect_stdout(buffer):
-            code = finish.cmd_shred(argparse.Namespace(run_root=str(self.root), run_dir=str(run_dir)), owner_uid=os.geteuid())
+            code = finish.cmd_shred(argparse.Namespace(run_root=str(self.root), run_dir=str(run_dir)), Overtoad_uid=os.geteuid())
         return code, buffer.getvalue()
 
     def test_a_kept_run_directory_is_shredded(self) -> None:
@@ -617,7 +617,7 @@ class RunRootTest(unittest.TestCase):
                 self.assertIn(f"mode {mode:04o}", str(caught.exception))
         os.chmod(self.root, 0o700)
 
-    def test_another_owner_a_symlink_a_file_and_a_missing_path_are_refused(self) -> None:
+    def test_another_Overtoad_a_symlink_a_file_and_a_missing_path_are_refused(self) -> None:
         link, a_file = Path(self.tmp.name) / "link", Path(self.tmp.name) / "file"
         link.symlink_to(self.root)
         a_file.write_text("x")
@@ -681,7 +681,7 @@ class DrillVerbTest(unittest.TestCase):
     def drill(self, args, *, run=None, task=None) -> tuple[int, str]:
         buffer = io.StringIO()
         with redirect_stdout(buffer), mock.patch.object(finish, "source_home", return_value="/nonexistent-home"):
-            code = finish.cmd_drill(args, run=run or self.never_run, task=task or (lambda _home: ("idle", "no active task; ProgramState=Running")), owner_uid=os.geteuid())
+            code = finish.cmd_drill(args, run=run or self.never_run, task=task or (lambda _home: ("idle", "no active task; ProgramState=Running")), Overtoad_uid=os.geteuid())
         return code, buffer.getvalue()
 
     def record(self) -> dict:
@@ -914,7 +914,7 @@ class PlanTest(unittest.TestCase):
         self.assertIn(finish.DRILLS["1"], plan["delete"], "drill 1's fileset does not -- which is why it is drilled first")
 
     def test_the_policy_is_the_amended_ruling(self) -> None:
-        self.assertEqual(finish.POLICY, AMENDED_POLICY, "the owner's 2026-11-14 ruling (Q7): the two-week frame keeps every fileset")
+        self.assertEqual(finish.POLICY, AMENDED_POLICY, "the Overtoad's 2026-11-14 ruling (Q7): the two-week frame keeps every fileset")
         self.assertEqual(retention.parse_policy(finish.POLICY)[0], (dt.timedelta(days=14), dt.timedelta(0)))
 
     def test_under_the_amended_policy_the_real_list_loses_only_the_five(self) -> None:
@@ -1065,7 +1065,7 @@ class AsideTest(unittest.TestCase):
         buffer = io.StringIO()
         with redirect_stdout(buffer), mock.patch.object(finish, "source_home", return_value=str(self.home)), mock.patch.object(finish.dt, "datetime", wraps=dt.datetime) as clock:
             clock.now.return_value = dt.datetime(2026, 11, 12, 1, 0, 0, tzinfo=UTC)
-            code = finish.cmd_aside(self.args(**overrides), task=task or (lambda _home: ("idle", "no active task; ProgramState=Running")), owner_uid=self.uid)
+            code = finish.cmd_aside(self.args(**overrides), task=task or (lambda _home: ("idle", "no active task; ProgramState=Running")), Overtoad_uid=self.uid)
         return code, buffer.getvalue()
 
     def passed(self, **overrides) -> None:
@@ -1108,7 +1108,7 @@ class AsideTest(unittest.TestCase):
         for name in copied:
             source, copy = os.stat(self.dest / name), os.stat(self.aside / name)
             self.assertEqual((self.aside / name).read_bytes(), (self.dest / name).read_bytes())
-            # What `cp -p` keeps: timestamps to the nanosecond, mode, owner and group.
+            # What `cp -p` keeps: timestamps to the nanosecond, mode, Overtoad and group.
             self.assertEqual((copy.st_mtime_ns, copy.st_mode, copy.st_uid, copy.st_gid), (source.st_mtime_ns, source.st_mode, source.st_uid, source.st_gid))
         self.assertEqual(self.listed(), {name: hashlib.sha256((self.dest / name).read_bytes()).hexdigest() for name in DLISTS_2026_11_11})
         self.assertIn("16 new, 0 already current", text)
@@ -1150,7 +1150,7 @@ class AsideTest(unittest.TestCase):
         with self.opened() as fd:
             self.assertEqual(finish.write_manifest(fd, finish.copy_aside(str(self.dest), fd, FIVE_PRE_RECOVERY[:1])), 1)
         self.assertEqual(set(self.listed()), {FIVE_PRE_RECOVERY[0]})
-        self.assertTrue((self.aside / orphan).exists(), "it is left for the owner to see")
+        self.assertTrue((self.aside / orphan).exists(), "it is left for the Overtoad to see")
 
     def test_a_fileset_added_after_the_first_copy_is_taken_by_the_second(self) -> None:
         self.passed()
@@ -1235,7 +1235,7 @@ class AsideTest(unittest.TestCase):
         with self.opened() as fd, self.assertRaises(finish.ToolError) as caught:
             finish.copy_aside(str(self.dest), fd, [name])
         self.assertIn("cannot be opened as a regular file", str(caught.exception))
-        self.assertTrue((self.aside / name).is_symlink(), "it is left for the owner to inspect")
+        self.assertTrue((self.aside / name).is_symlink(), "it is left for the Overtoad to inspect")
 
     def test_a_directory_renamed_after_the_check_still_receives_the_copy(self) -> None:
         # The aside directory's parent is group-writable on the host, so its NAME can be given to a symlink after
@@ -1553,7 +1553,7 @@ class Ac6VerbTest(unittest.TestCase):
         values.update(overrides)
         buffer = io.StringIO()
         with redirect_stdout(buffer), redirect_stderr(io.StringIO()), mock.patch.object(finish, "source_home", return_value=str(self.home)), mock.patch.object(finish, "load_module", return_value=driver):
-            code = finish.cmd_ac6(argparse.Namespace(**values), owner_uid=os.geteuid())
+            code = finish.cmd_ac6(argparse.Namespace(**values), Overtoad_uid=os.geteuid())
         return code, buffer.getvalue()
 
     def left_on_disk(self) -> list[str]:
@@ -1704,7 +1704,7 @@ class SourceUserHopTest(unittest.TestCase):
         args = argparse.Namespace(run_root=str(root), aside=str(aside), dest=str(dest), backup_id="2", expect_retention="restored")
         out = io.StringIO()
         with mock.patch.object(finish, "source_home", return_value=self.HOME), mock.patch.object(finish.subprocess, "run", return_value=argparse.Namespace(returncode=1)) as run, redirect_stdout(out):
-            code = finish.cmd_status(args, owner_uid=os.geteuid())
+            code = finish.cmd_status(args, Overtoad_uid=os.geteuid())
         return code, out.getvalue(), run
 
     def test_status_lists_the_records_and_runs_the_probe(self) -> None:

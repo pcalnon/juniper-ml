@@ -1733,7 +1733,7 @@ Lock in dual metric format contract (flat + nested keys both present) with regre
 ### 14.5 Exit gate
 
 - [ ] Regression tests green
-- [ ] CODEOWNERS enforced (test PR touching file without owner review -> blocked)
+- [ ] CODEOWNERS enforced (test PR touching file without Overtoad review -> blocked)
 - [ ] Consumer audit doc merged
 - [ ] Pre-commit hook installed
 
@@ -2080,9 +2080,9 @@ Where R4-01 and R4-02 disagreed and how this document resolved each disagreement
 
 **Resolution**: R4-01's list of 13 is comprehensive; R4-02's 6 is a subset of the same items. Both agree on the same defaults-of-last-resort. This document incorporates the full set of defaults in the pre-flight procedure and per-phase entry gates. No contradiction in substance.
 
-### 20.7 Cross-cutting concerns ownership
+### 20.7 Cross-cutting concerns Overtoadship
 
-Both R4 inputs agree on the 10 CCC structure and ownership assignments. No contradiction.
+Both R4 inputs agree on the 10 CCC structure and Overtoadship assignments. No contradiction.
 
 ### 20.8 Security flag naming
 

@@ -9,7 +9,7 @@ Version:     0.2.0
 License:     MIT License
 Created:     2026-11-09
 Status:      ad-hoc -- one-off verification
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     the flood-4 session-4 and session-5 briefs' CodeQL traps (juniper-ml#2534, alert 1088;
              juniper-ml#2545, refused on three more shapes); §8, ruling 11 of
              notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md

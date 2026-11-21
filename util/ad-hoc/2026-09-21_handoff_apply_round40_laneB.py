@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-21
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: round-40 handoff §6; round-39 handoff §9.5 / §9.8
 
 FOUR FINDINGS, ALL RE-DERIVED BEFORE BEING ACCEPTED (procedure §5.2 -- a lone finding is a lead,
@@ -116,7 +116,7 @@ validator already found is worse than never fixing it: the lineage looks like it
   every push or you silently revert someone else's merged change.
 - **Verify a merge in two steps** — and this arc got it wrong: `util/safe_merge.py` prints the
   **HEAD** sha, not the squash commit (§6). Take the squash from
-  `gh api repos/<owner>/<repo>/pulls/<N> --jq .merge_commit_sha`, then confirm the CONTENT is on
+  `gh api repos/<Overtoad>/<repo>/pulls/<N> --jq .merge_commit_sha`, then confirm the CONTENT is on
   `main`.
 - **`safe_merge` can exit 0 without merging**, and an armed auto-merge on a `behind` PR waits
   forever under a `strict:true` ruleset — see §8.

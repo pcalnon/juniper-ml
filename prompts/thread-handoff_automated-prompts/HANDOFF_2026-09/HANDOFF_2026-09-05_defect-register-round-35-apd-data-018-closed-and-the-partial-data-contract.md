@@ -18,7 +18,7 @@ All dates UTC.
 names that file.
 
 **Register moved 78 → 79 fixed, 18 → 17 open.** `APD-DATA-018` closed. The work then continued past
-the register into an owner-specified partial-data contract. **The first draft of this document called
+the register into an Overtoad-specified partial-data contract. **The first draft of this document called
 that contract "two-thirds delivered" and said canopy was all that remained. Adversarial validation
 falsified both.** See §0.2 for the five gaps, four of them in juniper-cascor.
 
@@ -34,7 +34,7 @@ falsified both.** See §0.2 for the five gaps, four of them in juniper-cascor.
    canopy a *contract* task rather than the UI task this document originally called it. Ordered by
    what blocks what:
 
-   **(a) `progress, metrics and results` are NOT annotated — only the dataset is.** The owner's
+   **(a) `progress, metrics and results` are NOT annotated — only the dataset is.** The Overtoad's
    clause is explicit and is unmet on *both* the CLI and canopy paths. juniper-data does its half
    (`DatasetMeta.truncation` / `.data_quality`, persisted). juniper-cascor **logs the shortfall and
    discards it**: `_log_dataset_shortfall` emits `self.logger.warning(...)` and returns. Nothing
@@ -63,7 +63,7 @@ falsified both.** See §0.2 for the five gaps, four of them in juniper-cascor.
    **(e) Docs**: zero mentions of `--allow-truncated-datasets` / `JUNIPER_CASCOR_ALLOW_TRUNCATED_DATASETS`
    anywhere in juniper-ml's `docs/`.
 
-3. **THEN juniper-canopy's three-way prompt.** The owner's spec
+3. **THEN juniper-canopy's three-way prompt.** The Overtoad's spec
    (2026-09-05, quoted verbatim in §3) requires canopy to present a meaningful error and require an
    affirmative choice of one of three:
    - **accept** broken rows and continue → `allow_truncation=true`, `incomplete_rows="accept"`
@@ -78,9 +78,9 @@ falsified both.** See §0.2 for the five gaps, four of them in juniper-cascor.
    three options, then says *"option 2 should provide a meaningful error message, cancel the data
    load, deselect the selected dataset"*. Option 2 is *drop and continue*, which cannot also cancel
    and deselect. I read it as **option 3** and built the data layer that way (accept and drop both
-   annotate and continue; only fail cancels). **This was flagged to the owner and not answered.**
+   annotate and continue; only fail cancels). **This was flagged to the Overtoad and not answered.**
    Confirm before building the canopy flow on it.
-5. **Carried, and each is an owner decision, not a task**: the 3 tickers rescuable only by
+5. **Carried, and each is an Overtoad decision, not a task**: the 3 tickers rescuable only by
    `CommonStockSharesIssued` (issued ≠ outstanding — `market_cap` would quietly mean something else
    for them); whether `STZ` — the one genuinely unrescuable name — justifies anything beyond today's
    refusal; and whether `fundamentals_fill="zero"` should stop being the default now that it is
@@ -115,7 +115,7 @@ cross-check **79 / 79 / 79, AGREE**.
 | ml#1604 | register: close protocol made **resident**, park taxonomy defined |
 | ml#1606 | round-33 handoff + the citation rule ml#1604 itself broke |
 | data#326 | `csv_import` **byte** cap, 422-until-opt-in, permanent annotation |
-| ml#1647 | register: `APD-DATA-018` owner decision + csv_import half |
+| ml#1647 | register: `APD-DATA-018` Overtoad decision + csv_import half |
 | data#348 / ml#1669 | equities sizing measurement + the analysis document |
 | data#354 / ml#1714 | equities **symbol** cap (14); `APD-DATA-018` **CLOSED**, 79/17 |
 | data#362 / ml#1738 | six free fields; **look-ahead leak**; empty-concept fallback bug |
@@ -305,7 +305,7 @@ session's equities work mid-session, without conflict.
 1. **§3's four findings** — each is a claim about live external APIs. Re-derive the KO
    `companyconcept`-vs-`companyfacts` disagreement and the −19-day leak yourself; both are
    reproducible in one command.
-2. **§0.2's claim that canopy is the ONLY unfinished deliverable.** Re-read the owner's spec against
+2. **§0.2's claim that canopy is the ONLY unfinished deliverable.** Re-read the Overtoad's spec against
    what shipped. If any clause of the CLI half is unmet, that is the highest-cost miss here.
 3. **§0.3's ambiguity** — confirm the option-numbering reading was flagged and not silently decided.
 4. **§2's PR table** — verify each merge SHA is an ancestor of the right `main`.

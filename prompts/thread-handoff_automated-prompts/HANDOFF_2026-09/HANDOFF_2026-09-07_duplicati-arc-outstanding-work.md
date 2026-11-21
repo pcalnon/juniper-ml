@@ -12,7 +12,7 @@ acceptance criteria live in a *different* file:
 
 **Distrust order — re-derive before acting.** Rots within a day: `LastRun`, the census
 file/byte counts (they *grow*; only `AGREE`/`DIVERGE` carries signal), sda1 usage, open-PR
-counts, any SHA. Rots on one owner action: sdc4's existence and mount state, the escrow
+counts, any SHA. Rots on one Overtoad action: sdc4's existence and mount state, the escrow
 sheet's presence. Rots on any merge: "main-verify green on all 9". Stable: the sdc geometry,
 the §8.x record.
 
@@ -67,7 +67,7 @@ Do not confuse this with §8.23's refuted *hazard* — that closed a risk, not t
 - Post-reboot, sdc4 is absent, so `util/ad-hoc/yamaguchi_retire_tier3.py` refuses at gate 0
   (`not a mountpoint`, exit 3), the durability check prints `ABSENT` not `NOT DURABLE`, and
   `util/ad-hoc/yamaguchi_records_sync.bash` refuses (§1 item 5). **None is a fault.**
-- Owner decision: **prepare it; the owner reboots on his own schedule.**
+- The Overtoad decision: **prepare it; the Overtoad reboots on his own schedule.**
 - Combine with §8.23.3's proactive sample: **read `paused-until` during the restart's
   30-minute `startup-delay` window** — that is the baseline nobody has captured (§1 item 7).
 
@@ -93,7 +93,7 @@ exists. It is not preserved. That is the vacuous-pass class *inside* the data-lo
 `util/ad-hoc/yamaguchi_retire_tier2.bash --execute-old-destination` deletes the ~196 G sdc4
 copy; its own header calls it *"the single most dangerous delete in the arc."* Do not run it,
 `util/ad-hoc/yamaguchi_retire_tier1.bash`, or `util/ad-hoc/yamaguchi_retire_tier3.py` unless
-the owner names the lane.
+the Overtoad names the lane.
 
 **Grow sdc2, NOT `/home`** — geometry verified from `/sys/block/sdc/*/start` (§8.25.3):
 sdc2 ends at 3,813,408,768 = sdc4's start; sdc4 ends at 7,782,432,768 = sdc3's start.
@@ -107,10 +107,10 @@ Extending sdc2 moves no data; extending `/home` relocates 3.65 TiB backwards.
 > it from a rescue/live boot, not a running desktop. Capture `sfdisk -d /dev/sdc > sdc.table`
 > first. Order: partition, then filesystem. Nothing forces this on any schedule.
 
-### 3. Print the escrow sheet (owner action, blocked on a printer)
+### 3. Print the escrow sheet (Overtoad action, blocked on a printer)
 
 `~/.cache/yamaguchi-key-escrow-sheet.txt` (0600, 1993 B). A synced password-manager copy
-exists and the owner accepted it as an interim (§8.24.1) — this is a **trust-model**
+exists and the Overtoad accepted it as an interim (§8.24.1) — this is a **trust-model**
 improvement, not a single-point-of-failure fix: paper fails independently of an account, a
 provider, and a reachable device.
 
@@ -220,7 +220,7 @@ proactively during the item-1 reboot.
   fingerprints are `PASSPHRASE → 6d8b263f6d064556`, `PASSPHRASE_OLD → b085454a8c34bd8c`
   (sha256[:16] — the **hand-reconciliation** values of §8.9-3, **not** the PBKDF2 pair
   `1ff8be45…`/`ad251cf0…`; picking the wrong scheme yields a confident mismatch).
-- **Cloud reporting** — owner-**deferred, not rejected**. §8.19.8 item 6 records a bearer JWT
+- **Cloud reporting** — Overtoad-**deferred, not rejected**. §8.19.8 item 6 records a bearer JWT
   with issuer `api.duplicati.com` expiring **2028** (no exact date is in the record —
   do not invent one). §8.18.4 has the `remote-control-enabled` / report-URL facts.
 - **Two §8.20.4 orphans**: the root `duplicati.service` on 8200 repurposed to 8300 rather

@@ -7,8 +7,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — investigation (flood-4 round-2 ml-code carrier; evidence for an open question)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: owner ruling "Fail closed" (2026-11-08) on util/claude_agent_guard.py's MAX_BRACE_ALTERNATIVES.
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Overtoad ruling "Fail closed" (2026-11-08) on util/claude_agent_guard.py's MAX_BRACE_ALTERNATIVES.
 
 Usage: python3 -I 2026-11-08_flood4r2_ml_code_brace_refusal_census.py <guard.py> <transcripts dir> <max files> <out file>
 

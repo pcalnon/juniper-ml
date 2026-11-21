@@ -8,14 +8,14 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-15
 Status:      ad-hoc -- one-off (Python 3.15 migration arc; this is not a 3.15 change)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-11-15_deploy_precommit_python_matrix.py (juniper-deploy#276, which added the legs);
              prompts/thread-handoff_automated-prompts/
              HANDOFF_2026-11-15_python-3-15-phase-2-approved-deploy-precommit-matrix.md (Task 1)
 
 Why this exists
 ---------------
-The owner asked on 2026-11-15 that deploy's pre-commit job "also run on 3.13 and 3.14, with these checks treated
+The Overtoad asked on 2026-11-15 that deploy's pre-commit job "also run on 3.13 and 3.14, with these checks treated
 the same as the existing 3.12 check". juniper-deploy#276 added the two legs, and they block through the Quality
 Gate. The existing 3.12 check, `Pre-commit`, is also a REQUIRED context of ruleset 14715370, so being treated the
 same means the two new contexts become required too. Adding them before `main` posted them would have held every

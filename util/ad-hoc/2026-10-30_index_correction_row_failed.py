@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 """
-Append the owner's 2026-10-30 correction row to the experiments index: run ``20261003T091414Z-4ba6`` is ``failed``.
+Append the Overtoad's 2026-10-30 correction row to the experiments index: run ``20261003T091414Z-4ba6`` is ``failed``.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-30
-Status: ad-hoc — one owner-ruled correction to ``~/.local/state/juniper-experiments/index.jsonl``
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one Overtoad-ruled correction to ``~/.local/state/juniper-experiments/index.jsonl``
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-29_recurrence-equities-mnist-schema-probe-canopy-778-parent-agents-cascor-0-13-0.md
-         (item 2, "the index.jsonl correction row ... Ask the owner"); notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md
-         (v1.7.23 :711 / :972 record row 482, and :712 leaves `failed` vs `degraded` to the owner)
+         (item 2, "the index.jsonl correction row ... Ask the Overtoad"); notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md
+         (v1.7.23 :711 / :972 record row 482, and :712 leaves `failed` vs `degraded` to the Overtoad)
 
 Why this exists
 ---------------
 Row 477 of the index records run ``20261003T091414Z-4ba6`` (E-H cell ``c001-0d8782ae``) as ``succeeded``, which was false:
-its crossval failed with HTTP 422 because the artifact lacked ``X_full`` (F-E1). On 2026-10-26 the owner ruled that a
+its crossval failed with HTTP 422 because the artifact lacked ``X_full`` (F-E1). On 2026-10-26 the Overtoad ruled that a
 correction row be appended and the original kept; the session that appended it (row 482) recorded ``degraded``, the outcome
-today's ``util/experiments/run_experiment.py`` assigns when train and predict succeed and crossval fails, where the owner's
-option named ``failed``. On 2026-10-30 the owner ruled: append one more correction row, correcting row 482, with outcome
+today's ``util/experiments/run_experiment.py`` assigns when train and predict succeed and crossval fails, where the Overtoad's
+option named ``failed``. On 2026-10-30 the Overtoad ruled: append one more correction row, correcting row 482, with outcome
 ``failed``. Rows 477 and 482 are never rewritten. The index is append-only; no reader in ``util/experiments/`` interprets
 ``corrects`` (they are annotations for a human or a later tool), so this row changes no aggregate.
 
@@ -105,12 +105,12 @@ def build_row(run_dir: str) -> dict:
         "run_dir": run_dir,
         "corrects": {"line": CORRECTED_LINE, "outcome": "degraded"},
         "reason": (
-            "The owner's 2026-10-26 option named failed; row 482 recorded degraded, the outcome today's run_experiment.py "
+            "The Overtoad's 2026-10-26 option named failed; row 482 recorded degraded, the outcome today's run_experiment.py "
             "assigns when train and predict succeed and crossval fails (here HTTP 422: the NPZ artifact lacks the required "
-            "key 'X_full', F-E1). The owner ruled on 2026-10-30 that failed stands. Rows 477 and 482 stay as written."
+            "key 'X_full', F-E1). The Overtoad ruled on 2026-10-30 that failed stands. Rows 477 and 482 stay as written."
         ),
         "corrected_at": now,
-        "corrected_by": f"owner ruling 2026-10-30 (session {SESSION}): append a correction row with outcome failed; never rewrite rows 477 or 482",
+        "corrected_by": f"Overtoad ruling 2026-10-30 (session {SESSION}): append a correction row with outcome failed; never rewrite rows 477 or 482",
     }
 
 

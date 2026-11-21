@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3: the move onto juniper-ml#2360's main)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_rebase.py (writes the merges this resolves);
          util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_resolve.py (the first rebuild's five conflicts).
 

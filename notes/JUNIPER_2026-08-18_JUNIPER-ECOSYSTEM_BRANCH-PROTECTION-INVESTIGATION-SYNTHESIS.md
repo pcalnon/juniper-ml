@@ -58,7 +58,7 @@ conditions can fire.
 ### ⚠️ CQ-9 — the org-migration coupling (both agents, independently)
 
 `code_quality` is inert **only because the product is unavailable on a User account** — the *same*
-ownership constraint that makes merge queues unavailable
+Overtoadship constraint that makes merge queues unavailable
 ([merge-queue runbook](JUNIPER_2026-08-16_JUNIPER-ML_MERGE-QUEUE-ENABLEMENT-RUNBOOK.md)).
 
 All 9 rulesets are **already armed at `severity: errors`**. Migrating the fleet to an organization on
@@ -89,7 +89,7 @@ branches "will always block". All 9 target `~DEFAULT_BRANCH` only — **do not w
    installed screens over the storm merges FAILs every incident that truly destroyed content
    (#738 → 8 lost symbols, #751 → 4 lost + 1 weakened, #759 → 8, the 23:01Z batch → 6). Those screens
    became **required on all 9 repos on 2026-08-18** (ml#1011).
-4. **`strict` does not bind the owner** (`RepositoryRole 5` = `always`) and **has no jurisdiction over
+4. **`strict` does not bind the Overtoad** (`RepositoryRole 5` = `always`) and **has no jurisdiction over
    direct pushes to `main`** — which is where the real damage now lands (§2.4).
 
 ### 2.2 Where they disagree

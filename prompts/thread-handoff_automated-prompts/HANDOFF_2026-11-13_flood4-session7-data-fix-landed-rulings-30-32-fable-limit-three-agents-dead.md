@@ -6,9 +6,9 @@
 
 **Host**: the Linux host.
 
-**Why the session stopped**: the account's **weekly Fable limit** was hit again at about 03:42Z on 2026-11-13, about 85 minutes after the first agents started. The API's words: "You've hit your Fable limit · resets Nov 18, 9pm (America/Chicago)", which is 2026-11-19 03:00Z. Three agents died mid-task (listed under Goal). The owner then logged in again (the harness reported an account change) and asked for this handoff; what that account's limit allows was not measured.
+**Why the session stopped**: the account's **weekly Fable limit** was hit again at about 03:42Z on 2026-11-13, about 85 minutes after the first agents started. The API's words: "You've hit your Fable limit · resets Nov 18, 9pm (America/Chicago)", which is 2026-11-19 03:00Z. Three agents died mid-task (listed under Goal). The Overtoad then logged in again (the harness reported an account change) and asked for this handoff; what that account's limit allows was not measured.
 
-**The running log is the detail**: `tmp/flood4/session7/STATE_S7.txt` in the orchestrator worktree has one clock-stamped entry per event, with the owner's rulings verbatim. Read it before acting.
+**The running log is the detail**: `tmp/flood4/session7/STATE_S7.txt` in the orchestrator worktree has one clock-stamped entry per event, with the Overtoad's rulings verbatim. Read it before acting.
 
 **If session 7 itself is still open when requests are accepted again**, it can resume its three dead agents with SendMessage, which a new session cannot: the guard builder `a5303a15bb4329057`, the unrun-tests validator `ab098e2e0ce5c1cfc`, the ml-tests tests lens `afa2d849b67f0bfb0`. The unrun-tests validator was near its report; the tests lens had finished its mutation run.
 
@@ -18,11 +18,11 @@
 
 - **The orchestrator worktree** is `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert`, on branch `worktree-humming-stargazing-papert`. HEAD is `734aab58`, deliberately not fast-forwarded.
 - **juniper-ml's main**: `origin/main` was `48b66130` at 10:26Z. juniper-ml#2558, the 0.11.5 release proposal, merged at 10:08:14Z as `48b66130`, and the v0.11.5 Release was cut on that commit at 10:24:18Z. juniper-ml#2561 (that cut's release-notes archive: one new file, auto-merge armed, not ours) was still open.
-- **This file** is on the branch `docs/handoff-2026-11-13-flood4-session7`, opened as a pull request by session 7 at the owner's request; **the owner merges it**. A working copy is in the orchestrator worktree.
+- **This file** is on the branch `docs/handoff-2026-11-13-flood4-session7`, opened as a pull request by session 7 at the Overtoad's request; **the Overtoad merges it**. A working copy is in the orchestrator worktree.
 - **Uncommitted there** (nothing staged): session 5's and session 6's handoffs; the helpers `util/ad-hoc/2026-11-1[12]_flood4r2_*`, to which session 7 added `2026-11-12_flood4r2_s7_log.py`, `2026-11-13_flood4r2_s7_handoff_check.py` and its agents' `2026-11-12_flood4r2_val_ml-propose-r3b_*` (13), `2026-11-12_flood4r2_val_d2-data_*` (9) and `2026-11-12_flood4r2_val_ml-tests-r2-tests_*` (11).
 - **Ignored there**: `tmp/`. Session 7's evidence is `tmp/flood4/session7/` (`briefs/`, `land/data-code/`, `BRIEF_S7_ADDENDUM.txt`).
 - **Other arcs on juniper-ml**: #2548 (the backup arc) is open. The R-OBS-SC-2 arc's session said on 2026-11-13, in its two messages around the cut, that its guard + register pull request follows the 0.11.5 cut (by session 6's log it changes `tests/test_service_fork_drift.py` and `docs/REFERENCE.md`), that it is ending, and that its next handoff will be the newest `HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-*` file.
-- **The primary checkout** is on the owner's branch. Do not touch it.
+- **The primary checkout** is on the Overtoad's branch. Do not touch it.
 
 ---
 
@@ -36,7 +36,7 @@ Signed, frozen on `c68e6b4c`, probed for sequence safety, scanned with a planted
 
 ---
 
-## The owner's rulings of 2026-11-13 (AskUserQuestion, labels verbatim; provisional numbers 30–32, in `STATE_S7.txt`)
+## The Overtoad's rulings of 2026-11-13 (AskUserQuestion, labels verbatim; provisional numbers 30–32, in `STATE_S7.txt`)
 
 - Opening message: "merge approval granted". It is per session and does not carry.
 - Agent load: "2-3 Fable agents (Recommended)".
@@ -55,19 +55,19 @@ Run the Verification block, then read tmp/flood4/session7/STATE_S7.txt and tmp/f
 (binding on every agent; it names the four older briefs to read first).
 
 FIRST:
-(1) Ask the owner for THIS session's merge approval (a handoff cannot carry it).
-(2) Ask the owner which model subagents run on and how many at once. Session 7 ran at most three Fable agents at a
+(1) Ask the Overtoad for THIS session's merge approval (a handoff cannot carry it).
+(2) Ask the Overtoad which model subagents run on and how many at once. Session 7 ran at most three Fable agents at a
     time and the limit still returned after about 85 minutes; the three that finished used 477,640, 664,263 and
     642,144 tokens.
 (3) juniper-ml LANDINGS WERE HELD for the 0.11.5 cut from 03:10Z, and THE HOLD IS OVER: juniper-ml#2558, the release
     proposal of the R-OBS-SC-2 arc, merged at 10:08:14Z as 48b66130, and that arc's session cut the v0.11.5 Release
-    on that commit at 10:24:18Z (the PyPI gate is the owner's). #2558 moved every unreleased CHANGELOG entry under
+    on that commit at 10:24:18Z (the PyPI gate is the Overtoad's). #2558 moved every unreleased CHANGELOG entry under
     "## [0.11.5] - 2026-11-13". Nothing of this arc is in 0.11.5: every CHANGELOG entry of ours goes under the
     now-empty "## [Unreleased]", never inside "## [0.11.5]". Read the headings above each entry after every rebuild.
 (4) Session 7's agents cannot be messaged from a new session. For each dead one: VERIFY ITS TREES FIRST, read what
     it left, then relaunch a FRESH agent with its brief plus the addendum, pointing at the partial work as leads.
 (5) Any run of juniper-ml's regression list from a tree that does not hold ae801a70 sets
-    DBUS_SESSION_BUS_ADDRESS=unix:path=/nonexistent/no-session-bus, or the owner gets a real "Backup FAILED" alert.
+    DBUS_SESSION_BUS_ADDRESS=unix:path=/nonexistent/no-session-bus, or the Overtoad gets a real "Backup FAILED" alert.
 
 1. juniper-data's unrun tests (ruling 25): NOT held. Carrier worktrees/juniper-data--test--run-the-unrun-tests--
    20261112-1815--c68e6b4c (14 of 14 files at their recorded sha256 at 10:26Z). Its validator (brief
@@ -99,7 +99,7 @@ FIRST:
    util/claude_agent_guard.py (sha256 7b5ee677...; main's is 09c5db22...) and no new test: never install it or land
    from it without reading all of it. Scratch: its tmp/flood4-fix/r18-guard/ (DESIGN.md, PROGRESS.txt, probes/,
    logs/). PROGRESS.txt lists SEVEN further open spellings its probes report on main (N1-N7; nobody has reviewed
-   them). They are not ruled public: keep them out of every committed text until the owner says otherwise.
+   them). They are not ruled public: keep them out of every committed text until the Overtoad says otherwise.
 6. Ruling 10's six ports: tmp/flood4/session5/BRIEF_R10_PORT.txt; none started.
 7. New rulings, briefs written, nothing launched: tmp/flood4/session7/briefs/M_d14_resume_four_rules_shared_table.txt
    (rulings 30 and 31; two carriers, juniper-ml and juniper-cascor) and N_cascor_pause_check_then_act.txt (ruling 32:
@@ -122,7 +122,7 @@ FIRST:
 
 ---
 
-## For the owner
+## For the Overtoad
 
 - Reinstall the guard: `bash util/install_claude_agent_guard.bash --dry-run`, then `--apply`, from a checkout at `b6b843b6` or later (carried from session 6).
 - The guard builder's probes report seven more ways past the guard on main (item 5); nobody has reviewed them. Their spellings are only in that agent's scratch `PROGRESS.txt`.
@@ -130,7 +130,7 @@ FIRST:
 - Unruled: a back-port of the pilot's blocking-wiring pins to juniper-data's own test; whether `main-verify.yml` should hold all fifteen of ml-tests' new suites (it holds six).
 - Up to two "Backup FAILED" desktop alerts on 2026-11-13 (02:38Z, 02:42Z) came from this arc's ml-tests builder, before juniper-ml#2559 was known to it.
 
-## Orchestrator decisions taken in session 7 (the owner may overrule)
+## Orchestrator decisions taken in session 7 (the Overtoad may overrule)
 
 - juniper-data#537 kept the two 120 s end-to-end tests session 6 had added; the helper-floor test was not renamed to the sibling services' name (the other arc was told); one CHANGELOG sentence gained the qualifier "For every window a float holds exactly," because the carrier's own test reaches a remainder of 0.0. `juniper_data/api/security.py`'s docstring and comment say it without the qualifier.
 - The hold on juniper-ml landings (Goal, FIRST 3), set at 03:10Z; the R-OBS-SC-2 arc's session confirmed it at 10:10Z, and it ended with the v0.11.5 Release at 10:24:18Z.
@@ -168,9 +168,9 @@ sha256sum /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/
 
 `util/ad-hoc/2026-11-13_flood4r2_s7_handoff_check.py` re-derived its checkable claims from their sources at 10:29Z: 69 of 69 passed (log: `tmp/flood4/session7/handoff_check.log`).
 
-It reads GitHub for every pull request, issue, release and count named here; the disk for every path and sha256, running the two carriers' own verify commands; the agents' report files for each figure quoted from them; and session 7's transcript for the owner's answers, the agents' token counts and the other arc's statements. An earlier run caught the v0.11.5 Release appearing while this file still called the landings held.
+It reads GitHub for every pull request, issue, release and count named here; the disk for every path and sha256, running the two carriers' own verify commands; the agents' report files for each figure quoted from them; and session 7's transcript for the Overtoad's answers, the agents' token counts and the other arc's statements. An earlier run caught the v0.11.5 Release appearing while this file still called the landings held.
 
-**Not checked**: no second agent read this file (the owner asked to keep token use down). An agent's result is quoted from its report, not re-run. The three dead agents' partial work is unreviewed.
+**Not checked**: no second agent read this file (the Overtoad asked to keep token use down). An agent's result is quoted from its report, not re-run. The three dead agents' partial work is unreviewed.
 
 ## Documents created or modified in session 7
 

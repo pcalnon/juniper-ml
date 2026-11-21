@@ -87,7 +87,7 @@ backlog, not an interrupted task.
    cannot move a rate already at 100%, and §14 argues an index row buys little for the
    source-recovered four. **Resolve this before spending another 35-run cycle**: either
    (a) register NEW policy probes with headroom to move, or (b) accept the measurable
-   question is settled and take the owner decision on re-scoring source-recovery instead.
+   question is settled and take the Overtoad decision on re-scoring source-recovery instead.
    Operating procedure is ledger **§7**, not §14 — hand the probe's `task` to a fresh
    session and **never mention the soak, the fact, or the pointer**; priming is what
    invalidated an entire arm. `severity`/`area` come from the frozen registry and cannot
@@ -120,7 +120,7 @@ backlog, not an interrupted task.
      A trimmed worktree over an untrimmed ancestor is the **worst** case — loaded context
      goes **UP**, not down.
    - Measured sizes: canopy **93,151**, cascor **68,224**. Re-measure; do not transcribe.
-5. **`MEMORY.md` forward-only cap (owner decision #4) never shipped.** Decided design is
+5. **`MEMORY.md` forward-only cap (Overtoad decision #4) never shipped.** Decided design is
    **120 bytes on NEW entries only; existing rows are not rewritten** (correction C7).
    Eviction shipped and bought only **+9 days**; rows cluster at 173–215 chars against a
    146.7 mean, so compression cannot close the gap — it needs **recurring** curation via
@@ -131,9 +131,9 @@ backlog, not an interrupted task.
    outside every repo, so no CI job can reach it. Pick a `util/` linter, a local hook, or
    documented discipline before writing code. Hard rule: **detail may be demoted;
    STATUS may not.**
-6. **Parent `Juniper/AGENTS.md`** — deferred by the owner 2026-08-20. Additive to every
+6. **Parent `Juniper/AGENTS.md`** — deferred by the Overtoad 2026-08-20. Additive to every
    session in all 9 repos, in a directory that is not a git repo.
-7. **Worktree settings asymmetry (owner decision #9, "yes, separately") — untouched.**
+7. **Worktree settings asymmetry (Overtoad decision #9, "yes, separately") — untouched.**
    The primary checkout's `.claude/settings.local.json` is gitignored, so worktree
    sessions run without settings main-checkout sessions get. Plan §7.5: any `.claude/`
    destination is **outside the docs content-loss screen entirely**.
@@ -174,7 +174,7 @@ backlog, not an interrupted task.
   **`soak_ledger.py status` exits 1 because of them, by design, and its own output
   suggests `soak_ledger.py resolve` — do NOT run that.** The discharge is irreversible in
   an append-only ledger. Whether to re-score source-recovery as its own outcome is an
-  **owner decision**. Note the instrument prints **rung 2 before rung 1**: rung 2 is
+  **Overtoad decision**. Note the instrument prints **rung 2 before rung 1**: rung 2 is
   neither taken nor closed, and rung 1 must not be allowed to imply it was settled.
 - **The soak's real finding is not the rate.** All 35 answers were correct **as
   re-adjudicated in §14** (§12 still records P15 as wrong; §14 explains its discriminator
@@ -203,8 +203,8 @@ backlog, not an interrupted task.
   policy choice, not a system wall.
 - **Set the `AGENTS.md` `**Last Updated**:` header to today's UTC date** — the check bites
   any PR authored after ~19:00 CDT.
-- **Worktree convergence: owner said LEAVE IT** (2026-08-20). **Proposal A's Skills stay
-  deferred** (owner decision #7) — revisited only on a *real* pointer-follow problem;
+- **Worktree convergence: Overtoad said LEAVE IT** (2026-08-20). **Proposal A's Skills stay
+  deferred** (Overtoad decision #7) — revisited only on a *real* pointer-follow problem;
   INCONCLUSIVE is not that signal. Do not re-propose either.
 - **Never pipe an exit-code-significant command through `tail`/`head`** — you get the
   pager's status. I did it; so did one validator. Use `set -o pipefail` or run unpiped.

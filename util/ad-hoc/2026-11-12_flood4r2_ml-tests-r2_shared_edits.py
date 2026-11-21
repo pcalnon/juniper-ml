@@ -20,7 +20,7 @@ nothing is written when any anchor is missing):
   AGENTS.md
     - the suite count in the "Run all tests" comment, and **Last Updated** set to <date>.
   .github/workflows/ci.yml
-    - HOST_TOOLING_SUITES gains the eight agent-guard suites that were not in it (the owner's ruling of
+    - HOST_TOOLING_SUITES gains the eight agent-guard suites that were not in it (the Overtoad's ruling of
       2026-11-12), with a comment in the job's env block and banner, and the regression step's comment on the
       gate follows.
 
@@ -32,7 +32,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier, round 2 of its build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-09_flood4r2_ml-tests_shared_edits.py (round 1's, which typed its numbers)
 """
 
@@ -86,13 +86,13 @@ TREE_NEW = (
 )
 GATE_ENTRY_OLD = "H4's `tests/test_mcp_setup.py` made the list twelve."
 GATE_ENTRY_NEW = (
-    GATE_ENTRY_OLD + " The agent guard's {added} other suites made it {total} (the owner's ruling of 2026-11-12): `util/claude_agent_guard.py` is the hook the macOS host runs, "
+    GATE_ENTRY_OLD + " The agent guard's {added} other suites made it {total} (the Overtoad's ruling of 2026-11-12): `util/claude_agent_guard.py` is the hook the macOS host runs, "
     "so every `tests/test_claude_agent_guard*.py` on disk must be in the list, and the gate compares the two."
 )
 JOB_ITEM_OLD = "with its own `!= success` arm, never as a separate ruleset context. Gate: `tests/test_ci_host_tooling_macos.py`."
 JOB_ITEM_NEW = (
     "with its own `!= success` arm, never as a separate ruleset context. The list holds every agent-guard suite (`tests/test_claude_agent_guard*.py`, {on_disk} files) beside the turing suites, "
-    "by the owner's ruling of 2026-11-12; the {added} beside `tests/test_claude_agent_guard.py` start no shell, and run here because the guard is the hook the macOS host runs. Gate: `tests/test_ci_host_tooling_macos.py`."
+    "by the Overtoad's ruling of 2026-11-12; the {added} beside `tests/test_claude_agent_guard.py` start no shell, and run here because the guard is the hook the macOS host runs. Gate: `tests/test_ci_host_tooling_macos.py`."
 )
 TALLY_START = "The complete ordered list, generated from"
 TALLY_TAIL = ". The drift script above counts, so re-run it rather than trusting this figure."
@@ -101,13 +101,13 @@ CI_LIST_OLD = "        juniper_clone find_encryption_readme_notes macvm_ctl clau
 CI_LIST_NEW = CI_LIST_OLD + "        " + " ".join(GUARD_SUITES[:3]) + "\n        " + " ".join(GUARD_SUITES[3:]) + "\n"
 CI_ENV_OLD = "      # tests/redacted_env.py and this workflow always count. G1's check suite pins the conf/hosts/turing/\n      # files listed here against each other.\n"
 CI_ENV_NEW = (
-    CI_ENV_OLD + "      # Every tests/test_claude_agent_guard*.py is listed (the owner's ruling of 2026-11-12), and\n"
+    CI_ENV_OLD + "      # Every tests/test_claude_agent_guard*.py is listed (the Overtoad's ruling of 2026-11-12), and\n"
     "      # tests/test_ci_host_tooling_macos.py compares the list with the files on disk.\n"
 )
 CI_BANNER_OLD = "  # is not turing's Intel /usr/local, so a green run also shows the scripts are prefix-independent.\n"
 CI_BANNER_NEW = (
     CI_BANNER_OLD + "  # The agent guard's other suites are the exception: they start no shell, and run here because the\n"
-    "  # guard is the hook the macOS host runs (the owner's ruling of 2026-11-12).\n"
+    "  # guard is the hook the macOS host runs (the Overtoad's ruling of 2026-11-12).\n"
 )
 CI_GATE_OLD = "          # the suite list equal to the turing host-tooling set, /bin/bash 3.x and a non-/usr/local brew\n"
 CI_GATE_NEW = "          # the suite list equal to the host-tooling set (the turing suites and every agent-guard suite on disk), /bin/bash 3.x and a non-/usr/local brew\n"

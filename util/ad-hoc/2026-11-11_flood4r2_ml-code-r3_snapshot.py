@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3: the manifest's file list and restore points)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tmp/flood4r2/ml-code/r3/manifest.json (its "files"); the move of the worktree from one origin/main to the
          next during the build (``save`` before, ``check`` after: the carrier's files must not have changed).
 

@@ -4,7 +4,7 @@
 **Sub-Project**: CLI test / validation / experimentation program (plan §10.5, P4)
 **Author**: Paul Calnon
 **Date**: 2026-08-09
-**Status**: EXECUTED — all nine §10.5 studies complete (55/55 cells terminal-succeeded); headline finding **F-P4-1** (service-path spiral training) raised to owner
+**Status**: EXECUTED — all nine §10.5 studies complete (55/55 cells terminal-succeeded); headline finding **F-P4-1** (service-path spiral training) raised to Overtoad
 **Plan of record**: [JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md](JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) §10.5
 **Operator runbook**: [REFERENCE — P4 Campaign Suites](../docs/REFERENCE.md#p4-campaign-suites) (current 19-YAML catalog; this note's 55-cell / nine-file census is the 2026-08-09 E-A…E-H pass)
 **Prior evidence**: [P0](JUNIPER_2026-07-30_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P0-PREFLIGHT-EVIDENCE.md) · [P1](JUNIPER_2026-08-07_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P1-SMOKE-EVIDENCE.md) · [P2](JUNIPER_2026-08-08_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P2-DATASET-MATRIX-EVIDENCE.md) · [P3](JUNIPER_2026-08-08_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P3-ACCEPTANCE-ROLLUP.md)
@@ -458,7 +458,7 @@ What this resolves and what it does not:
   accuracy gains in §3 sit across the same multi-commit span. Attribution would need the control
   arm this finding named from the start (the same grid at a single intermediate commit under
   equal conditions), which was neither scheduled nor budgeted.
-- ~~**Open, owner decision**: E-C's spiral rows are `max_iterations`-bound at 12 units under the
+- ~~**Open, Overtoad decision**: E-C's spiral rows are `max_iterations`-bound at 12 units under the
   inherited `spiral-baseline` budget (§3), so a spiral noise-robustness curve still needs an
   E-I-class `max_iterations` (≥ 64) on those four cells.~~ **CLOSED 2026-08-29 by
   [F-P4-7](#f-p4-7--e-c-re-measured-at-cap-64-the-flat-spiral-curve-was-the-cap-the-noise-0-dip-is-not-mainly-capacity).**
@@ -476,7 +476,7 @@ until 12:30 — so completion obligations to peers must be discharged by whichev
 awake, and the ledger's terminal line is the authoritative signal, not the announcement.
 
 
-### F-P4-1 — the cascor SERVICE path does not train spiral (study-blocking for spiral surfaces; raised to owner)
+### F-P4-1 — the cascor SERVICE path does not train spiral (study-blocking for spiral surfaces; raised to Overtoad)
 
 At **every budget tested** — the smoke block (E-B/E-C/E-H control cells) and the full baseline block (`max_epochs 2000 × max_iterations 12 × max_hidden_units ≤32`, patience 200; all 12 E-A cells) — a service-mode spiral run completes in 30–50 s with `train_accuracy ≈ 0.505` (chance), **0–1 hidden units recruited**, and `metrics_final` reporting epoch ≈ 2.
 Retroactively, **P1.1's certified reference run shows the identical signature** (0.505 / f1 0.505 / roc_auc 0.59 / 1 unit / epoch 2) — P1–P3 validated mechanics (exit codes, plots, artifacts, parity), and P4's studies are the first to measure spiral learning on this path.
@@ -528,7 +528,7 @@ Post-campaign attest: both experiment port ranges empty, zero port lockdirs, zer
 
 P0–P3 ✓ · Wave 4 ✓ · Wave 5 ✓ · Wave 6 ✓ · Wave 7 ✓ · **P4 ✓ (this document)**.
 The §10.5 outputs now exist for all nine studies.
-Raised to owner from this phase: **F-P4-1** (service-path spiral training termination — the priority follow-up; blocks meaningful E-A/E-B/E-C spiral surfaces and re-frames the P1.1 reference).
+Raised to Overtoad from this phase: **F-P4-1** (service-path spiral training termination — the priority follow-up; blocks meaningful E-A/E-B/E-C spiral surfaces and re-frames the P1.1 reference).
 Remaining program items: W-12/Q-7 (csv_import corpus — parked), Q-6 (log-dir override; would retire the one-cascor-per-checkout rule and unlock cascor-parallel suites), F-P1-2 (Grafana render — context package in P3), PF threshold ratification (§12), and the §12 perf lane proper (F-P1-3b profiling) — for which the PF suites and the E-B difficulty ranking are now standing inputs.
 
 > **Update (2026-08-15) — register refresh.** Two entries above have moved:
@@ -539,7 +539,7 @@ Remaining program items: W-12/Q-7 (csv_import corpus — parked), Q-6 (log-dir o
 >   other generator
 >   ([F-P4-1 root cause](JUNIPER_2026-08-10_JUNIPER-ECOSYSTEM_F-P4-1-SERVICE-SPIRAL-ROOT-CAUSE.md);
 >   fidelity fix cascor#504 merged, candidate-param plumbing gap cascor#505 closed).
->   Its "raised to owner / priority follow-up" framing above is therefore spent, and the claim it
+>   Its "raised to Overtoad / priority follow-up" framing above is therefore spent, and the claim it
 >   rested on — that the service tier is handicapped — is **false**, confirmed three independent ways
 >   (ml#1093, E-I, and the
 >   [head-to-head](JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-HEAD-TO-HEAD-SMOKE-EVIDENCE.md)).

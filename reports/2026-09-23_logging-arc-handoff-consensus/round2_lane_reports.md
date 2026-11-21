@@ -127,7 +127,7 @@ Documents, cited by filename at f93c347f:
   - #681 merged at 2026-09-23T06:15:08Z, about two minutes after the freeze commit (06:12:53Z). The condition is now met.
   - B2 reported that nothing tests `_display_training_progress` per level: "still true after #670 … P1.5 … drives only `_multi_output_correlation` and `_get_correlations`" (round1_lane_reports.md:1132).
   - cascor#679 is open and describes itself as "the level system (roadmap Phase 1's territory)".
-- **Fix:** say the P1.4 fix half landed with #681. State that the #670 sites' per-level gap and #679 keep "complete" open until the owner rules on them.
+- **Fix:** say the P1.4 fix half landed with #681. State that the #670 sites' per-level gap and #679 keep "complete" open until the Overtoad rules on them.
 
 **6. P2's Acceptance line contradicts the measurement correction, and a reader meets it first.** Severity: changes-an-action.
 - **Where:** …ROADMAP.md:372–373, "a re-measured delta against P0.1's corpus". The contradicting correction is at :729–730: "never as a delta against this corpus".
@@ -166,7 +166,7 @@ Documents, cited by filename at f93c347f:
 **12. Residue: P6.4 shipped ahead of its gates, and nothing records it.** Severity: changes-a-disposition.
 - **Where:** B2's "drops P6's gate on P0.4 and P2, even though #675 already shipped P6.4 ahead of that gate" (round1_lane_reports.md:1235) is absent from §8.1 and from the decision-6 UPDATE (…ROADMAP.md:792–799).
 - **Evidence:** P6.4 depends on P6.2 (:591), and P6 gates on P0.4, P1 and P2 (:69).
-- **Fix:** record the owner's hot-files ruling as the waiver.
+- **Fix:** record the Overtoad's hot-files ruling as the waiver.
 
 **13. Residue: the decision-5 stubs correction was never applied to the roadmap.** Severity: changes-a-number.
 - **Where:** …ROADMAP.md:771–773 still says "Measured faster than the status quo on every call site — 1,079 bound sites 55–77 ns …".

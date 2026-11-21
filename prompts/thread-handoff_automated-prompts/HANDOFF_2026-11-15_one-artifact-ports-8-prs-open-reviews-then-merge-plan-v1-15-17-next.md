@@ -6,7 +6,7 @@
 
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-15_r-obs-sc-2-cascor-one-artifact-landed-ports-plan-v1-15-17-next.md` (juniper-ml#2591).
 
-**Merge approval**: at this session's start the owner wrote "merge approval granted", with "continue work arc from
+**Merge approval**: at this session's start the Overtoad wrote "merge approval granted", with "continue work arc from
 handoff: …". That approval is per-session and does not carry over. Ask again, naming the PRs below.
 
 **Still running in session `08ef3e` at writing** (it may push to the PRs below after this handoff):
@@ -91,7 +91,7 @@ ml#2593 carries `Allow-Symbol-Loss:`. Keep the default squash message, which `sa
 
 - task-executor agents get their OWN worktree (`.claude/worktrees/agent-<id>`). Write/Edit into this worktree is
   refused there, so they write through Bash and mirror their files here.
-- Housekeeping, on the owner's word: those agent worktrees (recurrence's is 234 MB). This worktree's `tmp/ports/` holds
+- Housekeeping, on the Overtoad's word: those agent worktrees (recurrence's is 234 MB). This worktree's `tmp/ports/` holds
   the clones, the verify copies and the review scratch (hundreds of MB). Keep it under the retention rule.
 - The Bash guard trips on "git" inside words and on backticks inside double quotes, which bash executes. Put any such
   text in files written with the Write tool.

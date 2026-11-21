@@ -4,7 +4,7 @@ Put the flood-4 "ml-tests" carrier's suites into main-verify.yml's Regression Ba
 
 main-verify.yml's battery (its `Run Python regression battery` step) is a hand-kept, PARTIAL mirror of ci.yml's
 regression list (the `Run Python regression tests` step). The workflow's SYNC NOTE asks for every suite ci.yml
-gains to be mirrored there in the same pull request, and no test compares the two lists. By the owner's ruling of
+gains to be mirrored there in the same pull request, and no test compares the two lists. By the Overtoad's ruling of
 2026-11-14 ("Add all fifteen"), every one of the carrier's fifteen suites goes into the battery, in ci.yml's order.
 
 The battery lines are written by the wiring tool, util/ad-hoc/2026-11-09_flood4r2_ml-tests_wire.py, from a spec
@@ -42,7 +42,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier, its session-8 fix-up)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-09_flood4r2_ml-tests_wire.py (writes the lines), util/ad-hoc/2026-11-14_flood4r2_ml-tests-r2_land.py (runs both)
 """
 

@@ -8,7 +8,7 @@
 
 **By priority**: P0=5 | P1=16 | P2=24 | P3=8
 
-**By owner**: ccl=13 | ml=13 | can=10 | dcl=8 | cas=4 | cwk=3 | dat=2
+**By Overtoad**: ccl=13 | ml=13 | can=10 | dcl=8 | cas=4 | cwk=3 | dat=2
 
 ---
 
@@ -172,7 +172,7 @@ exception hierarchy (7 exception classes), design patterns (context manager, cal
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents have no guidance on codebase structure / Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
+[v3 xrepo fuzzy merge: Overtoads=ccl,dcl, n=2] High severity: agents have no guidance on codebase structure / Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
 
 ### JR-CCL-DOC-006 — Add Directory Layout section to AGENTS.md documenting complete directory tree with annotations.
 
@@ -307,7 +307,7 @@ CHANGELOG.md, docs/ (4 files), scripts/ (2 files), notes/, .env.example, .pre-co
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents cannot orient themselves or find major code components / Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
+[v3 xrepo fuzzy merge: Overtoads=ccl,dcl, n=2] High severity: agents cannot orient themselves or find major code components / Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
 and juniper-canopy). Agents working on this codebase are unaware of its existence when omitted from AGENTS.md.
 Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2).
 
@@ -577,7 +577,7 @@ Additional tests: nested format unchanged since Phase H, flat format unchanged s
 Consumer audit document: `juniper-ml/notes/code-review/NORMALIZE_METRIC_CONSUMER_AUDIT_2026-04-XX.md` enumerates every consumer:
 frontend MetricsPanel, CandidateMetricsPanel, Prometheus `/api/metrics`, WebSocket drain, debug logger, test fixtures.
 CODEOWNERS: `juniper-canopy/src/backend/normalize_metric.py @<project-lead>` + `juniper-canopy/src/frontend/components/metrics_panel.py @<project-lead>`.
-`.github/CODEOWNERS` branch protection enforces owner review.
+`.github/CODEOWNERS` branch protection enforces Overtoad review.
 
 **Design**:
 
@@ -585,7 +585,7 @@ Single PR (P16). Test-only phase; refactoring deferred to follow-up (gated on au
 
 **Notes**:
 
-Entry: Phase B in main. Exit: regression tests pass, CODEOWNERS enforced (test via PR without owner review → must block),
+Entry: Phase B in main. Exit: regression tests pass, CODEOWNERS enforced (test via PR without Overtoad review → must block),
 consumer audit reviewed + merged. Rollback: revert P16 (10 min TTF); CODEOWNERS rule disappears.
 Note: Phase H is NOT a behavior-change gate; it's a documentation + regression-gate phase.
 

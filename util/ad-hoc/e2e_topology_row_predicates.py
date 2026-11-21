@@ -8,7 +8,7 @@ Created: 2026-09-04
 Status: ad-hoc — extracted so the three predicates that scored the easier
         half of an OR can be unit-tested without importing the Playwright
         driver (which `_load`s sibling drivers at module level).
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: F-CANOPY-042, F-CANOPY-046, ml#1672, M-TOPOLOGY-06, M-TOPOLOGY-07, M-TOPOLOGY-12
 
 ``util/ad-hoc/e2e_seg17_topology_driver.py`` is the caller. These functions

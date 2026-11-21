@@ -1,4 +1,4 @@
-# HANDOFF 2026-10-08 — backup arc: Phase B MERGED (ml#2199); B9 next; owner actions owed
+# HANDOFF 2026-10-08 — backup arc: Phase B MERGED (ml#2199); B9 next; Overtoad actions owed
 
 Session 097ae87b ("backup phase b round 3"), continuing `HANDOFF_2026-10-04_backup-phase-b-round3-fold-in-pending.md`.
 
@@ -22,7 +22,7 @@ Continue the backup arc with **B9** of A §6.2. Phase B is merged; B9 is its own
   - round 7: **0 / 0 / 7**.
 
   Every finding is fixed or recorded in A §8 as residue, by round and finding id.
-- **Owner ruling (R3B DEFECT-1).** Retention is suspended through recovery, in the job and in the server defaults (`BackupID` −1). It is restored after AC-4's first drill as `2W:1D,6M:1W,2Y:1M,5Y:2M`. That first pass deletes 5 of the 9 old dlists, 09-18 among them, so A0 cannot be re-run afterwards; the five are copied aside first. `keep-time` and `keep-versions` defaults are never restored.
+- **The Overtoad ruling (R3B DEFECT-1).** Retention is suspended through recovery, in the job and in the server defaults (`BackupID` −1). It is restored after AC-4's first drill as `2W:1D,6M:1W,2Y:1M,5Y:2M`. That first pass deletes 5 of the 9 old dlists, 09-18 among them, so A0 cannot be re-run afterwards; the five are copied aside first. `keep-time` and `keep-versions` defaults are never restored.
 - **Artifact versions:** wrapper 2.4.0, installer 1.5.1, re-key 1.3.0, gate 1.2.0, hand start 1.3.0, snapshot 1.2.0.
 - **Five new suites, 122 tests:**
   - `tests/test_duplicati_wrapper_contract.py` (53)
@@ -36,8 +36,8 @@ Continue the backup arc with **B9** of A §6.2. Phase B is merged; B9 is its own
 
 1. **B9, as its own PR**: a gitleaks content rule plus a pre-commit hook (A §6.2 row B9; read it first).
    - Go is at `/snap/bin/go`.
-   - The repo setting `secret_scanning_non_provider_patterns` is the owner's to change. Do not change it.
-2. **Owner actions.** These are not a session's to do; list them for the owner.
+   - The repo setting `secret_scanning_non_provider_patterns` is the Overtoad's to change. Do not change it.
+2. **The Overtoad actions.** These are not a session's to do; list them for the Overtoad.
    - **The watchdog deploy:** `bash util/ad-hoc/yamaguchi_watchdog_deploy.bash --backup-id 2`. Until it runs, every 12:00 check records `JOB_MISSING`.
    - **Before §8's install, check the option NAMES in `/etc/duplicati/env`.** An `--option` outside the wrapper's allow-list stops the installer.
    - **Expect one refusal.** The installer refuses `/etc/default/duplicati` as UNBLESSED; re-run it with `--update-backup-behavior`.
@@ -50,7 +50,7 @@ Continue the backup arc with **B9** of A §6.2. Phase B is merged; B9 is its own
 - **`util/ad-hoc/2026-10-04_save_subagent_report.py` saves an agent's LAST message.** That can be a one-line wait-loop notice. Use `util/ad-hoc/2026-10-08_save_subagent_report_by_heading.py`.
 - **Simulate CI's missing mount with a `mountpoint` PATH stub.** Do not edit the wrapper's default: a test pins it on purpose.
 - **Signed commits:** `util/open_signed_pr.py`, or `util/ad-hoc/2026-09-23_open_signed_pr_from_file_list.py` for a file list, and `util/push_signed_commit.py` for a follow-up commit (full 40-character `--expected-head`). Rebase a local WIP with `-c commit.gpgsign=false`.
-- The sibling worktree `sorted-stargazing-garden` is no longer needed for Phase B. It still holds round 3's untracked drafts; the owner decides whether to sweep it.
+- The sibling worktree `sorted-stargazing-garden` is no longer needed for Phase B. It still holds round 3's untracked drafts; the Overtoad decides whether to sweep it.
 - **Bundles:**
   - `Juniper/backups/juniper-ml_feature-backup-phase-b_2026-10-08.bundle` (this session's local branch);
   - `…_wip-backup-phase-b_c3d0e890_2026-10-05.bundle` (the frozen round-3 commit).

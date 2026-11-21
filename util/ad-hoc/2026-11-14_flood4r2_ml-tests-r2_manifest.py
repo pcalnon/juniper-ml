@@ -23,7 +23,7 @@ files the two builds wrote as they went (all under --scratch):
   derived, checks, open_questions, if_main_moves      derived.json and the *_input.json files, as written.
 
 SESSION 8 (this version; util/ad-hoc/2026-11-12_flood4r2_ml-tests-r2_manifest.py is the one it supersedes). The
-carrier moved to a new worktree (session 8 could not write in session 7's) and was changed there for the owner's
+carrier moved to a new worktree (session 8 could not write in session 7's) and was changed there for the Overtoad's
 ruling of 2026-11-14. Every path session 8 added or changed is declared in files_s8.json as
 {path: {"note": "...", "how": "<only for a shared file: re-derived>"}}: it gets `how` = session-8 (copied or
 merged three-way at a landing) unless the declaration says re-derived (left at main's copy for the tools). Any
@@ -50,7 +50,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
 Status: ad-hoc — one-off (flood-4 round-2 ml-tests carrier, its session-8 fix-up)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-12_flood4r2_ml-tests-r2_manifest.py (the version it supersedes)
 """
 

@@ -25,7 +25,7 @@ It also:
 
 The image's `requirements.lock` pins juniper-data-client **0.6.0** (juniper-canopy#750), so canopy's advisory second check on generator loads runs the W1.4 `validate_npz_contract`.
 
-The owner rated this release **High**: two of the exposures handed a real key to a caller or to the logs once a key was mis-set.
+The Overtoad rated this release **High**: two of the exposures handed a real key to a caller or to the logs once a key was mis-set.
 
 ---
 
@@ -168,7 +168,7 @@ The owner rated this release **High**: two of the exposures handed a real key to
   - `src/tests/regression/test_selection_reachability_guardrails.py` gains **G7**, asserted through
     the real route and real backends as well as the registered callbacks. It also gains the **Y3**
     read-side guardrail, which the design's §5 table lacked. Mutation-checked at four sites.
-- **The dataset selector mounts at `⊥` instead of a seeded `spirals` (OQ-N2 / D-N13).** The owner
+- **The dataset selector mounts at `⊥` instead of a seeded `spirals` (OQ-N2 / D-N13).** The Overtoad
   accepted `⊥`-at-mount on 2026-09-02, on the condition that the hydration above land first
   (D-N10). With that in place, the first interaction is an explicit choice, and `⊥` appears only
   when it is true. What the mount lands on now depends on what the backend reports:
@@ -184,12 +184,12 @@ The owner rated this release **High**: two of the exposures handed a real key to
   - **demo mode** still lands on spirals, because the simulator holds spirals, not because of a
     seed.
   - The restart modal's dropdown loses its seed too (it was overwritten on every open anyway), and
-    its `enabled[0]` fallback is recorded in code as a deliberate exception to OQ-6 (owner ruling,
+    its `enabled[0]` fallback is recorded in code as a deliberate exception to OQ-6 (Overtoad ruling,
     2026-09-22).
   - Mutation-checked: re-seeding the layout, dropping the unknown fallback, a failed read writing
     `None`, and suppressing the unnameable notice each fail a test.
 - **Generator loads run `juniper_data_client.validate_npz_contract` as an ADVISORY second check**
-  (#559; owner ruling 2026-09-22). `regenerate_dataset_from_generator` now hands every downloaded
+  (#559; Overtoad ruling 2026-09-22). `regenerate_dataset_from_generator` now hands every downloaded
   artifact to the shared contract validator before its own rank probe dispatches it. For a 3-D
   artifact the validator checks sequence rules canopy's install never did: that a `t` / `dt`
   channel is present, that `dt >= 0` with `dt[:, 0] == 0`, that `t` and `dt` agree, and that
@@ -353,7 +353,7 @@ The owner rated this release **High**: two of the exposures handed a real key to
   generator declares. A preview above Start shows the request (W1.2; plan findings F-C2, F-C3).** The
   plan is juniper-ml's
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`
-  (v1.4.1). **Owner ruling R7 is still open.** This applies its recommended default pending the
+  (v1.4.1). **The Overtoad ruling R7 is still open.** This applies its recommended default pending the
   ruling, as the wave-1 PRs did for R2, R3 and R8. The alternatives touch one function,
   `backend/recurrence_request.shape_staged_ref`.
   - **F-C2.** The schema-driven form renders every field, and Apply posts every rendered value. An
@@ -589,7 +589,7 @@ The owner rated this release **High**: two of the exposures handed a real key to
     the banner the alert points at was gone.
 - **The restart modal called Start fresh "functionally a clean stack launch" (F2).** Since
   juniper-cascor#685, a start-fresh carries the applied parameters onto the rebuilt network, so
-  the parameters edited in the modal survive it (owner ruling 2026-09-24). A clean launch would
+  the parameters edited in the modal survive it (Overtoad ruling 2026-09-24). A clean launch would
   have reset them to the engine defaults.
   - The toggle label and both help texts now say the parameters carry over.
   - Against a cascor older than #685 the edits are still dropped, and the text is then wrong.
@@ -601,7 +601,7 @@ The owner rated this release **High**: two of the exposures handed a real key to
   exactly like `True`. So the first-paint seed read *"Active: CasCor"* before any read. A mount
   whose `GET /api/selection` failed kept that text too, so the "Active" claim came from the one
   path that had just failed to reach the backend.
-  - Following the owner's ruling of 2026-09-24, an unknown liveness now reads **"Selected: CasCor
+  - Following the Overtoad's ruling of 2026-09-24, an unknown liveness now reads **"Selected: CasCor
     (Cascade-Correlation) · backend status unknown"**. "Active" requires a round-tripped payload
     whose backend serves the model. A lifecycle note such as `· coming soon` still comes first.
   - The failed-read path now writes that text instead of leaving the summary alone, so the summary
@@ -911,7 +911,7 @@ The owner rated this release **High**: two of the exposures handed a real key to
   `model_registry.py` said seed order "decides which dataset the operator lands on when they pick
   Recurrence". Since canopy#652 the sidebar gate clears a stranded dataset to `⊥` instead. Order
   still decides two things: the order the dropdown offers, and the restart modal's fallback, which
-  keeps its `enabled[0]` swap by owner ruling. The registry comment and six test comments and
+  keeps its `enabled[0]` swap by Overtoad ruling. The registry comment and six test comments and
   docstrings now say that, rather than that order no longer matters.
 - **G11 was enforced by listing names, and the constant it cited did not exist.** The registry
   pointed at `UNBOUNDED_IMPORT_GENERATORS`, which occurred nowhere else in the repository, and no
@@ -981,7 +981,7 @@ The owner rated this release **High**: two of the exposures handed a real key to
   consistency with the sibling services. The lock was regenerated with `--upgrade-package` for the
   two packages only (60 pins; the freshness gate's constraint-mode resolution reproduces them).
   `pyproject.toml` now floors both as well, at `juniper-observability>=0.4.1` and
-  `juniper-service-core>=0.7.1` (owner-approved), so an install of canopy 0.9.0 cannot resolve the
+  `juniper-service-core>=0.7.1` (Overtoad-approved), so an install of canopy 0.9.0 cannot resolve the
   unpatched releases. The boot-time `enforce_dependency_floors` reads the **installed** metadata,
   so an existing editable install keeps booting until it is reinstalled; the reinstall upgrades it.
 - **`APIKeyAuth` now carries the blank-key filter and the non-short-circuiting compare that its
@@ -1107,7 +1107,7 @@ The owner rated this release **High**: two of the exposures handed a real key to
       `secrets_util.resolve_secret_detail`. The `get_secret` test now asserts literal values.
 - **Outbound keys are checked where they are read, and no transport error or compare frame can leak a
   secret (#683 validation).** The independent validation of juniper-canopy#683 found two HIGH secret
-  exposures and two LOW gaps. The owner ruled on 2026-09-24: "Fix everywhere now".
+  exposures and two LOW gaps. The Overtoad ruled on 2026-09-24: "Fix everywhere now".
   - **A padded outbound key leaked, to an anonymous caller.** canopy sends three keys as `X-API-Key`:
     juniper-cascor's (`JUNIPER_CASCOR_API_KEY`, falling back to `JUNIPER_DATA_API_KEY`), juniper-data's
     (`JUNIPER_CANOPY_JUNIPER_DATA_API_KEY`, then `JUNIPER_DATA_API_KEY`) and the recurrence service's. All

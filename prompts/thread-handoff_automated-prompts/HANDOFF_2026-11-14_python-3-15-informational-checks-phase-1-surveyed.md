@@ -5,7 +5,7 @@
 juniper-ml#2548 for the backup arc; that arc has its own handoff,
 `HANDOFF_2026-11-14_backup-phase-d-tools-merged-sitting-resumes-at-c1.md`). **No repository has been changed for this arc.**
 
-## The owner's request (2026-11-14, verbatim)
+## The Overtoad's request (2026-11-14, verbatim)
 
 > default python upgrade has been deferred for now due to the issues that occurred.
 > as a first step towards the python 3.15 migration, let's add python3.15 to the list of tested python versions in local
@@ -21,7 +21,7 @@ juniper-ml#2548 for the backup arc; that arc has its own handoff,
 
 Phase 1 of 4: Python 3.15 runs in every repo's CI test matrix and in local test infrastructure, and its results are
 visible but block nothing: no commit (never in pre-commit hooks), no merge (no gate `needs:` it, no ruleset requires it),
-no deployment (no publish or release path waits on it). Phases 2-4 are the owner's sequence above; do not start them.
+no deployment (no publish or release path waits on it). Phases 2-4 are the Overtoad's sequence above; do not start them.
 
 ### Completed so far
 
@@ -32,7 +32,7 @@ no deployment (no publish or release path waits on it). Phases 2-4 are the owner
 - **3.15 on runners: available.** `actions/setup-python` is SHA-pinned to v7.1.0 in all 194 uses; the manifest marks
   3.15.0-3.15.2 `stable`, with linux x64 builds for 22.04, 24.04 and 26.04 (`ubuntu-latest` is 26.04). No `allow-prereleases`.
 - **3.15 on this host:** `/usr/bin/python3.15` 3.15.2 with `venv`/`ensurepip`. `/usr/bin/python3` must stay 3.14: the
-  owner's deferral followed the 2026-11-14 switch that broke the backup drills and `JuniperCascor1` (memory note
+  Overtoad's deferral followed the 2026-11-14 switch that broke the backup drills and `JuniperCascor1` (memory note
   `project_host_python3_switched_to_315_2026-11-14.md`). No conda env has 3.15.
 
 ### Key findings (details and file:line in the surveys)
@@ -80,7 +80,7 @@ no deployment (no publish or release path waits on it). Phases 2-4 are the owner
 
 ### Remaining work (phase 1)
 
-1. **Ask the owner first** (one batch): (a) local infrastructure: recommended, a juniper-ml helper plus a
+1. **Ask the Overtoad first** (one batch): (a) local infrastructure: recommended, a juniper-ml helper plus a
    `conf/python_versions.yaml` (blocking 3.12-3.14, informational 3.15) that builds one venv per repo from
    `/usr/bin/python3.15` at a fixed path in that repo's primary `tmp/`, runs the repo's existing wrapper, exits 0 unless
    `--strict`, and is never wired into pre-commit; (b) pre-commit on 3.15 now or later; (c) juniper-deploy and juniper-harcot
@@ -90,8 +90,8 @@ no deployment (no publish or release path waits on it). Phases 2-4 are the owner
 3. **Roll out** one PR per repo: a worktree under `Juniper/worktrees/` per the naming convention, branch
    `ci/python-3-15-informational`, signed commits (`util/open_signed_pr.py` / `util/push_signed_commit.py`). For juniper-ml,
    wire any new test into `ci.yml` and `docs/REFERENCE.md` and bump `AGENTS.md`'s count and Last Updated date.
-4. **Local helper** in juniper-ml, if the owner approves, with its own tests.
-5. **Merges**: only with the owner's approval given in that session, `util/safe_merge.py` per PR. Note: its local merge
+4. **Local helper** in juniper-ml, if the Overtoad approves, with its own tests.
+5. **Merges**: only with the Overtoad's approval given in that session, `util/safe_merge.py` per PR. Note: its local merge
    drops a curated squash body (memory note `reference_squash_body_excludes_merge_commits.md`).
 
 ## Verification commands (start of the next thread)

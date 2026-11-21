@@ -1,7 +1,7 @@
 # 2026-09-22 re-evaluation of the 09-11 ci-tools handoff — consensus lane reports
 
 This directory holds the lane reports of the consensus review of the 2026-09-22 status banner in
-`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`.
+`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`.
 The review ran under `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.
 
 **The record is that banner's section "Validation record for this banner"**: sizing, conduct,

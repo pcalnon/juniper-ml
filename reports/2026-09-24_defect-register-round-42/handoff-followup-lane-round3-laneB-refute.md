@@ -8,7 +8,7 @@ Documents:
 - **R2A** and **R2B** are `handoff-followup-lane-round2-laneA-reprobe.md` and `…-round2-laneB-refute.md`.
 - The **validation report** is `bytes-compare-ml2086-data440-cascor689-validation.md`.
 
-v3 fixes round 2's HIGH (who owns the release) and all of its MEDIUMs. I found one new MEDIUM, five LOWs (one is a round-1 regression) and four NITs. No owner-only action is left for the agent to take. I edited nothing, and `hvG/` is pruned.
+v3 fixes round 2's HIGH (who owns the release) and all of its MEDIUMs. I found one new MEDIUM, five LOWs (one is a round-1 regression) and four NITs. No Overtoad-only action is left for the agent to take. I edited nothing, and `hvG/` is pruned.
 
 ## Findings
 
@@ -60,18 +60,18 @@ v3 fixes round 2's HIGH (who owns the release) and all of its MEDIUMs. I found o
 - **L134, "It was asked (2026-09-24)":** the request went at 00:19:33Z on 09-25, and the register lane agreed at 00:21:47Z. Write "It agreed (00:21Z)".
 - **F9's "commit text" (L97, L106):** a signed single-parent fixup cannot rewrite #689's commit body, and the default squash body will quote it again. Aim F9 at the CHANGELOG and the PR body.
 - **Two things v2 had that v3 dropped:**
-  - "the owner's ruling" before "Keep while fetched splits stay" (L53);
+  - "the Overtoad's ruling" before "Keep while fetched splits stay" (L53);
   - the `ci.yml:287` reference (L92).
 
 ## Specific checks
 
 - **OPEN item 5 is correct.**
-  - Releases stay with the owner.
-  - Option (1) repeats the owner's own text. Option (2) is offered to the owner, not assumed.
+  - Releases stay with the Overtoad.
+  - Option (1) repeats the Overtoad's own text. Option (2) is offered to the Overtoad, not assumed.
   - The order is right: cap PRs before the Release, lock and floor PRs after the wheel is on PyPI. That matches `feedback_semver_beats_consumer_cap_2026-09-05.md` lines 25-30.
   - A grep for `releas|bump|floor|cap` finds no release work left to this lane.
 - **The governance rule can be followed**, apart from LOW-2.
-- **The owner gates are consistent** at L26, L115, L122, L169, L173 and L186.
+- **The Overtoad gates are consistent** at L26, L115, L122, L169, L173 and L186.
 - **F3, F5 and F9 are routed as the F-table says:**
   - juniper-ml: service-core's F3, F5 and F9;
   - cascor#689: F3, F5 and F9;
@@ -86,7 +86,7 @@ v3 fixes round 2's HIGH (who owns the release) and all of its MEDIUMs. I found o
 
 ## Actionability and length
 
-- A successor following v3 would not take any owner-only action. The remaining risks are MEDIUM-1 and LOW-3.
+- A successor following v3 would not take any Overtoad-only action. The remaining risks are MEDIUM-1 and LOW-3.
 - **The goal is easy to find:** the title, Step 0, `## Goal`, and "OPEN … in order".
 - **The goal is long, and no reason is given.** Step 0 through OPEN is **1,755 words**, against a target of about 1,200; the same span in v2 was 1,645. The whole file is 3,140 words. R2B suggested cuts, and v3 made none.
 - **Safe cuts, about 350 words in all:**
@@ -114,7 +114,7 @@ v3 fixes round 2's HIGH (who owns the release) and all of its MEDIUMs. I found o
 | R2B 4 (cap order) | 114 | ✓ |
 | R2B 6 (gate comment) | 134 | ✓ (NIT) |
 | R2B 7 (which handoff governs) | 7, 9-11, 22-25 | ◐ LOW-2 |
-| R2B 8 (owner gate on cleanup) | 169, 186 | ✓ |
+| R2B 8 (Overtoad gate on cleanup) | 169, 186 | ✓ |
 | R2B 9 (git status) | 201-206 | ✓, then drifted (LOW-3) |
 | R2B NITs (sweeper commits / `--head` / spy marking) | 30 / 192 / 92 | ✓ / ✓ / ◐ LOW-4 |
 | R2B dropped items (APD-CASCOR-014, refusals, bytes-compare implementation report) | 130, 160-161, 86 | ✓ |

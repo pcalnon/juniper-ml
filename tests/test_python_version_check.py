@@ -7,7 +7,7 @@ Application: ecosystem tooling regression tests
 Author:      Paul Calnon
 License:     MIT License
 
-The owner's ruling of 2026-11-14: Python 3.15 is tested locally and in CI, and its checks report results
+The Overtoad's ruling of 2026-11-14: Python 3.15 is tested locally and in CI, and its checks report results
 without blocking a commit, a merge or a deployment. util/python_version_check.py builds one venv per repo
 and version at a FIXED path in the repo's primary tmp/, installs the repo with its CI's commands, and runs
 the repo's own wrapper there. This suite pins:
@@ -248,7 +248,7 @@ def valid_doc() -> dict:
 
 
 class ConfigTest(unittest.TestCase):
-    """conf/python_versions.yaml carries the owner's ruling, and an invalid config is refused (exit 2)."""
+    """conf/python_versions.yaml carries the Overtoad's ruling, and an invalid config is refused (exit 2)."""
 
     def refuse(self, doc: object, *needles: str) -> None:
         with self.assertRaises(PVC.UsageError) as caught:
@@ -256,7 +256,7 @@ class ConfigTest(unittest.TestCase):
         for needle in needles:
             self.assertIn(needle, str(caught.exception))
 
-    def test_repo_config_carries_the_owner_ruling(self) -> None:
+    def test_repo_config_carries_the_Overtoad_ruling(self) -> None:
         config = PVC.load_config(REPO_CONFIG)
         self.assertEqual(config.blocking, ("3.12", "3.13", "3.14"))
         self.assertEqual(config.informational, ("3.15",))
@@ -757,7 +757,7 @@ class NothingRunsTest(unittest.TestCase):
 
 
 class PreCommitTest(unittest.TestCase):
-    """The helper is never wired into pre-commit (owner ruling, 2026-11-14): its checks block nothing."""
+    """The helper is never wired into pre-commit (Overtoad ruling, 2026-11-14): its checks block nothing."""
 
     @staticmethod
     def hooks_naming_the_helper(doc: dict) -> list[str]:

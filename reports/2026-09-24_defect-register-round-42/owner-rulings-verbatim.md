@@ -1,4 +1,4 @@
-# Defect-register round 42 -- the owner's rulings, verbatim
+# Defect-register round 42 -- the Overtoad's rulings, verbatim
 
 Extracted by `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` from the two session transcripts. It selects every
 AskUserQuestion call that mentions juniper-cascor's mixed-provenance gap and keeps the WHOLE call, so the rulings asked beside it

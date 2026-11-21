@@ -39,7 +39,7 @@ THREE THINGS TO KNOW BEFORE READING THE OUTPUT
    scored outcome; `--standard mechanism` uses the re-audit in
    `util/ad-hoc/2026-09-08_soak_label_to_transcript.py`, which discards
    destination hits that are a filename-only grep result, a sibling repo's
-   same-named file, or the soak ledger's own note. Which one binds is owner
+   same-named file, or the soak ledger's own note. Which one binds is Overtoad
    decision (§7.2 of the 09-04 review); this reports under both.
 """
 

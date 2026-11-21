@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- investigation (local pre-push check for the Python 3.15 informational-leg change)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-14_py315_informational_edits.py (the change this checks);
          memory note reference_ci_merge_mechanics_hub.md (the CI step runs under ``bash -e`` and stops at the first
          failing suite, so its red says nothing about the suites after it)

@@ -56,7 +56,7 @@ Verbatim final reports of the four round-1 lanes that validated the Phase 9 sect
 4. **The host-load figure does have a raw artifact.** Transcript `259b4d16` holds the `uptime` outputs: "load average: 7.89…" at 19:30:31Z and "13.10…" at 19:40:52Z, plus `clamscan` in the second result. The figure is traceable to a raw transcript, though no committed artifact holds it.
 5. **G8, minor.** Phase 8 item 2's second half ("drive F-CANOPY-025's allow arm") is not restated in item 0 for the second fix. It survives only through "Matrix effect": "stays open with F-CANOPY-055".
 
-**SECRETS/PII:** One slip. When I dumped `autoMergeRequest` for G1, the tool output included its `authorEmail` field, the owner's commit email address. It was not sent anywhere and is not repeated here. No tokens, environment variables or credential files were printed. The transcript greps printed only file names and bounded command substrings.
+**SECRETS/PII:** One slip. When I dumped `autoMergeRequest` for G1, the tool output included its `authorEmail` field, the Overtoad's commit email address. It was not sent anywhere and is not repeated here. No tokens, environment variables or credential files were printed. The transcript greps printed only file names and bounded command substrings.
 
 ---
 
@@ -379,13 +379,13 @@ Files. `…E2E-VALIDATION-EVIDENCE.md` is `notes/JUNIPER_2026-08-09_JUNIPER-CANO
        - merged data-client#212 directly at 22:30:44Z, with no arm event.
      - #676's events interleave with that pass: ml#2032 ready/armed 22:27:20/27 → #676 ready 22:28:04 → update-branch `e581b821` 22:28:09 → arm 22:28:12 → canopy#678 merged 22:29:21 → #676's second update-branch 22:29:31, ten seconds after that merge moved canopy `main` → data#428 ready/armed 22:29:55/59.
      - #676 is the only one of these PRs where the update-branch fell between the ready and the arm. That is where its 8 s comes from.
-     - No draft PR is still open (`gh search prs --owner pcalnon --state open`).
+     - No draft PR is still open (`gh search prs --Overtoad pcalnon --state open`).
      - The three-PR list matches the "Third observation" in memory `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`, which tracked only one session's PRs.
    - Fix: describe one pass by the account over nine PRs, #676 included, with drafts from three sessions. Drop "of drafted PRs". Correct the memory note as well.
    - Changes a number: yes (the sweep's membership). Disposition: no. Action: no.
 
 5. **MINOR (C4): the "Who" bullet treats as open a candidate the transcripts rule out, and records no next step.**
-   - Quoted: `:8656` "GitHub cannot tell it from the owner or any session." Also Summary `:8489-8490`.
+   - Quoted: `:8656` "GitHub cannot tell it from the Overtoad or any session." Also Summary `:8489-8490`.
    - Evidence:
      - Every Claude session on this host returned `rate_limit` "You've hit your weekly limit · resets 10pm (America/Chicago)" between 21:30:36Z and 21:36:13Z. That covers 25de1349, e6c1cb6d, bc31e993, 798c2868 and their subagents.
      - From 21:41:02Z to 00:07:21Z the host's only transcript entry is one task-notification (21:53:09Z).
@@ -396,7 +396,7 @@ Files. `…E2E-VALIDATION-EVIDENCE.md` is `notes/JUNIPER_2026-08-09_JUNIPER-CANO
      - No schedule or workflow_dispatch Actions run appears in ml, data or canopy during the window.
      - The actor's two update-branches are not discussed, and no transcript holds them either.
    - The ledger does not overclaim. "Fits" is weaker than the interleaving allows.
-   - Fix: add the lockout facts. Reword to "the transcripts exclude every Claude session on this host". Add an owner question to Still owed: was the 21:47–22:51Z pass his?
+   - Fix: add the lockout facts. Reword to "the transcripts exclude every Claude session on this host". Add an Overtoad question to Still owed: was the 21:47–22:51Z pass his?
    - Changes an action: yes. Number or disposition: no.
 
 6. **MINOR: the quoted hold comment is cut, and the cut part contradicts "exactly that order".**
@@ -472,8 +472,8 @@ Files. `…E2E-VALIDATION-EVIDENCE.md` is `notes/JUNIPER_2026-08-09_JUNIPER-CANO
 - Other hosts, claude.ai cloud sessions, IDE or browser actions, and processes that ended before I looked.
 - Whether the weekly limit also blocked this account on other machines.
 - CI on the merged head `5e52debb`.
-- Whether the owner intended the merge.
+- Whether the Overtoad intended the merge.
 
-**SECRETS/PII:** one slip. `gh pr view 676 --json …autoMergeRequest` printed the `authorEmail` field, an owner email address, into my tool output. Nothing was sent anywhere, it is not repeated here, and later queries excluded the field. I read no tokens or credential files. Transcript greps printed only file names and bounded snippets, with token-shaped strings redacted. **Changed:** none. Scratch files are only under the session scratchpad.
+**SECRETS/PII:** one slip. `gh pr view 676 --json …autoMergeRequest` printed the `authorEmail` field, an Overtoad email address, into my tool output. Nothing was sent anywhere, it is not repeated here, and later queries excluded the field. I read no tokens or credential files. Transcript greps printed only file names and bounded snippets, with token-shaped strings redacted. **Changed:** none. Scratch files are only under the session scratchpad.
 
 ---

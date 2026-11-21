@@ -453,7 +453,7 @@ the upload will succeed and the artifacts will appear at:
 
 > **Gotcha — `gh` CLI does not expose deployment approval.** The
 > approval action is **only** available through the web UI or the
-> REST `POST /repos/{owner}/{repo}/actions/runs/{run_id}/pending_deployments`
+> REST `POST /repos/{Overtoad}/{repo}/actions/runs/{run_id}/pending_deployments`
 > endpoint. There is no `gh deployment review` subcommand at the time
 > of writing. Plan for that in any automation.
 

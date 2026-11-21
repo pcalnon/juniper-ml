@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — one-off (the Cursor flood-4 round-2 "ml-propose" carrier)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: juniper-ml#2507; owner ruling "Carry + extend propose.py";
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: juniper-ml#2507; Overtoad ruling "Carry + extend propose.py";
          util/ad-hoc/2026-11-07_flood4_ml_tests_manifest.py (round 1's generator, which this adapts)
 
 Inputs, all under ``<scratch>`` (the carrier's scratch directory): ``name_status.txt`` (``git status --porcelain``

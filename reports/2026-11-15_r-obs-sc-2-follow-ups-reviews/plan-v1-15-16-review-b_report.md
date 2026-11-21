@@ -43,7 +43,7 @@ I treated these dated passages as history and did not flag them: L34 (v1.15.15's
 
 5. **MAJOR** — L620: "…canopy#777 closes #737…; neither is in a canopy release yet." L630: "Canopy `main` still reads 0.9.0, so no release carries it yet."
    - **Why**: the compare API shows canopy#776 (`c7846b4e`), #777 (`33619d6d`) and #788 (`af650373`) are all ancestors of `v0.10.0` (ahead by 39, 38 and 18; behind by 0).
-   - **Fix**: append "(v1.15.16: all three ship in canopy 0.10.0, Release cut 2026-11-15; PyPI at the owner's gate)".
+   - **Fix**: append "(v1.15.16: all three ship in canopy 0.10.0, Release cut 2026-11-15; PyPI at the Overtoad's gate)".
 
 6. **MAJOR** — L1429 (§8): "conda env `JuniperCascor1` …, and the primary checkouts its editable installs map | … | Owner-only changes…"
    - **Why**: this contradicts O13 (2026-11-03; guarded session pulls of the cascor, data, data-client and recurrence primaries) and ruling 7 (the juniper-ml primary).
@@ -59,7 +59,7 @@ I treated these dated passages as history and did not flag them: L34 (v1.15.15's
 
 8. **MAJOR** (dropped open item) — L504 and L1088: "…no design is on `main` yet".
    - **Why**: ruling 4 has "a fresh session" write and validate the design, but nobody is named to start it.
-     - It is absent from "Still open with the owner" (L1106–1112), from §6 (L1255), from §4's waves and from §7.1's calendar. §7.1 counts every round against the account-wide cap.
+     - It is absent from "Still open with the Overtoad" (L1106–1112), from §6 (L1255), from §4's waves and from §7.1's calendar. §7.1 counts every round against the account-wide cap.
      - No transcript since 11-15 00:00Z was started from the prompt.
    - **Fix**: add "start the 0.4.3 design session from `prompts/generated/…_2026-11-15_0010.md`" to both lists, and add its rounds to §7.1 as **S**.
 
@@ -82,7 +82,7 @@ I treated these dated passages as history and did not flag them: L34 (v1.15.15's
 
 12. **MINOR** — L850, L1107, L1255: "the stack's restart".
     - **Why**: the plan calls the trio "The stack trio" (L142), and both sources conflate the two restarts. The plan is right, but ambiguous.
-    - **Fix**: "the juniper-deploy stack's restart (an owner action; ruling 6 governs only the trio's)".
+    - **Fix**: "the juniper-deploy stack's restart (an Overtoad action; ruling 6 governs only the trio's)".
 
 13. **MINOR** — L498, L1262, L1447 list the restart's conditions without P3-05. L1262 and L1447 also omit the blank DSNs.
     - **Why**: ruling 6's text says "on P3-05, and with blank Sentry DSNs". L503 and L848 carry both.
@@ -108,9 +108,9 @@ I treated these dated passages as history and did not flag them: L34 (v1.15.15's
     - **Why**: the 11-13 handoff records the four fork worktrees as removed. Ruling 2's text also says "The never-opened juniper-data worktree and the two juniper-ml session worktrees stay."
     - **Fix**: add "carried out 2026-11-13; the juniper-data worktree and the two session worktrees stay by the ruling".
 
-18. **MINOR** — L991 and L994 say "the owner cuts it", against L1065, L1081 and L1083.
-    - **Why**: sessions cut `v0.11.5`, `v0.14.0` and `v0.10.0` on the owner's rulings. v1.15.15 recorded the same departure for R-OBS-SC-2 at L1025; v1.15.16 does not.
-    - **Fix**: one line in the note: "each Release was cut by a session on the owner's rulings, where §5's rules have the owner cut".
+18. **MINOR** — L991 and L994 say "the Overtoad cuts it", against L1065, L1081 and L1083.
+    - **Why**: sessions cut `v0.11.5`, `v0.14.0` and `v0.10.0` on the Overtoad's rulings. v1.15.15 recorded the same departure for R-OBS-SC-2 at L1025; v1.15.16 does not.
+    - **Fix**: one line in the note: "each Release was cut by a session on the Overtoad's rulings, where §5's rules have the Overtoad cut".
 
 19. **MINOR** — L1102: "…cite a flood-4 'ruling 17' for different items (cascor `:244` at `v0.14.0` …; canopy `:156` at `v0.10.0` …), and the flood-4 record's §8 lists rulings 1 to 14, so neither can be checked…"
     - **Why**: flood-4's ruling 17 is one ruling over four fixes. `HO/HANDOFF_2026-11-09_flood4-record-merged-fixes-corrected-landing-next.md` item 3 names them: data's 44 unmarked tests, cascor's stop-then-start race, canopy's unit-lane port guard, and canopy's `lockfile-update.yml` print. So the citations agree.
@@ -122,7 +122,7 @@ I treated these dated passages as history and did not flag them: L34 (v1.15.15's
     - **Why**: the brief says `:322` is recorded; it is not. v2's `:110`, `:315`, `:322`, `:357`, `:358`, `:398-399`, `:409`, `:455` and `:480` are stale too.
     - `:398-399` lists round 2's Q1–Q4 as open, and `:455` ("No session moves it (Q4)") and `:480` (H-26, "Never pull one") contradict rulings 4–7.
     - v2 claims to replace v1's §2, §4 and §6, yet v1 mentions v2 nowhere outside this finding.
-    - **Fix**: list them all. Add one Status sub-bullet: "a draft v2 (ml#2550, not validated) proposes to replace §2, §4 and §6; v1 stays the record until the owner rules (v2's §6.4 item 20)."
+    - **Fix**: list them all. Add one Status sub-bullet: "a draft v2 (ml#2550, not validated) proposes to replace §2, §4 and §6; v1 stays the record until the Overtoad rules (v2's §6.4 item 20)."
 
 21. **MINOR** — L663: "…'next releases raise theirs', which goes stale once 0.14.0 and 0.10.0 are on PyPI".
     - **Why**: the parent `Juniper/AGENTS.md`'s cascor 0.13.0 and canopy 0.9.0 bullets (L240–260), including its "juniper-deploy pins the `0.13.0` image" line, also change. The 11-15 handoff says "that sentence and the cascor/canopy bullets".
@@ -135,7 +135,7 @@ I treated these dated passages as history and did not flag them: L34 (v1.15.15's
 23. **MINOR** — L1111 lists A1's open limbs without "whether host recurrence legs take a port of W1.14", which §6 A1 (L1232) lists as open.
     - **Fix**: add it, or write "among them".
 
-24. **MINOR** — L1089–1105: the 13 findings have no lane, actor or tier, though Appendix A claims "every ID, placed". Some need the owner (#2507), and some are §5 rules (the service-core 0.8.0 caps, which juniper-ml 0.11.5, cascor 0.14.0 and canopy 0.10.0 have just set at `<0.8.0`).
+24. **MINOR** — L1089–1105: the 13 findings have no lane, actor or tier, though Appendix A claims "every ID, placed". Some need the Overtoad (#2507), and some are §5 rules (the service-core 0.8.0 caps, which juniper-ml 0.11.5, cascor 0.14.0 and canopy 0.10.0 have just set at `<0.8.0`).
     - **Fix**: give each finding its next actor, or place it under Hygiene (T6).
 
 25. **MINOR** — L1184: "Both are cut: canopy 0.10.0 and cascor 0.14.0".
@@ -143,7 +143,7 @@ I treated these dated passages as history and did not flag them: L34 (v1.15.15's
     - **Fix**: "The later canopy release and a cascor release on the new locks are cut…; R-CASCOR's own gates stand."
 
 26. **MINOR** (§2) — L311 (P4) and L309 (P2).
-    - **Why**: the P4 row omits the two releases waiting at the owner's gates. The P2 row says the replay fix is "unreleased (74 commits past v0.8.1)", although 0.9.0 and 0.10.0 carry it.
+    - **Why**: the P4 row omits the two releases waiting at the Overtoad's gates. The P2 row says the replay fix is "unreleased (74 commits past v0.8.1)", although 0.9.0 and 0.10.0 carry it.
     - **Fix**: update both rows.
 
 27. **MINOR** (naming rule, mandatory) — unnamed documents:
@@ -153,20 +153,20 @@ I treated these dated passages as history and did not flag them: L34 (v1.15.15's
     - "each handoff" (L1112).
     - **Fix**: name the files.
 
-28. **MINOR** — L1106: "Still open with the owner (§6, mid-wave sitting)".
+28. **MINOR** — L1106: "Still open with the Overtoad (§6, mid-wave sitting)".
     - **Why**: A1's limbs and O13's canopy limb are Group A items (sitting item 8; A5).
     - **Fix**: "(§6)".
 
 29. **NIT**s:
     - L661, "it replaces the handoffs' 'never pull or switch'": it replaces only the pull half.
     - L626 and L846, "the same guarded pulls": ruling 7 adds "on main and clean".
-    - L1081, "`1b4fec84`'s ruling" is garbled; "the owner's version ruling in session `1b4fec84`".
+    - L1081, "`1b4fec84`'s ruling" is garbled; "the Overtoad's version ruling in session `1b4fec84`".
     - L683 still says "nor does 0.13.0" and is not updated for 0.14.0.
     - L1652, "cannot support: GHCR images", is stale.
     - L1054, "labels are verbatim", while round 1's and L1252's drop "(Recommended)".
     - L1635 puts the 0.13.0 and 0.14.0 occurrences in the Mitigation column instead of Likelihood.
     - L2256, "The four reviews it cites": "it" is ambiguous.
-    - The six primary pulls since ruling 7 match no `git pull` in any of the 18 transcripts written since 2026-11-13 10:00Z, so record them as unattributed or as the owner's own moves.
+    - The six primary pulls since ruling 7 match no `git pull` in any of the 18 transcripts written since 2026-11-13 10:00Z, so record them as unattributed or as the Overtoad's own moves.
 
 30. **MINOR** (outside-reader test)
     - **Status bullet (L35–36)**:
@@ -206,7 +206,7 @@ I treated these dated passages as history and did not flag them: L34 (v1.15.15's
    - The archive is transcript-derived text. §9 (L1464) and H-21/H-22 require the gate plus `--names` and `--all` over those nine files before the push, with keys and counts in the PR body.
    - A count that printed nothing found 9 lines naming an API key, 4 with "secret" and 4 with "token". These are names, not known values.
 7. **Validation record: record both reviews before landing**, as v1.15.15 did (counts, and that the findings are applied). The five-PRs handoff set "two independent reviewers" as v1.15.16's bar. Optionally archive their briefs and reports with the other four.
-8. **v1.15.15's Status bullet: keep it as history.** Leaving v2 unedited is defensible: it is "paused at the owner's request", and its header says it does not edit v1. But v1 must list v2's stale lines completely (item 20). Ask the owner whether v2 gets a one-line pointer, since its owner packet would re-ask questions already ruled.
+8. **v1.15.15's Status bullet: keep it as history.** Leaving v2 unedited is defensible: it is "paused at the Overtoad's request", and its header says it does not edit v1. But v1 must list v2's stale lines completely (item 20). Ask the Overtoad whether v2 gets a one-line pointer, since its Overtoad packet would re-ask questions already ruled.
 
 ## 4. New facts 1–5
 

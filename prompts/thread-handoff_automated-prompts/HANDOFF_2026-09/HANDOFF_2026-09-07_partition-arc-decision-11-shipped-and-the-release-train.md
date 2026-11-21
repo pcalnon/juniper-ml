@@ -291,7 +291,7 @@ current and §§2–7 are pre-review.
 - **`gh` 2.46.0 breaks ALL `gh pr edit`** — patch bodies via
   `gh api -X PATCH repos/O/R/pulls/N -F body=@file`.
 - **`util/safe_merge.py` wants a bare repo name; `util/ad-hoc/2026-09-05_auto_merge_shepherd.py`
-  wants `owner/repo`**, reports `NOT-ARMED` transiently from GraphQL, and background waiters get
+  wants `Overtoad/repo`**, reports `NOT-ARMED` transiently from GraphQL, and background waiters get
   OOM-killed — never run two on one PR.
 - **Sequence-safety needs CI's scope** (`--scope 'juniper_data/**'`, `'src/**/*.py'`); a bare
   invocation reports `files_screened=0` and is vacuous. **`Allow-Symbol-Loss:` is NOT a git

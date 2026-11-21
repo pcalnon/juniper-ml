@@ -94,7 +94,7 @@ Items found by me while the four lanes were running. Lane findings are appended 
    said: (a) the 0.11.5 proposal will NOT remove the two clauses -- delete or reword them BY HAND in the 0.11.5
    proposal PR; (b) its ml-propose and #2507 tests carriers are hours out and will be validated against the main
    that holds the floor PR; (c) the "row tracks pyproject, nothing checks the paragraph says so" point goes to the
-   owner with its ml-propose carrier; (d) juniper-data's Retry-After PR is not open yet.
+   Overtoad with its ml-propose carrier; (d) juniper-data's Retry-After PR is not open yet.
    Measured: `tmp/lps/pr2507_check.py` -> 20 tests OK with the edits; control (cell back to `>=0.4.1`) fails
    `test_current_series_row_matches_pyproject_floors` on `juniper-observability`. 347 tests OK; pre-commit OK.
    STILL TO DO: rewrite `tmp/lps/pr/ml_tools_floor.md` ("Left for the cut" section, `--check` counts 1 of 20 / 20 of
@@ -115,12 +115,12 @@ mut_*_telemetry.txt; probe_*.json; variant_check_*.txt; scripts/variant_check.py
 - A-4 MINOR optional: `app._telemetry` is private (held through all 47 releases 0.142.0..0.162.5; a rename turns
   the unit lane red). Below 0.142 `app.extra["telemetry"]` holds the five values, so a non-skipping variant exists
   (`laneA/scripts/variant_check.py`; kills the mutants on 0.137.0 and 0.162.x). DECISION: keep the faithful port of
-  data#454's test (the ruling); record the variant for the owner as a three-repo follow-up.
+  data#454's test (the ruling); record the variant for the Overtoad as a three-repo follow-up.
 - A-5 MINOR outside both diffs: **juniper-service-core's app factory** (`juniper-service-core/juniper_service_core/
   app.py:56-63`; same in the 0.7.2 wheel) builds FastAPI() with no `telemetry=` and no way to pass one;
   **juniper-recurrence** builds its service with it (`juniper_recurrence/app.py:26-32,86-91`); its lock pins
   `fastapi==0.141.1` (`requirements.lock:100`), floor `fastapi>=0.110` uncapped, so the next lock regeneration
-  crosses 0.142. The owner's question named only cascor and canopy. -> one sentence in each Scope section + record
+  crosses 0.142. The Overtoad's question named only cascor and canopy. -> one sentence in each Scope section + record
   as a service-core follow-up (plan v1.15.16; candidate for R-OBS-SC-3 / service-core 0.8.0).
 - A-6 NIT both: "stays idle until an OpenTelemetry provider is configured" omits FastAPI's own auto-configure path
   (`FASTAPI_OTEL_AUTO_CONFIGURE=true` + an OTLP endpoint + no SDK -> one startup warning on a default app).
@@ -162,7 +162,7 @@ Evidence: `tmp/lps/validation/round1/laneB/evidence/`; proposed tests: `tmp/lps/
   `src/canopy_constants.py:693-705`).
 - B-8 info both: a wall clock stepped BACKWARDS gives a wait above the window (61 on a 60 s window after -0.25 s;
   old code said 60). Pre-existing `time.time()` use; service-core identical. CR `test_api_security.py:439` and NR
-  `test_concurrent_load.py:222` now fail on any backward step between two calls. -> record for the owner
+  `test_concurrent_load.py:222` now fail on any backward step between two calls. -> record for the Overtoad
   (candidate: `time.monotonic()` in all four copies).
 - B-9 info canopy: canopy and cascor answer differently after a backward step (canopy's `_evict_expired`,
   `src/security.py:234-239`). Not in the changed lines. -> record.
@@ -224,7 +224,7 @@ upgrade_behaviour.py, train_proposal.py, wheel_diff_out.txt, registry_extras.py)
   `main` the release train edits neither the sentence nor the row, and ml#2507's carrier is to extend it to those
   two only."
 - D-4 MINOR: the two clauses are an unguarded obligation (a mechanical 0.11.5 cut leaves them; 20 tests still OK).
-  The detector on main's [Unreleased] says `minor` / `0.12.0`; the owner ruled a patch. Record BOTH branches for the
+  The detector on main's [Unreleased] says `minor` / `0.12.0`; the Overtoad ruled a patch. Record BOTH branches for the
   cut: a 0.11.x cut deletes the clauses; any other cut also restores the cell to `>=0.4.1`. The 0.11.5 co-change
   tool should assert the paragraph's exact text (as `2026-10-25_juniper_ml_0_11_1_cut_cochanges.py` does).
 - D-5 MINOR: `Verify AGENTS.md Last Updated` passes only while the UTC date is 2026-11-12 (main already carries the
@@ -241,7 +241,7 @@ upgrade_behaviour.py, train_proposal.py, wheel_diff_out.txt, registry_extras.py)
   script on the PR that adds it.
 - LOCAL-ONLY: `tests/test_release_train_registry.py` fails 3 tests in this worktree: its scan (line 175) walks the
   checkout for pyproject.toml and does not skip `tmp/` (my `tmp/lps/pr2507_check*` mini-roots and lane scratch
-  hold 33). Passes in CI. -> a tmp/-scope finding for the owner (2026-10-26 rulings); record.
+  hold 33). Passes in CI. -> a tmp/-scope finding for the Overtoad (2026-10-26 rulings); record.
 - Fleet drafts ml#2488, ml#2477 rewrite the same paragraph line; ml#2501 inserts beside the matrix (stale bases).
 - Confirmed by D: PyPI 0.4.2 (2026-11-09T09:51:35Z) and 0.7.2 (09:52:45Z), neither yanked; wheel diffs as claimed;
   resolution OK; consumers' locks pin both; 347 + 267 further tests OK; table widths; memory budget 27413/28000;
@@ -310,7 +310,7 @@ in CI" sections.
 - `tests/test_release_train_registry.py` walks the checkout for pyproject.toml and does not skip `tmp/`: 3 tests
   fail locally whenever tmp/ holds a repo copy (2026-10-26 tmp/ rulings: a scan chooses its scope).
 - juniper-ml#2507's row test makes the matrix row track pyproject between a floor PR and its release; nothing
-  checks the paragraph says so (flood-4 is taking this to the owner with its ml-propose carrier).
+  checks the paragraph says so (flood-4 is taking this to the Overtoad with its ml-propose carrier).
 - service-core's next release is 0.8.0 (ml#2534): every `<0.8.0` cap must widen first.
 - juniper-data's Retry-After fix is flood-4's (not open at 09:09Z); the DR worktree stays unopened; lane B's test
   points were sent to flood-4 at ~09:06Z.

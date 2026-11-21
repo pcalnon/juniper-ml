@@ -1,4 +1,4 @@
-# HANDOFF 2026-09-07 — Wave 0 CLOSED, three owner decisions ruled, and two consensus findings REFUTED
+# HANDOFF 2026-09-07 — Wave 0 CLOSED, three Overtoad decisions ruled, and two consensus findings REFUTED
 
 Successor to
 [`HANDOFF_2026-09-04_perf-lane-gate-built-waves-not-closed.md`](HANDOFF_2026-09-04_perf-lane-gate-built-waves-not-closed.md).
@@ -23,7 +23,7 @@ branch from a recorded sha.**
 
 ## 1. GOAL (paste this into the new thread)
 
-Continue the **juniper-ml performance lane**. **Wave 0 is CLOSED** and every owner decision the plan
+Continue the **juniper-ml performance lane**. **Wave 0 is CLOSED** and every Overtoad decision the plan
 was blocked behind is ruled. What remains splits cleanly into *needs an idle host* and *needs no host
 at all*.
 
@@ -56,7 +56,7 @@ unless stated otherwise.**
    from a clean clone — 2.4's starting artifact exists only on this host. Repo: juniper-cascor.
 4. **Needs an IDLE host — 2.1 (PF-2), and it needs a PROBE first.** See §4. Do not guess an epoch
    number.
-5. **Needs an IDLE host and a quiet window — 2.2 (PF-3).** ~6.7 h worst case. Owner approval was
+5. **Needs an IDLE host and a quiet window — 2.2 (PF-3).** ~6.7 h worst case. The Overtoad approval was
    given 2026-09-07 and still stands; only the window was missing.
 6. **Item 2.3 (PF-5/6/7, recurrence) is REPORT-ONLY forever** absent new instrumentation inside
    juniper-recurrence. Do not build a gate for it.
@@ -83,7 +83,7 @@ Each row was confirmed with `gh pr list --head <branch> --state all` — the for
 | `ml#1765` | 2026-09-05T22:08:30Z | drift-band **and** C4 refutations; handoff §7.1 decision record |
 | `ml#1786` | 2026-09-07T12:54:47Z | item **3.3 discharged**; 2.1 re-survey; 2.2 deferral |
 | `cascor#629` | merged 2026-09-07 | `xor-staged.yaml` sets both epoch keys to 200 |
-| **`ml#1811`** | **OPEN at hand-off** | three owner decisions + Wave 0 close |
+| **`ml#1811`** | **OPEN at hand-off** | three Overtoad decisions + Wave 0 close |
 
 **`ml#1811` is described in the present tense deliberately.** It had not merged when this was
 written. Do not assume it landed; check.
@@ -94,7 +94,7 @@ written. Do not assume it landed; check.
 
 ### 3.1 P1 §6 is CLOSED: do not wire the run tier to CI
 
-**The owner's ruling stands. The justification below is NARROWER than the one the ruling was taken
+**The Overtoad's ruling stands. The justification below is NARROWER than the one the ruling was taken
 on** — consensus validation (§10) showed the first draft over-claimed, and the correction is recorded
 here rather than quietly applied.
 
@@ -187,7 +187,7 @@ pinned next to the numbers in the sweep note.
     genuinely fixed.
   - **Therefore an unexamined option exists**: a work-style **exact-match** gate on
     `epochs_completed` for the candidate micro-benchmarks — the micro analogue of the run tier's
-    split gate. It was foreclosed by reasoning that is wrong, not by evidence. **Owner call**; do not
+    split gate. It was foreclosed by reasoning that is wrong, not by evidence. **The Overtoad call**; do not
     treat "PF-4 report-only" as having settled it.
 - **0.5 — `xor-staged.yaml` sets both epoch keys to 200** (`cascor#629`, MERGED).
   **The matching removal of its `PENDING_EPOCH_SPLIT_DECISIONS` entry is in `ml#1811`, which was
@@ -258,7 +258,7 @@ a hazard. See §7 trap 1.
 
 ```bash
 git fetch origin && git rev-parse --short origin/main
-gh pr list --head feat/perf-lane-owner-decisions-wave0-close --state all   # ml#1811: never-opened vs merged
+gh pr list --head feat/perf-lane-Overtoad-decisions-wave0-close --state all   # ml#1811: never-opened vs merged
 python3 -m unittest -q tests/test_read_run_metrics.py tests/test_make_baseline.py tests/test_compare_baseline.py
 python3 -m unittest -q tests/test_compare_baseline_defects.py tests/test_work_countable_contract.py \
   tests/test_termination_branch_precondition.py tests/test_run_suite_uncountable_report.py
@@ -393,7 +393,7 @@ cheap. From §0/§0.1/§4 of
   on `util/ad-hoc/2026-08-29_requirements_title_artifact_scan.py --check`. **Re-probed 2026-09-07:
   still exit 1, 91 artifacts** (84 truncated, 41 unbalanced-bold, 8 field-label, 1 blockquote — these
   **overlap and are not a partition**: 42 of the 91 carry 2–3 classes, and 134 tag-instances − 91
-  entries = 43 = 41×1 + 1×2; 91 visited by a repair pass, 0 never repaired). Owner must choose the
+  entries = 43 = 41×1 + 1×2; 91 visited by a repair pass, 0 never repaired). The Overtoad must choose the
   extraction rule. Run it **unpiped** — `$?` after a pipe reports the pipe's last command and reads 0.
 - **`JR-ML-OBS-003`** survives as its own item — a different class from the 172.
 - **R-1's second clause** — cascor must not report `succeeded` when zero candidates were installable
@@ -401,7 +401,7 @@ cheap. From §0/§0.1/§4 of
 - **F-P4-7** (why the noise-free spiral is harder), **E-C's 0.10/0.20 rows at cap 128**,
   **W-12/Q-7** (csv_import corpus), **F-P1-2** (Grafana render), **G-16's refusal half now
   untestable in `JuniperData`**.
-- **The owner's standing rider on the withdrawn 0.5% threshold** — *"come back and verify after this
+- **The Overtoad's standing rider on the withdrawn 0.5% threshold** — *"come back and verify after this
   gate goes live"* — is neither honoured nor retired. Speed is now structurally ungated, so it is
   arguably moot; **decide and record which.**
 
@@ -420,7 +420,7 @@ fails locally and passes in CI.
 Deliberate, so a dropped item stays distinguishable from an out-of-scope one: the backup/Duplicati
 arc, the canopy E2E arc, the defect register, P5 fleet rollout, the soak arc, the partition/data
 contract arc (`juniper-data#369` and its consumers), and juniper-service-core work. All have other
-owners and moved independently during this session.
+Overtoads and moved independently during this session.
 
 ---
 
@@ -446,7 +446,7 @@ amputation + executability). Verdicts: A1 **FAIL**, A2 PASS w/ findings, A3 PASS
 | 5 | Header claimed the predecessor's 12 traps were carried — true of **1** | B2 | fixed; 7 restored, predecessor un-superseded |
 | 6 | **C3 carve-out amputated** — `_readout_mlp.py:77,150` maintains a real counter | B2 | fixed; §3.4 qualified |
 | 7 | §3.1 "STRUCTURAL / permanently" over-claims; a **CI-cut baseline** was never examined; `thread_budget` is env, not hardware | B1 | fixed; ruling kept, justification narrowed |
-| 8 | §3.3 premise false — `epochs_completed` **is** emergent (live: 100→52, 200→68) | B1 | fixed; unexamined exact-match gate surfaced as an owner question |
+| 8 | §3.3 premise false — `epochs_completed` **is** emergent (live: 100→52, 200→68) | B1 | fixed; unexamined exact-match gate surfaced as an Overtoad question |
 | 9 | "no timing tolerance" false — two `*_TIME_THRESHOLD_S` asserts; **inherited from P1 design §1** | A2, B2 | fixed here + flagged for source correction |
 | 10 | "10+" worktrees → **93 / 114** | A3 | fixed |
 | 11 | title sub-counts overlap, not a partition | A3 | fixed |

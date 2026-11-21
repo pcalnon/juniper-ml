@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-16
 Status:      ad-hoc -- investigation (Python 3.15 migration arc, phase 3 go/no-go: is 3.15 green on every run, or only the latest?)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-11-15_py315_leg_survey.py (reads only the LATEST main run per workflow),
              util/ad-hoc/2026-11-15_py315_informational_green_legs.py (the report step whose annotation this reads)
 

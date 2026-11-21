@@ -2633,7 +2633,7 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             _phase("plots", t0)
             acceptance_reasons.extend(plot_errors)
         if train_ok:
-            # R6 -- the plan's RECOMMENDED ruling, applied pending the owner's: a `degraded` run exits
+            # R6 -- the plan's RECOMMENDED ruling, applied pending the Overtoad's: a `degraded` run exits
             # non-zero. Keyed on the outcome as well as on the reasons, so the exit code cannot drift
             # back to 0 if an aux-phase failure ever stops appending an acceptance reason.
             exit_code = EXIT_SUCCESS if outcome == "succeeded" and not acceptance_reasons else EXIT_ACCEPTANCE

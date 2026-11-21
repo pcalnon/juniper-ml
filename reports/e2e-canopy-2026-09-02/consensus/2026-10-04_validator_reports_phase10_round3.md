@@ -201,8 +201,8 @@ Abbreviations:
 
 6. **NIT — F-CANOPY-065's condition was not carried into four places.**
    - **Ledger text:** ":9814 (P1, OPEN)", ":9834 P1 … OPEN", ":9794 two of them P1", ":10343 (P1)".
-   - **Evidence:** the header (:10059) and the severity bullet now make P1 conditional on the owner's question. Lane 10-R2B's Finding 2 named these exact places.
-   - **Fix:** append "(conditional; the owner's question)" in each place.
+   - **Evidence:** the header (:10059) and the severity bullet now make P1 conditional on the Overtoad's question. Lane 10-R2B's Finding 2 named these exact places.
+   - **Fix:** append "(conditional; the Overtoad's question)" in each place.
    - **Changes a number/disposition/action?** No.
 
 7. **NIT — The Consensus record says both lanes reached a conclusion that one lane contradicted.**

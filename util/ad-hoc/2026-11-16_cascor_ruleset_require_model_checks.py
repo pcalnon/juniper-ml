@@ -7,17 +7,17 @@ Application: ad-hoc operations tooling
 Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-16
-Status:      ad-hoc -- one-off (Python 3.15 migration arc, owner question 1 of the phase-2 handoff; not a 3.15 change)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status:      ad-hoc -- one-off (Python 3.15 migration arc, Overtoad question 1 of the phase-2 handoff; not a 3.15 change)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-11-15_deploy_ruleset_require_unit_tests_legs.py (the same full-replacement PUT, which
              this copies with only the repo, ruleset, anchor and context changed);
              prompts/thread-handoff_automated-prompts/
-             HANDOFF_2026-11-15_python-3-15-phase-2-complete-dill-drift-nightly-markers-cleanup.md (Open owner question 1)
+             HANDOFF_2026-11-15_python-3-15-phase-2-complete-dill-drift-nightly-markers-cleanup.md (Open Overtoad question 1)
 
 Why this exists
 ---------------
 `ci-cascor-model.yml`'s `Test (Python 3.12)` caught juniper-cascor#687's drift on 2026-09-24, but no ruleset required
-it, so `main` stayed red for seven weeks. The owner ruled on 2026-11-16 to require a check from that workflow using
+it, so `main` stayed red for seven weeks. The Overtoad ruled on 2026-11-16 to require a check from that workflow using
 juniper-recurrence's pattern: the workflow runs on every PR, a `changes` job scopes the package jobs, and an
 always-reporting `Model required checks` job is the required context (juniper-cascor#771). This adds that context.
 

@@ -8,13 +8,13 @@
 
 ## Goal
 
-Continue the recurrence × equities arc: P12 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, at v1.15.14 once the PR carrying this file merges. Nothing in this arc is left for a session alone; what remains is gated or the owner's.
+Continue the recurrence × equities arc: P12 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, at v1.15.14 once the PR carrying this file merges. Nothing in this arc is left for a session alone; what remains is gated or the Overtoad's.
 
 ## Completed this session (2026-11-07)
 
 - **Re-check of ml#2498 passed.** `main` (`2fa15d25`, then `303ccc0b`) carries plan v1.15.13, its script and its handoff. The predecessor's memory block records that it sent the canopy Phase 16 session the number.
 - **juniper-ml 0.11.4 is published.**
-  - The owner approved run 42230617125's `pypi` gate. The approval is by `pcalnon` ("approved for PyPI"). Publish to PyPI ran 22:59:04–22:59:28Z, and PyPI serves the wheel from 22:59:23Z.
+  - The Overtoad approved run 42230617125's `pypi` gate. The approval is by `pcalnon` ("approved for PyPI"). Publish to PyPI ran 22:59:04–22:59:28Z, and PyPI serves the wheel from 22:59:23Z.
   - `util/ad-hoc/2026-11-07_verify_juniper_ml_0_11_4_published.py` passes. It checks:
     - the version endpoint's `requires_dist` carries `juniper-recurrence<0.9.0,>=0.8.1; extra == "recurrence"`;
     - the wheel's `METADATA` lists the same 17 requirements;
@@ -22,7 +22,7 @@ Continue the recurrence × equities arc: P12 of `notes/JUNIPER_2026-10-04_JUNIPE
   - Its 0.11.3 control fails on the floor, as it must.
   - `--resolve` against real PyPI: on Python 3.12, 3.13 and 3.14, `[recurrence]` resolves in 33 packages and `[all]` in 96, both with recurrence 0.8.1 and model-core 0.3.2. That is the pre-flight's 32 and 95, plus juniper-ml itself.
   - ml#2497 merged 2026-11-06 14:47:44Z (`d5152008`).
-- **The owner ruled, in this session's AskUserQuestion** (asked 23:08:12Z, answered 23:56:36Z; transcript lines 547 and 558):
+- **The Overtoad ruled, in this session's AskUserQuestion** (asked 23:08:12Z, answered 23:56:36Z; transcript lines 547 and 558):
   - parent `AGENTS.md`: "Edit it";
   - `docs/QUICK_START.md`: "Refresh it to 0.11.4".
 - **Parent `Juniper/AGENTS.md` edited.**
@@ -49,7 +49,7 @@ Continue the recurrence × equities arc: P12 of `notes/JUNIPER_2026-10-04_JUNIPE
 2. **Carried from the predecessor**:
    - **R-DATA-2**. Plan §5 gives the order: P3-03 → P3-09 → R-OBS-SC-2 on PyPI → data's second lock PR. Widen recurrence's `[bench]` caps from `<0.18.0` first, and carry D-07's retro-note. On 2026-11-07 PyPI still served observability 0.4.1 and service-core 0.7.1.
    - **P5 W4**, when P5 reaches it: data-client caps to `<0.8.0`.
-   - **The owner's §6 A1 items**: APD-ML OD-2, canopy#685 call (a), and F-S10's three choices.
+   - **The Overtoad's §6 A1 items**: APD-ML OD-2, canopy#685 call (a), and F-S10's three choices.
 
 ## Rules and traps that held this session
 

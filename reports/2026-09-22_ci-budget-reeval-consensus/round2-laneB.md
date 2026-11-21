@@ -50,7 +50,7 @@ The corrections introduced a failing check and several new errors, so all three 
    - `ci.yml:1626` says "THE SOAK HAS SINCE CONTRADICTED THE BACKTEST". Handoff:616 says "The 2026-09-16 backtest is not contradicted", from the same facts.
 
 6. **[Low-Med] "5 got no `pull_request` run at all" is false for #1139, and the claim appears in five places** (the workflow header, the walkthrough, REFERENCE, the runbook, handoff:506).
-   - #1139's opening commit `ea30c105` had no run. The owner's merge-main commit `5d343118` (2026-08-18) got two successful `pull_request` runs.
+   - #1139's opening commit `ea30c105` had no run. The Overtoad's merge-main commit `5d343118` (2026-08-18) got two successful `pull_request` runs.
    - The claim is only true at opening, because the probe reads `commits[0]` only.
    - #1139 was released a third way (a push), which the release accounting doesn't mention. Evidence: `r2b_lockfile_norun_check.py`.
 

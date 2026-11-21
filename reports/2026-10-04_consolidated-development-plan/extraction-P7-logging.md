@@ -64,31 +64,31 @@ Live probes: `gh api` on cascor issues #573, #679 (including #573's single comme
 | P7-28 | P6.1: delete `src/cascade_correlation/backups/` and the two dead test clauses, and decide the untracked `src/backups/check.py`. The trailer must be the final paragraph. | item 6; ROADMAP §9 | [VERIFIED 2026-10-04: 5 files still tracked on `main`; `check.py` exists only in the local checkout] | STARTABLE | — | cascor | S | HYGIENE |
 | P7-29 | P6.2, then P6.3: a lint rule banning bare numeric levels (`--advisory` until P6.2 lands). | item 6; B11 | [VERIFIED 2026-10-04: all 10 `isEnabledFor` sites in `candidate_unit.py` on `main` are symbolic, so P6.2's stated 8-site surface looks discharged by #652. No source records this] | BLOCKED-ON P2 (P7-16/P7-18) | P7-18 | cascor | S | HYGIENE |
 | P7-30 | P6.4 widening: 236 sites outside the hot files and 51 refused inside them. | item 9c | [NOT RE-PROBED — figures at `e052ef8`] | OWNER-DECISION | — | cascor | M | HYGIENE |
-| P7-31 | Phase 3: P3.1 sinks (fix the shadowed `_file_name` first), P3.2 console switch (decision 2), P3.3 rotation owner, then P3.4 persistent handle. | ROADMAP §6 | [NOT RE-PROBED] | BLOCKED-ON P7-18, P7-26, P7-27 | — | cascor | L | USER-FACING |
+| P7-31 | Phase 3: P3.1 sinks (fix the shadowed `_file_name` first), P3.2 console switch (decision 2), P3.3 rotation Overtoad, then P3.4 persistent handle. | ROADMAP §6 | [NOT RE-PROBED] | BLOCKED-ON P7-18, P7-26, P7-27 | — | cascor | L | USER-FACING |
 | P7-32 | P4.4 fork propagation, P5.2 JSON sink and P5.3 worker import-surface screen. Phase 7 (ELK) stays deferred. | ROADMAP §7, §8, §11 | [NOT RE-PROBED] | BLOCKED-ON P7-31 | P7-24 | cascor | L | USER-FACING |
 | P7-33 | Per §10: put a version token in each revertable log artifact's first record, and make every phase state its mirror and release obligation. | ROADMAP §10 | [NOT RE-PROBED] | STARTABLE (with P7-31) | P7-31 | cascor | S | DATA-INTEGRITY |
-| P7-34 | Remove eight cascor logging worktrees after verifying each one. Leave `perf--logging-hot-path`. Never run `remove_stale_worktrees.bash`. | items 7, 9d, 9e | [VERIFIED 2026-10-04: all nine exist; p01 holds 5 `.h5`]. Dirt states [UNVERIFIED — no git run outside this worktree] | STARTABLE, except p01 and wip (owner) | P7-39, P7-40 | cascor (local) | S | HYGIENE |
+| P7-34 | Remove eight cascor logging worktrees after verifying each one. Leave `perf--logging-hot-path`. Never run `remove_stale_worktrees.bash`. | items 7, 9d, 9e | [VERIFIED 2026-10-04: all nine exist; p01 holds 5 `.h5`]. Dirt states [UNVERIFIED — no git run outside this worktree] | STARTABLE, except p01 and wip (Overtoad) | P7-39, P7-40 | cascor (local) | S | HYGIENE |
 | P7-35 | Remove the ml worktree `temporal-snacking-zebra` once P7-01 lands. Dispose of `cached-greeting-mochi`. | item 8 | [VERIFIED 2026-10-04: both exist] | BLOCKED-ON P7-01 | P7-01 | ml (local) | S | HYGIENE |
 | P7-36 | File one issue each for ROADMAP §12's adjacent defects: canopy's dead env overrides, service-core's unread `JUNIPER_SERVICE_LOG_LEVEL`, and canopy's `CASCOR_*` names. | ROADMAP §12 | [VERIFIED 2026-10-04: 3 issue searches → 0 hits. The canopy `src/logger/logger.py:536` gate is unchanged on `main`. service-core `settings.py:36` declares `log_level`, and nothing in the package reads it] | STARTABLE | P2 (canopy) | canopy, ml | S | HYGIENE |
-| P7-37 | Owner re-confirms merge approval for this arc. | item 9a | approval expired [NOT RE-PROBED] | OWNER-ACTION | — | all | S | UNBLOCKER |
-| P7-38 | Owner rules whether Phase 1 is "complete". | item 9b; B5 | [VERIFIED 2026-10-04: code search → `_display_training_progress` appears in 2 coverage tests and 2 fixtures, NOT in `test_logger_per_level_exercise.py`; #679 OPEN] | OWNER-DECISION | P7-20 | — | S | HYGIENE |
-| P7-39 | Owner decides the p01 worktree's 5 ignored `.h5` snapshots. | item 9d | [VERIFIED 2026-10-04: 5 present] | OWNER-DECISION | — | cascor | S | DATA-INTEGRITY |
-| P7-40 | Owner decides whether to keep `wip/logging-p14-adopt-logging-utils` (#667's `--old` baseline). | item 9e | [VERIFIED 2026-10-04: remote ref at `1b918e61`] | OWNER-DECISION | — | cascor | S | HYGIENE |
-| P7-41 | Owner confirms or corrects ROADMAP decision 8's provenance ("Owner: please confirm or correct this entry"). | ROADMAP :815–821 | [VERIFIED 2026-10-04: the request text is unchanged] | OWNER-DECISION | — | ml | S | HYGIENE |
+| P7-37 | The Overtoad re-confirms merge approval for this arc. | item 9a | approval expired [NOT RE-PROBED] | OWNER-ACTION | — | all | S | UNBLOCKER |
+| P7-38 | The Overtoad rules whether Phase 1 is "complete". | item 9b; B5 | [VERIFIED 2026-10-04: code search → `_display_training_progress` appears in 2 coverage tests and 2 fixtures, NOT in `test_logger_per_level_exercise.py`; #679 OPEN] | OWNER-DECISION | P7-20 | — | S | HYGIENE |
+| P7-39 | The Overtoad decides the p01 worktree's 5 ignored `.h5` snapshots. | item 9d | [VERIFIED 2026-10-04: 5 present] | OWNER-DECISION | — | cascor | S | DATA-INTEGRITY |
+| P7-40 | The Overtoad decides whether to keep `wip/logging-p14-adopt-logging-utils` (#667's `--old` baseline). | item 9e | [VERIFIED 2026-10-04: remote ref at `1b918e61`] | OWNER-DECISION | — | cascor | S | HYGIENE |
+| P7-41 | The Overtoad confirms or corrects ROADMAP decision 8's provenance ("Owner: please confirm or correct this entry"). | ROADMAP :815–821 | [VERIFIED 2026-10-04: the request text is unchanged] | OWNER-DECISION | — | ml | S | HYGIENE |
 | P7-42 | Cut a cascor release, and after P7-21 a juniper-cascor-model release. | INDEX; ROADMAP §10 | [VERIFIED 2026-10-04: `compare v0.11.0...main` → 57 commits ahead, including logging PRs #644, #648, #652, #653, #667, #670, #675, #680, #681. PyPI: cascor 0.11.0 (2026-09-10), model 0.1.0] | OWNER-ACTION (P4) | P4 | cascor | S | USER-FACING |
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options, and the source's recommendation | Blocks | Source |
 | --- | --- | --- | --- | --- |
 | D1 | Re-confirm merge approval | grant it for the session / approve per PR. Approval expires per session | P7-13 and every merge | consolidated 9a; ROADMAP decision 9 |
-| D2 | Is Phase 1 "complete"? | yes now / after #679 plus a per-level test of the #670 sites. B5: keep "complete" open until the owner rules | wording in P7-01 and P7-14 | 9b |
+| D2 | Is Phase 1 "complete"? | yes now / after #679 plus a per-level test of the #670 sites. B5: keep "complete" open until the Overtoad rules | wording in P7-01 and P7-14 | 9b |
 | D3 | Widen P6.4 beyond the hot files? | widen (236 sites) / hot files only. No recommendation; "widening needs a fresh ruling" | P7-30 | 9c; decision-6 UPDATE |
 | D4 | p01 worktree `.h5` files | keep / move / delete. None recommended | P7-34 | 9d |
 | D5 | WIP branch | keep it as #667's timing baseline / delete it (its fix is on `main` via #681) | P7-34 | 9e |
 | D6 | Decision 8's provenance | confirm / correct | record only | ROADMAP :821 |
 | D7 | Release cuts | cascor now (57 commits); cascor-model after convergence | logging fixes on PyPI | INDEX; release handoff item 5 |
-| D8 | #679's fix shape | route the closure through the logger it is installed on / drop the copy. The issue defers it to the P1/P4 design; owner only if it alters ruled decision 5 | P7-20 | #679 body |
+| D8 | #679's fix shape | route the closure through the logger it is installed on / drop the copy. The issue defers it to the P1/P4 design; Overtoad only if it alters ruled decision 5 | P7-20 | #679 body |
 | D9 | Consumer-drift CI check | wire `--check-inventory` / record a rejection. No recommendation recorded | P7-11 | B20 |
 
 ## 3. Cross-path dependencies
@@ -126,7 +126,7 @@ Live probes: `gh api` on cascor issues #573, #679 (including #573's single comme
 - Phase 3, P4.4, P5.2, P5.3, the deferred Phase 7, and P5-G4's test disposition (P7-31, P7-32, P7-27).
 - ROADMAP §10's version token and per-phase release obligation (P7-33, P7-42).
 - ROADMAP §12's three adjacent issues (P7-36).
-- Decision 8's request for owner confirmation (P7-41).
+- Decision 8's request for Overtoad confirmation (P7-41).
 - The stale "zero comments" copies and P4-design's §8 table (P7-09).
 - P6.1's sub-items: `check.py` and the two dead test clauses (P7-28).
 - R2 Lane A's unchecked list: P0.2 figures other than 28.25 %, the P6.4 residue counts, the shape-survey counts, the conftest stub, and the "golden caught none of five breaks" claim. No lane re-derived these, and no round-2 lane re-ran the 14/14 mutation check (P7-12).
@@ -145,7 +145,7 @@ Live probes: `gh api` on cascor issues #573, #679 (including #573's single comme
 **Next actions, in order:**
 
 1. Do P7-01 → P7-02 → P7-05 → P7-06, P7-07, P7-09 and P7-10 in one juniper-ml PR (hunk by hunk, census at rc=0 including `replay_redrive.py`), then run P7-12.
-2. Ask the owner for D1 and D2 together (P7-37, P7-38). They gate P7-13 and the wording of P7-14.
+2. Ask the Overtoad for D1 and D2 together (P7-37, P7-38). They gate P7-13 and the wording of P7-14.
 3. In parallel, P7-27 or P7-28 can start, since neither touches the reconciled text. Then do P7-16 right after P7-13, deferring P7-17's A/B to a quiet window.
 
 ## 8. What this report cannot support

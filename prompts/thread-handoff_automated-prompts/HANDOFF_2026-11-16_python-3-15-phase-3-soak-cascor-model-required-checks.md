@@ -1,34 +1,34 @@
 # Handoff: Python 3.15 -- phase 3 soaks until 2026-11-23; cascor-model's `Model required checks` is required
 
-**Date**: 2026-11-16 (facts read 07:54Z to 21:53Z; owner dialogs were open from about 08:07Z to 15:20Z and from
+**Date**: 2026-11-16 (facts read 07:54Z to 21:53Z; Overtoad dialogs were open from about 08:07Z to 15:20Z and from
 16:05Z to 21:52Z)
-**Status**: **PAUSED at 21:53Z by the owner, for the weekly Claude Code token limit.** Resume from Remaining work,
+**Status**: **PAUSED at 21:53Z by the Overtoad, for the weekly Claude Code token limit.** Resume from Remaining work,
 in order.
 **Session**: host yamaguchi, juniper-ml worktree `.claude/worktrees/serialized-snuggling-gadget` (session 3a7c12fe).
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-15_python-3-15-phase-2-complete-dill-drift-nightly-markers-cleanup.md`
 (on `main` through juniper-ml#2590). It was checked item by item against source. Its three remaining items and its
-two open owner questions are all resolved below, and none was carried over silently.
+two open Overtoad questions are all resolved below, and none was carried over silently.
 
 ## Goal statement
 
-Phase 3 of the Python 3.15 migration, making the 3.15 checks block merges, is **scheduled, not started**. The owner
+Phase 3 of the Python 3.15 migration, making the 3.15 checks block merges, is **scheduled, not started**. The Overtoad
 chose a 7-day soak that ends **2026-11-23**. On or after that date:
 
 1. Re-count the 3.15 legs across every run since this session's count, with
    `python3 util/ad-hoc/2026-11-16_py315_leg_warning_history.py --since 2026-11-16T08:00:00Z`.
 2. Read every `warning` it lists, because a PR run's warning can be that PR's own defect.
-3. If none is a real 3.15 failure, start phase 3 with the owner's scope (below).
+3. If none is a real 3.15 failure, start phase 3 with the Overtoad's scope (below).
 
 Do not start phase 3 earlier, and do not move `/usr/bin/python3` off 3.14 (phase 4). **Merge approval for this arc's
 PRs was granted in this session (2026-11-16). It does not carry to a new session.**
 
-## Owner rulings this session (2026-11-16, from the dialog)
+## The Overtoad rulings this session (2026-11-16, from the dialog)
 
 1. **Phase 3 timing**: "Soak 7 days first". The legs stay informational until 2026-11-23. Then re-count the warnings
    across every run, and start if none were real.
 2. **Phase 3 scope**:
    - chosen: "PR legs + rulesets", "3.15 classifier" and "3.15 Pre-commit leg";
-   - added in the owner's own words: "bring juniper-recurrence and juniper-harcot in line with the other repos wrt
+   - added in the Overtoad's own words: "bring juniper-recurrence and juniper-harcot in line with the other repos wrt
      requiring per python version gates that include python3.15";
    - **not** chosen: "Non-gating legs too". juniper-ml's six sub-package workflows, cascor-model, cascor-protocol and
      the five nightly lanes keep informational 3.15 legs.
@@ -54,7 +54,7 @@ From the second dialog (answered at 21:52Z; findings 1, 4 and 5 below are the ev
 |------|--------------|------|
 | juniper-cascor | #771 -> `cf5566e1` (merged 15:46:34Z) | `ci-cascor-model.yml` runs on every PR. Its new `changes` job scopes `test` and `build`, and its new always-reporting `Model required checks` is the context to require (details below). Docs and CHANGELOG `### Changed` updated |
 
-- **#771's design** (owner ruling 3, juniper-recurrence's pattern):
+- **#771's design** (Overtoad ruling 3, juniper-recurrence's pattern):
   - `on.pull_request` is unfiltered, and `on.push` keeps its paths.
   - `changes` (`Detect cascor-model changes`) diffs the PR against its base. `test` and `build` run only for
     `juniper-cascor-model/**`, `src/{candidate_unit,utils,log_config,cascor_constants}/**` or the workflow.
@@ -143,7 +143,7 @@ From the second dialog (answered at 21:52Z; findings 1, 4 and 5 below are the ev
 
 ## Remaining work
 
-Do items A and B first; neither waits for the soak. The owner's merge approval of 2026-11-16 does not carry over, so
+Do items A and B first; neither waits for the soak. The Overtoad's merge approval of 2026-11-16 does not carry over, so
 confirm it before merging.
 
 - **A. The recurrence detector fix (ruling 7).** In `ci-recurrence-{app,bench,client,model}.yml`, in job `changes`,
@@ -172,7 +172,7 @@ confirm it before merging.
   - deploy's matrix posts its 3.12 leg as `Pre-commit` through an expression name, so keep that.
   - juniper-ml's `tests/test_python_version_matrix_drift.py` pins its matrices, so update it with them.
 
-1. **On or after 2026-11-23**: the soak re-count (Goal statement), then phase 3 with the owner's scope. One PR per
+1. **On or after 2026-11-23**: the soak re-count (Goal statement), then phase 3 with the Overtoad's scope. One PR per
    repo, plus ruleset PUTs:
    - **PR legs + rulesets.** On every PR-path 3.15 leg, drop `experimental: true`, each step's
      `continue-on-error: ${{ matrix.experimental == true }}`, and the `Report the informational Python 3.15 result`
@@ -185,7 +185,7 @@ confirm it before merging.
      Then add the 11 contexts (Measurements) to the 8 rulesets. Generalise
      `util/ad-hoc/2026-11-16_cascor_ruleset_require_model_checks.py`: it reads live, does a full-replacement PUT,
      and refuses until `main` posts the context green.
-     - Legs the owner did NOT include stay informational: juniper-ml's six `ci-<pkg>.yml`, cascor-model,
+     - Legs the Overtoad did NOT include stay informational: juniper-ml's six `ci-<pkg>.yml`, cascor-model,
        cascor-protocol and the five nightly lanes. So "3.15 is blocking" becomes per-workflow, and juniper-ml's
        `conf/python_versions.yaml` and `tests/test_python_version_matrix_drift.py` (`green_violations`) must learn
        that distinction rather than flip 3.15 globally.
@@ -199,11 +199,11 @@ confirm it before merging.
    - **recurrence and harcot "in line"**: follow rulings 5 and 6. For recurrence, rename the legs and move the skips
      into the steps first, then require the 16 contexts once the new names post on `main`.
 2. **dill floor**: unchanged from the predecessor. Raise cascor's and cascor-model's dill floors when a release after
-   0.4.1 ships with 3.15 support. Do not cite the upstream PR number in a PR body. The owner's merge approval is
+   0.4.1 ships with 3.15 support. Do not cite the upstream PR number in a PR body. The Overtoad's merge approval is
    needed again.
 3. **cascor's skip path**: read #770's `CI — juniper-cascor-model` run once #770 is updated (Done, "Ruleset
    15081045").
-## Open owner questions
+## Open Overtoad questions
 
 None. The second dialog answered all four questions it asked, as rulings 5 to 8. Finding 2 (fail-closed, low risk)
 and finding 3 (phase 3 removes the cause) were reported and not asked.
@@ -217,7 +217,7 @@ and finding 3 (phase 3 removes the cause) were reported and not asked.
   - `pre-commit run --files .[g]ithub/workflows/<f>` passes the guard.
 - **A fresh worktree has no `tmp/`.** `util/ad-hoc/2026-11-15_seqsafety_probe_worktree.py` writes its private index
   there and fails with `Unable to create … index.lock` until `mkdir tmp`.
-- **The owner dialog blocked the session for about seven hours.** Re-read anything time-sensitive after one. During
+- **The Overtoad dialog blocked the session for about seven hours.** Re-read anything time-sensitive after one. During
   this one, cascor's `main` gained #769 (`a011f21e`, committed 09:20Z), and juniper-ml's `main` moved to `dad9f1c6`.
 - **`gh run view --log` printed nothing** (gh 2.46) for these runs. Read job logs with
   `gh api repos/<o>/<r>/actions/jobs/<id>/logs`.
@@ -244,7 +244,7 @@ python3 util/ad-hoc/2026-11-16_py315_leg_warning_history.py --since 2026-11-16T0
   - `cascor_model_gate_logic_check.py`, `cascor_ruleset_require_model_checks.py`;
   - `open_signed_pr_from_paths.bash`, `piped_grep_q_failopen_scan.py`.
 - This version, with the paused status and rulings 5 to 8, lands through a one-file PR on branch
-  `docs/handoff-py315-paused-owner-rulings`.
+  `docs/handoff-py315-paused-Overtoad-rulings`.
 - The juniper-ml worktree `serialized-snuggling-gadget` is on `worktree-serialized-snuggling-gadget` at `edea2eb1`,
   with nothing committed. Its `tmp/` is already copied (next bullet), so the worktree can be removed.
 - The session's evidence comes to 35 files and 1.1 MB:

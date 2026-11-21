@@ -23,7 +23,7 @@ M1 also explicitly depends on W1.0: "P1 merged: W1.0 go/no-go issued." Thus even
 
 Requiring a published artifact is defensible for a milestone named "contract deployed": a checkout cannot prove the deployed path. The problem is schedule actionability. W1.11 makes an external release train a hard gate — "**M1 requires this item**" — but supplies no slip rule, fallback milestone, or revised-date trigger. The dependency table merely repeats that floors and pins follow publish.
 
-If 0.17.0, GHCR, a pin PR, or the published-image smoke slips, M1 slips wholesale; the plan never says whether runnable code may earn a partial milestone or how the date is rebaselined. With one owner, this is a brittle all-or-nothing gate rather than a managed dependency.
+If 0.17.0, GHCR, a pin PR, or the published-image smoke slips, M1 slips wholesale; the plan never says whether runnable code may earn a partial milestone or how the date is rebaselined. With one Overtoad, this is a brittle all-or-nothing gate rather than a managed dependency.
 
 **Severity: MAJOR.** Quoted evidence: "PyPI 0.17.0 probe ... smoke passes on published images. **M1 requires this item.**"
 
@@ -39,9 +39,9 @@ B2 is stronger. The prerequisites are themselves P0, so the matrix can close P0 
 
 ## Q5 — R4 converted to a note
 
-This attack does not land. The note gives a technical invariant, not an unexplained owner preference: producer normalization is fitted on pooled train data, while early CV folds evaluate rows inside that pool, so those fold statistics leak. Its remedy is equally scoped: preprocessing added for CV must fit only fold-train rows. It also preserves producer normalization as a convenience rather than banning it.
+This attack does not land. The note gives a technical invariant, not an unexplained Overtoad preference: producer normalization is fitted on pooled train data, while early CV folds evaluate rows inside that pool, so those fold statistics leak. Its remedy is equally scoped: preprocessing added for CV must fit only fold-train rows. It also preserves producer normalization as a convenience rather than banning it.
 
-Converting that invariant into a note is not self-serving merely because the author resolved it. An owner ruling would be appropriate only if there were competing valid leakage policies; none is offered here.
+Converting that invariant into a note is not self-serving merely because the author resolved it. An Overtoad ruling would be appropriate only if there were competing valid leakage policies; none is offered here.
 
 **Severity: HELD.** Quoted evidence: "its statistics leak into the early folds whose eval rows are inside that partition" and "must be fitted on the fold's train rows."
 
@@ -55,11 +55,11 @@ The missing-metric case is not consistent or actionable. W5.4 acceptance says un
 
 ## Q7 — M1 date credibility
 
-M1 on 2026-11-07 is not credible as a five-week, one-owner target when M0 consumes the first two weeks and P1 then has roughly three weeks. P1 contains W1.0 (M matrix), W1.2 (M), W1.4 (M), W1.5 (L across three repos), W1.8 (S–M), W1.11 (M release/ops), plus seven S/S–M rows and W1.12's restart persistence smoke.
+M1 on 2026-11-07 is not credible as a five-week, one-Overtoad target when M0 consumes the first two weeks and P1 then has roughly three weeks. P1 contains W1.0 (M matrix), W1.2 (M), W1.4 (M), W1.5 (L across three repos), W1.8 (S–M), W1.11 (M release/ops), plus seven S/S–M rows and W1.12's restart persistence smoke.
 
-The milestone also names releases of recurrence 0.6.0, model 0.4.0, data-client 0.6.0, canopy 0.9.0, and data 0.17.0. Only the data release is an explicit work item. Cross-repo review, release publication, image publication, pin PRs, and the authenticated smoke are not represented by enough schedule slack. Agents parallelize drafting, not owner review and release authority.
+The milestone also names releases of recurrence 0.6.0, model 0.4.0, data-client 0.6.0, canopy 0.9.0, and data 0.17.0. Only the data release is an explicit work item. Cross-repo review, release publication, image publication, pin PRs, and the authenticated smoke are not represented by enough schedule slack. Agents parallelize drafting, not Overtoad review and release authority.
 
-**Severity: MAJOR.** Quoted evidence: "Staffing assumption: one owner ..." and "M1 ... 2026-11-07 ... requires W1.11 ... and W1.12."
+**Severity: MAJOR.** Quoted evidence: "Staffing assumption: one Overtoad ..." and "M1 ... 2026-11-07 ... requires W1.11 ... and W1.12."
 
 ## Q8 — Recording the B2 dissent
 

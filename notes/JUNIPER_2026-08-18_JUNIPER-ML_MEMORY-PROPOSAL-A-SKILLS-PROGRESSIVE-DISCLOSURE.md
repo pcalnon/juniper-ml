@@ -13,7 +13,7 @@
 
 This is **Proposal A** of four independent, competing proposals for the 2026-08-18
 shared-session-memory design effort. It is not a plan of record. It argues one
-architectural bet as hard and as honestly as it can, so the owner can compare four
+architectural bet as hard and as honestly as it can, so the Overtoad can compare four
 arguments rather than four summaries.
 
 **The bet:** the bulk of `AGENTS.md` should become **Skills**, whose bodies load only when
@@ -56,10 +56,10 @@ something a design can target.
 
 ### 1.1 The accretion is almost perfectly localized
 
-| Metric | Value | Source |
-|--------|-------|--------|
-| Bytes in nested `  - ` sub-bullets | 44,567 | measured |
-| …of those, inside `## Key Files` | **43,842 (98.4%)**, 154 of 156 sub-bullets | measured |
+| Metric                             | Value                                      | Source   |
+|------------------------------------|--------------------------------------------|----------|
+| Bytes in nested `  - ` sub-bullets | 44,567                                     | measured |
+| …of those, inside `## Key Files`   | **43,842 (98.4%)**, 154 of 156 sub-bullets | measured |
 
 Doc 1 §4 identifies per-incident sub-bullets as the growth mechanism. They are **not spread
 through the file**: 154 of 156 are inside one section. The remaining two are in
@@ -71,25 +71,25 @@ through the file**: 154 of 156 are inside one section. The remaining two are in
 Attributing every added line since 2026-06-01 to the H2 section it landed in
 (285 commits, 2,011 added lines):
 
-| Added lines | % | Commits touching | Section |
-|-------------|---|------------------|---------|
-| 1,298 | 64.5% | **225 of 285 (79%)** | `## Key Files` |
-| 222 | 11.0% | 70 | `## CI/CD Pipelines` |
-| 209 | 10.4% | **114 of 285 (40%)** | `## Repository Structure` |
-| 103 | 5.1% | 102 | header block (`**Last Updated**` / `**Version**`) |
-| 69 | 3.4% | 58 | `## Build & Package Commands` |
-| 38 | 1.9% | 10 | Worktree + Handoff + Conventions + PR Conventions, combined |
+| Added lines | %     | Commits touching     | Section                                                     |
+|-------------|-------|----------------------|-------------------------------------------------------------|
+| 1,298       | 64.5% | **225 of 285 (79%)** | `## Key Files`                                              |
+| 222         | 11.0% | 70                   | `## CI/CD Pipelines`                                        |
+| 209         | 10.4% | **114 of 285 (40%)** | `## Repository Structure`                                   |
+| 103         | 5.1%  | 102                  | header block (`**Last Updated**` / `**Version**`)           |
+| 69          | 3.4%  | 58                   | `## Build & Package Commands`                               |
+| 38          | 1.9%  | 10                   | Worktree + Handoff + Conventions + PR Conventions, combined |
 
 Then attributing the 1,298 `## Key Files` lines to *domains* (the boundaries this proposal
 draws), 225 commits touched that section and:
 
-| Distinct domains touched | Commits |
-|--------------------------|---------|
-| **exactly 1** | **164 (73%)** |
-| 2 | 31 |
-| 3 | 9 |
-| 4 | 14 |
-| 5 | 7 |
+| Distinct domains touched | Commits       |
+|--------------------------|---------------|
+| **exactly 1**            | **164 (73%)** |
+| 2                        | 31            |
+| 3                        | 9             |
+| 4                        | 14            |
+| 5                        | 7             |
 
 **73% of the commits into the busiest section are single-domain.** That is the number that
 decides whether splitting reduces the collision surface or merely relocates it
@@ -106,17 +106,17 @@ them by section (predicate: case-insensitive `must|mandatory|never|prohibited|al
 which yields 160 lines — the nearest reproducible predicate to doc 1's 164; the distribution,
 not the total, is what matters here):
 
-| Lines | Section | Genre |
-|-------|---------|-------|
-| 110 | `## Key Files` | B — component contract |
-| 21 | `## CI/CD Pipelines` | B |
-| 8 | `## Repository Structure` | B |
-| 5 | `## Shared Service-Core Contracts` | B, but **security**-load-bearing |
-| 5 | `## Thread Handoff` | **A — agent behaviour** |
-| 4 | `## Conventions` | **A** |
-| 4 | `## Worktree Procedures` | **A** |
-| 2 | `## Publishing` | **A** (the Release convention) |
-| 1 | `## Pull Request Conventions` | **A** |
+| Lines | Section                            | Genre                            |
+|-------|------------------------------------|----------------------------------|
+| 110   | `## Key Files`                     | B — component contract           |
+| 21    | `## CI/CD Pipelines`               | B                                |
+| 8     | `## Repository Structure`          | B                                |
+| 5     | `## Shared Service-Core Contracts` | B, but **security**-load-bearing |
+| 5     | `## Thread Handoff`                | **A — agent behaviour**          |
+| 4     | `## Conventions`                   | **A**                            |
+| 4     | `## Worktree Procedures`           | **A**                            |
+| 2     | `## Publishing`                    | **A** (the Release convention)   |
+| 1     | `## Pull Request Conventions`      | **A**                            |
 
 **139 of 160 (87%) live in the three sections this proposal relocates. Only 16 are genre A** —
 and all 16 fit comfortably inside a 200-line residual file. This is the single most important
@@ -134,12 +134,12 @@ the very section it summarizes.
 
 Worse, the `[skip ci]` orphan class exists in **four** places at once:
 
-| Location | Evidence |
-|----------|----------|
-| `AGENTS.md:735` and `AGENTS.md:826` | two prose retellings |
-| `docs/REFERENCE.md:1374` | table row in `## AGENTS.md Date Check` |
-| `.github/workflows/agents-md-touch-up.yml:20-45` | 26-line header comment |
-| `~/.claude/…/memory/MEMORY.md` | index entry `project_juniper_ml_agents_md_touchup_skipci_orphan` |
+| Location                                         | Evidence                                                         |
+|--------------------------------------------------|------------------------------------------------------------------|
+| `AGENTS.md:735` and `AGENTS.md:826`              | two prose retellings                                             |
+| `docs/REFERENCE.md:1374`                         | table row in `## AGENTS.md Date Check`                           |
+| `.github/workflows/agents-md-touch-up.yml:20-45` | 26-line header comment                                           |
+| `~/.claude/…/memory/MEMORY.md`                   | index entry `project_juniper_ml_agents_md_touchup_skipci_orphan` |
 
 And the pointers are circular: `docs/REFERENCE.md:1719` sends the reader to
 "AGENTS.md CI/CD Pipelines" for the deep dive, while 32 lines of `AGENTS.md` send the reader
@@ -301,7 +301,7 @@ four structural additions, each justified individually:
   separate designs of record ([release-train plan / runbook] and
   [`JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md`](JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md)).
 - `worktree-ops` **split from** `host-orchestration`: different lifecycle (per-task versus
-  per-boot) and different owner surface; merging them makes a 10,000-char body that every
+  per-boot) and different Overtoad surface; merging them makes a 10,000-char body that every
   worktree question drags service-orchestration lore into.
 - `shared-packages` **added**: `## Shared Observability Helpers` + `## Shared Service-Core
   Contracts` are H2 sections today, not `## Key Files` entries, so they carry no `## Key Files`
@@ -319,20 +319,20 @@ Eleven **reference skills**, all repo-scoped, all model-invocable, all under
 Source sizes are UTF-8 **bytes** as measured from the line ranges named; body targets are
 **character** budgets. (The 1.1% divergence is immaterial at this granularity.)
 
-| # | Skill | Source material in `AGENTS.md` | Source bytes | Body target |
-|---|-------|--------------------------------|--------------|-------------|
-| 1 | `juniper-ml-release-train` | `:428-459` (registry/detect/propose/notes_render/archive_guard/ceremony) + `:666-678` (their tests) + `:805-840` (`### Release Train`) + `:722` (workflow bullet) | 23,321 | **14,000** + `reference/halt-catalog.md` ≈ 6,000 |
-| 2 | `juniper-ml-publish-path` | `:480-485` (`assert_release_tag`) + `:624-634` (publish/tag tests) + `:774-785` (`### Publishing`) + publisher workflow bullets + `:115-152` | 10,220 | **9,000** |
-| 3 | `juniper-ml-experiments` | `:517-596` (isolated_stack, experiment_stack, run_experiment, run_suite, get_cascor) + `:682-709` (tests) | 26,923 | **15,000** + `reference/driver-exit-matrix.md` ≈ 5,000 |
-| 4 | `juniper-ml-host-orchestration` | `:407-413` (reaper) + `:502-516` (plant/chop) + `:605-608` (tests) | 6,517 | **6,500** |
-| 5 | `juniper-ml-worktree-ops` | `:405-406` (`worktree_cleanup`) + `:602-604` (tests) + `:984-1031` (Quick Reference command blocks) | 3,900 | **5,000** |
-| 6 | `juniper-ml-env-drift` | `:415`, `:418-427` + `:609-616`, `:619-623`, `:660-665` (tests) | 10,479 | **9,000** |
-| 7 | `juniper-ml-agent-suite` | `:416-417`, `:460`, `:472-479` + `:635-639`, `:643-646`, `:650-659` (tests) | 11,737 | **10,000** |
-| 8 | `juniper-ml-fleet-triage` | `:461-471` (screens, `predict_merge`) + `:486-499` (`open_signed_pr`, `wait_for_checks`) + `:618`, `:640-642`, `:647-649` | 11,135 | **9,000** |
-| 9 | `juniper-ml-ci-workflows` | `### CI/CD Workflows` `:713-742` less publish/release rows + `## CI/CD Pipelines` `:753-844` less its release/publish subsections + `:617` | 11,925 | **10,000** |
-| 10 | `juniper-ml-shared-packages` | `## Shared Observability Helpers` `:153-163` + `## Shared Service-Core Contracts` `:164-179` + extras table `:881-892` | 6,607 | **6,500** |
-| 11 | `juniper-ml-repo-map` | `## Repository Structure` `:180-376` + `## Key Files` `:377-404`, `:743-752` | 22,911 | **7,000** |
-| | **Total** | | **145,675** | **101,000** (+ 11,000 sub-files) |
+| #  | Skill                           | Source material in `AGENTS.md`                                                                                                                                    | Source bytes | Body target                                            |
+|----|---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|--------------------------------------------------------|
+| 1  | `juniper-ml-release-train`      | `:428-459` (registry/detect/propose/notes_render/archive_guard/ceremony) + `:666-678` (their tests) + `:805-840` (`### Release Train`) + `:722` (workflow bullet) | 23,321       | **14,000** + `reference/halt-catalog.md` ≈ 6,000       |
+| 2  | `juniper-ml-publish-path`       | `:480-485` (`assert_release_tag`) + `:624-634` (publish/tag tests) + `:774-785` (`### Publishing`) + publisher workflow bullets + `:115-152`                      | 10,220       | **9,000**                                              |
+| 3  | `juniper-ml-experiments`        | `:517-596` (isolated_stack, experiment_stack, run_experiment, run_suite, get_cascor) + `:682-709` (tests)                                                         | 26,923       | **15,000** + `reference/driver-exit-matrix.md` ≈ 5,000 |
+| 4  | `juniper-ml-host-orchestration` | `:407-413` (reaper) + `:502-516` (plant/chop) + `:605-608` (tests)                                                                                                | 6,517        | **6,500**                                              |
+| 5  | `juniper-ml-worktree-ops`       | `:405-406` (`worktree_cleanup`) + `:602-604` (tests) + `:984-1031` (Quick Reference command blocks)                                                               | 3,900        | **5,000**                                              |
+| 6  | `juniper-ml-env-drift`          | `:415`, `:418-427` + `:609-616`, `:619-623`, `:660-665` (tests)                                                                                                   | 10,479       | **9,000**                                              |
+| 7  | `juniper-ml-agent-suite`        | `:416-417`, `:460`, `:472-479` + `:635-639`, `:643-646`, `:650-659` (tests)                                                                                       | 11,737       | **10,000**                                             |
+| 8  | `juniper-ml-fleet-triage`       | `:461-471` (screens, `predict_merge`) + `:486-499` (`open_signed_pr`, `wait_for_checks`) + `:618`, `:640-642`, `:647-649`                                         | 11,135       | **9,000**                                              |
+| 9  | `juniper-ml-ci-workflows`       | `### CI/CD Workflows` `:713-742` less publish/release rows + `## CI/CD Pipelines` `:753-844` less its release/publish subsections + `:617`                        | 11,925       | **10,000**                                             |
+| 10 | `juniper-ml-shared-packages`    | `## Shared Observability Helpers` `:153-163` + `## Shared Service-Core Contracts` `:164-179` + extras table `:881-892`                                            | 6,607        | **6,500**                                              |
+| 11 | `juniper-ml-repo-map`           | `## Repository Structure` `:180-376` + `## Key Files` `:377-404`, `:743-752`                                                                                      | 22,911       | **7,000**                                              |
+|    | **Total**                       |                                                                                                                                                                   | **145,675**  | **101,000** (+ 11,000 sub-files)                       |
 
 The 145,675 → 101,000 compression (−31%) is **not** hand-waving: it is exactly the
 duplication with `docs/REFERENCE.md` documented in [§1.4](#14-some-lore-is-duplicated-four-ways).
@@ -354,20 +354,20 @@ Each is written keyword-first, because truncation keeps the start
 and ends with an explicit `Use before editing <path glob>` clause so the routing signal is a
 path the model is about to touch, not a topic it has to infer.
 
-| Skill | Description (as proposed) | Chars |
-|-------|---------------------------|-------|
-| `juniper-ml-release-train` | Release-train internals: `detect.py` classifications (UNRELEASED_CHANGES / BUMPED_NOT_RELEASED / SHIP_UNCERTAIN / TAG_ONLY), `propose.py` version+CHANGELOG+AGENTS.md edits, `notes_render`, `archive_guard`'s four rules, ceremony HALTs and publish-run selection, `registry.yaml`. Use before editing anything under `util/release_train/` or `release-train.yml`. | 340 |
-| `juniper-ml-publish-path` | PyPI publish path: the 7 publishers, tag-only environment ref policies, `assert_release_tag.bash`, job-scoped `id-token`, TestPyPI Gate 1 extras verify, the Release-not-bare-tag convention. Use before editing `publish.yml` / `publish-*.yml`, a pypi/testpypi environment, or `util/assert_release_tag.bash`. | 295 |
-| `juniper-ml-experiments` | Experiment stack and drivers: `experiment_stack.bash` port ranges / RUN_DIR / F-6 listener-pid rule, `run_experiment.py` config schema, drive loops, Q-2 stall+wall budgets, exit matrix 0-4, plots/stats, `run_suite.py` cells and budget forwarding, suite YAML gate. Use before editing `util/experiment_stack.bash`, `util/experiments/**`, or a `suites/**.yaml`. | 335 |
-| `juniper-ml-host-orchestration` | Host service bring-up and teardown: `juniper_plant_all` / `juniper_chop_all` (systemd and nohup arms, `safe_conda_activate` nounset, KILL_WORKERS), `isolated_stack.bash` trio, `reap_pytest_orphans` live-experiment PROTECT keys. Use before editing `util/juniper_*_all.bash`, `util/isolated_stack.bash`, or `util/reap_pytest_orphans.bash`. | 315 |
-| `juniper-ml-worktree-ops` | Worktree tooling internals: `worktree_cleanup.bash` phases 1-7, the dirty-tree exit-1 gate, path-collision refusal, `cleanup_session_worktrees` fail-closed merged-PR check, the sweep scripts. The RULES for when to use a worktree stay in AGENTS.md; this holds the script contracts. Use before editing `util/worktree_*.bash` or `scripts/cleanup_session_worktrees.py`. | 350 |
-| `juniper-ml-env-drift` | Environment and install drift checkers: `editable_install_drift_check` path vs version axes (FRESH/WORKTREE_PINNED/ORPHANED × MATCH/STALE/UNKNOWN), `env_floor_drift_check` BELOW_FLOOR, `requirements_drift_check`, the doc-tools/ci-tools pin lints, service-fork drift ledger. Use before editing `util/*drift*.py` or a consumer pin. | 320 |
-| `juniper-ml-agent-suite` | Custom-agent suite internals: `prompt_discovery` grounding bundle, the `agent_templates` library + manifest `match_signals`, the data-layer resolver, `scaffold_template`, `agent_suite_doctor`/`summary`, `install_agents` mirror, and every `.claude/agents` + `.claude/skills` lint. Use before editing `.claude/**`, `prompts/agent_templates/**`, or the suite utilities. | 340 |
-| `juniper-ml-fleet-triage` | Fleet PR triage and CI waiting: `predict_merge` four verdicts and TRUE delta, the sequence-safety symbol/docs screens and their `Allow-*` trailers, `wait_for_checks` required-vs-observed anchor traps, `open_signed_pr` signed-commit path. Use before editing `util/fleet_triage/**`, `util/wait_for_checks.py`, or `util/open_signed_pr.py`. | 315 |
-| `juniper-ml-ci-workflows` | CI workflow contracts: `ci.yml` job set and the Quality Gate `needs:` list, `main-verify` G3 catch-up base, `docs-full-check` ECOSYSTEM_REPOS, security-scan vs per-PR pip-audit, lockfile-update, pr-budget-alarm, `agents-md-touch-up` verify-not-bump, the six `ci-*.yml` sub-package CIs. Use before editing `.github/workflows/**`. | 305 |
-| `juniper-ml-shared-packages` | In-repo published sub-packages: `juniper-observability` `register_or_reuse` family, `juniper-service-core` load-bearing security invariants (CR-024 body limit, auth-before-rate-limit, 429 headers, WS tunables), model-core / ci-tools / doc-tools / config-tools, and the pyproject extras contract. Use before editing `juniper-*/` subdirectories or pyproject extras. | 350 |
-| `juniper-ml-repo-map` | Repository layout beyond top-level directories: what lives under `util/`, `tests/`, `scripts/`, `conf/`, `notes/`, `prompts/`, `docs/`, and each `juniper-*/` sub-package, plus which file is the gate for which surface. Use when you need to find where something lives and `ls`/glob has not answered it. | 270 |
-| | **Total description chars** | **3,535** |
+| Skill                           | Description (as proposed)                                                                                                                                                                                                                                                                                                                                                      | Chars     |
+|---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| `juniper-ml-release-train`      | Release-train internals: `detect.py` classifications (UNRELEASED_CHANGES / BUMPED_NOT_RELEASED / SHIP_UNCERTAIN / TAG_ONLY), `propose.py` version+CHANGELOG+AGENTS.md edits, `notes_render`, `archive_guard`'s four rules, ceremony HALTs and publish-run selection, `registry.yaml`. Use before editing anything under `util/release_train/` or `release-train.yml`.          | 340       |
+| `juniper-ml-publish-path`       | PyPI publish path: the 7 publishers, tag-only environment ref policies, `assert_release_tag.bash`, job-scoped `id-token`, TestPyPI Gate 1 extras verify, the Release-not-bare-tag convention. Use before editing `publish.yml` / `publish-*.yml`, a pypi/testpypi environment, or `util/assert_release_tag.bash`.                                                              | 295       |
+| `juniper-ml-experiments`        | Experiment stack and drivers: `experiment_stack.bash` port ranges / RUN_DIR / F-6 listener-pid rule, `run_experiment.py` config schema, drive loops, Q-2 stall+wall budgets, exit matrix 0-4, plots/stats, `run_suite.py` cells and budget forwarding, suite YAML gate. Use before editing `util/experiment_stack.bash`, `util/experiments/**`, or a `suites/**.yaml`.         | 335       |
+| `juniper-ml-host-orchestration` | Host service bring-up and teardown: `juniper_plant_all` / `juniper_chop_all` (systemd and nohup arms, `safe_conda_activate` nounset, KILL_WORKERS), `isolated_stack.bash` trio, `reap_pytest_orphans` live-experiment PROTECT keys. Use before editing `util/juniper_*_all.bash`, `util/isolated_stack.bash`, or `util/reap_pytest_orphans.bash`.                              | 315       |
+| `juniper-ml-worktree-ops`       | Worktree tooling internals: `worktree_cleanup.bash` phases 1-7, the dirty-tree exit-1 gate, path-collision refusal, `cleanup_session_worktrees` fail-closed merged-PR check, the sweep scripts. The RULES for when to use a worktree stay in AGENTS.md; this holds the script contracts. Use before editing `util/worktree_*.bash` or `scripts/cleanup_session_worktrees.py`.  | 350       |
+| `juniper-ml-env-drift`          | Environment and install drift checkers: `editable_install_drift_check` path vs version axes (FRESH/WORKTREE_PINNED/ORPHANED × MATCH/STALE/UNKNOWN), `env_floor_drift_check` BELOW_FLOOR, `requirements_drift_check`, the doc-tools/ci-tools pin lints, service-fork drift ledger. Use before editing `util/*drift*.py` or a consumer pin.                                      | 320       |
+| `juniper-ml-agent-suite`        | Custom-agent suite internals: `prompt_discovery` grounding bundle, the `agent_templates` library + manifest `match_signals`, the data-layer resolver, `scaffold_template`, `agent_suite_doctor`/`summary`, `install_agents` mirror, and every `.claude/agents` + `.claude/skills` lint. Use before editing `.claude/**`, `prompts/agent_templates/**`, or the suite utilities. | 340       |
+| `juniper-ml-fleet-triage`       | Fleet PR triage and CI waiting: `predict_merge` four verdicts and TRUE delta, the sequence-safety symbol/docs screens and their `Allow-*` trailers, `wait_for_checks` required-vs-observed anchor traps, `open_signed_pr` signed-commit path. Use before editing `util/fleet_triage/**`, `util/wait_for_checks.py`, or `util/open_signed_pr.py`.                               | 315       |
+| `juniper-ml-ci-workflows`       | CI workflow contracts: `ci.yml` job set and the Quality Gate `needs:` list, `main-verify` G3 catch-up base, `docs-full-check` ECOSYSTEM_REPOS, security-scan vs per-PR pip-audit, lockfile-update, pr-budget-alarm, `agents-md-touch-up` verify-not-bump, the six `ci-*.yml` sub-package CIs. Use before editing `.github/workflows/**`.                                       | 305       |
+| `juniper-ml-shared-packages`    | In-repo published sub-packages: `juniper-observability` `register_or_reuse` family, `juniper-service-core` load-bearing security invariants (CR-024 body limit, auth-before-rate-limit, 429 headers, WS tunables), model-core / ci-tools / doc-tools / config-tools, and the pyproject extras contract. Use before editing `juniper-*/` subdirectories or pyproject extras.    | 350       |
+| `juniper-ml-repo-map`           | Repository layout beyond top-level directories: what lives under `util/`, `tests/`, `scripts/`, `conf/`, `notes/`, `prompts/`, `docs/`, and each `juniper-*/` sub-package, plus which file is the gate for which surface. Use when you need to find where something lives and `ls`/glob has not answered it.                                                                   | 270       |
+|                                 | **Total description chars**                                                                                                                                                                                                                                                                                                                                                    | **3,535** |
 
 None of these uses `when_to_use`: it shares the same 1,536-char entry cap
 ([§3.3](#33-verified-from-the-binary-the-listing-budget-is-exactly-8000-characters)), so a
@@ -379,15 +379,15 @@ second field buys nothing the description cannot carry more cheaply.
 
 ### 6.1 Listing cost, computed
 
-| Component | Chars |
-|-----------|-------|
-| 11 reference descriptions | 3,535 |
-| 11 × (`name.length` + 4), names averaging 25 | 319 |
-| 3 existing procedural skills (`template-agent` 481, `ui-test-author` 414, `service-smoke` 455, + names) | 1,403 |
-| 13 inter-entry separators | 13 |
-| **Total listing** | **5,270** |
-| **Budget** ([§3.3](#33-verified-from-the-binary-the-listing-budget-is-exactly-8000-characters)) | **8,000** |
-| **Headroom** | **2,730 (34%)** — roughly 8 further skills |
+| Component                                                                                               | Chars                                      |
+|---------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| 11 reference descriptions                                                                               | 3,535                                      |
+| 11 × (`name.length` + 4), names averaging 25                                                            | 319                                        |
+| 3 existing procedural skills (`template-agent` 481, `ui-test-author` 414, `service-smoke` 455, + names) | 1,403                                      |
+| 13 inter-entry separators                                                                               | 13                                         |
+| **Total listing**                                                                                       | **5,270**                                  |
+| **Budget** ([§3.3](#33-verified-from-the-binary-the-listing-budget-is-exactly-8000-characters))         | **8,000**                                  |
+| **Headroom**                                                                                            | **2,730 (34%)** — roughly 8 further skills |
 
 Every entry is far below the 1,536-char per-entry cap, so no description is ever truncated
 mid-entry in juniper-ml alone.
@@ -396,10 +396,10 @@ mid-entry in juniper-ml alone.
 
 Two classes, deliberately named differently:
 
-| Class | Members | Naming | Mirrored to `~/.claude`? | Invocation |
-|-------|---------|--------|--------------------------|------------|
-| **Procedural** | the 3 existing (`template-agent`, `service-smoke`, `ui-test-author`) | unprefixed — they are fleet-wide procedures and their names are already correct | **yes** | user-only (`disable-model-invocation: true`, asserted by three lints) |
-| **Reference** | the 11 new | `juniper-ml-<domain>` | **no** ([§11](#11-the-nine-repo-ecosystem)) | model-invocable (key omitted) |
+| Class          | Members                                                              | Naming                                                                          | Mirrored to `~/.claude`?                    | Invocation                                                            |
+|----------------|----------------------------------------------------------------------|---------------------------------------------------------------------------------|---------------------------------------------|-----------------------------------------------------------------------|
+| **Procedural** | the 3 existing (`template-agent`, `service-smoke`, `ui-test-author`) | unprefixed — they are fleet-wide procedures and their names are already correct | **yes**                                     | user-only (`disable-model-invocation: true`, asserted by three lints) |
+| **Reference**  | the 11 new                                                           | `juniper-ml-<domain>`                                                           | **no** ([§11](#11-the-nine-repo-ecosystem)) | model-invocable (key omitted)                                         |
 
 The prefix is not decoration. [§3.2](#32-verified-an-over-budget-skill-loses-its-description-entirely-not-gradually)
 establishes that a starved skill degrades to `- <name>:` with no description at all. The name
@@ -424,45 +424,45 @@ same topic. Cost: ~11 chars × 11 skills = 121 chars of permanent listing budget
 
 ### 7.1 Current sections, character basis (reconciles to 168,317)
 
-| Lines | Chars | Section | Disposition |
-|-------|-------|---------|-------------|
-| 13 | 331 | header block | keep verbatim (schema gate) |
-| 6 | 596 | `## What This Is` | condense |
-| 89 | 4,617 | `## Build & Package Commands` | drop the 54-line unittest list (3,119 chars) |
-| 44 | 3,641 | `## Publishing` | keep the mandatory Release convention only |
-| 11 | 1,495 | `## Shared Observability Helpers` | → skill 10 |
-| 16 | 3,512 | `## Shared Service-Core Contracts` | → skill 10 + a `paths:` rule ([§12.8](#128-d8--path-scoped-rules-for-the-security-invariants-secondary)) |
-| 197 | 20,469 | `## Repository Structure` | → skill 11; keep a gate-minimal tree |
-| 376 | 99,304 | `## Key Files` | → skills 1-11; replaced by a Skill Index |
-| 92 | 16,101 | `## CI/CD Pipelines` | → skills 1, 2, 9; keep required-context names |
-| 22 | 2,085 | `## Pre-commit Hooks` | condense to the three load-bearing scope facts |
-| 10 | 492 | `## Secrets Management (SOPS)` | keep verbatim |
-| 16 | 2,315 | `## Ecosystem Context` | extras table → skill 10 |
-| 28 | 2,484 | `## Conventions` | **keep verbatim — genre A** |
-| 29 | 2,842 | `## Pull Request Conventions` | keep verbs + scope + the `id_assignments` prohibition |
-| 92 | 4,159 | `## Worktree Procedures` | keep rules; command blocks → skill 5 |
-| 74 | 3,874 | `## Thread Handoff` | keep triggers + rules; how-to already in the procedure note |
-| **1,115** | **168,317** | | |
+| Lines     | Chars       | Section                            | Disposition                                                                                              |
+|-----------|-------------|------------------------------------|----------------------------------------------------------------------------------------------------------|
+| 13        | 331         | header block                       | keep verbatim (schema gate)                                                                              |
+| 6         | 596         | `## What This Is`                  | condense                                                                                                 |
+| 89        | 4,617       | `## Build & Package Commands`      | drop the 54-line unittest list (3,119 chars)                                                             |
+| 44        | 3,641       | `## Publishing`                    | keep the mandatory Release convention only                                                               |
+| 11        | 1,495       | `## Shared Observability Helpers`  | → skill 10                                                                                               |
+| 16        | 3,512       | `## Shared Service-Core Contracts` | → skill 10 + a `paths:` rule ([§12.8](#128-d8--path-scoped-rules-for-the-security-invariants-secondary)) |
+| 197       | 20,469      | `## Repository Structure`          | → skill 11; keep a gate-minimal tree                                                                     |
+| 376       | 99,304      | `## Key Files`                     | → skills 1-11; replaced by a Skill Index                                                                 |
+| 92        | 16,101      | `## CI/CD Pipelines`               | → skills 1, 2, 9; keep required-context names                                                            |
+| 22        | 2,085       | `## Pre-commit Hooks`              | condense to the three load-bearing scope facts                                                           |
+| 10        | 492         | `## Secrets Management (SOPS)`     | keep verbatim                                                                                            |
+| 16        | 2,315       | `## Ecosystem Context`             | extras table → skill 10                                                                                  |
+| 28        | 2,484       | `## Conventions`                   | **keep verbatim — genre A**                                                                              |
+| 29        | 2,842       | `## Pull Request Conventions`      | keep verbs + scope + the `id_assignments` prohibition                                                    |
+| 92        | 4,159       | `## Worktree Procedures`           | keep rules; command blocks → skill 5                                                                     |
+| 74        | 3,874       | `## Thread Handoff`                | keep triggers + rules; how-to already in the procedure note                                              |
+| **1,115** | **168,317** |                                    |                                                                                                          |
 
 ### 7.2 The residual budget
 
-| Lines | Chars | Section |
-|-------|-------|---------|
-| 13 | 331 | header block (unchanged) |
-| 3 | 400 | `## What This Is` |
-| 18 | 1,150 | `## Build & Package Commands` |
-| 9 | 950 | `## Publishing` — the mandatory Release convention |
-| 26 | 1,000 | `## Repository Structure` — gate-minimal tree ([§7.3](#73-the-gate-minimal-tree-is-a-verified-constraint-not-a-guess)) |
-| 18 | 1,700 | `## Skill Index` — replaces `## Key Files` |
-| 12 | 1,000 | `## CI/CD Pipelines` — required contexts + `RELEASE_TRAIN_MODE` kill switch |
-| 9 | 650 | `## Pre-commit Hooks` |
-| 10 | 492 | `## Secrets Management (SOPS)` (unchanged) |
-| 8 | 700 | `## Ecosystem Context` |
-| 28 | 2,484 | `## Conventions` (unchanged) |
-| 13 | 1,250 | `## Pull Request Conventions` |
-| 17 | 1,450 | `## Worktree Procedures` |
-| 16 | 1,600 | `## Thread Handoff` |
-| **200** | **15,157** | **Total** |
+| Lines   | Chars      | Section                                                                                                                |
+|---------|------------|------------------------------------------------------------------------------------------------------------------------|
+| 13      | 331        | header block (unchanged)                                                                                               |
+| 3       | 400        | `## What This Is`                                                                                                      |
+| 18      | 1,150      | `## Build & Package Commands`                                                                                          |
+| 9       | 950        | `## Publishing` — the mandatory Release convention                                                                     |
+| 26      | 1,000      | `## Repository Structure` — gate-minimal tree ([§7.3](#73-the-gate-minimal-tree-is-a-verified-constraint-not-a-guess)) |
+| 18      | 1,700      | `## Skill Index` — replaces `## Key Files`                                                                             |
+| 12      | 1,000      | `## CI/CD Pipelines` — required contexts + `RELEASE_TRAIN_MODE` kill switch                                            |
+| 9       | 650        | `## Pre-commit Hooks`                                                                                                  |
+| 10      | 492        | `## Secrets Management (SOPS)` (unchanged)                                                                             |
+| 8       | 700        | `## Ecosystem Context`                                                                                                 |
+| 28      | 2,484      | `## Conventions` (unchanged)                                                                                           |
+| 13      | 1,250      | `## Pull Request Conventions`                                                                                          |
+| 17      | 1,450      | `## Worktree Procedures`                                                                                               |
+| 16      | 1,600      | `## Thread Handoff`                                                                                                    |
+| **200** | **15,157** | **Total**                                                                                                              |
 
 **200 lines exactly — the official guideline in doc 2 §5 — and 15,157 characters, 9.0% of
 today's file.**
@@ -518,16 +518,16 @@ Let:
 Session cost after = `R + L + Σ_invoked s_i`. Crossover when
 `Σ_invoked s_i > B − R − L` = 168,317 − 20,427 = **147,890 chars (36,973 tokens)**.
 
-| Scenario | Chars carried | vs baseline |
-|----------|---------------|-------------|
-| Nothing invoked | 20,427 | **−87.9%** |
-| 1 average skill (9,182) | 29,609 | **−82.4%** |
-| 2 skills | 38,791 | **−77.0%** |
-| 3 skills (realistic ceiling for one session) | 47,973 | **−71.5%** |
-| 5 skills | 66,337 | **−60.6%** |
-| **All 11 reference bodies** (101,000) | 121,427 | **−27.9%** |
-| **All 11 + all 3 procedural** (130,650) | 151,077 | **−10.2%** |
-| **All 14 + every `reference/` sub-file** (141,650) | 162,077 | **−3.7%** |
+| Scenario                                           | Chars carried | vs baseline |
+|----------------------------------------------------|---------------|-------------|
+| Nothing invoked                                    | 20,427        | **−87.9%**  |
+| 1 average skill (9,182)                            | 29,609        | **−82.4%**  |
+| 2 skills                                           | 38,791        | **−77.0%**  |
+| 3 skills (realistic ceiling for one session)       | 47,973        | **−71.5%**  |
+| 5 skills                                           | 66,337        | **−60.6%**  |
+| **All 11 reference bodies** (101,000)              | 121,427       | **−27.9%**  |
+| **All 11 + all 3 procedural** (130,650)            | 151,077       | **−10.2%**  |
+| **All 14 + every `reference/` sub-file** (141,650) | 162,077       | **−3.7%**   |
 
 **Crossover is at 16.1 average-sized skill invocations. The design ships 14 skills.** The
 absolute worst case — a session that invokes every skill and reads every sub-file — is
@@ -597,16 +597,16 @@ different dispositions.
 
 **Tier 1 — stays resident in `AGENTS.md` (16 lines).** Every genre-A directive, enumerated:
 
-| Directive | Location today | Mechanically gated? |
-|-----------|----------------|---------------------|
-| Cut a GitHub Release; **never a bare `git push <tag>`** | `AGENTS.md:113-114` | **No** |
-| Scripts go under `util/`; **`/tmp/` is prohibited** for script source | `AGENTS.md:904-915` | **No** |
-| Never `grep` `id_assignments.yaml` for content — briefs are truncated | `AGENTS.md:940` | **No** |
-| Worktrees live in the centralized dir; never inside the repo | `AGENTS.md:1034` | **No** |
-| Push before you merge | `AGENTS.md:1036` | **No** |
-| Phase 7: restore the primary checkout to up-to-date `main` | `AGENTS.md:1018` | **No** |
-| Handoff **replaces** compaction; not optional | `AGENTS.md:1042-1053`, `:1110` | **No** |
-| Python `>=3.12` | `AGENTS.md:895` | yes (`pyproject` classifiers, CI matrix) |
+| Directive                                                             | Location today                 | Mechanically gated?                      |
+|-----------------------------------------------------------------------|--------------------------------|------------------------------------------|
+| Cut a GitHub Release; **never a bare `git push <tag>`**               | `AGENTS.md:113-114`            | **No**                                   |
+| Scripts go under `util/`; **`/tmp/` is prohibited** for script source | `AGENTS.md:904-915`            | **No**                                   |
+| Never `grep` `id_assignments.yaml` for content — briefs are truncated | `AGENTS.md:940`                | **No**                                   |
+| Worktrees live in the centralized dir; never inside the repo          | `AGENTS.md:1034`               | **No**                                   |
+| Push before you merge                                                 | `AGENTS.md:1036`               | **No**                                   |
+| Phase 7: restore the primary checkout to up-to-date `main`            | `AGENTS.md:1018`               | **No**                                   |
+| Handoff **replaces** compaction; not optional                         | `AGENTS.md:1042-1053`, `:1110` | **No**                                   |
+| Python `>=3.12`                                                       | `AGENTS.md:895`                | yes (`pyproject` classifiers, CI matrix) |
 
 Seven of the eight have **no mechanical gate whatsoever**. They are precisely the directives that
 must never become lazy, and all of them fit inside the 200-line residual
@@ -616,7 +616,7 @@ every one of them resident and unchanged.
 It also states plainly that keeping them resident is **not the same as enforcing them**
 (doc 2 §6). The `/tmp/` rule in particular guards against a permanent data loss that has already
 happened once (`AGENTS.md:915`), and it is a `Write`-tool path predicate that a `PreToolUse` hook
-could enforce exactly. That is [open question 3](#18-open-questions-for-the-owner), and it is out
+could enforce exactly. That is [open question 3](#18-open-questions-for-the-overtoad), and it is out
 of scope here only because it is orthogonal to the Skills bet, not because it is unimportant.
 
 **Tier 2 — `paths:`-scoped rules (5 lines).** The `juniper-service-core` security invariants
@@ -630,13 +630,13 @@ carried in `juniper-ml-shared-packages` so the rule is a net, not the sole copy.
 is structural rather than optimistic: **the prose was never what held them.** Examples, with
 their actual enforcement:
 
-| "MUST" in `AGENTS.md` | What actually holds it |
-|-----------------------|------------------------|
-| `select_publish_run` must drop skipped runs (`AGENTS.md:453-457`) | `SelectPublishRunTest`, [`tests/test_release_train_ceremony.py:719`](../tests/test_release_train_ceremony.py) |
-| `touches_releases` must inspect both sides of a rename (`AGENTS.md:446`) | `tests/test_release_train_archive_guard.py` |
-| Offline `list_releases` must raise, not return `set()` (`AGENTS.md:431`) | `tests/test_release_train_detect.py` |
-| Every tracked top-level dir must appear in the tree (`AGENTS.md:681`) | [`tests/test_agents_md_tree_drift.py`](../tests/test_agents_md_tree_drift.py) |
-| An oversize cascor suite must declare `execution.stall_seconds` (`AGENTS.md:705-709`) | `tests/test_experiment_suite_yamls.py` |
+| "MUST" in `AGENTS.md`                                                                 | What actually holds it                                                                                        |
+|---------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `select_publish_run` must drop skipped runs (`AGENTS.md:453-457`)                     | `SelectPublishRunTest`, [`tests/test_release_train_ceremony.py:719`](../tests/test_release_train_ceremony.py) |
+| `touches_releases` must inspect both sides of a rename (`AGENTS.md:446`)              | `tests/test_release_train_archive_guard.py`                                                                   |
+| Offline `list_releases` must raise, not return `set()` (`AGENTS.md:431`)              | `tests/test_release_train_detect.py`                                                                          |
+| Every tracked top-level dir must appear in the tree (`AGENTS.md:681`)                 | [`tests/test_agents_md_tree_drift.py`](../tests/test_agents_md_tree_drift.py)                                 |
+| An oversize cascor suite must declare `execution.stall_seconds` (`AGENTS.md:705-709`) | `tests/test_experiment_suite_yamls.py`                                                                        |
 
 **51 of the 154 `## Key Files` sub-bullets name their own pin in-line**, and the repo ships
 **89 test modules** against **65 non-ad-hoc `util/` scripts** — a ratio that exists precisely
@@ -676,17 +676,17 @@ file): **1.00**.
 Distributing the 285 commits by measured domain (with the multi-domain commits counted in each
 domain they touch, which is the conservative direction):
 
-| Destination | Commits since 2026-06-01 | Share |
-|-------------|--------------------------|-------|
-| `juniper-ml-release-train` + `-publish-path` | 120 | 26.4% |
-| `juniper-ml-host-orchestration` + `-worktree-ops` | 82 | 18.0% |
-| `juniper-ml-ci-workflows` | 70 | 15.4% |
-| `juniper-ml-repo-map` | 114 → **≈6** ([§7.3](#73-the-gate-minimal-tree-is-a-verified-constraint-not-a-guess)) | 1.3% |
-| `juniper-ml-experiments` | 45 | 9.9% |
-| `juniper-ml-env-drift` | 42 | 9.2% |
-| `juniper-ml-agent-suite` | 37 | 8.1% |
-| `juniper-ml-fleet-triage` | 8 | 1.8% |
-| residual `AGENTS.md` | 10 (genre-A sections) + 58 (build commands) | 15.0% |
+| Destination                                       | Commits since 2026-06-01                                                              | Share |
+|---------------------------------------------------|---------------------------------------------------------------------------------------|-------|
+| `juniper-ml-release-train` + `-publish-path`      | 120                                                                                   | 26.4% |
+| `juniper-ml-host-orchestration` + `-worktree-ops` | 82                                                                                    | 18.0% |
+| `juniper-ml-ci-workflows`                         | 70                                                                                    | 15.4% |
+| `juniper-ml-repo-map`                             | 114 → **≈6** ([§7.3](#73-the-gate-minimal-tree-is-a-verified-constraint-not-a-guess)) | 1.3%  |
+| `juniper-ml-experiments`                          | 45                                                                                    | 9.9%  |
+| `juniper-ml-env-drift`                            | 42                                                                                    | 9.2%  |
+| `juniper-ml-agent-suite`                          | 37                                                                                    | 8.1%  |
+| `juniper-ml-fleet-triage`                         | 8                                                                                     | 1.8%  |
+| residual `AGENTS.md`                              | 10 (genre-A sections) + 58 (build commands)                                           | 15.0% |
 
 Herfindahl index of that distribution: **≈0.17**. Expected same-destination collisions between
 two randomly chosen concurrent PRs drop by a factor of roughly **six**.
@@ -983,7 +983,7 @@ listing 5,270 of 8,000 chars, 34% headroom.
   else — alphabetical, or by registration order — a `juniper-ml-` prefix could systematically
   disadvantage all eleven at once.
 
-**Risks.** *Concrete scenario:* the owner enables three claude.ai skills. The listing exceeds
+**Risks.** *Concrete scenario:* the Overtoad enables three claude.ai skills. The listing exceeds
 8,000 chars. Because all eleven reference skills share a prefix and (plausibly) a low
 invocation count, they are the block that loses descriptions together, and every session
 degrades simultaneously with no error anywhere.
@@ -1172,38 +1172,38 @@ warned. The post-merge screen in
 
 ### 13.1 `AGENTS.md` itself (character basis)
 
-| | Lines | Chars | Tokens (÷4) |
-|---|-------|-------|-------------|
-| Before | 1,115 | 168,317 | 42,079 |
-| After — residual file | 200 | 15,157 | 3,789 |
-| After — skill listing (always resident) | — | 5,270 | 1,318 |
-| **After — total always-on** | **200** | **20,427** | **5,107** |
-| **Delta** | **−915** | **−147,890** | **−36,972** |
-| **Reduction** | −82.1% | **−87.9%** | −87.9% |
+|                                         | Lines    | Chars        | Tokens (÷4) |
+|-----------------------------------------|----------|--------------|-------------|
+| Before                                  | 1,115    | 168,317      | 42,079      |
+| After — residual file                   | 200      | 15,157       | 3,789       |
+| After — skill listing (always resident) | —        | 5,270        | 1,318       |
+| **After — total always-on**             | **200**  | **20,427**   | **5,107**   |
+| **Delta**                               | **−915** | **−147,890** | **−36,972** |
+| **Reduction**                           | −82.1%   | **−87.9%**   | −87.9%      |
 
 ### 13.2 Whole-session always-on context (doc 1 §1, byte basis)
 
-| File | Before (bytes) | After (bytes) |
-|------|----------------|---------------|
-| `~/.claude/CLAUDE.md` | 3,349 | 3,349 |
-| `Juniper/CLAUDE.md` (additive, doc 2 §7) | 11,016 | 11,016 + ~150 cross-repo pointer |
-| `juniper-ml/CLAUDE.md` → `AGENTS.md` | **170,137** | **15,324** |
-| Skill listing | 0 | 5,270 |
-| `MEMORY.md` (separate subsystem, [§17](#17-the-memorymd-problem)) | 20,388 | 20,388 |
-| **Total** | **204,890** | **55,497** |
-| **Tokens** | **≈51,222** | **≈13,874** |
-| **% of a 200k window consumed before the first prompt** | **25.6%** | **7.0%** |
+| File                                                              | Before (bytes) | After (bytes)                    |
+|-------------------------------------------------------------------|----------------|----------------------------------|
+| `~/.claude/CLAUDE.md`                                             | 3,349          | 3,349                            |
+| `Juniper/CLAUDE.md` (additive, doc 2 §7)                          | 11,016         | 11,016 + ~150 cross-repo pointer |
+| `juniper-ml/CLAUDE.md` → `AGENTS.md`                              | **170,137**    | **15,324**                       |
+| Skill listing                                                     | 0              | 5,270                            |
+| `MEMORY.md` (separate subsystem, [§17](#17-the-memorymd-problem)) | 20,388         | 20,388                           |
+| **Total**                                                         | **204,890**    | **55,497**                       |
+| **Tokens**                                                        | **≈51,222**    | **≈13,874**                      |
+| **% of a 200k window consumed before the first prompt**           | **25.6%**      | **7.0%**                         |
 
 ### 13.3 Where the 168,317 characters go
 
-| Destination | Chars | Note |
-|-------------|-------|------|
-| Stays resident in `AGENTS.md` | 15,157 | 9.0% |
-| Relocated to 11 skill bodies | 101,000 | lazy; median session pays 0-2 of these |
-| Relocated to `reference/` sub-files | 11,000 | third tier |
-| **Deleted as duplicated with `docs/REFERENCE.md`** | **≈33,825** | see below |
-| **Deleted as derivable** | **≈7,335** | the 54-line unittest list (3,119) + trimmed procedure blocks |
-| **Total** | **168,317** | |
+| Destination                                        | Chars       | Note                                                         |
+|----------------------------------------------------|-------------|--------------------------------------------------------------|
+| Stays resident in `AGENTS.md`                      | 15,157      | 9.0%                                                         |
+| Relocated to 11 skill bodies                       | 101,000     | lazy; median session pays 0-2 of these                       |
+| Relocated to `reference/` sub-files                | 11,000      | third tier                                                   |
+| **Deleted as duplicated with `docs/REFERENCE.md`** | **≈33,825** | see below                                                    |
+| **Deleted as derivable**                           | **≈7,335**  | the 54-line unittest list (3,119) + trimmed procedure blocks |
+| **Total**                                          | **168,317** |                                                              |
 
 The 33,825 deleted-as-duplicated figure is the residue of relocating 145,675 bytes of source
 into a 112,000-char corpus. It is the least certain number in this document, because it is a
@@ -1234,7 +1234,7 @@ Create one throwaway skill `.claude/skills/juniper-ml-probe/SKILL.md` with
 3. Run `/context` (or equivalent) and record the observed listing size.
 
 Record all three in `docs/REFERENCE.md`. **If (1) is negative, stop — Proposal A does not
-work as designed** and the owner should choose a different proposal. This is the cheapest
+work as designed** and the Overtoad should choose a different proposal. This is the cheapest
 possible test of the most expensive assumption. Delete the probe skill afterwards.
 
 ### Phase 1 — the gates, before any content moves
@@ -1317,16 +1317,16 @@ depends on a later phase; Phases 2-7 can stop at any point and leave a smaller-b
 Consolidated, so a reviewer can see the whole enforcement surface at once. Every one follows an
 existing repo pattern; none invents a new mechanism.
 
-| Gate | Type | Detects | Modelled on |
-|------|------|---------|-------------|
-| `tests/test_skills_frontmatter.py` | new unittest | frontmatter shape; `name` == directory; description 160-400 chars, keyword-first, ends in `Use before editing`; `## Invariants` first section; **`SKILL.md` ≤16,000 chars, directory ≤24,000**; **listing total ≤6,400 chars**; disjoint path globs; invocation mode correct per class | [`tests/test_agents_frontmatter.py`](../tests/test_agents_frontmatter.py) |
-| `tests/test_skill_index_drift.py` | new unittest | every skill has an `AGENTS.md` `## Skill Index` row and vice versa | [`tests/test_agents_md_tree_drift.py`](../tests/test_agents_md_tree_drift.py) |
-| `tests/test_agents_md_size_budget.py` | new unittest | residual `AGENTS.md` >260 lines or >22,000 chars (fail); >220 lines (warn). Self-locating, fleet-portable | [`tests/test_agents_md_header_schema.py`](../tests/test_agents_md_header_schema.py) |
-| skill-corpus budget | new `ci.yml` step, **PR-scoped** | Σ all `SKILL.md` >110,000 chars (fail on PR, warn on push); >100,000 (warn) | `release-train-archive-guard` PR-scoping in `ci.yml` |
-| `Allow-Skill-Growth:` trailer | commit trailer | waives the per-PR 1,500-char corpus growth budget | `Allow-Archive-Edit:` (`AGENTS.md:447`), `Allow-Docs-Rewrite:` (`docs/REFERENCE.md:823`) |
-| `.claude/rules/` tracking assertion | added to `test_skills_frontmatter.py` | a rules file untracked by git, or lacking `paths:` | `tests/test_agent_suite_path_drift.py` |
-| `util/agent_suite_doctor.py` extension | existing utility | enumerates every skill; reports invocation mode, mirror state, computed listing size | it already checks the suite; `:105` currently hardcodes one skill |
-| `util/install_agents.bash` `x-juniper-mirror` | existing utility | prevents reference skills reaching `~/.claude` | its own `link_one` idempotence contract |
+| Gate                                          | Type                                  | Detects                                                                                                                                                                                                                                                                                | Modelled on                                                                              |
+|-----------------------------------------------|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| `tests/test_skills_frontmatter.py`            | new unittest                          | frontmatter shape; `name` == directory; description 160-400 chars, keyword-first, ends in `Use before editing`; `## Invariants` first section; **`SKILL.md` ≤16,000 chars, directory ≤24,000**; **listing total ≤6,400 chars**; disjoint path globs; invocation mode correct per class | [`tests/test_agents_frontmatter.py`](../tests/test_agents_frontmatter.py)                |
+| `tests/test_skill_index_drift.py`             | new unittest                          | every skill has an `AGENTS.md` `## Skill Index` row and vice versa                                                                                                                                                                                                                     | [`tests/test_agents_md_tree_drift.py`](../tests/test_agents_md_tree_drift.py)            |
+| `tests/test_agents_md_size_budget.py`         | new unittest                          | residual `AGENTS.md` >260 lines or >22,000 chars (fail); >220 lines (warn). Self-locating, fleet-portable                                                                                                                                                                              | [`tests/test_agents_md_header_schema.py`](../tests/test_agents_md_header_schema.py)      |
+| skill-corpus budget                           | new `ci.yml` step, **PR-scoped**      | Σ all `SKILL.md` >110,000 chars (fail on PR, warn on push); >100,000 (warn)                                                                                                                                                                                                            | `release-train-archive-guard` PR-scoping in `ci.yml`                                     |
+| `Allow-Skill-Growth:` trailer                 | commit trailer                        | waives the per-PR 1,500-char corpus growth budget                                                                                                                                                                                                                                      | `Allow-Archive-Edit:` (`AGENTS.md:447`), `Allow-Docs-Rewrite:` (`docs/REFERENCE.md:823`) |
+| `.claude/rules/` tracking assertion           | added to `test_skills_frontmatter.py` | a rules file untracked by git, or lacking `paths:`                                                                                                                                                                                                                                     | `tests/test_agent_suite_path_drift.py`                                                   |
+| `util/agent_suite_doctor.py` extension        | existing utility                      | enumerates every skill; reports invocation mode, mirror state, computed listing size                                                                                                                                                                                                   | it already checks the suite; `:105` currently hardcodes one skill                        |
+| `util/install_agents.bash` `x-juniper-mirror` | existing utility                      | prevents reference skills reaching `~/.claude`                                                                                                                                                                                                                                         | its own `link_one` idempotence contract                                                  |
 
 Four things worth saying plainly about this table:
 
@@ -1383,10 +1383,10 @@ Stated plainly, because a proposal that claims to solve everything should not be
 
 Doc 2 §2 establishes this as *separate and harder*: the limit is real, hard, and silent.
 
-| Measure | Value | Limit | Headroom |
-|---------|-------|-------|----------|
-| Lines | 139 | 200 | 61 |
-| Bytes | 20,388 | ~25,600 | ~5,212 |
+| Measure | Value  | Limit   | Headroom |
+|---------|--------|---------|----------|
+| Lines   | 139    | 200     | 61       |
+| Bytes   | 20,388 | ~25,600 | ~5,212   |
 
 Confirmed on this host at authoring time: 139 lines / 20,388 bytes, with **154 files** in
 `~/.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml/memory/`.
@@ -1423,9 +1423,9 @@ accept silent memory loss in roughly 35 entries' time.
 
 ---
 
-## 18. Open questions for the owner
+## 18. Open questions for the Overtoad
 
-These are decisions, not gaps. Each is marked as belonging to the owner rather than guessed.
+These are decisions, not gaps. Each is marked as belonging to the Overtoad rather than guessed.
 
 1. **Ship Phase 0 before choosing between the four proposals?** It costs half a day and settles
    whether Proposal A is viable at all. Recommended regardless of which proposal is favoured,
@@ -1512,15 +1512,15 @@ post-image line number. Domain attribution repeats the procedure with a line-num
 built from the nearest preceding top-level bullet's leading code-span token, classified by these
 regexes (the judgement a re-derivation should challenge):
 
-| Domain | Regex over the bullet's leading token |
-|--------|---------------------------------------|
-| release-train | `release_train\|assert_release_tag\|publish[-_]\|notes_render\|archive_guard\|ceremony\|release-train\|open_signed_pr` |
-| experiments | `experiment\|isolated_stack\|run_suite\|run_experiment\|get_cascor\|plots_\|stats_summary\|list_runs` |
-| agent-suite | `prompt_discovery\|template_\|scaffold_template\|agent_suite\|install_agents\|generated_prompt_index\|symbol_overlay\|skill\|agents_frontmatter\|prompt_validator\|fleet_supervisor` |
-| fleet-and-seq-safety | `predict_merge\|fleet_triage\|sequence[-_]safety\|symbol-loss\|docs-additions\|wait_for_checks` |
-| env-and-install-drift | `editable_install\|env_floor\|requirements_drift\|env_drift\|doc_tools_drift\|ci_tools_drift\|coverage_gap\|pyproject_extras\|service_fork_drift` |
-| host-orchestration | `plant_all\|chop_all\|reap_pytest\|kill_helpers\|kill_all\|check_conda\|worktree\|cleanup_session\|wake_the_claude\|env_repr\|resume` |
-| agents-md-gates | `agents_md` |
+| Domain                | Regex over the bullet's leading token                                                                                                                                                |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| release-train         | `release_train\|assert_release_tag\|publish[-_]\|notes_render\|archive_guard\|ceremony\|release-train\|open_signed_pr`                                                               |
+| experiments           | `experiment\|isolated_stack\|run_suite\|run_experiment\|get_cascor\|plots_\|stats_summary\|list_runs`                                                                                |
+| agent-suite           | `prompt_discovery\|template_\|scaffold_template\|agent_suite\|install_agents\|generated_prompt_index\|symbol_overlay\|skill\|agents_frontmatter\|prompt_validator\|fleet_supervisor` |
+| fleet-and-seq-safety  | `predict_merge\|fleet_triage\|sequence[-_]safety\|symbol-loss\|docs-additions\|wait_for_checks`                                                                                      |
+| env-and-install-drift | `editable_install\|env_floor\|requirements_drift\|env_drift\|doc_tools_drift\|ci_tools_drift\|coverage_gap\|pyproject_extras\|service_fork_drift`                                    |
+| host-orchestration    | `plant_all\|chop_all\|reap_pytest\|kill_helpers\|kill_all\|check_conda\|worktree\|cleanup_session\|wake_the_claude\|env_repr\|resume`                                                |
+| agents-md-gates       | `agents_md`                                                                                                                                                                          |
 
 **Binary readings** ([§3](#3-three-facts-read-fresh-from-the-21235-binary)) were taken from
 `/home/pcalnon/.local/share/claude/versions/2.1.235` by locating each needle's byte offset and
@@ -1533,15 +1533,15 @@ Needles: `disableModelInvocation`, `skillListingMaxDescChars`, `function mgf(e,t
 
 ## Appendix B — related documents
 
-| Document | Role |
-|----------|------|
-| [`JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-FILE-SIZE-BASELINE-MEASUREMENTS.md`](JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-FILE-SIZE-BASELINE-MEASUREMENTS.md) | doc 1 — measured fact base |
-| [`JUNIPER_2026-08-18_JUNIPER-ML_CLAUDE-CODE-MEMORY-MECHANISM-FACTS.md`](JUNIPER_2026-08-18_JUNIPER-ML_CLAUDE-CODE-MEMORY-MECHANISM-FACTS.md) | doc 2 — verified mechanism facts |
-| [`../AGENTS.md`](../AGENTS.md) | the subject |
-| [`../docs/REFERENCE.md`](../docs/REFERENCE.md) | the 162,231-char operator reference this proposal de-duplicates against |
-| [`JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`](JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md) | the compaction mitigation [§9](#91-compaction-behaviour) relies on |
-| [`JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`](JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md) | holds the worktree how-to the residual file points at |
-| [`JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`](JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md) | ditto |
-| [`JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md`](JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md) | existing home for release-train operator surface |
-| [`JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md`](JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md) | the design of record behind skill 2 |
-| [`JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`](JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md) | this document's naming rules |
+| Document                                                                                                                                                 | Role                                                                    |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| [`JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-FILE-SIZE-BASELINE-MEASUREMENTS.md`](JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-FILE-SIZE-BASELINE-MEASUREMENTS.md)     | doc 1 — measured fact base                                              |
+| [`JUNIPER_2026-08-18_JUNIPER-ML_CLAUDE-CODE-MEMORY-MECHANISM-FACTS.md`](JUNIPER_2026-08-18_JUNIPER-ML_CLAUDE-CODE-MEMORY-MECHANISM-FACTS.md)             | doc 2 — verified mechanism facts                                        |
+| [`../AGENTS.md`](../AGENTS.md)                                                                                                                           | the subject                                                             |
+| [`../docs/REFERENCE.md`](../docs/REFERENCE.md)                                                                                                           | the 162,231-char operator reference this proposal de-duplicates against |
+| [`JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`](JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md)                                 | the compaction mitigation [§9](#91-compaction-behaviour) relies on      |
+| [`JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`](JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md)                                 | holds the worktree how-to the residual file points at                   |
+| [`JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`](JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md)                       | ditto                                                                   |
+| [`JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md`](JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md)       | existing home for release-train operator surface                        |
+| [`JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md`](JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md) | the design of record behind skill 2                                     |
+| [`JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`](JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md)                         | this document's naming rules                                            |

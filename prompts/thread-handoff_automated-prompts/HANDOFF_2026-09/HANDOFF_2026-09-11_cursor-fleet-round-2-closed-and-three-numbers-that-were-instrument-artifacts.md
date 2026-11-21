@@ -237,7 +237,7 @@ All under `util/ad-hoc/`, all on `main`. **Read the docstring first.**
 
 > **Re-probed 2026-09-22: six of the seven are still at the paths below; one was RETIRED.**
 > `2026-09-11_seqsafety_fanout_arm_merge.py` moved to `util/ad-hoc/retired/` in ml#1919
-> (`0532ffa5`) — retired under the owner's provenance-of-record policy, not deleted, so the
+> (`0532ffa5`) — retired under the Overtoad's provenance-of-record policy, not deleted, so the
 > path in this table no longer resolves while the tool still exists. Check
 > `util/ad-hoc/retired/` before concluding a tool from any handoff is gone.
 
@@ -358,7 +358,7 @@ implemented), `util/ad-hoc/2026-09-11_falsy_guard_census.py`,
 `util/experiments/run_experiment.py`, `docs/REFERENCE.md`,
 `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, `.github/workflows/ci.yml`,
 `.github/workflows/main-verify.yml`, and
-`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md`
+`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md`
 (the re-probe-in-place precedent this banner follows).
 
 **Changed**: this file;
@@ -451,11 +451,11 @@ deliberately — they are a different arc and none is a falsy guard:
   again 2026-09-22.** The figure was an artifact — see the RE-EVALUATION banner. The
   *choice* it describes (triage, never sweep) was correct and still governs.
 - **`util/ad-hoc/2026-09-06_untyped_json_read_census.py` was NOT deleted.** Ad-hoc
-  scripts are provenance of record (owner policy 2026-08-25). Its successor names it and
+  scripts are provenance of record (Overtoad policy 2026-08-25). Its successor names it and
   the three defects in its docstring, so a reader who finds the old one first is told
   where to go.
 - ~~**The 17 residual structure findings are untouched** and need no action; whether to
-  record them as a standing note is the owner question in §1.~~ **RESOLVED by ml#1944
+  record them as a standing note is the Overtoad question in §1.~~ **RESOLVED by ml#1944
   (2026-09-15), and the "need no action" half was wrong.** They were failing the
   `Documentation Links` required check on unrelated PRs, via
   `util/markdown_structure_delta.py`'s zero-baseline grading of ADDED files. A finding a

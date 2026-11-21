@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-20
 Status:      ad-hoc -- migration (base-branch-guard rollout, ml#434 part 2)
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: a general ruleset editor exists in util/ proper, or the rollout is done.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: a general ruleset editor exists in util/ proper, or the rollout is done.
 Related:     ml#434; util/ad-hoc/2026-08-18_promote_sequence_safety.py;
              util/ad-hoc/2026-08-19_sequence_safety_context_rename.py;
              util/ad-hoc/2026-08-20_add_required_context.py;
@@ -127,19 +127,19 @@ def gh_json(path: str, method: str | None = None, body: dict | None = None):
         return None, "unparseable response"
 
 
-def find_ruleset(owner: str, repo: str):
+def find_ruleset(Overtoad: str, repo: str):
     """Resolve the ruleset carrying required_status_checks, BY CONTENT not by name.
 
     Deliberately not "the first branch ruleset whose name != juniper-no-direct-push" --
     that heuristic holds only while every repo has exactly two rulesets and fails silently
     the day a third appears. Selecting on the rule we are about to edit cannot mis-target.
     """
-    sets, err = gh_json(f"repos/{owner}/{repo}/rulesets")
+    sets, err = gh_json(f"repos/{Overtoad}/{repo}/rulesets")
     if sets is None:
         return None, f"cannot list rulesets: {err}"
     hits = []
     for rs in sets:
-        full, err = gh_json(f"repos/{owner}/{repo}/rulesets/{rs['id']}")
+        full, err = gh_json(f"repos/{Overtoad}/{repo}/rulesets/{rs['id']}")
         if full is None:
             # A failed per-ruleset GET used to be `continue`d, which turned a rate limit or a
             # network blip into "no ruleset carries required_status_checks" -- the same
@@ -191,28 +191,28 @@ def fingerprint(rs: dict):
     }
 
 
-def observed_contexts(owner: str, repo: str, limit: int = 8):
+def observed_contexts(Overtoad: str, repo: str, limit: int = 8):
     """Context strings this repo's CI has ACTUALLY published recently.
 
     Looked up from recent PR heads rather than from the ruleset, because the question is
     'does anything publish this name here', which the ruleset cannot answer.
     """
     prs, _ = gh_json(
-        f"repos/{owner}/{repo}/pulls?state=all&sort=updated&direction=desc&per_page={limit}"
+        f"repos/{Overtoad}/{repo}/pulls?state=all&sort=updated&direction=desc&per_page={limit}"
     )
     seen = set()
     for pr in prs or []:
         sha = ((pr.get("head") or {}).get("sha")) or ""
         if not sha:
             continue
-        runs, _ = gh_json(f"repos/{owner}/{repo}/commits/{sha}/check-runs?per_page=100")
+        runs, _ = gh_json(f"repos/{Overtoad}/{repo}/commits/{sha}/check-runs?per_page=100")
         for cr in (runs or {}).get("check_runs", []):
             if cr.get("name"):
                 seen.add(cr["name"])
     return seen
 
 
-def observed_context_apps(owner: str, repo: str, context: str, limit: int = 8):
+def observed_context_apps(Overtoad: str, repo: str, context: str, limit: int = 8):
     """App ids that have ACTUALLY published a check-run named ``context`` in this repo.
 
     The name-only :func:`observed_contexts` answers "does anything publish this name here",
@@ -226,14 +226,14 @@ def observed_context_apps(owner: str, repo: str, context: str, limit: int = 8):
     just saying no.
     """
     prs, _ = gh_json(
-        f"repos/{owner}/{repo}/pulls?state=all&sort=updated&direction=desc&per_page={limit}"
+        f"repos/{Overtoad}/{repo}/pulls?state=all&sort=updated&direction=desc&per_page={limit}"
     )
     found: dict = {}
     for pr in prs or []:
         sha = ((pr.get("head") or {}).get("sha")) or ""
         if not sha:
             continue
-        runs, _ = gh_json(f"repos/{owner}/{repo}/commits/{sha}/check-runs?per_page=100")
+        runs, _ = gh_json(f"repos/{Overtoad}/{repo}/commits/{sha}/check-runs?per_page=100")
         for cr in (runs or {}).get("check_runs", []):
             if cr.get("name") != context:
                 continue
@@ -243,7 +243,7 @@ def observed_context_apps(owner: str, repo: str, context: str, limit: int = 8):
     # A PR-gated job reports on PR heads; one that only runs on main may not appear above, so
     # fall back to main's own check-runs rather than refusing a legitimate amend.
     if not found:
-        runs, _ = gh_json(f"repos/{owner}/{repo}/commits/main/check-runs?per_page=100")
+        runs, _ = gh_json(f"repos/{Overtoad}/{repo}/commits/main/check-runs?per_page=100")
         for cr in (runs or {}).get("check_runs", []):
             if cr.get("name") != context:
                 continue
@@ -255,7 +255,7 @@ def observed_context_apps(owner: str, repo: str, context: str, limit: int = 8):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", action="append", default=None, help="repeatable; default: all 9")
     ap.add_argument("--context", default=DEFAULT_CONTEXT)
     ap.add_argument("--integration-id", type=int, default=ACTIONS_INTEGRATION_ID)
@@ -281,8 +281,8 @@ def main() -> int:
     rc = 0
     for repo in repos:
         print("=" * 78)
-        print(f"{args.owner}/{repo}")
-        rs, err = find_ruleset(args.owner, repo)
+        print(f"{args.Overtoad}/{repo}")
+        rs, err = find_ruleset(args.Overtoad, repo)
         if rs is None:
             print(f"  ERROR: {err}")
             rc = 1
@@ -308,7 +308,7 @@ def main() -> int:
             if cur_iid == args.integration_id:
                 print(f"  ALREADY PINNED (integration_id={cur_iid}) — no-op")
                 continue
-            publishers = observed_context_apps(args.owner, repo, args.context)
+            publishers = observed_context_apps(args.Overtoad, repo, args.context)
             print(f"  amend        : integration_id {cur_iid} -> {args.integration_id}")
             print(f"  observed publishers of {args.context!r}: "
                   f"{publishers if publishers else 'NONE'}")
@@ -325,7 +325,7 @@ def main() -> int:
                 continue
             amending = True
 
-        obs = observed_contexts(args.owner, repo) if not amending else set()
+        obs = observed_contexts(args.Overtoad, repo) if not amending else set()
         published = amending or args.context in obs
         if not amending:
             print(f"  context observed publishing here: {'YES' if published else 'NO'}")
@@ -361,7 +361,7 @@ def main() -> int:
         print(f"  snapshot     : {snap}")
 
         # ---- re-read live immediately before the PUT -----------------------
-        fresh, err = find_ruleset(args.owner, repo)
+        fresh, err = find_ruleset(args.Overtoad, repo)
         if fresh is None:
             print(f"  ERROR on re-read: {err}")
             rc = 1
@@ -397,7 +397,7 @@ def main() -> int:
             payload["bypass_actors"] = fresh["bypass_actors"]
 
         _, err = gh_json(
-            f"repos/{args.owner}/{repo}/rulesets/{fresh['id']}", method="PUT", body=payload
+            f"repos/{args.Overtoad}/{repo}/rulesets/{fresh['id']}", method="PUT", body=payload
         )
         if err:
             print(f"  PUT FAILED: {err}")
@@ -405,7 +405,7 @@ def main() -> int:
             continue
 
         # ---- post-write verification --------------------------------------
-        after_rs, err = find_ruleset(args.owner, repo)
+        after_rs, err = find_ruleset(args.Overtoad, repo)
         if after_rs is None:
             print(f"  ERROR on verify: {err}")
             rc = 1
@@ -453,7 +453,7 @@ def main() -> int:
             print("  !! POST-WRITE VERIFICATION FAILED:")
             for p in problems:
                 print(f"       {p}")
-            print(f"  ROLLBACK: gh api repos/{args.owner}/{repo}/rulesets/{fresh['id']} "
+            print(f"  ROLLBACK: gh api repos/{args.Overtoad}/{repo}/rulesets/{fresh['id']} "
                   f"-X PUT --input {snap}")
             rc = 1
         else:

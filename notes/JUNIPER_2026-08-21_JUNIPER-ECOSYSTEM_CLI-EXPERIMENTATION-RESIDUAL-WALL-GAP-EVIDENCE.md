@@ -244,7 +244,7 @@ So "the CLI is ~1.9× slower" is a poor headline. The gap is:
 > multiplied by a VARIABLE amount of work the CLI happens to do, which is cascor#532 and not a
 > performance property at all.**
 
-Those are different defects with different owners. The rate term is what the fix should target (§4.4 → cascor#563). The work
+Those are different defects with different Overtoads. The rate term is what the fix should target (§4.4 → cascor#563). The work
 term is already tracked as G1/G1a and is only reducible by making the CLI path reproducible.
 
 #### 3.3b The cap series — the compounding is entirely the work term
@@ -564,7 +564,7 @@ not the allocator, not scheduling. It is `inspect.getmodule`.
 
 #### Why `getmodule` is slower on one path
 
-> **Correction (owner review).** An earlier version of this section said the workers are "forked, so
+> **Correction (Overtoad review).** An earlier version of this section said the workers are "forked, so
 > each inherits its parent's `sys.modules` wholesale". **That is wrong.** Candidate workers are
 > created from a **forkserver**, verified in source:
 > `_PROJECT_MODEL_CANDIDATE_TRAINING_CONTEXT = "forkserver"`
@@ -906,4 +906,4 @@ Checked after the last arm, with `util/experiment_stack.bash --down <RUN_ID>` ru
 | `artifacts/` preserved | yes — teardown reports "never deleted" |
 
 > Concurrent sessions share these ranges. A non-zero count is not necessarily this arc's leak;
-> `util/experiment_stack.bash --status` lists every run before assuming ownership.
+> `util/experiment_stack.bash --status` lists every run before assuming Overtoadship.

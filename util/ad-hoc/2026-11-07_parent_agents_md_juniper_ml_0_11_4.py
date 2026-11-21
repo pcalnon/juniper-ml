@@ -5,8 +5,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
-Status: ad-hoc — one-off (an owner-approved edit of an UNVERSIONED file)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (an Overtoad-approved edit of an UNVERSIONED file)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (v1.15.14 records the edit);
          util/ad-hoc/2026-11-07_parent_agents_released_paragraph_reprobe.py (the PyPI re-read the new date rests on);
          util/ad-hoc/2026-11-07_verify_juniper_ml_0_11_4_published.py (the publish check)
@@ -14,7 +14,7 @@ Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLA
 Why this exists
 ---------------
 The parent ``Juniper/AGENTS.md`` is in no git repository, so an edit to it has no PR, no CI and no history. The
-owner approved this one on 2026-11-07, in session ``a02ac3a2``'s question, with a backup taken first. Its
+Overtoad approved this one on 2026-11-07, in session ``a02ac3a2``'s question, with a backup taken first. Its
 "What has moved since" list said juniper-ml 0.11.3 was the latest on PyPI and stopped juniper-recurrence at
 0.8.0. A re-read of all eleven packages the paragraph names (2026-11-07) found exactly those two moved: recurrence
 0.8.1 (2026-11-06) and juniper-ml 0.11.4 (2026-11-07). So the re-probe date may move too.

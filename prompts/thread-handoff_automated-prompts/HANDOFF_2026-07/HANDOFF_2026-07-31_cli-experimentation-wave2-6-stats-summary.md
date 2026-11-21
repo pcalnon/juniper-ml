@@ -1,6 +1,6 @@
 # HANDOFF 2026-07-31 — CLI Experimentation Program: continue with Wave 2.6 (stats.json + summary.md renderers)
 
-Continue executing the CLI test/validation/experimentation program for juniper-cascor + juniper-recurrence (plan of record: `notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`; owner ratified all Q-1..Q-12).
+Continue executing the CLI test/validation/experimentation program for juniper-cascor + juniper-recurrence (plan of record: `notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`; Overtoad ratified all Q-1..Q-12).
 
 ## Completed so far
 
@@ -17,9 +17,9 @@ Continue executing the CLI test/validation/experimentation program for juniper-c
 
 - **Read the memory file first**: `project_cascor_recurrence_cli_experimentation_plan.md` — Waves 2.2-2.5 paragraphs carry the implementation truths (payload contracts, sequence-NPZ keys, `y_reg_` preference, plots-module loading, skip-vs-fail semantics, `RequestTimeout` budget, no-`--params` CLI constraint).
 - Driver test idiom: scripted stub `http.server`; `state.artifact_kind` tabular/sequence NPZ artifacts; `RedactedEnv` subprocess arms; PNG-magic assertions.
-- Headless commits: `git -c commit.gpgsign=false commit`. Owner merges via admin bypass (unsigned commits sit OPEN/BLOCKED under `required_signatures`).
+- Headless commits: `git -c commit.gpgsign=false commit`. The Overtoad merges via admin bypass (unsigned commits sit OPEN/BLOCKED under `required_signatures`).
 - CI test job installs pyyaml/packaging/numpy/matplotlib — no new deps expected for 2.6.
-- Owner decision still pending (not urgent): recurrence namespace alignment. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
+- The Overtoad decision still pending (not urgent): recurrence namespace alignment. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
 
 ## Verification for the new thread
 

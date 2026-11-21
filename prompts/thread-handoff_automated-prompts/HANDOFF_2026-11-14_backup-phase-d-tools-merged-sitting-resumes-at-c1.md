@@ -15,12 +15,12 @@ Q6 to Q8), its Key context and its limits still hold, except where this file say
 ## Goal statement
 
 1. Continue the Phase D sitting at step C.1 of `HANDOFF_2026-11-12_…md`. None of C.1 to C.11 has run.
-2. Carry the open questions to the owner (first: Q7 before the retention save of C.4, and whether the probe may list the
+2. Carry the open questions to the Overtoad (first: Q7 before the retention save of C.4, and whether the probe may list the
    destination's file names; then Q2, Q3, Q6; then Q1, Q4, Q8).
 
-The working pattern holds: the owner runs every command that changes the host or reaches the server and pastes summary
+The working pattern holds: the Overtoad runs every command that changes the host or reaches the server and pastes summary
 lines; the session checks read-only, keeps the running record, names each next command with its expected output.
-Ask the owner for merge approval again in a new session.
+Ask the Overtoad for merge approval again in a new session.
 
 ### What changed since `HANDOFF_2026-11-13_…md`
 
@@ -31,17 +31,17 @@ Ask the owner for merge approval again in a new session.
   - The squash message is GitHub's default concatenation, not `final-squash-body.md`: `util/safe_merge.py`'s local merge
     (no body flags) beat the re-armed auto-merge net. Nothing depends on it. Recorded in the memory note
     `reference_squash_body_excludes_merge_commits.md`; a fix to `safe_merge.py` is an open follow-up.
-- **`D`**: the tools are on `main`. The primary checkout was at `4a786c81` when #2548 merged. After the owner runs
+- **`D`**: the tools are on `main`. The primary checkout was at `4a786c81` when #2548 merged. After the Overtoad runs
   `git -C /home/pcalnon/Development/python/Juniper/juniper-ml pull --ff-only`, `D` can be the primary. Until then `D` = `W`
   (detached at `165c513f` with the five built files: the same content as `main`). The seven SHA-256 prefixes in `W` match
   the list in `HANDOFF_2026-11-12_…md` ("Key context").
 - **The host's Python, 2026-11-14.** Between 08:14Z and 09:19Z `/usr/bin/python3` was switched to 3.15.2 (apt `python3.15`,
   alternatives priority 90) and `JuniperCascor1`'s `bin/python`, `bin/python3`, `bin/python3.1` were re-pointed from
   `python3.14` to `/usr/bin/python(3)`. Under 3.15.2 the AC-4 driver could not import `cryptography`'s ciphers, so drills
-  would have read `ERROR`. **The owner deferred the default switch**: at 22:20Z `/usr/bin/python3` is 3.14.4 again
+  would have read `ERROR`. **The Overtoad deferred the default switch**: at 22:20Z `/usr/bin/python3` is 3.14.4 again
   (alternatives manual mode) and the driver's import works. **`JuniperCascor1`'s three links still point at `/usr/bin`**:
   that env's `python3` runs the system 3.14.4 without the env's packages, and its console scripts fail. The restore (three
-  `ln -sfn python3.14 …` commands) was offered to the owner and not run. It does not affect the drills (the tools run
+  `ln -sfn python3.14 …` commands) was offered to the Overtoad and not run. It does not affect the drills (the tools run
   `/usr/bin/python3 -I`). Memory: `project_host_python3_switched_to_315_2026-11-14.md`.
 - **Host, read-only, 10:18Z:** no aside directory, no `~/.local/state/duplicati/acceptance.json`, no probe unit. Watchdog
   records of 11-11, 11-12 and 11-13 all read `OK RUNNING` (task ids 46, 48, 49). Q6 asks whether such a day counts for AC-5.
@@ -58,7 +58,7 @@ Ask the owner for merge approval again in a new session.
    tool refuses while the server reports an active task). Check `/usr/bin/python3 --version` is 3.14 first.
 3. C.3 to C.11 as written there.
 
-**C. For the owner**: the open questions, as in the goal.
+**C. For the Overtoad**: the open questions, as in the goal.
 
 **D. The record PR** (C.10): add this file's findings: the 11-14 Python switch and its effect on the drills; `safe_merge.py`'s
 local path and the squash text; the regression runs on 3.15.2 (227 of 243) against 3.14.7 (239 of 243).
@@ -70,12 +70,12 @@ gh pr view 2548 --repo pcalnon/juniper-ml --json state,mergedAt,mergeCommit --jq
 /usr/bin/python3 --version
 /usr/bin/python3 -I -c 'from cryptography.hazmat.primitives.ciphers import Cipher; print("AC-4 import ok")'
 ls -l /opt/miniforge3/envs/JuniperCascor1/bin/python3
-git -C /home/pcalnon/Development/python/Juniper/juniper-ml log -1 --format=%h   # run by the owner; a worktree session is refused
+git -C /home/pcalnon/Development/python/Juniper/juniper-ml log -1 --format=%h   # run by the Overtoad; a worktree session is refused
 tail -n 20 /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/swift-stargazing-spindle/tmp/phase-d-sitting/segment-2026-11-14.md
 ```
 
 **Expect:** `MERGED 2026-11-14T11:04:33Z 76488449…`; Python 3.14.x; `AC-4 import ok`; the link target (`python3.14` once
-the owner restored it, `/usr/bin/python3` before); the primary at `76488449` or later once pulled; the segment's last
+the Overtoad restored it, `/usr/bin/python3` before); the primary at `76488449` or later once pulled; the segment's last
 lines naming the three green post-merge runs.
 
 ## Git status at handoff

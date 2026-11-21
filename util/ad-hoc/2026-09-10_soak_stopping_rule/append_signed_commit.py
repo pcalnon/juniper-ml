@@ -7,7 +7,7 @@ Application: util/ad-hoc
 Author:      Paul Calnon
 License:     MIT License
 Created:     2026-09-10
-Superseded:  for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
+Superseded:  for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (Overtoad policy 2026-08-25).
 
 Why this exists
 ---------------
@@ -65,9 +65,9 @@ def _load_open_signed_pr():
     return mod
 
 
-def branch_head_oid(owner: str, repo: str, branch: str) -> str:
+def branch_head_oid(Overtoad: str, repo: str, branch: str) -> str:
     out = subprocess.run(  # nosec B603 B607 - fixed argv, no shell
-        ["gh", "api", f"repos/{owner}/{repo}/git/ref/heads/{branch}"],
+        ["gh", "api", f"repos/{Overtoad}/{repo}/git/ref/heads/{branch}"],
         capture_output=True, text=True, check=True,
     ).stdout
     return json.loads(out)["object"]["sha"]
@@ -75,7 +75,7 @@ def branch_head_oid(owner: str, repo: str, branch: str) -> str:
 
 def main(argv: list) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", default="juniper-ml")
     ap.add_argument("--branch", required=True)
     ap.add_argument("--add", action="append", default=[], metavar="LOCAL:REPOPATH")
@@ -112,7 +112,7 @@ def main(argv: list) -> int:
     if args.commit_body_file:
         body = pathlib.Path(args.commit_body_file).read_text(encoding="utf-8")
 
-    head = branch_head_oid(args.owner, args.repo, args.branch)
+    head = branch_head_oid(args.Overtoad, args.repo, args.branch)
     print(f"branch {args.branch} head {head[:12]}")
     print(f"adding {len(additions)} file(s): {[p for p, _ in additions]}")
     if args.delete:
@@ -122,10 +122,10 @@ def main(argv: list) -> int:
         return 0
 
     oid = osp.create_signed_commit(
-        args.owner, args.repo, args.branch, args.message,
+        args.Overtoad, args.repo, args.branch, args.message,
         additions, head, deletions=args.delete or None, commit_body=body,
     )
-    print(f"signed commit {oid[:12]} on {args.owner}/{args.repo}:{args.branch}")
+    print(f"signed commit {oid[:12]} on {args.Overtoad}/{args.repo}:{args.branch}")
     return 0
 
 

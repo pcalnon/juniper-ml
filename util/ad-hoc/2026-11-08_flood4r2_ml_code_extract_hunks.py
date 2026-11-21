@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4 round 2, ml-code carrier (#2485 #2493 #2494 #2502 #2504 #2505 #2508 #2513);
          BRIEF_COMMON_R2 rule 7 (own hunks only, never a whole-file copy). Adapted from
          2026-11-07_flood4_canopy_extract_hunks.py.

@@ -19,17 +19,17 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 
 **2. MAJOR — The combined handoff and A6's instrument exist only untracked in `bubbly-meandering-pie`, and nothing protects that worktree.**
 - Where: goal statement's repo-relative path; Session layout (Lane A → fresh worktree from main, Lane B → `idempotent-jumping-sparkle`); Verification "(any lane)" `…ledger_cited_commit_reachability.py`; Git state "No PR has been opened"; X5.
-- Evidence: `git status` here: `?? …canopy-combined-e2e-y2-wave2-selection-owner-calls.md`, `?? util/ad-hoc/2026-09-24_ledger_cited_commit_reachability.py`. Neither that script nor `2026-09-24_secret_shape_check.py` exists in `idempotent-jumping-sparkle`. B's predecessor `HANDOFF_2026-09-24_y2-wave2-round-15-fix-pass.md` is likewise untracked only there, and B4 never schedules archiving it.
-- Fix: goal statement — "Until its PR merges this file exists ONLY at `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md`." Add `bubbly-meandering-pie` to X5 ("only copy of this handoff, the reachability script and the consensus record"). B4: "archive `HANDOFF_2026-09-24_y2-wave2-round-15-fix-pass.md` in the closing PR unless this handoff's PR carried it."
+- Evidence: `git status` here: `?? …canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md`, `?? util/ad-hoc/2026-09-24_ledger_cited_commit_reachability.py`. Neither that script nor `2026-09-24_secret_shape_check.py` exists in `idempotent-jumping-sparkle`. B's predecessor `HANDOFF_2026-09-24_y2-wave2-round-15-fix-pass.md` is likewise untracked only there, and B4 never schedules archiving it.
+- Fix: goal statement — "Until its PR merges this file exists ONLY at `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md`." Add `bubbly-meandering-pie` to X5 ("only copy of this handoff, the reachability script and the consensus record"). B4: "archive `HANDOFF_2026-09-24_y2-wave2-round-15-fix-pass.md` in the closing PR unless this handoff's PR carried it."
 
 **3. MAJOR — "Never merge other sessions' PRs." dropped.**
-- Source: `HANDOFF_2026-09-24_y2-wave2-round-15-fix-pass.md`:5 "ONLY this session's four PRs … No deploys, images, PyPI or GitHub Releases. The juniper-recurrence release is owner-gated. Never merge other sessions' PRs."
+- Source: `HANDOFF_2026-09-24_y2-wave2-round-15-fix-pass.md`:5 "ONLY this session's four PRs … No deploys, images, PyPI or GitHub Releases. The juniper-recurrence release is Overtoad-gated. Never merge other sessions' PRs."
 - The draft's merge-approval paragraph quotes only the first two sentences, while Lane A tracks other sessions' PRs (`fix/secret-leaks-683-validation`, cascor#690 — both session `bc31e993`'s).
 - Fix: "Rules that bind every lane": "**Never merge another session's PR**, whatever the grant — the `fix/secret-leaks-683-validation` PR and cascor#690 are session `bc31e993`'s."
 
-**4. MINOR — The one-message owner-question batch omits standing calls.**
+**4. MINOR — The one-message Overtoad-question batch omits standing calls.**
 - Where: goal statement "The standing calls: C2 (Y7), C3 (the X8 release), A3 (ledger item 17), and the rest of A6 (the ratings and the account's later actions)."
-- Missing: ledger items 3 (F-CANOPY-004's contract), 9 (M-DATASET-17..26), 10 (metrics replay drives no chart) (ledger :9612, :9624, :9626); `S/main/handoff_v4.md`:54 "making recurrence's `Settings` case-sensitive … is the owner's call"; `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-owner-rulings-open.md`:36 "retiring the ad-hoc copies needs an owner decision under the retention policy" (lost upstream); `HANDOFF_2026-09-24_canopy-selection-four-rulings-made-x11-f2-f1-x8-to-implement.md`:30–31 "It printed `HF_TOKEN` and two PyPI tokens … Token rotation is the owner's call" (B5 names only the PyPI tokens).
+- Missing: ledger items 3 (F-CANOPY-004's contract), 9 (M-DATASET-17..26), 10 (metrics replay drives no chart) (ledger :9612, :9624, :9626); `S/main/handoff_v4.md`:54 "making recurrence's `Settings` case-sensitive … is the Overtoad's call"; `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-Overtoad-rulings-open.md`:36 "retiring the ad-hoc copies needs an Overtoad decision under the retention policy" (lost upstream); `HANDOFF_2026-09-24_canopy-selection-four-rulings-made-x11-f2-f1-x8-to-implement.md`:30–31 "It printed `HF_TOKEN` and two PyPI tokens … Token rotation is the Overtoad's call" (B5 names only the PyPI tokens).
 - Fix: add all four to the batch.
 
 **5. MINOR — O9's source pointer is wrong; F-060–062 have no source.**
@@ -44,7 +44,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 **7. MINOR — Three traps weakened.**
 - Source `…four-rulings-shipped…md`:123–124: "Snapshot first, and scan the snapshot for the mutants' strings." The draft keeps only "Never upload while one runs."
 - A's predecessor: quoted-literal review "by known-literal/length output", and `--allow-shape AGENT_ID=LITERAL` never excuses key material (`key_material()`); the draft: "after reviewing it".
-- `…four-rulings-made…md` § Traps: "Agent briefs must forbid printing env/secrets and sending the owner's email anywhere" — dropped, though the A-N2 agent did send the email to sec.gov (`…queue-drained…md`:105). The draft's "Nothing was sent" is true only of the four lanes it names.
+- `…four-rulings-made…md` § Traps: "Agent briefs must forbid printing env/secrets and sending the Overtoad's email anywhere" — dropped, though the A-N2 agent did send the email to sec.gov (`…queue-drained…md`:105). The draft's "Nothing was sent" is true only of the four lanes it names.
 
 **8. MINOR — Verification block changed meaning.**
 - The predecessor's `(cd $S/r15 && …)` was a subshell; the draft's bare `cd …/r15 && …` persists, so the next three commands' relative paths fail.
@@ -67,7 +67,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 - LFS pointers required for PNGs in signed API commits (`…queue-drained…md`:108).
 - The full canopy test recipe (`src/tests/{unit,regression,contract,performance}/`, `--timeout=60`, `LIBTORCH= LD_LIBRARY_PATH=`).
 
-**13. MINOR — The owner's sweeper answer's scope is broadened.** Ledger item 15 and A's predecessor record that the question named data#428, ml#2032, ml#2059 and canopy#678, and "#676 is covered only by the pass's pattern". The draft states it as a general rule, and X1 leans on it for the Y2 PRs.
+**13. MINOR — The Overtoad's sweeper answer's scope is broadened.** Ledger item 15 and A's predecessor record that the question named data#428, ml#2032, ml#2059 and canopy#678, and "#676 is covered only by the pass's pattern". The draft states it as a general rule, and X1 leans on it for the Y2 PRs.
 
 **14. NIT.**
 - C2 "or accepts the gap" — "Accept the gap" is already option 4 in the §4.3 note.
@@ -84,11 +84,11 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 |---|---|---|---|---|
 | A's predecessor (`…phase9-landed…followup-684.md`) | ~48 | ~40 | 6 (main-verify check — closed; `--allow-shape` method; squash-setting names; §4.9 routing; "grep finds none"; memory STATE block) | 2 (sweeper scope; O9 source) |
 | B's predecessor (`…y2-wave2-round-15-fix-pass.md`) | ~55 | ~45 | 7 (#3; old scratchpad path; `process_cleanup.py`; intent-to-add; #183/#184 descriptions; MAJOR/MINOR/NIT tally; "proven no-op") | 3 (drafts → X1, correct; `values.yaml`, correct; subshell → `cd`, breaks) |
-| C's predecessor (`…cleanup-done…owner-calls-remain.md`) | ~35 | ~29 | 5 (containers-session scope, moot; 3 verification commands; upstream facts the §4.3 note still holds) | 2 (claims-terms pointer, equivalent; C2 wording) |
+| C's predecessor (`…cleanup-done…Overtoad-calls-remain.md`) | ~35 | ~29 | 5 (containers-session scope, moot; 3 verification commands; upstream facts the §4.3 note still holds) | 2 (claims-terms pointer, equivalent; C2 wording) |
 | Ledger Phase 9 items 0–17 | 18 items / ~40 sub-bullets | 18/18 items | 4 sub-bullets (item 13's gaps and item 15's evidence survive only via the "ledger is authoritative" pointer) | item 15's list is incomplete in the source (finding 1) |
 | `…phase9-cuts-reviewed…f058-filed.md` (09-23) | 6 items + 12 facts | items 1–2 CLOSED (verified), 3–6 carried | 5 (pacer detail, digest move, 2/68/2, `df -i`, f055 log check) | 0 |
 | `…four-rulings-shipped…md` + `…queue-drained…md` | ~25 | ~18 | 7 (retention decision, HF_TOKEN, egress rule, LFS, snapshot scan, glob-redirect shape, 3 verification commands) | 0 |
-| `S/main/PLAN.md` + `handoff_v4.md` | pointer targets | PLAN.md content verified; wave 3/X10/owner-gated carried | 2 details; known limitations by pointer only | 0 |
+| `S/main/PLAN.md` + `handoff_v4.md` | pointer targets | PLAN.md content verified; wave 3/X10/Overtoad-gated carried | 2 details; known limitations by pointer only | 0 |
 | R15A–D | 3 MAJOR, 10 MINOR, ~20 NIT | all headings (fix-list `diff` empty) | ~8 sub-fixes (finding 10) | 2 flagged overtaken (correct) |
 
 ## Could not check

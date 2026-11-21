@@ -1,4 +1,4 @@
-# Thread Handoff — Recurrence × Equities: juniper-ml 0.11.0 cut and parked at the owner's PyPI gate; plan v1.7.14
+# Thread Handoff — Recurrence × Equities: juniper-ml 0.11.0 cut and parked at the Overtoad's PyPI gate; plan v1.7.14
 
 **Date**: 2026-10-21
 **Host**: turing (Darwin, Intel; no commit signing; bash 3.2). Every landing goes through `util/open_signed_pr.py` / `util/push_signed_commit.py`.
@@ -9,7 +9,7 @@
 
 ## Goal
 
-Continue the arc from plan v1.7.14. **This session** (turing session 8) picked up the predecessor's step 1. The owner granted merge approval and approved cutting juniper-ml 0.11.0 at its start.
+Continue the arc from plan v1.7.14. **This session** (turing session 8) picked up the predecessor's step 1. The Overtoad granted merge approval and approved cutting juniper-ml 0.11.0 at its start.
 
 - **Pre-flight on `main` `fcaf5e0c`.** The predecessor's post-merge re-check passed: each of the two release-train CHANGELOG entries counts 1 on `origin/main`. `detect.py` read UNRELEASED_CHANGES → 0.11.0. `propose.py --dry-run --json` gave a PR body of 1,909 characters and a notes draft of 91,945 B, which is **122,596 B base64**. That is 2,404 B under the ceremony's 125,000 B cap; the predecessor measured 6,936 B of headroom before more `[Unreleased]` entries landed. Every pyproject pin change in the `v0.10.0..main` window is recorded in `[Unreleased]`.
 - **A generator gap, caught before `--execute`.** `tests/test_pyproject_extras.py` `ReadmeCompatTableTest.test_compat_table_lead_in_names_current_version` requires README's "The pyproject pins matching `juniper-ml` X:" lead-in to name the pyproject version. `propose.py` edits only `pyproject.toml`, `CHANGELOG.md` and `AGENTS.md`, so the bare proposal fails Regression Tests with `'0.10.0' != '0.11.0'`; I reproduced that on a scratch copy. This was the first generated juniper-ml proposal since the guard landed (#1972); 0.10.0 was bumped by hand (#2033). **The generator is not fixed yet** (Remaining work, item 2).
@@ -38,11 +38,11 @@ Continue the arc from plan v1.7.14. **This session** (turing session 8) picked u
 
 1. **Owner: approve the juniper-ml 0.11.0 `pypi` gate.** The run is 39577119562 and the environment is `pypi` (id `12341743943`; it has a 5-minute wait timer). Approve on the run page ("Review deployments"), or run:
    `gh api -X POST repos/pcalnon/juniper-ml/actions/runs/39577119562/pending_deployments -F 'environment_ids[]=12341743943' -f state=approved -f comment='juniper-ml 0.11.0'`.
-   The agent does not approve this gate (memory `pypi-gate-is-owner-only`). After the publish:
+   The agent does not approve this gate (memory `pypi-gate-is-Overtoad-only`). After the publish:
    - `python3 -I -c "import json,urllib.request;print(json.load(urllib.request.urlopen('https://pypi.org/pypi/juniper-ml/json'))['info']['version'])"` should print `0.11.0`.
    - Check that `requires_dist` carries `juniper-recurrence<0.9.0,>=0.8.0`, `juniper-recurrence-model<0.7.0,>=0.6.0`, `juniper-data>=0.17.0` and `juniper-canopy>=0.9.0`.
    - Confirm #2307 merged; if it did not, run `python3 util/safe_merge.py --pr 2307 --repo juniper-ml --execute`.
-   - The parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0) is the owner's: that file is not on turing.
+   - The parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0) is the Overtoad's: that file is not on turing.
 2. **Fix the generator gap**, so the next juniper-ml proposal is green as generated. In `util/release_train/propose.py`, when the bumped package is the meta (`juniper-ml`, `path: "."`), also rewrite `README.md`'s `The pyproject pins matching \`juniper-ml\` <old>:` line (the regex is `_COMPAT_LEAD_RE` in `tests/test_pyproject_extras.py`; `util/ad-hoc/2026-09-21_sync_readme_compat_table.py` renders the whole table). Then add it to `Files changed` and add a test in `tests/test_release_train_propose.py`. Run the `.py` fix's discrimination check: on `main`'s module the new test must fail. `docs/REFERENCE.md`'s matrix row and sentence stay a per-cut manual co-change; `util/ad-hoc/2026-10-21_juniper_ml_0_11_0_cut_cochanges.py` is the pattern.
 3. **Post-merge re-check** (memory `api-whole-file-uploads-rebase-on-main`). About an hour after #2306 merged, each of these should print 1:
    - `git show origin/main:README.md | grep -c 'pyproject pins matching .juniper-ml. 0.11.0'`
@@ -69,14 +69,14 @@ Continue the arc from plan v1.7.14. **This session** (turing session 8) picked u
 - **Simulate the proposal before `--execute`.** Copy the tree to the scratchpad, apply the three edits, and run the suites that read the version, README or REFERENCE. That is how the README guard was found. Scratch scripts: `simulate_bump.py`, `run_suites.py`.
 - **Put the co-changes on the proposal branch**, one signed commit per large file (`util/push_signed_commit.py --expected-head <head>`, `--commit-body-file` for the trailers). No CHANGELOG entry, because the notes were within 3 KB of the archive cap. The ceremony renders from `[0.11.0]`, and the `--target-sha` tag makes the tag window equal to the merge sha.
 - **The release order that worked**: `safe_merge.py --execute` (it handled one BEHIND by itself) → `git reset --hard <merge sha>` on the worktree (after proving every local edit was in it) → re-detect → `gh run watch <ci run> --exit-status` → ceremony `--dry-run` → `--execute` (about 2 min from Release to the gate).
-- Everything else is as in the predecessor: the `pypi` gate is the owner's; one plain command per call under the worktree guard; the dir-mode secret scan runs through a scratchpad wrapper.
+- Everything else is as in the predecessor: the `pypi` gate is the Overtoad's; one plain command per call under the worktree guard; the dir-mode secret scan runs through a scratchpad wrapper.
 
 ## Verification commands for the new thread
 
 ```bash
 gh pr view 2306 --repo pcalnon/juniper-ml --json state,mergeCommit -q '.state + " " + (.mergeCommit.oid // "-")'            # MERGED 0b714d90
 gh pr view 2307 --repo pcalnon/juniper-ml --json state,mergeCommit -q '.state + " " + (.mergeCommit.oid // "-")'            # MERGED (archive) once its CI is green
-gh run view 39577119562 --repo pcalnon/juniper-ml --json status,conclusion -q '.status + " " + .conclusion'                  # waiting -> completed success after the owner's approval
+gh run view 39577119562 --repo pcalnon/juniper-ml --json status,conclusion -q '.status + " " + .conclusion'                  # waiting -> completed success after the Overtoad's approval
 gh api repos/pcalnon/juniper-ml/git/ref/tags/v0.11.0 -q .object.sha                                                          # 0b714d90fea5e687635412b6dd55bd2c823383d8
 python3 -I -c "import json,urllib.request;print(json.load(urllib.request.urlopen('https://pypi.org/pypi/juniper-ml/json'))['info']['version'])"   # 0.10.0 until the gate, then 0.11.0
 grep -n '^- \*\*Version\*\*' notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md   # 1.7.14

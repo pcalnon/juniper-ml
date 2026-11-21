@@ -177,7 +177,7 @@ class RetrievalChannel(unittest.TestCase):
         # notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md
         # defines the `ledger` class as "the match is INSIDE the soak ledger's own
         # JSON", so a match inside a shell COMMAND is Sec 3's `filename` class --
-        # owner decision 7, not a defect; and the shape has 0 occurrences in 49
+        # Overtoad decision 7, not a defect; and the shape has 0 occurrences in 49
         # bound transcripts while all 7 real ledger sightings are RESULT-side, which
         # this channel cannot see (see WiredChannelSeesToolInputsOnly).
         parsed = {
@@ -615,7 +615,7 @@ class WiredChannelSeesToolInputsOnly(unittest.TestCase):
 
     THIS CLASS IS A STANDARD PIN, NOT A BUG PIN, and it is meant to go red one day.
     §3.D records that wiring ``tool_result`` into ``parse_events`` **changes the
-    retrieval standard** and is owner-decision territory rather than a plumbing fix.
+    retrieval standard** and is Overtoad-decision territory rather than a plumbing fix.
     If someone wires it, the two mechanism cases below start firing and this reddens
     -- which is the point: the change becomes visible as a standard change instead of
     arriving as a silent widening of what counts as a follow.
@@ -650,7 +650,7 @@ class WiredChannelSeesToolInputsOnly(unittest.TestCase):
 
 
 class ContaminationScreenIsWiredReportOnly(unittest.TestCase):
-    """Item F, owner ruling 2026-09-15: the screen runs on every scored run, and REPORTS.
+    """Item F, Overtoad ruling 2026-09-15: the screen runs on every scored run, and REPORTS.
 
     `conf/soak_probes.json`'s _README has said since the pilot that scoring MUST run
     the contamination screen. Nothing referenced it until this change.

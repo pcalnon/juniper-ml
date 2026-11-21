@@ -15,7 +15,7 @@
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 #
 # Status:        ad-hoc -- investigation
-# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:       recovery plan B6 / I-20 (notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md)
 #
 # Description:

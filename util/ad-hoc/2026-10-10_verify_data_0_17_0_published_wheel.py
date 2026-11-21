@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-10
 Status: ad-hoc — one-off (W1.11 post-publication check of juniper-data 0.17.0)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md
          (W1.11: "PyPI 0.17.0 probe shows `regression`; wheel probe re-run"), juniper-data#437 (X8),
          util/ad-hoc/2026-09-10_verify_published_wheels.py (the pattern this follows)

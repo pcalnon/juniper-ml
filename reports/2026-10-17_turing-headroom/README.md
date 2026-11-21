@@ -2,7 +2,7 @@
 
 Task F3 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` asks for at least 480 samples per
 mode, taken at 60 s intervals, in dev mode and node mode. This directory holds the **dev-mode** run. Node mode (desktop apps
-and Docker Desktop quit, no VM running) is still to do: the owner sets that host state.
+and Docker Desktop quit, no VM running) is still to do: the Overtoad sets that host state.
 
 ## Files
 

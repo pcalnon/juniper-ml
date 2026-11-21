@@ -7,11 +7,11 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use; wraps util/open_signed_pr.py
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Session 2fba4397 (worktree `fizzy-hugging-dream`) wrote two handoffs on 2026-09-24/25: its own
 (`…ml2088-merged-data-fixforward-refuted-and-fixing-closes-pr-owed.md`) and the consolidated one the
-owner asked for (`…consolidated-both-lanes-validations-and-closes-pr-owed.md`), which merges it with the
+Overtoad asked for (`…consolidated-both-lanes-validations-and-closes-pr-owed.md`), which merges it with the
 follow-up lane's (juniper-ml#2097) and their predecessor (juniper-ml#2084). Both, their validation
 reports, and the rest of the lane's uncommitted evidence ship together here.
 
@@ -25,7 +25,7 @@ Before opening anything it refuses when:
     so a stale base would silently revert whatever main changed since (run `git fetch` first);
   * an OPEN juniper-ml PR already touches one of the paths (read from the paginated REST file listing:
     `gh pr view/list --json files` stops at 100 files per PR);
-  * a file carries the repository owner's configured email address (it is never printed).
+  * a file carries the repository Overtoad's configured email address (it is never printed).
 
 `--dry-run` is forwarded to util/open_signed_pr.py.
 
@@ -51,7 +51,7 @@ FILES = [
     "util/ad-hoc/2026-09-24_archive_round42_reports.py",
     "util/ad-hoc/2026-09-24_data438_round2_stall_probe_throughout.py",
     "util/ad-hoc/2026-09-24_rebuild_round42_doc2_draft_0021z.py",
-    f"{REPORTS}/owner-ruling-key-leaks-verbatim.md",
+    f"{REPORTS}/Overtoad-ruling-key-leaks-verbatim.md",
     f"{REPORTS}/data438-fixforward-pr-draft.md",
 ]
 # Report globs: the data fix-forward's validation rounds, its executor's disposition report and its PR draft,
@@ -113,7 +113,7 @@ def main() -> int:
 
     email = run("git", "config", "user.email").stdout.strip()
     if email:
-        problems += [f"owner's email address found in: {f}" for f in files if (REPO / f).is_file() and email in (REPO / f).read_text(encoding="utf-8", errors="replace")]
+        problems += [f"Overtoad's email address found in: {f}" for f in files if (REPO / f).is_file() and email in (REPO / f).read_text(encoding="utf-8", errors="replace")]
 
     if problems:
         print("\n".join(problems))

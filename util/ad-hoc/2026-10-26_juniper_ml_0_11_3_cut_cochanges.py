@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — one-off (the juniper-ml 0.11.3 release proposal)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-25_juniper_ml_0_11_2_cut_cochanges.py (the 0.11.2 cut this follows);
          util/release_train/propose.py (its co-change checklist leaves docs/REFERENCE.md to the cut);
          juniper-ml#2062 and juniper-ml#2333 (the [servers] extras that 0.11.3 ships)

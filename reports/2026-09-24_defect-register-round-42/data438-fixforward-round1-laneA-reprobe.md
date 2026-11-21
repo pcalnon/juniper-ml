@@ -83,7 +83,7 @@ What does not reproduce is wording:
 - **F5: fixed.** Row 19.
 - **F6: fixed.** Rows 11 and 20.
 - **F7: fixed.** A symlinked `.npz` is now a 500, and the docs say so (row 21).
-- **F8: not fixed.** Flagged for an owner ruling as stated; the counts reproduce (row 22).
+- **F8: not fixed.** Flagged for an Overtoad ruling as stated; the counts reproduce (row 22).
 
 `data438-round1-laneB-refute.md`:
 - **M1: fixed.** Same evidence as F1.

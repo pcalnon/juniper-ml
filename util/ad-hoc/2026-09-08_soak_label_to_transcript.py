@@ -33,7 +33,7 @@ Two things blocked the re-audit. Both are solved here:
 
 WHAT IT DOES NOT DO
 -------------------
-It does not ratify a retrieval standard -- that is a judgement the owner makes
+It does not ratify a retrieval standard -- that is a judgement the Overtoad makes
 on this evidence. It reports, per row, what the tool layer actually shows:
 whether the destination appeared in a tool INPUT, in a tool RESULT, or in
 neither. It does not modify the ledger.
@@ -638,7 +638,7 @@ def main() -> int:
                   f"evidence={parts}  ({e['binding']})")
         print("  Candidates for re-scoring, NOT re-scorings: whether a filename-only")
         print("  or sibling-repo hit counts is exactly the standard question item E")
-        print("  puts to the owner. The ledger is not modified by this tool.")
+        print("  puts to the Overtoad. The ledger is not modified by this tool.")
     return 0
 
 

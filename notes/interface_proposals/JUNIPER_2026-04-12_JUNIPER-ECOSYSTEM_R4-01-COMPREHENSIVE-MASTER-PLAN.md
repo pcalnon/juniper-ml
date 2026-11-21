@@ -246,9 +246,9 @@ Every setting has a `Field(..., description=...)` Pydantic docstring; CI asserts
 
 ## 3. Phase index
 
-Owner key: **C**=backend-cascor, **Y**=backend-canopy, **F**=frontend, **S**=SDK, **Sec**=security review, **O**=ops.
+The Overtoad key: **C**=backend-cascor, **Y**=backend-canopy, **F**=frontend, **S**=SDK, **Sec**=security review, **O**=ops.
 
-| # | Phase | Goal (one line) | Owner | Effort (o/e/p) | Entry deps | Exit top criterion | Rollback TTF | NOT-in-phase |
+| # | Phase | Goal (one line) | The Overtoad | Effort (o/e/p) | Entry deps | Exit top criterion | Rollback TTF | NOT-in-phase |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **0-cascor** | Cascor `/ws/training` emits `seq`, advertises `server_instance_id`+`replay_buffer_capacity`, supports `resume`, fixes state coalescer+broadcast_from_thread | C | 1.5/2.0/3.0 | cascor main clean; GAP-WS-19 verified | `cascor_ws_seq_gap_detected_total==0` after 72h soak | 15 min revert | Full Phase E; permessage-deflate; topology chunking; seq on `command_response` |
 | 2 | **A-SDK** (parallel with 1) | `CascorControlStream.set_params(params, timeout=1.0, command_id=...)` ships to PyPI | S | 0.5/1.0/1.5 | cascor-client main clean | `test_set_params_caller_cancellation` green | PyPI yank | Canopy adapter refactor; SDK retries; debounce |
@@ -1237,7 +1237,7 @@ Lock in dual metric format contract (flat + nested keys both present) with regre
 ### 14.5 Exit gate
 
 - [ ] Regression tests green
-- [ ] CODEOWNERS enforced (test PR touching file without owner review -> blocked)
+- [ ] CODEOWNERS enforced (test PR touching file without Overtoad review -> blocked)
 - [ ] Consumer audit doc merged
 - [ ] Pre-commit hook installed
 
@@ -1283,7 +1283,7 @@ All 13 resolved. **No item in this plan is TBD.**
 
 10 CCCs from R2-03, with per-phase touchpoints integrated in sections 4-14. This section lists each CCC's owning role and key acceptance criteria.
 
-| # | CCC | Owner | Key acceptance criteria |
+| # | CCC | The Overtoad | Key acceptance criteria |
 |---|---|---|---|
 | CCC-01 | Wire-format schema evolution | backend-cascor lead | `command_id` rename enforced; additive-only contract tested; rollout state matrix in Phase 0-cascor PR |
 | CCC-02 | Observability stack | backend-canopy lead | Metric-before-behavior via CI; SLO panel deployed; page alerts test-fired; metrics-presence in `fast` lane |
@@ -1788,7 +1788,7 @@ R3-02 specified Lax. R4-01 uses Strict per section 22.5 (Canopy is single-origin
 11. **Section 7.4 cross-cutting**: initial Phase B had no CCC subsection. Added full CCC-01 through CCC-10 cross-cutting deliverables per R3-01 S5.3.2.
 12. **Section 7.5 tests**: expanded from 14 to 22 tests to match R3-01 S5.4 + R3-03 S6.1 union.
 13. **Section 14a**: added unresolved items resolution table from R3-02 S1.7 (13 items, all resolved).
-14. **Section 14b**: added cross-cutting concerns summary from R3-01 S16 (10 CCCs with owners).
+14. **Section 14b**: added cross-cutting concerns summary from R3-01 S16 (10 CCCs with Overtoads).
 15. **Section 1.3**: added secondary goals from R3-01 S1.2 (7 items).
 16. **Section 1.4**: added explicit non-goals from R3-01 S1.3 (12 items).
 17. **Section 18**: expanded observability section with audit logger scope, clock offset, dashboard-as-code, metric naming audit per R3-01 S15.6-15.9.

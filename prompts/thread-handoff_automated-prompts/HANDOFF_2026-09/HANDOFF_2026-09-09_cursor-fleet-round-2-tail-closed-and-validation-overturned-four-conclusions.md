@@ -15,7 +15,7 @@ because §1 is what survived.
 ```text
 Continue the cursor-fleet round-2 tail for juniper-ml. All six items of the 2026-09-07
 handoff are merged (#1831, #1833, #1834, #1837, #1849, #1856). What remains is SIX items.
-Only ONE is an owner decision -- an earlier draft of this handoff called two of them
+Only ONE is an Overtoad decision -- an earlier draft of this handoff called two of them
 decisions, and measurement answered both.
 
 Completed so far:
@@ -45,7 +45,7 @@ Remaining work, in priority order:
    retagged six bare fences in this same file and left this one. Fix the fence.
    I had called this "a template that emits markdown", overriding my own triage tool,
    which had classified it LOST-FENCE? -- its damage bucket.
-2. RESTORE the four table rows, do not ratify them. This was drafted as an owner decision;
+2. RESTORE the four table rows, do not ratify them. This was drafted as an Overtoad decision;
    the evidence is one-way. `notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md:360`
    says verbatim: "Moved to the companion model document (§3.2) -- numerical-correctness,
    known-answer/golden, regression-metric, time-series-leakage, growth-loop, determinism,
@@ -80,7 +80,7 @@ Remaining work, in priority order:
    it clears 4 there and takes 3 of the 6 notes/legacy/ files to zero). Live notes/ 24 -> 19 (whole-tree delta is 9; 4 of it lands in the ratified set).
    A length-aware fence walker (four-backtick blocks) takes it to 49.
 5. THE RATIFICATION IS RECORDED NOWHERE -- and DO NOT WRITE IT DOWN UNTIL 1-4 LAND.
-   The owner ruled in session 2026-09-08 "fix live notes/ only, ratify the rest"; nothing in
+   The Overtoad ruled in session 2026-09-08 "fix live notes/ only, ratify the rest"; nothing in
    the repo says so. But the number is not yet correct and the set is not uniformly benign:
      * item 4's fix removes >=4 of the 39 and empties 3 of its 9 files;
      * the 39 contains REAL damage the ruling was made without -- TWO unclosed fences,
@@ -93,7 +93,7 @@ Remaining work, in priority order:
        `util/ad-hoc/2026-09-08_tag_sample_fences.py` fixes in one word.
    So: re-measure, repair what is real, THEN record what is genuinely accepted.
    OWNER DECISION -- the ruling was given without knowing the set held real defects.
-6. TAIL, none of it owner-gated:
+6. TAIL, none of it Overtoad-gated:
    a. CROSS-REPO FAN-OUT. `Sequence Safety` is a REQUIRED context in ALL EIGHT sibling
       repos, and all eight workflows say "ADVISORY, NOT a required check ... never blocks a
       merge" (juniper-cascor/.github/workflows/sequence-safety.yml:24 and the same text in
@@ -314,7 +314,7 @@ reconciler** before acceptance; a lone agent report is a lead, not a fact.
 
 | my claim | measured | why I was wrong |
 | --- | --- | --- |
-| "only ONE symlink is repairable; the other nine are PERMANENTLY broken" | **all ten** repairable | I grepped the links' RESOLVED path `notes/legacy/regressions/`. The targets are in `notes/regressions/` — 27 tracked files — renamed by the same commit that broke the tenth. One of the options I offered the owner ("delete the nine") would have destroyed nine live cross-references. |
+| "only ONE symlink is repairable; the other nine are PERMANENTLY broken" | **all ten** repairable | I grepped the links' RESOLVED path `notes/legacy/regressions/`. The targets are in `notes/regressions/` — 27 tracked files — renamed by the same commit that broke the tenth. One of the options I offered the Overtoad ("delete the nine") would have destroyed nine live cross-references. |
 | "NONE [of the 24] is a document defect" | **one is** | `PROMPT-ANALYSIS…:816`'s ` ```jinja2 ` closes early at :856; Jinja tags render as prose on github.com. My triage tool had classified it `LOST-FENCE?` — its damage bucket — and I overrode it by hand. |
 | the four RECURSE-MODEL rows are a balanced RESTORE-or-RATIFY | **evidence is one-way: restore** | The companion at `:360` assigns all eight suites to the model doc. §3.3 does not hold them (zero hits). The survivor/deleted split is inverted. |
 | "63 → 56" from the two screen fixes | **63 → 54** from the first alone | I subtracted only the live-notes hits, assuming the fix could not reach the ratified set. It clears 4 there and empties 3 of its 9 files — so the "39 accepted debt" figure item 5 was told to record is wrong on both sides. |
@@ -329,7 +329,7 @@ The systemd install-recipe loss (§1, repaired here); the cross-repo fan-out —
 Safety` required in all eight siblings while all eight workflows call it advisory; 28
 remaining `or {}` chains plus the census's two blind spots; the 87 unadjudicated residue
 lines; six sites still asserting 102/21; and that both genuine unclosed fences on `main` sit
-inside the set the owner was asked to ratify.
+inside the set the Overtoad was asked to ratify.
 
 ### What ROUND 2 found — the fix pass introduced five new errors
 

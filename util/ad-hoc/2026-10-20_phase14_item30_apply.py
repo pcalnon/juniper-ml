@@ -6,8 +6,8 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-20
-# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (owner policy 2026-08-25)
-# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (Overtoad policy 2026-08-25)
+# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : ledger Phase 14 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);
 #               HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md;
 #               util/ad-hoc/2026-10-20_item30_fixwave_redrive.py (the drives this records)
@@ -526,9 +526,9 @@ HANDOFF_TEXT = f"""# HANDOFF 2026-10-20 — P2 canopy Lane A: Phase 14 recorded.
 turing (macOS; no trio; throwaway legs from the E2 tree), at a phase boundary, as its PR was opened.
 **Consensus**: see the ledger's Phase 14 consensus record.
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, authoritative for P2.
-Its items 5 and 7 and the owner batch O1–O17 carry over. This file supersedes
+Its items 5 and 7 and the Overtoad batch O1–O17 carry over. This file supersedes
 `HANDOFF_2026-10-19_canopy-phase13-manual-sweep-five-p2s-now-p1-item-30-owed.md`.
-**Merge approval**: the owner granted it for this session's PR. It is NOT carried: ask again.
+**Merge approval**: the Overtoad granted it for this session's PR. It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
 
@@ -566,7 +566,7 @@ the trio on the Linux host; item 27 needs a demo leg that trains (this host can 
 **Remaining, in order:**
 
 1. **Land this session's PR** if it has not merged: `python3 util/wait_for_checks.py`, query
-   `reviewThreads(isResolved:false)`, ask the owner, then `python3 util/safe_merge.py --execute` and read its
+   `reviewThreads(isResolved:false)`, ask the Overtoad, then `python3 util/safe_merge.py --execute` and read its
    `MERGED` line. Afterwards re-check `origin/main`: `grep -c 'FIXED' <(grep -E '^\\*\\*F-CANOPY-(001|012|013|018|032) ' notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md)` should print 5.
 2. **Item 32, F-CANOPY-069** (canopy code): read which member of each colliding pair runs under dash 4.4.1; fix the
    pairs (distinct inputs or one callback; `running=` for the progress alerts); decide the floor; correct
@@ -579,8 +579,8 @@ the trio on the Linux host; item 27 needs a demo leg that trains (this host can 
    (`bash util/ad-hoc/2026-10-20_turing_canopy_leg.bash up 8062 demo http://127.0.0.1:9 ~/.local/state/juniper/turing-e2/venvs/JuniperCanopy1-dash44/bin/python`,
    then `util/ad-hoc/2026-09-23_f055_f025_allow_arm_demo_drive.py` adapted to the chrome channel and the CDN route).
 5. **Items 25 and 28** on the Linux host, against the trio (ledger Phase 12). **Item 29**, the Linux host.
-6. **Item 26's second step** once the owner rules (O17).
-7. Then the parent's items 5 and 7, and the owner batch O1–O17.
+6. **Item 26's second step** once the Overtoad rules (O17).
+7. Then the parent's items 5 and 7, and the Overtoad batch O1–O17.
 
 **Traps learned:**
 

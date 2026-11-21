@@ -14,16 +14,16 @@ C.x and Qx statuses.**
 
 ## Goal statement
 
-1. After the 2026-11-15 13:00Z backup (07:00 CST) has finished, the owner runs `status`; check that run's retention pass,
+1. After the 2026-11-15 13:00Z backup (07:00 CST) has finished, the Overtoad runs `status`; check that run's retention pass,
    the first that can delete anything (step A below).
 2. Watch AC-5 complete: the probe can read `PASS` from 02:00Z on 11-17 (step B).
 3. Build the record PR (C.10) into `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`
    §6.3.1 (step C).
-4. Carry the open questions to the owner: Q1, Q6's Warning half, Q4, Q8 (step D). Then C.11 (step E).
+4. Carry the open questions to the Overtoad: Q1, Q6's Warning half, Q4, Q8 (step D). Then C.11 (step E).
 
-The working pattern holds: the owner runs every command that changes the host or reaches the server and pastes summary
+The working pattern holds: the Overtoad runs every command that changes the host or reaches the server and pastes summary
 lines; the session checks read-only, keeps the running record and names each next command with its expected output.
-Ask the owner for merge approval again in a new session.
+Ask the Overtoad for merge approval again in a new session.
 
 ### What this session did (2026-11-14 23:38Z to 2026-11-15 11:45Z)
 
@@ -37,7 +37,7 @@ Ask the owner for merge approval again in a new session.
   - AC-5 does not count an `OK RUNNING` day.
 
   The watchdog timer moved to 20:00 local, the snapshot timer to 12:45 UTC.
-- **The owner ran, as root, from `W` (tools 1.1.0) and then from `D` (tools 1.2.0, then main's):**
+- **The Overtoad ran, as root, from `W` (tools 1.1.0) and then from `D` (tools 1.2.0, then main's):**
   - C.1 `status` and `shred`: `run dirs : 0 on disk`;
   - drill 1 `PASS` 01:53:01Z, drill 2 `PASS` 03:23:38Z, `ac6` (AC-6b) `PASS` 04:08:40Z;
   - `aside` `PASS` at 05:42:13Z (20 dlists) and again at 11:08:28Z (21; `MANIFEST.sha256 lists 21`, 2,924,387,121 B);
@@ -48,7 +48,7 @@ Ask the owner for merge approval again in a new session.
   deleted nothing; the cause is not known.** A candidate, not verified: the save-queued run did not carry the new option.
   The schedule stayed at 14:00Z until a second save (next run 2026-11-15 07:00 CST). That save started no run. AC-2 reads
   `PASS` "repeat=1D at 13:00:00Z (anchor date 2026-11-15)" since 11:16:00Z.
-- **C.9 deployed** by the owner at 11:30:09Z: probe `9baec4ec1e8228ca…`, API client `756b41f60c7af32d…`. Timer
+- **C.9 deployed** by the Overtoad at 11:30:09Z: probe `9baec4ec1e8228ca…`, API client `756b41f60c7af32d…`. Timer
   `NEXT Sun 2026-11-15 17:30:00 CST`, enabled, `YAMAGUCHI_BACKUP_ID=2`.
   - First run: `RESULT: FAIL (7 PASS, 1 FAIL, 1 PENDING, 2 ATTN, 2 INFO)`, AC-7 the one FAIL.
   - The unit reads `failed` after a FAIL **by design**: the unit file says so.
@@ -58,22 +58,22 @@ Ask the owner for merge approval again in a new session.
   `D/tmp/phase-d-sitting/segment-2026-11-14b.md`. If you edit a segment, edit `W`'s copy and re-run the assembler.
 - Memory: `project_backup_arc_hub.md` has the 2026-11-15 paragraph; the MEMORY.md line was updated.
 
-### Owner rulings this session (answers verbatim)
+### The Overtoad rulings this session (answers verbatim)
 
 - Dialog, 2026-11-15 00:08:36Z:
   - May the probe list the destination's file names (the census): "Accept as built (Recommended)".
   - Q7: "Keep all for two weeks".
 - Dialog, 04:46:17Z:
   - AC-2's source change: "Yes, deliberately".
-  - Q2: "Yes, all three". The three off-schedule starts were the owner's UI saves; 05:45:35Z was a fourth, observed.
+  - Q2: "Yes, all three". The three off-schedule starts were the Overtoad's UI saves; 05:45:35Z was a fourth, observed.
   - Q3: "Keep D-14; 0017 interim".
   - Q6: "Don't count them".
-- On the UMask, the owner's words: "the change to umask 0017 was intended to write backup files into the Yamaguchi
-  directory that were group writable. the group ownership of these files is duplicati. since the pcalnon user is a
+- On the UMask, the Overtoad's words: "the change to umask 0017 was intended to write backup files into the Yamaguchi
+  directory that were group writable. the group Overtoadship of these files is duplicati. since the pcalnon user is a
   member of the duplicati group, this allows files to be processed by Dropbox." D-14 stands. **Never propose
-  group-writable volumes**; `0017` is the owner's own interim.
-- Owner request: "move the watchdog check to 8:00pm CST" and "move the scheduled backup time to 7:00am CST". Done
-  (#2583, the owner's installs and the second save).
+  group-writable volumes**; `0017` is the Overtoad's own interim.
+- The Overtoad request: "move the watchdog check to 8:00pm CST" and "move the scheduled backup time to 7:00am CST". Done
+  (#2583, the Overtoad's installs and the second save).
 
 ### Status of every predecessor item
 
@@ -87,13 +87,13 @@ Ask the owner for merge approval again in a new session.
 - Q2, Q3, Q6, Q7: ruled (above). Open: Q1, Q4, Q8, and Q6's Warning half.
 - `HANDOFF_2026-11-14_…md` item D (fold the 11-14 Python switch, `safe_merge.py`'s local path and the squash text, and the
   3.15.2 regression runs into the record PR): still owed, in step C.
-- Not done: the primary checkout's pull (owner), and `JuniperCascor1`'s three links. They still point at `/usr/bin`; the
-  restore is three `ln -sfn python3.14 …` commands, the owner's. This session ran the env's 3.14.7 through the shim
+- Not done: the primary checkout's pull (Overtoad), and `JuniperCascor1`'s three links. They still point at `/usr/bin`; the
+  restore is three `ln -sfn python3.14 …` commands, the Overtoad's. This session ran the env's 3.14.7 through the shim
   `D/tmp/backup-phase-d-swirling/py314-bin/`.
 
 ### Remaining work, in order
 
-**A. The first retention pass (owner, root), once the 13:00Z run has finished.** Runs have taken 0h52m to 12h30m.
+**A. The first retention pass (Overtoad, root), once the 13:00Z run has finished.** Runs have taken 0h52m to 12h30m.
 
 ```bash
 D=/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/swirling-skipping-turtle
@@ -109,7 +109,7 @@ Expect:
 
 `plan` evaluates every pass time up to 60 h ahead, so the clock should not change the count.
 
-- **If the pass deletes none again**, refuse any further save and ask the owner. Nothing is lost: `aside` holds all 21.
+- **If the pass deletes none again**, refuse any further save and ask the Overtoad. Nothing is lost: `aside` holds all 21.
 - **If it deletes some other number**, run `bash "$D/util/ad-hoc/2026-11-11_phase_d_finish.bash" plan` (any user) and
   compare its `stability` line.
 
@@ -117,7 +117,7 @@ Expect:
 
 - 11-14 holds two `OK OK` records for backup 2. 11-15 holds only the two 999 test records, which the streak ignores.
 - If the 20:00 CST checks of 11-15 and 11-16 both read `OK OK`, AC-5 reads `PASS` from 02:00Z 11-17. The daily probe
-  first sees it at 23:30Z 11-17; the owner can run the probe by hand sooner.
+  first sees it at 23:30Z 11-17; the Overtoad can run the probe by hand sooner.
 - A `Warning` run resets the streak (Q6's Warning half).
 
 **C. The record PR (C.10)**, into `…RECOVERY-PLAN.md` §6.3.1. Fold in:
@@ -129,7 +129,7 @@ Expect:
 Build it from `origin/main` blobs. `util/open_signed_pr.py` signs. Run both sequence-safety screens on a local
 probe commit first (never pushed; `git reset --soft` after).
 
-**D. For the owner:**
+**D. For the Overtoad:**
 
 - Q1: AC-3 after the source change. Examined bytes read +8.1% against the 2026-11-08 baseline; AC-3's threshold is 5%.
 - Q6's Warning half: a `Warning` run reads `ALERT NOT_SUCCESS` and resets the streak, and the 11-10 run's 575 warnings
@@ -170,7 +170,7 @@ probe commit first (never pushed; `git reset --soft` after).
 - "Nothing under `/mnt/Backups/Ubuntu/` beyond `stat`."
 - "Never read a secret file; never print an environment variable or a token."
 - "No `git stash`; no interactive shells; no host actions."
-- "The owner may direct a named action in person, which releases that action only. Nothing releases one of
+- "The Overtoad may direct a named action in person, which releases that action only. Nothing releases one of
   `…RECOVERY-PLAN.md` §6.0 item 6's absolutes."
 - Pastes carry counts and summary lines only. Never print `send-http-url`, `TargetURL` or a warning's text. No file is
   written under `/tmp`.

@@ -25,7 +25,7 @@ Before that refusal, a start issued right after a stop made a newer run current 
 run's ``fit`` was still running: before that ``fit`` reached an event (the start cleared the stop,
 so the ``fit`` kept running), or while it was still unwinding from the stop. The
 ``test_a_stopped_runs_*`` tests rebuild that interleaving by clearing the stop before the start
-(``_start_beside_the_stopped_fit``), and pin that the ownership check, now a second line of
+(``_start_beside_the_stopped_fit``), and pin that the Overtoadship check, now a second line of
 defence, still keeps the stale thread's settle off the newer run. On 0.7.2 and earlier the stale
 thread completed a newer run that was still training (a third start was then accepted beside it),
 failed it, or wrote its monitor context ``stopped``; and the paused-completion branch, unguarded,
@@ -390,7 +390,7 @@ def _start_beside_the_stopped_fit(mgr: ServiceLifecycleManager, X: np.ndarray, y
     ``start_training`` refuses that start while the stop is pending (the stop-then-start race;
     ``tests/test_lifecycle_stop_then_start.py``). Clearing the stop first, as the start itself
     used to, rebuilds the interleaving the refusal now prevents, so the tests below still pin the
-    ownership check behind it.
+    Overtoadship check behind it.
     """
     mgr._stop_event.clear()
     return mgr.start_training(X, y)
@@ -450,7 +450,7 @@ def test_a_stopped_runs_fit_that_returns_leaves_a_newer_running_run_alone(script
     old_thread.join(timeout=5.0)
     assert not old_thread.is_alive()
 
-    # Without the ownership guard (as on 0.7.2), run 1's thread marked run 2 COMPLETED while its fit
+    # Without the Overtoadship guard (as on 0.7.2), run 1's thread marked run 2 COMPLETED while its fit
     # was still running, and a third start was then accepted beside it.
     status = mgr.get_status()
     assert status["state_machine"]["status"] == "STARTED"
@@ -474,7 +474,7 @@ def test_a_stopped_runs_fit_that_returns_leaves_a_newer_paused_run_alone(scripte
     old_thread.join(timeout=5.0)
     assert not old_thread.is_alive()
 
-    # Without the ownership guard, run 1's thread issued RESUME on run 2, opened the pause gate and
+    # Without the Overtoadship guard, run 1's thread issued RESUME on run 2, opened the pause gate and
     # marked run 2 COMPLETED while its fit was still running.
     _assert_the_new_run_is_still_paused_and_held(mgr, model)
     _resume_and_finish_the_new_run(mgr, model)
@@ -489,7 +489,7 @@ def test_a_stopped_runs_fit_that_raises_leaves_a_newer_paused_run_alone(scripted
     old_thread.join(timeout=5.0)
     assert not old_thread.is_alive()
 
-    # Without the ownership guard, run 1's error marked run 2 FAILED ("old-boom").
+    # Without the Overtoadship guard, run 1's error marked run 2 FAILED ("old-boom").
     _assert_the_new_run_is_still_paused_and_held(mgr, model)
     _resume_and_finish_the_new_run(mgr, model)
 
@@ -515,7 +515,7 @@ def test_a_stopped_runs_interrupt_leaves_a_newer_runs_monitor_alone(scripted) ->
     assert not old_thread.is_alive()
 
     status = mgr.get_status()
-    # Without the ownership guard, run 1's thread wrote monitor stopped / idle over run 2's context
+    # Without the Overtoadship guard, run 1's thread wrote monitor stopped / idle over run 2's context
     # while the machine said STARTED.
     assert status["monitor"]["status"] == "running"
     assert status["monitor"]["phase"] == "running"

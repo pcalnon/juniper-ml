@@ -190,7 +190,7 @@ def build(repo_slug: str, project: str, marker: str | None) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--repo-slug", required=True, help="owner/name used by the stubbed gh, e.g. pcalnon/juniper-data")
+    ap.add_argument("--repo-slug", required=True, help="Overtoad/name used by the stubbed gh, e.g. pcalnon/juniper-data")
     ap.add_argument("--project", required=True, help="value for the header's Project: field")
     ap.add_argument("--marker", default=None, help="pytest marker to apply module-wide (use 'unit' for cascor / data)")
     ap.add_argument(

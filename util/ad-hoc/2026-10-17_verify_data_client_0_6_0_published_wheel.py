@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-17
 Status: ad-hoc — one-off (W1.13 post-publication check of juniper-data-client 0.6.0)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md
          (W1.13: "PyPI/GHCR probes for all four"; W1.4: the validator gaps, findings F-P3 / F-S3),
          util/ad-hoc/2026-10-10_verify_data_0_17_0_published_wheel.py (the pattern this follows)

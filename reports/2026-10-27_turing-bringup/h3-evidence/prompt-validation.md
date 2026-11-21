@@ -19,7 +19,7 @@ Each round re-ran discovery (TTL 900 s) at HEAD `4db485921abbe075b01fa39cf6af151
 
 | Prompt | Template (class) | Overall | Findings |
 |---|---|---|---|
-| macos-host-sme | generic (generic) | PASS | 4 minor: R1.1 the signing plan (K10, K11) not in Resources and dependency disagreements not surfaced; R1.1 "the owner step it implies" dropped from the denial rule; R4 "at `main`" (local `main` is `ecc05079`; HEAD is `origin/main`); R4 the orchestrating session's independent run not named |
+| macos-host-sme | generic (generic) | PASS | 4 minor: R1.1 the signing plan (K10, K11) not in Resources and dependency disagreements not surfaced; R1.1 "the Overtoad step it implies" dropped from the denial rule; R4 "at `main`" (local `main` is `ecc05079`; HEAD is `origin/main`); R4 the orchestrating session's independent run not named |
 | signing-auth-sme | generic (generic) | PASS | 5 minor: R4 "at `main`"; R4 the `H3 negative test` section and gate record had no place; R1.1 K11 and §10.2 not cited; R1.1 D11 item 4 (plan :353) names the H3 negative-test forms (`cat ~/.ssh/config`, flag-first `gh api -X POST`) and the prompt used `-X GET`; R4 "its root cause" for two failing conditions |
 | k8s-node-sme | audit (analysis) | **FAIL** | 1 major: R2.3 the agent has no clock (no Bash) and the host's local date (2026-10-26, CDT) differs from UTC (2026-10-27), so "dated in UTC" could not be executed. 3 minor: R4 "at `main`"; R4 the `H3 negative test` section's place and an item's severity when it passes; R3.4 the sentinel path's absence was asserted, not checked |
 

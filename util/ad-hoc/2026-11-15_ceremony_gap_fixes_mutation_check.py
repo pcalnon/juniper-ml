@@ -7,7 +7,7 @@ Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (the two release-train gaps the one-artifact publishers opened: HALT_BUILD, and a republish
         dispatch the monitor never saw)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/release_train/ceremony.py (classify_publish_run, publish_run_status); tests/test_release_train_ceremony.py
          (OneArtifactPublisherClassifyTest, PublishRunStatusDispatchTest)
 

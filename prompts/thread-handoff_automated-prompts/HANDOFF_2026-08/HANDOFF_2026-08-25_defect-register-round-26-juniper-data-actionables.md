@@ -9,7 +9,7 @@ Successor to [`HANDOFF_2026-08-25_defect-register-round-25-client-tier-sweep.md`
 — cite this one by its full name. **Validate this document with independent agents before
 trusting it**: this draft's three validators (facts/git, register-consistency, amputation lenses,
 all prompted to REFUTE) returned **24 findings (4 major / 20 minor, about six of them the same
-defect seen through two lenses)** — every one applied before archiving. The classes: two owner
+defect seen through two lenses)** — every one applied before archiving. The classes: two Overtoad
 routings that existed only in this lineage and not in the register (§3.1, §5.3), a stale count
 inside the register's own Status block (§4), an unexecutable constraint (the T6 caveat had no
 check a fresh thread could run — §1), an amputated environment requirement and two amputated
@@ -109,7 +109,7 @@ after both of its fix PRs read MERGED). Merge SHAs make "merged" checkable offli
   six mutations over three passes: -020 and -021 each fail only the targeted pin; -015's hoist
   fails the generic + named pair by design and its delete only the named pin. The -021 evidence scripts are
   retained under `util/ad-hoc/apd_data_021_{openapi_probe,mutation_check}.py` (ad-hoc retention
-  policy, owner decision 2026-08-25).
+  policy, Overtoad decision 2026-08-25).
 
 ---
 
@@ -123,15 +123,15 @@ Re-derived by the §1 script; per-repo splits re-derived the same way.
 | Cross-client `APD-ECO-*` | 7 | decision-shaped; `-001` unlocks `CCLIENT-001`; `-004` now also owns the `RCLIENT-004` proposal (§3.2 — handoff routing, not yet recorded in the register); `-007` carries `CCLIENT-012`'s removal-date half (recorded in place) |
 | `juniper-service-core` | 7 | **all latent** (`.websocket.*` / `workers/`, no consumer) — still do not fix as live |
 | `juniper-cascor-client` | 2 | `-001` (blocked on `APD-ECO-001`), `-008` (envelope sniffing — design-shaped) |
-| `juniper-rclient` | 2 | `-004` (proposal in §3.2), `-005` (three-name identity — owner-flavored, Low conf) |
-| `juniper-cascor` | 2 | `-003` (response_model on 46 routes — large); `-005` **owner decision** (primer self-contradiction, unchanged) |
+| `juniper-rclient` | 2 | `-004` (proposal in §3.2), `-005` (three-name identity — Overtoad-flavored, Low conf) |
+| `juniper-cascor` | 2 | `-003` (response_model on 46 routes — large); `-005` **Overtoad decision** (primer self-contradiction, unchanged) |
 | `juniper-ml` | 1 | `-001` — primer-flagged as judgement |
 | `juniper-data-client` | 0 | swept |
 | `juniper-observability` | 0 | swept (4/4 FIXED) |
 
 ### 3.1 Parked on Paul's decisions — unchanged, do not action unilaterally
 
-`APD-CASCOR-005`; the juniper-data REST group — **an owner routing carried by this handoff lineage,
+`APD-CASCOR-005`; the juniper-data REST group — **an Overtoad routing carried by this handoff lineage,
 not recorded in the register**: the register ties only `-026`–`-033` together (via `APD-DATA-013`'s
 marker), and `-008`/`-017`/`-022` are grouped by lineage alone, so cite the predecessor chain, not
 the register, for it (§5.3 carries the fix-up); `APD-ECO-001` → `APD-CCLIENT-001` (one decision, not
@@ -161,7 +161,7 @@ Items 1–4 are juniper-data work and **need the JuniperData conda env**
 3. **`APD-DATA-005` + `-024` together** (M+M) — `api_key_header` (`api/security.py:29`) is defined
    and referenced nowhere, and `openapi_url` is `None` whenever any API key is configured
    (`api/app.py`, `docs_enabled = not settings.api_keys`), so `securitySchemes` would be invisible
-   exactly where it matters. The -024 half is an owner decision (serve `/openapi.json` behind
+   exactly where it matters. The -024 half is an Overtoad decision (serve `/openapi.json` behind
    auth?); -005 alone is a no-op. Bring them to Paul as one question.
 4. **`APD-DATA-016`** (R) — `download_artifact` (`datasets.py:836-863`) calls
    `store.get_artifact_bytes` (whole body) and wraps `io.BytesIO(...)` in a `StreamingResponse`.
@@ -256,7 +256,7 @@ the app serves.
   now owns all of them.
 - **NEW — two register fix-ups for the next register PR** (found by this handoff's validators):
   the §2 Status block's "the remaining 58 are `C`/`R`/`M`/`E`" sentence is stale (see §4); and the
-  two owner routings this lineage relies on — the juniper-data REST group (`-026`–`-033`, `-008`,
+  two Overtoad routings this lineage relies on — the juniper-data REST group (`-026`–`-033`, `-008`,
   `-017`, `-022`) and `APD-ECO-004` ↔ `APD-RCLIENT-004` — exist only in handoffs. Record them in the
   register (a §4.1 / §4.6 note in the style of the `APD-DATA-005` cross-reference note) so they
   survive the handoff chain not being read.

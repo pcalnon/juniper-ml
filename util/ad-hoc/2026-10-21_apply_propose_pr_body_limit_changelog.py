@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-21
 Status: ad-hoc — one-off (the CHANGELOG half of the propose.py PR-body fix; kept so a silent revert costs one re-run)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/release_train/propose.py PR_BODY_MAX / _fitted_pr_body; tests/test_release_train_propose.py;
          util/ad-hoc/2026-10-21_apply_detect_pyproject_table_changelog.py (the detector fix this follows, same shape)
 

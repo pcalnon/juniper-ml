@@ -1,4 +1,4 @@
-# Thread handoff — canopy E2E arc: Phase 9 landed after ten consensus rounds, the owner answered the sweeper question, the canopy follow-up is canopy#684
+# Thread handoff — canopy E2E arc: Phase 9 landed after ten consensus rounds, the Overtoad answered the sweeper question, the canopy follow-up is canopy#684
 
 > **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_canopy-consolidated.md` (consolidated handoff for P2 canopy: E2E validation arc + canopy-selection arc), where this file is "predecessor A". History only; do not act on this file's items. Archived 2026-10-04 with the ledger's Phase 10, which files its item 2; until then it lived only on the unmerged branch `docs/canopy-e2e-handoff-2026-09-24` (`dd4413e5`), and a frozen copy is on `main` at `reports/2026-09-24_canopy-combined-handoff-consensus/r1/predecessors/`. Below the banner this file is byte-identical to both.
 
@@ -22,7 +22,7 @@ before any review round.
   `util/ad-hoc/2026-09-24_phase9_ledger_round{1..10}_corrections.py`; every lane report and brief is archived under
   `reports/e2e-canopy-2026-09-02/{consensus,drafts}/`. Counts (`util/ad-hoc/e2e_finding_triage.py`): 70 findings,
   48 fixed, 1 accepted, 2 withdrawn, 19 open; 1 open P0 (F-CANOPY-059), 6 open P1.
-- **The owner answered the sweeper question** (session `bc31e993`, asked 03:34:45Z, answered 07:32:48Z): "Mine:
+- **The Overtoad answered the sweeper question** (session `bc31e993`, asked 03:34:45Z, answered 07:32:48Z): "Mine:
   fix forward". The ledger's "Who" states its scope once: the question named data#428, ml#2032, ml#2059 and
   canopy#678 (three were drafts) and cascor#678's earlier arm; #676 is covered only by the pass's pattern. Still
   open (item 15): #676's CI re-run and the account's other later actions; the ratings.
@@ -54,7 +54,7 @@ before any review round.
    **(a) From the defect-register arc (round 42).** Its §4.9 routes canopy behaviour to this ledger. **Ids
    F-CANOPY-060 to -062 are RESERVED for these and were given to that arc to cite**; use them, or mark one
    WITHDRAWN if re-derivation refutes it:
-   - **F-CANOPY-060** (NIT/LOW, pre-existing, no owner yet): the dataset-shortfall prompt drops juniper-data's
+   - **F-CANOPY-060** (NIT/LOW, pre-existing, no Overtoad yet): the dataset-shortfall prompt drops juniper-data's
      truncation-permanence sentence. `_producer_detail_from_refusal` (`src/frontend/dashboard_manager.py:8404`,
      canopy `7ab994e5`) cuts the producer detail at `" To accept it,"` and at `" The resulting dataset"`
      (`:8410`), so the cap refusal's "The resulting dataset will be permanently annotated as truncated."
@@ -87,11 +87,11 @@ before any review round.
 
    File what survives with the rest of item 2; decline the rest with a reason.
 3. **Item 17 triage**: a replay replaces cascor's live network and nothing restores it, while canopy calls it
-   "read-only playback". canopy's wording, cascor's design, or both — an owner call.
+   "read-only playback". canopy's wording, cascor's design, or both — an Overtoad call.
 4. **F-058's census** (item 0): the first one was refuted before its first run. Hook dispatch (or
    `add_init_script`), detect fires before the reset, and run a synthetic check both ways first.
 5. **F-055/F-058 redesign**: a request/ack handshake pacer with no `running=` guard.
-6. **Owner questions** (item 15): the later actions and #676's CI re-run; the ratings (F-059 P0 against F-014's P1
+6. **The Overtoad questions** (item 15): the later actions and #676's CI re-run; the ratings (F-059 P0 against F-014's P1
    precedent; F-056/057 P1); a provenance ref for the local-only commits the ledger cites.
 7. **MEMORY.md** is at ~24,880 characters, ~120 under the ~25,000-CHARACTER load limit (`wc -m`). Compact by
    retiring entries, never by stripping hooks; snapshot the link set first
@@ -103,7 +103,7 @@ before any review round.
 
 **Key context:**
 
-- **The owner's sweeper readies and arms PRs, and its merges are intended.** A PR that must be validated before
+- **The Overtoad's sweeper readies and arms PRs, and its merges are intended.** A PR that must be validated before
   it merges is validated BEFORE it is opened; an open PR can be merged before its review ends. The sweeper arms
   with the repo's default squash body (juniper-ml and canopy: `COMMIT_OR_PR_TITLE` / `COMMIT_MESSAGES`), so a
   waiver trailer must be in a commit body.
@@ -114,7 +114,7 @@ before any review round.
 - **Do not touch the trio** (`:8101` data, `:8202` cascor) and never `:8051`. A replay writes cascor.
 - Lanes must build fake secrets by concatenation and print booleans only; archive lane reports with
   `2026-09-23_archive_consensus_reports_by_round.py`, allowing a quoted literal only per agent after reviewing it
-  by known-literal/length output. Earlier in the arc, lanes C5, R4-A, A1 and B2 printed the owner's address in
+  by known-literal/length output. Earlier in the arc, lanes C5, R4-A, A1 and B2 printed the Overtoad's address in
   their own local tool output (nothing sent).
 
 ## Verification commands (run first)

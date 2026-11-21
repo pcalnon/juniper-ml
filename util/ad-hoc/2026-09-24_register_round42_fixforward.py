@@ -7,9 +7,9 @@ Sub-Project: ad-hoc tooling (defect-register maintenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use editor; all-or-nothing, refuses to run twice
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
-juniper-ml#2074 (defect-register round 42) was validated after merge, per the owner's 2026-09-24 policy
+juniper-ml#2074 (defect-register round 42) was validated after merge, per the Overtoad's 2026-09-24 policy
 ("validate after merge and fix forward"), by two independent lanes archived in
 reports/2026-09-24_defect-register-round-42/ml2074-round1-laneA-reprobe.md and
 reports/2026-09-24_defect-register-round-42/ml2074-round1-laneB-refute.md. The APD-ECO-008 close held;
@@ -21,7 +21,7 @@ notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md and docs/REFERENCE
   and the seven prose citations checked the same way;
 - the claims that were false when #2074 made them, or that #2074 left standing on a line it edited;
 - APD-ECO-012, canopy's copy of APD-CASCOR-001b (CORS inside auth), latent;
-- the verbatim record of the two mixed-provenance rulings (owner-rulings-verbatim.md);
+- the verbatim record of the two mixed-provenance rulings (Overtoad-rulings-verbatim.md);
 - APD-ML-007's facts after juniper-data v0.16.0 was cut and juniper-ml#2071 added --target-sha.
 
 Each substitution must match exactly the number of times it declares, or nothing is written.
@@ -64,8 +64,8 @@ SUBS: list[tuple[str, str, str, int]] = [
     ),
     (
         "s2 ten rulings",
-        "**Ten of those carry owner rulings taken 2026-09-09** and are actionable; see the rulings block under [§4.9](#49-filed-after-the-primer).",
-        "**Ten of those carried owner rulings taken 2026-09-09** and were actionable when this was written; most have since closed, so read the rulings block under [§4.9](#49-filed-after-the-primer), not this count.",
+        "**Ten of those carry Overtoad rulings taken 2026-09-09** and are actionable; see the rulings block under [§4.9](#49-filed-after-the-primer).",
+        "**Ten of those carried Overtoad rulings taken 2026-09-09** and were actionable when this was written; most have since closed, so read the rulings block under [§4.9](#49-filed-after-the-primer), not this count.",
         1,
     ),
     (
@@ -178,7 +178,7 @@ SUBS: list[tuple[str, str, str, int]] = [
     (
         "s4.9 provenance count",
         "`reports/2026-09-08_round-37-consensus/`). **FIFTEEN rows below have a different provenance**, and the\ncount moved from two on 2026-09-22, and from seven on 2026-09-24 — `APD-ML-002`–`-006` were filed that day from the cursor-fleet\nround-2 close-out,",
-        "`reports/2026-09-08_round-37-consensus/`); round 38 filed its sixteen rows\n([juniper-ml#1858](https://github.com/pcalnon/juniper-ml/pull/1858)). **TWENTY-FOUR rows below have a different provenance**\n*(corrected 2026-09-24: this said two, then seven, then fifteen, and undercounted each time, because each\nedit counted only the rows it added. It missed `APD-DATA-046`, filed 2026-09-09 with the owner's rulings\nby juniper-ml#1864, and `APD-DATA-047`–`-052`, filed by round 39 in juniper-ml#1947; the filing commit of\nevery row is printed by `util/ad-hoc/2026-09-24_register_row_filing_commits.py`)*. `APD-ML-002`–`-006`\nwere filed on 2026-09-22 from the cursor-fleet round-2 close-out,",
+        "`reports/2026-09-08_round-37-consensus/`); round 38 filed its sixteen rows\n([juniper-ml#1858](https://github.com/pcalnon/juniper-ml/pull/1858)). **TWENTY-FOUR rows below have a different provenance**\n*(corrected 2026-09-24: this said two, then seven, then fifteen, and undercounted each time, because each\nedit counted only the rows it added. It missed `APD-DATA-046`, filed 2026-09-09 with the Overtoad's rulings\nby juniper-ml#1864, and `APD-DATA-047`–`-052`, filed by round 39 in juniper-ml#1947; the filing commit of\nevery row is printed by `util/ad-hoc/2026-09-24_register_row_filing_commits.py`)*. `APD-ML-002`–`-006`\nwere filed on 2026-09-22 from the cursor-fleet round-2 close-out,",
         1,
     ),
     (
@@ -250,8 +250,8 @@ SUBS: list[tuple[str, str, str, int]] = [
     ),
     (
         "mixed-provenance verbatim",
-        "  those splits while status and `/v1/metrics` say null. Asked with three options, the owner chose\n  \"Keep while any split is fetched\" — the annotation is null only when every partition in use is\n  inline. Rejected: dropping the retained val/test (a training-behaviour change) and a per-partition\n  annotation (an API-shape change).",
-        "  those splits while status and `/v1/metrics` say null. Two sessions asked, each with three options,\n  and the owner chose the same rule both times: \"Keep while fetched splits stay (Recommended)\"\n  (07:32:48Z, session `bc31e993`), whose description, which the owner was shown, reads \"The fetch's\n  annotation (and current_dataset) stays for as long as any of its partitions is still loaded. It\n  clears only once train, val and test have all been replaced.\"; and \"Keep while any split is fetched\n  (Recommended)\" (07:53:26Z, session `8f86dec2`), described as \"The annotation stays whenever any\n  partition the run uses came from a short fetch; it is null only when every partition is inline.\"\n  The first names `current_dataset`; the second question did not. Rejected both times: dropping the\n  retained val/test (a training-behaviour change) and a per-partition annotation (an API-shape\n  change). Both calls are archived verbatim in\n  `reports/2026-09-24_defect-register-round-42/owner-rulings-verbatim.md`.",
+        "  those splits while status and `/v1/metrics` say null. Asked with three options, the Overtoad chose\n  \"Keep while any split is fetched\" — the annotation is null only when every partition in use is\n  inline. Rejected: dropping the retained val/test (a training-behaviour change) and a per-partition\n  annotation (an API-shape change).",
+        "  those splits while status and `/v1/metrics` say null. Two sessions asked, each with three options,\n  and the Overtoad chose the same rule both times: \"Keep while fetched splits stay (Recommended)\"\n  (07:32:48Z, session `bc31e993`), whose description, which the Overtoad was shown, reads \"The fetch's\n  annotation (and current_dataset) stays for as long as any of its partitions is still loaded. It\n  clears only once train, val and test have all been replaced.\"; and \"Keep while any split is fetched\n  (Recommended)\" (07:53:26Z, session `8f86dec2`), described as \"The annotation stays whenever any\n  partition the run uses came from a short fetch; it is null only when every partition is inline.\"\n  The first names `current_dataset`; the second question did not. Rejected both times: dropping the\n  retained val/test (a training-behaviour change) and a per-partition annotation (an API-shape\n  change). Both calls are archived verbatim in\n  `reports/2026-09-24_defect-register-round-42/Overtoad-rulings-verbatim.md`.",
         1,
     ),
     (
@@ -269,7 +269,7 @@ SUBS: list[tuple[str, str, str, int]] = [
     (
         "ECO-012 park",
         "  text, which goes beyond what `APD-ECO-008`'s ruling asked for.\n",
-        "  text, which goes beyond what `APD-ECO-008`'s ruling asked for.\n- `APD-ECO-012` — **filed 2026-09-24 by round 42's fix-forward; awaiting an owner ruling, do not\n  action.** The question mirrors `APD-ECO-009` / `-010`: fix canopy's middleware order, and decide\n  whether canopy becomes a site of `cors-outside-auth`. Latent until someone sets `cors_origins`.\n- `APD-DATA-057` — **filed 2026-09-24; actionable, needs no ruling.** The remedy is the lock the\n  single-dataset route already takes, and juniper-data#438 applies it (open when filed). Close it when\n  #438 has merged and its validation holds.\n",
+        "  text, which goes beyond what `APD-ECO-008`'s ruling asked for.\n- `APD-ECO-012` — **filed 2026-09-24 by round 42's fix-forward; awaiting an Overtoad ruling, do not\n  action.** The question mirrors `APD-ECO-009` / `-010`: fix canopy's middleware order, and decide\n  whether canopy becomes a site of `cors-outside-auth`. Latent until someone sets `cors_origins`.\n- `APD-DATA-057` — **filed 2026-09-24; actionable, needs no ruling.** The remedy is the lock the\n  single-dataset route already takes, and juniper-data#438 applies it (open when filed). Close it when\n  #438 has merged and its validation holds.\n",
         1,
     ),
     # ---- section 5.1 -------------------------------------------------------------------------------------

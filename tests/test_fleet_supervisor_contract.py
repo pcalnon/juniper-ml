@@ -10,7 +10,7 @@ Validates the read-only fleet-triage agent deliverable without a live model, mod
 * the body wires to the real script -- it references ``util/fleet_triage/predict_merge.py``,
   documents all four SCRIPT verdict tokens (MERGE-CLEAN / NEEDS-UPDATE-BRANCH /
   DAMAGED-FIX-FIRST / CONFLICT), states the read-only / never-push mandate, and states the
-  two-key DUP-CLOSE rule (content overlap AND owner confirmation; the script never
+  two-key DUP-CLOSE rule (content overlap AND Overtoad confirmation; the script never
   auto-closes).
 
 The ``.claude/**`` subtree is git-tracked via the PR-1 ``.gitignore`` negation but excluded
@@ -119,7 +119,7 @@ class FleetSupervisorAgentTest(unittest.TestCase):
         self.assertIsNotNone(model, "supervisor model must be pinned (suite default)")
         base = str(model).split(":")[0].strip().lower()
         is_opus = base == "opus" or base.startswith("claude-opus")
-        self.assertTrue(is_opus, f"suite default model is latest Opus (owner directive); got {model!r}")
+        self.assertTrue(is_opus, f"suite default model is latest Opus (Overtoad directive); got {model!r}")
 
     def test_effort_is_max(self):
         effort = self.front.get("effort")
@@ -149,8 +149,8 @@ class FleetSupervisorAgentTest(unittest.TestCase):
         low = self.body.lower()
         self.assertIn("two-key", low, "agent body must name the two-key DUP-CLOSE rule")
         self.assertTrue(
-            ("owner confirm" in low) or ("owner confirmation" in low) or ("owner-confirmed" in low),
-            "the two-key rule must require owner confirmation (a false close = lost real work)",
+            ("Overtoad confirm" in low) or ("Overtoad confirmation" in low) or ("Overtoad-confirmed" in low),
+            "the two-key rule must require Overtoad confirmation (a false close = lost real work)",
         )
         self.assertTrue(
             "overlap" in low or "jaccard" in low or "multiset" in low,
@@ -160,7 +160,7 @@ class FleetSupervisorAgentTest(unittest.TestCase):
     def test_body_scopes_gpgsign_bypass_to_keyless_contexts(self):
         """The ``-c commit.gpgsign=false`` bypass must be scoped to KEYLESS contexts only.
 
-        Before 2026-08-07 the owner's card-resident key could not sign unattended, so this body
+        Before 2026-08-07 the Overtoad's card-resident key could not sign unattended, so this body
         carried a blanket "any headless commit MUST disable signing" rule -- and the *previous*
         version of this test pinned that blanket rule in place. Headless signing works on the
         workstation now, and the stale rule was the direct cause of the unsigned juniper-cascor#506

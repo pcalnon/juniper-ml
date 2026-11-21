@@ -12,7 +12,7 @@
 
 **Do not continue the arc from this file.** Three sessions edited the plan on 2026-10-18, and the current record of state is the successor handoff named above. The next thread should:
 
-1. read `HANDOFF_2026-10-18_recurrence-equities-0-6-1-published-extras-floor-and-p5-next.md` from juniper-ml#2240's head (or from `main` once #2240 merges) and continue from **its** "Remaining work" list, whose first item is the juniper-ml `[recurrence]` floor to `juniper-recurrence>=0.6.1` (an owner ruling of 2026-10-18);
+1. read `HANDOFF_2026-10-18_recurrence-equities-0-6-1-published-extras-floor-and-p5-next.md` from juniper-ml#2240's head (or from `main` once #2240 merges) and continue from **its** "Remaining work" list, whose first item is the juniper-ml `[recurrence]` floor to `juniper-recurrence>=0.6.1` (an Overtoad ruling of 2026-10-18);
 2. use this file only for what this session did and verified, and for the two merge-helper observations under Key context.
 
 ## Completed this session (2026-10-18)
@@ -26,13 +26,13 @@
 - **What v1.6.2 did *not* record, because it happened during or after the merge** (all now in v1.7.0 / v1.7.1 instead):
   - juniper-ml#2234 (`500c9c01`) replaced canopy 0.9.0's condensed release-notes archive with the full Fixed section — v1.6.2's "Ruled 2026-10-17" bullet still calls that archive condensed;
   - recurrence **0.6.1**: proposal juniper-recurrence#207 (`cad03ed5`), archive juniper-ml#2238 (`20a1c802`), Release `juniper-recurrence-v0.6.1` cut 18:06Z, **on PyPI 19:02Z** with `requires_dist` `juniper-recurrence-model<0.5.0,>=0.4.0` and `juniper-data-client<0.7.0,>=0.6.0` (verified from the index in this session);
-  - the owner rulings taken in the deploy-smokes session (plan "Ruled 2026-10-18, turing deploy-smokes session", v1.7.0): R1–R8 confirmed as shipped, R5's band accepted, W5.8 (B) + W5.9 + W5.10 accepted for recurrence 0.7.0 / model 0.5.0, W5.11 declined, **M1 does not wait for 0.6.1**, the `[recurrence]` floor moves to `>=0.6.1` once published, 2c reconciled.
+  - the Overtoad rulings taken in the deploy-smokes session (plan "Ruled 2026-10-18, turing deploy-smokes session", v1.7.0): R1–R8 confirmed as shipped, R5's band accepted, W5.8 (B) + W5.9 + W5.10 accepted for recurrence 0.7.0 / model 0.5.0, W5.11 declined, **M1 does not wait for 0.6.1**, the `[recurrence]` floor moves to `>=0.6.1` once published, 2c reconciled.
 - **Worktree** reset onto the merged `main` after the merge (the local edit was byte-identical to what landed); the PR branch was auto-deleted.
 
 ## Remaining work (in order)
 
 1. **Merge juniper-ml#2240** (plan v1.7.1 + the successor handoff) once its three regression suites finish; they were `IN_PROGRESS` at this handoff, everything else green. Needs its own merge approval: `python3 util/safe_merge.py --pr 2240 --repo juniper-ml --execute`.
-2. **Then follow the successor handoff's list**, in its order: the `[recurrence]` floor to `>=0.6.1` (lockstep files as in juniper-ml#2232, pre-flight with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`); the owner's Compose-pin decision for 0.6.1 (check whether a `0.6.1` GHCR image exists first); the merged juniper-deploy worktree removal (owner); P5 (W5.10 → W5.8 (B) + W5.9; W5.2, W5.4; W5.7); the owner's W0.1 service-core half; the parent `Juniper/AGENTS.md` "RELEASED to PyPI" paragraph (drafted there with recurrence 0.6.1); the open follow-ups.
+2. **Then follow the successor handoff's list**, in its order: the `[recurrence]` floor to `>=0.6.1` (lockstep files as in juniper-ml#2232, pre-flight with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`); the Overtoad's Compose-pin decision for 0.6.1 (check whether a `0.6.1` GHCR image exists first); the merged juniper-deploy worktree removal (Overtoad); P5 (W5.10 → W5.8 (B) + W5.9; W5.2, W5.4; W5.7); the Overtoad's W0.1 service-core half; the parent `Juniper/AGENTS.md` "RELEASED to PyPI" paragraph (drafted there with recurrence 0.6.1); the open follow-ups.
 3. **Nothing from this session is pending**: no open PR, no local change, no scratch worth keeping.
 
 ## Key context (what this session learned, beyond the predecessor's traps)

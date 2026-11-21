@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-11-08
 # Status:     ad-hoc — investigation (defect reproduction)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/ad-hoc/2026-11-07_securityfs_remount_validate.bash (baseline_problem),
 #             util/ad-hoc/2026-11-08_remount_validate_baseline_gate_check.py (cases C3 and C10 caught it),
 #             notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md (§14)

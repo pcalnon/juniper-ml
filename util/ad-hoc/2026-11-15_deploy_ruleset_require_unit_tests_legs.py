@@ -8,18 +8,18 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-15
 Status:      ad-hoc -- one-off (Python 3.15 migration arc; this is not a 3.15 change)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-11-15_deploy_ruleset_require_precommit_legs.py (the same change for the Pre-commit
              legs, which this copies with only the anchor and the two context names changed);
              prompts/thread-handoff_automated-prompts/
-             HANDOFF_2026-11-15_python-3-15-phase-2-deploy-precommit-required-h5py-prs.md (Open owner question 2)
+             HANDOFF_2026-11-15_python-3-15-phase-2-deploy-precommit-required-h5py-prs.md (Open Overtoad question 2)
 
 Why this exists
 ---------------
 juniper-deploy#274 gave the `tests` job a 3.12-3.15 matrix. Its 3.12 leg keeps posting the required `Unit Tests`
 through an expression name; the 3.13 and 3.14 legs block only through the required Quality Gate, which fails when
 `needs.tests.result` is not success. The question "should they become required contexts too?" was carried through
-three handoffs. The owner answered it on 2026-11-15: "Require both".
+three handoffs. The Overtoad answered it on 2026-11-15: "Require both".
 
 What it does, and refuses to do
 -------------------------------

@@ -46,7 +46,7 @@ Argue against the ledger. In particular:
    Network Information Panel and the recurrence text in § Visualization Tabs and § Training Metrics; F-CANOPY-060
    against § Dataset View and § "A wider dataset needs Start fresh"; F-CANOPY-051, -001, -033, -034, -063; and
    F-CANOPY-067 (is "unchanged" right when the manual documents the plots, given the entry's own condition?).
-3. **The owner's question** (O17). The phase says the first limb now decides F-CANOPY-065 alone. Check: does the
+3. **The Overtoad's question** (O17). The phase says the first limb now decides F-CANOPY-065 alone. Check: does the
    ruling still reach F-CANOPY-057 through `notes/development/REPLAY_V2_FAQ.md` or another plan the phase did not
    read? Is correcting the design note, and then saying the note no longer promises the stream, legitimate, or
    does it settle a rating by editing the evidence? (Item 26 required the correction whatever the ruling; say

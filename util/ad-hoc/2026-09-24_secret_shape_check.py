@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round-6 fix pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: util/ad-hoc/2026-09-24_owner_answer_extract.py, util/ad-hoc/2026-09-24_merge_command_launch_scan.py,
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: util/ad-hoc/2026-09-24_Overtoad_answer_extract.py, util/ad-hoc/2026-09-24_merge_command_launch_scan.py,
          util/ad-hoc/2026-09-24_archive_phase9_tmpfs_evidence_round2.py and, since round 7,
          util/ad-hoc/2026-09-23_archive_consensus_reports_by_round.py (the four tools checked);
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round6.md (Lane R6-B's
@@ -30,7 +30,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 TOOLS = [
-    "2026-09-24_owner_answer_extract.py",
+    "2026-09-24_Overtoad_answer_extract.py",
     "2026-09-24_merge_command_launch_scan.py",
     "2026-09-24_archive_phase9_tmpfs_evidence_round2.py",
     # Added in round 7 (Lane R7-B): the report archiver. It has no EMAIL_RE (a report may name a bot address),

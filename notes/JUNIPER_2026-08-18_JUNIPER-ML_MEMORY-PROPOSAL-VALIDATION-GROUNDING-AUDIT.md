@@ -444,7 +444,7 @@ directive, "Runs under the same cross-repo gating as the existing drift tests �
 weekly in `docs-full-check.yml`, the only job that clones siblings.**"
 
 **Found**: `docs-full-check.yml:107-110` clones by GitHub repo name —
-`git clone --depth 1 "https://github.com/${{ github.repository_owner }}/$repo.git"` — over
+`git clone --depth 1 "https://github.com/${{ github.repository_Overtoad }}/$repo.git"` — over
 `env.ECOSYSTEM_REPOS` (`:79-83`: juniper-data, juniper-cascor, juniper-canopy,
 juniper-data-client, …). The parent ecosystem file lives at
 `/home/pcalnon/Development/python/Juniper/AGENTS.md`, and **that directory is not a git
@@ -682,7 +682,7 @@ release-train runbook **34**, `docs/REFERENCE.md` **15**. `:450-451` is quoted v
 
 `ci.yml:720-780` (archive-guard job shape) · `:735-740` (the `merge_group` green notice at
 737-740, before the checkout at 742) · `:787-794` (the ADVISORY-not-required rationale) ·
-`:791-794` (the "owner + Cursor App always-bypass it … guaranteed value is the visible red at
+`:791-794` (the "Overtoad + Cursor App always-bypass it … guaranteed value is the visible red at
 review" sentence, verbatim) · `:796-803` (the WARN-only label hatch) · `:812-815`
 (`fetch-depth: 0`) · `:873-877` (the no-`--scope` docs screen) — **all exact**.
 
@@ -743,7 +743,7 @@ reduction **−393** (`34f44864`, 2026-07-01), August **35 merges / 33 grew / 0 
 
 The Cursor integration id is at `:34`, not `:33`. And "three of the five always-bypass actors
 can click-merge past every non-nuclear stage" over-attributes: the source
-(`:447-449`) attaches that parenthetical specifically to `RepositoryRole 5` (admin=owner)
+(`:447-449`) attaches that parenthetical specifically to `RepositoryRole 5` (admin=Overtoad)
 while listing five bypass actors in total. The substantive point — that bypass actors
 including the Cursor App can merge past the gate — is correct and is separately stated at
 `ci.yml:791-794`.

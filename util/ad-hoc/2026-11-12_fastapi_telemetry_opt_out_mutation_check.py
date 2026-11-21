@@ -6,8 +6,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling (R-OBS-SC-2 follow-ups)
 Author: Paul Calnon
 Created: 2026-11-12
-Status: ad-hoc -- one-off verifier for the two telemetry ports (owner ruling 2026-11-09, "Port to both now")
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc -- one-off verifier for the two telemetry ports (Overtoad ruling 2026-11-09, "Port to both now")
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#454 (the change ported); the telemetry PRs in juniper-cascor and juniper-canopy;
          notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (R-OBS-SC-2's follow-ups);
          util/ad-hoc/2026-11-12_run_with_blank_sentry_dsns.py (H-14, applied here too)

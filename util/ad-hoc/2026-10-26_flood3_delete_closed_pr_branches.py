@@ -10,7 +10,7 @@
 #
 # Description:
 #   Deletes the leftover `cursor/*` head branches of CLOSED Cursor flood-3 PRs
-#   (owner ruling 2026-10-26: "Delete flood-3's only"). The PR set is
+#   (Overtoad ruling 2026-10-26: "Delete flood-3's only"). The PR set is
 #   util/ad-hoc/2026-10-08_fleet_flood3_disposition.json (116 PRs). A branch is
 #   deleted only when every guard holds:
 #     - the PR is closed and was NOT merged (a merged PR's branch is reported, not touched);

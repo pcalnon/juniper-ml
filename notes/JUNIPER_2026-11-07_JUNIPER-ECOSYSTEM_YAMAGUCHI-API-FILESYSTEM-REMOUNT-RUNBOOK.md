@@ -2,9 +2,9 @@
 
 **Date**: 2026-11-07
 **Host**: yamaguchi only
-**Executor**: the owner. Steps 2, 3 and 6c need root; the session that wrote this has no sudo.
+**Executor**: the Overtoad. Steps 2, 3 and 6c need root; the session that wrote this has no sudo.
 **Time**: about 10 minutes. **No reboot.**
-**Status**: **executed 2026-11-08.** The owner ran steps 1–3 between 08:23Z and 08:28:29Z, and every check
+**Status**: **executed 2026-11-08.** The Overtoad ran steps 1–3 between 08:23Z and 08:28:29Z, and every check
 passed. The record, with two defects the run exposed in the validator and their fixes, is §14 of the RCA.
 Steps 1 and 4 below carry the fixes for how this run went wrong.
 **Why**: `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md`
@@ -147,9 +147,9 @@ The seven containers left in `created` on 2026-11-06 are started.
 
 `make up` runs four preflights, and the image-provenance one has nothing to do with this runbook. It
 refuses a released image that is behind its local checkout. On 2026-11-08 it refused canopy 0.9.0 and
-data 0.17.1, each 2 commits behind (tests, docs and CI only). Choosing what runs is the owner's call:
+data 0.17.1, each 2 commits behind (tests, docs and CI only). Choosing what runs is the Overtoad's call:
 `make build` builds from the checkouts, and `JUNIPER_IMAGE_STALE_OK=1 make up` runs the released
-images, which is what the owner chose (RCA §14 F6).
+images, which is what the Overtoad chose (RCA §14 F6).
 
 ### Step 6 — regression suites and after-evidence
 

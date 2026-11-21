@@ -5,8 +5,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
-Status: ad-hoc — investigation (negative control for the one-artifact publish port, the owner's directive of 2026-11-15)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — investigation (negative control for the one-artifact publish port, the Overtoad's directive of 2026-11-15)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: .github/workflows/publish.yml and the six publish-<pkg>.yml (the steps marked "one-artifact publish template",
          and the republish job); tests/test_publish_one_artifact.py; juniper-cascor's
          util/ad-hoc/2026-11-15_verify_publish_one_artifact_tests_are_not_vacuous.py, which this ports

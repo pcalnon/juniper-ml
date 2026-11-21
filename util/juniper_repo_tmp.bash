@@ -9,7 +9,7 @@
 # Related:    notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md;
 #             tests/test_juniper_repo_tmp.py
 #
-# No file is ever written under the system temp directory (owner directive, 2026-10-26). On the
+# No file is ever written under the system temp directory (Overtoad directive, 2026-10-26). On the
 # Linux host it is a tmpfs that systemd-tmpfiles-clean ages daily, deleting files a live process
 # still uses; it emptied a live E2E stack's pid files and venv three times in one week. Each repo
 # writes its temp files to its own gitignored tmp/. This helper names that directory for a path,

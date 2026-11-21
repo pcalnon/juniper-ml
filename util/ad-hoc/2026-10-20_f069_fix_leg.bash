@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # Created     : 2026-10-20
 # Status      : ad-hoc -- investigation
-# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : util/ad-hoc/2026-10-20_turing_canopy_leg.bash (the launcher this wraps);
 #               util/ad-hoc/2026-10-20_f069_apply_fix.py (builds the fix tree this serves);
 #               notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md (Phase 14, F-CANOPY-069)

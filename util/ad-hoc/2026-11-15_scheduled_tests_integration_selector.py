@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-11-15
 Status:      ad-hoc -- one-off (a pre-existing defect found by the Python 3.15 migration arc; not a 3.15 change)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/templates/ci/scheduled-tests.yml (the template; its TODO 2 names the selector rule);
              prompts/thread-handoff_automated-prompts/
              HANDOFF_2026-11-15_python-3-15-phase-2-deploy-precommit-required-h5py-prs.md (Remaining work, item 4)

@@ -32,12 +32,12 @@ reach; which library carries it is narrowed, not identified (§4.2).
 | item | state after this document |
 |---|---|
 | **4.1 residue** (occupancy probe, S) | **DONE** — §2. One PF-1-shape run under the default budget consumes **4.52** cores during training (cpu-seconds per wall-second; 3 cells, 1.1% spread), as one ~11-core block for the initial output pass followed by ~1.8 for the other ten passes. Under the pinned budget, **2.15**, never above 3.5 in any pinned cell of the day. The sweep-worker unit those figures are read against is assumed, not measured (§2.1) |
-| **4.2** (the two-arm pair) | **EXECUTED from `util/ad-hoc/`** — §3. Parallel / control mean step = 1.1125, **+11.3% per step at the pinned budget; +8.5 to +12.7% leaving one of the three pairs out**; inside the sweep's 20.5% quiet band, outside today's within-arm spread by a margin one pair wide. Advisory, as 4.3 said it could only be. Where a *committed* instrument would live (the §1.5 CI hazard) is still the owner's call, and is now **optional** — §6 |
+| **4.2** (the two-arm pair) | **EXECUTED from `util/ad-hoc/`** — §3. Parallel / control mean step = 1.1125, **+11.3% per step at the pinned budget; +8.5 to +12.7% leaving one of the three pairs out**; inside the sweep's 20.5% quiet band, outside today's within-arm spread by a margin one pair wide. Advisory, as 4.3 said it could only be. Where a *committed* instrument would live (the §1.5 CI hazard) is still the Overtoad's call, and is now **optional** — §6 |
 | **2.4 follow-up** (quiet re-cut `0003`) | **DONE at ambient, not idle** — §1. Cut at 1-minute load 5.3 → 7.1 against 9–10 for `0001` / `0002`; the micro tier does not see that difference (median ratio 0.99). It does **not** supersede under the cascor procedure's quiet-host rule; it is recommended as the compare target as the best-conditioned cut |
-| **2.1** (PF-2's inert axis) | Untouched — owner. §4 adds one constraint: fix the thread budget explicitly in any re-scope, because the budget moves step time and `step_count` not at all |
+| **2.1** (PF-2's inert axis) | Untouched — Overtoad. §4 adds one constraint: fix the thread budget explicitly in any re-scope, because the budget moves step time and `step_count` not at all |
 | **2.2** (PF-3, ~6.7 h, approval standing) | **BLOCKED — its second matrix axis is inert.** `pf3-cascor-pool-scaling.yaml` varies `runtime.num_processes: [1, 2, 4]`, which nothing reads (§4.1, §4.3), so as written the approved run is four pool sizes run three times each and cannot produce its speedup curve. Do not launch it until the `runtime:` block is ruled — §6 |
-| `epochs_completed` exact-match (2026-09-09 handoff §1 item 1, third bullet) | Untouched — owner. §1 adds evidence: in every pairwise comparison of the three micro cuts, the benchmarks outside ±20.5% are dominated by the candidate tier, whose epoch count is emergent |
-| **NEW owner question** | Implement or retire the `runtime:` block — §4.3, §6 item 4. It changes what every existing YAML means, so it is a baseline-cutting decision, not a fix |
+| `epochs_completed` exact-match (2026-09-09 handoff §1 item 1, third bullet) | Untouched — Overtoad. §1 adds evidence: in every pairwise comparison of the three micro cuts, the benchmarks outside ±20.5% are dominated by the candidate tier, whose epoch count is emergent |
+| **NEW Overtoad question** | Implement or retire the `runtime:` block — §4.3, §6 item 4. It changes what every existing YAML means, so it is a baseline-cutting decision, not a fix |
 
 ---
 
@@ -62,7 +62,7 @@ procedure's rule (`juniper-cascor/docs/testing/REFERENCE.md` § Micro timing ref
 *re-cutting on a quiet host* supersedes an earlier cut; `0003` is not that cut, and does not
 supersede under that rule. It is the best-conditioned of the three, and this document recommends
 it as the compare target on that basis, until a cut at a 1-minute load under 3 exists:
-`--benchmark-compare=0003`, never `--benchmark-compare-fail` (owner, item 2.5).
+`--benchmark-compare=0003`, never `--benchmark-compare-fail` (Overtoad, item 2.5).
 
 **What the three cuts say about each other**, benchmark by benchmark from the saved JSON
 (`util/ad-hoc/2026-09-10_micro_reference_compare.py`; median of each benchmark's rounds; no re-run):
@@ -83,7 +83,7 @@ of the 18 out-of-band entries across the three comparisons, 12 are `test_micro_c
 at 1.58× and 1.44×), against 2 correlation, 3 forward-pass / residual-error, 1 output-training. That is
 the tier whose epoch count is emergent (2026-09-09 handoff §3.3), so a timing comparison of it is
 partly a comparison of how many epochs each cut happened to run — evidence for, not a decision on,
-the owner's `epochs_completed` exact-match question.
+the Overtoad's `epochs_completed` exact-match question.
 
 ---
 
@@ -444,7 +444,7 @@ cores with a 4–5-core ambient" is the plausible mechanism for it, not a measur
   pool sizes run three times each with no process-count variation at all. It must not be launched
   until the block is ruled; if the block is implemented, `CASCOR_NUM_PROCESSES` exported per cell
   from `runtime.num_processes` is exactly the export PF-3 needs.
-- **Fixing the block is an owner decision, not a bug fix.** The obvious change — the launcher
+- **Fixing the block is an Overtoad decision, not a bug fix.** The obvious change — the launcher
   exporting `JUNIPER_CASCOR_BLAS_THREADS` (or the three variables) from `runtime.blas_threads` and
   `CASCOR_NUM_PROCESSES` from `runtime.num_processes` — would make every existing experiment YAML
   mean something different from what it has meant in every run to date, change the speed regime of
@@ -474,7 +474,7 @@ cascor stack on `:8202`. Ambient, not idle — the sweep's own standard (§8.2 o
 
 ---
 
-## 6. Owner decisions — three carried, two new
+## 6. The Overtoad decisions — three carried, two new
 
 1. **PF-2's axis** (2026-09-09 handoff §1 item 1, first bullet) — unchanged. One constraint added
    by §2.3: whatever the scenario becomes, its suite must fix the thread budget explicitly, because

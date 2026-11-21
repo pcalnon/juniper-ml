@@ -11,7 +11,7 @@ through it `HANDOFF_2026-10-30_backup-phase-d-design-merged-then-sitting.md`
   (below: `…RECOVERY-PLAN.md`). Its §6.4 holds the sitting's steps 0-14, §6.5 holds Phase E, §6.3.1 receives the record.
 - the integrated design, `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`
   (below: `…INTEGRATED-DESIGN.md`). Its §7.4 holds the destination permission model, §9 the AC table, §10.1 the
-  owner's rulings.
+  Overtoad's rulings.
 
 ---
 
@@ -21,16 +21,16 @@ Three threads. Take them in this order.
 
 1. **Land juniper-ml#2548** (the tools for step 14). It is open, has no conflict, and is **red on purpose**: it
    stepped aside for the 0.11.5 release cut. One more signed commit is owed after the release proposal merges.
-2. **The owner's new issue (2026-11-12): desktop alerts say a Duplicati backup failed, and no such backup exists.**
+2. **The Overtoad's new issue (2026-11-12): desktop alerts say a Duplicati backup failed, and no such backup exists.**
    One source is found and proven: a test sends a real notification. Its fix, juniper-ml#2559, merged on
    2026-11-13 at 02:49Z (`ae801a70`). A trace of all 238 regression commands found no other test of that kind. A
    second, real source is the watchdog. The job's off-schedule runs are a separate, open question.
 3. **Continue the Phase D sitting (Procedure A0) at step 14 of `…RECOVERY-PLAN.md` §6.4.** No step ran in this
-   segment and no host was changed. Each remaining step is one owner command and one pasted verdict block.
+   segment and no host was changed. Each remaining step is one Overtoad command and one pasted verdict block.
 
-**The working pattern holds.** The owner runs every command that changes the host or reaches the server. They paste
+**The working pattern holds.** The Overtoad runs every command that changes the host or reaches the server. They paste
 summary lines. The session checks read-only, keeps the running record, and names each next command with its expected
-output. The owner granted merge approval for this arc's PRs on 2026-11-11 and added thread 2 to the arc; ask again in a
+output. The Overtoad granted merge approval for this arc's PRs on 2026-11-11 and added thread 2 to the arc; ask again in a
 new session.
 
 ### Completed in this segment (2026-11-11 to 11-13 UTC)
@@ -50,7 +50,7 @@ new session.
   - `tests/test_env_repr_safety.py` forbids `dict(os.environ, …)` in a test. It is the third command of the regression
     step, which runs under `bash -e`, so no later suite ran on that head.
   - CodeQL flagged seven fixtures that set a group- or world-readable mode on purpose, and four smaller notes.
-- **This session then sat idle for about 16 hours** (cause not known). In that time the owner armed auto-merge
+- **This session then sat idle for about 16 hours** (cause not known). In that time the Overtoad armed auto-merge
   (2026-11-12 23:07Z), applied three CodeQL autofix commits, merged `main`, and pushed two commits to
   `tests/test_yamaguchi_acceptance_probe.py`. `main` moved again and the PR conflicted in `AGENTS.md` and
   `docs/REFERENCE.md`.
@@ -118,7 +118,7 @@ new session.
      `systemd-cat`;
    - `tests/test_juniper_repo_ssh_setup.py` runs the real `ssh -G` against a temporary config (it parses, it does not
      connect).
-4. The watchdog and the off-schedule runs need the server, so they need the owner: see questions Q2 and Q6.
+4. The watchdog and the off-schedule runs need the server, so they need the Overtoad: see questions Q2 and Q6.
 
 **C. The sitting.** `D` below is a checkout that holds the tools. On 2026-11-13 the **primary** checkout
 (`/home/pcalnon/Development/python/Juniper/juniper-ml`) is on the PR's branch and holds them; so does this worktree.
@@ -135,7 +135,7 @@ pcalnon and are not in that list of printed hashes.
    server reports an active task. If it cannot read the server's state it says so and proceeds.
    - If `/root/phase-d-tmp/ac4-drill1.out` exists, the tool adopts it and does not run the driver. If the adopted
      output reads `ERROR`, run `bash "$T" drill 1 --rerun`.
-   - The owner pastes from `-- summary of drill 1` to `VERDICT:`. On `PASS` the run directory is shredded.
+   - The Overtoad pastes from `-- summary of drill 1` to `VERDICT:`. On `PASS` the run directory is shredded.
 3. **The aside copy (root):** `bash "$T" aside`. It copies **every** dlist (18 on 2026-11-13, 2,313,447,418 bytes) to
    `/mnt/Backups/Ubuntu/_yamaguchi_retention_aside` and writes `MANIFEST.sha256`. It refuses until drill 1 has passed.
    Run it right before step 4; if a backup finishes in between, run it again.
@@ -157,10 +157,10 @@ pcalnon and are not in that list of printed hashes.
 11. **Then:** update the memory hub `project_backup_arc_hub.md`; fix the AC-4 driver's gaps; move on to the
     after-Phase-D items of `…RECOVERY-PLAN.md` §6.5 (Phase E), O-11, D-12, finding 15, and AC-14's Phase E ruling.
 
-**Rule for every sitting** (the predecessor's rule 4): no hand-written grep, count or filter in an owner block when a
+**Rule for every sitting** (the predecessor's rule 4): no hand-written grep, count or filter in an Overtoad block when a
 tool can carry it. A new check goes into a tool with a test first.
 
-### Open questions (the owner's to rule)
+### Open questions (the Overtoad's to rule)
 
 - **Q1. AC-3's count criterion going forward.** Unruled. The probe treats a move of more than ±10 % against the
   previous run, or ±5 % of bytes against the 2026-11-08 baseline, as `ATTN`, not `FAIL`.
@@ -179,7 +179,7 @@ tool can carry it. A new check goes into a tool with a test first.
     (`Duplicati/Library/RestAPI/Scheduler.cs`, fetched to `tmp/phase-d-finish/alerts/upstream/`) re-reads a schedule
     row whose time changed and queues the job at once when that time is not in the future
     (`if (start <= DateTime.UtcNow)`). A job save rewrites that row. The sitting already saw one UI save move the
-    schedule's date back a day. Ask the owner whether the job's edit page was saved near each start.
+    schedule's date back a day. Ask the Overtoad whether the job's edit page was saved near each start.
   - **A way to tell at the next off-schedule start:** read the schedule's `LastRun` in `export 2` before the next
     14:00Z run. The scheduler sets it only for runs it queued itself. If it equals the off-schedule start, a rewritten
     schedule row (a save) started the run; if it still shows the last 14:00Z start, a run request did (the UI's run
@@ -235,7 +235,7 @@ Q5 of the predecessor (where the scripts land) is settled: juniper-ml#2544 commi
     whose text ends `See …/juniper-ml/tmp/tmp<random>/state/failures.log`: a temporary directory that is gone when the
     test ends. `strace` shows the call (`tmp/phase-d-finish/alerts/strace-reporter-test.txt`).
   - No backup runs: `duplicati-cli` is a stub there. Every local run of the regression list sends one alert.
-  - The owner's `util/ad-hoc/check_for_duplicati_failed_logs.bash` (juniper-ml#2549) looks in exactly that place.
+  - The Overtoad's `util/ad-hoc/check_for_duplicati_failed_logs.bash` (juniper-ml#2549) looks in exactly that place.
   - The real unit of that name is gone, and its last real failure record is dated 2026-08-25
     (`~/.local/state/duplicati/failures.log`, 3 records). The tier-2 and tier-3 reporters have never written one.
 - **The real alert source is the watchdog** (`util/ad-hoc/yamaguchi_watchdog.py`, daily 12:00 local):
@@ -252,7 +252,7 @@ Q5 of the predecessor (where the scripts land) is settled: juniper-ml#2544 commi
   **by count**; `Repeat` `1D` at 14:00:00 UTC; `blocksize`, `tempdir`, `aes-version`, `no-auto-compact` by value; the
   guard path; the option **names** against the recorded set (so an added or dropped option fails); retention. It does
   **not** compare the schedule's anchor date (it prints it), the contents of the sources and filters, or any other
-  option's value. For those, the owner compares an `export 2` from before the save with one from after.
+  option's value. For those, the Overtoad compares an `export 2` from before the save with one from after.
 - **SHA-256 prefixes of the tools** (unchanged since the PR's first head):
   - `2026-11-11_phase_d_finish.py` `4a66d4cba2c614cf`; `2026-11-11_phase_d_finish.bash` `c5659bff20b93c73`;
   - `2026-11-09_ac4_restore_drill.py` `29db0ed3ec5d3368`; `retention_table.py` `489509efe3c960ca`;
@@ -282,7 +282,7 @@ Q5 of the predecessor (where the scripts land) is settled: juniper-ml#2544 commi
   `tmp/phase-d-sitting/assemble_record.py` rebuilds and re-archives it after a new segment file is added.
 - **Where the tools differ from the predecessor's sketch.**
   - The timer fires at 23:30 UTC, not 15:30: runs took up to 12 h 25 m.
-  - `aside` reads drill 1's verdict record, not `results.json`, and copies in-process (owner, group, mode, timestamps).
+  - `aside` reads drill 1's verdict record, not `results.json`, and copies in-process (Overtoad, group, mode, timestamps).
   - The probe reads the job log through `util/ad-hoc/yamaguchi_server_api.py`, not through `yamaguchi_census.py`.
 - **Still true from the predecessor.**
   - `util/ad-hoc/duplicati_drill_fresh.py` is superseded for AC-4: it puts the passphrase on argv.
@@ -307,7 +307,7 @@ Q5 of the predecessor (where the scripts land) is settled: juniper-ml#2544 commi
   - "Nothing under `/mnt/Backups/Ubuntu/` beyond `stat`."
   - "Never read a secret file; never print an environment variable or a token."
   - "No `git stash`; no interactive shells; no host actions."
-  - "The owner may direct a named action in person, which releases that action only. Nothing releases one of
+  - "The Overtoad may direct a named action in person, which releases that action only. Nothing releases one of
     `…RECOVERY-PLAN.md` §6.0 item 6's absolutes."
   - A lane brief says "no `sudo` in any form, not even `-n` or `-l`" and sets `PYTHONDONTWRITEBYTECODE=1`.
   - Also: no `/tmp`; root scratch goes in `/root/phase-d-tmp`; pastes are counts and summary lines only; never print
@@ -317,7 +317,7 @@ Q5 of the predecessor (where the scripts land) is settled: juniper-ml#2544 commi
     file there (the predecessor asked for the newest dlist only); `plan` lists the dlist names;
   - by hand, the session listed the names (not the values) of the extended attributes of three volumes.
 
-  The owner should confirm that the probe's census is acceptable, or ask for it to be narrowed.
+  The Overtoad should confirm that the probe's census is acceptable, or ask for it to be narrowed.
 - **Traps of this segment.**
   - In this harness a four-hex-digit backslash-u escape typed into a file reaches it as the character itself. Build
     such a character with `chr()`.
@@ -326,7 +326,7 @@ Q5 of the predecessor (where the scripts land) is settled: juniper-ml#2544 commi
   - Run the **whole** regression list before opening a PR, not only the new suites: a repo lint lives in it.
   - CodeQL flags an integer literal with group or world bits that reaches `os.chmod`, also through a conditional
     expression. A mode built from the `stat` module's names is not flagged.
-  - `util/push_signed_commit.py` uploads whole files. The owner had pushed to the PR's branch; pin `--expected-head`
+  - `util/push_signed_commit.py` uploads whole files. The Overtoad had pushed to the PR's branch; pin `--expected-head`
     and build on the branch's files, not on a worktree's older copies.
   - A release cut under an open PR files its CHANGELOG entry under the released heading with no conflict. Step aside
     (no CHANGELOG change) until the proposal merges, then add the entry under the new `[Unreleased]`.
@@ -365,7 +365,7 @@ tail -n 40 "$W/tmp/phase-d-sitting/segment-2026-11-11.md"
 
 ## Git status at handoff
 
-- **juniper-ml#2548** is open at `5099d14c` (nine commits, auto-merge armed by the owner, red on purpose).
+- **juniper-ml#2548** is open at `5099d14c` (nine commits, auto-merge armed by the Overtoad, red on purpose).
 - **juniper-ml#2559** (the alert fix) merged as `ae801a70`. This worktree's copy of
   `tests/test_duplicati_scheduled_backup.py` holds the same fix as an unstaged change, because the worktree's HEAD
   is older than the merge.

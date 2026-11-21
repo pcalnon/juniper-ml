@@ -137,4 +137,4 @@ Metrics exposition on + rate-limit off for per-run scrape lanes; targets labeled
 
 **Detail**:
 
-Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an owner call; nothing blocks on it.
+Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an Overtoad call; nothing blocks on it.

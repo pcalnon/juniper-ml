@@ -6,12 +6,12 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: flood-4 juniper-data docs carrier validation (juniper-data #509, #510, #511, #515)
 
 Usage: python3 2026-11-07_flood4_val_data_docs_upstream.py <out_dir>
 
-Writes <out_dir>/tag_resolution.json and <out_dir>/upstream/<owner>__<repo>__<ref8>__<path_>.txt.
+Writes <out_dir>/tag_resolution.json and <out_dir>/upstream/<Overtoad>__<repo>__<ref8>__<path_>.txt.
 Read-only against GitHub (gh api GETs only).
 """
 
@@ -76,7 +76,7 @@ def main():
     up = os.path.join(out_dir, "upstream")
     os.makedirs(up, exist_ok=True)
     if len(sys.argv) > 2:
-        # Extra mode: each further argument is <owner/repo>@<ref>:<path>; fetch only those.
+        # Extra mode: each further argument is <Overtoad/repo>@<ref>:<path>; fetch only those.
         for spec in sys.argv[2:]:
             repo_ref, path = spec.split(":", 1)
             repo, ref = repo_ref.split("@", 1)

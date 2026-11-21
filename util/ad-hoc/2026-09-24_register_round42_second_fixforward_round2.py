@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register maintenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use editor; all-or-nothing, refuses to run twice
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Branch `docs/register-round-42-second-fixforward` holds the second fix-forward (e2f87aae) and its round-1
 corrections (990ef3f9, util/ad-hoc/2026-09-24_register_round42_second_fixforward_corrections.py). Round 2

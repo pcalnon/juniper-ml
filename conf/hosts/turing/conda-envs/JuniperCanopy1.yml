@@ -2,7 +2,7 @@
 # turing conda env JuniperCanopy1: plan task E2 (decision D8), juniper-canopy's own env spec ported to osx-64.
 #
 # Source: pcalnon/juniper-canopy conf/conda_environment.yaml at main bd00115389a5415e30d396f69baca2f4ba36932b
-# (blob e402df53), a `conda list --export` of 376 packages from a linux-64 host (conda 25.11.1). The owner's
+# (blob e402df53), a `conda list --export` of 376 packages from a linux-64 host (conda 25.11.1). The Overtoad's
 # checkout (~/Development/python/Juniper/juniper-canopy) is 6 commits ahead of that main: one empty commit and
 # five merges of origin/main, none changing a file, so its tracked files are identical to it.
 #

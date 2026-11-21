@@ -5,8 +5,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc — investigation (non-vacuity check for a new always-on test)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: APD-ECO-008; owner ruling 2026-09-23 (the shared package is a site of both key-handling
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: APD-ECO-008; Overtoad ruling 2026-09-23 (the shared package is a site of both key-handling
          guards); tests/test_service_fork_drift.py; notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md
 
 The test reads ``<juniper-ml root>/juniper-service-core/juniper_service_core/security.py``. This

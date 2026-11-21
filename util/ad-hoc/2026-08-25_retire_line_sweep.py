@@ -7,14 +7,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-25
 Status: ad-hoc — one-off (retention-policy sweep)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/README.md Lifecycle table; the 2026-08-24 determinism arc's close-out report
 
 Owner decision 2026-08-25: util/ad-hoc scripts are retained as the provenance of how
 evidence, migrations, and one-off analyses were produced — no script carries a retirement
 deadline. This sweep rewrites each existing `Retire when: <condition>` line, in place, to:
 
-    Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: <condition>
+    Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: <condition>
 
 Deliberately line-local: only the first matching line per file is rewritten and nothing is
 deleted, so a condition that wraps onto continuation lines stays readable as the tail of the
@@ -28,7 +28,7 @@ import re
 import sys
 from pathlib import Path
 
-MARK = "RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously:"
+MARK = "RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously:"
 LINE = re.compile(r"^(?P<prefix>.*?Retire when:\s*)(?P<cond>\S.*)$")
 
 

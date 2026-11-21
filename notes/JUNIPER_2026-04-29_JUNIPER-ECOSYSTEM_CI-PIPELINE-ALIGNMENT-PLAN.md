@@ -686,7 +686,7 @@ against every repo and cross-checking the gap matrix.
 
 ### Open follow-ups
 
-- The plan does not yet specify per-repo `ANTHROPIC_API_KEY` secret ownership. Confirm at the org level (`pcalnon`) before the Phase 1 rollout so that `claude.yml` runs do not 401 on first dispatch.
+- The plan does not yet specify per-repo `ANTHROPIC_API_KEY` secret Overtoadship. Confirm at the org level (`pcalnon`) before the Phase 1 rollout so that `claude.yml` runs do not 401 on first dispatch.
 - §7.5 proposes `trivy` for juniper-deploy. Verify that the trivy GitHub action's `severity: HIGH,CRITICAL` policy lines up with juniper-deploy's tolerance for base-image CVEs **before** treating the new job as a required check; a soft-fail shakedown cycle (§9 risk register) is recommended.
 
 ---

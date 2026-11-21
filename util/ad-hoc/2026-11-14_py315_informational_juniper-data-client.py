@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-14
 Status: ad-hoc -- migration (phase 1 of the ecosystem's Python 3.15 migration)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-14_py315_informational_edits.py (the juniper-data pilot's script, juniper-data#538,
          whose design, checks and structure this follows); tmp/py315/ROLLOUT_BRIEF.md (the rollout brief);
          tmp/py315-informational-2026-11-14/survey-ci-2026-11-14.md and survey-local-2026-11-14.md (the surveys
@@ -14,7 +14,7 @@ Related: util/ad-hoc/2026-11-14_py315_informational_edits.py (the juniper-data p
 
 Why this exists
 ---------------
-The owner's request of 2026-11-14: add Python 3.15 to the tested versions in CI, with the 3.15 checks reporting
+The Overtoad's request of 2026-11-14: add Python 3.15 to the tested versions in CI, with the 3.15 checks reporting
 results but blocking no commit, merge or deployment. juniper-data#538 piloted and measured the pattern; this script
 applies it to juniper-data-client. Every edit is an exact-substring replacement that must match exactly once, so the
 set can be re-applied onto a moved ``origin/main`` from a fresh worktree (re-run, never re-type), and a drifted base
@@ -25,7 +25,7 @@ What it changes (base: juniper-data-client origin/main b45aafbb, 2026-11-13, jun
 * ``.github/workflows/ci.yml``: ``unit-tests`` and ``integration-tests`` each gain a 3.15 ``include`` entry with
   ``experimental: true`` and the job-level ``continue-on-error: ${{ matrix.experimental == true }}``, which neither
   job had. The macOS include keeps its values (``experimental`` unset compares as false). Pre-commit is untouched
-  (owner ruling 2026-11-14: no 3.15 pre-commit in phase 1), and so are the gate, its ``needs:`` and every
+  (Overtoad ruling 2026-11-14: no 3.15 pre-commit in phase 1), and so are the gate, its ``needs:`` and every
   single-version job.
 * ``.github/workflows/scheduled-tests.yml``: the same leg and expression; the static job name spells out the suffix
   GitHub appended, so the existing legs' names stay byte-identical and the new one is ``(3.15)``.
@@ -78,13 +78,13 @@ CI_UNIT_NEW = """\
     name: Unit Tests + Coverage (Python ${{ matrix.python-version }} on ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     needs: [pre-commit]
-    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (owner request,
+    # The Python 3.15 leg is INFORMATIONAL: phase 1 of the ecosystem's 3.15 migration (Overtoad request,
     # 2026-11-14) runs it so its results show, but it must block no merge. It is the only leg with
     # `experimental: true` (the macOS leg leaves the flag unset, which compares as false), so this
     # expression is true on it alone: a failure there leaves the job's result, which the Quality Gate
     # reads as `needs.unit-tests.result`, unchanged, so it fails neither the job nor the gate, and
     # `build` and (on a push to `main`) `notify-downstream` still run. Measured on juniper-data#538
-    # (run 43655144734). The leg's context is in no ruleset. Keep both until the owner makes 3.15 a
+    # (run 43655144734). The leg's context is in no ruleset. Keep both until the Overtoad makes 3.15 a
     # required version (phase 3 of the migration).
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
@@ -119,11 +119,11 @@ CI_INTEGRATION_NEW = """\
     name: Integration Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     needs: [pre-commit]
-    # Python 3.15 is INFORMATIONAL here too (phase 1 of the 3.15 migration, owner request 2026-11-14):
+    # Python 3.15 is INFORMATIONAL here too (phase 1 of the 3.15 migration, Overtoad request 2026-11-14):
     # `Integration Tests (Python 3.15)` reports, but under this expression a failure there leaves
     # `needs.integration-tests.result` unchanged, so it fails neither the job nor the Quality Gate.
     # Its context is in no ruleset; the 3.12-3.14 contexts stay required. Same pattern as unit-tests
-    # (measured on juniper-data#538, run 43655144734); keep it until the owner makes 3.15 required.
+    # (measured on juniper-data#538, run 43655144734); keep it until the Overtoad makes 3.15 required.
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: false
@@ -155,10 +155,10 @@ SCHED_NEW = """\
     # "(3.15)" rather than "(3.15, true)".
     name: Slow / Integration Tests (${{ matrix.python-version }})
     runs-on: ubuntu-latest
-    # Python 3.15 is INFORMATIONAL (phase 1 of the 3.15 migration, owner request 2026-11-14): its leg
+    # Python 3.15 is INFORMATIONAL (phase 1 of the 3.15 migration, Overtoad request 2026-11-14): its leg
     # reports, but a failure there fails neither the job nor the run. Same pattern as ci.yml's
     # unit-tests job (measured on juniper-data#538, run 43655144734). None of these contexts is in a
-    # ruleset; keep the leg informational until the owner makes 3.15 a required version.
+    # ruleset; keep the leg informational until the Overtoad makes 3.15 a required version.
     continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: false
@@ -181,7 +181,7 @@ CHANGELOG_NEW = """\
 ### Added
 
 - **CI runs the unit and integration tests on Python 3.15 as well, as informational legs that block nothing.** Phase 1
-  of the ecosystem's Python 3.15 migration (the owner's request of 2026-11-14): 3.15 results are reported, and no
+  of the ecosystem's Python 3.15 migration (the Overtoad's request of 2026-11-14): 3.15 results are reported, and no
   merge, commit or deployment waits on them.
   - `.github/workflows/ci.yml`: `unit-tests` gains `Unit Tests + Coverage (Python 3.15 on ubuntu-latest)` and
     `integration-tests` gains `Integration Tests (Python 3.15)`, each an `include` entry with `experimental: true`.

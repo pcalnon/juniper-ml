@@ -54,12 +54,12 @@ Names used below:
 
 1. **MINOR. Round 2's two-limbed question was not carried into F-CANOPY-068's header, the Summary or the Rating's bold lead.**
    - **Quoted (L):**
-     - Header (L:10713): "(P1 if a shipped CHANGELOG promise counts as documented, else P2, the owner's question; …)".
+     - Header (L:10713): "(P1 if a shipped CHANGELOG promise counts as documented, else P2, the Overtoad's question; …)".
      - Summary (L:10569): "**Filed: F-CANOPY-068 (P1 if a shipped CHANGELOG promise counts as documented, else P2; OPEN)**".
-     - Rating lead (L:10759): "**Rating: P1 if a shipped CHANGELOG promise counts as documented, else P2**, the owner's question that F-CANOPY-065 already carries".
+     - Rating lead (L:10759): "**Rating: P1 if a shipped CHANGELOG promise counts as documented, else P2**, the Overtoad's question that F-CANOPY-065 already carries".
      - Against these, the Matrix (L:10982-10984) says "F-CANOPY-068 only if a CHANGELOG's description of an internal mechanism does … F-CANOPY-065 alone, 6 and 17", and the Unresolved bullet (L:10922-10925) says the same.
-   - **Evidence:** Take the Matrix's own 6/17 ruling: shipped CHANGELOG promises of what a user sees count, and descriptions of internal mechanisms do not. The header's condition is then met, so the header reads P1, while the Matrix counts F-068 P2. The Rating bullet now also says both that F-068 rests on "the owner's question that F-CANOPY-065 already carries" and that "a ruling for F-CANOPY-065 does not by itself settle it". A related gap predates round 2: F-065's header (L:10086) still says "a shipped CHANGELOG promise", narrower than its own Severity bullet (L:10130-10133), which Phase 11 now quotes.
-   - **Fix:** In the header, the Summary and the Rating lead, write "P1 if a CHANGELOG's description of an internal mechanism counts as documented behaviour (the owner's question, second limb), else P2", and drop "that F-CANOPY-065 already carries". Make F-065's header read "a shipped CHANGELOG or design-plan promise".
+   - **Evidence:** Take the Matrix's own 6/17 ruling: shipped CHANGELOG promises of what a user sees count, and descriptions of internal mechanisms do not. The header's condition is then met, so the header reads P1, while the Matrix counts F-068 P2. The Rating bullet now also says both that F-068 rests on "the Overtoad's question that F-CANOPY-065 already carries" and that "a ruling for F-CANOPY-065 does not by itself settle it". A related gap predates round 2: F-065's header (L:10086) still says "a shipped CHANGELOG promise", narrower than its own Severity bullet (L:10130-10133), which Phase 11 now quotes.
+   - **Fix:** In the header, the Summary and the Rating lead, write "P1 if a CHANGELOG's description of an internal mechanism counts as documented behaviour (the Overtoad's question, second limb), else P2", and drop "that F-CANOPY-065 already carries". Make F-065's header read "a shipped CHANGELOG or design-plan promise".
    - **Changes a number, disposition or action?** Disposition: yes, the condition F-068's rating is stated to depend on. Number: no; the triage still reads P1.
 
 2. **MINOR. The counts per ruling assume limb 1 cannot reach F-CANOPY-057, which the ledger never checked.**
@@ -72,7 +72,7 @@ Names used below:
      - canopy's released CHANGELOG sections carry no such promise at `60ae1870` or `c7876f5a`; every match sits under `[Unreleased]`, and those lines disclaim the stream. So only the design-plan half of limb 1 reaches F-057.
      - The other four P1s that do not turn on the question (F-055, F-058, F-064, F-CASCOR-001/002) rest on no such promise, so the 5/18 count for "neither" stands.
    - **Fix:** Either name F-057 in limb 1 and give its counts (if design plans count: 8 and 15 with F-068 P1, 7 and 16 without), or state why a design note that records the stream as delivered is not a design-plan promise.
-   - **Changes a number, disposition or action?** Number: yes, two branch counts. Action: yes, the scope of the owner's question.
+   - **Changes a number, disposition or action?** Number: yes, two branch counts. Action: yes, the scope of the Overtoad's question.
 
 3. **NIT. The README still makes the lag attribution that round 2 withdrew from the ledger.**
    - **Quoted (R:69-71):** "Its scripted triggers take effect 1.3–4.2 s after they fire, partly through the renderer's queue and, for T-tab, mostly through the driver's own late clicks … (the ledger's Phase 11, Instruments)".
@@ -112,7 +112,7 @@ Names used below:
 
 **Lane 11-R3B** (adversarial on round 2's correction pass)
 
-**VERDICT: SOUND-WITH-FIXES.** Round 2's pass replays byte for byte. Every figure it introduced re-derives within the scope it is stated for, and both readers behave as `…E2E-VALIDATION-EVIDENCE.md` says. The pass did leave three problems. It split the owner's question in only some places: F-CANOPY-068's header, the Summary and the Rating bullet's lead still give the old single condition. F-CANOPY-058's trigger bullet now applies the 8 trigger evictions' range to all 29 evictions. And `f058-census-v2/README.md` still attributes the trigger lag, although the ledger no longer does. Findings 1 and 2 change a number or an action, so §4 of `…INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires another round.
+**VERDICT: SOUND-WITH-FIXES.** Round 2's pass replays byte for byte. Every figure it introduced re-derives within the scope it is stated for, and both readers behave as `…E2E-VALIDATION-EVIDENCE.md` says. The pass did leave three problems. It split the Overtoad's question in only some places: F-CANOPY-068's header, the Summary and the Rating bullet's lead still give the old single condition. F-CANOPY-058's trigger bullet now applies the 8 trigger evictions' range to all 29 evictions. And `f058-census-v2/README.md` still attributes the trigger lag, although the ledger no longer does. Findings 1 and 2 change a number or an action, so §4 of `…INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires another round.
 
 **TABLE** (line numbers are at `7af6a381`; values are "T1 ; T2")
 
@@ -144,23 +144,23 @@ Names used below:
 
 **FINDINGS**
 
-1. **MINOR: the owner's question is still stated two ways.** Round 2 split it only in the Matrix, the Consensus record and the body of the Rating bullet.
+1. **MINOR: the Overtoad's question is still stated two ways.** Round 2 split it only in the Matrix, the Consensus record and the body of the Rating bullet.
    - **Quoted** (all in `…E2E-VALIDATION-EVIDENCE.md`):
-     - F-068's header (`:10713`) and F-065's header (`:10086`) carry the identical condition: "P1 if a shipped CHANGELOG promise counts as documented, else P2, the owner's question".
+     - F-068's header (`:10713`) and F-065's header (`:10086`) carry the identical condition: "P1 if a shipped CHANGELOG promise counts as documented, else P2, the Overtoad's question".
      - The Summary (`:10569`): "Filed: F-CANOPY-068 (P1 if a shipped CHANGELOG promise counts as documented, else P2; OPEN)".
-     - The Rating bullet's lead (`:10759-10760`): "the owner's question that F-CANOPY-065 already carries". The bullet's own new sentence (`:10764-10766`) denies this: "a ruling for F-CANOPY-065 does not by itself settle it".
+     - The Rating bullet's lead (`:10759-10760`): "the Overtoad's question that F-CANOPY-065 already carries". The bullet's own new sentence (`:10764-10766`) denies this: "a ruling for F-CANOPY-065 does not by itself settle it".
    - **Evidence:**
      - The ledger itself calls F-068's CHANGELOG text a shipped promise: "canopy's CHANGELOG makes the promise to its readers" (`:10723-10724`) and "canopy's shipped CHANGELOG promises the behaviour" (`:10761`).
-     - Limb 1 as put to the owner (`:10922`) is not limited to promises of something a user sees.
+     - Limb 1 as put to the Overtoad (`:10922`) is not limited to promises of something a user sees.
      - So take a ruling that CHANGELOG promises count but descriptions of internal mechanisms do not. F-068's header makes it P1, giving 7 open P1 and 16 open P2. The Matrix's "F-CANOPY-065 alone" makes it P2, giving 6 and 17.
      - F-065's header is also narrower than the "CHANGELOG or design-plan" the Matrix quotes. That mismatch predates round 2.
-     - The round-1 record (`:10884-10885`) still says "the owner's question F-CANOPY-065 already carries". It is history, but it now reads as current.
+     - The round-1 record (`:10884-10885`) still says "the Overtoad's question F-CANOPY-065 already carries". It is history, but it now reads as current.
    - **Fix:**
      - In "Unresolved" and the Matrix, limit limb 1 to promises of user-visible behaviour.
      - Restate F-068's header, the Summary and the Rating lead as the second limb: "P1 if a shipped CHANGELOG's description of an internal mechanism counts as documented behaviour, else P2". Drop "that F-CANOPY-065 already carries".
      - Align F-065's header with its Severity bullet.
      - Note in the round-1 bullet that round 2 split the question.
-   - **Changes a number, disposition or action?** Yes. Under one ruling it changes F-068's rating and the counts, and it changes the question as put to the owner.
+   - **Changes a number, disposition or action?** Yes. Under one ruling it changes F-068's rating and the counts, and it changes the question as put to the Overtoad.
 
 2. **MINOR: F-CANOPY-058's trigger bullet applies the 8 trigger evictions' range to every eviction.**
    - **Quoted** (`…E2E-VALIDATION-EVIDENCE.md:9153-9156`): "(in Phase 11's runs, the evictions came 1.2–2.4 s after the re-enable)". The same bullet calls a late completion a re-enable: "The evicted request's late completion then re-enables the lane under its successor".
@@ -220,7 +220,7 @@ Names used below:
    - **Changes anything?** No number or disposition. Minor action: item 24's instrument.
 
 **WHAT YOU COULD NOT CHECK**
-- **The counts for each ruling hold only if F-065 and F-068 are the only findings the owner's ruling moves.** No sweep of the open P2s against canopy's CHANGELOG and design plans exists. For example, F-CANOPY-018 concerns the same apply toast that CHANGELOG 0.6.0 promises.
+- **The counts for each ruling hold only if F-065 and F-068 are the only findings the Overtoad's ruling moves.** No sweep of the open P2s against canopy's CHANGELOG and design plans exists. For example, F-CANOPY-018 concerns the same apply toast that CHANGELOG 0.6.0 promises.
 - Whether `…phase11_round2.md` holds the lanes' final messages verbatim.
 - How the lag splits between the driver and the page. Nothing logs it.
 - How long T-tab's click handling took. Nothing stamps the time before the click.

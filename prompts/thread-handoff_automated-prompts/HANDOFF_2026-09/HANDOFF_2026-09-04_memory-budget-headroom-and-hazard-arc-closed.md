@@ -1,4 +1,4 @@
-# HANDOFF — memory-budget headroom + resident-hazard arc CLOSED; two owner decisions open
+# HANDOFF — memory-budget headroom + resident-hazard arc CLOSED; two Overtoad decisions open
 
 **Date**: 2026-09-04
 **Origin session**: `hazards blocks, stale RoT`, worktree `.claude/worktrees/zippy-questing-wilkinson`
@@ -156,7 +156,7 @@ defensible statistic and say which.
 juniper-cascor-worker (+446) and juniper-data-client (+122) sit only just above their requirement,
 and that was a decision, not an oversight: tightening them buys ~2,000 chars fleet-wide while
 putting three repos within ~20 chars of their own worst observed commit. juniper-recurrence keeps
-its 20,000 **policy** ceiling (owner decision 2026-08-28: the size at which a cut becomes worthwhile
+its 20,000 **policy** ceiling (Overtoad decision 2026-08-28: the size at which a cut becomes worthwhile
 there), which is NOT slack-derived and must not be re-derived as if it were. Full reasoning: the
 closing comment on juniper-ml#1326.
 
@@ -194,7 +194,7 @@ than "the arc's": several worktrees from EARLIER sessions of this same arc are s
 `docs/handoff-2026-08-30-p5-step-e-complete`, `docs/handoff-shared-session-memory`,
 `docs/handoff-2026-08-28-arc-remaining-work`, `docs/handoff-2026-08-25-p5-ports-split` and
 `docs/handoff-2026-08-26-p5-promotion-preconditions`. They are not mine to remove and were not
-audited here — check ownership before touching any of them. The session worktree
+audited here — check Overtoadship before touching any of them. The session worktree
 `.claude/worktrees/zippy-questing-wilkinson` is live and locked.
 
 ## 5. Validation record

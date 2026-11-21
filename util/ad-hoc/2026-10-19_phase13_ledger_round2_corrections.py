@@ -6,8 +6,8 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-19
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
-# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
+# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : ledger Phase 13 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);
 #               HANDOFF_2026-10-19_canopy-phase13-manual-sweep-five-p2s-now-p1-item-30-owed.md
 # ---------------------------------------------------------------------------
@@ -47,7 +47,7 @@ AUDIT_NAME = "JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md"
 # ---------------------------------------------------------------------------
 
 LEDGER_SUBS = [
-    # --- Summary: the owner's question (R2A F1, R2B F1) ---
+    # --- Summary: the Overtoad's question (R2A F1, R2B F1) ---
     (
         "  the manual without any ruling. F-CANOPY-057 was still recorded as shipped by two documents the design note's\n"
         "  correction does not touch: the V7 roadmap's §28.1 and CAN-015 row\n"
@@ -120,11 +120,11 @@ LEDGER_SUBS = [
     ),
     # --- F-057 status bullet (R2A F1, R2B F1) ---
     (
-        "  the owner's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1\n"
+        "  the Overtoad's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1\n"
         "  (`" + ROADMAP_NAME + "`) carries the same correction since Phase 13's round 1; the 2026-05-05 audit's activity line\n"
         "  (`" + AUDIT_NAME + ":112`) still reads \"CAN-015g replay V2 wired\" and is left as a dated snapshot, the one document\n"
         "  through which the first limb could still reach this entry.",
-        "  the owner's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1 and CAN-015\n"
+        "  the Overtoad's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1 and CAN-015\n"
         "  row (`" + ROADMAP_NAME + "`) and the 2026-05-05 audit's §5.2 (`" + AUDIT_NAME + "`), which had said \"shipped\n"
         "  end-to-end on `main`\" while its own §11.4 confirmed only g-1 and g-6, carry the same correction since Phase 13's\n"
         "  rounds 1 and 2; the audit's §5.1 line \"CAN-015g replay V2 wired\" (`:112`) describes canopy's consumers, which\n"
@@ -146,7 +146,7 @@ LEDGER_SUBS = [
         "commit table, \"CAN-015g replay V2 wired\" under juniper-canopy (`" + AUDIT_NAME + ":112`). Round 1 gave §28.1 the\n"
         "same dated correction, a note under its heading and the g-3 row annotated; the CAN-015 row points to §28.1 and is\n"
         "left. The audit is a dated snapshot of commit themes since 2026-04-23, not a plan's promise, and is left as\n"
-        "history. Until the owner rules, the first limb reaches F-CANOPY-057 only through that audit line.",
+        "history. Until the Overtoad rules, the first limb reaches F-CANOPY-057 only through that audit line.",
         "Two other documents recorded g-3 as shipped (round 1, Lane 13-B, MAJOR; round 2, Lanes 13-R2A and 13-R2B, MAJOR):\n"
         "the V7 roadmap's §28.1, \"CAN-015g + CAN-015h — Phase 6E deferred, shipped end-to-end\", whose g-3 row read \"cascor\n"
         "#190 (retarget of #187) | Sample-boundary weight emission | `dbc25277`\" (`" + ROADMAP_NAME + ":15146-15160`), and\n"
@@ -162,9 +162,9 @@ LEDGER_SUBS = [
         "the stream as shipped, and the first limb reaches F-CANOPY-057 through none of them; a plan none of them read may\n"
         "still, which item 26's second step would find.",
     ),
-    # --- Matrix effect: the owner's question (R2A F1, R2B F1) ---
+    # --- Matrix effect: the Overtoad's question (R2A F1, R2B F1) ---
     (
-        "  - **The owner's question** (O17): the first limb decides F-CANOPY-065, and F-CANOPY-057 only if the 2026-05-05\n"
+        "  - **The Overtoad's question** (O17): the first limb decides F-CANOPY-065, and F-CANOPY-057 only if the 2026-05-05\n"
         "    audit's activity line counts as a design-plan promise: 9 open P1 and 11 open P2 if a shipped CHANGELOG or\n"
         "    design-plan promise counts as documented, as the triage counts them; 8 and 12 if not; 10 and 10 by the\n"
         "    broadest reading. The second limb decides F-CANOPY-068's rating of record and moves no count. F-CANOPY-028 is\n"
@@ -172,7 +172,7 @@ LEDGER_SUBS = [
         "    re-ratings\"), which would make each of those pairs one P1 fewer; F-CANOPY-012's counter-reading, that the\n"
         "    manual's \"lets CasCor validate the exact target shape\" makes a shape rejection the documented outcome, is\n"
         "    weaker and no lane adopted it.",
-        "  - **The owner's question** (O17): the first limb decides F-CANOPY-065 alone among the findings Phase 11 named,\n"
+        "  - **The Overtoad's question** (O17): the first limb decides F-CANOPY-065 alone among the findings Phase 11 named,\n"
         "    the four sites that recorded F-CANOPY-057's stream as shipped now carrying the dated correction: 9 open P1\n"
         "    and 11 open P2 if a shipped CHANGELOG or design-plan promise counts as documented, as the triage counts them;\n"
         "    8 and 12 if not. The second limb decides F-CANOPY-068's rating of record and moves no count. The two recorded\n"
@@ -312,15 +312,15 @@ ROUND1_TAIL = (
 
 HANDOFF_SUBS = [
     (
-        "8. Then the parent's items 5 and 7, and the owner batch O1–O17 (O17's first limb now decides F-CANOPY-065 alone).",
-        "8. Then the parent's items 5 and 7, and the owner batch O1–O17 (O17's first limb decides F-CANOPY-065 alone among the\n"
+        "8. Then the parent's items 5 and 7, and the Overtoad batch O1–O17 (O17's first limb now decides F-CANOPY-065 alone).",
+        "8. Then the parent's items 5 and 7, and the Overtoad batch O1–O17 (O17's first limb decides F-CANOPY-065 alone among the\n"
         "   findings Phase 11 named, the four sites that recorded F-CANOPY-057's stream as shipped now corrected: 9/11 or 8/12).",
     ),
     (
-        "    stays with the owner's first limb, which now decides it, and F-CANOPY-057 only through the 2026-05-05 audit's\n"
+        "    stays with the Overtoad's first limb, which now decides it, and F-CANOPY-057 only through the 2026-05-05 audit's\n"
         "    activity line); F-CANOPY-067 \"P2 pending a live drive\", unchanged. One round-1 lane dissents on F-CANOPY-028 (P2)\n"
         "    and on F-CANOPY-067 (P1 by source); both are recorded in the ledger's consensus record.",
-        "    stays with the owner's first limb, which now decides it alone among the findings Phase 11 named); F-CANOPY-067\n"
+        "    stays with the Overtoad's first limb, which now decides it alone among the findings Phase 11 named); F-CANOPY-067\n"
         "    \"P2 pending a live drive\", unchanged. One round-1 lane dissents on F-CANOPY-028 (P2) and on F-CANOPY-067 (P1 by\n"
         "    source); both are recorded in the ledger's consensus record.",
     ),

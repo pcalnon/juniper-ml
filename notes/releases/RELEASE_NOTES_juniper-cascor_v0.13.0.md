@@ -25,11 +25,11 @@
 
 ### Changed
 
-- **Temporary files go in the repo's gitignored `tmp/`, never `/tmp` (owner directive, 2026-10-26), and the
-  owner's rulings on it are applied.** `/tmp/` is ignored, the lock-regeneration recipes use `tmp/`, and
+- **Temporary files go in the repo's gitignored `tmp/`, never `/tmp` (Overtoad directive, 2026-10-26), and the
+  Overtoad's rulings on it are applied.** `/tmp/` is ignored, the lock-regeneration recipes use `tmp/`, and
   `AGENTS.md` § Temporary files carries the rule and the rulings, retention included. `juniper-check-doc-links`
   passes `--exclude tmp` in the pre-commit hook and in CI, and `.dockerignore` lists `tmp/`; nothing keeps pytest
-  out of it, and counting scripts are to choose their scope as to `tmp/` deliberately (the owner's revised
+  out of it, and counting scripts are to choose their scope as to `tmp/` deliberately (the Overtoad's revised
   ruling).
 - **The dependency locks moved** (`requirements.lock`, and `requirements-cpu.lock`, which the image installs),
   through the Dependabot groups merged since 0.12.0 (#717, #720, #726). The notable runtime pins:
@@ -43,7 +43,7 @@
 ### Added
 
 - **The final evaluation reports accuracy** (`eval_metrics.final.accuracy`; juniper-ml APD-ML-002,
-  owner ruling 2026-10-26). `eval_metrics.final` (cascor#582) scored the finished model with F1,
+  Overtoad ruling 2026-10-26). `eval_metrics.final` (cascor#582) scored the finished model with F1,
   precision, recall and ROC-AUC but no accuracy, so juniper-ml's experiment reader asked for a
   `test_accuracy` that cascor never computed. The block now carries `accuracy`, computed from the
   same forward pass and on the same rows as its siblings: the rows `final.split` names, `test` when
@@ -93,7 +93,7 @@
 - **`docs/ci_cd/BRANCH_PROTECTION.md` now records the live rulesets, and how to re-read them.**
   It listed six required checks, two under names no context has (`Unit Tests + Coverage`,
   `Integration Tests`), where the `main` ruleset (`juniper-cascor-rules`, id `15081045`) requires
-  24, and it said one approving review and a code-owner review are required, where both rulesets
+  24, and it said one approving review and a code-Overtoad review are required, where both rulesets
   require 0 and `false`. Read again on 2026-10-26, the page now gives all 24 contexts with the
   workflow and job that post each, and the eight that sit outside the Quality Gate's `needs:`;
   every `pull_request` parameter of both rulesets (`juniper-no-direct-push`, id `21019063`, is the

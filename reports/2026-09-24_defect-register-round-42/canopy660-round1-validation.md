@@ -24,7 +24,7 @@
 - **Fix:**
   1. Disclose the lost Origin/CSRF gate in the PR body and `CHANGELOG.md`.
   2. Log a distinct WARNING in `get_api_key_auth()` when `CANOPY_API_KEY` is set but blank.
-  3. Separately, and only with an owner decision, consider keeping the Origin check when auth is disabled.
+  3. Separately, and only with an Overtoad decision, consider keeping the Origin check when auth is disabled.
 
 **D2 (Low): the WebSocket "before" statement holds only in the default configuration, and it was never an exposure.**
 - **Claim.** "WebSocket accepted the whitespace key … `?api_key=%20%20%20` authenticated."
@@ -50,8 +50,8 @@
 - **Fix.** Say "on main; unreleased in juniper-service-core".
 
 **D5 (Low): the cited ruling isn't in the versioned register.**
-- **Claim.** "as the owner ruled it on 2026-09-22", citing the defect register.
-- **Evidence.** On juniper-ml `origin/main`, `JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md:1406` still says APD-ECO-008 "needs an owner decision". The ruling exists only as an uncommitted local edit.
+- **Claim.** "as the Overtoad ruled it on 2026-09-22", citing the defect register.
+- **Evidence.** On juniper-ml `origin/main`, `JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md:1406` still says APD-ECO-008 "needs an Overtoad decision". The ruling exists only as an uncommitted local edit.
 - **Fix.** Land the register edit first, or with this PR.
 
 **D6 (Nits):**

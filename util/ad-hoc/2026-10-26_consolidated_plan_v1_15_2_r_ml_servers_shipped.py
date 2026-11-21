@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — one-off (a record revision of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2339 (the 0.11.2 proposal, e8d38732), #2341 (its archive), publish run 40247789317;
          juniper-ml#2330 and its fix juniper-ml#2345;
          util/ad-hoc/2026-10-25_consolidated_plan_v1_15_1_session_record.py (the revision this follows, and the pattern);
@@ -14,9 +14,9 @@ Related: juniper-ml#2339 (the 0.11.2 proposal, e8d38732), #2341 (its archive), p
 
 Why
 ---
-v1.15.1 lists R-ML-SERVERS as the next cut and ml#2330 as an open question. On 2026-10-26 the owner approved
+v1.15.1 lists R-ML-SERVERS as the next cut and ml#2330 as an open question. On 2026-10-26 the Overtoad approved
 0.11.2's ``pypi`` gate, so R-ML-SERVERS shipped, and chose ml#2330's option 1 (in a turing session; relayed), whose fix
-is ml#2345. The owner approved this revision on 2026-10-26, on the condition that every line stays within 512
+is ml#2345. The Overtoad approved this revision on 2026-10-26, on the condition that every line stays within 512
 characters. v1.15.1 left three lines over that (XC-P12's bullet, P12's milestone row and the R-ML-SERVERS row); this
 revision rewrites all three, so the whole plan is back under the limit, and the script refuses if any line is over.
 
@@ -56,55 +56,55 @@ _XC_P12_NEW = (
     "The driver's `worst_case_budget` sums the health waits, dataset creation, every wall-bounded phase and `save_model`, or cascor's teardown settle and `snapshot_at_end`.\n"
     "  The nine recurrence suites, at 3900 s against 1200–1800, now carry 4500; the 20 cascor suites already cleared theirs. "
     "Its post-merge re-check passed on `main` `c86a5e5e`, four merges later. Its out-of-scope finding, E-C's wall budget, is ml#2330 (§6 Group C).\n"
-    "  The owner chose ml#2330's option 1 on 2026-10-26 (v1.15.2). ml#2345 (FIX_STATE) sets E-C's `execution.max_wall_seconds` to 5400, so its worst-case driver budget is 5,850 s against a 7,200 s `per_run_timeout_seconds`; its cell ids and `config_sha256` are unchanged, and a CI test pins both bounds.\n"
+    "  The Overtoad chose ml#2330's option 1 on 2026-10-26 (v1.15.2). ml#2345 (FIX_STATE) sets E-C's `execution.max_wall_seconds` to 5400, so its worst-case driver budget is 5,850 s against a 7,200 s `per_run_timeout_seconds`; its cell ids and `config_sha256` are unchanged, and a CI test pins both bounds.\n"
 )
 
 _P12_ROW_OLD = (
-    "| P12 equities | M0 closes on its date (10-24); W0.1's service-core half is an owner follow-up · Phase 1 done (10-17) → M1 (11-21; the W1.11/W1.12 smokes owed on 0.8.0) · W1.1b not commissioned · W5.4 done · "
-    "R-ML-SERVERS's floors merged (ml#2326) · next: the juniper-ml 0.11.2 cut (owner ruling 2026-10-25) | "
+    "| P12 equities | M0 closes on its date (10-24); W0.1's service-core half is an Overtoad follow-up · Phase 1 done (10-17) → M1 (11-21; the W1.11/W1.12 smokes owed on 0.8.0) · W1.1b not commissioned · W5.4 done · "
+    "R-ML-SERVERS's floors merged (ml#2326) · next: the juniper-ml 0.11.2 cut (Overtoad ruling 2026-10-25) | "
     "The F-S10 data-client patch comes from a `v0.5.0` branch (§5) and is forward-ported to `main` for a 0.6.x patch (0.6.0 was cut without it). "
     "Annotate the false `succeeded` row (`20261003T091414Z-4ba6`) in `~/.local/state/juniper-experiments/index.jsonl` (residue) |\n"
 )
 _P12_ROW_NEW = (
-    "| P12 equities | M0 closes on its date (10-24); W0.1's service-core half: owner · Phase 1 done (10-17) → M1 (11-21; W1.11/W1.12 smokes passed on 0.8.0, 10-25) · W1.1b not commissioned · W5.4 done · "
+    "| P12 equities | M0 closes on its date (10-24); W0.1's service-core half: Overtoad · Phase 1 done (10-17) → M1 (11-21; W1.11/W1.12 smokes passed on 0.8.0, 10-25) · W1.1b not commissioned · W5.4 done · "
     "R-ML-SERVERS shipped (juniper-ml 0.11.2, 10-26) | "
     "The F-S10 data-client patch comes from a `v0.5.0` branch (§5) and is forward-ported to `main` for a 0.6.x patch (0.6.0 was cut without it). "
     "Annotate the false `succeeded` row (`20261003T091414Z-4ba6`) in `~/.local/state/juniper-experiments/index.jsonl` (residue) |\n"
 )
 
 _SERVERS_ROW_OLD = (
-    "| **R-ML-SERVERS** (floors merged as ml#2326, `f823b0b7`; the cut is juniper-ml **0.11.2** by the owner's ruling of 2026-10-25, over `detect.py`'s 0.12.0; v1.15.1): a juniper-ml patch | "
+    "| **R-ML-SERVERS** (floors merged as ml#2326, `f823b0b7`; the cut is juniper-ml **0.11.2** by the Overtoad's ruling of 2026-10-25, over `detect.py`'s 0.12.0; v1.15.1): a juniper-ml patch | "
     "The `[servers]` floors `juniper-data>=0.17.1` and `juniper-cascor>=0.12.0`, which floor the shared security patches; ml#2062's fix if it is ready (ml#2333, open on 2026-10-25) | "
-    "Both on PyPI (met: data 2026-10-23, cascor 2026-10-25). The floors PR first, pre-flighted for `[servers]` and `[all]` against real PyPI; then the owner's cut, gate and rating | "
+    "Both on PyPI (met: data 2026-10-23, cascor 2026-10-25). The floors PR first, pre-flighted for `[servers]` and `[all]` against real PyPI; then the Overtoad's cut, gate and rating | "
     "`[servers]` and `[all]` users whose upgrade keeps data 0.17.0 or cascor 0.11.0 |\n"
 )
 _SERVERS_ROW_NEW = (
     "| **R-ML-SERVERS** (shipped as juniper-ml 0.11.2, 2026-10-26; note below) | "
-    "The `[servers]` floors `juniper-data>=0.17.1` and `juniper-cascor>=0.12.0` (ml#2326), which floor the shared security patches. Rated as 0.11.1 (owner, 2026-10-25) | "
-    "Both on PyPI (met: data 2026-10-23, cascor 2026-10-25); proposal ml#2339, archive ml#2341; the owner approved the gate (run 40247789317) | "
+    "The `[servers]` floors `juniper-data>=0.17.1` and `juniper-cascor>=0.12.0` (ml#2326), which floor the shared security patches. Rated as 0.11.1 (Overtoad, 2026-10-25) | "
+    "Both on PyPI (met: data 2026-10-23, cascor 2026-10-25); proposal ml#2339, archive ml#2341; the Overtoad approved the gate (run 40247789317) | "
     "`[servers]` and `[all]` users whose upgrade kept data 0.17.0 or cascor 0.11.0 |\n"
 )
 
 # Multi-line texts are bound to names here rather than written inside the REPLACEMENTS display: adjacent literals inside
 # a list or tuple trip CodeQL's py/implicit-string-concatenation-in-list, whose unresolved thread blocks a merge.
 _STATUS_ANCHOR = "over the 0.12.0 that `util/release_train/detect.py` proposes (§5). Like v1.15.0, no round checks it.\n"
-_STATUS_ADD = "  - v1.15.2 (2026-10-26) records juniper-ml 0.11.2's publish, which ships R-ML-SERVERS (§5), and the owner's ruling on ml#2330 with its fix, ml#2345 (XC-P12; §6 Group C). Like v1.15.0, no round checks it.\n"
+_STATUS_ADD = "  - v1.15.2 (2026-10-26) records juniper-ml 0.11.2's publish, which ships R-ML-SERVERS (§5), and the Overtoad's ruling on ml#2330 with its fix, ml#2345 (XC-P12; §6 Group C). Like v1.15.0, no round checks it.\n"
 
-_FURTHER_P12_OLD = "Further P12 work follows `…0-11-1-published-servers-floors-next.md`: the juniper-ml 0.11.2 cut (§5; R-ML-SERVERS's floors merged as ml#2326; v1.15.1), the recurrence-client 0.3.1 cut, the W1.11 and W1.12 smokes on the 0.8.0 image, and the owner's open items (§6 A1, A9)."
+_FURTHER_P12_OLD = "Further P12 work follows `…0-11-1-published-servers-floors-next.md`: the juniper-ml 0.11.2 cut (§5; R-ML-SERVERS's floors merged as ml#2326; v1.15.1), the recurrence-client 0.3.1 cut, the W1.11 and W1.12 smokes on the 0.8.0 image, and the Overtoad's open items (§6 A1, A9)."
 _FURTHER_P12_NEW = (
-    "Further P12 work follows the **Next** bullet of `…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.20): the recurrence-client 0.3.1 cut and the owner's open items (§6 A1, A9). "
+    "Further P12 work follows the **Next** bullet of `…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.20): the recurrence-client 0.3.1 cut and the Overtoad's open items (§6 A1, A9). "
     "The juniper-ml 0.11.2 cut is done (R-ML-SERVERS; v1.15.2), and the W1.11 and W1.12 smokes passed on the 0.8.0 image (2026-10-25; that plan's v1.7.17)."
 )
 
 _RML_NOTES_OLD = "R-ML-TOOLS followed as 0.11.1 (2026-10-25).\n- There is still no forward-port"
 _RML_NOTES_NEW = (
     "R-ML-TOOLS followed as 0.11.1 (2026-10-25), and R-ML-SERVERS as 0.11.2 (2026-10-26).\n"
-    "- R-ML-SERVERS shipped in 0.11.2 under the owner's ruling of 2026-10-25 (`detect.py` proposed 0.12.0), with ml#2062's fix (ml#2333) left out. PyPI's 0.11.2 metadata carries both floors under `extra == \"servers\"`, and the published `[servers]` and `[all]` resolve against real PyPI in 61 and 95 packages besides juniper-ml itself (2026-10-26). 0.11.2's `[servers]` still installs no Juniper client (ml#2062); its fix, ml#2333, merged on 2026-10-26 (`da5e8de3`) and ships in 0.11.3.\n"
+    "- R-ML-SERVERS shipped in 0.11.2 under the Overtoad's ruling of 2026-10-25 (`detect.py` proposed 0.12.0), with ml#2062's fix (ml#2333) left out. PyPI's 0.11.2 metadata carries both floors under `extra == \"servers\"`, and the published `[servers]` and `[all]` resolve against real PyPI in 61 and 95 packages besides juniper-ml itself (2026-10-26). 0.11.2's `[servers]` still installs no Juniper client (ml#2062); its fix, ml#2333, merged on 2026-10-26 (`da5e8de3`) and ships in 0.11.3.\n"
     "- There is still no forward-port"
 )
 
 _VALIDATION_ANCHOR = "its facts cite those PRs and `util/ad-hoc/2026-10-25_consolidated_plan_v1_15_1_session_record.py`.\n"
-_VALIDATION_ADD = "  - v1.15.2 is a record of juniper-ml 0.11.2's publish (2026-10-26), which ships R-ML-SERVERS, and of ml#2330's ruling and its fix, ml#2345. No round checks it (owner ruling 2026-10-24); its facts cite PyPI's 0.11.2 metadata, publish run 40247789317, ml#2345's diff and `util/ad-hoc/2026-10-26_consolidated_plan_v1_15_2_r_ml_servers_shipped.py`.\n"
+_VALIDATION_ADD = "  - v1.15.2 is a record of juniper-ml 0.11.2's publish (2026-10-26), which ships R-ML-SERVERS, and of ml#2330's ruling and its fix, ml#2345. No round checks it (Overtoad ruling 2026-10-24); its facts cite PyPI's 0.11.2 metadata, publish run 40247789317, ml#2345's diff and `util/ad-hoc/2026-10-26_consolidated_plan_v1_15_2_r_ml_servers_shipped.py`.\n"
 
 _SCRIPTS_ANCHOR = "then, with v1.15.0's PR, `2026-10-25_p12_arc_state_reprobe.py` and `2026-10-25_consolidated_plan_v1_15_0_p12_arc.py`;\n"
 _SCRIPTS_ADD = "    - with v1.15.1's PR, `2026-10-25_consolidated_plan_v1_15_1_session_record.py`; and with v1.15.2's, `2026-10-26_consolidated_plan_v1_15_2_r_ml_servers_shipped.py`;\n"
@@ -125,8 +125,8 @@ REPLACEMENTS = [
         "and juniper-ml 0.11.0, 0.11.1 and 0.11.2 (10-26). R-OBS-SC-2 and R-DATA-2 are owed. P4's Wave 4 waits on Docker Hub secrets (10-10). | §5 (the fix-forwards) | T1 |",
     ),
     (
-        "juniper-ml 0.11.0 and 0.11.1 carry the floors. W0.1's service-core half: owner (XC-P12). | §5 R-ML-SERVERS; client 0.3.1 (owner); §6 A1, A9's rest | T1/T2 |",
-        "juniper-ml 0.11.0 to 0.11.2 (10-26) carry the floors. W0.1's service-core half: owner (XC-P12). | client 0.3.1 (owner); §6 A1, A9's rest | T1/T2 |",
+        "juniper-ml 0.11.0 and 0.11.1 carry the floors. W0.1's service-core half: Overtoad (XC-P12). | §5 R-ML-SERVERS; client 0.3.1 (Overtoad); §6 A1, A9's rest | T1/T2 |",
+        "juniper-ml 0.11.0 to 0.11.2 (10-26) carry the floors. W0.1's service-core half: Overtoad (XC-P12). | client 0.3.1 (Overtoad); §6 A1, A9's rest | T1/T2 |",
     ),
     (_XC_P12_OLD, _XC_P12_NEW),
     (_FURTHER_P12_OLD, _FURTHER_P12_NEW),
@@ -138,12 +138,12 @@ REPLACEMENTS = [
     (_SERVERS_ROW_OLD, _SERVERS_ROW_NEW),
     (_RML_NOTES_OLD, _RML_NOTES_NEW),
     (
-        "7. R-ML-SERVERS: its floors merged as ml#2326 (2026-10-25), and the owner ruled the cut **0.11.2** (2026-10-25; `detect.py` proposed 0.12.0). The cut waits on none of the steps above (v1.15.1).\n",
-        "7. R-ML-SERVERS: shipped as juniper-ml **0.11.2** (2026-10-26; v1.15.2), its floors from ml#2326 and its version by the owner's ruling of 2026-10-25 (`detect.py` proposed 0.12.0).\n",
+        "7. R-ML-SERVERS: its floors merged as ml#2326 (2026-10-25), and the Overtoad ruled the cut **0.11.2** (2026-10-25; `detect.py` proposed 0.12.0). The cut waits on none of the steps above (v1.15.1).\n",
+        "7. R-ML-SERVERS: shipped as juniper-ml **0.11.2** (2026-10-26; v1.15.2), its floors from ml#2326 and its version by the Overtoad's ruling of 2026-10-25 (`detect.py` proposed 0.12.0).\n",
     ),
     (
-        "  Opened with the owner on 2026-10-25.\n",
-        "  Opened with the owner on 2026-10-25. **Ruled 2026-10-26: option 1** (in a turing session; v1.15.2). Its fix is ml#2345, FIX_STATE.\n",
+        "  Opened with the Overtoad on 2026-10-25.\n",
+        "  Opened with the Overtoad on 2026-10-25. **Ruled 2026-10-26: option 1** (in a turing session; v1.15.2). Its fix is ml#2345, FIX_STATE.\n",
     ),
     (
         "with the `[tools]` floors (ml#2314), released as 0.11.0 and 0.11.1; next, R-ML-SERVERS (§5) |",

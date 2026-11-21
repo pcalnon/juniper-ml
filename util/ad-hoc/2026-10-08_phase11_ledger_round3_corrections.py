@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-08
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Round 3's correction pass on the ledger's Phase 11, the evidence README and the two readers' docstrings.
 
@@ -46,7 +46,7 @@ ROUND3_RECORD = """
     `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 3`.
 - **Verdicts.** Both returned SOUND-WITH-FIXES. Their findings change a disposition (the condition F-CANOPY-068's
   rating is stated to rest on), numbers (the counts each ruling gives, and F-CANOPY-058's horizon as worded) and
-  actions (the owner's question's reach, and items 24 and 26), so §4 of
+  actions (the Overtoad's question's reach, and items 24 and 26), so §4 of
   `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires round 4.
 - **What round 3 changed:**
   - the two limbs, carried everywhere. F-CANOPY-068's header, the Summary and the Rating's lead gave the first
@@ -102,15 +102,15 @@ SUBS = [
         "  its own rather than part of F-CANOPY-058.",
     ),
     (
-        "(P1 if a shipped CHANGELOG promise counts as documented, else P2, the owner's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census;",
-        "(P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2, the second limb of the owner's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census;",
+        "(P1 if a shipped CHANGELOG promise counts as documented, else P2, the Overtoad's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census;",
+        "(P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2, the second limb of the Overtoad's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census;",
     ),
     (
-        "(P1 if a shipped CHANGELOG promise counts as documented, else P2, the owner's question; canopy repo; observed 2026-09-23",
-        "(P1 if a shipped CHANGELOG or design-plan promise counts as documented, else P2, the first limb of the owner's question; canopy repo; observed 2026-09-23",
+        "(P1 if a shipped CHANGELOG promise counts as documented, else P2, the Overtoad's question; canopy repo; observed 2026-09-23",
+        "(P1 if a shipped CHANGELOG or design-plan promise counts as documented, else P2, the first limb of the Overtoad's question; canopy repo; observed 2026-09-23",
     ),
     (
-        "- **Rating: P1 if a shipped CHANGELOG promise counts as documented, else P2**, the owner's question that\n"
+        "- **Rating: P1 if a shipped CHANGELOG promise counts as documented, else P2**, the Overtoad's question that\n"
         "  F-CANOPY-065 already carries (Phase 10's Consensus record). Plan §6.3's P1 is \"breaks a documented\n"
         "  behaviour\", and canopy's shipped CHANGELOG promises the behaviour these fires break (Its own contract,\n"
         "  above). If such a promise does not count, it is P2: on its own it delays the chart by a cycle at a time,\n"
@@ -119,7 +119,7 @@ SUBS = [
         "  rests on a CHANGELOG and a design plan; this one is a CHANGELOG's description of an internal mechanism, so a\n"
         "  ruling for F-CANOPY-065 does not by itself settle it (round 2, Lane 11-R2B).",
         "- **Rating: P1 if a CHANGELOG's description of an internal mechanism counts as documented, else P2**, the\n"
-        "  second limb of the owner's question; its first limb, from Phase 10's Consensus record, decides F-CANOPY-065.\n"
+        "  second limb of the Overtoad's question; its first limb, from Phase 10's Consensus record, decides F-CANOPY-065.\n"
         "  Plan §6.3's P1 is \"breaks a documented behaviour\", and canopy's shipped CHANGELOG describes the behaviour\n"
         "  these fires break (Its own contract, above). If such a description does not count, it is P2: on its own it\n"
         "  delays the chart by a cycle at a time, which §6.3 puts under drift, and the harm a user would see comes\n"
@@ -180,17 +180,17 @@ SUBS = [
     ),
     # --- the round-1 record notes the split (R3B F1) ---
     (
-        "    11-B2), the owner's question F-CANOPY-065 already carries. The counts move to 7 open P1 and 16 open P2.",
-        "    11-B2), the owner's question F-CANOPY-065 already carries; round 2 split that question, and this is now its\n"
+        "    11-B2), the Overtoad's question F-CANOPY-065 already carries. The counts move to 7 open P1 and 16 open P2.",
+        "    11-B2), the Overtoad's question F-CANOPY-065 already carries; round 2 split that question, and this is now its\n"
         "    second limb. The counts move to 7 open P1 and 16 open P2.",
     ),
     # --- Unresolved: limb 1 is a promise of something a user sees, and reaches further (R3A F2, R3B F1) ---
     (
-        "- **Unresolved, for the owner:** Phase 10's question, whether a shipped CHANGELOG or design-plan promise counts\n"
+        "- **Unresolved, for the Overtoad:** Phase 10's question, whether a shipped CHANGELOG or design-plan promise counts\n"
         "  as documented under plan §6.3, which decides F-CANOPY-065's rating; and, since round 2 (Lane 11-R2B), a second\n"
         "  limb, whether a CHANGELOG's description of an internal mechanism counts as documented behaviour, which decides\n"
         "  F-CANOPY-068's.",
-        "- **Unresolved, for the owner:** Phase 10's question, whether a shipped CHANGELOG's or a design plan's promise\n"
+        "- **Unresolved, for the Overtoad:** Phase 10's question, whether a shipped CHANGELOG's or a design plan's promise\n"
         "  of something a user sees counts as documented under plan §6.3, which decides F-CANOPY-065's rating; and, since\n"
         "  round 2 (Lane 11-R2B), a second limb, whether a CHANGELOG's description of an internal mechanism counts as\n"
         "  documented behaviour, which decides F-CANOPY-068's. Since round 3 (Lanes 11-R3A and 11-R3B), the first limb\n"
@@ -208,8 +208,8 @@ SUBS = [
     ),
     # --- the round-3 record, after round 2's slips ---
     (
-        "  generic bot no-reply address, not the owner's, into its own local output. Lane 11-R2A reported none.",
-        "  generic bot no-reply address, not the owner's, into its own local output. Lane 11-R2A reported none.ROUND3_RECORD",
+        "  generic bot no-reply address, not the Overtoad's, into its own local output. Lane 11-R2A reported none.",
+        "  generic bot no-reply address, not the Overtoad's, into its own local output. Lane 11-R2A reported none.ROUND3_RECORD",
     ),
     # --- Matrix effect and counts: the counts move two findings only; the first limb reaches further (R3A F2) ---
     (
@@ -243,7 +243,7 @@ SUBS = [
     (
         "    switch, the end of an Apply (with the clamp defeat) and a second-Input change in mid-request.\n",
         "    switch, the end of an Apply (with the clamp defeat) and a second-Input change in mid-request.\n"
-        "26. **The reach of the owner's §6.3 ruling.** Once the owner rules, check each open finding not yet rated on a\n"
+        "26. **The reach of the Overtoad's §6.3 ruling.** Once the Overtoad rules, check each open finding not yet rated on a\n"
         "    CHANGELOG or a design plan for a promise, of a kind the ruling counts, of the behaviour it breaks. Start with\n"
         "    F-CANOPY-057 and F-CANOPY-018 (Matrix effect and counts), and re-rate what the ruling reaches. Whatever the\n"
         "    ruling, the CAN-015g/h design note's \"every CAN-015g item has merged to `main`\" needs a dated correction:\n"

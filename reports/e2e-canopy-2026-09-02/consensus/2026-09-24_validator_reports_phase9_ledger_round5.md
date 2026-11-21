@@ -76,25 +76,25 @@ Round 5 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 
 *agent `a508083b18dc402b4` · round 1 · last-assistant-text (not resumed) · 12001 chars*
 
-**VERDICT: SOUND-WITH-FIXES.** The replay reproduces the ledger exactly, and most of what the pass introduced holds against source and GitHub. The problems are two wrong counts in the owner evidence, one wrong cause cited for the status bar, one false size claim about the push tool, and one post-freeze event that overtakes the owner question. Findings 1–5 change a number, a disposition or an action, so under §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` the review continues.
+**VERDICT: SOUND-WITH-FIXES.** The replay reproduces the ledger exactly, and most of what the pass introduced holds against source and GitHub. The problems are two wrong counts in the Overtoad evidence, one wrong cause cited for the status bar, one false size claim about the push tool, and one post-freeze event that overtakes the Overtoad question. Findings 1–5 change a number, a disposition or an action, so under §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` the review continues.
 
 Paths: "ledger" means `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` at `07aef715`. Canopy lines are at `e9053227` and cascor lines at `0e016a7c`.
 
 ## FINDINGS
 
-**1. MAJOR (staleness after the freeze): the owner has answered the owner question.**
+**1. MAJOR (staleness after the freeze): the Overtoad has answered the Overtoad question.**
 - **Quoted:**
-  - ledger :8786-8787, "The actor is unidentified … **Owner question**: were that pass and the later actions his?"
+  - ledger :8786-8787, "The actor is unidentified … **The Overtoad question**: were that pass and the later actions his?"
   - item 15, :9496-9503
   - :9377-9379, "who readied and armed canopy#676 … beyond 'no Claude Code process on this host'"
 - **Evidence:**
-  - Session `bc31e993` asked the owner at 03:34:45Z (transcript `…happy-skipping-hollerith/bc31e993-97b0-4a01-ae04-cb39593eb647.jsonl`, line 4227). The owner answered at **2026-09-24T07:32:48Z** (line 4260), 4 min after `07aef715` was committed at 07:28:28Z.
+  - Session `bc31e993` asked the Overtoad at 03:34:45Z (transcript `…happy-skipping-hollerith/bc31e993-97b0-4a01-ae04-cb39593eb647.jsonl`, line 4227). The Overtoad answered at **2026-09-24T07:32:48Z** (line 4260), 4 min after `07aef715` was committed at 07:28:28Z.
   - The exchange: "Four PRs from this arc (data#428, ml#2032, ml#2059 and canopy#678) were taken out of draft and armed 4-7 s later, as pcalnon … and cascor#678 was armed the same way earlier. Is that sweeper yours?" = **"Mine: fix forward"**.
   - The same answer is now recorded in three places:
     - line 5 of the handoff whose title the ledger cites as evidence (`HANDOFF_2026-09-23_defect-register-round-42-four-prs-armed-by-an-unseen-actor-two-merged-unvalidated.md`, modified 07:57Z);
     - memory `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`, updated 07:33Z;
-    - both say "RESOLVED 2026-09-24: the sweeper is the owner's".
-- **Fix:** record the answer, its date, its wording and its scope in "Who", item 15 and "What the evidence cannot support", and retire "unidentified". The question did not name #676's CI re-run, the update-branches, cascor-worker#196 or ml#2045's disarm/re-arm, so those remain the owner's to confirm.
+    - both say "RESOLVED 2026-09-24: the sweeper is the Overtoad's".
+- **Fix:** record the answer, its date, its wording and its scope in "Who", item 15 and "What the evidence cannot support", and retire "unidentified". The question did not name #676's CI re-run, the update-branches, cascor-worker#196 or ml#2045's disarm/re-arm, so those remain the Overtoad's to confirm.
 - **Changes:** disposition yes (item 15's first question moves from open to answered for the ready-and-arm sweeper); action yes.
 
 **2. MINOR: the arm census understates both occasions and the early sweep.**
@@ -126,7 +126,7 @@ Paths: "ledger" means `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EV
     - It then made no tool call from 20:09:38Z to 20:25Z, and no transcript names #2057 or its branch between 19:50Z and 21:00Z.
   - Every other arm on 09-23 before 21:47Z is attributable: `safe_merge` about 4 s before, `gh pr merge … --auto` 1–7 s before, the converge driver, or the release ceremony (ml#2050).
   - R4-A's window was 13:00–13:45Z, so "R4-A's scan … any of them" misattributes the early three. They came from R4-B's pattern scan. My all-calls check agrees there was no arming command.
-- **Fix:** at least three occasions: 00:47:31–01:08:14Z (≥10 PRs across ml, canopy, cascor and deploy), 13:17:53–13:32:10Z (9 PRs), and 20:23:01Z (ml#2057); ≥20 PRs in all. Alternatively, given finding 1, replace the census with the owner's answer plus a lower bound.
+- **Fix:** at least three occasions: 00:47:31–01:08:14Z (≥10 PRs across ml, canopy, cascor and deploy), 13:17:53–13:32:10Z (9 PRs), and 20:23:01Z (ml#2057); ≥20 PRs in all. Alternatively, given finding 1, replace the census with the Overtoad's answer plus a lower bound.
 - **Changes a number:** yes (2 → ≥3 occasions; early sweep 3 → ≥10 PRs; start 00:52:07Z → 00:47:31Z).
 
 **3. MINOR: wrong cause cited for the status bar's "Stopped", and item 16's new status-bar check cannot fail.**
@@ -207,7 +207,7 @@ Paths: "ledger" means `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EV
   - R4-B findings 1–14: applied, with the defects in findings 2, 3, 4, 6 and 7 above.
 
 ## WHAT I COULD NOT CHECK
-- **Who acted.** GitHub records only `pcalnon` for every arm. The owner's answer does not say whether it covers the CI re-run or the later actions.
+- **Who acted.** GitHub records only `pcalnon` for every arm. The Overtoad's answer does not say whether it covers the CI re-run or the later actions.
 - **The hardware key.** I did not query the YubiKey's touch policy.
 - **Anything live.** Nothing was driven.
 - **The ~1 MB upload.** Whether it can land is unknown; the push tool was not run.

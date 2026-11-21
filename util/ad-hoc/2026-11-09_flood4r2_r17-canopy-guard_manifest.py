@@ -1,7 +1,7 @@
 """
 Assemble manifest.json for the ruling-17 canopy carrier from the build worktree, the census runs and a facts file.
 
-Builder helper for the owner's ruling 17 ("canopy: tests hit :8050"). Reads the build worktree's uncommitted
+Builder helper for the Overtoad's ruling 17 ("canopy: tests hit :8050"). Reads the build worktree's uncommitted
 changes (``git status --porcelain``, untracked files included) and hashes each file; summarises every merged
 census JSON it is given (per-port connect and test counts, outcomes, failures); and merges a hand-kept facts
 file holding the checks run, the mutations and the open questions, so the manifest restates only what a
@@ -16,8 +16,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: owner ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Overtoad ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
 """
 
 from __future__ import annotations

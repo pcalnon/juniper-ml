@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-17
 Status: ad-hoc — investigation (suite strength evidence for the turing bring-up G2 change)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task G2, gate
          G-ALIAS, regressions R-G2a/b/c); util/git_remote_alias_check.py;
          tests/test_git_remote_alias_check.py; util/ad-hoc/2026-10-16_turing_a4_b9_mutation_check.py

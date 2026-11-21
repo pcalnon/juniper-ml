@@ -25,7 +25,7 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
 | Remaining 4: fork-drift marker | (1) Check data#440 and cascor#689: both OPEN. (2) Read the `GUARDS` in `tests/test_service_fork_drift.py`. (3) Add a new ENFORCED `Guard`. | Yes. The gating claim is correct: status is per-guard, so a `KNOWN_GAP` would fail at the two sites already merged. The marker text is present at service-core `security.py:88,91` and canopy `src/security.py:52`. | The PRs are open. `docs/REFERENCE.md` has no "drift-gate section"; the text is the suite bullet at L2972 (N7). |
 | Remaining 5: two candidates | (1) Read primer lines 4742 and 2687. (2) `git -C …/juniper-data grep RequestValidationError FETCH_HEAD -- juniper_data/api/`. (3) Write a probe. | (1) and (2) yes. **The premise is stale:** juniper-data `main` registers the handler. (3) Not run, because it writes. | M5 |
 | Remaining 6: PATCH #2080 | (1) `gh pr view 2080 --json body`. (2) Read `ml2080-round1-laneA-reprobe.md` line 156 (N6). (3) `gh api -X PATCH …/pulls/2080`. | (1) and (2) yes: the "A-nit on `APD-ML-008`" bullet is under "Rejected, with reasons". (3) Not run, because it writes. | None |
-| Remaining 7: owner decisions | Check each item is still open, then ask the owner. | **APD-DATA-047 was already RATIFIED** on 2026-09-21. MEMORY.md measures 25,125 bytes / 24,929 characters. | M1 |
+| Remaining 7: Overtoad decisions | Check each item is still open, then ask the Overtoad. | **APD-DATA-047 was already RATIFIED** on 2026-09-21. MEMORY.md measures 25,125 bytes / 24,929 characters. | M1 |
 | Appendix A | As for Remaining 3, plus finding the peer report. | The peer report is only in worktree `happy-skipping-hollerith`. The cascor anchors resolve at `7f4a7213`: `test_cfg_03_sentry_dsn_resolution.py:25`, `main.py:231`, `conftest.py:37`. | M6, M8, L4 |
 | Appendix B | Open the round-39 handoff at §0. | Yes, it is on `main`. Every listed id is open **except APD-DATA-047**. | M1, L9 |
 | Appendix C | Check the drafts, then the anchors at `d1c66a11`. | The drafts are on tmpfs. All four anchors resolve, but the bare `constants.py` matches three files. | H4, M7, L3 |
@@ -36,7 +36,7 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
 ### HIGH
 
 **H1. The Git status lists two of the six uncommitted entries, and nothing stops a successor from "syncing" the worktree and destroying the only copy of the extractor change.**
-- **Quote:** "**Uncommitted:** `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (M) and `reports/…/owner-ruling-key-leaks-verbatim.md` (??)" (`handoff_session_r1_frozen.md` L94). Also "their reports are archived in `reports/2026-09-24_defect-register-round-42/`" (L32).
+- **Quote:** "**Uncommitted:** `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (M) and `reports/…/Overtoad-ruling-key-leaks-verbatim.md` (??)" (`handoff_session_r1_frozen.md` L94). Also "their reports are archived in `reports/2026-09-24_defect-register-round-42/`" (L32).
 - **Evidence:**
   - `git status --short` shows four more entries:
     - `util/ad-hoc/2026-09-24_archive_round42_reports.py` (M), whose only change is the two `MISSING` entries for the data round-1 reports;
@@ -45,13 +45,13 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
     - the handoff's own archive (??).
   - Verification command 4's count of 36 includes the two untracked reports.
   - The branch is 3 unsigned scratch commits ahead of `origin/main` and 5 commits behind it (`c32e5f2a`…`5af9d722`).
-  - `git grep -e '--topic' origin/main -- util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` finds nothing. The `--topic key-leaks` mode that `owner-ruling-key-leaks-verbatim.md`'s header names exists only in the uncommitted copy.
+  - `git grep -e '--topic' origin/main -- util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` finds nothing. The `--topic key-leaks` mode that `Overtoad-ruling-key-leaks-verbatim.md`'s header names exists only in the uncommitted copy.
   - `git reset --hard origin/main` is the natural way to drop "never push" commits and catch up, and it would erase that mode. `git clean` would delete the four untracked files.
 - **Replacement for L94:**
   - "**Uncommitted, six entries; ship ALL of them in the next juniper-ml PR:**
     - `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (M: adds `--topic key-leaks`, which exists nowhere else);
     - `util/ad-hoc/2026-09-24_archive_round42_reports.py` (M: the two data round-1 `MISSING` entries);
-    - untracked `reports/2026-09-24_defect-register-round-42/{owner-ruling-key-leaks-verbatim,data438-fixforward-round1-laneA-reprobe,data438-fixforward-round1-laneB-refute}.md`;
+    - untracked `reports/2026-09-24_defect-register-round-42/{Overtoad-ruling-key-leaks-verbatim,data438-fixforward-round1-laneA-reprobe,data438-fixforward-round1-laneB-refute}.md`;
     - this handoff's archive `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_defect-register-round-42-ml2088-merged-data-fixforward-refuted-and-fixing-closes-pr-owed.md`.
   - **Do not `git reset`, `checkout`, `clean`, `stash` or remove this worktree until those six have shipped.** Never `git commit` or `git push` here.
   - Ship with `util/open_signed_pr.py --repo juniper-ml --branch <new> --add <local>:<repo path> …`, which makes a signed commit on a new branch from `origin/main`. Uploads are whole-file, so check each file against `git show origin/main:<path>` first."
@@ -77,7 +77,7 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
   - The predecessor `HANDOFF_2026-09-24_defect-register-round-42-fixforwards-merged-438-fixing-in-place-second-fixforward-owed.md` (In flight 1) gave the report path and said to read it with `last_report()`. This snapshot drops both.
   - The recovery recipe exists only in the memory file `reference_subagents_killed_by_session_limit_resume_with_sendmessage.md`.
 - **Replacement (append to In flight 1):**
-  - "**Is it alive?** Run `stat -c '%y %n' /home/pcalnon/.claude/projects/*/2fba4397-7d9b-4929-8ca2-375b8168e1c8/subagents/agent-a46e715a6801b98ca.jsonl`. If it was written within about 10 minutes, the old session is still running: do not touch the juniper-data worktree. Ask the owner to close that session, or wait.
+  - "**Is it alive?** Run `stat -c '%y %n' /home/pcalnon/.claude/projects/*/2fba4397-7d9b-4929-8ca2-375b8168e1c8/subagents/agent-a46e715a6801b98ca.jsonl`. If it was written within about 10 minutes, the old session is still running: do not touch the juniper-data worktree. Ask the Overtoad to close that session, or wait.
   - **Its disposition report** is the last assistant message in that file; read it with `last_report()` in `util/ad-hoc/2026-09-24_archive_round42_reports.py`. **Its full brief** is the `user` record at 2026-09-24T23:48:49Z; Appendix C is only its summary.
   - **If it died with the worktree dirty and the ref still at `d1c66a112e4bc70ee97496a14265f7b90e10fb88`:** save that brief to your scratchpad. Launch a new `task-executor` in your own session on the same worktree, with the brief, both round-1 reports and the drafts. Tell it to review the uncommitted diff first and to push with that full `--expected-head`. A dead subagent cannot be resumed from another session."
 
@@ -91,14 +91,14 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
 
 ### MEDIUM
 
-**M1. APD-DATA-047 is presented as a pending owner decision, but it was ruled on 2026-09-21.**
-- **Quote:** "plus `APD-DATA-047`, the 1e11 ceiling, which is an owner decision" (`handoff_session_r1_frozen.md` L148). Also "sequencing C-A…D-G, and APD-DATA-047's ceiling" (L69).
+**M1. APD-DATA-047 is presented as a pending Overtoad decision, but it was ruled on 2026-09-21.**
+- **Quote:** "plus `APD-DATA-047`, the 1e11 ceiling, which is an Overtoad decision" (`handoff_session_r1_frozen.md` L148). Also "sequencing C-A…D-G, and APD-DATA-047's ceiling" (L69).
 - **Evidence:**
-  - `JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` L1284 reads "**FIXED (RATIFIED by the owner, 2026-09-21 — the ceiling STAYS, at `1e11`…**", with §5.1 at L1661. The id is not in `register_open_set.py`'s open list.
-  - The round-39 handoff that Appendix B cites says "**`APD-DATA-047` is RULED**" (L52) and "Owner decisions still owed — NONE, as of 2026-09-21" (L278).
+  - `JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` L1284 reads "**FIXED (RATIFIED by the Overtoad, 2026-09-21 — the ceiling STAYS, at `1e11`…**", with §5.1 at L1661. The id is not in `register_open_set.py`'s open list.
+  - The round-39 handoff that Appendix B cites says "**`APD-DATA-047` is RULED**" (L52) and "The Overtoad decisions still owed — NONE, as of 2026-09-21" (L278).
   - The claim also contradicts Appendix B's own "All are ruled" (L140).
 - **Replacement:**
-  - L148: "D-G: `APD-DATA-048/-049/-051`. (`APD-DATA-047` was RATIFIED at 1e11 by the owner on 2026-09-21 and is closed; do not re-ask.)"
+  - L148: "D-G: `APD-DATA-048/-049/-051`. (`APD-DATA-047` was RATIFIED at 1e11 by the Overtoad on 2026-09-21 and is closed; do not re-ask.)"
   - L69: "sequencing C-A…D-G."
 
 **M2. The peer lane is never identified, and the predecessor's re-route instruction was dropped.**
@@ -144,13 +144,13 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
   - juniper-cascor `main` also registers one, at `src/api/app.py:856`.
 - **Replacement:** "(a) Any FastAPI service whose 422 renders through Starlette's `JSONResponse` probably answers a lone-surrogate echo with a 500. That includes FastAPI's default and juniper-data's APD-DATA-013 handler at `juniper_data/api/app.py:187`, which copies the default byte for byte; check cascor's at `src/api/app.py:856` too. Primer lines 4742-4743 are also stale: they say juniper-data registers no such handler."
 
-**M6. Appendix A leaves the status and owner-gating of two new rows ambiguous.**
+**M6. Appendix A leaves the status and Overtoad-gating of two new rows ambiguous.**
 - **Quote:** "**File** (ruled, fixes shipped or in flight, so not parked)" (L103). Also "`APD-ECO-014` … Fixed by canopy#685." (L113), and for `APD-CASCOR-014`: "cascor#689's `include_local_variables=False` removes the locals, not the events." (L119). All are in `handoff_session_r1_frozen.md`.
 - **Evidence:**
   - The snapshot's gate rule (L99) is "close a row only after its PR merges AND its own validation holds". canopy#685's validation is never stated, so a successor cannot tell whether to file APD-ECO-014 open or FIXED.
   - APD-CASCOR-014 has no fix shipped or in flight. The peer report `bytes-compare-ml2086-data440-cascor689-validation.md` F4 only proposes a `conftest.py` change.
-  - The ruling options in `owner-ruling-key-leaks-verbatim.md` name byte comparison and Sentry's local-variable capture, not a test suite that starts the real SDK. So "ruled … not parked" is unsupported for that row.
-- **Replacement:** "File `APD-ECO-014` OPEN, with canopy#685 as its fix, and close it once canopy#685's validation is cited. File `APD-CASCOR-014` OPEN and PARKED for an owner ruling: no fix is in flight, and the Key-leaks ruling does not name it."
+  - The ruling options in `Overtoad-ruling-key-leaks-verbatim.md` name byte comparison and Sentry's local-variable capture, not a test suite that starts the real SDK. So "ruled … not parked" is unsupported for that row.
+- **Replacement:** "File `APD-ECO-014` OPEN, with canopy#685 as its fix, and close it once canopy#685's validation is cited. File `APD-CASCOR-014` OPEN and PARKED for an Overtoad ruling: no fix is in flight, and the Key-leaks ruling does not name it."
 
 **M7. This session's lane probe scripts exist only on tmpfs.**
 - **Quote:** "Evidence, file:line and probe scripts are in the two round-1 reports." (`handoff_session_r1_frozen.md` L162)
@@ -164,8 +164,8 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
 **M8. Documents owned by other sessions are cited without a path.**
 - **Quote:** "canopy combined's handoff" (L24), "Source: `bytes-compare-ml2086-data440-cascor689-validation.md`" (L112) and "F-CANOPY-060, -061 and -062 are reserved" (L24), all in `handoff_session_r1_frozen.md`.
 - **Evidence:**
-  - The canopy combined handoff is `…/.claude/worktrees/bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md`. It is untracked and not on `main`.
-  - The canopy E2E session's reservation is in `…/.claude/worktrees/graceful-sprouting-panda/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md`, also untracked.
+  - The canopy combined handoff is `…/.claude/worktrees/bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md`. It is untracked and not on `main`.
+  - The canopy E2E session's reservation is in `…/.claude/worktrees/graceful-sprouting-panda/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md`, also untracked.
   - I found both only with a sweep of every worktree. It finished with exit 0, and those plus a consensus draft beside the first were its only hits outside this session's own handoff.
   - The peer report is untracked, in `…/.claude/worktrees/happy-skipping-hollerith/reports/2026-09-24_defect-register-round-42/`.
   - F-CANOPY-060..062 appear on neither repo's `main`. The canopy E2E ledger, juniper-ml's `JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, does not carry them.
@@ -190,7 +190,7 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
 - **L1. The abbreviated `--expected-head` would be refused.** Quote: "`--expected-head d1c66a11…`" (L39), and "re-running with the same `--expected-head` is safe" (L75), in `handoff_session_r1_frozen.md`. `util/push_signed_commit.py --help` says the head "must be the FULL 40-hex sha; an abbreviation is refused before any API call". Replace with `d1c66a112e4bc70ee97496a14265f7b90e10fb88`. The executor's own brief already uses the full SHA.
 - **L2. Opening the data PR and updating the branch have no stated mechanism.** `util/open_signed_pr.py` refuses a branch that already exists (exit 1). Add: "Open it with `gh pr create --repo pcalnon/juniper-data --head fix/conditional-requests-round4-followups --title "<line 1>" --body-file <body>`. Update-branch is `gh api -X PUT repos/pcalnon/<repo>/pulls/<N>/update-branch -f expected_head_sha=<full sha>`."
 - **L3. Appendix C uses bare file names.** `constants.py:45-47` (`handoff_session_r1_frozen.md` L170) matches three juniper-data files; the stripe text is in `juniper_data/storage/constants.py:45-47`. Write the others in full too: `docs/REFERENCE.md:1357-1362`, `juniper_data/storage/local_fs.py:200-202`, `juniper_data/api/routes/datasets.py:1282`. All four resolve at `d1c66a11`.
-- **L4. Two adjacent bullets say "#678" and mean different repos.** "#678's squash message is stale" (L126) is cascor#678: squash `0e016a7`, described in `cascor678-postmerge-validation.md` §"Squash message" as "wrong on six counts". "#678's mutation script" (L127) is juniper-canopy's `util/ad-hoc/2026-09-23_blank_api_key_warning_mutation_check.py`, whose retire condition is "the APD-ECO-008 follow-up to juniper-canopy#660 is merged". Prefix both with the repo, and add "(record only; retiring an ad-hoc script is the owner's decision under `util/ad-hoc/README.md`'s Lifecycle section)".
+- **L4. Two adjacent bullets say "#678" and mean different repos.** "#678's squash message is stale" (L126) is cascor#678: squash `0e016a7`, described in `cascor678-postmerge-validation.md` §"Squash message" as "wrong on six counts". "#678's mutation script" (L127) is juniper-canopy's `util/ad-hoc/2026-09-23_blank_api_key_warning_mutation_check.py`, whose retire condition is "the APD-ECO-008 follow-up to juniper-canopy#660 is merged". Prefix both with the repo, and add "(record only; retiring an ad-hoc script is the Overtoad's decision under `util/ad-hoc/README.md`'s Lifecycle section)".
 - **L5. `0bee089e` is never identified, and the re-check is framed as conditional.** Quote: "at `0bee089e`; re-check if either moves" (L57). `0bee089e` is data#440's head. The fix-forward branch *will* move, because the executor edits `CHANGELOG.md`, so the re-check is certain.
 - **L6. The traps refer to tools by role only.**
   - "The three editors" (L76) are `util/ad-hoc/2026-09-24_register_round42_second_fixforward{,_corrections,_round2}.py`. Each is single-use and "refuses to run twice", so a successor models a new editor on them rather than re-running one.
@@ -223,7 +223,7 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
 
 - The executor's eventual push, its disposition report, and whether a round-2 section lands in the drafts. It was still mid-edit when I finished.
 - canopy#685's own validation, and the source of its residue list (`handoff_session_r1_frozen.md` L129-134).
-- Whether the owner meant the Key-leaks ruling to cover APD-CASCOR-014.
+- Whether the Overtoad meant the Key-leaks ruling to cover APD-CASCOR-014.
 - The Completed figures that need the tmpfs venv: harness 62/62, 12/12 caught, and 27/27 with 25 differing. The scripts exist and their arguments match.
 - The "typed JSON escapes" trap (L78).
 - v0.16.0's PyPI time of 18:35Z (the parent `AGENTS.md` states it independently), canopy#683's SHA, and the notify-consumers 403.

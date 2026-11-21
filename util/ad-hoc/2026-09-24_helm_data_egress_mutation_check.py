@@ -7,9 +7,9 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-deploy `tests/test_helm_networkpolicy_data_egress.py` (new) and the TCP 443 egress
-         rule in `k8s/helm/juniper/templates/networkpolicy-data.yaml` (owner ruling 2026-09-24,
+         rule in `k8s/helm/juniper/templates/networkpolicy-data.yaml` (Overtoad ruling 2026-09-24,
          the k8s half of the `data-egress` compose network).
 
 Why: the first draft of these tests selected policies by a NAME prefix the chart never renders.
@@ -62,7 +62,7 @@ ALLOW_ALL_ON_DATA = "apiVersion: networking.k8s.io/v1\nkind: NetworkPolicy\nmeta
 # (name, template file, anchor, replacement, the test that must go red)
 # M1-M5 are the first round's. M6-M13 are the eight broader rules validation lane B showed passing
 # juniper-deploy#232's tests, which pinned the rule's WORDING; M14 is the same all-ports rule on the
-# worker, added here. M15 is the service-account token the owner ruled off after lane B's
+# worker, added here. M15 is the service-account token the Overtoad ruled off after lane B's
 # API-server finding. M16-M26 are round-2 lane R2's shapes that passed #233's tests, which looked at
 # ONE policy at a time where Kubernetes unions every policy selecting a pod (juniper-deploy#235 is
 # the fix; test names are #235's).

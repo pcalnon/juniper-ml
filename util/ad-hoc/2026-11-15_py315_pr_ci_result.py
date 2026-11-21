@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- investigation (the "CI result" of juniper-cascor#759 and juniper-cascor-worker#228)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tmp/py315/ROLLOUT_BRIEF.md (the rollout brief, whose "After opening the PR" step lists what to record)
 
 Prints: every required context (from the branch ruleset) with its check-run conclusion on the PR head; every check run

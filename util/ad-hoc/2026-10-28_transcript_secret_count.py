@@ -7,9 +7,9 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-28
-Status: ad-hoc -- one-off (backup arc, Phase C item 7's transcript row; owner ruling 2026-10-28: build it now, the
-        owner runs it before Phase D step 9)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc -- one-off (backup arc, Phase C item 7's transcript row; Overtoad ruling 2026-10-28: build it now, the
+        Overtoad runs it before Phase D step 9)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §6 (the transcript row,
          the instruments row) and notes sink-a, sink-c;
          notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md §6.3.1, §6.6

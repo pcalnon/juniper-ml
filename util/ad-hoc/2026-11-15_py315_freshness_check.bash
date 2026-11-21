@@ -7,7 +7,7 @@
 # Author:     Paul Calnon
 # Created:    2026-11-15
 # Status:     ad-hoc -- one-off (the pre-upload check for juniper-cascor#759 and juniper-cascor-worker#228)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    tmp/py315/ROLLOUT_BRIEF.md, "Mechanics" (the check this automates); util/open_signed_pr.py
 #
 # Usage: freshness_check.bash <primary> <base-sha> <paths-file>     Exit 0 = fresh, 1 = a path moved.

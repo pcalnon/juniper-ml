@@ -7,12 +7,12 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-26
 Status: ad-hoc — investigation (suite strength evidence for the APD-ML-002 cascor-headline PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md (§4.9, row APD-ML-002);
          util/experiments/run_suite.py; tests/test_run_suite.py; tests/test_run_suite_acceptance.py;
          util/ad-hoc/2026-10-25_turing_c9_guard_mutation_check.py (whose shape this follows)
 
-The owner's four rulings of 2026-10-26 on APD-ML-002, and what each mutant re-breaks:
+The Overtoad's four rulings of 2026-10-26 on APD-ML-002, and what each mutant re-breaks:
 
 - ruling 1, the cascor columns: the reader back at the TOP of ``stats["cascor"]``, ``eval_scalars`` mapped,
   ``bool`` accepted, ``0.0`` dropped by truthiness, a non-finite accuracy dropped;

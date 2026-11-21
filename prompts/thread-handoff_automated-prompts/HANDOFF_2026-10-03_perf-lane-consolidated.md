@@ -1,4 +1,4 @@
-# HANDOFF 2026-10-03 — Performance lane + `util/experiments/` residue (CONSOLIDATED): all perf PRs merged; PF-2 axis 1 (cascor field) is next, PF-3 waits for a quiet window, five run_suite defects await an owner ruling
+# HANDOFF 2026-10-03 — Performance lane + `util/experiments/` residue (CONSOLIDATED): all perf PRs merged; PF-2 axis 1 (cascor field) is next, PF-3 waits for a quiet window, five run_suite defects await an Overtoad ruling
 
 **Consolidated sources** (all in `prompts/thread-handoff_automated-prompts/`):
 
@@ -18,7 +18,7 @@
 
 ## Goal statement (paste as the new thread's first prompt)
 
-Continue the **juniper-ml performance lane** (PF-1..PF-8 suites, owner decisions D1–D6, the thread-width helper, the micro timing reference) and its **`util/experiments/` harness residue**.
+Continue the **juniper-ml performance lane** (PF-1..PF-8 suites, Overtoad decisions D1–D6, the thread-width helper, the micro timing reference) and its **`util/experiments/` harness residue**.
 
 **Completed so far** (all merged; `[VERIFIED 2026-10-03: gh pr view]`):
 
@@ -26,15 +26,15 @@ Continue the **juniper-ml performance lane** (PF-1..PF-8 suites, owner decisions
 - D1: epoch-count debt paid, verdict CLEAR; the BLAS default flip to 2 shipped (cascor#683, `f7a6d573`, carries `Allow-Symbol-Loss`).
 - PF-1 successor baseline `pf1-2026-09-23-blas2` minted (capped, cascor `0d2d826`). PF-3 re-shaped to 14 cells; D3's one-cell check passed. PF-2 axis 2 built at the 5,882 ceiling and run (no knee, so the in-process follow-up does not fire). PF-2 axis 3 built and run, plus a 5-seed probe (ml#2068, ml#2078).
 - `util/thread_width.py` + `tests/test_thread_width.py` built and wired into CI as the 168th suite (ml#2068, `2b53255a`).
-- Python 3.14 micro reference cut, LOADED by owner ruling: `Linux-CPython-3.14-64bit/0001` (cascor `0e016a7`).
-- juniper-data#432 filed (additive-sizing 400). 09-17 D6 work rescued (ml#2031). Owner rulings recorded in `notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md` §5 and §6.
+- Python 3.14 micro reference cut, LOADED by Overtoad ruling: `Linux-CPython-3.14-64bit/0001` (cascor `0e016a7`).
+- juniper-data#432 filed (additive-sizing 400). 09-17 D6 work rescued (ml#2031). The Overtoad rulings recorded in `notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md` §5 and §6.
 - The 09-24 handoff's own merge-wait PR, **ml#2078, MERGED** 2026-09-24T09:45:51Z as `514b6c24`.
 
-**Owner rulings in the rulings note (`…SIX-OWNER-DECISIONS-RULED.md`) §5 and §6 are FINAL — do not re-ask.** PF-3 waits for a quiet window (no `clamscan`, 1-minute load that STAYS under ~6). PF-2 axis 1's instrument: publish `epochs_completed` from cascor as a structured record; do not parse the log. D2 key names ratified as-is, no second knob. D4 axis 2 "10,000 now, in-process later". D6 advisory first. D1 "pay the debt, then flip" (done).
+**The Overtoad rulings in the rulings note (`…SIX-OWNER-DECISIONS-RULED.md`) §5 and §6 are FINAL — do not re-ask.** PF-3 waits for a quiet window (no `clamscan`, 1-minute load that STAYS under ~6). PF-2 axis 1's instrument: publish `epochs_completed` from cascor as a structured record; do not parse the log. D2 key names ratified as-is, no second knob. D4 axis 2 "10,000 now, in-process later". D6 advisory first. D1 "pay the debt, then flip" (done).
 
 **Remaining work, in priority order:**
 
-1. **PF-2 axis 1 — publish the candidate count from cascor** (agent-doable, cross-repo cascor PR; owner already ruled the instrument). Source: `TrainingResults.epochs_completed`,
+1. **PF-2 axis 1 — publish the candidate count from cascor** (agent-doable, cross-repo cascor PR; Overtoad already ruled the instrument). Source: `TrainingResults.epochs_completed`,
    built in `_process_training_results` (cascor `src/cascade_correlation/cascade_correlation.py`, def now at `:2986`, `epochs_completed` at `:3035`) `[VERIFIED 2026-10-03: gh contents;
    the source's :3033 was imprecise; the file is unchanged since 010d0359]`. Transport: `monitor.on_epoch_end()` (`src/api/lifecycle/monitor.py:258`; its `kind` defaults to
    `"training_step"` at `:267`) `[VERIFIED 2026-10-03: gh contents]`. The drain is `_extract_and_record_metrics` (`src/api/lifecycle/manager.py`, def `:2332`), whose per-row
@@ -46,18 +46,18 @@ Continue the **juniper-ml performance lane** (PF-1..PF-8 suites, owner decisions
    `src/tests/fixtures/api_snapshots/` and every other history-row consumer before merging. Then build the suite: `candidate_epochs` ≈ 2000 in the base (or counts are
    budget-bound), a reducer reading the new field, keys per `notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` §2. No cascor PR for this exists yet
    `[VERIFIED 2026-10-03: gh pr list search]`.
-2. **PF-3 — only in a quiet window** (owner-gated by ruling; agent launches when the condition holds). One pass ≈ 7 h, load sampler beside it; recipe in Verification commands. **Check load AT launch, not only before.** At probe time load was 6.16 / 4.27 / 3.49 and no `clamscan` ran `[VERIFIED 2026-10-03: /proc/loadavg, ps]` — borderline, not a window. Not launched since 09-24 (only the 09-23 D3 one-cell dir exists) `[VERIFIED 2026-10-03: ls suites/]`. Thresholds remain UNRATIFIED; report, don't gate.
-3. **Present the D6 recount to the owner** (owner-gated decision; recount already run 2026-10-03 with `util/ad-hoc/2026-09-23_d6_advisory_firing_count.py`). At 09-24: 0 firings / 6 SHAs / 28 legs. Cascor has merged ≥6 non-dependabot
+2. **PF-3 — only in a quiet window** (Overtoad-gated by ruling; agent launches when the condition holds). One pass ≈ 7 h, load sampler beside it; recipe in Verification commands. **Check load AT launch, not only before.** At probe time load was 6.16 / 4.27 / 3.49 and no `clamscan` ran `[VERIFIED 2026-10-03: /proc/loadavg, ps]` — borderline, not a window. Not launched since 09-24 (only the 09-23 D3 one-cell dir exists) `[VERIFIED 2026-10-03: ls suites/]`. Thresholds remain UNRATIFIED; report, don't gate.
+3. **Present the D6 recount to the Overtoad** (Overtoad-gated decision; recount already run 2026-10-03 with `util/ad-hoc/2026-09-23_d6_advisory_firing_count.py`). At 09-24: 0 firings / 6 SHAs / 28 legs. Cascor has merged ≥6 non-dependabot
    PRs since `[VERIFIED 2026-10-03: gh api commits]`. **Recounted 2026-10-03: 0 firings on 36 head SHAs / 168 legs; the positive control still fired on 4 of 4** `[VERIFIED
    2026-10-03: ran the counter, ~9 min]`. Many of the new SHAs are dependabot or CI bumps that do not touch candidate numerics, so the count says little about how often the gate
    fires on intended changes (the tree-sensitivity question in Context §D). **Whether it blocks is the OWNER's decision; present counts, not a recommendation.**
-4. **`util/experiments/` defects APD-ML-002..006** `[ALSO P3]` (owner-gated: filed in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` §4.9, "UNPARKED, and NOT
-   thereby actionable … need an owner decision before code is written" — still so on main `[VERIFIED 2026-10-03: grep register]`). Put them to the owner as one menu; detail in
+4. **`util/experiments/` defects APD-ML-002..006** `[ALSO P3]` (Overtoad-gated: filed in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` §4.9, "UNPARKED, and NOT
+   thereby actionable … need an Overtoad decision before code is written" — still so on main `[VERIFIED 2026-10-03: grep register]`). Put them to the Overtoad as one menu; detail in
    Context §C. Sequencing: APD-ML-002 (`_headline_metrics`) ships with first tests for the registry `metrics` columns; APD-ML-003 must repair both `run_suite.py:28-29` and
    `docs/REFERENCE.md`'s exit-code table.
-5. **PF-2 axis 3 gating menu** (owner-gated: thresholds are the owner's). One dataset seed cannot order adjacent spiral counts (seed spread ≈ 5× the 4-vs-5 gap). Present as a menu: ~5 dataset seeds per cell compared paired, and the accuracy column choice (roc_auc / raw f1 / chance-adjusted f1). Do not decide it.
+5. **PF-2 axis 3 gating menu** (Overtoad-gated: thresholds are the Overtoad's). One dataset seed cannot order adjacent spiral counts (seed spread ≈ 5× the 4-vs-5 gap). Present as a menu: ~5 dataset seeds per cell compared paired, and the accuracy column choice (roc_auc / raw f1 / chance-adjusted f1). Do not decide it.
 6. **Carried items** (from `HANDOFF_2026-09-22_perf-lane-d2-…` §8; substance in Context §D) — all optional / report-only: the three ICV residuals; PF-5/6/7 never executed (report-only forever); P2 item 4.2's open half (should PF-8 get a parallel cascor suite); P2 item 5.2 experiment-scoped alerts (juniper-deploy) `[ALSO P4?]`; the CLI-experimentation tail (title-repair acceptance gate first — still exit 1, 91 artifacts `[VERIFIED 2026-10-03: ran --check unpiped]`).
-7. **Housekeeping** (agent-doable but cross-worktree git is refused to an isolated session — owner or a non-isolated session): remove converged worktrees `.claude/worktrees/reflective-mixing-pearl` (HEAD `f8e04b11`) and `.claude/worktrees/idempotent-wibbling-dongarra` (HEAD `514b6c24` = ml#2078's squash, i.e. already reset onto main) after a cleanliness check; both still exist `[VERIFIED 2026-10-03: git worktree list]`. Cleanliness NOT probed (classifier).
+7. **Housekeeping** (agent-doable but cross-worktree git is refused to an isolated session — Overtoad or a non-isolated session): remove converged worktrees `.claude/worktrees/reflective-mixing-pearl` (HEAD `f8e04b11`) and `.claude/worktrees/idempotent-wibbling-dongarra` (HEAD `514b6c24` = ml#2078's squash, i.e. already reset onto main) after a cleanliness check; both still exist `[VERIFIED 2026-10-03: git worktree list]`. Cleanliness NOT probed (classifier).
 
 **Key context:** never quote wall-clock figures from loaded runs; structural outcomes (`step_count`, `epochs_completed`, thread counts) are load-insensitive, wall clock is not.
 `metrics_final.json`'s top level is the VALIDATION split; test figures are `eval_metrics.final` (`split == "test"`). Use `util/thread_width.py`, never `CDLL("libgomp.so.1")` or
@@ -68,7 +68,7 @@ Continue the **juniper-ml performance lane** (PF-1..PF-8 suites, owner decisions
 
 ## Dependencies on other paths
 
-- **P3 (defect register)**: APD-ML-002..006 live in its register and need its owner ruling; juniper-data#432 is the register lane's to assign an `APD-DATA-*` id — still OPEN, 0 comments, unlabelled `[VERIFIED 2026-10-03: gh issue view]`. This lane has nothing left on #432, but PF-2 axis 2's 5,882 ceiling is caused by it: if #432 is fixed so the additive val+test sizing stops overflowing `MAX_POINTS`, the axis-2 ceiling note (re-spec §1) must be revisited.
+- **P3 (defect register)**: APD-ML-002..006 live in its register and need its Overtoad ruling; juniper-data#432 is the register lane's to assign an `APD-DATA-*` id — still OPEN, 0 comments, unlabelled `[VERIFIED 2026-10-03: gh issue view]`. This lane has nothing left on #432, but PF-2 axis 2's 5,882 ceiling is caused by it: if #432 is fixed so the additive val+test sizing stops overflowing `MAX_POINTS`, the axis-2 ceiling note (re-spec §1) must be revisited.
 - **P4 (release & distribution)**: the D1 flip (cascor#683) is on cascor `main` only — the latest cascor release is still **v0.11.0 (2026-09-09)** `[VERIFIED 2026-10-03: gh release list]`, so no published wheel/image carries the BLAS-2 default yet. When the next cascor release ships, service containers that export no BLAS vars (juniper-deploy's compose sets none — `[NOT RE-PROBED — from HANDOFF_2026-09-23_…, validated by receipt]`) will run BLAS 2-wide. Worth a release-notes line.
 - **Canopy (P2)**: PF-2 axis 1's field must not break canopy's live tiles (`metrics_panel.py:1652`, also `:1887` reads `metrics_data[-1]`) — an additive field on `training_step` is safe; a new row kind is not.
 - **P10 / CI tooling**: none required. The structure-screen arc (ml#2000) is closed; see Dispositioned.
@@ -86,14 +86,14 @@ Continue the **juniper-ml performance lane** (PF-1..PF-8 suites, owner decisions
 4. **`run_suite --dry-run` prints a suite dir but creates nothing**, and prints neither runtime env nor thread budget (D3 proof needs a real `--only <cell>` run + `manifest.json`). `run_suite --only` exit 1 is documented design (exit 0 = FULL expansion succeeded) — read the manifest. `include`-only suites emit a bare base-config cell `c000`.
 5. **Budget-bound counts are not evidence**: under `spiral-smoke` hidden units, output epochs and `step_count` 8 all equal their budgets. `candidate_epochs` 2000 gives 94/100 emergent counts.
 6. **The request ceiling is 5,882 per spiral at the suite's split**, not 10,000 (10,000 is total rows; juniper-data#432). The "422" in the re-spec §1 and `rescale_generator_params`'s docstring is false — it is a generic 400.
-7. **Do not compare the 3.14 micro reference with 3.13 runs**; `Linux-CPython-3.13-64bit/0003` resolves but is not comparable. PF-4 is report-only on timing permanently (owner
+7. **Do not compare the 3.14 micro reference with 3.13 runs**; `Linux-CPython-3.13-64bit/0003` resolves but is not comparable. PF-4 is report-only on timing permanently (Overtoad
    2.5): `--benchmark-compare=<N>`, never `--benchmark-compare-fail`. The micro procedure lives at the ABSOLUTE path
    `/home/pcalnon/Development/python/Juniper/juniper-cascor/docs/testing/REFERENCE.md` § Micro timing reference (a relative path silently hits juniper-ml's own
    `docs/REFERENCE.md`). pytest-benchmark's `--benchmark-json` dir must pre-exist.
 8. **Seeds**: the service exposes no network `random_seed`; suites can vary only the DATASET seed. `seed_policy: fixed` repeats are bit-identical — they prove determinism, not seed variance.
 9. **Do not quote `fit_seconds`/wall from the D1 debt run or scope probe** (loads 8–31). Do not cite load 54.49 (withdrawn, ml#2015); sourced loads are 12.08 / 19.50 / 32.26. Do not cite the width sweep's −33% (true first-pass benefit −49.2%); "16 is 5–7× worse" is the `thread` mechanism only (env route ≈1%; true span 4.97–7.42×).
 10. **The `ci-probe/*` `workflow_dispatch` run is not a D6 firing** (the counter excludes it).
-11. **Merge mechanics**: a required check pins `AGENTS.md` `**Last Updated**:` to today's UTC date whenever a PR touches it. MD013 applies to table rows. The owner's sweeper
+11. **Merge mechanics**: a required check pins `AGENTS.md` `**Last Updated**:` to today's UTC date whenever a PR touches it. MD013 applies to table rows. The Overtoad's sweeper
     applies Copilot Autofix to CodeQL findings and one autofix broke a PR (deleted `from unittest import mock`) — write `unittest.mock.<name>` with `import unittest.mock`.
     `safe_merge.py` can read a STALE head right after a push; under `strict:true` an armed net on a BEHIND PR waits forever — wait until `headRefOid` shows the pushed SHA, then one
     `update-branch` with `expected_head_sha`. Use `python3 -u` for logs. Same-file test rename = symbol LOSS (waiver must be in cascor's single squashed commit, last paragraph);
@@ -125,7 +125,7 @@ Continue the **juniper-ml performance lane** (PF-1..PF-8 suites, owner decisions
 
 ### C. The five `util/experiments/` defects (APD-ML-002..006) `[ALSO P3]` `[NOT RE-PROBED — from HANDOFF_2026-09-22_structure-screen-…, validated adversarially]`
 
-The source (structure-screen handoff §1) recommends starting from item 2, `expand_cells` (APD-ML-003), once the owner rules. Also from that handoff's §7 `[ALSO P3]`:
+The source (structure-screen handoff §1) recommends starting from item 2, `expand_cells` (APD-ML-003), once the Overtoad rules. Also from that handoff's §7 `[ALSO P3]`:
 `util/ad-hoc/register_status_crosscheck.py` is keyed only on `**FIXED` and printed `AGREE` while three register §2 counts were stale — it cannot catch count drift.
 
 Line numbers were probed 2026-09-22; `run_suite.py` was rewritten again by ml#2047 (09-23) since, e.g. `_headline_metrics` is now at `:585` (was `:580`) `[VERIFIED 2026-10-03: grep]` — **re-grep every anchor before editing**. The register rows (§4.9) carry the corrected readings.
@@ -154,8 +154,8 @@ Line numbers were probed 2026-09-22; `run_suite.py` was rewritten again by ml#20
 - **P2 item 5.2** (P2 plan): experiment-scoped alerts, juniper-deploy, S-sized, the only Wave 5 row without DONE.
 - **CLI-experimentation tail** (`notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md`): **title-repair acceptance gate** first —
   `util/ad-hoc/2026-08-29_requirements_title_artifact_scan.py --check` exit 1, 91 artifacts, all visited by a repair pass `[VERIFIED 2026-10-03]`; 163 of 172 broken titles were
-  produced BY a repair pass, so owner must choose the extraction rule before any repair. Also: `JR-ML-OBS-003` (`status: designed` `[VERIFIED 2026-10-03]`); R-1's second clause
-  (cascor must not report `succeeded` with zero installable candidates); F-P4-7; E-C's 0.10/0.20 rows at cap 128; W-12/Q-7; F-P1-2; G-16's refusal half; and the owner's standing
+  produced BY a repair pass, so Overtoad must choose the extraction rule before any repair. Also: `JR-ML-OBS-003` (`status: designed` `[VERIFIED 2026-10-03]`); R-1's second clause
+  (cascor must not report `succeeded` with zero installable candidates); F-P4-7; E-C's 0.10/0.20 rows at cap 128; W-12/Q-7; F-P1-2; G-16's refusal half; and the Overtoad's standing
   rider on the withdrawn 0.5% threshold ("come back and verify after this gate goes live") — decide and record honoured vs retired.
 - **D6 tree-sensitivity question**: the D6 reference is tree-sensitive by construction (fires on any cascor change moving candidate numerics); only 2 of 4 budgets (100, 200 → 68) are emergent. The recount (item 3) is what informs this.
 - **Optional: why `thread16` first diverges at candidate phase 20** (one candidate 1450→1442) — an untested hypothesis in
@@ -218,7 +218,7 @@ Decide deliberately whether PF-3 should run on the retained `0d2d826` pin (compa
 | Micro timing cut (7 sessions) | 09-22 item 5, 09-23 item 4 | DONE, LOADED by ruling | `Linux-CPython-3.14-64bit/0001_0e016a7c…` exists `[VERIFIED 2026-10-03]` |
 | PF-1 successor baseline | 09-22 item 1 | DONE `pf1-2026-09-23-blas2` | dir exists `[VERIFIED 2026-10-03]` |
 | PF-3 re-shape + D3 one-cell | 09-22 item 2 | DONE (14 cells, D3 PASS) | `pf3-cascor-pool-scaling-20260923T130821Z` exists |
-| D4 axis 2 owner call / build / run | 09-22 item 3, 09-23 item 2 | RULED, BUILT, RUN — no knee; in-process follow-up does not fire | re-spec §3, ml#2047/#2048 |
+| D4 axis 2 Overtoad call / build / run | 09-22 item 3, 09-23 item 2 | RULED, BUILT, RUN — no knee; in-process follow-up does not fire | re-spec §3, ml#2047/#2048 |
 | PF-2 axis 3 build + 4/5 inversion | 09-24 residue | DONE — inversion was the seed | re-spec §4.2/§4.3 |
 | Commit or retire 09-17 D6 work | 09-22 item 4 | COMMITTED (ml#2031) | merged `[VERIFIED 2026-10-03]` |
 | Cascor thread-pin defect repair | 09-22 item 6 | RULED and SHIPPED (process default cap 2, opt-out `0`/`off`/`none`) | cascor#683 |
@@ -240,7 +240,7 @@ Decide deliberately whether PF-3 should run on the retained `0d2d826` pin (compa
 
 ### Non-perf residue from the structure-screen handoff (kept separate, not perf-lane work)
 
-- **`MEMORY.md` over its 20 KB target** — owner call on which linked closed-arc entries may retire; now **25,125 bytes** `[VERIFIED 2026-10-03: wc -c]`. Compact by retiring entries, never stripping hazard hooks; both existing gates (lossless verifier, link-set check) do not read hook TEXT — fix before reusing. `[ALSO P10?]` — cross-cutting memory hygiene, owned by no single path; reported to the coordinator.
+- **`MEMORY.md` over its 20 KB target** — Overtoad call on which linked closed-arc entries may retire; now **25,125 bytes** `[VERIFIED 2026-10-03: wc -c]`. Compact by retiring entries, never stripping hazard hooks; both existing gates (lossless verifier, link-set check) do not read hook TEXT — fix before reusing. `[ALSO P10?]` — cross-cutting memory hygiene, owned by no single path; reported to the coordinator.
 - **`util/env_floor_drift_check.py` reason string**: a malformed pyproject correctly exits 2 but says "no juniper-\* version floors declared" (`:384`, unchanged `[VERIFIED 2026-10-03]`). Small ci-tooling polish `[ALSO P10]`.
 
 ---

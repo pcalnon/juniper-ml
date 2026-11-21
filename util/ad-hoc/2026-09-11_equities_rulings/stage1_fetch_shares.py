@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Stage 1 of the equities owner-rulings implementation: `_fetch_shares` becomes causal.
+Stage 1 of the equities Overtoad-rulings implementation: `_fetch_shares` becomes causal.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-11
 Status: ad-hoc — one-off (applied once to the juniper-data worktree named below)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: register rows APD-DATA-040 / -043 / -044 / -039 / -045 and their owner rulings of
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: register rows APD-DATA-040 / -043 / -044 / -039 / -045 and their Overtoad rulings of
          2026-09-09 (register §4.9 rulings block)
 
 Three rulings land here, all inside one method:

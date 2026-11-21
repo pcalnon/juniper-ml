@@ -27,7 +27,7 @@
 
 - **A release now notifies the repos that install juniper-data from PyPI**
   (`.github/workflows/notify-consumers.yml`, new; `publish.yml` gains a `notify-consumers` job
-  after `pypi`). This is juniper-recurrence#178, and the owner picked cross-repo dispatch. A
+  after `pypi`). This is juniper-recurrence#178, and the Overtoad picked cross-repo dispatch. A
   consumer lane scoped to its own paths can't see a break that arrives through this package:
   decision 11 (#369) broke all seven juniper-recurrence bench datasets, and that lane reported
   success for 15 days. Once the PyPI job succeeds, the new job fires `repository_dispatch`
@@ -39,7 +39,7 @@
   a version already on PyPI. **A failed dispatch turns the publish run red after PyPI has
   already accepted the release**, so the `pypi` job, not the run, is the publish verdict.
 - **The container image can generate `equities` and `equities_seq` datasets** (#421). This was
-  an owner decision on 2026-09-22. `requirements.lock` was compiled with
+  an Overtoad decision on 2026-09-22. `requirements.lock` was compiled with
   `--extra api --extra observability --extra mnist` only. pandas reached the image through the
   mnist chain, but yfinance never did, so `EQUITIES_DEPS_AVAILABLE` was `False` and every
   `equities` / `equities_seq` request raised `ImportError(install_hint())`. The image built,
@@ -63,11 +63,11 @@
   dependency ships wheels for x86_64 and aarch64 on CPython 3.14 or abi3, so neither arch builds
   from source. **Generating equities data makes outbound calls to Yahoo Finance and SEC EDGAR
   from the container.** Published images pick this up at the next release.
-- **`ETag`s and conditional requests on the three single-dataset reads** (APD-DATA-017, owner
+- **`ETag`s and conditional requests on the three single-dataset reads** (APD-DATA-017, Overtoad
   rulings 2026-09-11 and 2026-09-23). `GET /v1/datasets/{dataset_id}` and `GET /v1/datasets/latest`
   carry a STRONG tag, the SHA-256 of the exact response body; `GET /v1/datasets/{dataset_id}/artifact`
   carries a WEAK one, `W/"<checksum>"` -- the 2026-09-11 ruling asked for strong on the premise that
-  the stored checksum hashes the served bytes, and it does not (see below), so the owner re-ruled. Preconditions follow RFC 9110 §13.2.2: `If-Match` first, compared strongly, a failure
+  the stored checksum hashes the served bytes, and it does not (see below), so the Overtoad re-ruled. Preconditions follow RFC 9110 §13.2.2: `If-Match` first, compared strongly, a failure
   answering `412 Precondition Failed`; then `If-None-Match` (a list, possibly over several header
   lines; `*`; `W/` tags compared weakly), a match answering `304 Not Modified` with no body. A field
   that is not a well-formed entity-tag list, or is longer than 8192 characters, is malformed: on a
@@ -130,7 +130,7 @@
   `Cache-Control` and `Content-Location` response headers and their 304 / 412 responses. No
   generated client exists in the ecosystem; one generated from the old schema would see its model
   renamed.
-- **The API versioning policy is amended for 0.x** (owner ruling 2026-09-23;
+- **The API versioning policy is amended for 0.x** (Overtoad ruling 2026-09-23;
   `docs/api/JUNIPER_DATA_API.md` § API Versioning Strategy). It promised never to remove a response
   field within a major version, which this release does, as the defect-register rulings for this
   arc do knowingly. While juniper-data is `0.x`, `/v1` may change incompatibly, and every such
@@ -148,7 +148,7 @@
   entry deliberately left these two adapters out of decision 11. They cut **two** ways with no
   `X_val`, wrote the retired pair and stamped `generator_version="1.0.0"`, below the 3.0.0
   floor. The generator floor guard could not see them, because it enumerates
-  `juniper_data.generators` only. The owner ruled on 2026-09-22 to conform them. What changed:
+  `juniper_data.generators` only. The Overtoad ruled on 2026-09-22 to conform them. What changed:
   - `load_hf_dataset` / `load_kaggle_dataset` return exactly `X_train`, `y_train`, `X_val`,
     `y_val`, `X_test`, `y_test`. They carve like the other real-data sources (`mnist`,
     `csv_import`, `arc_agi`), through `resolve_partition_counts` + `split_three_way`, with

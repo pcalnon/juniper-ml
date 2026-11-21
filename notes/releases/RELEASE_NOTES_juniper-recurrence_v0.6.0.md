@@ -166,7 +166,7 @@ The first fix needs an operator to configure a padded key, and the others need S
   it would be a contract change for every consumer.
 - **The `[bench]` and `[bench-equities]` extras admit `juniper-data` 0.15.0** (ceiling `<0.15.0` →
   `<0.16.0`; floor unchanged at `>=0.9.0`). juniper-data 0.15.0 (PyPI, 2026-09-22) is the first
-  release to publish `equities` / `equities_seq` at `generator_version` **5.0.0** — the owner-ruled
+  release to publish `equities` / `equities_seq` at `generator_version` **5.0.0** — the Overtoad-ruled
   causal share history and 15-column feature set (juniper-data#395) plus the fix for #395's
   scale-typo regression (juniper-data#404). The old ceiling excluded exactly that release, so a
   fresh `.[bench,bench-equities]` install resolved 0.14.0 and its **3.0.0** equities generator,
@@ -179,7 +179,7 @@ The first fix needs an operator to configure a padded key, and the others need S
   `<0.18.0`; floor unchanged at `>=0.9.0`). This is a W1.13 prerequisite in juniper-ml
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`.
   - **Why.** juniper-data 0.17.0 (PyPI, 2026-10-10) is the first release to serve `equities_seq` at
-    `generator_version` **6.0.0** with `task_type: regression` (owner ruling X8, juniper-data#437).
+    `generator_version` **6.0.0** with `task_type: regression` (Overtoad ruling X8, juniper-data#437).
     Under the old ceiling, a fresh `.[bench,bench-equities]` install resolved 0.16.0, with its
     5.0.0 / `classification` label.
   - **No bench number moves.** The bench's `equities_seq` row calls `EquitiesSeqGenerator.generate()`

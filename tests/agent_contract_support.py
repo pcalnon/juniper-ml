@@ -226,8 +226,8 @@ class ContractMixin(object):
         self.assertIsNotNone(self.front, "no parseable YAML frontmatter between '---' fences")
         self.assertEqual(self.front.get("name"), self.AGENT, "name must equal the filename stem")
         self.assertGreaterEqual(len(self.front.get("description", "")), 60, "the description says when to delegate")
-        self.assertEqual(str(self.front.get("model", "")).strip().lower(), "opus", "suite default model (owner directive)")
-        self.assertEqual(str(self.front.get("effort", "")).strip().lower(), "max", "suite default effort (owner directive)")
+        self.assertEqual(str(self.front.get("model", "")).strip().lower(), "opus", "suite default model (Overtoad directive)")
+        self.assertEqual(str(self.front.get("effort", "")).strip().lower(), "max", "suite default effort (Overtoad directive)")
 
     def test_tools_are_exactly_the_plan_set(self):
         tools = as_tool_set(self.front.get("tools") if self.front else None)
@@ -274,7 +274,7 @@ class ContractMixin(object):
     def test_body_says_a_denial_is_recorded_not_retried(self):
         low = self.body.lower()
         self.assertTrue("when the guard denies a call" in low, "the body says what to do when the guard denies a call")
-        self.assertTrue("never retry" in low, "a denied call is recorded for the owner, never respelled and retried")
+        self.assertTrue("never retry" in low, "a denied call is recorded for the Overtoad, never respelled and retried")
 
     def test_body_names_the_plan_of_record(self):
         self.assertIn(PLAN, self.body, "the body cites the bring-up plan by filename")

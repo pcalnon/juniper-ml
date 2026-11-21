@@ -11,7 +11,7 @@ refute. **37 findings across the three lenses, all applied.** See §4 — the P0
 
 ```text
 Continue the Juniper shared-session-memory arc, plan §P5. Step e (the cut) is DONE in all 9
-governed repos — do not re-plan it. What remains is stale records, four owner-taken decisions,
+governed repos — do not re-plan it. What remains is stale records, four Overtoad-taken decisions,
 and residual fixes.
 
 DUP-GUARD FIRST, before any work: `gh pr list` on the target repo, then
@@ -33,7 +33,7 @@ REMAINING WORK
    On juniper-ml use `gh pr merge 1506 --squash --auto` + util/wait_for_checks.py; do NOT use
    safe_merge --no-auto-fallback (main merges every ~8-15 min against ~10 min CI, so the
    client-side race is unwinnable and it exits 0 having merged nothing).
-3. Owner decisions C.1/C.2/C.5/C.6 were TAKEN on 2026-08-29/30 and are UNSTARTED work, not
+3. The Overtoad decisions C.1/C.2/C.5/C.6 were TAKEN on 2026-08-29/30 and are UNSTARTED work, not
    settled positions — read #1326 comment 5467340380 for their text before assuming otherwise.
 4. HEADROOM IS THE URGENT RISK, not size: juniper-data-client has 486 chars and cascor-worker
    783, against a BLOCKING required gate. One added paragraph in either FAILS CI. Check with
@@ -81,7 +81,7 @@ canopy. canopy is the only repo whose Hazards block landed BEFORE its cut, so it
 | juniper-recurrence | 11,578 | 13,259 | **+1,681** | 20,000 | 6,741 |
 | **net** | | | **−135,118** | | |
 
-recurrence took a **policy ceiling raise instead of a cut** (owner decision) and then gained a
+recurrence took a **policy ceiling raise instead of a cut** (Overtoad decision) and then gained a
 Hazards block, so it is the only repo that grew.
 
 **Merged squashes** — cuts: canopy `1a29ca4e`+`f7e0213e`, cascor `9820ebd6`, data `9f9c0b8c`,
@@ -112,10 +112,10 @@ inventory), `_p5_cut_overlap_probe.py`, `_p5_docs_tree_overlap.py`, `_p5_worktre
   directive that was never in `AGENTS.md` — which is how canopy's strongest hazard was found.
 - **juniper-ml's own `Memory Budget` required context has no `integration_id`** (the other eight
   pin `15368`), so it matches any app publishing that name — on the repo governing this arc's PRs.
-  Repair is a ruleset write and needs an owner claim.
+  Repair is a ruleset write and needs an Overtoad claim.
 - **`MEMORY.md` is at 24,034 / 25,000 bytes.** Truncation is silent and drops the NEWEST rows, and
   `2026-08-19_memory_index_evict.py` is spent (`freed: 0` and exits clean). Compaction is
-  owner-DEFERRED to a concurrent session; the margin is the risk, not the policy.
+  Overtoad-DEFERRED to a concurrent session; the margin is the risk, not the policy.
 - **`Allow-Budget-Overrun` loans have no central ledger** — a loan is visible only in its trailer.
 
 ## 4. Validation findings applied

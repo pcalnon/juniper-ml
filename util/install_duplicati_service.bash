@@ -199,12 +199,12 @@ if ! wrapper_accepts "${ENV_SRC}"; then
     echo "REFUSING: the wrapper refuses ${ENV_SRC} (see its lines above); it would exit 78 at the next start" >&2
     exit 2
 fi
-# The modes an existing env file may have. Which one is RIGHT is the owner's open decision O-12
+# The modes an existing env file may have. Which one is RIGHT is the Overtoad's open decision O-12
 # (the contract header, D's P1 item 2, A's O-12 row); this installer does NOT settle it, so it
 # accepts either documented form and nothing else (R5A DEFECT-2):
 #   root:duplicati 0640 -- what this installer creates, and what the design recommends;
 #   duplicati:duplicati 0600 -- the dissent (Lane A3 / Lane B2 D15).
-# Anything else is refused: another owner or group, any group- or other-writable file, and any
+# Anything else is refused: another Overtoad or group, any group- or other-writable file, and any
 # other-readable one (the file may export SETTINGS_ENCRYPTION_KEY -- R5A NIT-1), and a group that
 # cannot read it (root:root 0640 passes the root-run grammar gate and then fails every start with
 # exit 78 -- R4C N-4). A SYMLINK is refused by name: stat would judge the link's own 0777, and the
@@ -225,7 +225,7 @@ elif [[ -e "${ENV_DST}" ]]; then
         exit 2
     fi
     # Refused on a real run; reported on a dry run, which as a user cannot tell a scratch prefix's
-    # owner from the host's.
+    # Overtoad from the host's.
     env_meta="$(stat -c '%U:%G:%a' "${ENV_DST}")"
     case "${env_meta}" in
         root:duplicati:640|duplicati:duplicati:600) ;;

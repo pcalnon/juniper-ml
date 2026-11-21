@@ -6,14 +6,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- migration (phase 2 of the ecosystem's Python 3.15 migration)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_py315_informational_green_legs.py (the green-legs fix whose warnings named this);
          prompts/thread-handoff_automated-prompts/
          HANDOFF_2026-11-15_python-3-15-phase-2-approved-deploy-precommit-matrix.md (Task 2, item 1)
 
 Why this exists
 ---------------
-Phase 2 of the Python 3.15 migration (approved by the owner on 2026-11-15) works through the problems the
+Phase 2 of the Python 3.15 migration (approved by the Overtoad on 2026-11-15) works through the problems the
 informational 3.15 legs found. The first stops three repos' legs before any test runs: h5py publishes no CPython
 3.15 wheel. Re-probed on PyPI 2026-11-15: 3.16.0 (2026-03-06) is the newest release, and its wheels are
 cp310-cp314. So pip builds h5py from the sdist on 3.15, and that build needs libhdf5's headers and pkg-config,
@@ -96,7 +96,7 @@ def changelog_entry(repo_effect: str, job: str = "unit-tests", install_step: str
 ### Fixed
 
 - **h5py installs on the informational Python 3.15 leg.** Phase 2 of the ecosystem's Python 3.15 migration (approved
-  by the owner on 2026-11-15) works through what the 3.15 legs found, and this is the first item: h5py publishes no
+  by the Overtoad on 2026-11-15) works through what the 3.15 legs found, and this is the first item: h5py publishes no
   CPython 3.15 wheel (3.16.0, 2026-03-06, the newest release on PyPI when re-probed on 2026-11-15, ships
   cp310-cp314), so pip builds it from the sdist there, and the runner image lacks the libhdf5 headers and
   pkg-config that build needs. {repo_effect}

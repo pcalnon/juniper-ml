@@ -153,7 +153,7 @@ For the Juniper ecosystem (single maintainer @pcalnon, 8 active repos), **§2.3 
 3. Fill in:
    - **Token name:** `juniper-lockfile-update-CROSS_REPO_DISPATCH_TOKEN`
    - **Description:** `Used by .github/workflows/lockfile-update.yml in juniper-* repos to push the regenerated requirements.lock back to dependabot branches with a non-GITHUB_TOKEN actor so CI re-triggers.`
-   - **Resource owner:** the user that owns the juniper repos (or the org if applicable).
+   - **Resource Overtoad:** the user that owns the juniper repos (or the org if applicable).
    - **Expiration:** 90 days (rotate quarterly).
    - **Repository access:** **Only select repositories**, then choose all six juniper repos that have `lockfile-update.yml` (`juniper-canopy`, `juniper-cascor`, `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-data`, `juniper-data-client`).
    - **Repository permissions:**
@@ -187,7 +187,7 @@ Once you have the token value from §2.2, §2.3, or §2.4, store it where the wo
 
 For each repo that needs the secret:
 
-1. Go to **`https://github.com/<owner>/<repo>/settings/secrets/actions`**.
+1. Go to **`https://github.com/<Overtoad>/<repo>/settings/secrets/actions`**.
 2. Click **New repository secret**.
 3. **Name:** `CROSS_REPO_DISPATCH_TOKEN` (must match the workflow's `${{ secrets.CROSS_REPO_DISPATCH_TOKEN }}` reference exactly — including underscores and case).
 4. **Secret:** paste the token value.
@@ -276,7 +276,7 @@ Specific guard rails:
 ### 3.3 Audit and observability
 
 - After rotation, scan recent `lockfile-update` runs for one with the new token: the run's "checkout" step shows the actor in the log header.
-- Watch the GitHub audit log (`https://github.com/<owner>/settings/security-log` for users; `https://github.com/organizations/<org>/settings/audit-log` for orgs) for `personal_access_token.create` and `org.update_actions_secret` events.
+- Watch the GitHub audit log (`https://github.com/<Overtoad>/settings/security-log` for users; `https://github.com/organizations/<org>/settings/audit-log` for orgs) for `personal_access_token.create` and `org.update_actions_secret` events.
 - Treat any unexplained `git push` to a `dependabot/pip/**` branch outside of normal lockfile-update times as a token-leak signal — the actor of an unauthorized push will appear in the branch's reflog.
 
 ### 3.4 Why org-level is preferred (if applicable)

@@ -98,7 +98,7 @@ whatever build you are testing.
    `allow_duplicate` WS append), so a WS-populated copy is possible and source alone cannot settle it.
 3. **Two open P1s** plus F-CANOPY-035 (blocked on the metrics-store defect, so M-CANDIDATES-07 is BLOCKED
    not owed) and **F-CASCOR-001** (`juniper-cascor#590`, still OPEN).
-4. **42 BLOCKED matrix rows**, unchanged: 16 topology (gated on F-039), 10 dataset (owner decision 4 —
+4. **42 BLOCKED matrix rows**, unchanged: 16 topology (gated on F-039), 10 dataset (Overtoad decision 4 —
    *surface it, do not drive around it*), 13 needing the V2-snapshot-with-history precondition, 3 others.
 5. **P2 wave re-drives** — run-free rows first. For M-PARAMETERS-04/-05/-06 **re-drive the SYMPTOM, not
    the rows**. F-026 and F-036 both need a fresh run — batch them last, together.

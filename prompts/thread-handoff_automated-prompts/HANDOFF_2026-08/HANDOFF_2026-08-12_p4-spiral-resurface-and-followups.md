@@ -1,6 +1,6 @@
 # HANDOFF 2026-08-12 — P4 Spiral Re-Surface Complete; A GPU Leak That Corrupts Experiments Silently
 
-Continue the **CLI experimentation program** (successor to `HANDOFF_2026-08-10_cli-experimentation-f-p4-1-followups.md`). The spiral surface is re-run and published; F-P4-1 is confirmed dead. Every **PR** opened this arc is merged; two cascor **issues** remain open, and the residual work is one scoped re-run plus owner design calls.
+Continue the **CLI experimentation program** (successor to `HANDOFF_2026-08-10_cli-experimentation-f-p4-1-followups.md`). The spiral surface is re-run and published; F-P4-1 is confirmed dead. Every **PR** opened this arc is merged; two cascor **issues** remain open, and the residual work is one scoped re-run plus Overtoad design calls.
 
 ## Completed this session (do not redo)
 
@@ -22,9 +22,9 @@ All code work: **use a worktree, open a PR, never self-merge**, and `gh pr list`
 3. **R-4 — give E-C's spiral rows an E-A-class budget, or make E-C moon-only.** At a 2-unit cap the spiral noise curve is flat because the cap binds, not the noise.
 4. **R-5 — investigate the service-vs-CLI spiral accuracy gap.** Best cell 0.670 val vs ≈0.995 for the direct CLI at radius-10. Budget ceiling, scale/parameterisation difference, or a real service-path limit — open.
 5. **R-6 — adopt `execution.stall_seconds` in `util/experiments/suites/p4/*.yaml`** and delete `util/ad-hoc/2026-08-10_driver_stall_shim.py`.
-6. **cascor#509 / #505** — owner's call. For #509 the standalone-valuable half: a run that installed zero candidates because of allocation failures **must not report `succeeded`**.
+6. **cascor#509 / #505** — Overtoad's call. For #509 the standalone-valuable half: a run that installed zero candidates because of allocation failures **must not report `succeeded`**.
 
-**Owner items carried unchanged** from the predecessor handoff: Q-6 (log-dir override retires H-7, unlocks cascor-parallel `run_suite`); F-P1-2 (`:3000` Grafana squatter); §12 PF threshold ratification + F-P1-3b profiling lane; W-12/Q-7 (`csv_import` corpus); Q-8/Q-10 (perf-baselines home; recurrence conda env); JR-REC ingest at the next requirements-snapshot refresh.
+**The Overtoad items carried unchanged** from the predecessor handoff: Q-6 (log-dir override retires H-7, unlocks cascor-parallel `run_suite`); F-P1-2 (`:3000` Grafana squatter); §12 PF threshold ratification + F-P1-3b profiling lane; W-12/Q-7 (`csv_import` corpus); Q-8/Q-10 (perf-baselines home; recurrence conda env); JR-REC ingest at the next requirements-snapshot refresh.
 
 ## Key context
 
@@ -51,7 +51,7 @@ nvidia-smi --query-gpu=memory.free --format=csv                            # bef
 
 ## Git state at handoff
 
-**Do not trust a SHA in this section — re-derive it.** Concurrent sessions push docs straight to `main`; during this handoff's own validation, `main` moved from `c90584c` to `e33f842` (a +46/-45 reformat of the evidence note by the owner) and a draft was nearly committed on the stale blob, which would have silently reverted it. Always:
+**Do not trust a SHA in this section — re-derive it.** Concurrent sessions push docs straight to `main`; during this handoff's own validation, `main` moved from `c90584c` to `e33f842` (a +46/-45 reformat of the evidence note by the Overtoad) and a draft was nearly committed on the stale blob, which would have silently reverted it. Always:
 
 ```bash
 git fetch --prune && git log --oneline HEAD..origin/main    # must be empty before you commit

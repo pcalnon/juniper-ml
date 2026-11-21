@@ -68,7 +68,7 @@ Gitleaks v8.30.1, on v6. Rows 1 and 4–6 ran on earlier v6 builds (`e4885f068c8
 | --- | --- | --- | --- |
 | R8A-01 A prefixed or no-blank second name still swallowed the secret on one line | BLOCKER | Accepted (fixed and tested) | Gate v6: the swallowed rule takes any prefix and zero or more blanks after the separator, and a `#`-led value. The path allowlist skips a leading `:` or `=`, so `X=PASSPHRASE_FILE=/path` stays clean. Cases `swallow-prefixed`, `-plain-then-prefixed`, `-dunder`, `-export-path`, `-no-blank` (exit 2) and `path-after-separator` (exit 0); the canary's `same-line.sh` class is now the prefixed layout. Plan: XC-PRESERVE. R7A-01's disposition, "fixed and tested", held for an unprefixed name only; recorded here, not in place |
 | R8A-02 ml#2179 published the Phase B record without the gate §9 makes Hard | MAJOR | Accepted (re-derived) | S0.3: once this plan's PR merges, gate the record as merged, read the five lines, record accept keys or send a real value to XC-CRED. P1-09, row b, §9's P1-09 row and Appendix A say the record is published and not yet gated. The reconciler's masked read of the five (above) finds none credential-shaped |
-| R8A-03 v1.7.0 took in ml#2157 but not the P2 handoff it carried | MAJOR | Accepted (re-derived; with R8B2-01, -06, -07) | `…phase11-owed.md` in the Documents table and Inputs; §2's P2 row; Wave 2's P2 lane and its Phase 11 note; §7.1 item 18; XC-PRESERVE row r; Group B's P2 adds the F-CANOPY-065 question; §2 says "065 pending an owner ruling" |
+| R8A-03 v1.7.0 took in ml#2157 but not the P2 handoff it carried | MAJOR | Accepted (re-derived; with R8B2-01, -06, -07) | `…phase11-owed.md` in the Documents table and Inputs; §2's P2 row; Wave 2's P2 lane and its Phase 11 note; §7.1 item 18; XC-PRESERVE row r; Group B's P2 adds the F-CANOPY-065 question; §2 says "065 pending an Overtoad ruling" |
 | R8A-04 §8 omitted ml#2150 | MINOR | Accepted | §8's `util/isolated_stack.bash` row, XC-FLEET's note and A10: ml#2149 and ml#2150 |
 | R8A-05 W1.1a shipped on an answer to data#409 | MINOR | Accepted (with R8B2-08) | XC-P12's wave-1 bullet and action 1, A9, Appendix B row 17 and §10's P12 list: R1's default half was applied pending and is ratified or reverted at A9; W1.1b stays optional |
 | R8A-06 Four "green" drafts are in conflict | MINOR | Accepted | XC-FLEET's rows: "in conflict on 2026-10-08" for ml#2121, #2122, #2125 and #2137; ml#2181 is only behind; the note and A10 say the sweeper could merge a green one once out of conflict |
@@ -77,7 +77,7 @@ Gitleaks v8.30.1, on v6. Rows 1 and 4–6 ran on earlier v6 builds (`e4885f068c8
 | R8A-09 Three of the five drafts were opened before ml#2134 merged | NIT | Accepted | XC-FLEET's backup-test row |
 | R8A-10 "(current)" handoffs were superseded | NIT | Accepted (with R8B2-20) | Scope's Inputs name `…round3-fold-in-pending.md`, `…phase11-owed.md` and `…p1-wave1-in-flight.md` as the successors |
 | R8A-11 The fleet metric used 104 | NIT | Accepted | Success metrics: 115 on 2026-10-08 |
-| R8A-12 data#451 departs from R3's literal wording | NIT | Accepted | XC-P12 and A9 ask the owner to ratify data#451's reading of R3 |
+| R8A-12 data#451 departs from R3's literal wording | NIT | Accepted | XC-P12 and A9 ask the Overtoad to ratify data#451's reading of R3 |
 | R8A-13 The record also holds the fix-forward lanes | NIT | Accepted (with R8B2-21) | The Documents table: rounds 2–3, the ml#2115 fix-forward lanes, two briefs and the handoff validations, 16 sections |
 | R8A-14 Row b's place and loss | NIT | Accepted (with R8B2-21) | Row b: round 4's reports in `sorted-stargazing-garden`, untracked, and in subagent transcripts until saved; lost by sweep or transcript expiry |
 | R8B1-01 A PEP 604 union in an annotation passed both scans | BLOCKER | Accepted (fixed and tested) | Gate: the annotation form takes any type text of up to 81 characters before `=`, unions and nested brackets included. Cases `ann-union-field`, `ann-union-constant`, `ann-union-field-call`; canary class `annotated-union.py`. Plan: XC-PRESERVE's list of shapes ("unions included"), and the read of every added line that names a credential, whatever the gate says, which this finding proposed |
@@ -108,7 +108,7 @@ Gitleaks v8.30.1, on v6. Rows 1 and 4–6 ran on earlier v6 builds (`e4885f068c8
 | R8B2-04 Nothing guards a maintenance-branch PR | MAJOR | Accepted | Wave 1's F-S10 delivery: open the PR only after §7.1 item 3's round, label it `stacked-pr`, run CI by `workflow_dispatch` (or the suite locally) and read it before the cut; §5's vehicle and R-DC-PATCH rows and §9's 0.5.1 row point there |
 | R8B2-05 The forward-port to `main` was required nowhere | MAJOR | Accepted | The P12 chain's "Ready when", Wave 2's P12 lane, a new §9 row (Hard), §5's branch note, and the Wave 1 exit when A1 accepts the data-client fix |
 | R8B2-06 The census directory is a single copy | MINOR | Accepted | XC-PRESERVE row r; Overview 4 and the metric count 17 |
-| R8B2-07 F-CANOPY-065's owner question had no slot | MINOR | Accepted | Group B's P2 entry, naming the severity rule in §6.3 of `notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md` (re-derived: the ledger's "plan §6.3" cites that file, L357–360); §2's P2 row |
+| R8B2-07 F-CANOPY-065's Overtoad question had no slot | MINOR | Accepted | Group B's P2 entry, naming the severity rule in §6.3 of `notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md` (re-derived: the ledger's "plan §6.3" cites that file, L357–360); §2's P2 row |
 | R8B2-08 R1 was applied pending | MINOR | Accepted (with R8A-05) | As R8A-05 |
 | R8B2-09 O7's remainder had no prep | MINOR | Accepted | S0.9 derives it; the session-item intro names it |
 | R8B2-10 The 0.6.0 option for R-DC-PATCH led nowhere | MINOR | Accepted | Dropped from §5's "Ready when"; the branch note says why it is not offered |
@@ -158,7 +158,7 @@ None. The lanes overlapped on six themes and agreed on each:
 
 ## Slips on the lanes' constraints
 
-None reached a repository or printed a real value. The owner may want to know:
+None reached a repository or printed a real value. The Overtoad may want to know:
 
 - **Lane A**:
   - the harness saved one long `git ls-tree` output under `~/.claude/projects/…/tool-results/`; the lane did not read it;

@@ -12,7 +12,7 @@ There is no HIGH. There is one MEDIUM: three of the rewrite's new "reconcile" cl
 
 | Round-2 finding(s) | Disposition | Where / note |
 |---|---|---|
-| F2-M1, O2-M1, P2-M2 (#2089 CodeQL; #2081 precedent; 59 alerts; merge gate; checks command) | APPLIED | L40, L80, L156, L255-258, L346-348. Three clauses were dropped: F2-M1's "keep the peer's four README rows if #2089 is rebuilt"; O2-M1's "re-read #2089's head before any push if the owner edits a probe"; and P2-M2's "re-check for owner-account commits before merging". Attribution was made neutral (L256), with reason. |
+| F2-M1, O2-M1, P2-M2 (#2089 CodeQL; #2081 precedent; 59 alerts; merge gate; checks command) | APPLIED | L40, L80, L156, L255-258, L346-348. Three clauses were dropped: F2-M1's "keep the peer's four README rows if #2089 is rebuilt"; O2-M1's "re-read #2089's head before any push if the Overtoad edits a probe"; and P2-M2's "re-check for Overtoad-account commits before merging". Attribution was made neutral (L256), with reason. |
 | F2-M2, O2-M3 (cascor image lock) | APPLIED | L214. O2-M3's service-core `:133` note was dropped; the peer's draft L158 carries it. |
 | F2-M3 (6(b) refuted) | APPLIED | L99-101. It is routed per P2-L7 ("correct the primer in place") rather than F2's "file under (a) or drop". I re-measured it. |
 | F2-M4 (6(a) outcomes) | APPLIED WRONGLY (partly) | Data is correct. For cascor, F2's "same shape, expected 400 `VALIDATION_ERROR`" became "expected to be the same" (L2 below). |
@@ -33,7 +33,7 @@ There is no HIGH. There is one MEDIUM: three of the rewrite's new "reconcile" cl
 | O2-N9 (fresh-checkout count changes when the peer's PR lands) | NOT APPLIED, no reason given | N2. |
 | F2-N5, O2-N2 (129 `.py`; runners; the peer's paragraph) | APPLIED; the runner count APPLIED WRONGLY | L38-39: it took F2's "67" over O2's correct "66" (N1). |
 | F2-N6, P2-M3 (ship order; re-copy first; check open PRs) | APPLIED | L26-29. |
-| O2-M2 (owner questions the peer asks; release sequencing) | APPLIED | L264-270. |
+| O2-M2 (Overtoad questions the peer asks; release sequencing) | APPLIED | L264-270. |
 | O2-L1, O2-L2, O2-L6, O2-L7, O2-L8, O2-L9, O2-L10 | APPLIED | L43, L209/L334, L223, L119, L44/L48, L113-115, L313. |
 | O2-L11 (reconciliation items) | APPLIED, but stale at the freeze | L73-76 (M1). |
 | O2-N3, N4, N5, N6, N7, N8, N11, N12, N14 | APPLIED | L82-84, L104, L303-336, L194/L239, L224, L259, L308/L315/L365, L241, L206. N5's bar still omits two items (N12). |
@@ -159,7 +159,7 @@ There is no HIGH. There is one MEDIUM: three of the rewrite's new "reconcile" cl
 - **cascor on its locked pair:** JuniperCanopy1 lacks matplotlib, so I measured cascor only in JuniperCascor1, without its lifespan.
 - **Data's stack differs slightly from production:** data was imported from the main checkout at `1afc348` (its `app.py` equals `0f0f7e0e`'s), with sentry-sdk 2.62.0 rather than the locked 2.70.0. The probe initialised Sentry itself, because data's `configure_sentry` is a no-op on an empty DSN.
 - **Point-in-time values:** the `/tmp` figure at exactly 01:10Z, and the peer's draft at exactly 01:10Z. I reconstructed the draft from its transcript's edits.
-- **Other:** the owner's grant to [24f8d8], and whether the tmpfs scratchpad survives that session.
+- **Other:** the Overtoad's grant to [24f8d8], and whether the tmpfs scratchpad survives that session.
 
 **Side effects:**
 - Verification command 6 ran `git fetch` here, which created two new remote refs.

@@ -3,7 +3,7 @@
 
 **Entry point:** instrument adequacy: its own instrument, then 26 mutations of the census.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T23:28:21Z to 2026-09-23T00:45:47Z, read-only. Agent `agent-ad373550cfa2cb2a4`.
 
@@ -23,7 +23,7 @@ ARTIFACTS, identical in the worktree and at juniper-ml PR #2020's head `4855bf8c
 - `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`, census v3. v2 is at `50430e02`; `git diff 50430e02 4855bf8c -- util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` shows what changed.
 - `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`. It claims that removing each of 15 rules makes `--self-test` fail.
 - The round-2 lane that reviewed v2 is archived at `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round2-laneA-census-adequacy.md`. Read it to see what v3 was meant to fix.
-- The census's claims as the handoff states them: Corrections 1 and the verification block of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`.
+- The census's claims as the handoff states them: Corrections 1 and the verification block of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`.
 
 THE AUTHOR'S POST-MERGE PREDICTION. The command is `python3 util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py --ref juniper-ml=4855bf8c --ref juniper-canopy=fdb9e2de --ref juniper-cascor=a824829b --ref juniper-cascor-client=daa6c675 --ref juniper-data-client=ee1fb5d7 --ref juniper-deploy=e6091c46`. The other three repos (juniper-cascor-worker, juniper-data, juniper-recurrence) read at `main`. It predicts:
 - 54 live pins, one distinct range `>=0.9.0,<0.10.0`;
@@ -113,7 +113,7 @@ distinct live ranges: {'<0.10.0,>=0.9.0': 54}
 --- STALE (fails the census) against >=0.9.0,<0.10.0 ---
   juniper-ml/docs/QUICK_START.md:92  ==0.4.*  [DOC]
 
---- AMBIGUOUS, matching >=0.9.0,<0.10.0: passes, but the owner is unproven -- read each ---
+--- AMBIGUOUS, matching >=0.9.0,<0.10.0: passes, but the Overtoad is unproven -- read each ---
   juniper-ml/docs/REFERENCE.md:3023  <0.10.0,>=0.9.0
   juniper-ml/tests/test_ci_tools_drift.py:461  <0.10.0,>=0.9.0
 
@@ -134,7 +134,7 @@ At current `main`, with no `--ref`, it exits 1 with 23 STALE lines, 54 live pins
 - **Fix:** none.
 
 **2. The self-test does not discriminate — BUG in the adequacy evidence, MAJOR.**
-- **Claim tested:** the handoff's "15 of 15 code mutations fail that self-test" and "The self-test discriminates" (validation record of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`).
+- **Claim tested:** the handoff's "15 of 15 code mutations fail that self-test" and "The self-test discriminates" (validation record of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`).
 - **The 15 are real.** Each dies on a genuine FAIL line, not a crash.
 - **Evidence:** I wrote 26 mutations of my own, none among the 15. 21 survive at 81/81, and several change real verdicts:
 
@@ -169,17 +169,17 @@ At current `main`, with no `--ref`, it exits 1 with 23 STALE lines, 54 live pins
 
 **3. A repo name next to the range drops it silently — FALSE-NEGATIVE, MAJOR.**
 - **Claim tested:** the docstring of `2026-09-22_ci_tools_pin_census_remote.py` (lines 37–38: "another juniper name … is AMBIGUOUS rather than silently dropped"), and the first limit in the handoff's Corrections 1.
-- **Evidence, crafted.** An "other" owner is discarded before the context check runs. Each of these produces `hits=[]`:
+- **Evidence, crafted.** An "other" Overtoad is discarded before the context check runs. Each of these produces `hits=[]`:
   - `The sequence-safety workflows in juniper-cascor pin \`>=0.8.0,<0.9.0\`.`
   - a `tests/` docstring: `juniper-cascor pins \`\`>=0.8.0,<0.9.0\`\` in its sequence-safety workflow today.`
   - a workflow comment `# juniper-ci-tools pins:` followed by `#   juniper-cascor  >=0.8.0,<0.9.0`. `DIRECT_RE`'s "juniper name across spaces" rule reads this as cascor's own range.
   - a list item `- **juniper-cascor**: \`>=0.8.0,<0.9.0\`` under `### juniper-ci-tools pins by repo`.
-- **Evidence, real prose.** I fed the text of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` through `census_text()` as if it were a current `docs/` page. It silently drops:
+- **Evidence, real prose.** I fed the text of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` through `census_text()` as if it were a current `docs/` page. It silently drops:
   - line 186, "Both were in juniper-cascor, … pinned `>=0.6.0,<0.7.0`";
   - line 245, "two live juniper-cascor pins were still `>=0.6.0,<0.7.0`".
 
   That is the arc's central finding, in the arc's own phrasing.
-- **Fix:** only a glued name (no gap) owns a range outright. A repo name (a `REPOS` member), or any "other" owner in a section matching `CONTEXT_WORDS_RE`, should yield AMBIGUOUS, never a drop.
+- **Fix:** only a glued name (no gap) owns a range outright. A repo name (a `REPOS` member), or any "other" Overtoad in a section matching `CONTEXT_WORDS_RE`, should yield AMBIGUOUS, never a drop.
 
 **4. Table attribution — FALSE-NEGATIVE, MAJOR (one v3 regression).**
 - **Regression (T2):** the header `| package | pin in juniper-ml |` with the row `| juniper-ci-tools | >=0.8.0,<0.9.0 |` gave DOC and failed in v2. In v3 it gives `[]`, because a header naming a repo returns "other" and overrides the row's own ci-tools cell.
@@ -189,8 +189,8 @@ At current `main`, with no `--ref`, it exits 1 with 23 STALE lines, 54 live pins
   - a generic-header table under a ci-tools-only heading.
 - **Why it matters:** these are the natural shapes for a per-repo fan-out table.
 - **Fix:**
-  - Header ownership should use `OWNER_NAME_RE` or the context words.
-  - A header that names a repo is not an owner.
+  - Header Overtoadship should use `OWNER_NAME_RE` or the context words.
+  - A header that names a repo is not an Overtoad.
   - If the header says nothing, the row's cell should win.
   - Unattributed cells in ci-tools context should be AMBIGUOUS.
 
@@ -242,7 +242,7 @@ At current `main`, with no `--ref`, it exits 1 with 23 STALE lines, 54 live pins
   - Extend it to Dockerfile, Makefile and pre-commit configs.
 
 **8. The handoff's statements about the census — mixed; MAJOR for the limits (task 6).**
-Statements are from `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`.
+Statements are from `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`.
 - **Confirmed:**
   - "81 passed, 0 failed" and "15 of 15 mutations killed";
   - "live pins: 54, one distinct range";

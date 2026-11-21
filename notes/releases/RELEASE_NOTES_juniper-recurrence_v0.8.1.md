@@ -19,12 +19,12 @@ Upgrading moves model-core to 0.3.x (`pip install -U juniper-recurrence`). An in
 
 ### Changed (repository and bench only; neither ships in the wheel)
 
-- **Temporary files go in the repo's gitignored `tmp/`, never `/tmp` (owner directive, 2026-10-26), and the owner's
+- **Temporary files go in the repo's gitignored `tmp/`, never `/tmp` (Overtoad directive, 2026-10-26), and the Overtoad's
   rulings on it are applied** (repo-wide, recorded here as the bench is). `/tmp/` is ignored, and `AGENTS.md` §
   Temporary files carries the rule and the rulings, retention included. `juniper-check-doc-links` passes
   `--exclude tmp` in `ci-docs.yml`, and the app image's build context (`juniper-recurrence/.dockerignore`) lists
   `tmp/`; nothing keeps pytest out of it, and counting scripts are to choose their scope as to `tmp/` deliberately
-  (the owner's revised ruling).
+  (the Overtoad's revised ruling).
 - **The bench's equities rows pool `trainval` and cut a panel's folds on the global date per entity; a multi-ticker row `equities_seq_panel` joins the single-ticker one** (W5.2 of juniper-ml
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, the owed
   bench half; `bench/` is not part of the published distribution). `bench/run_benchmark.py` cut row-index folds

@@ -579,7 +579,7 @@ def main(argv: list[str]) -> int:
         elif held:
             print(f"\nprimary {repo} is HELD by live process(es) {held} -- not pulling (frozen while imported)")
         elif cur != "main":
-            print(f"\nprimary {repo} is on {cur!r}, not main -- not pulling (owner's call)")
+            print(f"\nprimary {repo} is on {cur!r}, not main -- not pulling (Overtoad's call)")
         elif pdirty is None or pdirty:
             print(f"\nprimary {repo} is dirty or unreadable -- not pulling (F-6 guard)")
         else:

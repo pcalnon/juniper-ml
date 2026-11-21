@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 docs-carrier build)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-07_flood4_ml_docs_extract.py (extract_summary.json: heads, titles),
          util/ad-hoc/2026-11-07_flood4_ml_docs_fixes.py (fixes.json: every correction, with its evidence)
 
@@ -37,7 +37,7 @@ DISPOSITIONS: dict[int, tuple[str, str, list[str] | None, list[str]]] = {
     2422: ("carried-with-fix", "failed-auth cap mechanics verified by probe; the 255-address test description and the 10,000 peak wording fixed, and the expiry-test sentences name #2419's cap test (tests carrier)", F4 + ["juniper-service-core/README.md"], []),
     2424: ("not-carried", "same claim as #2426, which is better grounded: #2424 has two false statements, drops still-true util-entry text, puts its section just before Version History, and edits a Test Suite Reference line", [], ["the whole draft; its claim is carried once, through #2426"]),
     2426: ("carried-with-fix", "G-SEC getblockall gate verified (decision table confirmed by probe); the State-0 message sentence fixed and the State-1 sentence qualified", None, []),
-    2428: ("carried-with-fix", "MERGED-line SHA semantics verified; the --repo owner/repo consequence (measured), the exit-3 stream, the squash-only 'Expected' and the net-row label fixed", None, []),
+    2428: ("carried-with-fix", "MERGED-line SHA semantics verified; the --repo Overtoad/repo consequence (measured), the exit-3 stream, the squash-only 'Expected' and the net-row label fixed", None, []),
     2432: ("carried-with-fix", "_read_stats/_row_metrics verified by probe; the overview scope and the /1 re-derivation exception fixed, and the section moved below the jq block it had swallowed", None, [SUITE_DROP]),
     2433: ("carried-with-fix", "token-bucket maths verified by probe; HandshakeCooldown scoped to /ws/control, the cleanup-pass timing, the rate-0 refusal and the test path fixed, and the section moved below the symptom table it had swallowed", None, []),
     2437: ("carried-with-fix", "save path verified (operation_id branch, failed phase, degraded exit 1); the cheatsheet symptom label and the overview row's dropped text fixed, and the cheatsheet Tip moved below the line it had split", None, []),

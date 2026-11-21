@@ -6,22 +6,22 @@ The session ran no step of Phase D. Outside the repo it changed only its memory 
 
 | Short form | File |
 | --- | --- |
-| **the runbook** | `notes/JUNIPER_2026-10-29_JUNIPER-ECOSYSTEM_BACKUP-PHASE-D-STEP0-TRIAL-AND-KEY-WRITE-RUNBOOK.md`: step 0, step 7's route, step 9's key write on Procedure A, A0's command lines, the owner rulings and the pending departures (its §3) |
+| **the runbook** | `notes/JUNIPER_2026-10-29_JUNIPER-ECOSYSTEM_BACKUP-PHASE-D-STEP0-TRIAL-AND-KEY-WRITE-RUNBOOK.md`: step 0, step 7's route, step 9's key write on Procedure A, A0's command lines, the Overtoad rulings and the pending departures (its §3) |
 | `…10-29…md` | the predecessor handoff above. Its Continue item 1, Remaining §1 (the deltas), Remaining §2 (after Phase D), Key context and Corrections still apply wherever the runbook does not replace them |
 | `…RECOVERY-PLAN.md` | `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`: §6.4 is Phase D; §6.3.1 is the running record |
 | `…INTEGRATED-DESIGN.md` | `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` ("D"); its §8 is the procedure `…RECOVERY-PLAN.md` §6.4 checks against |
 
 ## Continue
 
-**Phase D's sitting, steps 0 to 14, interactively with the owner** (about two hours).
+**Phase D's sitting, steps 0 to 14, interactively with the Overtoad** (about two hours).
 
-1. Run the verify block below. If any line differs from its comment, stop and show the owner.
+1. Run the verify block below. If any line differs from its comment, stop and show the Overtoad.
 2. **If a tool, path or flag is not where the runbook, `…10-29…md`, `…RECOVERY-PLAN.md` or `…INTEGRATED-DESIGN.md` says,
    stop and report it; never substitute one** (`…10-29…md` Continue item 1). Where `…10-29…md` or the runbook departs
-   from D on purpose, it wins; a runbook departure wins only once the owner has ruled on it.
+   from D on purpose, it wins; a runbook departure wins only once the Overtoad has ruled on it.
 3. Read the runbook in full. Then read `…10-29…md`'s Remaining §1, Remaining §2 and Key context, and `…RECOVERY-PLAN.md`
    §6.4.
-4. **Before step 0, put the runbook's three pending departures to the owner** (its §3, "Not yet put to the owner"):
+4. **Before step 0, put the runbook's three pending departures to the Overtoad** (its §3, "Not yet put to the Overtoad"):
    - the trial's inputs under `/usr/local/lib/duplicati-trial/`, with the drop-in's `DUPLICATI_ENV_FILE` and `Description=`;
    - the throwaway key under `/etc/credstore`;
    - step 7's glob copy, its `Backup` listing and its two added trust conditions.
@@ -30,7 +30,7 @@ The session ran no step of Phase D. Outside the repo it changed only its memory 
 5. **Step 0 is the runbook's §1.** Steps 1 to 6 are `…RECOVERY-PLAN.md` §6.4 with `…10-29…md`'s deltas. Step 7 is the
    runbook's §2.1, then its §2.2 on an `ENV_ACTIVE_KEY` match, or its §2.4 (A0) on none. Step 9 on Procedure A is the
    runbook's §2.3. Steps 10 to 14 are `…RECOVERY-PLAN.md` §6.4 with `…10-29…md`'s deltas.
-6. **Who runs what** is unchanged: the owner runs every step that changes the host or reaches the server, in the shell
+6. **Who runs what** is unchanged: the Overtoad runs every step that changes the host or reaches the server, in the shell
    the runbook's §0 names, and pastes counts and the tools' own summary lines, never a raw journal from a server start.
    The session checks each step read-only and keeps a running record.
 7. **Land the record** in `…RECOVERY-PLAN.md` §6.3.1 in one signed PR at the end. If the record changes a step of
@@ -38,7 +38,7 @@ The session ran no step of Phase D. Outside the repo it changed only its memory 
 8. **After Phase D**: `…10-29…md` Remaining §2 (Phase E's order; O-11, whose TestPyPI token stays live until rotated;
    D-12; finding 15), plus the runbook's §5 (AC-14's Phase E ruling).
 
-Merge approval for this sitting's PRs: ask the owner again (2026-10-29's approval covered that session's PRs).
+Merge approval for this sitting's PRs: ask the Overtoad again (2026-10-29's approval covered that session's PRs).
 
 ## Completed, 2026-10-29 and 10-30
 
@@ -60,7 +60,7 @@ Merge approval for this sitting's PRs: ask the owner again (2026-10-29's approva
     SIGQUIT across the write, and turns core dumps off.
   - **Round 4 found the rulings overstated** (three departures were never asked) and this file missing three items of
     `…10-29…md`'s. Both are fixed: the runbook's §3, and Continue items 2, 4 and 8 here.
-- **Owner rulings, 2026-10-30** (the runbook's §3):
+- **The Overtoad rulings, 2026-10-30** (the runbook's §3):
   - the trial's form: a runtime unit plus the drop-in;
   - the five departures the question listed (the runbook's §3 items 5 to 8, and item 4's redirect);
   - `PrivateTmp` accepted for Phase D;
@@ -100,7 +100,7 @@ ls -la /home/duplicati/.config/Duplicati/preload.json /usr/lib/duplicati/preload
 ls -d /home/pcalnon/Development/python/Juniper/juniper-ml/tmp/ac11-restore-2026-10-28* 2>&1           # absent: removed 10-28
 ```
 
-The owner's checkout must be at `origin/main` including the design PR (the runbook's §0).
+The Overtoad's checkout must be at `origin/main` including the design PR (the runbook's §0).
 
 **Git state at handoff.** Worktree `lively-finding-wand`, branch `worktree-lively-finding-wand`. Everything the session
 wrote in the repo is in the design PR. Outside it:
@@ -122,6 +122,6 @@ deleting them.
 - Never read a secret file; never print an environment variable or a token.
 - No `git stash`; no interactive shells; no host actions.
 
-The owner may direct a named action in person, which releases that action only. Nothing releases one of
-`…RECOVERY-PLAN.md` §6.0 item 6's absolutes. Phase D's `sudo` steps, server calls and credential writes are the owner's.
+The Overtoad may direct a named action in person, which releases that action only. Nothing releases one of
+`…RECOVERY-PLAN.md` §6.0 item 6's absolutes. Phase D's `sudo` steps, server calls and credential writes are the Overtoad's.
 A lane brief that turns bytecode off writes `PYTHONDONTWRITEBYTECODE=1`: an empty value turns it on.

@@ -98,7 +98,7 @@ Document:
 - `.sops.yaml` — SOPS encryption config
 - `.serena/project.yml` — Serena integration
 - `.gitattributes` — Git LFS for images
-- `.github/CODEOWNERS` — Code ownership
+- `.github/CODEOWNERS` — Code Overtoadship
 - `.github/dependabot.yml` — Automated dependency updates
 - `MANIFEST.in` — Distribution includes
 

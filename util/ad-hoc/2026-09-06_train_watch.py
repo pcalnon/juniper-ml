@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-06
 Status: ad-hoc -- one-off (cursor-fleet merge train)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-05_auto_merge_shepherd.py`, which does the syncing this only watches
 
 A merge train under `strict_required_status_checks_policy` has a state that looks like progress

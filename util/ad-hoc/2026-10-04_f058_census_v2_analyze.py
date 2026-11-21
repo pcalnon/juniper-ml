@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-05
-# Status      : ad-hoc — investigation; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — investigation; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Read a ``2026-10-04_f058_census_v2_live.py`` transcript event by event, past its verdicts.
 

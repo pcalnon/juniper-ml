@@ -58,10 +58,10 @@ Paul's explicit per-PR/group approval; guardrails (checks RAN + green, verify `r
   `gh pr checks`. Query `reviewThreads` via GraphQL when a PR is blocked with everything green.
 - **Concurrent merges silently convert `pass` merges into `bypass`.** ml#1090 recorded `bypass` with
   `required_status_checks: fail — 14 of 14 expected`: three PRs landed between its green check and
-  its merge, so the squash SHA had no reports yet and the owner's entitlement let it through. Content
+  its merge, so the squash SHA had no reports yet and the Overtoad's entitlement let it through. Content
   was fine (main-verify passed post-merge), but this erodes the property the arc established — a
   second data point for the **merge-queue** question after ml#1076's three rebases.
-- `main` moved 4+ times during one PR, several as owner direct-pushes doing bulk doc reformatting
+- `main` moved 4+ times during one PR, several as Overtoad direct-pushes doing bulk doc reformatting
   (`f366279`, `68f62f5`, `a43cf57`) — that class is what produced both the corruption and the red.
 - Concurrent sessions own the CLI-experimentation (#1097) and canopy E2E arcs. `gh pr list`
   dup-guard first — #1089/#1091 duplicated my main-verify work this session.

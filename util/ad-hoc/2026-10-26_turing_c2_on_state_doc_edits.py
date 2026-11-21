@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-26
 Status: ad-hoc — landing helper (turing bring-up task C2: the gate reads the block-all sentence turing printed)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18.2 C2 row; erratum
          E-C2-GATE); util/host_state_check.py; tests/test_host_state_check.py;
          util/ad-hoc/2026-10-25_turing_c2_gate_doc_edits.py (the shape this follows, and whose markers these
@@ -46,18 +46,18 @@ G1_MUTATION = "util/ad-hoc/2026-10-20_turing_g1_mutation_check.py"
 # docs/REFERENCE.md, § Test Suite Reference: tests/test_host_state_check.py
 REF_SENTENCE_OLD = "reports block all, in either of the binary's two sentences. An unknown block-all state, or a probe without the capture,"
 REF_SENTENCE_NEW = (
-    "reports block all, in the sentence turing's getter printed once the owner applied C2 (2026-10-26; its on-state captures are"
+    "reports block all, in the sentence turing's getter printed once the Overtoad applied C2 (2026-10-26; its on-state captures are"
     " pinned). An unknown block-all state, `--setblockall`'s confirmation sentence (which juniper-ml#2338 took for the getter's),"
     " or a probe without the capture,"
 )
-REF_SENTENCE_MARKER = "in the sentence turing's getter printed once the owner applied C2"
+REF_SENTENCE_MARKER = "in the sentence turing's getter printed once the Overtoad applied C2"
 REF_MUTANTS_OLD = f"`{MUTATION}` kills 11 of 11 mutants, and the 57"
 
 CHANGELOG_MARKER = "**G-SEC's firewall condition reads the block-all sentence turing printed**"
 CHANGELOG_ENTRY = (
     f"- {CHANGELOG_MARKER} (turing bring-up task C2; the §18.2\n"
     f"  C2 row and erratum E-C2-GATE of `{PLAN}`).\n"
-    "  The owner applied C2's block-all form on 2026-10-26, so the on-state captures exist: `--getglobalstate` prints\n"
+    "  The Overtoad applied C2's block-all form on 2026-10-26, so the on-state captures exist: `--getglobalstate` prints\n"
     "  \"Firewall is blocking all non-essential incoming connections. (State = 2)\", `--getblockall` \"Firewall is blocking\n"
     "  all non-essential incoming connections.\" and `--getstealthmode` \"Firewall stealth mode is on\".\n"
     "  - `util/host_state_check.py` accepts only the getter's sentence. \"Firewall is set to block all non-essential\n"

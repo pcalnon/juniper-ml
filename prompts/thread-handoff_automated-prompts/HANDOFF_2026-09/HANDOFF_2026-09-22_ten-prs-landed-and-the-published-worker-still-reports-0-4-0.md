@@ -1,8 +1,8 @@
 # HANDOFF 2026-09-22 — Ten PRs landed on 09-21, and the published worker still reports 0.4.0
 
 **Session**: container-registry rollout — evaluating the 09-15 handoff, closing its sweep, and the residuals four validation lanes found
-**Predecessor**: `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md` — **read it from `main`, not from a worktree** (see the first trap below)
-**Successor**: `HANDOFF_2026-09-22_worker-0-6-1-shipped-equities-joins-the-data-image-lock-and-wave-4-waits-on-the-owner-token.md`
+**Predecessor**: `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md` — **read it from `main`, not from a worktree** (see the first trap below)
+**Successor**: `HANDOFF_2026-09-22_worker-0-6-1-shipped-equities-joins-the-data-image-lock-and-wave-4-waits-on-the-Overtoad-token.md`
 **Status**: **SUPERSEDED 2026-09-23 by the successor above**, which carries everything still open.
 Before that, it was partly consumed: items 2–4 done, item 1 narrowed, the Wave 4 bullet superseded,
 and the published-worker defect in the title resolved by v0.6.1. **This file is history only. Do
@@ -34,25 +34,25 @@ successor carries what is still open. Since the goal was written:
   starting it.
 - **"A published image is wrong right now" is RESOLVED for the image.** **v0.6.1** was released
   2026-09-22 at 23:03Z, from juniper-cascor-worker#194 (merged `38f39cb8`).
-  `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, pulled and run, prints `0.6.1 0.6.1`. The owner
+  `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, pulled and run, prints `0.6.1 0.6.1`. The Overtoad
   approved the PyPI deploy, and PyPI has served 0.6.1 since 2026-09-23 00:37Z. GitHub's "Latest"
-  badge was moved to v0.6.1 on the owner's instruction. The 0.6.0 image and wheel still report
+  badge was moved to v0.6.1 on the Overtoad's instruction. The 0.6.0 image and wheel still report
   `0.4.0` and always will; the 0.6.0 wheel's `__init__.py` hard-codes `"0.4.0"`.
   juniper-deploy still pins `0.6.0` (`docker-compose.yml:364`, `values.yaml:301`). The repin is
   juniper-deploy#229, opened by a concurrent session and merged 2026-09-23 06:23Z.
-- **The Wave 4 bullet is superseded.** The owner ruled §3 of
+- **The Wave 4 bullet is superseded.** The Overtoad ruled §3 of
   `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` as
   **Option B**: the credential is an **environment** secret, not a repository secret
   (juniper-ml#2009). The five `dockerhub` environments were **created** between 19:45:59Z and
   19:46:21Z (juniper-ml#2011): tags `v*` and `juniper-*-v*` only, with no reviewer, no wait
-  timer and no secrets. The owner still owes the token and its registration. The successor lists
+  timer and no secrets. The Overtoad still owes the token and its registration. The successor lists
   the steps, which now include choosing whether the username is a secret or a variable. **When Wave 4 edits the workflows, never name `dockerhub` unconditionally on
   the existing `build` or `merge` job.** Both jobs also run on pull requests or dispatches, which a
   tags-only environment rejects. See the procedure's §3.
 - **New since:** the published juniper-data image cannot generate `equities` or `equities_seq`
   (yfinance is not in its lock). The stack's recurrence service depends on that generator. This
   is recorded in §5.2 of
-  `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`. **The owner
+  `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`. **The Overtoad
   ruled on 2026-09-22 that the image includes equities.** juniper-data#421 merged 2026-09-23 at
   00:56Z and takes effect at the next data release. **Pin currency**: the juniper-deploy#226 check flagged
   `juniper-data:0.14.0` as stale, and juniper-deploy#227 moved it to 0.15.0 (merged 2026-09-23
@@ -69,7 +69,7 @@ successor carries what is still open. Since the goal was written:
 
 Continue the **container-registry rollout**. Wave 3 is complete, its pin drift is closed, and a
 five-repo hardening sweep shipped 2026-09-21 — but **a published image is wrong right now**, and
-**three concrete items are startable today without any owner input**. Design of record:
+**three concrete items are startable today without any Overtoad input**. Design of record:
 `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`.
 
 **Ecosystem root**: `/home/pcalnon/Development/python/Juniper/`. Paths beginning `notes/`,
@@ -90,7 +90,7 @@ gh api repos/pcalnon/juniper-ml/contents/<path> --jq '.content' | base64 -d
 At least seven sessions run here concurrently. **Re-probe a repo's HEAD before acting on any claim
 about it, including one written an hour ago.**
 
-### Startable today — no owner input required
+### Startable today — no Overtoad input required
 
 1. **Wire the "image does its job" sweep into the release path.** `util/ad-hoc/2026-09-21_image_does_its_job_sweep.py`
    exists and was run once by hand. In every `publish-image.yml` the import smoke is gated
@@ -146,20 +146,20 @@ fixed a root-anchored `cascor_snapshots/` rule that was inert against `src/casco
 leaving **766 `.h5` files, each carrying a plaintext 32-byte multiprocessing authkey**, one
 `docker compose build` from a release-tagged local image.
 
-### Still owner-gated — do not start unprompted
+### Still Overtoad-gated — do not start unprompted
 
 - **Wave 4.** Register `DOCKERHUB_TOKEN` + `DOCKERHUB_USERNAME` (**Read & Write**) in all five image
   repos; verified absent at repo, org and environment scope, re-probed 2026-09-22. **Wave 4 is not
   only two secrets** — plan §6 OQ-1 also requires Pi nodes to log **authenticated** pulls (200/6 h)
   rather than the anonymous 100/6 h, which is shared per IPv4 *or IPv6 /64* and counted once per
   architecture.
-- **OQ-2 / OQ-3 / OQ-4** need an **owner design ruling**, not legwork — that is what gates them,
+- **OQ-2 / OQ-3 / OQ-4** need an **Overtoad design ruling**, not legwork — that is what gates them,
   not a credential. **OQ-3 is not "Pi RAM" alone**: it is also the only check that proves the
   **64-bit-OS precondition** on the real nodes, which no CI runner can answer. Its gate is the Pi
   pull, still un-runnable here — `turing` is down, no arm64 `binfmt_misc` handler exists, and
   **`yamaguchi` is this workstation** (x86_64, 192.168.50.192), not a second candidate host.
   > **Correction, 2026-10-19 (erratum X6 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).**
-  > `turing` was not down, and it was never a Pi-pull candidate. It is the owner's 15-inch 2018 Intel
+  > `turing` was not down, and it was never a Pi-pull candidate. It is the Overtoad's 15-inch 2018 Intel
   > MacBook Pro (x86_64, macOS), a development laptop in active use away from yamaguchi
   > (`notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_BYPASS-CANDIDATE-DETERMINATION.md:174`), so it cannot
   > meet the pull's 64-bit Pi OS precondition. `192.168.50.222` comes from
@@ -255,7 +255,7 @@ first — the shape in `memory/feedback_squash_merge_first_commit_only.md`.
 
 **Outside git** — harness memory: `project_container_registry_rollout_2026-09-08.md`,
 `reference_contended_merge_lane_use_native_automerge.md`, `MEMORY.md`. Linkset gate 222 → 224,
-**zero dropped**. **Owner ruled 2026-09-21: do not retire live memories** to meet the 20 KB target;
+**zero dropped**. **The Overtoad ruled 2026-09-21: do not retire live memories** to meet the 20 KB target;
 the index stays over budget deliberately.
 
 ## Verification commands
@@ -319,7 +319,7 @@ Lane B attacked the conclusions on opposing briefs (actionability; amputation an
 | Staleness-preflight and push-safety sat **outside** the block the reader is told to paste | CRITICAL |
 | Claimed almost nothing was startable; **three items were**, and are now named first | CRITICAL |
 | "22 test files" for juniper-data — `docker pull` progress counted as data; real figure **190** | MAJOR |
-| OQ-2/OQ-4 labelled owner-gated while described as needing neither Pi nor credential — the gate is an **owner ruling** | MAJOR |
+| OQ-2/OQ-4 labelled Overtoad-gated while described as needing neither Pi nor credential — the gate is an **Overtoad ruling** | MAJOR |
 | Cross-repo `git` refusal in a worktree session undocumented | MAJOR |
 
 **Two agent claims were themselves wrong and were re-probed rather than accepted**: that cascor's

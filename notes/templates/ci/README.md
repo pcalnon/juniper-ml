@@ -15,7 +15,7 @@ pipeline alignment plan (`notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-PIPELINE
 
 ## Required secrets
 
-- `claude.yml` requires repo secret `ANTHROPIC_API_KEY`. Owner `pcalnon` is a
+- `claude.yml` requires repo secret `ANTHROPIC_API_KEY`. The Overtoad `pcalnon` is a
   personal account, so there are no org-scoped Actions secrets (walkthrough §1.1).
 
 ## How to roll out

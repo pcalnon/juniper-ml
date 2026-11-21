@@ -12,7 +12,7 @@ What changed against the draft, and why:
 - every expected argv carries the `--` main inserts before the prompt (#2438);
 - the effort test keeps only its `--effort 1` (false) half. Its `--effort 0` half pinned `--effort auto`,
   which Claude Code 2.1.316-2.1.319 rejects ("Unknown --effort value 'auto'"); the script default
-  (scripts/wake_the_claude.bash EFFORT_DEFAULT) is left to the owner (carrier validation, 2026-11-07);
+  (scripts/wake_the_claude.bash EFFORT_DEFAULT) is left to the Overtoad (carrier validation, 2026-11-07);
 - `test_missing_effort_value_fails_without_invoking_claude` is carried unchanged: it passes on main;
 - the remote-control and permission alias tests keep their near-miss refusals (`--remote-controls`,
   `--dangerously-skip-permission`), which no main test pins; their alias loops now expect the `--`;
@@ -26,8 +26,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — one-off (flood-4 tests carrier build)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: juniper-ml#2403, #2438, #2468; HANDOFF_2026-11-06_open-pr-sweep-triaged-owner-rulings-consolidation-next.md
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: juniper-ml#2403, #2438, #2468; HANDOFF_2026-11-06_open-pr-sweep-triaged-Overtoad-rulings-consolidation-next.md
 """
 
 import subprocess
@@ -43,7 +43,7 @@ BLOCK = '''    def test_effort_false_omits_the_effort(self) -> None:
 
         ``--effort 0`` (true) is deliberately not pinned: it sends the script default, ``EFFORT_DEFAULT`` (``auto`` today),
         and Claude Code 2.1.316-2.1.319 warns "Unknown --effort value 'auto'" and ignores it, so that default is an open
-        question for the owner, not behaviour to lock in.
+        question for the Overtoad, not behaviour to lock in.
         """
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--effort", "1", "--prompt", "hello"])
         self.assertEqual(args, ["--resume", VALID_UUID, "--", "hello"])

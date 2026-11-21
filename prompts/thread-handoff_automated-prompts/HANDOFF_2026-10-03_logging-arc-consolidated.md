@@ -32,7 +32,7 @@ Continue the juniper-cascor logging redesign
 
 **Remaining work, in order**:
 
-1. **Round-2 reconciliation PR** (juniper-ml, cut from current `main`). Agent-doable; merging it is owner-gated (item 9).
+1. **Round-2 reconciliation PR** (juniper-ml, cut from current `main`). Agent-doable; merging it is Overtoad-gated (item 9).
    [VERIFIED 2026-10-03: none of it is on `main`. No commit has touched `…ROADMAP.md`, `…RECONCILIATION.md`, `HANDOFF_2026-09-22_…` or the census since `7e952534`. The census `EXCLUDED_FILES` lacks the three tools. `…ROADMAP.md:179` still says "BUILT". `:725` still says 28.25 %.] Line numbers in `round2_lane_reports.md` are at ml `f93c347f`, and these files have the same content on `main`.
    - **1a. Lane A's four fixes.** They exist uncommitted in worktree `juniper-ml/.claude/worktrees/temporal-snacking-zebra` [VERIFIED 2026-10-03: plain `diff` against `main` shows exactly these hunks]. Salvage them by copying the hunks, then soften the two "Phase 1 IS complete" phrasings per B5 (1c):
      - census `util/ad-hoc/2026-09-22_p04_log_marker_census.py`: add `EXCLUDED_FILES` entries, each with a reason, for `2026-09-22_p04_harness_mutation_check.py`, `2026-09-22_p04_reference_capture_excerpt.py` and `2026-09-23_logconfig_custom_level_binding_repro.py`.
@@ -78,7 +78,7 @@ Continue the juniper-cascor logging redesign
    - P5.1;
    - P6.1: `src/cascade_correlation/backups/` is still tracked, 5 files [VERIFIED 2026-10-03: `gh api contents`].
    - **P6.2 and P6.3 stay gated on P2** (B11).
-7. **Cascor worktree cleanup** (section 5 of the 09-24 source). Agent-doable after verification, except the two owner-gated decisions in item 9. **Never run `util/remove_stale_worktrees.bash`.** All nine still exist [VERIFIED 2026-10-03: `ls`]. The table in "Context" lists them.
+7. **Cascor worktree cleanup** (section 5 of the 09-24 source). Agent-doable after verification, except the two Overtoad-gated decisions in item 9. **Never run `util/remove_stale_worktrees.bash`.** All nine still exist [VERIFIED 2026-10-03: `ls`]. The table in "Context" lists them.
 8. **juniper-ml worktree cleanup**: remove `temporal-snacking-zebra` once 1a has landed. `cached-greeting-mochi`, the 09-22 session's worktree at `a7568f78`, still exists. Agent-doable.
 9. **Owner-gated**:
    - (a) re-confirm merge approval, which expires per session;
@@ -115,11 +115,11 @@ Continue the juniper-cascor logging redesign
 | B9 | The banner scope and "next step" (:47–58) are uncorrected. Widen the banner and add row 24: the order survives only because #680 added caller identity beyond the spec. | `HANDOFF_2026-09-22_…` |
 | B10 | §3.1 says "BUILT". Change it to MERGED `6276c459` [CHANGED SINCE HANDOFF: the lane's "#680 open" premise is moot; only the relabel remains] | `…ROADMAP.md:179`, `:207` |
 | B11 | Row 19 is wrong: P6.2 and P6.3 depend on P2; only P6.1 is unblocked | row 19 |
-| B12 | P6.4 shipped ahead of its gates (P6.2, P0.4, P2). Record the owner's hot-files ruling as the waiver. | `…ROADMAP.md` decision-6 UPDATE (:792–799) |
+| B12 | P6.4 shipped ahead of its gates (P6.2, P0.4, P2). Record the Overtoad's hot-files ruling as the waiver. | `…ROADMAP.md` decision-6 UPDATE (:792–799) |
 | B13 | Decision 5's "55–77 ns" describes stubs, not cascor; the correction was never applied | `…ROADMAP.md:771–773` |
 | B14 | B1's gate critique was dropped. ~1.03 s of 6.18 s (`_filter_by_level` + `_resolve_level_number`) is beyond P2's reach, so report P2's addressable ceiling. B1's A/B measured V0 at 2,371 ns/call against V1 at 1,162 (0.669 s wall per corpus-equivalent, ≈21 ms per candidate training). | decision-1 CORRECTION |
 | B15 | Row 17 omits part of B2's findings: "EXIT 0" has no test-count check under the conftest stub; an empty `$CASCOR` makes `git -C ""` run in the cwd; the byte-gate check covers 1 of 4 gated trees; local `--timeout=900` vs CI's 60 s | row 17 |
-| B16 | P4.2 (:486) and P2.4 (:368–370) still have P4.2 subsuming `_get_log_level_check` (the roadmap cites `logger.py:394`/`:516`, which are stale; on cascor `main` `_get_log_level` is at `:427` and `_get_log_level_check` at `:435` [VERIFIED 2026-10-03: `gh api contents` + grep]; both are now dead), while the P2.2 correction gives its deletion to P2.2. **Resolve ownership first.** Plus eight stale copies: see the list below this table | `…ROADMAP.md` |
+| B16 | P4.2 (:486) and P2.4 (:368–370) still have P4.2 subsuming `_get_log_level_check` (the roadmap cites `logger.py:394`/`:516`, which are stale; on cascor `main` `_get_log_level` is at `:427` and `_get_log_level_check` at `:435` [VERIFIED 2026-10-03: `gh api contents` + grep]; both are now dead), while the P2.2 correction gives its deletion to P2.2. **Resolve Overtoadship first.** Plus eight stale copies: see the list below this table | `…ROADMAP.md` |
 | B17 | "Path A and Path B/C emit different timestamp formats" should read: A and B emit seconds; C emits `,mmm`; 3 of 6 parsers cannot read C | `…RECONCILIATION.md:477–478` |
 | B18 | "6/6 pass in both variants" and row 3's "convergent" overstate it: only B1 probed one-hop-too-many, and B1's V4 (two-hop `_frame_info`) gave correct callers, so the suite rejects a correct implementation | `…ROADMAP.md:329–330`; row 3 |
 | B19 | The "at or above the level" rule is not universal: `stop_requested` (`src/api/lifecycle/manager.py`) has `required_level: null` | `…ROADMAP.md:199–201` |
@@ -150,12 +150,12 @@ Continue the juniper-cascor logging redesign
 - 5.5: a probe must not reconstruct the code under test. P0.4(d)(i) was exactly such a constants check;
 - 5.9: `git grep -E '(?:…)'` returns empty silently.
 
-**Owner rulings in force** (`…ROADMAP.md` §13.1) [UNVERIFIED — summarised from `HANDOFF_2026-09-24_logging-arc-p04-merged-finish-round-2-then-p21.md`, not validated; only decision 6's text was re-read]:
+**The Overtoad rulings in force** (`…ROADMAP.md` §13.1) [UNVERIFIED — summarised from `HANDOFF_2026-09-24_logging-arc-p04-merged-finish-round-2-then-p21.md`, not validated; only decision 6's text was re-read]:
 
 - decision 1: P2 runs, because the gate cleared 10 %;
 - decision 4: converge the mirror;
 - decision 5: A2-bind;
-- decision 6 UPDATE, quoted from `…ROADMAP.md:793–797`: "**P6.4 RULED, hot files ONLY.** The owner authorised `%`-args conversion in `candidate_unit.py` and `cascade_correlation.py`; shipped as cascor#675, 220 sites. … **widening needs a fresh ruling.**" [VERIFIED 2026-10-03: `sed -n 790,800p`];
+- decision 6 UPDATE, quoted from `…ROADMAP.md:793–797`: "**P6.4 RULED, hot files ONLY.** The Overtoad authorised `%`-args conversion in `candidate_unit.py` and `cascade_correlation.py`; shipped as cascor#675, 220 sites. … **widening needs a fresh ruling.**" [VERIFIED 2026-10-03: `sed -n 790,800p`];
 - decision 7;
 - decision 10: P1.4 → hoisted guard + `%`-args, not `log_if_enabled`.
 - Merge approval was granted for the 2026-09-23 session only, so **treat it as expired**.
@@ -200,7 +200,7 @@ Continue the juniper-cascor logging redesign
 | `…--fix--logging-p14-guard-display-progress--20260922-0530--0c14e92d` | same |
 | `…--fix--logging-p64-hot-files--20260922-1815--05c13d55` | same |
 | `…--measure--p14-plus-memo--20260921-0500--1b918e61` | its `logger.py` dirt DIFFERS: inspect it |
-| `…--p01--logging-corpus--20260922-0630--8065ca0f` | 5 ignored `.h5` files: owner decides (item 9d) |
+| `…--p01--logging-corpus--20260922-0630--8065ca0f` | 5 ignored `.h5` files: Overtoad decides (item 9d) |
 | `…--wip--logging-p14--20260921-0340--1b918e61` | clean; its fix is on `main`: removable (but see item 9e) |
 | `…--perf--logging-hot-path--20260830-0145--6f3b09a7` | an older arc: leave it |
 

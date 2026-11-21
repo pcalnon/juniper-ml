@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation (flood-4 round-2 ml-code carrier: the cost of the brace-sequence refusals)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: 2026-11-08_flood4r2_ml_code_brace_refusal_census.py (the builder's census, adapted here: it lumped
          every refusal that is not the cap together, and read whatever files were newest at the time).
 

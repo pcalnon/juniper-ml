@@ -6,8 +6,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling (R-OBS-SC-2 follow-ups)
 Author: Paul Calnon
 Created: 2026-11-12
-Status: ad-hoc -- one-off verifier for the three fork fixes (owner ruling 2026-11-09, "Row + fix all three")
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc -- one-off verifier for the three fork fixes (Overtoad ruling 2026-11-09, "Row + fix all three")
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md (APD-ECO-016; APD-SVCCORE-004);
          juniper-service-core/juniper_service_core/security.py (the reference: ``RateLimiter._seconds_until_reset``
          and ``FailedAuthThrottle.check``); util/ad-hoc/2026-11-12_run_with_blank_sentry_dsns.py (H-14, applied here)

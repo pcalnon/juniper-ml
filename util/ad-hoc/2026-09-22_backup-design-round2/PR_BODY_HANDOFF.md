@@ -5,9 +5,9 @@
 The thread handoff for the Juniper backup-infrastructure arc, archived per
 `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` §Step 4.
 
-State it carries: all seven gating owner decisions **ruled** (§10.1, ml#2029); `sda` SMART **run and
+State it carries: all seven gating Overtoad decisions **ruled** (§10.1, ml#2029); `sda` SMART **run and
 passed** 2026-09-23 (ml#2041); drill ordering clarified (ml#2057); ml#2045 closed unmerged; ml#2067
-open. **§8 P0 recovery is the next action and is owner-gated.**
+open. **§8 P0 recovery is the next action and is Overtoad-gated.**
 
 ## Validated by consensus — all three lenses returned FAIL on the first draft
 

@@ -624,7 +624,7 @@ a *mechanism*: nothing structural stops a later contributor from adding the dupl
 why **INV-6 (exactly one owning callback for `nn-dataset-type-dropdown.value`, asserted against
 `app.callback_map`) is not optional for C** — it is the thing that converts my discipline into a gate.
 If the team is not willing to land INV-6, ship P1-A alone and defer C; A does not touch that Output at
-all beyond the existing owner.
+all beyond the existing Overtoad.
 
 ---
 

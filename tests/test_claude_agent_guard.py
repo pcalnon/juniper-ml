@@ -26,7 +26,7 @@ Pinned here:
   of the settings stays allowed; Grep and Glob roots and patterns;
 - malformed input exits 2 with empty stdout; an unknown tool prints nothing;
 - stdout is EMPTY for every allowed case (the guard never emits ``allow``), and a deny is exactly one
-  JSON object of the documented shape whose reason names the rule id and says owner-run (D11);
+  JSON object of the documented shape whose reason names the rule id and says Overtoad-run (D11);
 - the guard parses as Python 3.9 and runs under ``/usr/bin/python3`` when that exists;
 - task C9: the settings matcher names exactly the eight built-in tools plus Serena v1.7.0's edit tools and
   shell; every Serena edit tool is judged (a ``.git/hooks`` path denied, an ordinary file allowed); paths
@@ -558,7 +558,7 @@ SELF_PROTECT_BASH_CASES = [
 ]
 
 
-# Commit-signing plan K12 (S9): the owner's signing configuration, git hooks, and the ways around D11.
+# Commit-signing plan K12 (S9): the Overtoad's signing configuration, git hooks, and the ways around D11.
 GIT_SIGNING_CASES = [
     ("git -c include.path=/tmp/sign.inc commit -m x", GIT_SIGNING),
     ("git -c includeIf.gitdir:/x/.path=/tmp/y commit -m x", GIT_SIGNING),
@@ -646,7 +646,7 @@ class BashRuleTests(GuardHarness):
     def test_gpg_secret_and_signing(self) -> None:
         self.check_table("Bash", GPG_CASES)
 
-    def test_k12_owner_signing_configuration(self) -> None:
+    def test_k12_Overtoad_signing_configuration(self) -> None:
         self.check_table("Bash", GIT_SIGNING_CASES)
 
     def test_gh_subcommands_and_keychain(self) -> None:
@@ -1055,12 +1055,12 @@ class ContractTests(GuardHarness):
                 if out:
                     self.assertEqual(json.loads(out)["hookSpecificOutput"]["permissionDecision"], "deny")
 
-    def test_deny_reason_names_the_rule_and_the_owner(self) -> None:
+    def test_deny_reason_names_the_rule_and_the_Overtoad(self) -> None:
         spec = self.assert_denied("Bash", {"command": "gh pr merge 7"}, GH_PR, primary=True)
         reason = spec["permissionDecisionReason"]
         self.assertTrue(reason.startswith("juniper-agent-guard denied this Bash call. Rule GH-PR-WRITE:"), reason)
         self.assertIn("notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md", reason)
-        self.assertIn("ask the owner", reason)
+        self.assertIn("ask the Overtoad", reason)
 
     def test_several_rules_are_all_named(self) -> None:
         spec = self.assert_denied("Bash", {"command": "sudo cat ~/.ssh/config"}, CRED_BASH, primary=True)

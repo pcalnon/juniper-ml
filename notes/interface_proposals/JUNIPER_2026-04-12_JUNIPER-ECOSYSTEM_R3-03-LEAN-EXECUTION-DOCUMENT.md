@@ -54,7 +54,7 @@ Single tabular page. Every item here is SETTLED — do not re-litigate. Source p
 | C-17 | REST fallback cadence during disconnect = 1 Hz (NOT 100 ms) | R1-05 §4.4; R2-04 D-05 | Avoids reintroducing polling bomb |
 | C-18 | `ws-metrics-buffer` store shape = `{events, gen, last_drain_ms}` (NOT bare array) | R1-05 §4.7; R2-04 D-07 | Dash equality false-negative guard |
 | C-19 | Ring-bound enforced in the handler (NOT the drain callback); AST lint enforces | R1-02 §5.4; R2-01 §6.1 | Independent of drain rate |
-| C-20 | GAP-WS-24 splits into 24a (browser JS emitter) + 24b (canopy `/api/ws_latency` + histogram), both in Phase B | R1-05 §4.8; R2-02 §6.3 | Clean ownership |
+| C-20 | GAP-WS-24 splits into 24a (browser JS emitter) + 24b (canopy `/api/ws_latency` + histogram), both in Phase B | R1-05 §4.8; R2-02 §6.3 | Clean Overtoadship |
 | C-21 | NetworkVisualizer: minimum WS wiring in Phase B; deep migration deferred if cytoscape | R1-05 §4.5; R2-04 D-06 | First Phase B commit verifies render tech |
 | C-22 | `_normalize_metric` dual-format contract (flat + nested) preserved forever; CODEOWNERS hard gate in Phase H | R1-05 §4.41; R2-04 D-27 | RISK-01 |
 | C-23 | REST endpoints (`/api/metrics/history`, `/api/train/*`, `/api/v1/training/params`, `/api/topology`) preserved FOREVER — no deprecation | R1-05 §4.23; R1-02 principle 7; R2-04 D-21, D-54 | Kill switch fallback |
@@ -82,11 +82,11 @@ Single tabular page. Every item here is SETTLED — do not re-litigate. Source p
 
 ## 2. Phase index
 
-Owner key: **C**=backend-cascor, **Y**=backend-canopy, **F**=frontend, **S**=SDK, **Sec**=security review, **O**=ops.
+The Overtoad key: **C**=backend-cascor, **Y**=backend-canopy, **F**=frontend, **S**=SDK, **Sec**=security review, **O**=ops.
 
 Effort triple = optimistic / expected / pessimistic (eng-days).
 
-| # | Phase | Goal (one line) | Owner | Effort | Entry deps | Exit top criterion | Rollback TTF | NOT-in-phase |
+| # | Phase | Goal (one line) | The Overtoad | Effort | Entry deps | Exit top criterion | Rollback TTF | NOT-in-phase |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **0-cascor** (was Phase A-server) | Cascor `/ws/training` emits monotonic `seq`, advertises `server_instance_id`+`replay_buffer_capacity`, supports `resume`, fixes state coalescer | C | 1.5/2.0/3.0 | cascor main clean; GAP-WS-19 verified | `cascor_ws_seq_gap_detected_total==0` after 72h soak | 15 min revert | Full Phase E; permessage-deflate; topology chunking; seq on `command_response` |
 | 2 | **A-SDK** (parallel with 1) | `CascorControlStream.set_params(params, timeout=1.0, command_id=...)` ships to PyPI | S | 0.5/1.0/1.5 | cascor-client main clean | `test_set_params_caller_cancellation` green | PyPI yank or pin downgrade | Canopy adapter refactor; SDK retries; debounce |
@@ -933,7 +933,7 @@ n/a (test-only).
 
 - [ ] Regression tests green
 - [ ] Audit doc published + reviewed
-- [ ] CODEOWNERS rule enforced (verified by opening a test PR that touches `normalize_metric.py` without owner review — must block)
+- [ ] CODEOWNERS rule enforced (verified by opening a test PR that touches `normalize_metric.py` without Overtoad review — must block)
 - [ ] Pre-commit hook installed
 
 ### 13.3 Rollback
@@ -1042,7 +1042,7 @@ Every switch below has a CI test (`test_<switch>_env_override`) flipping the fla
 
 ## 16. Risk register
 
-| ID | Risk | Sev/Lik | Phase | Owner | Kill switch (TTF) | Signal |
+| ID | Risk | Sev/Lik | Phase | The Overtoad | Kill switch (TTF) | Signal |
 |---|---|---|---|---|---|---|
 | 01 | Dual metric format removed aggressively | H/M | H | Y | `git revert` (5-10 min) | `/api/metrics` shape hash drift |
 | 02 | Phase B clientside-callback debuggability | M/H | B | F+O | `disable_ws_bridge=true` (5 min) | `drain_callback_gen` stuck; `browser_js_errors > 0` |
@@ -1061,7 +1061,7 @@ Every switch below has a CI test (`test_<switch>_env_override`) flipping the fla
 | 15 | CSWSH attack exploits missing Origin validation | **H**/M | B-pre-a + B-pre-b | Sec+C+Y | `disable_ws_control_endpoint=true` (5 min) | `origin_rejected_total` PAGE on any non-zero from unknown origin_hash. **Abandon trigger if kill switch itself fails** (R1-02 §9.4) |
 | 16 | Topology > 64KB silently for large networks | M/M | B-pre-a + follow-up chunking | C | REST fallback for topology (5 min) | `oversized_frame_total{endpoint,type}`; WARNING log. **Residual risk >50-100 hidden units**; fix v1.1 |
 | CCC-01 | `request_id` rename incomplete across corpus | H | all | R3 lead | grep pre-review | stale references survive to Phase G |
-| CCC-02 | Metric added but no alert/panel | M | all | CCC-02 owner | metric-before-behavior hard gate | silent metric |
+| CCC-02 | Metric added but no alert/panel | M | all | CCC-02 Overtoad | metric-before-behavior hard gate | silent metric |
 | CCC-03 | Kill switch documented but never tested in CI | H | all | ops | CI flip test mandatory | undocumented switch doesn't work in incident |
 | CCC-04 | Cross-repo pin points at unreleased version | H | A→C | ops | `required_upstream_sha` check | CI resolve failure |
 
@@ -1356,7 +1356,7 @@ Target: 1000-1500 lines (lean reformat; ~half of R3-01/R3-02 ≥2000 line target
 - Does not include 1-week-by-1-week project schedule — that's R2-02 day-by-day contracts
 - Does not repeat file-path tables when R2-01/R2-02 already have them — cross-references instead
 
-R3-03 is the **cheat sheet that lives next to the engineer's monitor while they work**. For prose-heavy context, fall through to R2-01; for phase-execution contract detail, fall through to R2-02; for cross-cutting concern ownership, fall through to R2-03; for decision rationale, fall through to R2-04.
+R3-03 is the **cheat sheet that lives next to the engineer's monitor while they work**. For prose-heavy context, fall through to R2-01; for phase-execution contract detail, fall through to R2-02; for cross-cutting concern Overtoadship, fall through to R2-03; for decision rationale, fall through to R2-04.
 
 ---
 

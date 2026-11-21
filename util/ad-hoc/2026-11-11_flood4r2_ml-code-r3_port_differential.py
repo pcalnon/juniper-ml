@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — investigation (Cursor flood-4 round-2 ml-code carrier, round 3: the validator's corpus, run again)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: validator findings ml-code-port-lens F1 and F5. This is the port lens's own generator
          (2026-11-09_flood4r2_val_ml-code-port_differential.py, written for the round-2 validation), copied with only
          this header changed, so that ``--n 6000 --seed 20261109`` draws the 10,934 words the validator judged round 2

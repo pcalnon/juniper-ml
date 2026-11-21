@@ -7,7 +7,7 @@
 # Author:     Paul Calnon
 # Created:    2026-10-04
 # Status:     ad-hoc — investigation
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    still-owed item 16 of notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md;
 #             item 1 of prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md;
 #             derived from util/ad-hoc/2026-09-23_a_n2_stack.bash

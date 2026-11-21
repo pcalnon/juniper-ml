@@ -133,7 +133,7 @@ This section enumerates every settled decision — R1-05 resolutions, R2-04 reco
 | rAF coalescer | **scaffolded, disabled** via `enable_raf_coalescer=False` | R1-05 §4.3, R2-04 D-04 |
 | REST polling fallback cadence during disconnect | **1 Hz** (NOT 100 ms) | R1-05 §4.4, R2-04 D-05 |
 | `ws-metrics-buffer` Dash store shape | **`{events: [...], gen: int, last_drain_ms: float}`** structured object | R1-05 §4.7, R2-04 D-07 |
-| GAP-WS-24 (latency instrumentation) ownership | **Split 24a (browser emitter) + 24b (canopy backend)**, both in Phase B | R1-05 §4.8, R2-04 D-08 |
+| GAP-WS-24 (latency instrumentation) Overtoadship | **Split 24a (browser emitter) + 24b (canopy backend)**, both in Phase B | R1-05 §4.8, R2-04 D-08 |
 | NetworkVisualizer in Phase B | **minimum WS wiring**; deep render migration deferred to Phase B+1 contingent on render tech verification in first commit | R1-05 §4.5, R2-04 D-06 |
 | Uncapped reconnect attempts (GAP-WS-31) | **cap lifted in Phase B**, max interval 30-60 s | R1-03 §8.5, R2-01 §6 (overrides R1-01) |
 | Reconnect backoff jitter (GAP-WS-30) | **present in Phase B** `websocket_client.js` | R1-05 §6.2, R2-01 §6 |
@@ -502,7 +502,7 @@ Coverage target: 95% on new SDK code (R1-03 §15.2).
 
 ### 3.6 Pull request plan
 
-| # | Branch | Title | Owner | Target | Merge order |
+| # | Branch | Title | The Overtoad | Target | Merge order |
 |---|---|---|---|---|---|
 | P1 | `phase-0-cascor-seq-replay-resume` | `feat(ws): seq numbers, replay buffer, resume protocol, state coalescer (GAP-WS-07,13,21,22,29,32)` | backend-cascor | juniper-cascor main | 1 (after P2) |
 | P2 | `phase-a-sdk-set-params` | `feat(sdk): CascorControlStream.set_params with command_id correlation (GAP-WS-01)` | SDK | juniper-cascor-client main | 1 (parallel with P1, must publish first) |
@@ -714,7 +714,7 @@ CI test `test_audit_log_env_override` and `test_allowed_origins_wildcard_refused
 
 ### 4.5 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P3 | `phase-b-pre-a-cascor-security` | `feat(security): origin allowlist + max_size + per-IP cap + idle timeout on /ws/training (M-SEC-01b/03/04/10)` | backend-cascor + security | juniper-cascor main |
 | P4 | `phase-b-pre-a-canopy-security` | `feat(security): origin allowlist + max_size on /ws/training + audit logger skeleton (M-SEC-01/03/07 skeleton)` | backend-canopy + security | juniper-canopy main |
@@ -990,7 +990,7 @@ CI tests `test_enable_browser_ws_bridge_env_override`, `test_disable_ws_bridge_e
 
 ### 5.5 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P5 | `phase-b-cascor-audit-prom-counters` | `feat(cascor): audit-event Prometheus counters (deferred from B-pre-a per R1-05 §4.14)` | backend-cascor | juniper-cascor main |
 | P6 | `phase-b-canopy-drain-wiring` | `feat(canopy): ws_dash_bridge drain callbacks, Plotly extendTraces, connection indicator, Phase I cache bust, jitter-backoff lift (flag off)` | backend-canopy + frontend | juniper-canopy main |
@@ -1200,7 +1200,7 @@ CI tests for each flag.
 
 ### 6.5 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P8 | `phase-b-pre-b-cascor-control-security` | `feat(security): /ws/control origin, rate limit, idle timeout, HMAC adapter auth (M-SEC-01/01b/05/10/11)` | backend-cascor + security | juniper-cascor main |
 | P9 | `phase-b-pre-b-canopy-csrf-audit` | `feat(security): cookie session + CSRF first-frame + audit log prometheus + M-SEC-07 extended` | backend-canopy + security | juniper-canopy main |
@@ -1284,7 +1284,7 @@ Canopy adapter splits parameter updates into "hot" (11 params: `learning_rate`, 
 Unit: `test_apply_params_feature_flag_default_off`, `test_apply_params_hot_keys_go_to_websocket`, `test_apply_params_cold_keys_go_to_rest`, `test_apply_params_mixed_batch_split`, `test_apply_params_hot_falls_back_to_rest_on_ws_disconnect`, `test_apply_params_hot_falls_back_to_rest_on_timeout`, `test_apply_params_hot_surfaces_server_error_no_fallback`, `test_apply_params_unclassified_keys_default_to_rest_with_warning`, `test_apply_params_preserves_public_signature`, `test_apply_params_latency_histogram_labels_emitted`, `test_control_stream_supervisor_reconnects_with_backoff`, `test_control_stream_supervisor_shutdown_cancels_pending_futures`, `test_len_pending_returns_to_zero_after_failure_modes` (nightly), `test_cascor_rejects_unknown_param_with_extra_forbid`, `test_canopy_adapter_defaults_unclassified_to_rest_with_warning`. Chaos: inject random `Exception` in recv loop; assert pending map fully drained, supervisor restarts.
 
 ### 7.6 Pull request plan
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P10 | `phase-c-canopy-set-params-adapter` | `feat(canopy): set_params hot/cold split, ws transport behind flag (P2)` | backend-canopy | juniper-canopy main |
 
@@ -1344,7 +1344,7 @@ Route browser `start`/`stop`/`pause`/`resume`/`reset` training-control clicks th
 - `test_set_params_echoes_command_id` (Phase G cross-reference)
 
 ### 8.5 Pull request plan
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P11 | `phase-d-cascor-control-commands` | `feat(cascor): /ws/control command dispatch + per-command timeouts` | backend-cascor | juniper-cascor main |
 | P12 | `phase-d-canopy-button-ws-routing` | `feat(canopy): training-control buttons route via /ws/control with REST fallback` | frontend + backend-canopy | juniper-canopy main |
@@ -1402,7 +1402,7 @@ Replace serial fan-out in `WebSocketManager.broadcast()` with per-client pump ta
 - `test_slow_client_does_not_block_other_clients`, `test_slow_client_send_timeout_closes_1008_for_state`, `test_slow_client_progress_events_dropped`, `test_drop_oldest_queue_policy`, `test_backpressure_default_is_drop_oldest_progress_only` (R1-05 regression gate), `test_event_type_classification_for_backpressure_policy`, `test_block_policy_still_works_when_opted_in`.
 
 ### 9.5 Pull request plan
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P13 | `phase-e-cascor-backpressure-pump-tasks` | `feat(cascor): per-client pump tasks + bounded queues + policy matrix (GAP-WS-07 full fix)` | backend-cascor | juniper-cascor main |
 
@@ -1439,7 +1439,7 @@ Add application-level `ping`/`pong` heartbeat to detect TCP half-open faster tha
 - `test_heartbeat_ping_pong_reciprocity`, `test_dead_connection_detected_via_missing_pong`, `test_reconnect_attempt_uncapped`, `test_jitter_formula_no_nan_delay`, `test_broken_connection_1006_triggers_heartbeat_detection_and_reconnect`.
 
 ### 10.5 Pull request plan
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P14 | `phase-f-heartbeat-jitter` | `feat(ws): application-level heartbeat, uncapped reconnect, jitter formula` | frontend + backend-cascor | juniper-cascor + juniper-canopy main |
 
@@ -1482,7 +1482,7 @@ Add cascor-side integration tests exercising `/ws/control` `set_params` via Fast
 Tests marked `@pytest.mark.critical` — run in `fast` lane on every PR to cascor or cascor-client (R1-02 §7.4).
 
 ### 11.4 Pull request plan
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P15 | `phase-g-cascor-set-params-integration` | `test(cascor): /ws/control set_params integration suite + contract lane` | backend-cascor | juniper-cascor main |
 
@@ -1513,14 +1513,14 @@ Lock in the dual metric format contract (flat keys and nested keys both present 
 - **Pre-commit hook** (R1-02 §7.5): refuses commits removing nested-format keys from normalize output (static check).
 
 ### 12.4 Pull request plan
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P16 | `phase-h-normalize-metric-audit` | `docs(audit): normalize_metric consumer audit + CODEOWNERS rule + regression gate (RISK-01)` | backend-canopy | juniper-canopy main |
 
 Version bump: canopy **patch**.
 
 ### 12.5 Exit gate
-1. Regression tests green. 2. CODEOWNERS rule enforced (test PR that touches `_normalize_metric.py` without owner review is blocked). 3. Consumer audit doc reviewed and merged. 4. Pre-commit hook installed.
+1. Regression tests green. 2. CODEOWNERS rule enforced (test PR that touches `_normalize_metric.py` without Overtoad review is blocked). 3. Consumer audit doc reviewed and merged. 4. Pre-commit hook installed.
 
 ### 12.6 Rollback
 None needed (test-only + doc phase). If future PR proposes removal, re-run Phase H scenario analysis.
@@ -1607,7 +1607,7 @@ Consolidated from R2-01 §14, R2-02 §5.4, R2-03 CCC-03 §5.4 and refined. Every
 
 The 10 CCCs from R2-03, with phase touchpoints integrated throughout §3-§13 above. This section lists each CCC's **owning role** (assigned per R2-03 §14.12 recommendation) and its **key acceptance criteria** — the per-phase details are in the individual phase sections.
 
-| # | CCC | Owner | Key acceptance criteria |
+| # | CCC | The Overtoad | Key acceptance criteria |
 |---|---|---|---|
 | CCC-01 | Wire-format schema evolution | backend-cascor lead | `command_id` rename enforced; additive-only contract tested; rollout state matrix documented in Phase 0-cascor PR |
 | CCC-02 | Observability stack | backend-canopy lead | Metric-before-behavior enforced via CI; SLO panel deployed; page alerts test-fired; metrics-presence test in `fast` lane |
@@ -1839,7 +1839,7 @@ Every phase has all required fields:
 
 ### 22.2 CCC coverage
 
-All 10 CCCs from R2-03 woven into Phase 0-cascor, B-pre-a, B, B-pre-b explicitly (§3.3.3, §4.3.2, §5.3.2, §6.3.2). Later phases (C-H) reference CCCs per their phase contracts (§7.4, etc.). Summary table in §16 lists owner + acceptance per CCC. Phase x CCC matrix can be reconstructed from the per-phase CCC subsections.
+All 10 CCCs from R2-03 woven into Phase 0-cascor, B-pre-a, B, B-pre-b explicitly (§3.3.3, §4.3.2, §5.3.2, §6.3.2). Later phases (C-H) reference CCCs per their phase contracts (§7.4, etc.). Summary table in §16 lists Overtoad + acceptance per CCC. Phase x CCC matrix can be reconstructed from the per-phase CCC subsections.
 
 ### 22.3 R2-04 decision coverage
 
@@ -1886,7 +1886,7 @@ All 16 RISK-NN entries from source doc §10 have entries in §15 with severity, 
 9. **§19 effort summary**: initially listed total as 13.5 days. Corrected to show R2-02's more conservative 15.75 expected, which includes the 2.25-day delta for audit, HMAC, and NetworkVisualizer work. The 13.5 from R1-05 §4.40 is the parallel-execution compressed estimate.
 10. **§3.4 SDK tests**: initially listed 12 tests. Added `test_correlation_map_bounded_at_256` and `test_len_pending_returns_to_zero_after_failure_modes` for 14 total per R2-01 §4.3.
 11. **§5.3.2 CCC-08**: initially only mentioned "REST paths kept". Added specific reference to regression harness file and golden shape file per R2-03 CCC-08 §10.3 items 2, 5.
-12. **§16 CCC summary**: initially did not assign owners per R2-03 §14.12 recommendation. Added owner-role column.
+12. **§16 CCC summary**: initially did not assign Overtoads per R2-03 §14.12 recommendation. Added Overtoad-role column.
 
 ### 22.9 Confidence assessment
 

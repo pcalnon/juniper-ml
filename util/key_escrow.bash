@@ -33,7 +33,7 @@ set +x  # first: under `bash -x` the lines that handle the key would be traced t
 #   key_escrow.bash verify-file PATH [--expect P]        hash a copy held in a file
 #   key_escrow.bash verify-typed [--expect P]            hash a copy typed or pasted (hidden prompt)
 #   key_escrow.bash cleanup --spool dNNNNN-NNN [...]     (root) shred named spool documents
-#   key_escrow.bash cleanup --sheet [PATH]               (root or owner) shred the cleartext sheet
+#   key_escrow.bash cleanup --sheet [PATH]               (root or Overtoad) shred the cleartext sheet
 #   key_escrow.bash cleanup --old-env --escrow-verified  (root) shred the moved-aside .env
 #
 # The reference hash: as root, the sha256 of the credstore key itself (and --expect, if given,
@@ -61,7 +61,7 @@ readonly OLD_ENV=/home/duplicati/.config/Duplicati.empty-2026-09-20/.env
 readonly DEFAULT_SHEET="$OWNER_HOME/.cache/yamaguchi-key-escrow-sheet.txt"
 readonly SPOOL=/var/spool/cups
 readonly SHAPE='^[A-Za-z0-9+/]{64}$'   # openssl rand -base64 48 | tr -d '\n'
-readonly DEFAULT_PRINTER=HP_OfficeJet_Pro_6970_540AC0_USB   # from the owner's 2026-11-04 stub
+readonly DEFAULT_PRINTER=HP_OfficeJet_Pro_6970_540AC0_USB   # from the Overtoad's 2026-11-04 stub
 readonly DEFAULT_COPIES=3
 readonly PASS_SRC="$OWNER_HOME/.config/duplicati-backup/env"
 readonly PASS_SIBLING="$SIBLING_DIR/env"
@@ -143,7 +143,7 @@ cmd_status() {
     fi
     if [[ -e "$OLD_ENV" ]]; then printf 'moved-aside .env             PRESENT (shred after escrow)\n'
     else printf 'moved-aside .env             gone\n'; fi
-    if [[ -e "$DEFAULT_SHEET" ]]; then printf 'cleartext sheet              PRESENT %s -- cleartext under the owner home: shred after printing\n' "$(stat -c '%a %U %s' -- "$DEFAULT_SHEET")"
+    if [[ -e "$DEFAULT_SHEET" ]]; then printf 'cleartext sheet              PRESENT %s -- cleartext under the Overtoad home: shred after printing\n' "$(stat -c '%a %U %s' -- "$DEFAULT_SHEET")"
     else printf 'cleartext sheet              gone\n'; fi
     printf 'spool documents:\n'; list_spool
     printf 'not checkable here: the printed sheet and the password manager -- verify-typed each\n'
@@ -306,7 +306,7 @@ cmd_cleanup() {
             done
             printf 'spool now:\n'; list_spool ;;
         sheet)
-            ((EUID == 0)) || [[ -O "$sheet_path" ]] || die 3 "not root and not the owner of $sheet_path"
+            ((EUID == 0)) || [[ -O "$sheet_path" ]] || die 3 "not root and not the Overtoad of $sheet_path"
             [[ -f "$sheet_path" && ! -L "$sheet_path" ]] || die 3 "$sheet_path is not a regular file"
             [[ "$sheet_path" == /home/* ]] || die 3 "--sheet takes a file under /home (the cleartext sheet), got $sheet_path"
             shred -u -- "$sheet_path" && [[ ! -e "$sheet_path" ]] || die 1 "shred failed"

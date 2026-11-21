@@ -27,14 +27,14 @@ design is `notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md`.
 ## 1. GOAL (paste this into the new thread)
 
 Continue the **juniper-ml performance lane**. This session discharged the predecessor's §1 items
-2, 3 and 4 — and two of the three turned into **owner questions** rather than work. Both PRs it
+2, 3 and 4 — and two of the three turned into **Overtoad questions** rather than work. Both PRs it
 opened are **MERGED** and its worktrees are cleaned up, so nothing is left to land. What remains
-splits into *decisions only the owner can take*, *free work*, and *host-bound work*.
+splits into *decisions only the Overtoad can take*, *free work*, and *host-bound work*.
 
 ### Immediate, in order
 
-1. **Three owner decisions are open — two surfaced this session, one carried from the predecessor
-   §3.3. Put them to the owner; do NOT take them yourself:**
+1. **Three Overtoad decisions are open — two surfaced this session, one carried from the predecessor
+   §3.3. Put them to the Overtoad; do NOT take them yourself:**
    - **PF-2's axis is inert** (re-scope note §4): `n_points_per_spiral` 250 → 2000 moves neither
      `step_count` (identical 450 / 890 / 1770 at both ends) nor step time. Widen n by orders of
      magnitude, retarget the scenario at the candidate phase, or drop PF-2. If kept as written the
@@ -45,7 +45,7 @@ splits into *decisions only the owner can take*, *free work*, and *host-bound wo
      turns `tests/test_experiment_suite_yamls.py` red in CI. Recommended fix: move the cascor
      version-floor check from `load_suite` to the execution path, still fail-closed.
    - **The `epochs_completed` exact-match option** for the candidate micro-benchmarks (predecessor
-     §3.3) — still unexamined, still an owner call.
+     §3.3) — still unexamined, still an Overtoad call.
 2. **Free — 4.1's residue, S not L**: an occupancy probe. Sample the cascor process tree's CPU
    (uvicorn pid + forkserver + children, `/proc/<pid>/stat` deltas at 1 s — **not** `ps %CPU`,
    which is a lifetime average) during one PF-1 cell and express it in sweep-worker equivalents;
@@ -117,7 +117,7 @@ splits into *decisions only the owner can take*, *free work*, and *host-bound wo
   branch commit at cut time — the squash landed as `3de89b11`; the sha is provenance, not
   identity), 71 benchmarks each. `machine_info.juniper` is compared (warns on change);
   `juniper_run.loadavg` is recorded, never compared. Compare with `--benchmark-compare=0002`; never
-  `--benchmark-compare-fail` (owner, item 2.5). The worktree's dated `baseline_20260909.json` —
+  `--benchmark-compare-fail` (Overtoad, item 2.5). The worktree's dated `baseline_20260909.json` —
   the first `baseline_*.json` ever to carry timing keys — was copied there as
   `baseline_20260909.worktree-copy.json` before the worktree was removed.
 - **No cascor baseline file ever held a timing** — all 22 that ever existed, 312 entries, zero
@@ -227,7 +227,7 @@ from, stop — the baseline or the reader drifted.
 
 Deliberately: the predecessor's §8 (CLI-experimentation arc tail, the title-repair gate,
 `JR-ML-OBS-003`, R-1, the recurrence `juniper-data` pin) is untouched and still open; the backup,
-canopy E2E, defect register, P5, soak, partition and service-core arcs have other owners.
+canopy E2E, defect register, P5, soak, partition and service-core arcs have other Overtoads.
 
 ---
 
@@ -257,7 +257,7 @@ independent code). **B2 — SAFE WITH FIXES** (3 MEDIUM, 3 LOW, no HIGH).
 | 5 | the PF-1 calibration-thinness caveat (predecessor §4) carried nowhere, though the 1770 cross-check inherits it | B2 | fixed — §3 and the note's §4; predecessor §4 added to the "remains live" list |
 | 6 | the P1 design cited without its filename | B2 | fixed — header |
 | 7 | the cascor primary fast-forwarded without the predecessor's fourth "Do NOT" reaffirmed or the holder check recorded | B2 | fixed — §1 and §5 |
-| 8 | "three owner decisions surfaced" — one is carried, not new | B2 | fixed |
+| 8 | "three Overtoad decisions surfaced" — one is carried, not new | B2 | fixed |
 | 9 | "6–8 knee" cited to the note's §1.3, which says "~4–8" | B2 | reconciled here and in P2 row 4.1 |
 | 10 | the note's §1.2 presents "the harness exists" as satisfying the P1 design's literal "two suites" shape rather than reinterpreting it | B1 | fixed — note §1.2, this §3 |
 | 11 | no mechanism given for the count invariance; the real one (data-blind throttle, `max_units_reached`) is stronger **and bounds the finding** — widening n must revisit `max_hidden_units` | B1 | fixed — note §4 blockquote, this §1 / §3 |

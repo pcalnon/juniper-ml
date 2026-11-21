@@ -6,21 +6,21 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-19
 Status: ad-hoc — one-off (the E2 validation runner; all three envs validated 2026-10-20, plan §18.2)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: conf/hosts/turing/conda-envs/{JuniperCascor1,JuniperData,JuniperCanopy1}.yml (the specs this validates);
          util/ad-hoc/2026-10-19_turing_e2_derive_conda_envs.py (derives them);
          notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (D8, E2, G-ENV; §17)
 
 Why: the derived specs solve (mamba --dry-run), but on 2026-10-19 no env could be created. Outbound connections from
 Miniforge's base python3.13 and from mamba time out on turing, while curl, gh and JuniperPython's python connect to
-the same hosts. That is Little Snitch's per-app filtering. Once the owner allows conda.anaconda.org for those
+the same hosts. That is Little Snitch's per-app filtering. Once the Overtoad allows conda.anaconda.org for those
 binaries, and pypi.org and files.pythonhosted.org for the new envs' pythons, create each env from its spec, then run:
 
     python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py <cascor|data|canopy> [--phase prepare|install|test|all]
         [--lane unit|integration|all] [--work DIR] [--env KEY=VALUE ...]
 
   prepare  rsync each repo checkout under ~/Development/python/Juniper (and juniper-data-client, which cascor and data
-           install) into WORK/trees/, without .git. The owner's checkouts are only read.
+           install) into WORK/trees/, without .git. The Overtoad's checkouts are only read.
   install  create a `venv --system-site-packages` overlay on the conda env and run the repo's CI pip steps in it, so
            the conda env stays exactly what its spec builds.
   test     run the repo's ci.yml unit and integration lanes; write junit, logs and a summary JSON under WORK/logs/.
@@ -34,7 +34,7 @@ stock run's.
 
 Deviations from CI, on purpose (from the runner written in the 2026-10-19 session):
   - --maxfail is dropped, so every test runs and the counts are complete;
-  - juniper-data-client comes from the WORK copy of the owner's checkout instead of `pip install git+https://...@main`;
+  - juniper-data-client comes from the WORK copy of the Overtoad's checkout instead of `pip install git+https://...@main`;
   - TMPDIR stays the macOS per-user default, because AF_UNIX socket paths cap at 104 bytes;
   - MPLBACKEND=Agg (CI runners are headless; this host has a desktop session), and CI=true as on Actions;
   - the stray PYTHONPATH (JuniperPython's conda env var, "${CONDA_PREFIX}/lib/python3.9/site-packages") is not

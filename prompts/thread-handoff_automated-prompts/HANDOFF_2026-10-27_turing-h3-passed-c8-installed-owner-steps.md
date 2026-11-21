@@ -1,13 +1,13 @@
-# Handoff — turing bring-up: H3 passed (3 of 3 agree, 3 of 3 denials) once the owner installed C8; owner steps next
+# Handoff — turing bring-up: H3 passed (3 of 3 agree, 3 of 3 denials) once the Overtoad installed C8; Overtoad steps next
 
-- **Continued (2026-10-30, plan v1.4.11).** "t1" (8161e3) landed "Agent next" item 2, the check's wording (juniper-ml#2392). The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_turing-check-wording-fixed-owner-steps.md`, which carries this file's owner steps forward.
+- **Continued (2026-10-30, plan v1.4.11).** "t1" (8161e3) landed "Agent next" item 2, the check's wording (juniper-ml#2392). The arc's main handoff is now `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_turing-check-wording-fixed-Overtoad-steps.md`, which carries this file's Overtoad steps forward.
 
 - **From:** the 2026-10-26/27 session on turing named "cached-enchanting-cosmos-84" (760fde; worktree `.claude/worktrees/cached-enchanting-cosmos`), which the user later renamed "c2-applied-gate-reads-getter-sentence".
   - It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`.
-  - "c9-landed-h6-audited-owner-decides" (bd4cfc) continued from that file too and applied H6 (plan v1.4.9). The two sessions split the work by cross-session message: H3 here, H6 there.
+  - "c9-landed-h6-audited-Overtoad-decides" (bd4cfc) continued from that file too and applied H6 (plan v1.4.9). The two sessions split the work by cross-session message: H3 here, H6 there.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.4.10. §18.2 holds the C8, H2, C9 and H3 rows, and §18.3 erratum E-H3.
-- **This file is the arc's main handoff.** It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-owner.md`, which now points here, and carries that file's owner steps forward.
-- **Standing approval:** the owner granted merge approval for the work arc, merging only after green; this session's start repeated it. It does not cover the `pypi` deployment gate.
+- **This file is the arc's main handoff.** It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-Overtoad.md`, which now points here, and carries that file's Overtoad steps forward.
+- **Standing approval:** the Overtoad granted merge approval for the work arc, merging only after green; this session's start repeated it. It does not cover the `pypi` deployment gate.
 
 ## Done this session
 
@@ -18,7 +18,7 @@
 
 ## H3, in brief
 
-- **The owner installed C8** on 2026-10-26, at about 22:30Z: the pull, the guard installer, and `install_agents.bash` (9 links at 22:32Z).
+- **The Overtoad installed C8** on 2026-10-26, at about 22:30Z: the pull, the guard installer, and `install_agents.bash` (9 links at 22:32Z).
 - **C8's acceptance** was checked here at 2026-10-27T00:22Z:
   - `commit.gpgsign` is `false`;
   - `cat ~/.ssh/config` was denied (CRED-PATH-BASH);
@@ -41,7 +41,7 @@
 - **The `en7` dongle is gone.** macOS shows no interface with its MAC.
 - **WebFetch to kubernetes.io timed out.** All six fetches did, while `curl` reached the site, so the k8s audit's comparison with upstream is "could not verify".
 - **The check's wording.** `util/host_state_check.py`'s G-TOOLS `kubectl` remediation omits D3, and G-MEM's "free + inactive" figure also counts speculative pages.
-- **The k8s audit** holds 14 findings: 6 major and 8 minor, with 10 owner questions. Its majors:
+- **The k8s audit** holds 14 findings: 6 major and 8 minor, with 10 Overtoad questions. Its majors:
   - no reservation values exist for the 6 GiB node;
   - no taint step exists, nor F6's `nd-*` macvm script;
   - the VM, as written, has no route out and no admin path;
@@ -60,11 +60,11 @@
   - G-MEM fails on node mode (F3) and on Docker Desktop.
 - **G-AGENT holds** (H2's suites; H3's denials).
 - **The guard is 1.2.0 and installed.** Agents land only through `util/open_signed_pr.py`. It denies `gh pr create`, `gh api -X`, any mention of `~/.ssh` or `~/.gnupg` in a Bash command, and any mention of `.mcp.json`.
-- **H6 is applied** (v1.4.9). The token's rotation and the first VS Code sync are the owner's.
+- **H6 is applied** (v1.4.9). The token's rotation and the first VS Code sync are the Overtoad's.
 - **H5's option B is intact.** The hardening check exited 0 at 00:17Z; B.5 is still pending.
 - **C0** still reports `[Included]` (02:09Z).
 
-## Owner steps
+## The Overtoad steps
 
 1. **D11 item 5.** In a real terminal, run `gh auth status`. Then give agent sessions item 5's fine-grained PAT: the 10 Juniper repos, Contents and Pull requests read/write, Metadata read, no Administration.
 2. **H6's, carried forward from the H6 handoff:**
@@ -78,7 +78,7 @@
    - F2: re-attach the `en7` dongle and get a 1000baseT link;
    - A6: a DHCP reservation;
    - iperf3 to yamaguchi.
-7. **The k8s audit's questions**, F1's D1 ruling first: `notes/JUNIPER_2026-10-27_JUNIPER-ECOSYSTEM_TURING-K8S-NODE-AUDIT.md`, "Open questions for the owner". Question 5 asks whether to split E5 so that X1, X2 and X5 land now.
+7. **The k8s audit's questions**, F1's D1 ruling first: `notes/JUNIPER_2026-10-27_JUNIPER-ECOSYSTEM_TURING-K8S-NODE-AUDIT.md`, "Open questions for the Overtoad". Question 5 asks whether to split E5 so that X1, X2 and X5 land now.
 8. **Unchanged:**
    - B.4, a standing Little Snitch rule for the Cellar `node`;
    - B.5, `git remote remove origin` in each H5 tree, from a separate terminal;
@@ -90,14 +90,14 @@
 
 ## Agent next
 
-1. **After the owner's first VS Code sync:** re-run `python3 -I util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py --check`, which should hold 8 of 8.
-2. **The check's wording (AGENT, no owner step):** in `util/host_state_check.py`, G-TOOLS `kubectl`'s remediation should name D3, and G-MEM's message should say what its figure counts. Re-run G1's mutation check, and the C2 one if G-SEC is touched.
-3. **E5's split, if the owner agrees with the audit's question 5(a):** land X1, X2, X5 (and X9) in juniper-k8s through `python3 util/open_signed_pr.py --repo juniper-k8s`. X3 and X4 wait on A6.
-4. **H3's upstream half, if the owner wants it** (the audit's question 10): re-run `k8s-node-sme`'s items 2-4 from a session that can WebFetch kubernetes.io.
+1. **After the Overtoad's first VS Code sync:** re-run `python3 -I util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py --check`, which should hold 8 of 8.
+2. **The check's wording (AGENT, no Overtoad step):** in `util/host_state_check.py`, G-TOOLS `kubectl`'s remediation should name D3, and G-MEM's message should say what its figure counts. Re-run G1's mutation check, and the C2 one if G-SEC is touched.
+3. **E5's split, if the Overtoad agrees with the audit's question 5(a):** land X1, X2, X5 (and X9) in juniper-k8s through `python3 util/open_signed_pr.py --repo juniper-k8s`. X3 and X4 wait on A6.
+4. **H3's upstream half, if the Overtoad wants it** (the audit's question 10): re-run `k8s-node-sme`'s items 2-4 from a session that can WebFetch kubernetes.io.
 5. **After K10:** K11 records the I-SIGN matrix and fills in G-SIGN.integration.
 6. **After E-H4-WHEEL:** H4's live check, `timeout 30 claude mcp list`.
 7. **After B.5:** re-run `python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py`, and record B.4 and B.5.
-8. **F7** (AGENT, P2), if the owner wants it before F4. Its design notes are in the c2-applied handoff, and the k8s audit's question 7 bears on its acceptance.
+8. **F7** (AGENT, P2), if the Overtoad wants it before F4. Its design notes are in the c2-applied handoff, and the k8s audit's question 7 bears on its acceptance.
 9. **Before numbering the next plan revision,** check for an open turing plan PR: `gh pr list --repo pcalnon/juniper-ml --state open --search "turing in:title"`.
 
 ## Verify the starting state
@@ -123,7 +123,7 @@ python3 -I util/ad-hoc/2026-10-27_turing_h3_record.py --h3-pr 2374 --h3-sha 0584
   - this file.
 - **Modified in this session:**
   - `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`, to v1.4.10;
-  - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-owner.md`, given a pointer here.
+  - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-Overtoad.md`, given a pointer here.
 - **Referenced, not changed:**
   - `notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md` (K6-K13, §10.2, §13);
   - `.claude/agents/macos-host-sme.md`, `.claude/agents/signing-auth-sme.md`, `.claude/agents/k8s-node-sme.md` and `.claude/agents/prompt-validator.md`;

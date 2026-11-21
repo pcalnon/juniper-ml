@@ -89,9 +89,9 @@ Gitleaks v8.30.1. All inputs are synthetic except rows 3, 4 and 6.
 | R11B2-04 Row r's read is S0.13's | MINOR | Accepted | XC-PRESERVE's method names S0.13 |
 | R11B2-05 H-22's lift and the exit disagreed | MINOR | Accepted | H-22 and the Phase 11 rule: "through a release, a sync to the validated branch or to `main`, or a validated port" |
 | R11B2-06 §8 and §9 skipped the port's validation | MINOR | Accepted | §8's `JuniperCascor1` row and §9's relay row: "as a validated port"; a new §9 row for the recurrence host legs |
-| R11B2-07 The after-upgrade run had no slot | MINOR | Accepted | Security step 5 split: the owner upgrades; a session runs S0.11's relay tests with the DSNs empty; then the owner restarts. Step 4's lock PRs get the same run |
+| R11B2-07 The after-upgrade run had no slot | MINOR | Accepted | Security step 5 split: the Overtoad upgrades; a session runs S0.11's relay tests with the DSNs empty; then the Overtoad restarts. Step 4's lock PRs get the same run |
 | R11B2-08 S0.13 held up sitting item 8 | MINOR | Accepted | S0.13 gates only A10's ml#2183 limb, which moves to the mid-wave sitting if S0.13 is not done |
-| R11B2-09 data#454's entry had no owner | MINOR | Accepted | R-DATA: P3-03 writes it |
+| R11B2-09 data#454's entry had no Overtoad | MINOR | Accepted | R-DATA: P3-03 writes it |
 | R11B2-10 P1-08 checked a step no procedure holds | MINOR | Accepted | H-23: the fold-in carries the step into A0, A and A2, so P1-08 reviews it; a restore before then applies it with the read-back as its only check |
 | R11B2-11 #2166 | MINOR | Accepted (with R11A-06) | As R11A-06 |
 | R11B2-12 57 or 63 | MINOR | Accepted (with R11A-13) | As R11A-13 |
@@ -112,7 +112,7 @@ Gitleaks v8.30.1. All inputs are synthetic except rows 3, 4 and 6.
 
 The fleet ended after v1.10.0's freeze, outside this plan:
 
-- **ml#2181** was closed unmerged by the owner at 16:10:16Z (Lane A's GETs), with a comment that cites the owner's flood-3 record.
+- **ml#2181** was closed unmerged by the Overtoad at 16:10:16Z (Lane A's GETs), with a comment that cites the Overtoad's flood-3 record.
 - **ml#2184** merged at 16:40:27Z (`1da05a92`). It carried 16 of juniper-ml's docs drafts, corrected against `main` (ml#2125, #2152 and #2177 among them), folded in the checked pieces of #2119, #2122, #2128, #2137 and #2146, and left #2141 and #2181 closed; the drafts it names were then closed. It changed `docs/REFERENCE.md` (996 lines added, 28 removed, to 0.6.62) and eight other docs and README files.
 - **ml#2185** opened at 16:57:47Z and merged at 17:17:37Z (`81d3fbb3`), with the same 49 files it held at 17:05Z. It adds `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, a `CHANGELOG.md` entry and 47 `util/ad-hoc/` files. The record was read from its branch, except its §5 per-PR tables, where one line carries a credential word. Its counts: 116 drafts in eight repositories; 25 merged as themselves, 78 carried by six consolidation PRs, 10 superseded, 3 closed as wrong, none open.
 - **The census** at 17:01Z (`--since 2026-10-08T15:21:00Z`, exit 0, no UNREADABLE line): ml#2184 the only merge in the nine repositories; ml#2185 the only open PR; the newest Releases and PyPI's versions unchanged since 2026-09-24. A census at 17:26Z (`--since 2026-10-08T17:01:00Z`) found ml#2185 merged, no open PR in the nine repositories, and Releases and PyPI unchanged. Lane A's census at 15:35Z and Lane B2's at 15:33Z and 16:07Z saw 22 drafts open, and Lane A's at 16:10Z saw 21, after ml#2181's closing.
@@ -130,7 +130,7 @@ Round 12 is briefed on both. Elsewhere the lanes overlapped on six themes and ag
 
 ## Slips on the lanes' constraints
 
-None reached a repository or printed a real value. The owner may want to know:
+None reached a repository or printed a real value. The Overtoad may want to know:
 
 - **Lane A**: four commands refused by the guard and re-issued plainly; a `git grep` that printed one public line of a certification note carrying a 16-hex passphrase fingerprint (a hash prefix on `main`, not a credential), read outside the line read; a `find` that hashed census-tool copies in earlier rounds' lane scratch; public PR text written to scratch by shell redirection; `od -c` printing two synthetic values; and the tools under test writing synthetic values to scratch files, confirmed by count.
 - **Lane B1**: two commands refused and re-issued; three synthetic inputs first named `.env`, then renamed; bare CRs written into synthetic inputs with `sed -i`, after which the harness echoed those synthetic files, with their invented values, back into the session; a scratch copy of the read made and mutated as a script file, restored at the end; and a harness task-output file left unread.

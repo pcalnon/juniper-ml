@@ -22,13 +22,13 @@ The problems are in what a successor would do while "defect reg [24f8d8]" is sti
 |---|---|---|---|
 | Verification commands (L153-165) | Run all 13; compare each output with its note; compare with the clock | **Yes, 13 of 13, no refusal.** Results: 17 entries; #2088 MERGED 23:41:16Z `5af9d722`; #2089 OPEN `a2fa3ad8` BLOCKED; CodeQL fail; peer PR none at 01:12Z; 136 \| 100 \| 36; AGREE; 42; `d1c66a11…`; data worktree `[ahead 1]` and clean; transcript printed; data#440, cascor#689 and #690 open; /tmp inodes 85%. "34 in a fresh checkout" holds: main has 37 headed reports minus 3 STOPPED stubs | Drift since the freeze: cmd 5 now prints #2097 (01:20:02Z), and `git status` shows 18 entries (the consolidated draft) (L7) |
 | First action 2 and In flight 1 (L21, L57-67) | `ListAgents`; `find … -mmin -30`; read `last_report()` | Yes. A fresh `ListAgents` names the caller and lists only the caller's own subagents, so the executor never appears; [24f8d8] appears as busy or idle. The executor is alive: 01:27:53Z it began "wait up to ten minutes for the harness"; the ref is still `d1c66a11` at 01:31Z. Its unsigned scratch commit `f97850c1` was made at 01:04:13Z. `last_report()` returns `""` mid-flight | In the alive case: no hand-over (H1) and no way out (M2). In the dead case: a finished executor reads as dead (M1) |
-| First action 3 (L22-25) | `ListAgents`; SendMessage the peer's successor, "you replace [24f8d8]"; `gh pr list … --head docs/handoff-round42-followup-lane` | The last one finds #2097. The message was not sent (forbidden to me) | While [24f8d8] lives and is coordinating with the peer, "you replace [24f8d8]" splits ownership of the lane (H1) |
+| First action 3 (L22-25) | `ListAgents`; SendMessage the peer's successor, "you replace [24f8d8]"; `gh pr list … --head docs/handoff-round42-followup-lane` | The last one finds #2097. The message was not sent (forbidden to me) | While [24f8d8] lives and is coordinating with the peer, "you replace [24f8d8]" splits Overtoadship of the lane (H1) |
 | First action 4 (L26-29) | Wait for the gate; re-copy the draft; check for PRs that carry the paths | Waiting is correct now | No way out if [24f8d8] lingers (M2). The PR check misses main and stops at 100 files (L4) |
 | Remaining 0 (consolidate) | Look for a consolidated handoff; read the three inputs; reconcile | The inputs exist: #2097's file and the predecessor on main | [24f8d8] is already doing it; the untracked draft is invisible to L8 (H1). The reconcile list was stale at the freeze (L2) |
 | Remaining 1 (ship) | Re-copy the draft; `git show origin/main:<p> \| diff - <p>` (works, not refused); `open_signed_pr.py … --commit-body "Allow-Symbol-Loss: const:SESSIONS" --dry-run` | Yes. The tool supports `--commit-body`. The screen's own classifier gives `const:SESSIONS` LOST/FAIL, and the waiver makes it WAIVED. The archiver has no findings | The consolidated draft plans to ship this same file set in a consolidation PR (L4). Round 3's reports are not in the list (L1) |
 | Remaining 2 (#2088 delta) | `git diff -U0 990ef3f9 2439d049 -- <primer>`; launch lanes A and B in one message; archiver MISSING entries plus SESSION_IDS | Yes. Both objects are local. The primer hunks equal the checklist exactly. `1f116c38` (main merge) touches none of #2088's 14 files, and its tree equals `5af9d722`'s | "Also the tools" means the 7 util scripts in the diff; they are not named |
 | Remaining 3 (data fix-forward) | Wait for the ref to move and `last_report()` to return text; diff `d1c66a11..<new>`; round-2 lanes | Yes, after the executor. The `gh pr create` syntax is valid | The title file now ends in `\n` (N6). `--title "$(…)"` is refused (N5) |
-| Remaining 4 / Appendix A | Check gates (#690 OPEN `78e99414`; #685 unvalidated); read `owner-ruling-key-leaks-verbatim.md` and `bytes-compare-ml2086-data440-cascor689-validation.md` (lines 63-64 and 131 resolve); edit the register from main | Partly: the gates are correctly unmet | When to open it is not stated (N7). The peer's CASCOR-014 wording differs (L2) |
+| Remaining 4 / Appendix A | Check gates (#690 OPEN `78e99414`; #685 unvalidated); read `Overtoad-ruling-key-leaks-verbatim.md` and `bytes-compare-ml2086-data440-cascor689-validation.md` (lines 63-64 and 131 resolve); edit the register from main | Partly: the gates are correctly unmet | When to open it is not stated (N7). The peer's CASCOR-014 wording differs (L2) |
 | Remaining 5 / Appendix E | `gh pr view 440` and `689` (both OPEN); re-verify anchors; edit the guard and mutation-check it | Blocked, correctly. The anchors resolve: `:289`, `:205-209`, `ci.yml:500`, REFERENCE `:2977`, register L240/L252/L1106/L1751 | Mutation-check ambiguity (L3). "The siblings at origin/main" means the shared checkouts (L5) |
 | Remaining 6 | Export data and cascor `origin/main` to scratch; serve on free ports with DSNs `""`; POST a lone surrogate | Yes. data `app.py:187/:214`, cascor `:856/:916` and primer 4742-4743 resolve. The example is at primer L2354 (L9844 only shows the marker) | The serve script (`2026-09-24_serve_scratch_juniper_data.bash`) is only on #2097 |
 | Remaining 7 | `gh pr view 2080 --json body`; edit with a script; `gh api -X PATCH … -F body=@file` | Yes. #2080 L65/L69, #2088 body L47, `2439d049`'s message L14 and round-2 lane B N11 (L120) all verified | None |
@@ -48,7 +48,7 @@ The problems are in what a successor would do while "defect reg [24f8d8]" is sti
   - [24f8d8]'s SendMessage at 01:21:18Z reads "I'm consolidating from juniper-ml#2097's file at 2e4917c2".
   - The untracked consolidated draft appeared in this worktree: 563 lines at 01:33:20Z, making `git status` 18 entries.
   - The check in L8 cannot see an untracked draft, so a successor lands on L72 and starts a second consolidation.
-  - L23 then tells the peer that the successor replaces [24f8d8], while [24f8d8] is still the session writing the consolidated handoff from the peer's messages. The peer's items then go to the session that is not writing the document, which is the "context lost" failure the owner's instruction guards against.
+  - L23 then tells the peer that the successor replaces [24f8d8], while [24f8d8] is still the session writing the consolidated handoff from the peer's messages. The peer's items then go to the session that is not writing the document, which is the "context lost" failure the Overtoad's instruction guards against.
   - Nothing tells the successor to message [24f8d8].
 - **Replace L8 with:** "- Look for it on `origin/main`, in open juniper-ml PRs (branch `docs/handoff-round42-consolidated`), and as an untracked `HANDOFF_*consolidated*.md` in this worktree's `prompts/thread-handoff_automated-prompts/`. "defect reg [24f8d8]" began writing it here at about 01:20Z. An untracked draft is unvalidated: while [24f8d8] is listed, ask it for the draft's state before you use it."
 - **Replace L21 with:** "2. **Is "defect reg [24f8d8]" still live?** Run `ListAgents`, loading it with ToolSearch if it is deferred. Its header names you. [24f8d8] appears among the peer sessions in any state but offline. The executor never appears in your list, because it is [24f8d8]'s subagent.
@@ -57,7 +57,7 @@ The problems are in what a successor would do while "defect reg [24f8d8]" is sti
     - Ask which items it is still doing. At 01:21Z it had begun Remaining 0.
     - Ask it to hand you the lane, to forward what the peer and its executor send, and to tell you when it stops writing here.
     - Start no item it is still doing.
-    - Until it hands over, treat the executor as ALIVE (In flight 1). Do not touch the juniper-data worktree, do not launch a second executor, and never ask the owner to close [24f8d8] while the executor runs.
+    - Until it hands over, treat the executor as ALIVE (In flight 1). Do not touch the juniper-data worktree, do not launch a second executor, and never ask the Overtoad to close [24f8d8] while the executor runs.
   - **Not listed, or offline:** go by In flight 1."
 - **L22:** start it with "3. **Re-route the peer lane** once [24f8d8] has handed you the lane, or is gone."
 
@@ -81,12 +81,12 @@ The problems are in what a successor would do while "defect reg [24f8d8]" is sti
     - launch a new `task-executor` with all of these and both round-1 reports. Tell it to review `git diff origin/fix/conditional-requests-round4-followups` first and to push with the full `--expected-head`."
 
 **M2. There is no way out of the ship gate while [24f8d8] stays listed.**
-- **Quotes:** L21, "never ask the owner to close that session"; L26, "only once "defect reg [24f8d8]" is gone AND the executor has finished".
+- **Quotes:** L21, "never ask the Overtoad to close that session"; L26, "only once "defect reg [24f8d8]" is gone AND the executor has finished".
 - **Evidence:**
   - Handed-off sessions stay listed for days. At 00:18:48Z `ListAgents` showed "ci budget [39d3e9] · idle · started 2d ago".
   - L21 makes "[24f8d8] listed" mean "the executor is ALIVE". Read literally, the successor never ships and never asks.
   - The consolidated draft carries the same rule (its L41-44).
-- **Replace L26 with:** "4. **Ship the uncommitted files** once the executor has FINISHED (In flight 1) AND [24f8d8] is gone or has confirmed it no longer writes here. If it stays listed and silent after the executor has finished, ask the owner to close it. That is safe then, and only then."
+- **Replace L26 with:** "4. **Ship the uncommitted files** once the executor has FINISHED (In flight 1) AND [24f8d8] is gone or has confirmed it no longer writes here. If it stays listed and silent after the executor has finished, ask the Overtoad to close it. That is safe then, and only then."
 
 ### LOW
 

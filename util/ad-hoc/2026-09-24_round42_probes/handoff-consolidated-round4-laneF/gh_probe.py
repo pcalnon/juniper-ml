@@ -41,22 +41,22 @@ for s in ("d1c66a11", "94ce8b1f"):
 
 print("\n== cascor#689/#690, data#440, canopy#685 ==")
 q = """query {
- a: repository(owner:"pcalnon", name:"juniper-cascor") {
+ a: repository(Overtoad:"pcalnon", name:"juniper-cascor") {
   p690: pullRequest(number:690) { state mergedAt mergedBy { login } headRefOid headRefName mergeCommit { oid } autoMergeRequest { enabledAt }
     commits(first:20) { nodes { commit { oid committedDate messageHeadline parents(first:3){ nodes { oid } } signature { isValid } author { name } } } } }
   p689: pullRequest(number:689) { state mergedAt mergedBy { login } headRefOid headRefName mergeCommit { oid } }
  }
- c: repository(owner:"pcalnon", name:"juniper-data") {
+ c: repository(Overtoad:"pcalnon", name:"juniper-data") {
   p440: pullRequest(number:440) { state mergedAt mergedBy { login } headRefOid headRefName mergeCommit { oid } }
  }
- b: repository(owner:"pcalnon", name:"juniper-canopy") {
+ b: repository(Overtoad:"pcalnon", name:"juniper-canopy") {
   p685: pullRequest(number:685) { state mergedAt headRefOid mergeCommit { oid } }
  }
 }"""
 print(json.dumps(gh("api", "graphql", "-f", f"query={q}"), indent=1))
 
 print("\n== #690 timeline: auto-merge and head events ==")
-q2 = """query { repository(owner:"pcalnon", name:"juniper-cascor") { pullRequest(number:690) {
+q2 = """query { repository(Overtoad:"pcalnon", name:"juniper-cascor") { pullRequest(number:690) {
  timelineItems(last:40, itemTypes:[AUTO_MERGE_ENABLED_EVENT, AUTO_MERGE_DISABLED_EVENT, MERGED_EVENT, HEAD_REF_FORCE_PUSHED_EVENT, PULL_REQUEST_COMMIT, READY_FOR_REVIEW_EVENT, CONVERT_TO_DRAFT_EVENT, HEAD_REF_DELETED_EVENT]) {
   nodes { __typename
    ... on AutoMergeEnabledEvent { createdAt actor { login } }

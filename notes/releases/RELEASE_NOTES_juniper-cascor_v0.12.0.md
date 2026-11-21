@@ -57,7 +57,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
   `opentelemetry-api` 1.45.0), `starlette` 1.6.0 -> 1.7.0, `uvicorn` 0.52.4 -> 0.54.0, `sentry-sdk`
   2.68.1 -> 2.71.0, `websockets` 17.1 -> 17.2 and `filelock` 3.32.5 -> 4.0.11, plus 14 smaller
   moves. The wheel's declared requirements are unchanged apart from this release's two floors.
-- **The BLAS thread policy now caps at 2 by default: owner decision D1, ruled 2026-09-23**
+- **The BLAS thread policy now caps at 2 by default: Overtoad decision D1, ruled 2026-09-23**
   (`src/parallelism/blas_threads.py`). `configure_blas_threads()` used to do nothing unless
   `JUNIPER_CASCOR_BLAS_THREADS` was set. It now sets `OMP_NUM_THREADS` / `MKL_NUM_THREADS` /
   `OPENBLAS_NUM_THREADS` to **2** wherever they are unset, on both entry points.
@@ -130,7 +130,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
   Mutation-checked against 14 deliberate breaks (juniper-ml
   `util/ad-hoc/2026-09-22_p04_harness_mutation_check.py`): all fail it, while the unmutated tree
   and P2.1 implemented as prescribed both pass. Test-only; no runtime change.
-- **An ADVISORY exact-match check on the candidate micro-benchmark's `epochs_completed`** (owner
+- **An ADVISORY exact-match check on the candidate micro-benchmark's `epochs_completed`** (Overtoad
   decision D6, ruled 2026-09-22, juniper-ml
   `notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md` §5.4: build it
   non-blocking, count how often it fires on real cascor PRs, then decide whether it blocks).
@@ -169,7 +169,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
   no cascor baseline file had ever held a timing figure: all 22 `baseline_*.json` files that ever
   existed (21 tracked until commit `971d35a` deleted them, plus the live gitignored one; 312
   entries) carry parameters and memory keys only, while `save_baseline`'s docstring promised
-  `mean_ms` from the start. **Report-only by owner decision** (P2 item 2.5, 2026-09-07): nothing
+  `mean_ms` from the start. **Report-only by Overtoad decision** (P2 item 2.5, 2026-09-07): nothing
   asserts on a timing, and the memory gate and the two fixed `*_TIME_THRESHOLD_S` ceilings are
   unchanged. `.benchmarks/` is now gitignored — the reference is cut with `--benchmark-storage`
   pointed outside every checkout, because a `git worktree remove` deletes ignored files. Helpers in
@@ -226,7 +226,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
   **Start fresh** on, every edit was dropped. juniper-ml's A-N2 run observed `max_iterations` /
   `output_epochs` / `candidate_epochs` / `max_hidden_units` at 8 / 60 / 40 / 32 before the restart
   and 1000000 / 10000 / 400 / 10 after it.
-  - Following the owner's ruling of 2026-09-24 ("apply the edits after the fresh rebuild"), the
+  - Following the Overtoad's ruling of 2026-09-24 ("apply the edits after the fresh rebuild"), the
     reset now captures the discarded network's params: `get_training_params()` less the derived
     `epochs_max` and the lifecycle's `auto_snap_*`.
   - `start_training` re-applies them to the rebuilt network through `_apply_params_unlocked`, so
@@ -247,7 +247,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
     left staged for a start-fresh to use.
   - juniper-ml's A-N2 run hit this with `equities` (15 features) over the 2x2 network
     `checkerboard` left behind.
-  - Following the owner's ruling of 2026-09-24, `_reload_dataset` takes a `refuse_wider_than`
+  - Following the Overtoad's ruling of 2026-09-24, `_reload_dataset` takes a `refuse_wider_than`
     bound, and `start_training` passes the continued network's dims. No bound is passed for a
     start-fresh, or when there is no network. A dataset wider on either axis is refused after the
     fetch and before anything is bound. The loaded data, its identity, its annotations and the
@@ -262,7 +262,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
   - `src/tests/unit/api/test_start_refuses_wider_staged_dataset.py`, mutation-checked at five
     sites.
 - **`src/profiling/logging_utils.py` raised `TypeError` at every emit, and logged at levels cascor
-  does not have** (cascor#573, roadmap P1.4 — the "fix the levels" half of owner decision 8). All
+  does not have** (cascor#573, roadmap P1.4 — the "fix the levels" half of Overtoad decision 8). All
   five `logger.log(level, msg)` sites used the stdlib signature, but every cascor call site binds the
   `Logger` CLASS, so the inherited instance method received `level` as `self` and raised
   `TypeError: Logger.log() missing 1 required positional argument: 'msg'`. The module's tests never
@@ -290,7 +290,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
   training on** (APD-CASCOR-013). It was written at one line and never cleared -- not on a new
   run, not on reset -- so a run started on inline tensors reported the last staged run's
   shortfall and its `dataset_id`. RULED: the field is named for what THIS run trains on; the
-  owner settled how on 2026-09-23 -- **it follows the loaded data**. The annotation is bound
+  Overtoad settled how on 2026-09-23 -- **it follows the loaded data**. The annotation is bound
   together with the tensors it describes (in `start_training` for tensors passed as `X`, in
   `_reload_dataset` for a fetch), so a run on inline data reports `null`, a run on a new fetch
   reports that fetch's, and a run on data RETAINED from an earlier fetch -- a plain Stop -> Start,
@@ -645,7 +645,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
   bytes. So `validate` matches exactly when the strings are equal. `surrogateescape` raises on
   `"\ud800"` and maps `"\xe9"` and `"\udcc3\udca9"` to the same bytes. juniper-ml's
   `tests/test_service_fork_drift.py` markers (`blank-api-key-filter`,
-  `nonshortcircuit-key-compare`) are unchanged. Owner ruling "Fix everywhere now" (2026-09-24),
+  `nonshortcircuit-key-compare`) are unchanged. The Overtoad ruling "Fix everywhere now" (2026-09-24),
   landing the same compare in juniper-service-core and juniper-data.
   Pinned by 62 new tests in `src/tests/unit/api/test_api_security.py`. They cover the non-ASCII
   mismatch, a 7x7 equality matrix built to separate the candidate encodings, and the
@@ -675,7 +675,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
   - `AGENTS.md`: the workflow-table rows for both checks, the CodeQL section, and the Sequence
     Safety section's "Everything is **ADVISORY**". That section now says a green Quality Gate does
     not mean mergeable (`sequence-safety.yml` is standalone, and a `needs:` entry can only name a
-    job in the same workflow), gives the ruleset query, and says the owner labels green the
+    job in the same workflow), gives the ruleset query, and says the Overtoad labels green the
     required context while only an `Allow-Symbol-Loss:` / `Allow-Docs-Rewrite:` trailer waives a
     finding in the post-merge `main-verify.yml`.
   - `docs/ci_cd/MANUAL.md` and `docs/ci_cd/REFERENCE.md`, which cited a Sequence Safety

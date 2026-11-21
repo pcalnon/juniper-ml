@@ -9,7 +9,7 @@ Version:     0.1.0
 License:     MIT License
 Created:     2026-11-12
 Status:      ad-hoc -- one-off (landing step of the N-2 carrier build)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     §8, ruling 11 of notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md
              (juniper-service-core's stop-then-start race); util/ad-hoc/2026-11-11_flood4r2_n2-r2_assemble.py
              (the copy-or-three-way step, which stops at a conflict and sets no stamp)
@@ -41,7 +41,7 @@ For each of ``CHANGELOG.md``, ``juniper-service-core/CHANGELOG.md``, ``docs/REFE
    anything else fails the run.
 5. Text changes, after the proof and outside it. ``--text-changes`` names a JSON list of
    ``{"path", "old", "new", "why"}``: each ``old`` must occur exactly once in that file's rebuilt
-   text and is replaced by ``new``. These are the sentences a later owner ruling made stale; they
+   text and is replaced by ``new``. These are the sentences a later Overtoad ruling made stale; they
    are kept apart from the rebuild so that the proof above stays a statement about the merge.
 
 The carrier tree is read as plain files; git runs only in this worktree. The four results are

@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **A `fit` that returns while the run is paused settles `COMPLETED` instead of wedging the
   lifecycle** (the "paused-fit wedge" in §4 of
-  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`; owner ruling "Fix
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`; Overtoad ruling "Fix
   now", 2026-11-08). Pause is cooperative: `ServiceLifecycleManager`'s event sink waits at the
   model's next event. A pause that arrives after the model's last event, or during a `fit` that
   emits none, is never waited on, so `fit` returns while the machine is still `PAUSED`.
@@ -91,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `monitor.status` `ended` while the new run trains. The pause gate is shared too, so the release
   on a paused completion or failure also wakes a stopped run's `fit` that is waiting at it, and a
   start is then accepted beside that `fit`; after a paused completion, 0.7.2's wedge had kept it
-  waiting. The owner has ruled that the stop-then-start race behind both gets
+  waiting. The Overtoad has ruled that the stop-then-start race behind both gets
   its own fix, in its own PR (§8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
 - **Tests**: `tests/test_lifecycle_paused_fit_return.py` (11 tests) pins both entries. With
@@ -104,12 +104,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stop** (the stop-then-start race; §8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, "Fix all four now").
   The ruling names the defect, not a mechanism; the refusal is this change's choice, and the
-  owner's ruling of 2026-11-12 accepts it (that record's next update adds it to its §8). A stop is
+  Overtoad's ruling of 2026-11-12 accepts it (that record's next update adds it to its §8). A stop is
   seen at `fit`'s next event, and a `fit` that emits no events runs until it returns.
   `start_training` cleared the stop, so a start sent before then cancelled it: the stopped run's
   `fit` ran on beside the new run, on the same model, and its events went through the shared sink
   into the new run (a `phase_change` set its phase, an `epoch_end` landed in its history, a
-  `training_end` set `monitor.status` `ended`). The ownership guard of juniper-ml#2531 fenced only
+  `training_end` set `monitor.status` `ended`). The Overtoadship guard of juniper-ml#2531 fenced only
   the settle, and that change's paused-completion and failure releases woke such a `fit` if it was
   waiting at the shared pause gate, after which a start was accepted beside it. Every release that
   ships the manager accepts that start, 0.2.0 through 0.7.2.
@@ -125,7 +125,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   leaves after a stop (`RESUME_READY`, `INVESTIGATING` or `REPLAYING`). A run that settled itself
   (`COMPLETED` or `FAILED`) holds no start back while its thread exits, and a thread that ended
   without settling holds none back either. `LifecycleStateMachine` and the routes are unchanged,
-  and the ownership guard of juniper-ml#2531 stays, as a second line of defence.
+  and the Overtoadship guard of juniper-ml#2531 stays, as a second line of defence.
 
   **What it costs.** The refusal lasts as long as the stopped `fit` does. A `fit` that does not
   end at its next event (it emits none, it hangs, or the model catches the interrupt and carries
@@ -151,17 +151,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   controls. Five tests of `tests/test_lifecycle_paused_fit_return.py` (the four
   `test_a_stopped_runs_*` tests and `test_only_the_run_that_completes_records_its_result`) started
   a newer run beside a stopped `fit`, which is now refused. They clear the stop first
-  (`_start_beside_the_stopped_fit`), rebuilding that interleaving, and still pin the ownership
+  (`_start_beside_the_stopped_fit`), rebuilding that interleaving, and still pin the Overtoadship
   guard. Twelve mutants of `manager.py` (juniper-ml's
   `util/ad-hoc/2026-11-09_flood4r2_n2_mutation_check.py`: the fix reverted, the refusal removed,
   each half of its condition dropped, the refusal limited to a `STOPPED` machine, the check moved
   before the lock is taken, after the dataset write or after the stop is cleared, and four mutants
-  of the ownership guard and result recording of juniper-ml#2531) are each killed by the suite.
+  of the Overtoadship guard and result recording of juniper-ml#2531) are each killed by the suite.
 
 - **A `resume_ok` on `/ws/training` now means the client missed nothing up to the moment its socket
   goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
   juniper-ml `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix
-  now" by the owner on 2026-11-08. A resumed client could be answered `resume_ok` and still have
+  now" by the Overtoad on 2026-11-08. A resumed client could be answered `resume_ok` and still have
   missed broadcasts, two ways:
   - **A broadcast with no socket active was never sequenced or buffered.**
     `WebSocketManager.broadcast` returned at once when no socket was active, including while a
@@ -233,7 +233,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - juniper-cascor carries its own copies of the manager and handler, with both defects. They are
     not changed here.
 
-- **A socket a broadcast drops is closed 1011 instead of being left open on a dead stream** (owner
+- **A socket a broadcast drops is closed 1011 instead of being left open on a dead stream** (Overtoad
   ruling 11 in §8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`,
   "Fix all four now"). `WebSocketManager.broadcast` dropped a socket whose send raised or timed out
   with `disconnect()` alone, which forgets a socket but never closes it. The `/ws/training`

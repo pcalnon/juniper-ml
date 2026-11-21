@@ -32,7 +32,7 @@ Three hazards this encodes so they are not re-learned per PR:
 Dry-run by default: prints the plan and the live state of every PR, touches nothing.
 
 Usage:
-    python util/ad-hoc/2026-09-05_fleet_merge_train.py --repo juniper-ml --owner pcalnon \\
+    python util/ad-hoc/2026-09-05_fleet_merge_train.py --repo juniper-ml --Overtoad pcalnon \\
         --pr 1707 --pr 1709 [...] [--execute] [--timeout 2400]
 """
 
@@ -52,9 +52,9 @@ def _run(cmd: list, timeout: int | None = None) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, check=False)  # nosec B603
 
 
-def pr_state(owner: str, repo: str, pr: int) -> dict:
+def pr_state(Overtoad: str, repo: str, pr: int) -> dict:
     """Live state. A merge decision is only ever made from THIS, never from an exit code."""
-    cp = _run(["gh", "pr", "view", str(pr), "--repo", f"{owner}/{repo}", "--json", "state,isDraft,mergedAt,title"])
+    cp = _run(["gh", "pr", "view", str(pr), "--repo", f"{Overtoad}/{repo}", "--json", "state,isDraft,mergedAt,title"])
     if cp.returncode != 0:
         return {"error": (cp.stderr or cp.stdout).strip()[:200]}
     try:
@@ -63,8 +63,8 @@ def pr_state(owner: str, repo: str, pr: int) -> dict:
         return {"error": f"non-JSON from gh: {exc}"}
 
 
-def merge_one(owner: str, repo: str, pr: int, *, execute: bool, timeout: int) -> dict:
-    before = pr_state(owner, repo, pr)
+def merge_one(Overtoad: str, repo: str, pr: int, *, execute: bool, timeout: int) -> dict:
+    before = pr_state(Overtoad, repo, pr)
     if "error" in before:
         return {"pr": pr, "result": "ERROR", "detail": before["error"]}
     if before.get("state") != "OPEN":
@@ -74,19 +74,19 @@ def merge_one(owner: str, repo: str, pr: int, *, execute: bool, timeout: int) ->
         return {"pr": pr, "result": "DRY-RUN", "detail": f"OPEN draft={before.get('isDraft')} -- would undraft+merge"}
 
     if before.get("isDraft"):
-        cp = _run(["gh", "pr", "ready", str(pr), "--repo", f"{owner}/{repo}"])
+        cp = _run(["gh", "pr", "ready", str(pr), "--repo", f"{Overtoad}/{repo}"])
         if cp.returncode != 0:
             return {"pr": pr, "result": "ERROR", "detail": f"undraft failed: {(cp.stderr or cp.stdout).strip()[:160]}"}
 
     started = time.time()
     try:
-        cp = _run([sys.executable, str(SAFE_MERGE), "--pr", str(pr), "--repo", repo, "--owner", owner, "--execute"], timeout=timeout)
+        cp = _run([sys.executable, str(SAFE_MERGE), "--pr", str(pr), "--repo", repo, "--Overtoad", Overtoad, "--execute"], timeout=timeout)
         tail = "\n".join((cp.stdout + cp.stderr).strip().splitlines()[-3:])
     except subprocess.TimeoutExpired:
         tail = f"safe_merge exceeded {timeout}s"
 
     # THE ONLY EVIDENCE. safe_merge's exit code is deliberately not consulted.
-    after = pr_state(owner, repo, pr)
+    after = pr_state(Overtoad, repo, pr)
     elapsed = int(time.time() - started)
     if after.get("state") == "MERGED":
         return {"pr": pr, "result": "MERGED", "detail": f"{after.get('mergedAt')} in {elapsed}s"}
@@ -96,7 +96,7 @@ def merge_one(owner: str, repo: str, pr: int, *, execute: bool, timeout: int) ->
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--repo", required=True)
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--pr", type=int, action="append", required=True)
     ap.add_argument("--execute", action="store_true", help="actually undraft + merge (default: dry-run)")
     ap.add_argument("--timeout", type=int, default=2400, help="per-PR safe_merge timeout, seconds")
@@ -109,7 +109,7 @@ def main(argv=None) -> int:
 
     results = []
     for pr in args.pr:
-        r = merge_one(args.owner, args.repo, pr, execute=args.execute, timeout=args.timeout)
+        r = merge_one(args.Overtoad, args.repo, pr, execute=args.execute, timeout=args.timeout)
         results.append(r)
         print(f"  #{r['pr']:<6} {r['result']:<11} {r['detail']}", flush=True)
         if args.stop_on_fail and r["result"] in ("NOT-MERGED", "ERROR"):

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — recovery (Phase D sitting, step 14)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md (section 6.4 step 14),
          notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (section 9: AC-4, AC-6),
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-11_backup-phase-d-sitting-steps-11-13-done-ac4-drill-next.md ("Process change"),
@@ -36,7 +36,7 @@ VERBS
              and it compares its own DateTime values. Names cannot show either, so `aside` does not depend on it.
 
     drill N  AC-4's drill N (1 = duplicati-20260918T140000Z, pre-recovery; 2 = duplicati-20261107T212908Z, the first
-             post-recovery fileset). If <run-root>/ac4-drillN.out exists it is ADOPTED, never re-run: the owner may
+             post-recovery fileset). If <run-root>/ac4-drillN.out exists it is ADOPTED, never re-run: the Overtoad may
              have run the driver by hand. Otherwise the driver runs, unless the server reports an active task (the
              driver refuses its own result when a dlist lands mid-restore, so a drill started during a backup is
              wasted). Either way the output is read strictly: one driver run prints each of its lines once, in a
@@ -47,7 +47,7 @@ VERBS
              kept as evidence.
 
     aside    Copies EVERY dlist in the destination to a root-only 0700 directory outside the Dropbox root, keeping
-             what `cp -p` keeps (owner, group, mode, timestamps), then compares SHA-256 on both sides -- the copy's
+             what `cp -p` keeps (Overtoad, group, mode, timestamps), then compares SHA-256 on both sides -- the copy's
              read back from the media where the filesystem allows O_DIRECT -- and writes MANIFEST.sha256. Every
              dlist, not the predicted list: a superset needs no model to be right. It never overwrites: an existing
              copy with the same hash is current, one with another hash stops the run. It works through descriptors
@@ -114,7 +114,7 @@ SOURCE_USER = "pcalnon"  # the backup Source is this user's home, and the web cr
 DEST = "/mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi"
 ASIDE = "/mnt/Backups/Ubuntu/_yamaguchi_retention_aside"
 RUN_ROOT = "/root/phase-d-tmp"
-POLICY = "2W:U,6M:1W,2Y:1M,5Y:2M"  # owner ruling 2026-10-08, amended 2026-11-14 (Q7): the two-week frame keeps every fileset
+POLICY = "2W:U,6M:1W,2Y:1M,5Y:2M"  # Overtoad ruling 2026-10-08, amended 2026-11-14 (Q7): the two-week frame keeps every fileset
 DRILLS = {"1": "duplicati-20260918T140000Z.dlist.zip.aes", "2": "duplicati-20261107T212908Z.dlist.zip.aes"}
 AC4_MIN_VERIFIED = 15  # design AC-4: "SHA-256 and length match on >= 15 files"
 AC4_LIVE_FLOOR = 5  # the driver's reviewed default
@@ -253,8 +253,8 @@ def source_home(user=SOURCE_USER):
         raise Refused(f"this host has no user {user}") from None
 
 
-def check_run_root(run_root, owner_uid):
-    """The real path of the run root, which must be a directory owned by `owner_uid` with no access for anyone else.
+def check_run_root(run_root, Overtoad_uid):
+    """The real path of the run root, which must be a directory owned by `Overtoad_uid` with no access for anyone else.
 
     Verdict records are read from it (`aside` acts on drill 1's) and decrypted dlists are written into it, so a
     directory another user can write is refused. A symlink is refused: lstat reads the name itself.
@@ -265,8 +265,8 @@ def check_run_root(run_root, owner_uid):
         raise Refused(f"the run root {run_root} does not exist (create it 0700, owned by root)") from None
     if not stat.S_ISDIR(st.st_mode):
         raise Refused(f"the run root {run_root} is not a directory (a symlink is refused)")
-    if st.st_uid != owner_uid or st.st_mode & 0o077:
-        raise Refused(f"the run root {run_root} must be owned by uid {owner_uid} with mode 0700 (it is uid {st.st_uid}, mode {stat.S_IMODE(st.st_mode):04o})")
+    if st.st_uid != Overtoad_uid or st.st_mode & 0o077:
+        raise Refused(f"the run root {run_root} must be owned by uid {Overtoad_uid} with mode 0700 (it is uid {st.st_uid}, mode {stat.S_IMODE(st.st_mode):04o})")
     return os.path.realpath(run_root)
 
 
@@ -485,7 +485,7 @@ def read_verdict(run_root, label):
 
 
 # --- shredding a run directory --------------------------------------------------------------------------------------
-def check_run_dir(path, run_root, owner_uid):
+def check_run_dir(path, run_root, Overtoad_uid):
     """The real path of a run directory this tool may shred; raises Refused for anything else."""
     if os.path.islink(path):
         raise Refused(f"{path} is a symlink")
@@ -496,8 +496,8 @@ def check_run_dir(path, run_root, owner_uid):
         raise Refused(f"{os.path.basename(real)} is not an ac4-* or ac6-* run directory")
     if not os.path.isdir(real):
         raise Refused(f"{path} is not a directory")
-    if os.lstat(real).st_uid != owner_uid:
-        raise Refused(f"{path} is not owned by uid {owner_uid}")
+    if os.lstat(real).st_uid != Overtoad_uid:
+        raise Refused(f"{path} is not owned by uid {Overtoad_uid}")
     return real
 
 
@@ -533,10 +533,10 @@ def shred_tree(path):
     return files, failures
 
 
-def shred_run_dir(run_dir, run_root, owner_uid):
+def shred_run_dir(run_dir, run_root, Overtoad_uid):
     """(files shredded, failures) for a run directory; a directory this tool may not touch is reported as a failure."""
     try:
-        return shred_tree(check_run_dir(run_dir, run_root, owner_uid))
+        return shred_tree(check_run_dir(run_dir, run_root, Overtoad_uid))
     except Refused as exc:
         return 0, [f"{run_dir}: {exc}"]
 
@@ -575,12 +575,12 @@ def free_bytes(path):
     return st.f_bavail * st.f_frsize
 
 
-def open_aside_dir(aside, owner_uid):
+def open_aside_dir(aside, Overtoad_uid):
     """A descriptor on the aside directory, created 0700 if absent. Everything `aside` writes goes through it.
 
     The directory's parent is group-writable on this host, so the path can be renamed, and a symlink put in its
     place, after any check of the path. The descriptor cannot: it names the directory that was opened, which is
-    then shown to be a directory owned by `owner_uid` with mode 0700.
+    then shown to be a directory owned by `Overtoad_uid` with mode 0700.
     """
     created = False
     try:
@@ -596,9 +596,9 @@ def open_aside_dir(aside, owner_uid):
         problem = f"{aside} cannot be opened as a directory (a symlink is refused): {exc.strerror}"
         raise (ToolError(problem) if created else Refused(problem)) from None
     st = os.fstat(fd)
-    if st.st_uid != owner_uid or stat.S_IMODE(st.st_mode) != 0o700:
+    if st.st_uid != Overtoad_uid or stat.S_IMODE(st.st_mode) != 0o700:
         os.close(fd)
-        problem = f"{aside} must be a directory owned by uid {owner_uid} with mode 0700 (it is uid {st.st_uid}, mode {stat.S_IMODE(st.st_mode):04o})"
+        problem = f"{aside} must be a directory owned by uid {Overtoad_uid} with mode 0700 (it is uid {st.st_uid}, mode {stat.S_IMODE(st.st_mode):04o})"
         raise (ToolError(problem + " -- and this run created it, so something replaced it") if created else Refused(problem))
     return fd
 
@@ -855,10 +855,10 @@ def run_driver(dlist, dest, run_root, out_path):
             return proc.wait()
 
 
-def cmd_drill(args, *, run=run_driver, task=server_task, owner_uid=0):
+def cmd_drill(args, *, run=run_driver, task=server_task, Overtoad_uid=0):
     dlist, label = DRILLS[args.n], f"ac4-drill{args.n}"
     header(f"AC-4 drill {args.n}: {dlist}", ("driver", DRIVER))
-    run_root = check_run_root(args.run_root, owner_uid)
+    run_root = check_run_root(args.run_root, Overtoad_uid)
     out_path = os.path.join(run_root, f"{label}.out")
     dest = os.path.realpath(args.dest)
     previous = read_verdict(run_root, label)
@@ -907,7 +907,7 @@ def cmd_drill(args, *, run=run_driver, task=server_task, owner_uid=0):
     for reason in reasons:
         print(f"reason      : {reason}")
     if verdict == "PASS" and run_dir and os.path.lexists(run_dir):
-        files, failures = shred_run_dir(run_dir, run_root, owner_uid)
+        files, failures = shred_run_dir(run_dir, run_root, Overtoad_uid)
         record["run_dir"] = "shredded" if not failures else "NOT shredded"
         print(f"run dir     : shredded {files} file(s) from {run_dir!r}" + (f"; {len(failures)} path(s) could NOT be removed -- the decrypted dlist may still be on disk" if failures else ""))
         if failures:
@@ -935,9 +935,9 @@ def predicted_line(dlists, policy_text, now):
     return f"predicted   : the first pass under {policy_text} deletes {len(plan['delete'])} of {len(dlists)} dlists (it assumes {PLAN_ASSUMES})"
 
 
-def cmd_aside(args, *, task=server_task, owner_uid=0):
+def cmd_aside(args, *, task=server_task, Overtoad_uid=0):
     header(f"retention aside copy to {args.aside}", ("retention", RETENTION_TABLE))
-    run_root = check_run_root(args.run_root, owner_uid)
+    run_root = check_run_root(args.run_root, Overtoad_uid)
     drill = read_verdict(run_root, "ac4-drill1")
     if not drill or drill.get("verdict") != "PASS" or drill.get("dlist") != DRILLS["1"]:
         raise Refused(f"drill 1 has no PASS verdict record for {DRILLS['1']} in {run_root} -- the first retention pass deletes that fileset, so it is drilled first")
@@ -954,7 +954,7 @@ def cmd_aside(args, *, task=server_task, owner_uid=0):
     free = free_bytes(args.aside)
     if free < need * 2:
         raise Refused(f"the filesystem of {args.aside} has {free} B free; the copy needs {need} B and this tool wants twice that")
-    aside_fd = open_aside_dir(args.aside, owner_uid)
+    aside_fd = open_aside_dir(args.aside, Overtoad_uid)
     try:
         rows = copy_aside(args.dest, aside_fd, dlists)
         for row in rows:
@@ -969,13 +969,13 @@ def cmd_aside(args, *, task=server_task, owner_uid=0):
     return EXIT_PASS
 
 
-def cmd_ac6(args, *, owner_uid=0):
+def cmd_ac6(args, *, Overtoad_uid=0):
     dlists = list_dlists(args.dest)
     dlist = args.dlist or dlists[-1]
     if dlist not in dlists:
         raise Refused(f"{dlist} is not in {args.dest}")
     header(f"AC-6b: the server-DB snapshot in {dlist}", ("driver", DRIVER))
-    run_root = check_run_root(args.run_root, owner_uid)
+    run_root = check_run_root(args.run_root, Overtoad_uid)
     home = source_home()  # before the driver is imported: it resolves the same user at import time
     driver = load_module(DRIVER, "phase_d_ac4_driver")
     snapshot = os.path.join(home, SNAPSHOT_REL)
@@ -1006,7 +1006,7 @@ def cmd_ac6(args, *, owner_uid=0):
     except (OSError, zipfile.BadZipFile, KeyError, IndexError, ValueError, EOFError) as exc:  # no credential file, a truncated volume, a zip without a file list
         stopped = f"the dlist could not be read ({type(exc).__name__}); nothing was judged"
     finally:
-        files, failures = shred_run_dir(run_dir, run_root, owner_uid)
+        files, failures = shred_run_dir(run_dir, run_root, Overtoad_uid)
     if stopped is not None:
         reasons = [stopped]
     print(f"fileset     : {facts['entries']} entries; started {facts['fileset']}, complete {utc_stamp(fileset_end)}")
@@ -1047,9 +1047,9 @@ def aside_coverage(aside, dest):
     return f"aside       : {os.path.join(aside, MANIFEST)} lists {len(listed)} dlist(s); {len(missing)} missing from the directory; {tail}"
 
 
-def cmd_status(args, *, owner_uid=0):
+def cmd_status(args, *, Overtoad_uid=0):
     header("Phase D step 14: root-side records, then the acceptance probe")
-    run_root = check_run_root(args.run_root, owner_uid)
+    run_root = check_run_root(args.run_root, Overtoad_uid)
     leftovers = leftover_run_dirs(run_root)
     print(f"run dirs    : {len(leftovers)} on disk" + (f" -- each holds a decrypted dlist; shred with the `shred` verb: {', '.join(leftovers)}" if leftovers else ""))
     for label in ("ac4-drill1", "ac4-drill2", "ac6b"):
@@ -1065,10 +1065,10 @@ def cmd_status(args, *, owner_uid=0):
     return EXIT_PASS
 
 
-def cmd_shred(args, *, owner_uid=0):
+def cmd_shred(args, *, Overtoad_uid=0):
     header(f"shred {args.run_dir}")
-    run_root = check_run_root(args.run_root, owner_uid)
-    files, failures = shred_tree(check_run_dir(args.run_dir, run_root, owner_uid))
+    run_root = check_run_root(args.run_root, Overtoad_uid)
+    files, failures = shred_tree(check_run_dir(args.run_dir, run_root, Overtoad_uid))
     print(f"shredded    : {files} file(s)" + (f"; {len(failures)} path(s) could NOT be removed" if failures else ""))
     print(f"VERDICT: {'PASS' if not failures else 'ERROR'}")
     return EXIT_PASS if not failures else EXIT_ERROR

@@ -65,7 +65,7 @@ document did it again and was caught in validation. The accurate position:
 > protected only by one ancestor's mode: a later `chmod` on `/mnt/Backups/Ubuntu`, or a second
 > account, converts it into a real leak with no further warning.
 
-**Owner decision taken 2026-08-30: accept as-is and document it.** Rejected: `SETTINGS_ENCRYPTION_KEY`
+**The Overtoad decision taken 2026-08-30: accept as-is and document it.** Rejected: `SETTINGS_ENCRYPTION_KEY`
 (adds a *third* key needing escrow, and losing it makes the server DB unreadable — worse recovery
 story), and excluding the snapshot from the backup (defeats its purpose; the archive already holds a
 cleartext copy anyway).
@@ -165,7 +165,7 @@ it after the next run rather than assuming; do not mark §8.19.8 item 2 closed u
    `git worktree remove` deletes it **silently**. Risk is now lower — with the sda1 escrow in place
    it is no longer the only recoverable copy of `PASSPHRASE_OLD` — but it is still a cleartext key
    inside a backup Source.
-6. **Cloud reporting** (§8.18.4) — owner-**deferred, not rejected**. `remote-control-enabled = True`
+6. **Cloud reporting** (§8.18.4) — Overtoad-**deferred, not rejected**. `remote-control-enabled = True`
    and `additional-report-url` embeds a long-lived bearer JWT (`iss=api.duplicati.com`,
    `exp=2028-08-24`). A credential, not merely a URL.
 7. **The disabled `duplicati-backup.*` user lane** (§8.11.3) — removal PR still unopened. The lane

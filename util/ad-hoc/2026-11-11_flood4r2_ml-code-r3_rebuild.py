@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — one-off (Cursor flood-4 round-2 ml-code carrier, round 3 rebuild)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md; the round-2 carrier's
          tmp/flood4r2/ml-code/r2/manifest.json; validator findings ml-code-port-lens F6 and ml-code-claims-lens
          F1 / F10 (a plain copy of the carrier's shared files would revert what main gained since its base).

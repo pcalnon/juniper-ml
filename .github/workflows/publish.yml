@@ -24,7 +24,7 @@
 #    The steps marked "one-artifact publish template", and the republish
 #    job, are juniper-cascor's publish.yml copied verbatim (juniper-cascor#763
 #    and #767): they read nothing from this repository but the two `env`
-#    values below. The republish job is step 1 of the owner's recovery ladder
+#    values below. The republish job is step 1 of the Overtoad's recovery ladder
 #    for a release that never reached PyPI (docs/REFERENCE.md § Independent
 #    Sibling Package Publish Pipelines).
 #
@@ -172,7 +172,7 @@ jobs:
             ${{ env.PUBLISH_DIST_DIR }}/
             SHA256SUMS
           if-no-files-found: error
-          # The PyPI job downloads this only once the owner approves the `pypi` gate, which may wait 30 days, and a
+          # The PyPI job downloads this only once the Overtoad approves the `pypi` gate, which may wait 30 days, and a
           # run can be re-run for 30 days after it started. An artifact that expired first would strand the release,
           # because a rebuild cannot reproduce the files TestPyPI already holds.
           retention-days: 90
@@ -331,7 +331,7 @@ jobs:
       - name: Verify TestPyPI install
         run: |
           VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
-          # ── TWO-PHASE VERIFICATION (2026-08-08 amendment, owner-approved) ────────────
+          # ── TWO-PHASE VERIFICATION (2026-08-08 amendment, Overtoad-approved) ────────────
           # pip has NO index priority. --index-url plus --extra-index-url form ONE merged
           # namespace and pip picks the HIGHEST version found across both. That is a
           # dependency-confusion vector: a TestPyPI squatter outranks the real package.
@@ -630,7 +630,7 @@ jobs:
           sys.exit(1)
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
-  # The owner's recovery ladder, step 1 (2026-11-15): a dispatch from the release tag republishes TestPyPI's files.
+  # The Overtoad's recovery ladder, step 1 (2026-11-15): a dispatch from the release tag republishes TestPyPI's files.
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   republish:
     # No "pypi" in this name, on purpose: juniper-ml's release-train ceremony tells a run's publish jobs apart by the

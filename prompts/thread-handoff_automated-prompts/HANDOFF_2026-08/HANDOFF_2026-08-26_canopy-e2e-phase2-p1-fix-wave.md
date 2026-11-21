@@ -39,7 +39,7 @@ arc worktree/branch is already cleaned (four older NON-arc canopy worktrees ling
 
 ## THE T6 HOLD (cross-session, still active)
 
-Owner is now the successor session **`t6 rebaseline`** (handoff ml#1371), not the original T6 session (which
+The Overtoad is now the successor session **`t6 rebaseline`** (handoff ml#1371), not the original T6 session (which
 went idle after transferring the hold). Its last word: zero cells run, campaign unlaunched, window expected
 **~05:10–07:45 local on 2026-08-26**, release announced **by name to "canopy e2e phase 2"** — a fresh session
 must tell it its own name first. Rules unchanged: no isolated trio (8051/8101/8202), no chrome-headless, do not
@@ -81,8 +81,8 @@ urgency demands a decision, escalate to Paul; do not decide unilaterally.
 3. **Row re-drives owed regardless** (same bring-up): M-TOPOLOGY-01..18 + W4 + W1-12..14 (F-006's blocker gone),
    C2.10-03 (W7 confirm/swap), M-SNAPSHOTS-20/-21 via a real dataset swap through the restored Live Switch,
    M-DATASET-14 (theme flip), the F-CANOPY-004 latency-class rows after item 4. **M-DATASET-17..26 still await
-   the owner's DEMO-lane / 3-D-posture scoping decision** — surface it, do not drive around it.
-4. **Owner decisions to put to Paul** (drafted in the evidence note's session section): **F-CANOPY-004** —
+   the Overtoad's DEMO-lane / 3-D-posture scoping decision** — surface it, do not drive around it.
+4. **The Overtoad decisions to put to Paul** (drafted in the evidence note's session section): **F-CANOPY-004** —
    accept-and-document a freshness contract now (post-Stage-2 numbers: 3–16 s interaction renders, 20–40 s
    fresh-session population; recommended) versus open the JR-CAN-PERF-004 WS-migration workstream; and the
    **open-P2 set** (-001, -012, -013, -015, -018, -026, -028, -032, -033, -034, -036, F-CASCOR-002) for
@@ -90,7 +90,7 @@ urgency demands a decision, escalate to Paul; do not decide unilaterally.
    (-036's dead-click test is READY at `e2e_f027_redrive.py --step cardsprobe`; -034 = delete the inert store
    + regen `metrics_panel.txt`); defer -001, -033; -012 rides an editor follow-up; F-CASCOR-002 → file
    upstream like juniper-cascor#590.
-5. **Phase 3** (plan §6.4, the `ui_live` suite) — entry condition "every P0/P1 closed or owner-deferred" is
+5. **Phase 3** (plan §6.4, the `ui_live` suite) — entry condition "every P0/P1 closed or Overtoad-deferred" is
    reachable after items 2 and 4: after the re-drive, F-CANOPY-004's disposition is the only P0/P1 gate.
 6. **Phase 4 remainder** (plan §6.5 / §11): the canopy USER_MANUAL/REFERENCE drift table (the plan's D-1..D-8,
    a different ledger from the evidence note's D-0..D-5), the D-3 source-doc fix (replay tick base 1000 ms), and
@@ -99,7 +99,7 @@ urgency demands a decision, escalate to Paul; do not decide unilaterally.
 
 ## Key context (corrections and additions to the standing traps)
 
-- **Branch protection IS strict on both repos, and this session's BEHIND merges went through on the owner's
+- **Branch protection IS strict on both repos, and this session's BEHIND merges went through on the Overtoad's
   Admin bypass — do not repeat that.** Rulesets canopy `14249530` / ml `13805432` set
   `strict_required_status_checks_policy: true` with `bypass_actors: RepositoryRole 5 (Admin), bypass_mode:
   always`. The REST squash (`gh api -X PUT repos/<o>/<r>/pulls/<N>/merge -f merge_method=squash`) on a green

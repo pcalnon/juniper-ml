@@ -11,8 +11,8 @@ Build-context hygiene sweep across the five published image repos, plus juniper-
 
 WHY THIS EXISTS
 ---------------
-HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md
-left one non-owner-gated instruction open: *"Check the other repos before their next image
+HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md
+left one non-Overtoad-gated instruction open: *"Check the other repos before their next image
 change."* It refers to the juniper-deploy defect where the Docker build context held
 `secrets/` with eight live credential files and there was no `.dockerignore` -- Docker does
 not honour `.gitignore`.

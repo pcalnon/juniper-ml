@@ -2,7 +2,7 @@ You are Lane R7-A (measurement re-creation, ARTIFACT-FIRST, ROUND 7) of the Juni
 
 HARD RULES
 - READ-ONLY on every repo: no edits to tracked files, commits, pushes, PR/issue writes, arming, disarming, drafting, `gh pr ready`, `gh pr merge`. `gh api` GETs, GraphQL queries and `gh pr view` are fine. Do not start or stop any canopy/cascor/data process; never touch ports :8051, :8101, :8202 or any :805x leg. Do NOT run `util/ad-hoc/2026-09-24_f058_trigger_census.py` or `util/ad-hoc/2026-09-24_push_phase9_signed_groups.py`. Run the archive scripts only with `--dry-run`. Scratch work only in a directory you create with `mktemp -d`.
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential to an external service; never request an email field from GitHub. Do NOT print commit headers or signature fields that carry an email address: no `git cat-file commit`, no `%GS`, `%ae`, `%ce`, and no `git show` of a whole commit header. When you read session transcripts under `~/.claude/projects/`, print only bounded, redacted substrings; `util/ad-hoc/2026-09-24_owner_answer_extract.py <transcript> <line>...` prints chosen records redacted. Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential to an external service; never request an email field from GitHub. Do NOT print commit headers or signature fields that carry an email address: no `git cat-file commit`, no `%GS`, `%ae`, `%ce`, and no `git show` of a whole commit header. When you read session transcripts under `~/.claude/projects/`, print only bounded, redacted substrings; `util/ad-hoc/2026-09-24_Overtoad_answer_extract.py <transcript> <line>...` prints chosen records redacted. Report any slip.
 - Do not use `git -C` against `/home/pcalnon/Development/python/Juniper/juniper-ml` (the primary checkout); use the worktree below. If a shell guard refuses a compound command, split it into plain separate commands, or put a script under your `mktemp -d` directory and run it with `python3 -B`.
 
 THE FROZEN ARTIFACT: juniper-ml worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/graceful-sprouting-panda` at commit `129f4880` (branch `docs/canopy-e2e-phase9`). The round-6 pass is `git -C <worktree> diff b0b17cad 129f4880`. The ledger is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` (Phase 9). Round 6's reports: `reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round6.md`.
@@ -14,7 +14,7 @@ Sources:
 - session `bc31e993`'s transcript: `/home/pcalnon/.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml--claude-worktrees-happy-skipping-hollerith/bc31e993-97b0-4a01-ae04-cb39593eb647.jsonl`.
 
 CLAIMS TO RE-DERIVE (artifact first):
-1. The owner's answer, as "Who" now scopes it:
+1. The Overtoad's answer, as "Who" now scopes it:
    - asked at 03:34:45Z, answered at 07:32:48Z;
    - the four PRs the question named, of which three (data#428, ml#2032, ml#2059) were drafts readied then armed 4–7 s later, and canopy#678 never a draft, merged directly with no arm event;
    - the pass's other five PRs (#676, data#431, data#434, ml#2066, data-client#212); that #676, data#431 and data#434 share the pattern (a draft readied, then armed 4–8 s later), while ml#2066 (armed, not a draft) and data-client#212 (merged directly) do not.

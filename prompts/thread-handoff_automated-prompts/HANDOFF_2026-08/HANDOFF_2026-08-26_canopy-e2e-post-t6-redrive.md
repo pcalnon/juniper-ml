@@ -46,7 +46,7 @@ docs + code canopy worktrees were removed this session).
 ## Remaining work, in priority order
 
 1. **F-CANOPY-004 is the whole game now.** It is the sole open P0/P1 and it gated the live render of F-035
-   (empty store) and F-011 (~65 s editor lag) this session. The **owner decision** is drafted in the
+   (empty store) and F-011 (~65 s editor lag) this session. The **Overtoad decision** is drafted in the
    evidence note: accept-and-document a freshness contract (post-Stage-2: 3–16 s interaction renders,
    20–40 s fresh-session population) **versus** open the JR-CAN-PERF-004 WS-migration workstream. Put it to
    Paul; recommendation is the contract now + migration as a planned workstream. Until F-004 is decided,
@@ -54,7 +54,7 @@ docs + code canopy worktrees were removed this session).
 2. **The fix-independent §6.3 re-drives** (runnable on a fresh bring-up, no fix needed): M-TOPOLOGY-01..18
    + W4 + W1-12..14 (F-006's blocker gone), C2.10-03, M-SNAPSHOTS-20/-21 via a real dataset swap through
    the restored Live Switch, M-DATASET-14 (theme flip), the F-CANOPY-004 latency-class rows. **M-DATASET-17..26
-   still await the owner's DEMO-lane / 3-D-posture scoping decision** — surface it, do not drive around it.
+   still await the Overtoad's DEMO-lane / 3-D-posture scoping decision** — surface it, do not drive around it.
 3. **F-CANOPY-014's three slider rows (W5-21..23)** — the driver's rc-slider handle drag did not land
    (`driven=False`, not errored); the fix is verified via the three button controls (same URL path). Needs
    the native rc-slider drag idiom (mouse down on `.rc-slider-handle`, move, up — my `drag_handle` in
@@ -64,7 +64,7 @@ docs + code canopy worktrees were removed this session).
    always 'No topology loaded.'" / "empty dropdown today" expected-result text is now stale; the rows read
    PASS but the *content* needs updating to the real topology/populated-dropdown behaviour. (A matrix
    content edit, not a rescore.)
-6. **The open-P2 owner decision** (fixed-vs-deferred): -001, -012, -013, -015, -018, -026, -028, -032,
+6. **The open-P2 Overtoad decision** (fixed-vs-deferred): -001, -012, -013, -015, -018, -026, -028, -032,
    -033, -034, -036, F-CASCOR-002. Suggested fix-now: -013/-015/-018/-026/-028/-032/-034/-036; defer
    -001/-033; -012 rides an editor follow-up; F-CASCOR-002 → file upstream.
 7. **Phase 3** (plan §6.4, the `ui_live` suite) — entry condition is reachable once F-004's disposition

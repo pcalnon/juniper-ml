@@ -8,7 +8,7 @@ which **remains canonical** for T6's rationale, its §0 decision record (L-2 in 
 its trap catalogue, and its §4 merge-trap rules (`util/safe_merge.py` mandatory; waiver trailer must
 reach the squash commit). Those are not superseded by this document.
 
-The 08-26 handoff left **two owner items plus an unowned tail**. Both owner items shipped, three
+The 08-26 handoff left **two Overtoad items plus an unowned tail**. Both Overtoad items shipped, three
 tail items with them. This records what closed, the one question this session *opened*, the traps it
 added, and what is still unowned.
 
@@ -24,8 +24,8 @@ added, and what is still unowned.
 
 | item | PR |
 |---|---|
-| **T6 owner item 2** — a `stalled`/`timed_out` cell is stopped BEFORE collect, not left to `experiment_stack.bash`'s SIGTERM. New manifest key `teardown_preempt`. | **ml#1408** |
-| **T6 owner item 1** — `util/experiments/suites/p4/e-c-cascor-noise-robustness.yaml` pinned to `max_hidden_units: 64` **and** `max_iterations: 64`, matrix + every moon `include` | **ml#1409** |
+| **T6 Overtoad item 2** — a `stalled`/`timed_out` cell is stopped BEFORE collect, not left to `experiment_stack.bash`'s SIGTERM. New manifest key `teardown_preempt`. | **ml#1408** |
+| **T6 Overtoad item 1** — `util/experiments/suites/p4/e-c-cascor-noise-robustness.yaml` pinned to `max_hidden_units: 64` **and** `max_iterations: 64`, matrix + every moon `include` | **ml#1409** |
 | Campaigns can pin cascor to a **worktree** (`JUNIPER_EXP_CASCOR_SRC_DIR`); `_resolve_base_config` override-precedence bug | **ml#1412** |
 | Recurrence brought under the wall-ordering gate; last 5 offenders cleared | **ml#1414** |
 | Cross-view inconsistency **measured**: 52 + 149 title/body diffs on matching ids, ZERO id and ZERO metadata divergence, collapsing to 4 cosmetic artifacts | **ml#1415** |
@@ -178,7 +178,7 @@ itself the first task: a hypothesis and a probe, not a re-run.
   from PyPI. A juniper-data release is what makes the fix visible.
 - **T2's permanent residual** — the read-only settings surface for cascor / recurrence was
   **declined, not deferred**. No PR, issue, or scoped design exists; reviving it means writing that
-  scope first, then an owner decision.
+  scope first, then an Overtoad decision.
 - **T7's Wave 7.6 minimum — FIVE items, not four**: the **experiment-config layer** (dropped from
   the 08-26 tail, restored here), plus **G-5** (zero recurrence plotting code, plan `:217`),
   **W-5** (register `ar_p` in the bench registry, plan `:945`) and **W-7** (`--results-dir` for
@@ -304,8 +304,8 @@ suites are `UNRESOLVED` and it still prints a clean-looking summary.
 Absence here is deliberate, so a dropped item stays distinguishable from an out-of-scope one:
 
 - The **backup / Duplicati arc**, the **P5 fleet rollout**, the **defect register**, the **canopy E2E
-  arc**, and **juniper-service-core**'s round-29 work — all had other owners and moved during this
+  arc**, and **juniper-service-core**'s round-29 work — all had other Overtoads and moved during this
   session.
-- Open cascor issues **#572, #573, #578** (other owners). **#582 is in scope** only as §1's
+- Open cascor issues **#572, #573, #578** (other Overtoads). **#582 is in scope** only as §1's
   interpretation guardrail.
 - The **requirements corpus's content quality beyond the five repaired artifacts** — see §3.

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-21
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#1973
 
 WHY A SCRIPT AND NOT A ONE-LINER. A worktree-isolated session refuses shell STRUCTURE -- `for`,
@@ -59,7 +59,7 @@ def poll(repo: str, pr: int) -> tuple[str, str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--repo", required=True, help="owner/name")
+    parser.add_argument("--repo", required=True, help="Overtoad/name")
     parser.add_argument("--pr", required=True, type=int)
     parser.add_argument("--interval", type=int, default=45, help="seconds between polls (>=30 for a remote API)")
     parser.add_argument("--timeout", type=int, default=3000, help="give up after this many seconds")

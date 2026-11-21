@@ -1,12 +1,12 @@
-# Handoff: Cursor flood-3 arc, the owner's continuation. juniper-cascor 0.13.0 waits at its pypi gate; the 2026-10-26 rows are closed or carried; ml#2064 is in flight
+# Handoff: Cursor flood-3 arc, the Overtoad's continuation. juniper-cascor 0.13.0 waits at its pypi gate; the 2026-10-26 rows are closed or carried; ml#2064 is in flight
 
 **Date**: 2026-10-28 (UTC)
 
-**Arc**: The Cursor flood-3 disposition and its follow-ups. This stretch is the owner's request of 2026-10-27: "Continue from handoff", with merge approval for this session's PRs.
+**Arc**: The Cursor flood-3 disposition and its follow-ups. This stretch is the Overtoad's request of 2026-10-27: "Continue from handoff", with merge approval for this session's PRs.
 
 **Record**: `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, cited below as `…FLOOD-3-DISPOSITION.md`. This handoff's PR makes the record's eighth update (§4 rows, §6 traps, §8, §9).
 
-**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-27_flood3-owner-items-closed-erratum-cleanup-backlog.md`, cited below as `HANDOFF_2026-10-27_…backlog.md`.
+**Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-27_flood3-Overtoad-items-closed-erratum-cleanup-backlog.md`, cited below as `HANDOFF_2026-10-27_…backlog.md`.
 
 **Host**: the Linux host, session worktree `.claude/worktrees/whimsical-leaping-glacier`. Commits go only through GraphQL `createCommitOnBranch` (`util/open_signed_pr.py`, `util/push_signed_commit.py`).
 
@@ -14,7 +14,7 @@
 
 ## Goal
 
-Nothing is owed unless the owner asks. What remains is the owner's (Remaining work, items 1-3), and the merges that follow from them (items 2 and 4). The owner's rulings of 2026-10-27:
+Nothing is owed unless the Overtoad asks. What remains is the Overtoad's (Remaining work, items 1-3), and the merges that follow from them (items 2 and 4). The Overtoad's rulings of 2026-10-27:
 
 - the release: "Cut it now";
 - the cleanup: "Yes, remove them".
@@ -38,22 +38,22 @@ Nothing is owed unless the owner asks. What remains is the owner's (Remaining wo
 
 ## Remaining work
 
-1. **The owner's `pypi` gate for juniper-cascor 0.13.0.** Approve run 40608671287 before 2026-11-27 00:25Z, the end of its 30-day re-run window. GitHub cancels it at 2026-12-02 00:25Z. TestPyPI already holds 0.13.0, so a lost run means a new version number. Never approve it from a session.
-2. **juniper-ml#2376** is the `/tmp` arc's PR. It fixes `main`'s red Regression Tests: five duplicati tests fail on tmpfs runners. It needs the owner's merge approval. After it lands, update-branch these three:
+1. **The Overtoad's `pypi` gate for juniper-cascor 0.13.0.** Approve run 40608671287 before 2026-11-27 00:25Z, the end of its 30-day re-run window. GitHub cancels it at 2026-12-02 00:25Z. TestPyPI already holds 0.13.0, so a lost run means a new version number. Never approve it from a session.
+2. **juniper-ml#2376** is the `/tmp` arc's PR. It fixes `main`'s red Regression Tests: five duplicati tests fail on tmpfs runners. It needs the Overtoad's merge approval. After it lands, update-branch these three:
    - juniper-ml#2378;
    - juniper-ml#2379, the 0.13.0 notes archive, which is armed to auto-merge;
    - this handoff's PR.
    Merge #2378 and this PR with `util/safe_merge.py`. The approval for that does not carry to a new session.
-3. **Owner decisions:**
+3. **The Overtoad decisions:**
    - Codecov: add `CODECOV_TOKEN`, to the Dependabot store too, or drop the step.
    - cascor `ci.yml:659`: `continue-on-error: ${{ github.event_name != 'pull_request' }}` or leave it.
 4. **ml#2064 is juniper-ml#2381**, open at head `edbe25c1`, from the `agent-af4830ffb939894cb` lane.
    - **CI:** red only on the five inherited duplicati tests. The 3.13 leg ran every suite, this PR's included, and passed.
    - **Merge:** after #2376 lands and the branch is updated, with `util/safe_merge.py`. It also edits `ci.yml`, `AGENTS.md`, `docs/REFERENCE.md` and `CHANGELOG.md`, so whichever of it and #2360 merges second needs a re-sync.
-   - **For the owner to see:**
+   - **For the Overtoad to see:**
      - it bumps `stats.json` to `juniper-experiment-stats/2`, because `eval_scalars` now means the held-out final block;
      - `test_*` columns fill only when that block's split is `test`;
-     - register row `APD-ML-002` is left for the owner's close procedure, once cascor 0.13.0 is on PyPI.
+     - register row `APD-ML-002` is left for the Overtoad's close procedure, once cascor 0.13.0 is on PyPI.
 5. **After 0.13.0 reaches PyPI:**
    - Check `/pypi/juniper-cascor/0.13.0/json` returns 200.
    - Probe the installed wheel's `compute_classification_accuracy` with `importlib.import_module`.
@@ -67,7 +67,7 @@ Nothing is owed unless the owner asks. What remains is the owner's (Remaining wo
 
 ## Cleanup inventory (this pass)
 
-Nothing in this inventory has been removed. It needs an owner signal plus an API check that each PR is MERGED.
+Nothing in this inventory has been removed. It needs an Overtoad signal plus an API check that each PR is MERGED.
 
 - **Centralized worktrees:**
   - `juniper-cascor--release--v0.13.0--20261027-1816--996134e5`: detached at `61a67c53`. `juniper-ml/tmp/release-cascor-0.13.0/eco/juniper-cascor` symlinks to it. Keep it until 0.13.0 is on PyPI.
@@ -80,7 +80,7 @@ Nothing in this inventory has been removed. It needs an owner signal plus an API
 - **This session's worktree**, `whimsical-leaping-glacier`, is locked while the session lives.
 - **Keep:**
   - `juniper-ml/tmp/release-cascor-0.13.0/`: manifests, the notes preview, the ceremony logs and the pytest 9.2.0 venv. Keep until PyPI publish is verified.
-  - `juniper-ml/tmp/worktree-cleanup-2026-10-26/` and `-2026-10-27/`, and `tmp/flood3-deleted-branches.tsv`: keep until the owner says otherwise.
+  - `juniper-ml/tmp/worktree-cleanup-2026-10-26/` and `-2026-10-27/`, and `tmp/flood3-deleted-branches.tsv`: keep until the Overtoad says otherwise.
   - About 24 `cascor-test-snapshots-*` directories in `juniper-ml/tmp/`, left there by cascor's test conftest.
 
 ## Key context and traps

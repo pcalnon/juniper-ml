@@ -12,7 +12,7 @@ boundary, before its PR was opened. **Not consensus-validated.**
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md` (authoritative for P2;
 its items 2 and 3 now carry this session's status). It supersedes
 `HANDOFF_2026-10-04_canopy-phase10-round3-fix-pass-owed-then-land-census-v2-ready.md`.
-**Merge approval**: the owner granted it in this session for this session's PRs. It is NOT carried: ask again.
+**Merge approval**: the Overtoad granted it in this session for this session's PRs. It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
 
@@ -54,8 +54,8 @@ commands first. Merge approval is not carried, so ask before the first merge.
 
 **Remaining, in order:**
 
-1. **Land the Phase 10 PR** if it has not merged. Run `python3 util/wait_for_checks.py` against it, ask the owner,
-   then run `python3 util/safe_merge.py --execute` and read its `MERGED` line, not its exit code. The owner's sweeper
+1. **Land the Phase 10 PR** if it has not merged. Run `python3 util/wait_for_checks.py` against it, ask the Overtoad,
+   then run `python3 util/safe_merge.py --execute` and read its `MERGED` line, not its exit code. The Overtoad's sweeper
    may arm or merge it unseen, so check its state first.
 2. **Phase 11: record the census.** On a fresh branch from `main`:
    - copy the six scripts into `util/ad-hoc/`;
@@ -67,7 +67,7 @@ commands first. Merge approval is not carried, so ask before the first merge.
    - The live script's `--adhoc-dir` defaults to its own directory, which is right once it is in `util/ad-hoc/`.
 3. **Item 4, the F-CANOPY-055 + F-CANOPY-058 redesign.** It must account for the watchdog's sampling, not only for
    the `running=` guard.
-4. Then items 5 and 7 and the owner batch O2–O16, from the parent. New owner question: does a shipped CHANGELOG or
+4. Then items 5 and 7 and the Overtoad batch O2–O16, from the parent. New Overtoad question: does a shipped CHANGELOG or
    design-plan promise count as "documented" under plan §6.3? If it does not, F-CANOPY-065 becomes P2. Phase 10's
    Still owed item 23: tell the defect-register arc that F-CANOPY-063 is its "Nothing was loaded" id.
 

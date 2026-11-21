@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-04
-# Status      : ad-hoc — investigation; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — investigation; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Live re-drive of the CAN-015 replay player against a WRITABLE cascor (still-owed item 16).
 

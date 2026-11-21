@@ -97,7 +97,7 @@ state = cfg["dir"]
 argv = sys.argv[1:]
 with open(os.path.join(state, "gh.log"), "a", encoding="utf-8") as fh:
     fh.write(" ".join(argv) + "\n")
-slug = cfg["owner"] + "/" + cfg["repo"]
+slug = cfg["Overtoad"] + "/" + cfg["repo"]
 
 
 def read_head():
@@ -196,7 +196,7 @@ class _Harness:
         (self.state / "gh.log").write_text("", encoding="utf-8")
         config = {
             "dir": str(self.state),
-            "owner": "pcalnon",
+            "Overtoad": "pcalnon",
             "repo": "juniper-cascor",
             "default_branch": "main",
             "branch_exists": True,

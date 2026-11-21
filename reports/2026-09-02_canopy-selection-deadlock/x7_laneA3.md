@@ -62,7 +62,7 @@ frontend `requests.*` calls were not touched.
 ### 1.3 Two tracked requirements, both still `proposed`
 
 - **`JR-CAN-PERF-003`** — *"API timeout must be reduced for fast-interval callbacks."*
-  `juniper-ml/notes/requirements/by-status/proposed.md:8424-8436`. Status **proposed**, P2, owner `can`.
+  `juniper-ml/notes/requirements/by-status/proposed.md:8424-8436`. Status **proposed**, P2, Overtoad `can`.
   This is literally HIGH-005's remediation #1 from A2, formalised and never shipped.
 - **`JR-CAN-PERF-004`** — *"Dashboard HTTP polling ignores WebSocket relay."*
   `…/proposed.md:10019-10028`. Status **proposed**, P2. A plan exists (A6); no code.
@@ -144,7 +144,7 @@ matrix's own Phase-1 methodology notes:
 > expected result is a DOM state were credited only after the state actually rendered; rows starved
 > past the run's end were re-read post-run when the callback queue drains."*
 
-and F-CANOPY-004 was **owner-ACCEPTED** (evidence `:117-133`) with a written freshness contract whose
+and F-CANOPY-004 was **Overtoad-ACCEPTED** (evidence `:117-133`) with a written freshness contract whose
 fourth row reads *"during-run steady-state polling surfaces — best-effort; **no freshness
 guarantee**"*. A6 §1 calls that row *"the whole mandate… an admission that during a training run, the
 only time the dashboard matters, canopy makes no promise about what it is showing."*
@@ -218,7 +218,7 @@ event loop (`service_launcher.py:116-118`), polling cascor's own health endpoint
 loop must serve. It is bounded, startup-only, and opt-in, so it does not carry X7's blast radius —
 but it is the same anti-pattern one layer down.
 
-### 3.3 Consequence for fix ownership
+### 3.3 Consequence for fix Overtoadship
 
 **A fix belongs in canopy, not in `juniper-service-core`.** No other service has the pattern, so
 there is nothing to share and no other consumer to regress. This also means the shared-tier

@@ -9,7 +9,7 @@ Version:     0.1.0
 License:     MIT License
 Created:     2026-11-08
 Status:      ad-hoc -- one-off verification
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     the "paused-fit wedge", §4 of notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md;
              juniper-service-core/tests/test_lifecycle_paused_fit_return.py
 
@@ -97,9 +97,9 @@ MUTANTS = [
     Mutant("fix-reverted", (), (*SETTLES, HTTP, RAISES_PAUSED, STALE_RETURN_RUNNING, STALE_RETURN, STALE_RAISE, STALE_INTERRUPT, RESULT), "the whole fix (main's manager.py)"),
     Mutant("paused-completion-keeps-the-gate-closed", ((_PAUSED_RELEASE, "                        self.state_machine.handle_command(LifecycleCommand.RESUME)\n"),), SETTLES, "the pause-gate release of a paused completion"),
     Mutant("paused-completion-settles-stopped", ((_PAUSED_RELEASE, _PAUSED_RELEASE.replace("LifecycleCommand.RESUME", "LifecycleCommand.STOP")),), SETTLES, "COMPLETED, not STOPPED"),
-    Mutant("completion-without-the-ownership-guard", ((_SETTLE_GUARD, "                if not self._stop_event.is_set():\n"),), (STALE_RETURN_RUNNING, STALE_RETURN), "the ownership guard on a completion (the stale-return regression)"),
-    Mutant("failure-without-the-ownership-guard", ((_FAILURE_GUARD, _FAILURE_GUARD.replace("if self._thread is threading.current_thread():", "if True:")),), (STALE_RAISE,), "the ownership guard on a failure"),
-    Mutant("interrupt-without-the-ownership-guard", ((_INTERRUPT_GUARD, _INTERRUPT_GUARD.replace("if self._thread is threading.current_thread():", "if True:")),), (STALE_INTERRUPT,), "the ownership guard on an interrupt"),
+    Mutant("completion-without-the-Overtoadship-guard", ((_SETTLE_GUARD, "                if not self._stop_event.is_set():\n"),), (STALE_RETURN_RUNNING, STALE_RETURN), "the Overtoadship guard on a completion (the stale-return regression)"),
+    Mutant("failure-without-the-Overtoadship-guard", ((_FAILURE_GUARD, _FAILURE_GUARD.replace("if self._thread is threading.current_thread():", "if True:")),), (STALE_RAISE,), "the Overtoadship guard on a failure"),
+    Mutant("interrupt-without-the-Overtoadship-guard", ((_INTERRUPT_GUARD, _INTERRUPT_GUARD.replace("if self._thread is threading.current_thread():", "if True:")),), (STALE_INTERRUPT,), "the Overtoadship guard on an interrupt"),
     Mutant("failure-keeps-the-gate-closed", ((_FAILURE_RELEASE, ""),), (RAISES_PAUSED,), "the pause-gate release of a failure"),
     Mutant("completion-ignores-a-stop", ((_SETTLE_GUARD, "                if self._thread is threading.current_thread():\n"),), (STOP_CONTROL,), "a stop that races the completion still wins (pre-existing guard)"),
     Mutant("result-recorded-outside-the-guard", ((_RESULT_UNDER_THE_GUARD, "                self._last_result = result\n"),), (RESULT,), "only the settle that completes a run records its result (main's position)"),

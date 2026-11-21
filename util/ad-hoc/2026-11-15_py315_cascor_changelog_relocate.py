@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (phase 1 of the Python 3.15 migration, juniper-cascor#759)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor#758 (the v0.14.0 release proposal, merged 2026-11-15T01:15:14Z under the open #759) and
          juniper-canopy#818 (v0.10.0, merged 01:20:20Z under the open #819);
          util/ad-hoc/2026-11-14_py315_informational_juniper-cascor.py (the edits #759 carries)

@@ -7,7 +7,7 @@
 # Author:     Paul Calnon (authored via Claude Code)
 # Created:    2026-10-17
 # Status:     ad-hoc — investigation (why large createCommitOnBranch uploads from turing fail with HTTP 499)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§2.2 network; task F2, gate G-NET);
 #             util/ad-hoc/2026-10-17_push_signed_with_retry.py (the uploads that failed)
 #

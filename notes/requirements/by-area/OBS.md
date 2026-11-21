@@ -8,7 +8,7 @@
 
 **By priority**: P0=23 | P1=49 | P2=109 | P3=12
 
-**By owner**: ml=149 | can=19 | dep=12 | dat=7 | cas=5 | rec=1
+**By Overtoad**: ml=149 | can=19 | dep=12 | dat=7 | cas=5 | rec=1
 
 ---
 
@@ -1384,7 +1384,7 @@ logger.warning("Failed to extract network topology: %s: %s", type(e).__name__, e
 
 **Detail**:
 
-**Severity:** P2 · **Owner repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
+**Severity:** P2 · **The Overtoad repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
 
 **Notes**:
 
@@ -2311,7 +2311,7 @@ Persistence schema TBD during review.
 
 **Detail**:
 
-**Severity:** P2 · **Owner repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
+**Severity:** P2 · **The Overtoad repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
 
 **Notes**:
 
@@ -2426,7 +2426,7 @@ Settled position C-18 from R3-03 table; cross-round consensus consolidation
 
 **Detail**:
 
-**Severity:** P3 (user-discretion) · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 (user-discretion) · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Notes**:
 
@@ -2467,7 +2467,7 @@ Settled position C-18 from R3-03 table; cross-round consensus consolidation
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor-worker · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor-worker · **Status:** deferred
 
 **Notes**:
 

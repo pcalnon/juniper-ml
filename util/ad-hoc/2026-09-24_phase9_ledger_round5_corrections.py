@@ -6,18 +6,18 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round-5 fix pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9;
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round5.md;
          util/ad-hoc/2026-09-24_phase9_ledger_round4_corrections.py (the pass this corrects);
-         util/ad-hoc/2026-09-24_owner_answer_extract.py (prints the owner's answer, redacted)
+         util/ad-hoc/2026-09-24_Overtoad_answer_extract.py (prints the Overtoad's answer, redacted)
 
 Exact substitutions, each matching exactly once, or the script refuses and writes nothing. Nothing in this
 pass is applied to the LEDGER by hand; the launch scan's docstring was edited directly. Labels: A = R5-A,
 B = R5-B, C8 = the canopy follow-up's round-8 lane.
 
-The pass's centre is R5-B's finding 1: four minutes after round 5's artifact was frozen, the owner answered
-the owner question in another session ("Mine: fix forward"), so the "Who" narrative now records an answer
+The pass's centre is R5-B's finding 1: four minutes after round 5's artifact was frozen, the Overtoad answered
+the Overtoad question in another session ("Mine: fix forward"), so the "Who" narrative now records an answer
 and its scope instead of an open question. Every re-derivation this pass rests on is listed in the round-5
 consensus bullet it adds.
 
@@ -78,18 +78,18 @@ SUBS = [
       closed unmerged at 07:29:52Z.""",
     ),
     (
-        "B1: the owner has answered",
-        """    - The actor is unidentified. It acts as `pcalnon`, the owner's account, and it is not Claude Code on this
+        "B1: the Overtoad has answered",
+        """    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account, and it is not Claude Code on this
       host. **Owner question**: were that pass and the later actions his? (Still owed, item 15.)""",
-        """    - **The owner has answered: the sweeper is the owner's.** It acts as `pcalnon` and is not Claude Code on
+        """    - **The Overtoad has answered: the sweeper is the Overtoad's.** It acts as `pcalnon` and is not Claude Code on
       this host. On 2026-09-24 at 07:32:48Z, four minutes after round 5's artifact was frozen, session
       `bc31e993` asked whether the sweeper that took four PRs out of draft and armed them 4–7 s later as
-      `pcalnon` was the owner's. It named data#428, ml#2032, ml#2059 and canopy#678, all four in the pass above
-      (canopy#678 merged there with no arm event), and cascor#678's morning arm. The owner chose "Mine: fix
-      forward", an option whose text says the sweeper is the owner's and its merges intended, with validation
+      `pcalnon` was the Overtoad's. It named data#428, ml#2032, ml#2059 and canopy#678, all four in the pass above
+      (canopy#678 merged there with no arm event), and cascor#678's morning arm. The Overtoad chose "Mine: fix
+      forward", an option whose text says the sweeper is the Overtoad's and its merges intended, with validation
       continuing after the merge and fixes going forward in follow-up PRs. The question did not name #676, the
-      account's later actions or ml#2045's next morning, so those remain the owner's to confirm (Still owed,
-      item 15). Lane R5-B found the exchange; `util/ad-hoc/2026-09-24_owner_answer_extract.py` prints it,
+      account's later actions or ml#2045's next morning, so those remain the Overtoad's to confirm (Still owed,
+      item 15). Lane R5-B found the exchange; `util/ad-hoc/2026-09-24_Overtoad_answer_extract.py` prints it,
       redacted, from lines 4227 and 4260 of that session's transcript.""",
     ),
     # --- F-CANOPY-059: the status bar's cause -----------------------------------------------------------------
@@ -116,8 +116,8 @@ SUBS = [
 """,
         """  - `2026-09-24_phase9_ledger_round2_corrections.py`: round 2's pass, entirely scripted; rounds 3 to 5's passes
     are `…_round{3,4,5}_corrections.py`, likewise.
-  - `2026-09-24_owner_answer_extract.py`: prints chosen records of a session transcript, redacted; round 5
-    used it for the owner's answer ("Who", above).
+  - `2026-09-24_Overtoad_answer_extract.py`: prints chosen records of a session transcript, redacted; round 5
+    used it for the Overtoad's answer ("Who", above).
 """,
     ),
     (
@@ -134,10 +134,10 @@ SUBS = [
     # --- Consensus record --------------------------------------------------------------------------------------
     (
         "B2: round 4's record, bounded again",
-        """    - the owner question's evidence, stated with bounds: arms like the pass's ran twice earlier that day, on at
+        """    - the Overtoad question's evidence, stated with bounds: arms like the pass's ran twice earlier that day, on at
       least twelve PRs; ml#2045's 00:00Z push was a fast-forward of 29 signed commits, not a force-push; and one
       touch of the key can sign a burst;""",
-        """    - the owner question's evidence, stated with bounds: arms like the pass's ran twice earlier that day, on at
+        """    - the Overtoad question's evidence, stated with bounds: arms like the pass's ran twice earlier that day, on at
       least twelve PRs (round 5 found a third occasion and at least 20 PRs); ml#2045's 00:00Z push was a
       fast-forward of 29 signed commits, not a force-push; and one touch of the key can sign a burst;""",
     ),
@@ -163,18 +163,18 @@ SUBS = [
     script is exact, both launch-scan outputs regenerate byte-identical, and the counts, F-CANOPY-014's
     precedent, item 17, the F-CANOPY-015 pointer, the REPLAYING refusals and the signed-commit facts held.
   - **What round 5 changed:**
-    - the owner question, answered for the pass's sweeper four minutes after the freeze (R5-B): "Who", item 15
+    - the Overtoad question, answered for the pass's sweeper four minutes after the freeze (R5-B): "Who", item 15
       and "What the evidence cannot support" record the answer and its scope;
     - the arm census: at least three earlier occasions and at least 20 PRs, where two and twelve stood; three
       later background launches, not two, the two `safe_merge` runs re-arming canopy#670 after its disarms;
-      and ml#2045's 03:02:06Z push of three commits signed with the owner's key;
+      and ml#2045's 03:02:06Z push of three commits signed with the Overtoad's key;
     - the status bar's cause: its own `else` and, while F-CANOPY-055 is open, its layout default, not
       `state_sync.py:177`; item 16's check now reads `fsm_status` and the badge;
     - the push tool's group sizes, the scan's round-3 forms and its docstring (the forms it still misses), and
       item 13's account of the FAQ's old error and of the follow-up's review, which terminated at round 8;
     - the ledger's changes all in `util/ad-hoc/2026-09-24_phase9_ledger_round5_corrections.py`, with no hand
       edit to the ledger.
-  - **Re-derived before applying (round 5):** the owner's question and answer (lines 4227 and 4260 of
+  - **Re-derived before applying (round 5):** the Overtoad's question and answer (lines 4227 and 4260 of
     `bc31e993`'s transcript); the events of ml#2059, canopy#676 and canopy#678; canopy#670's arms and
     disarms, ml#2041's single arm, the 13:35:20Z foreground command and the three background rows; the arms
     of ml#2013, deploy#228 and ml#2057; the status bar's `else` and layout default; ml#2045's 03:02:06Z push
@@ -192,7 +192,7 @@ SUBS = [
     unnamed path escapes);""",
         """  - who re-ran #676's CI, or took the account's other later actions, beyond "no Claude Code process on this
     host" (foreground calls and background launches whose command lines match a pattern, which a script run
-    by an unnamed path escapes): the owner's answer covers the sweeper that readied and armed the pass's PRs
+    by an unnamed path escapes): the Overtoad's answer covers the sweeper that readied and armed the pass's PRs
     and names neither, and it covers #676's own ready and arm by the pass's pattern, not by name;""",
     ),
     # --- Still owed ----------------------------------------------------------------------------------------------
@@ -217,18 +217,18 @@ SUBS = [
         """    - Were the 21:47–22:51Z pass over nine PRs, and the account's later actions, his? Those are the update-branches
       on ml#2066 and data#434 (23:16–23:17Z), ml#2045's disarm and re-arm (23:48Z), cascor-worker#196's merge
       (01:21:37Z) and #676's CI re-run (01:22:32Z), without which its armed merge could not fire. No Claude Code
-      process on this host did any of them ("Who", above), while commits signed with the owner's key landed at
+      process on this host did any of them ("Who", above), while commits signed with the Overtoad's key landed at
       21:45:22Z, 23:47:30Z and 23:57–00:00Z, and arms like the pass's ran twice earlier that day (00:52–01:08Z
       and 13:17–13:32Z). Lane R2-F reports interactive git activity in host
       reflogs from about 21:39Z to 00:07Z (not re-derived). If they were not his, nothing held a PR that night:
       not a disarm, a draft or a comment. Only a PR that does not yet exist is held.""",
-        """    - **Answered for the sweeper (2026-09-24):** the pass over nine PRs, 21:47–22:51Z, was the owner's sweeper
-      ("Who", above), whose merges the owner calls intended. Still the owner's to confirm, because the question
+        """    - **Answered for the sweeper (2026-09-24):** the pass over nine PRs, 21:47–22:51Z, was the Overtoad's sweeper
+      ("Who", above), whose merges the Overtoad calls intended. Still the Overtoad's to confirm, because the question
       did not name them: the account's later actions, which are the update-branches on ml#2066 and data#434
       (23:16–23:17Z), ml#2045's disarm and re-arm (23:48Z), cascor-worker#196's merge (01:21:37Z) and #676's CI
       re-run (01:22:32Z), without which its armed merge could not fire; and ml#2045's draft and ready the next
       morning (03:04–03:05Z). No Claude Code process on this host did any of them, while commits signed with the
-      owner's key landed at 21:45:22Z, 23:47:30Z, 23:57–00:00Z and 03:00–03:02Z. Lane R2-F reports interactive
+      Overtoad's key landed at 21:45:22Z, 23:47:30Z, 23:57–00:00Z and 03:00–03:02Z. Lane R2-F reports interactive
       git activity in host reflogs from about 21:39Z to 00:07Z (not re-derived). What follows for this arc: a
       disarm, a draft or a comment does not hold a PR, so a PR that must be validated before it merges is
       validated before it is opened.""",

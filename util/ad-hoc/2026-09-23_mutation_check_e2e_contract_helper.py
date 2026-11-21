@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy fix/e2e-test-three-partition-contract (``src/tests/integration/test_juniper_data_e2e.py``)
 
 Each mutation re-introduces one way the helper could be wrong -- the retired contract it was on

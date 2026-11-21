@@ -83,7 +83,7 @@
 - **PRs, issues and SHAs:**
   - #422 = `ce436819` and #430 = `90ad035e`, which closes #429 and #427. `90ad035e`'s only parent is `ce436819`.
   - #423's quotation is verbatim.
-  - canopy#663 = `cc3588a8`, merged 2026-09-23, and records the owner's 2026-09-22 ruling.
+  - canopy#663 = `cc3588a8`, merged 2026-09-23, and records the Overtoad's 2026-09-22 ruling.
   - cascor-client#155 and canopy#584 both merged 2026-09-05.
   - juniper-ml#2043 merged as `8b8d5d94`. Its §14 holds B-1..B-7, R-1..R-7 and C-1..C-4 with the same severities (4 BLOCKER, 8 MAJOR, 2 MINOR = 14 findings).
   - recurrence#185 = `ca9609f0` changed one file, `.github/workflows/ci-recurrence-bench.yml`.

@@ -3,24 +3,24 @@ You are an independent FACT-CHECKER for an uncommitted record revision of a plan
 ## What is under review
 - Repository: juniper-ml, worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humble-humming-flask`. It is read-only to you. Run commands from there.
 - The edit: `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, going from v1.15.15 to v1.15.16. It is uncommitted; `git diff -- notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` shows it, about 144 lines added and 49 removed. It records the "R-OBS-SC-2 follow-ups" from 2026-11-09 to 2026-11-15:
-  - owner rulings (round 1 of 2026-11-09, the seven of 2026-11-13, and three of 2026-11-14);
+  - Overtoad rulings (round 1 of 2026-11-09, the seven of 2026-11-13, and three of 2026-11-14);
   - five PRs of 2026-11-13 and juniper-data#537;
   - the juniper-ml 0.11.5 release;
   - register row APD-ECO-016 (juniper-ml#2576);
-  - the juniper-cascor 0.14.0 and juniper-canopy 0.10.0 cuts, now waiting at the owner's `pypi` gates;
+  - the juniper-cascor 0.14.0 and juniper-canopy 0.10.0 cuts, now waiting at the Overtoad's `pypi` gates;
   - four reviews;
-  - 13 findings and the items still open with the owner.
+  - 13 findings and the items still open with the Overtoad.
 - The writer is `util/ad-hoc/2026-11-15_consolidated_plan_v1_15_16_r_obs_sc_2_followups.py` (61 anchored replacements).
 - The re-probe is `util/ad-hoc/2026-11-15_r_obs_sc_2_followups_record_reprobe.py`. Its author reported 156 PASS at 04:09Z. Read it; do not trust it.
 
 ## Your job
-For EVERY added or changed line in the diff, re-derive each factual claim from a primary source. That includes each PR number, state, merge time and merge commit; Release tags, targets and times; run ids and their job states; package versions and floors; counts; `file:line` citations (read the line at the ref the plan names); and each owner ruling's label text and time. Then check coverage: list the claims the re-probe does not check. If you cannot check everything, say exactly what you sampled.
+For EVERY added or changed line in the diff, re-derive each factual claim from a primary source. That includes each PR number, state, merge time and merge commit; Release tags, targets and times; run ids and their job states; package versions and floors; counts; `file:line` citations (read the line at the ref the plan names); and each Overtoad ruling's label text and time. Then check coverage: list the claims the re-probe does not check. If you cannot check everything, say exactly what you sampled.
 
 Primary sources:
 - `gh` read calls only, e.g. `gh pr view N --repo pcalnon/<repo> --json ...`, `gh api repos/pcalnon/<repo>/...`, `gh run view`.
 - PyPI and TestPyPI JSON (`https://pypi.org/pypi/<pkg>/<ver>/json`).
 - Files at the cited refs: `git show <ref>:<path>` in this worktree for juniper-ml; `gh api repos/pcalnon/<repo>/contents/<path>?ref=<ref>` for the others.
-- Owner rulings, from session transcripts: `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py <session-prefix> --full`. Known quirk: it can print "answered None" when a later untimestamped copy overwrites the time; the first timestamped entry gives the real time.
+- The Overtoad rulings, from session transcripts: `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py <session-prefix> --full`. Known quirk: it can print "answered None" when a later untimestamped copy overwrites the time; the first timestamped entry gives the real time.
 - The handoffs in `prompts/thread-handoff_automated-prompts/`: the `HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-four-ruled-four-open.md`, `HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-five-prs-validated-opening-next.md`, `HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next.md` and `HANDOFF_2026-11-15_r-obs-sc-2-cascor-0-14-0-canopy-0-10-0-at-pypi-gates-guard-pr-plan-v1-15-16-next.md`. These are summaries, NOT sources: a plan fact that rests only on a handoff is at least MINOR ("unverified").
 - The archived reviews: `reports/2026-11-15_r-obs-sc-2-follow-ups-reviews/` (untracked).
 

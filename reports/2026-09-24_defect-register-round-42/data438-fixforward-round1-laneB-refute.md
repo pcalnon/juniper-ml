@@ -205,7 +205,7 @@ Findings in `data438-round1-laneA-reprobe.md`:
 | F5 NIT: OWS characters | **Fixed** (docs). h11 0.16.0 passes 0x1C–0x1F; httptools 0.7.1 refuses them; both refuse VT and FF (`parser_bytes_check.py`). |
 | F6 NIT: id logged at ERROR on download | **Fixed** on the artifact route, at the cost in N-1. |
 | F7 NIT: `.npz` answered 400 | **Fixed** (500). |
-| F8 NIT: breaking marker | Not acted on (owner ruling), as the PR says. |
+| F8 NIT: breaking marker | Not acted on (Overtoad ruling), as the PR says. |
 
 Findings in `data438-round1-laneB-refute.md`:
 

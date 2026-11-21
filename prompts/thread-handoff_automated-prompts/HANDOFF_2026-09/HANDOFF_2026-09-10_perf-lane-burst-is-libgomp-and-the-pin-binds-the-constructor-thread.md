@@ -1,4 +1,4 @@
-# HANDOFF 2026-09-10 — the first-pass burst is libgomp under torch, cascor's parent pin binds only the constructor's thread, and the owner decisions are unchanged but re-weighted
+# HANDOFF 2026-09-10 — the first-pass burst is libgomp under torch, cascor's parent pin binds only the constructor's thread, and the Overtoad decisions are unchanged but re-weighted
 
 Successor to
 [`HANDOFF_2026-09-10_perf-lane-pf8-located-pair-run-runtime-block-binds-nothing.md`](HANDOFF_2026-09-10_perf-lane-pf8-located-pair-run-runtime-block-binds-nothing.md).
@@ -31,11 +31,11 @@ the GNU OpenMP runtime, inside `libtorch_cpu`**, predominantly under `torch::aut
 NumPy's OpenBLAS pool carries **none** of it. The cause is a **cascor defect**: the parent thread
 pin is applied in the network *constructor*, and the service constructs on the request thread but
 trains on a different one. `juniper-ml#1881` is merged. Nothing else from the predecessor's work
-list was executed — item 2 remains host-bound and items 1, 3 and 5 remain owner-gated.
+list was executed — item 2 remains host-bound and items 1, 3 and 5 remain Overtoad-gated.
 
 ### Work list, in order
 
-1. **Six owner decisions are open — put them to the owner; do NOT take them yourself.** The
+1. **Six Overtoad decisions are open — put them to the Overtoad; do NOT take them yourself.** The
    predecessor's five are unchanged in substance but **item 1 is re-weighted and there is a new
    sixth**:
    - **NEW — the cascor thread-pin defect.** `torch.set_num_threads(2)` is called in
@@ -195,7 +195,7 @@ not show 2 burning threads, the instrument or the tree drifted — stop and re-d
 ## 7. What this handoff does NOT cover
 
 The predecessor's §7, and the arcs it names (backup, canopy E2E, defect register, P5, soak,
-partition, service-core) have other owners. The attribution note's §7 lists four residuals; §5.3 is
+partition, service-core) have other Overtoads. The attribution note's §7 lists four residuals; §5.3 is
 the live one.
 
 ## Git state at hand-off

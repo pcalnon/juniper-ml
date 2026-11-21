@@ -14,8 +14,8 @@ This tool replaces that with a MECHANISM. A bypass row is load-bearing only if t
 rule it bypasses is actually EVALUATED for the actor's operations. GitHub keeps a
 per-ruleset version history, so the scope in force at any past moment is readable:
 
-    GET /repos/{owner}/{repo}/rulesets/{id}/history
-    GET /repos/{owner}/{repo}/rulesets/{id}/history/{version_id}   -> {.state}
+    GET /repos/{Overtoad}/{repo}/rulesets/{id}/history
+    GET /repos/{Overtoad}/{repo}/rulesets/{id}/history/{version_id}   -> {.state}
 
 `~ALL` scoping evaluates `creation` on EVERY branch, so an actor that creates
 branches needs the bypass. `~DEFAULT_BRANCH` scoping evaluates it only on the

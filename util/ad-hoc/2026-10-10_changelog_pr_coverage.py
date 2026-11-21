@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-10
 Status: ad-hoc — one-off (pre-flight for the juniper-cascor 0.12.0 and juniper-data 0.17.1 cuts)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: memory reference_release_train_ceremony_traps_2026-09-09 (seventh trap: the notes ship
          the CHANGELOG section, and nothing checks it describes the release)
 

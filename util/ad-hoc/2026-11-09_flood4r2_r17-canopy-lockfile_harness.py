@@ -1,13 +1,13 @@
 """
-Run lockfile-update.yml's commit step, byte-identical, against a gh that exits as the real CLI does (owner ruling 17).
+Run lockfile-update.yml's commit step, byte-identical, against a gh that exits as the real CLI does (Overtoad ruling 17).
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: Cursor flood-4, owner ruling 17 ("canopy: dead error path"); juniper-canopy#808; juniper-canopy
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Cursor flood-4, Overtoad ruling 17 ("canopy: dead error path"); juniper-canopy#808; juniper-canopy
          .github/workflows/lockfile-update.yml step "Commit updated lockfile (GitHub-signed, via API)"
 
 The defect: ``gh api graphql`` exits 1 on a response that carries GraphQL ``errors``

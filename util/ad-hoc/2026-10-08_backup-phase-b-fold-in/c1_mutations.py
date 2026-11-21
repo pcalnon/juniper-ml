@@ -7,7 +7,7 @@ Author:      Paul Calnon
 Created:     2026-10-08
 Version:     1.3.0 (2026-10-08: round-6 `r6` mode; round-5 mutants R17-R27; ci-sim by a `mountpoint` PATH stub)
 Status:      ad-hoc -- validation instrument (Phase B round-3 fold-in, lane C1)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-10-04_backup-phase-b-round3/r3c-harness/t6_mutations.py (round 3's M01-M25)
              util/ad-hoc/2026-10-04_backup-phase-b-round3/R3C.md (D-5: 14 of 25 mutants survived)
 
@@ -100,7 +100,7 @@ AFTER = [
     ("R6", WRAPPER, "quotes no longer stripped from KEY=VALUE (R4C X10)", '            value="$(strip_quotes "${BASH_REMATCH[3]}")"', '            value="${BASH_REMATCH[3]}"'),
     ("R7", WRAPPER, "env file overrides the environment (R4C X11)", '            if [[ -n "${!key+x}" ]]; then', '            if false; then'),
     ("R8", INSTALLER, "UNBLESSED no longer needs the switch", '            echo "UNBLESSED: installed ${dst} differs from the repository and was never blessed" >&2\n            drift=1\n', ''),
-    ("R9", INSTALLER, "existing env file's owner/group/mode not checked", '    if [[ "${env_owner}" != root || "${env_group}" != duplicati ]] ||', '    if false &&'),
+    ("R9", INSTALLER, "existing env file's Overtoad/group/mode not checked", '    if [[ "${env_Overtoad}" != root || "${env_group}" != duplicati ]] ||', '    if false &&'),
     ("R10", INSTALLER, "env mode check admits group write", '(8#${env_mode} & 8#022) != 0', '(8#${env_mode} & 8#002) != 0'),
     ("R11", INSTALLER, "real run does not say where the drifted copy went", '        (( DRY_RUN )) || say "kept the drifted ${dst} as ${aside}"\n', ''),
     ("R12", INSTALLER, "pre-install copy without -p (R4C X15)", '(a never-blessed file that differs from the repository is kept)" cp -p "${dst}" "${aside}"',

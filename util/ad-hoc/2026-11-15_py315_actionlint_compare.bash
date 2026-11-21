@@ -7,7 +7,7 @@
 # Author:     Paul Calnon
 # Created:    2026-11-15
 # Status:     ad-hoc -- investigation (verification for juniper-cascor#759 and juniper-cascor-worker#228)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/ad-hoc/2026-11-15_py315_compare_legs.bash (the same base/branch layout)
 #
 # Usage: actionlint_compare.bash <label> <base-dir> <worktree-workflows-dir> <out-dir> <file> [<file> ...]

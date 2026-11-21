@@ -264,7 +264,7 @@ class ProposeSources:
 
     The write path is **entirely GitHub-API based**, and deliberately so. It previously wrote files
     into a local checkout and made a local ``git commit`` pinned to ``-c commit.gpgsign=false`` (the
-    runner has no GPG key and the owner's YubiKey-resident key cannot reach a headless commit). Once
+    runner has no GPG key and the Overtoad's YubiKey-resident key cannot reach a headless commit). Once
     the 2026-08-12 branch-protection normalization added ``required_signatures`` to all 9 repos, that
     unsigned commit made every proposal PR unmergeable -- an unsigned commit anywhere on the branch
     blocks the merge and squash does not rescue it (cascor#515; the pre-normalization cascor#497
@@ -309,7 +309,7 @@ def _gh(args: list, timeout: int = 60) -> "str | None":
 # the affordance that would let the unsigned path grow back (see ``ProposeSources``).
 
 
-def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path) -> ProposeSources:
+def make_live_sources(Overtoad: str, repo_root: Path, ecosystem_root: Path) -> ProposeSources:
     def read_file(entry: "detect.PackageEntry", filename: str) -> "str | None":
         target = detect.base_dir_for(entry, repo_root, ecosystem_root) / filename
         try:
@@ -318,7 +318,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path) -> Prop
             return None
 
     def list_open_prs(repo: str) -> list:
-        out = _gh(["pr", "list", "--repo", f"{owner}/{repo}", "--state", "open", "--json", "number,title,headRefName", "--limit", "100"])
+        out = _gh(["pr", "list", "--repo", f"{Overtoad}/{repo}", "--state", "open", "--json", "number,title,headRefName", "--limit", "100"])
         if not out:
             return []
         try:
@@ -327,14 +327,14 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path) -> Prop
             raise SourceError(f"gh pr list returned non-JSON for {repo}") from exc
 
     def resolve_ref_sha(repo: str, ref: str) -> str:
-        out = _gh(["api", f"repos/{owner}/{repo}/git/ref/heads/{ref}", "--jq", ".object.sha"])
+        out = _gh(["api", f"repos/{Overtoad}/{repo}/git/ref/heads/{ref}", "--jq", ".object.sha"])
         sha = (out or "").strip()
         if not sha:
-            raise SourceError(f"cannot resolve {ref} in {owner}/{repo} (empty sha)")
+            raise SourceError(f"cannot resolve {ref} in {Overtoad}/{repo} (empty sha)")
         return sha
 
     def create_branch(repo: str, branch: str, sha: str) -> None:
-        _gh(["api", f"repos/{owner}/{repo}/git/refs", "-X", "POST", "-f", f"ref=refs/heads/{branch}", "-f", f"sha={sha}"])
+        _gh(["api", f"repos/{Overtoad}/{repo}/git/refs", "-X", "POST", "-f", f"ref=refs/heads/{branch}", "-f", f"sha={sha}"])
 
     def create_signed_commit(repo: str, branch: str, message: str, additions: list, expected_head_oid: str) -> str:
         # ``gh api graphql -f k=v`` can only pass scalars, and ``fileChanges.additions`` is a LIST --
@@ -346,7 +346,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path) -> Prop
             "query": _CREATE_COMMIT_ON_BRANCH_MUTATION,
             "variables": {
                 "input": {
-                    "branch": {"repositoryNameWithOwner": f"{owner}/{repo}", "branchName": branch},
+                    "branch": {"repositoryNameWithOwner": f"{Overtoad}/{repo}", "branchName": branch},
                     "message": {"headline": message},
                     "expectedHeadOid": expected_head_oid,
                     "fileChanges": {"additions": [{"path": path, "contents": contents} for path, contents in additions]},
@@ -375,7 +375,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path) -> Prop
         return (((data.get("data") or {}).get("createCommitOnBranch") or {}).get("commit") or {}).get("oid") or ""
 
     def open_pr(repo: str, base: str, head: str, title: str, body: str) -> str:
-        out = _gh(["pr", "create", "--repo", f"{owner}/{repo}", "--base", base, "--head", head, "--title", title, "--body", body])
+        out = _gh(["pr", "create", "--repo", f"{Overtoad}/{repo}", "--base", base, "--head", head, "--title", title, "--body", body])
         return (out or "").strip()
 
     return ProposeSources(
@@ -1456,7 +1456,7 @@ def _follow_on_body(fo: "FollowOnPR", date: str, trigger_branch: "str | None", t
     lines.append("")
     lines.append("### Why this is a SEPARATE, standard-gated PR (plan S13/D6)")
     lines.append("- Upstream-first ordering is **soft** for the deploy but **hard** for propagation: the ceiling bump can only land once the upstream is actually released.")
-    lines.append("- It is **standard-gated** -- the owner reviews and merges it. It is **never** auto-merged and **never** folded into the exempt notes-archive path (that path is add-only notes files; a pin edit there would break the R5/R7 exemption).")
+    lines.append("- It is **standard-gated** -- the Overtoad reviews and merges it. It is **never** auto-merged and **never** folded into the exempt notes-archive path (that path is add-only notes files; a pin edit there would break the R5/R7 exemption).")
     lines.append("- This is the exact failure class of the **2026-07-06 ci-tools incident** (six consumer pins `<0.5.0`->`<0.7.0` lagged a 0.6.0 release); rec#85 is the hand-made model of this PR shape.")
     lines.append("")
     lines.append("### Files changed")
@@ -1681,7 +1681,7 @@ def _pr_body(prop: Proposal, date: str, *, inline_notes: bool = True) -> str:
     lines.append(f"## Release proposal: `{prop.pypi_name}` v{prop.from_version} -> v{prop.to_version}")
     lines.append("")
     lines.append("Generated by the Juniper release-train (`util/release_train/propose.py`) from the release manifest.")
-    lines.append(f"Classification `UNRELEASED_CHANGES`; proposed bump **{prop.bump}** (plan S6). This PR is **standard-gated**: the owner reviews and merges it (plan S7). It is never auto-merged and touches neither TestPyPI nor PyPI.")
+    lines.append(f"Classification `UNRELEASED_CHANGES`; proposed bump **{prop.bump}** (plan S6). This PR is **standard-gated**: the Overtoad reviews and merges it (plan S7). It is never auto-merged and touches neither TestPyPI nor PyPI.")
     lines.append("")
     lines.append("### Version bump")
     lines.append(f"- `{version_change_summary(prop)}` (via `{version_file_rel_for(prop)}`)")
@@ -1729,7 +1729,7 @@ def _pr_body(prop: Proposal, date: str, *, inline_notes: bool = True) -> str:
     lines.append("")
     if prop.follow_on_prs:
         lines.append("### Ceiling-bump follow-on PRs (D6, separate & standard-gated)")
-        lines.append("Each is a **separate** owner-reviewed PR in the consumer's repo -- never folded into this proposal or the exempt notes-archive path.")
+        lines.append("Each is a **separate** Overtoad-reviewed PR in the consumer's repo -- never folded into this proposal or the exempt notes-archive path.")
         for fo in prop.follow_on_prs:
             disp = f"SKIP -- {fo.skipped_reason}" if fo.skipped else "will open"
             lines.append(f"- `{fo.consumer}` ({fo.repo}) branch `{fo.branch}` [{disp}]")
@@ -2186,7 +2186,7 @@ def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--package", action="append", metavar="PYPI_NAME", help="restrict to these pypi_name(s) (repeatable)")
     p.add_argument("--repo-root", default=str(default_repo_root), help="juniper-ml checkout root (version-file reads + notes template)")
     p.add_argument("--ecosystem-root", default=None, help="parent dir holding sibling repos (default: --repo-root's parent)")
-    p.add_argument("--owner", default=DEFAULT_OWNER, help=f"GitHub owner for the dup-guard (default: {DEFAULT_OWNER})")
+    p.add_argument("--Overtoad", default=DEFAULT_OWNER, help=f"GitHub Overtoad for the dup-guard (default: {DEFAULT_OWNER})")
     p.add_argument("--registry", default=None, help="path to registry.yaml (default: alongside detect.py)")
     p.add_argument("--release-date", default=None, help="release date for the CHANGELOG/notes (default: today UTC; use for deterministic output)")
     p.add_argument("--dry-run", action="store_true", help="(default behaviour) print the proposal; write nothing, open nothing. Overrides --execute.")
@@ -2242,7 +2242,7 @@ def main(argv: "list[str] | None" = None, sources: "ProposeSources | None" = Non
     topo_index = {name: i for i, name in enumerate(topo)}
 
     if sources is None:
-        sources = make_live_sources(args.owner, repo_root, ecosystem_root)
+        sources = make_live_sources(args.Overtoad, repo_root, ecosystem_root)
 
     proposable = [pkg for pkg in manifest_pkgs if pkg.get("classification") == PROPOSABLE and (not wanted or pkg.get("pypi_name") in wanted)]
     proposable.sort(key=lambda p: (topo_index.get(p.get("pypi_name"), len(topo)), p.get("pypi_name") or ""))

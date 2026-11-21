@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc — one-off (Paul's 2026-08-26 decision: exclude the running win11 VM's VDI, note §8.6-2)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md (§8.6-2, §8.6-4 PUT rule);
          util/ad-hoc/yamaguchi_switch_aes.py (the reference GET/modify/PUT pattern)
 

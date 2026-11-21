@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (R-OBS-SC-2 follow-ups)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (the image half of the juniper-deploy pin PR's verification)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-deploy#266 (the precedent: cascor 0.13.0's pin, whose image was pulled by digest and run);
          notes/releases/RELEASE_NOTES_juniper-cascor_v0.14.0.md and notes/releases/RELEASE_NOTES_juniper-canopy_v0.10.0.md;
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-15_r-obs-sc-2-cascor-0-14-0-canopy-0-10-0-at-pypi-gates-guard-pr-plan-v1-15-16-next.md

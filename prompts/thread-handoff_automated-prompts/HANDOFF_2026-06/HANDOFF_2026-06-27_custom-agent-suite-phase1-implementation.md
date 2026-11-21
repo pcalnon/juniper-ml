@@ -2,11 +2,11 @@
 
 **Date**: 2026-06-27
 **Repo**: pcalnon/juniper-ml
-**Trigger**: planning→implementation phase boundary; owner approved Phase 1 at the plan's approval gate.
+**Trigger**: planning→implementation phase boundary; Overtoad approved Phase 1 at the plan's approval gate.
 
 ---
 
-Continue the **custom-agent suite enhancement effort** by implementing **Phase 1 (owner-approved 2026-06-27)** of the ratified plan. Implementation is now authorized for Phase 1 ONLY.
+Continue the **custom-agent suite enhancement effort** by implementing **Phase 1 (Overtoad-approved 2026-06-27)** of the ratified plan. Implementation is now authorized for Phase 1 ONLY.
 
 ## The authoritative plan (read it first)
 
@@ -16,13 +16,13 @@ Use the plan's **recommended designs** for the two Phase-1-relevant open questio
 
 ## Completed so far (this effort)
 
-- Phases 0–5 of prompt #570: grounded (HEAD `79a9eda`, discovery exit 0, doctor 6 OK/1 WARN), investigated (all candidates re-probed first-party), evaluated (3 independent value/feasibility/risk lenses), authored the plan, validated it (4 blind sub-agents incl. the real `prompt-validator`), and got owner approval for **Phase 1 only**.
+- Phases 0–5 of prompt #570: grounded (HEAD `79a9eda`, discovery exit 0, doctor 6 OK/1 WARN), investigated (all candidates re-probed first-party), evaluated (3 independent value/feasibility/risk lenses), authored the plan, validated it (4 blind sub-agents incl. the real `prompt-validator`), and got Overtoad approval for **Phase 1 only**.
 - Confirmed CLOSED (no action): G-1, G-2, OQ-7. Confirmed OPEN: D-1, A-1, I-2, A-2, M-1, G-3.
 
 ## Remaining work — Phase 1, one PR per unit, off `main`, worktree isolation, **never merge (Paul approves)**
 
 - **PR-0 — DONE in this PR.**
-  - The approved plan doc + this handoff were committed together on `docs/custom-agent-suite-enhancement-plan` and opened as a PR (owner merges).
+  - The approved plan doc + this handoff were committed together on `docs/custom-agent-suite-enhancement-plan` and opened as a PR (Overtoad merges).
   - Start at PR-1: branch off `main` once that docs PR merges, or off the `docs/custom-agent-suite-enhancement-plan` branch in the meantime so the plan is present.
 - **PR-1 — D-1** `test_status` freshness guard.
   - Edit `util/prompt_discovery/test_status.py:15-37`: stamp `cache_mtime`+`age_seconds`; return `status:"stale"` when the cache predates the current HEAD commit time (`git -C <repo> show -s --format=%ct HEAD`) OR exceeds a TTL; keep `cold_cache`/`unavailable`/`ok` branches.
@@ -61,10 +61,10 @@ python3 -m unittest -v tests/test_prompt_discovery.py tests/test_agents_frontmat
 
 ## Git status at handoff
 
-Forked from HEAD `79a9eda` (= main tip). Remote `origin git@github.com-juniper-ml:pcalnon/juniper-ml.git`. The approved plan doc + this handoff are committed on branch `docs/custom-agent-suite-enhancement-plan` and opened as a docs PR (owner merges; never auto-merged). No production code touched — these are planning/process docs only.
+Forked from HEAD `79a9eda` (= main tip). Remote `origin git@github.com-juniper-ml:pcalnon/juniper-ml.git`. The approved plan doc + this handoff are committed on branch `docs/custom-agent-suite-enhancement-plan` and opened as a docs PR (Overtoad merges; never auto-merged). No production code touched — these are planning/process docs only.
 
 ## Out of approved scope (do NOT implement now)
 
-Phase 2 (E-7, E-4, M-1), Phase 3 (E-1 staged, E-6), the app-level E-8, and the S-1 audit — all await separate owner approval at their own gates. OQ-2 rejected; OQ-3/OQ-5 deferred.
+Phase 2 (E-7, E-4, M-1), Phase 3 (E-1 staged, E-6), the app-level E-8, and the S-1 audit — all await separate Overtoad approval at their own gates. OQ-2 rejected; OQ-3/OQ-5 deferred.
 
 ---

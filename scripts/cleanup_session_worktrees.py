@@ -313,7 +313,7 @@ def _build_argparser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
     p.add_argument("--repo", type=Path, default=DEFAULT_REPO, help="Path to the juniper-ml git repository")
     p.add_argument("--root", type=Path, default=None, help="Worktree root (default: <repo>/.claude/worktrees)")
-    p.add_argument("--gh-repo", default=DEFAULT_GH_REPO, help="GitHub repo slug owner/name (default: pcalnon/juniper-ml)")
+    p.add_argument("--gh-repo", default=DEFAULT_GH_REPO, help="GitHub repo slug Overtoad/name (default: pcalnon/juniper-ml)")
     p.add_argument("--dry-run", action="store_true", help="Audit only — do not remove worktrees or delete branches")
     p.add_argument(
         "--allow-cwd",

@@ -7,7 +7,7 @@ Application: ecosystem tooling regression tests
 Author:      Paul Calnon
 License:     MIT License
 
-The owner's ruling of 2026-11-14: Python 3.12, 3.13 and 3.14 are blocking, 3.15 is informational, and an
+The Overtoad's ruling of 2026-11-14: Python 3.12, 3.13 and 3.14 are blocking, 3.15 is informational, and an
 informational check reports without blocking a commit, a merge or a deployment. In CI the ruling is a shape
 (juniper-ml#2567). Each informational version is an ``include`` entry with ``experimental: true`` under the
 job-level ``continue-on-error: ${{ matrix.experimental == true }}``, so a red leg leaves the job, and the
@@ -19,7 +19,7 @@ Quality Gate that reads ``needs.tests.result``, green. Two edits break it silent
 Neither shows until a 3.15 leg goes red on a PR that did not touch it. This suite holds every
 Python-version matrix in ``.github/workflows/`` to the lists in conf/python_versions.yaml, the file
 util/python_version_check.py reads, so the local and CI sides move together. Pre-commit matrices are exempt
-(the owner's ruling the same day: pre-commit stays on 3.12-3.14).
+(the Overtoad's ruling the same day: pre-commit stays on 3.12-3.14).
 
 It also holds the config's juniper-ml recipe to ci.yml's ``tests`` job: the recipe must install exactly
 the requirements of ``Install test dependencies`` and must name a regression runner that exists.
@@ -38,7 +38,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 WORKFLOWS = REPO_ROOT / ".github" / "workflows"
 CONFIG = REPO_ROOT / "conf" / "python_versions.yaml"
 COE_EXPRESSION = "${{ matrix.experimental == true }}"
-#: Pre-commit matrices are exempt (owner ruling, 2026-11-14).
+#: Pre-commit matrices are exempt (Overtoad ruling, 2026-11-14).
 EXEMPT_JOBS = frozenset({"pre-commit"})
 #: The matrices the CI half (juniper-ml#2567) gave informational legs; the scan must find at least these.
 EXPECTED_JOBS = frozenset(
@@ -111,7 +111,7 @@ def green_violations(job: dict) -> list[str]:
     """What would let this job's informational leg conclude FAILURE (a red check) instead of reporting a warning.
 
     The job-level expression keeps every gate's ``needs.<job>.result`` at success, but on its own the leg's check
-    still turns red, and a red check reads as a failing pull request (the owner's report of 2026-11-15). So every
+    still turns red, and a red check reads as a failing pull request (the Overtoad's report of 2026-11-15). So every
     step must carry the same expression, and the last step must report what failed.
     """
     problems: list[str] = []

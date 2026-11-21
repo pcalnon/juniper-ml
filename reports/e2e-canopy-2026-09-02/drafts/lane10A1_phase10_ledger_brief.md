@@ -2,7 +2,7 @@ You are Lane 10-A1 (measurement re-creation, SOURCE-FIRST, ROUND 1) of the Junip
 
 HARD RULES
 - READ-ONLY on every repo: no edits to tracked files, no commits, pushes, PR/issue writes, arming, merging. `gh api` GETs and `gh pr view` are fine. Do not start or stop any service; never touch ports :8051, :8101, :8202 or any :805x/:806x leg. Scratch work only in a directory you create with `mktemp -d`.
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential anywhere; never request an email field from GitHub (no REST commit objects; use `gh pr view --json` fields that carry no author email). Do NOT print commit headers or signature fields. Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential anywhere; never request an email field from GitHub (no REST commit objects; use `gh pr view --json` fields that carry no author email). Do NOT print commit headers or signature fields. Report any slip.
 - Read juniper-ml only through the worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/clever-juggling-spring` (never `git -C` the primary juniper-ml checkout). If a shell guard refuses a compound command, split it into plain commands, or put a script under your `mktemp -d` directory and run it with `python3 -B`.
 
 THE FROZEN ARTIFACT: commit `0737d573` in that worktree (branch `docs/canopy-e2e-phase10`). Read the ledger as `git -C <worktree> show 0737d573:notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` — Phase 10 is the section headed "## Phase 10 — 2026-10-04". Do not read the working tree's copy (it may move).

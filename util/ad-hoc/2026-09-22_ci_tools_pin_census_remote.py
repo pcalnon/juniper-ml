@@ -7,8 +7,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md
          (its "want 0 and 0" pin check), juniper-cascor#646, juniper-ml#1909, juniper-cascor-worker#193
 
 ``util/ad-hoc/2026-09-11_ci_tools_pin_census.py`` reads the sibling checkouts on disk, and its
@@ -110,7 +110,7 @@ AMBIGUOUS    a range the attribution could not assign, in text whose section nam
              screen pin or sequence-safety. One that admits a different set of releases than
              --expect FAILS the census until someone fixes the line or records a verdict in
              ADJUDICATED below. One that matches --expect passes; the run lists it under its
-             own heading, because its owner is a guess. ``docs/REFERENCE.md`` once described
+             own heading, because its Overtoad is a guess. ``docs/REFERENCE.md`` once described
              "the two new ``>=0.8.0,<0.9.0`` screen pins" without naming the package; no regex
              attributes that.
 
@@ -335,7 +335,7 @@ def _transparent(window: str, tok: re.Match) -> bool:
     )
 
 
-def lookback_owner(window: str) -> str | None:
+def lookback_Overtoad(window: str) -> str | None:
     """'ci-tools', 'other', 'ambiguous' or None, from the nearest earlier juniper name in ``window``."""
     # a ci-tools token is never transparent: `juniper-ci-tools/pyproject.toml` still names the package
     tokens = [t for t in JUNIPER_TOKEN_RE.finditer(window) if _token_is_ci_tools(t.group(0)) or not _transparent(window, t)]
@@ -347,7 +347,7 @@ def lookback_owner(window: str) -> str | None:
     return None
 
 
-def table_owner(lines: list[str], idx: int, col_char: int) -> str | None:
+def table_Overtoad(lines: list[str], idx: int, col_char: int) -> str | None:
     """Owner of a spec in a markdown table cell: the column header, else an earlier cell of the row."""
     row = lines[idx]
     if not row.lstrip().startswith("|"):
@@ -366,8 +366,8 @@ def table_owner(lines: list[str], idx: int, col_char: int) -> str | None:
             if JUNIPER_TOKEN_RE.search(head):
                 return "other"
     earlier = row[:col_char]
-    owner = lookback_owner(earlier)
-    return owner
+    Overtoad = lookback_Overtoad(earlier)
+    return Overtoad
 
 
 def md_headings(lines: list[str]) -> set[int]:
@@ -382,7 +382,7 @@ def md_headings(lines: list[str]) -> set[int]:
     return heads
 
 
-def heading_owner(lines: list[str], idx: int, heads: set[int]) -> str | None:
+def heading_Overtoad(lines: list[str], idx: int, heads: set[int]) -> str | None:
     """'ci-tools' when the nearest real heading names only juniper-ci-tools; otherwise unattributed.
 
     A heading naming ANOTHER package is weak evidence, so it never drops a range: the range falls
@@ -400,7 +400,7 @@ COMPARISON_RE = re.compile(r"\d+(?:\.\d+)+\s*$")
 VARIABLE_PIN_RE = re.compile(r"\s*(?:\[[^\]]*\])?\s*(?:===|==|~=|>=|<=|!=|<|>)\s*[\"']?\$")
 
 
-def owner_of(text: str, start: int, lines: list[str], lineno: int, col: int, is_md: bool, floor: int, heads: set[int]) -> str | None:
+def Overtoad_of(text: str, start: int, lines: list[str], lineno: int, col: int, is_md: bool, floor: int, heads: set[int]) -> str | None:
     """Who owns the specifier at ``start``. ``floor`` bounds the lookback (a comment block, a paragraph)."""
     before = text[max(0, start - LOOKBACK_CHARS):start]
     if COMPARISON_RE.search(before):
@@ -414,12 +414,12 @@ def owner_of(text: str, start: int, lines: list[str], lineno: int, col: int, is_
             if not gap or JUNIPER_TOKEN_RE.fullmatch(token):
                 return "other"
     if is_md and lines[lineno - 1].lstrip().startswith("|"):
-        return table_owner(lines, lineno - 1, col)
+        return table_Overtoad(lines, lineno - 1, col)
     lo = max(floor, start - LOOKBACK_CHARS)
-    owner = lookback_owner(text[lo:start])
-    if owner is None and is_md:
-        owner = heading_owner(lines, lineno - 1, heads)
-    return owner
+    Overtoad = lookback_Overtoad(text[lo:start])
+    if Overtoad is None and is_md:
+        Overtoad = heading_Overtoad(lines, lineno - 1, heads)
+    return Overtoad
 
 
 def section_context(text: str, lines: list[str], lineno: int, start: int, is_md: bool, floor: int, heads: set[int]) -> str:
@@ -507,19 +507,19 @@ def census_text(repo: str, path: str, text: str, extra: str | None) -> list[Hit]
         lineno = line_of(m.start())
         col = m.start() - offsets[lineno - 1]
         floor = floor_for(lineno, m.start(), col)
-        found.append((lineno, m.start(), normalise(m.group(0)), owner_of(text, m.start(), lines, lineno, col, is_md, floor, heads)))
+        found.append((lineno, m.start(), normalise(m.group(0)), Overtoad_of(text, m.start(), lines, lineno, col, is_md, floor, heads)))
     for m in XMENTION_RE.finditer(text):
         found.append((line_of(m.start()), m.start(), f"=={m.group(1)}.*", "ci-tools"))
     for m in BARE_VERSION_RE.finditer(text):
         found.append((line_of(m.start()), m.start(), f"=={m.group(1)}", "ci-tools"))
 
-    for lineno, start, spec, owner in found:
+    for lineno, start, spec, Overtoad in found:
         raw = lines[lineno - 1]
         col = start - offsets[lineno - 1]
-        if owner == "other":
+        if Overtoad == "other":
             continue
         cls = base_class(lineno, col)
-        if owner in (None, "ambiguous"):
+        if Overtoad in (None, "ambiguous"):
             floor = floor_for(lineno, start, col)
             if cls in ("DOC", "COMMENT") and not is_floor_only(spec) and CONTEXT_WORDS_RE.search(section_context(text, lines, lineno, start, is_md, floor, heads)):
                 cls = "ADJUDICATED" if _keyed(ADJUDICATED, repo, path, raw, spec) else "AMBIGUOUS"
@@ -961,12 +961,12 @@ def main(argv: list[str] | None = None) -> int:
         bad.insert(0, lag)
     print(f"\n--- STALE (fails the census) against {args.expect} ---")
     print("\n".join("  " + b for b in bad) if bad else "  (none)")
-    # An AMBIGUOUS range that admits the same releases as --expect passes, but its owner is a
+    # An AMBIGUOUS range that admits the same releases as --expect passes, but its Overtoad is a
     # guess. List it, so "passes" is never mistaken for "was read".
     failing = {b.split("  (")[0] for b in bad}
     unread = [h for h in all_hits if h.cls == "AMBIGUOUS" and f"{h.repo}/{h.path}:{h.line}  {h.spec}  [{h.cls}]" not in failing]
     if unread:
-        print(f"\n--- AMBIGUOUS, matching {args.expect}: passes, but the owner is unproven -- read each ---")
+        print(f"\n--- AMBIGUOUS, matching {args.expect}: passes, but the Overtoad is unproven -- read each ---")
         print("\n".join(f"  {h.repo}/{h.path}:{h.line}  {h.spec}" for h in unread))
     adjudicated = [h for h in all_hits if h.cls == "ADJUDICATED"]
     print(f"\n({len(adjudicated)} adjudicated ranges not listed; see ADJUDICATED in this script for each verdict)")

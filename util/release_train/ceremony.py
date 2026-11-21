@@ -4,7 +4,7 @@
 Consumes the release-manifest JSON emitted by ``detect.py`` and, for every package the detector
 classified ``BUMPED_NOT_RELEASED`` (``declared > released``; no Release cut yet -- plan S5.1), runs the
 **automated ceremony**: the middle arc R6 automates without ever touching a gate (plan S5.3). The
-version bump that *made* the package ``BUMPED_NOT_RELEASED`` already rode the owner-approved proposal PR
+version bump that *made* the package ``BUMPED_NOT_RELEASED`` already rode the Overtoad-approved proposal PR
 (Gate 1), and the PyPI deploy at the very end still waits at the ``pypi`` environment gate (Gate 2). The
 ceremony only automates the middle: notes authoring + central archival, the exempt archive PR, the
 Release cut, and TestPyPI verification -- **never** a version bump without approval and **never** a PyPI
@@ -25,7 +25,7 @@ coincide, so the split is a no-op and behaviour is byte-identical to Phase 3:
      live PyPI truth; a non-empty ``CHANGELOG [<version>]`` section to source the notes; (during the
      monitor) a green build job and TestPyPI job before Gate 2. If the ``gh issue`` API itself fails when
      filing that dedup issue -- most plausibly the cross-repo GitHub App token lacking the **Issues**
-     permission (the owner may grant it later; plan S11 failure-issues) -- the upsert **degrades
+     permission (the Overtoad may grant it later; plan S11 failure-issues) -- the upsert **degrades
      gracefully**: a loud operator log line + a step-summary-visible ``halt_issue_failed`` flag, NEVER a
      crash. The package stays HALTED and the run's step summary + Slack still surface it; the R7 ``gh``
      surface is unchanged (the degrade wraps the same ``upsert_halt_issue`` seam member).
@@ -36,10 +36,10 @@ coincide, so the split is a no-op and behaviour is byte-identical to Phase 3:
      a ``createCommitOnBranch`` GraphQL mutation), so the commit is **GitHub-signed / Verified** and the
      exempt PR satisfies the juniper-ml ruleset's ``required_signatures`` rule -- which is what makes the
      auto-merge (step 4) truly hands-free. A plain runner-side ``git commit`` is unsigned and left the
-     armed auto-merge BLOCKED behind that rule despite all checks green (2026-07-23 ml#707, owner
+     armed auto-merge BLOCKED behind that rule despite all checks green (2026-07-23 ml#707, Overtoad
      admin-bypass one-click); the API commit removes that block with zero security-posture change.
   4. **Auto-merge** -- enable ``gh pr merge --auto --squash`` on it; if the repo has ``allow_auto_merge``
-     off (step 3.3 has not landed yet) enabling **degrades gracefully** to the owner one-click merge,
+     off (step 3.3 has not landed yet) enabling **degrades gracefully** to the Overtoad one-click merge,
      it is NOT a halt.
   5. **Cut the Release** -- ``gh release create <tag> --latest|--latest=false --notes-file <archive>``.
      ``--latest`` only for the package whose registry entry says ``latest: true`` -- one per repo, the
@@ -66,13 +66,13 @@ mutates a deployment environment or a reviewer. Every live ``gh`` call is routed
 or carrying a forbidden token (``environment`` / ``deployment`` / ``review`` / ``--admin`` / ...), a bare
 ``pr merge`` without ``--auto``, or a ``release create --verify-tag``. ``api`` **stays forbidden for the
 general surface**; the ONLY carve-out is the archive lane's two calls, which are bounded by the sibling
-assertion ``_assert_api_allowed`` to (a) a ``repos/<owner>/<repo>/git/refs`` POST creating a
+assertion ``_assert_api_allowed`` to (a) a ``repos/<Overtoad>/<repo>/git/refs`` POST creating a
 ``refs/heads/*`` ref and (b) an ``api graphql`` body containing ``createCommitOnBranch`` with
 ``repoWithOwner`` bound -- each pinned to one of the 8 publishing repos; every other ``gh api`` (a
 different path, a different mutation, a non-POST ref write, or an out-of-allowlist repo) is a
 ``SeamViolation``. Phase 4.1 adds a **``--repo`` value bound**:
 when a call carries ``--repo <slug>`` and the live seam was built with the registry-derived allowlist,
-the slug MUST name one of the 8 publishing repos (``owner/<repo>``); a ``--repo`` pointing anywhere else
+the slug MUST name one of the 8 publishing repos (``Overtoad/<repo>``); a ``--repo`` pointing anywhere else
 is a ``SeamViolation``. This is how cross-repo ``--repo pcalnon/<owning>`` is expressed WITHOUT widening
 the verb allowlist -- the surface (verb pairs + forbidden tokens) is unchanged; only the repo target set
 opens, and only to the exact 8.
@@ -90,7 +90,7 @@ later workflow step and is **never** run against the real repo in this change. `
 pre-commit-lint-gated, so that unittest IS the gate (the ``env_floor_drift_check`` precedent, shared with
 ``detect.py`` / ``propose.py``).
 
-Exit codes: 0 clean run (no halts), 1 at least one package HALTED (owner attention -- an issue was
+Exit codes: 0 clean run (no halts), 1 at least one package HALTED (Overtoad attention -- an issue was
 filed/updated), 2 invocation error (bad manifest / empty registry / unknown ``--package``).
 
 Project: juniper-ml
@@ -139,7 +139,7 @@ CEREMONIAL = "BUMPED_NOT_RELEASED"
 WRITABLE_REPO = os.environ.get("JUNIPER_RELEASE_TRAIN_WRITABLE_REPO", detect.META_REPO)
 
 # Monitor bounds (plan S8 TestPyPI gate -> the ``pypi`` env-gate; §12 step 3.2). The publish workflow
-# builds + verifies on TestPyPI before its ``pypi``-environment deploy job parks at the owner-gated
+# builds + verifies on TestPyPI before its ``pypi``-environment deploy job parks at the Overtoad-gated
 # approval, at which point the run's top-level GitHub status becomes ``waiting`` (verified: ``waiting`` is
 # a documented workflow-run status and ``gh run view --json status`` is a raw passthrough of that REST
 # field). The monitor polls for a BOUNDED wall clock at a short fixed interval so it actually observes
@@ -156,7 +156,7 @@ class SeamViolation(RuntimeError):
 
 
 # The EXACT mutating ``gh`` surface the ceremony's write identity may use (plan S9.3 / R7). Nothing here
-# mutates a deployment environment or a reviewer; the PyPI deploy stays owner-gated at the ``pypi`` env.
+# mutates a deployment environment or a reviewer; the PyPI deploy stays Overtoad-gated at the ``pypi`` env.
 GH_MUTATING_SURFACE = frozenset(
     {
         ("pr", "create"),  # open the exempt archive PR
@@ -210,7 +210,7 @@ def _assert_gh_allowed(args: list, allowed_repos: "frozenset[str] | None" = None
     Enforces: the leading ``(subcommand, verb)`` pair is in ``GH_ALLOWED_SURFACE``; no argv token is in
     ``GH_FORBIDDEN_TOKENS``; ``pr merge`` always carries ``--auto`` (never a bare immediate merge);
     ``release create`` never carries ``--verify-tag`` (the Release CREATES the tag for a sub-package);
-    and -- when ``allowed_repos`` is supplied (the registry-derived ``owner/<repo>`` set, Phase 4.1) --
+    and -- when ``allowed_repos`` is supplied (the registry-derived ``Overtoad/<repo>`` set, Phase 4.1) --
     any ``--repo <slug>`` names one of the 8 publishing repos and nothing else. ``allowed_repos=None``
     leaves the ``--repo`` VALUE unchecked (the surface + token guards still apply); the live seam always
     supplies it, so a real run is always bounded to the 8.
@@ -267,10 +267,10 @@ def commit_ci_verdict(conclusions: list) -> "str | None":
     return values[0] if values else None
 
 
-def publishing_repo_slugs(entries: list, owner: str) -> "frozenset[str]":
-    """The ``owner/<repo>`` allowlist for ``_assert_gh_allowed``, derived from the registry's repo set
+def publishing_repo_slugs(entries: list, Overtoad: str) -> "frozenset[str]":
+    """The ``Overtoad/<repo>`` allowlist for ``_assert_gh_allowed``, derived from the registry's repo set
     (data-driven, so it can never drift from the 8 publishing repos -- plan S4.1 / the registry lint)."""
-    return frozenset(f"{owner}/{e.repo}" for e in entries)
+    return frozenset(f"{Overtoad}/{e.repo}" for e in entries)
 
 
 # ── the archive lane's two sanctioned ``gh api`` calls (GitHub-signed commit) ─
@@ -280,7 +280,7 @@ def publishing_repo_slugs(entries: list, owner: str) -> "frozenset[str]":
 # stays forbidden for everything else; these two shapes are the deliberate, narrowly-bounded carve-out.
 
 # The ONLY sanctioned non-graphql ``gh api`` REST path: a POST creating ``refs/heads/<archive-branch>``
-# on one of the 8 publishing repos (group 1 == ``<owner>/<repo>``).
+# on one of the 8 publishing repos (group 1 == ``<Overtoad>/<repo>``).
 _API_REFS_PATH_RE = re.compile(r"^repos/([^/]+/[^/]+)/git/refs$")
 
 # The ONLY sanctioned ``gh api graphql`` mutation. ``createCommitOnBranch`` adds the single archive file
@@ -306,12 +306,12 @@ _CREATE_COMMIT_ON_BRANCH_MUTATION = (
 # 131,000 B refused with HTTP 499) but NOT established as GitHub's own limit rather than that host's
 # link (re-diagnosed 2026-10-18 as turing's weak Wi-Fi: GitHub's GraphQL frontend drops a request that runs
 # past about 7-10 s, so the figure is a request-duration symptom, not a body-size rule). plan_ceremony HALTs `archive-too-large` BEFORE any write when the encoded archive exceeds this
-# many bytes. The owner ruled on 2026-10-18 to default to that conservative figure (125,000) until a
+# many bytes. The Overtoad ruled on 2026-10-18 to default to that conservative figure (125,000) until a
 # runner-side measurement settled the real cap. It was settled on 2026-10-26: from a GitHub-hosted runner
 # (juniper-ml run 40410086979), GitHub accepted every GraphQL request body from 100,000 B to 16,777,216 B,
 # padded in a comment or in a variable, the largest in 3.29 s, and from the Linux host every body up to
 # 8,388,608 B (util/ad-hoc/2026-10-26_graphql_body_cap_probe.py; reports/2026-10-26_graphql-body-cap-probe/).
-# The owner then ruled (2026-10-26) to raise the default to 1,000,000: 16x below the largest body the runner
+# The Overtoad then ruled (2026-10-26) to raise the default to 1,000,000: 16x below the largest body the runner
 # was seen to accept, and far above any release notes so far (juniper-ml 0.11.0's archive, at 122,032 B, came
 # within 7 KB of the old cap). JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX still overrides it. The remedy for a
 # HALT is still to condense the notes (util/ad-hoc/2026-10-17_condense_release_notes_section.py, the
@@ -353,7 +353,7 @@ def _assert_api_allowed(args: list, allowed_repos: "frozenset[str] | None") -> N
     ``api`` stays in ``GH_FORBIDDEN_TOKENS`` for the general surface; this sibling assertion is the
     deliberate carve-out, each call pinned to one of the 8 publishing repos:
 
-      (a) ``api repos/<owner>/<repo>/git/refs`` with method POST and a ``ref=refs/heads/*`` field, or
+      (a) ``api repos/<Overtoad>/<repo>/git/refs`` with method POST and a ``ref=refs/heads/*`` field, or
       (b) ``api graphql`` whose body is the ``createCommitOnBranch`` mutation with ``repoWithOwner`` bound.
 
     A different path, a different mutation, a non-POST ref write, or a repo outside ``allowed_repos`` (when
@@ -370,13 +370,13 @@ def _assert_api_allowed(args: list, allowed_repos: "frozenset[str] | None") -> N
             raise SeamViolation(f"gh api graphql is sanctioned ONLY for the createCommitOnBranch archive commit; got {args!r}")
         slug = _api_field(args, "repoWithOwner")
         if slug is None:
-            raise SeamViolation(f"gh api graphql createCommitOnBranch must bind repoWithOwner=<owner>/<repo>; got {args!r}")
+            raise SeamViolation(f"gh api graphql createCommitOnBranch must bind repoWithOwner=<Overtoad>/<repo>; got {args!r}")
         if allowed_repos is not None and slug not in allowed_repos:
             raise SeamViolation(f"gh api graphql createCommitOnBranch bound to {slug!r}, not one of the {len(allowed_repos)} publishing repos {sorted(allowed_repos)} -- R7 archive-lane repo bound")
         return
     m = _API_REFS_PATH_RE.match(sub)
     if not m:
-        raise SeamViolation(f"gh api is forbidden except the archive-branch `repos/<owner>/<repo>/git/refs` POST and the createCommitOnBranch graphql mutation; got {args!r}")
+        raise SeamViolation(f"gh api is forbidden except the archive-branch `repos/<Overtoad>/<repo>/git/refs` POST and the createCommitOnBranch graphql mutation; got {args!r}")
     slug = m.group(1)
     if allowed_repos is not None and slug not in allowed_repos:
         raise SeamViolation(f"gh api git/refs bound to {slug!r}, not one of the {len(allowed_repos)} publishing repos {sorted(allowed_repos)} -- R7 archive-lane repo bound")
@@ -640,13 +640,13 @@ def classify_publish_run(run: "dict | None") -> str:
     Returns: ``PENDING_PYPI_APPROVAL`` (TestPyPI verify passed; the pypi deploy job is parked at the env
     gate -- SUCCESS for the train), ``HALT_BUILD`` (the build job failed: this attempt published nothing),
     ``HALT_TESTPYPI`` (the TestPyPI job failed before Gate 2), ``HALT_PUBLISH`` (the run failed otherwise),
-    ``RELEASED`` (both gates done -- owner already approved), ``IN_PROGRESS`` (still running -> keep
+    ``RELEASED`` (both gates done -- Overtoad already approved), ``IN_PROGRESS`` (still running -> keep
     polling), ``NOT_FOUND`` (no run yet).
 
     A publisher with a separate build job fails a bad build in ``Build and Validate``, which leaves the
     TestPyPI job SKIPPED rather than failed. Before ``HALT_BUILD`` that run read as ``HALT_PUBLISH`` (a note,
     no issue), where the same failure inside a TestPyPI job that built for itself had filed one. A republish
-    dispatch run (the owner's recovery ladder, 2026-11-15) skips the build and both
+    dispatch run (the Overtoad's recovery ladder, 2026-11-15) skips the build and both
     publish jobs and runs ``Republish the tested files (dispatch only)``, whose name holds neither "testpypi"
     nor "pypi": it classifies by the run's own status (waiting -> PENDING_PYPI_APPROVAL, success -> RELEASED,
     failure -> HALT_PUBLISH)."""
@@ -676,7 +676,7 @@ def classify_publish_run(run: "dict | None") -> str:
 
     testpypi_ok = bool(testpypi_jobs) and all((j.get("conclusion") or "").lower() == "success" for j in testpypi_jobs)
     pypi_parked = bool(pypi_jobs) and all((j.get("status") or "").lower() in ("waiting", "queued", "pending", "") for j in pypi_jobs)
-    # The run's top-level status is 'waiting' while parked at the owner-gated `pypi` deployment env
+    # The run's top-level status is 'waiting' while parked at the Overtoad-gated `pypi` deployment env
     # (verified: a documented workflow-run status that `gh run view --json status` passes through). The
     # job-level (testpypi succeeded + pypi job parked) check is the belt-and-suspenders fallback.
     if run_status == "waiting" or (testpypi_ok and pypi_parked):
@@ -776,10 +776,10 @@ class CeremonySources:
     create_signed_commit: "Callable[..., str] | None" = None
 
 
-def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allowed_repos: "frozenset[str] | None" = None, gh: "Callable | None" = None, git: "Callable | None" = None) -> CeremonySources:
+def make_live_sources(Overtoad: str, repo_root: Path, ecosystem_root: Path, *, allowed_repos: "frozenset[str] | None" = None, gh: "Callable | None" = None, git: "Callable | None" = None) -> CeremonySources:
     """The live seam. Every ``gh`` call is routed through ``_assert_gh_allowed`` (the R7 code gate).
 
-    ``allowed_repos`` (Phase 4.1) is the registry-derived ``owner/<repo>`` allowlist bounding every
+    ``allowed_repos`` (Phase 4.1) is the registry-derived ``Overtoad/<repo>`` allowlist bounding every
     ``--repo`` argument to the 8 publishing repos; ``main`` always supplies it (via
     ``publishing_repo_slugs``). ``gh`` / ``git`` are injectable so the seam-surface test can drive the
     real argv construction with a recording fake -- proving the live surface is exactly the R7-permitted
@@ -818,17 +818,17 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         # its CI is the signal, not whatever merged after it. See ``commit_ci_verdict`` for how its runs
         # are read. A commit that never ran the workflow on main returns None -> HALT, fail-closed.
         if commit:
-            out = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--branch", "main", "--workflow", workflow, "--commit", commit, "--status", "completed", "--limit", "20", "--json", "conclusion", "--jq", "[.[].conclusion]"])
+            out = _cgh(["run", "list", "--repo", f"{Overtoad}/{repo}", "--branch", "main", "--workflow", workflow, "--commit", commit, "--status", "completed", "--limit", "20", "--json", "conclusion", "--jq", "[.[].conclusion]"])
             try:
                 conclusions = json.loads(out or "[]")
             except ValueError as exc:
                 raise SourceError(f"gh run list returned non-JSON for {repo}@{commit}") from exc
             return commit_ci_verdict(conclusions)
-        out = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--branch", "main", "--workflow", workflow, "--status", "completed", "--limit", "1", "--json", "conclusion", "--jq", ".[0].conclusion"])
+        out = _cgh(["run", "list", "--repo", f"{Overtoad}/{repo}", "--branch", "main", "--workflow", workflow, "--status", "completed", "--limit", "1", "--json", "conclusion", "--jq", ".[0].conclusion"])
         return (out or "").strip() or None
 
     def list_open_prs(repo: str) -> list:
-        out = _cgh(["pr", "list", "--repo", f"{owner}/{repo}", "--state", "open", "--json", "number,title,headRefName", "--limit", "100"])
+        out = _cgh(["pr", "list", "--repo", f"{Overtoad}/{repo}", "--state", "open", "--json", "number,title,headRefName", "--limit", "100"])
         if not out:
             return []
         try:
@@ -837,7 +837,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
             raise SourceError(f"gh pr list returned non-JSON for {repo}") from exc
 
     def release_exists(repo: str, tag: str) -> bool:
-        out = _cgh(["release", "view", tag, "--repo", f"{owner}/{repo}", "--json", "tagName", "--jq", ".tagName"])
+        out = _cgh(["release", "view", tag, "--repo", f"{Overtoad}/{repo}", "--json", "tagName", "--jq", ".tagName"])
         return bool((out or "").strip())
 
     def archive_on_main(relpath: str) -> bool:
@@ -851,22 +851,22 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         # other Releases made since (juniper-ml fires seven publishers per Release; a repo-wide window of 20 runs held
         # fewer than three Releases). select_publish_run drops the image publisher's run on the same Release.
         fields = "databaseId,headBranch,displayTitle,status,conclusion,workflowDatabaseId,workflowName,startedAt"
-        out = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--event", "release", "--branch", tag, "--json", fields, "--limit", "20"])
+        out = _cgh(["run", "list", "--repo", f"{Overtoad}/{repo}", "--event", "release", "--branch", tag, "--json", fields, "--limit", "20"])
         runs = json.loads(out) if out else []
         match = select_publish_run(runs, tag)
         if match is None:
             return None
-        # A dispatch of the same publisher from the release tag -- its republish job (the owner's recovery ladder,
+        # A dispatch of the same publisher from the release tag -- its republish job (the Overtoad's recovery ladder,
         # 2026-11-15) or a plain re-fire -- is a workflow_dispatch run, which the release-event listing never shows.
         # Only THAT workflow's dispatch runs on THIS tag count: a repo's other dispatch runs (CI, docs, an image
         # publish) say nothing about this package's PyPI state. select_publish_run then prefers an unfinished run of the
         # set, then the one whose latest attempt started last, so a release run re-run after a failed dispatch is read.
         workflow_id = match.get("workflowDatabaseId")
         if workflow_id:
-            out_d = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--event", "workflow_dispatch", "--workflow", str(workflow_id), "--branch", tag, "--json", fields, "--limit", "20"])
+            out_d = _cgh(["run", "list", "--repo", f"{Overtoad}/{repo}", "--event", "workflow_dispatch", "--workflow", str(workflow_id), "--branch", tag, "--json", fields, "--limit", "20"])
             dispatched = [r for r in (json.loads(out_d) if out_d else []) if (r.get("headBranch") or "") == tag and r.get("workflowDatabaseId") == workflow_id]
             match = select_publish_run([match, *dispatched], tag) or match
-        out2 = _cgh(["run", "view", str(match["databaseId"]), "--repo", f"{owner}/{repo}", "--json", "status,conclusion,jobs"])
+        out2 = _cgh(["run", "view", str(match["databaseId"]), "--repo", f"{Overtoad}/{repo}", "--json", "status,conclusion,jobs"])
         data = json.loads(out2) if out2 else {}
         return {
             "status": data.get("status"),
@@ -875,7 +875,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         }
 
     def create_branch(repo: str, branch: str, from_sha: str) -> "tuple[str, bool]":
-        # Create refs/heads/<branch> at <from_sha> via REST (POST /repos/<owner>/<repo>/git/refs).
+        # Create refs/heads/<branch> at <from_sha> via REST (POST /repos/<Overtoad>/<repo>/git/refs).
         # Returns (effective_head_oid, already_committed): the head oid the subsequent signed commit must
         # thread as expectedHeadOid, and whether the branch ALREADY carries our archive commit (so the
         # caller must NOT re-commit). Idempotent re-entry (the branch survives a prior partial run):
@@ -887,7 +887,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         #                                          semantics -- the planner's PR-open / on-main dup-guards
         #                                          normally prevent ever reaching here).
         try:
-            _cgh(["api", f"repos/{owner}/{repo}/git/refs", "-X", "POST", "-f", f"ref=refs/heads/{branch}", "-f", f"sha={from_sha}"])
+            _cgh(["api", f"repos/{Overtoad}/{repo}/git/refs", "-X", "POST", "-f", f"ref=refs/heads/{branch}", "-f", f"sha={from_sha}"])
             return (from_sha, False)
         except SourceError as exc:
             if "already exists" not in str(exc).lower() and "422" not in str(exc):
@@ -924,7 +924,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
                     "-f",
                     f"query={_CREATE_COMMIT_ON_BRANCH_MUTATION}",
                     "-f",
-                    f"repoWithOwner={owner}/{repo}",
+                    f"repoWithOwner={Overtoad}/{repo}",
                     "-f",
                     f"branch={branch}",
                     "-f",
@@ -962,13 +962,13 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         if not already_committed:
             content_b64 = base64.b64encode(content.encode("utf-8")).decode("ascii")
             create_signed_commit(repo, branch, title, relpath, content_b64, head_oid)
-        return (_cgh(["pr", "create", "--repo", f"{owner}/{repo}", "--base", base, "--head", branch, "--title", title, "--body", body]) or "").strip()
+        return (_cgh(["pr", "create", "--repo", f"{Overtoad}/{repo}", "--base", base, "--head", branch, "--title", title, "--body", body]) or "").strip()
 
     def enable_automerge(repo: str, pr: str) -> bool:
         # Graceful degrade (plan S12 step 3.3 not yet landed -> allow_auto_merge may be off): a failure
-        # to ENABLE --auto is the owner one-click fallback, NOT a halt. SeamViolation still propagates.
+        # to ENABLE --auto is the Overtoad one-click fallback, NOT a halt. SeamViolation still propagates.
         try:
-            _cgh(["pr", "merge", str(pr), "--repo", f"{owner}/{repo}", "--auto", "--squash"])
+            _cgh(["pr", "merge", str(pr), "--repo", f"{Overtoad}/{repo}", "--auto", "--squash"])
             return True
         except SourceError:
             return False
@@ -978,18 +978,18 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         # already rode the exempt archive PR into juniper-ml's central notes/releases/ (``notes_relpath``,
         # kept for the record/log); writing it into the OWNING checkout here left a stray untracked file
         # that dirtied the tree (07-19 live run). --notes-file takes the temp path. ``latest`` is the
-        # registry's per-repo badge owner (procedure S11.4): --latest for it, --latest=false for every other
+        # registry's per-repo badge Overtoad (procedure S11.4): --latest for it, --latest=false for every other
         # package, so a sub-package Release never steals its repo's badge. The default is the badge-safe
         # --latest=false; until 2026-09-23 that was the ONLY value, and every repo's badge went stale. NO
         # --verify-tag: the Release CREATES the tag. The cross-repo Release is cut on the owning repo via
-        # --repo owner/<repo>; gh does not need a local checkout of it (the temp notes file suffices).
+        # --repo Overtoad/<repo>; gh does not need a local checkout of it (the temp notes file suffices).
         # ``target`` (--target-sha) creates the tag at that FULL commit; without it gh tags the repo's
         # default branch as it is at this moment. gh rejects an abbreviated sha, so main() refuses one first.
         fd, tmp_path = tempfile.mkstemp(prefix="release-notes-", suffix=".md")
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as fh:
                 fh.write(content)
-            argv = ["release", "create", tag, "--repo", f"{owner}/{repo}", "--title", title, "--notes-file", tmp_path, "--latest" if latest else "--latest=false"]
+            argv = ["release", "create", tag, "--repo", f"{Overtoad}/{repo}", "--title", title, "--notes-file", tmp_path, "--latest" if latest else "--latest=false"]
             if target:
                 argv += ["--target", target]
             return (_cgh(argv) or "").strip()
@@ -1000,11 +1000,11 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
                 pass
 
     def upsert_halt_issue(repo: str, title: str, body: str) -> str:
-        existing = _cgh(["issue", "list", "--repo", f"{owner}/{repo}", "--state", "open", "--search", f"in:title {title}", "--json", "number", "--jq", ".[0].number"])
+        existing = _cgh(["issue", "list", "--repo", f"{Overtoad}/{repo}", "--state", "open", "--search", f"in:title {title}", "--json", "number", "--jq", ".[0].number"])
         num = (existing or "").strip()
         if num:
-            return (_cgh(["issue", "edit", num, "--repo", f"{owner}/{repo}", "--body", body]) or "").strip()
-        return (_cgh(["issue", "create", "--repo", f"{owner}/{repo}", "--title", title, "--body", body]) or "").strip()
+            return (_cgh(["issue", "edit", num, "--repo", f"{Overtoad}/{repo}", "--body", body]) or "").strip()
+        return (_cgh(["issue", "create", "--repo", f"{Overtoad}/{repo}", "--title", title, "--body", body]) or "").strip()
 
     return CeremonySources(
         pypi_json=pypi_json,
@@ -1138,7 +1138,7 @@ def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySour
         actions.append(CeremonyAction("open_archive_pr", f"open the exempt add-only archive PR ({plan.archive_relpath}) on branch {plan.archive_branch} -- the single-file diff the S7.2 guard proves", {"relpath": plan.archive_relpath, "branch": plan.archive_branch, "title": f"release-notes: {entry.pypi_name} v{target}"}))
 
     if not on_main:
-        actions.append(CeremonyAction("enable_auto_merge", "enable `gh pr merge --auto --squash` on the archive PR (degrades to the owner one-click merge if allow_auto_merge is off -- step 3.3 not yet landed)", {"branch": plan.archive_branch}))
+        actions.append(CeremonyAction("enable_auto_merge", "enable `gh pr merge --auto --squash` on the archive PR (degrades to the Overtoad one-click merge if allow_auto_merge is off -- step 3.3 not yet landed)", {"branch": plan.archive_branch}))
 
     latest_flag = "--latest" if plan.latest else "--latest=false"
     target_flag = f" --target {plan.target_sha}" if plan.target_sha else ""
@@ -1158,7 +1158,7 @@ def monitor_publish_run(sources: CeremonySources, repo: str, tag: str, *, timeou
 
     Polls ``publish_run_status`` at ``poll_seconds`` for up to ``timeout_seconds`` (a bounded wall clock).
     Returns as soon as ``classify_publish_run`` reaches a terminal signal: ``PENDING_PYPI_APPROVAL`` (the
-    run parked at the owner-gated ``pypi`` env -- its GitHub status is ``waiting`` -- which is SUCCESS for
+    run parked at the Overtoad-gated ``pypi`` env -- its GitHub status is ``waiting`` -- which is SUCCESS for
     the train), ``RELEASED``, or a HALT. If the timeout elapses while the run is still building it returns
     ``IN_PROGRESS`` -- now an honest 'still building' rather than a premature give-up; the ceremony is
     idempotent, so a re-run resumes at the monitor. ``monotonic`` is injected for hermetic timeout tests."""
@@ -1176,7 +1176,7 @@ def _file_halt_issue(sources: CeremonySources, repo: str, issue: dict, result: d
     """Upsert the dedup HALT issue, degrading GRACEFULLY if the ``gh issue`` API fails (plan S8/S11).
 
     A failed ``gh issue create``/``edit`` -- most plausibly the cross-repo GitHub App token lacking the
-    **Issues** permission (owner-grantable later; plan S11 failure-issues) -- must NOT crash the ceremony
+    **Issues** permission (Overtoad-grantable later; plan S11 failure-issues) -- must NOT crash the ceremony
     run: the package is STILL HALTED, so this emits a LOUD operator log line and records a step-summary-
     visible flag (``halt_issue_failed``) + note, then continues -- the other packages still run and the
     run's step summary + Slack still surface the HALT. Only ``SourceError`` (a runtime gh/transport/auth
@@ -1206,7 +1206,7 @@ def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: 
     """Perform a plan's actions in order via the seam. Opt-in (``--execute``); never the dry-run default.
 
     Returns a result dict (final state + any PR/Release URLs). A halt files/updates the dedup issue and
-    stops. Auto-merge failure degrades to the owner one-click fallback (a note, not a halt)."""
+    stops. Auto-merge failure degrades to the Overtoad one-click fallback (a note, not a halt)."""
     # plan_state (the classification) is kept alongside the mutable state (the final verdict) so the
     # workflow's ceremony step summary can bucket ceremonies vs resumes vs halts; target_version feeds
     # the same machine-parseable summary line (main's --execute output).
@@ -1237,7 +1237,7 @@ def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: 
             # Auto-merge the central archive PR (juniper-ml), where it lives.
             enabled = sources.enable_automerge(plan.archive_repo, pr_ref or plan.archive_branch)
             if not enabled:
-                result["notes"].append("auto-merge could not be enabled (allow_auto_merge off? -- step 3.3); owner one-click merge fallback (NOT a halt).")
+                result["notes"].append("auto-merge could not be enabled (allow_auto_merge off? -- step 3.3); Overtoad one-click merge fallback (NOT a halt).")
             result["auto_merge_enabled"] = enabled
         elif action.kind == "cut_release":
             if sources.create_release is None:
@@ -1274,7 +1274,7 @@ def _archive_pr_body(plan: CeremonyPlan) -> str:
         f"gate-exempt notes-archive PR (plan §7 / R5); the `release-train-archive-guard` check proves the "
         f"diff is add-only, path-confined, name-valid, and single-purpose, which is why it may auto-merge "
         f"behind that required check. It deploys nothing: the PyPI deploy is the subsequent Release cut, "
-        f"whose publish workflow waits at the owner-gated `pypi` environment (R7).\n"
+        f"whose publish workflow waits at the Overtoad-gated `pypi` environment (R7).\n"
     )
 
 
@@ -1362,7 +1362,7 @@ def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--package", action="append", metavar="PYPI_NAME", help="restrict to these pypi_name(s) (repeatable)")
     p.add_argument("--repo-root", default=str(default_repo_root), help="juniper-ml checkout root (CHANGELOG/notes reads + central notes/releases/)")
     p.add_argument("--ecosystem-root", default=None, help="parent dir holding sibling repos (default: --repo-root's parent)")
-    p.add_argument("--owner", default=DEFAULT_OWNER, help=f"GitHub owner (default: {DEFAULT_OWNER})")
+    p.add_argument("--Overtoad", default=DEFAULT_OWNER, help=f"GitHub Overtoad (default: {DEFAULT_OWNER})")
     p.add_argument("--registry", default=None, help="path to registry.yaml (default: alongside detect.py)")
     p.add_argument("--release-date", default=None, help="release date for the notes (default: today UTC; use for deterministic output)")
     p.add_argument(
@@ -1373,7 +1373,7 @@ def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     )
     p.add_argument("--dry-run", action="store_true", help="(default) print the full ceremony script of actions; write nothing, open nothing, cut nothing. Overrides --execute.")
     p.add_argument("--execute", action="store_true", help="opt-in: perform the ceremony (archive PR + auto-merge + Release + monitor). --dry-run overrides it.")
-    p.add_argument("--cross-repo", action="store_true", help="Phase 4.1: this run has a cross-repo write identity (the GitHub App installation token). With it AND a sibling checkout under --ecosystem-root, a sibling's Release is cut on ITS repo (--repo owner/<repo>) while the exempt archive PR still lands centrally in juniper-ml; without it, sibling packages are skipped. No effect in --dry-run.")
+    p.add_argument("--cross-repo", action="store_true", help="Phase 4.1: this run has a cross-repo write identity (the GitHub App installation token). With it AND a sibling checkout under --ecosystem-root, a sibling's Release is cut on ITS repo (--repo Overtoad/<repo>) while the exempt archive PR still lands centrally in juniper-ml; without it, sibling packages are skipped. No effect in --dry-run.")
     p.add_argument("--json", action="store_true", help="emit the ceremony plans as JSON instead of the human report")
     p.add_argument("--monitor-timeout", type=int, default=DEFAULT_MONITOR_TIMEOUT_SECONDS, metavar="SECONDS", help=f"max seconds the (--execute) monitor polls the publish run for the pypi-env-gate 'waiting' state before reporting a still-building IN_PROGRESS (default: {DEFAULT_MONITOR_TIMEOUT_SECONDS} = ~15 min)")
     return p.parse_args(argv)
@@ -1444,7 +1444,7 @@ def main(argv: "list[str] | None" = None, sources: "CeremonySources | None" = No
 
     if sources is None:
         # Bound every --repo argument to the registry's 8 publishing repos (R7 --repo value guard, Phase 4.1).
-        sources = make_live_sources(args.owner, repo_root, ecosystem_root, allowed_repos=publishing_repo_slugs(entries, args.owner))
+        sources = make_live_sources(args.Overtoad, repo_root, ecosystem_root, allowed_repos=publishing_repo_slugs(entries, args.Overtoad))
 
     try:
         plans = _plans_for(manifest_pkgs, entries, wanted, sources, repo_root, ecosystem_root, when, cross_repo=args.cross_repo, target_sha=args.target_sha)

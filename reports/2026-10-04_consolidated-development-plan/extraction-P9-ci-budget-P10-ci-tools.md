@@ -16,7 +16,7 @@ Abbreviations below stand for these files (all paths from the juniper-ml root):
 | P10C | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_ci-tools-reevaluation-consolidated.md` | full |
 | IDX | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_INDEX_consolidated-development-paths.md` | full |
 | H0909 | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md` (**moved here by ml#2117**) | full (1281 lines) |
-| H0911 | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` (**moved here by ml#2117**) | full (828 lines) |
+| H0911 | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` (**moved here by ml#2117**) | full (828 lines) |
 | WALK | `notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md` | full |
 | H0924B | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_ci-budget-arc-consensus-round-6-and-merge-ml2035.md` (superseded source) | full |
 | H0924T | `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_ci-tools-reevaluation-all-nine-prs-merged-and-the-banner-still-says-three-are-open.md` (superseded source) | full |
@@ -55,13 +55,13 @@ Abbreviations below stand for these files (all paths from the juniper-ml root):
 | P10-03 | Diagnose the X7 flake (canopy#661): find where the worst gap falls against the stub's timeline before changing any bound | P10C item 3a; H0911 note f `:167-188` | [VERIFIED 2026-10-04: #661 open, 0 comments, last updated 2026-09-23 06:06Z; the test is unchanged since canopy#585 (2026-09-05); no open canopy PR names it] | STARTABLE | P2 (canopy files) | juniper-canopy | M | HYGIENE |
 | P10-04 | 6f: add a `starlette>=1.7.0` floor to recurrence's `[test]` deps, drop the BlockingPortal ignore (`pyproject.toml:186`), run the suite under `error`, close #182 | P10C item 3b; H0911 note d | [VERIFIED 2026-10-04: #182 open; the starlette 1.7.0 wheel's testclient uses only `anyio.from_thread.BlockingPortal` (`:53`, `:388`, `:431`); main CI run 37066556852, job Test-3.12, installed starlette-1.7.0, anyio-4.15.1, fastapi-0.142.2; service-core 0.7.0 needs only `fastapi>=0.110`; but `requirements.lock:108` still pins `starlette==1.6.0` (last re-locked #163, 2026-09-10)] | STARTABLE | — | juniper-recurrence | S | HYGIENE |
 | P10-05 | Optional: record outcomes in memory file `project_container_registry_rollout_2026-09-08.md` `:395` ("PRs opened: …") | P10C item 4 | [VERIFIED 2026-10-04: line unchanged; file mtime 2026-09-24] | STARTABLE (memory, outside git) | — | memory | S | HYGIENE |
-| P10-06 | Owner cleanup signal for `jolly-wibbling-pearl` and H0911 note g's set | P10C item 5; H0911 note g | [VERIFIED 2026-10-04: `jolly-wibbling-pearl` at `d0582a21`, `luminous-inventing-crystal` and `tender-splashing-wigderson` exist; 30 of 30 sibling worktrees exist] | OWNER-ACTION | — | ecosystem | S | HYGIENE |
+| P10-06 | The Overtoad cleanup signal for `jolly-wibbling-pearl` and H0911 note g's set | P10C item 5; H0911 note g | [VERIFIED 2026-10-04: `jolly-wibbling-pearl` at `d0582a21`, `luminous-inventing-crystal` and `tender-splashing-wigderson` exist; 30 of 30 sibling worktrees exist] | OWNER-ACTION | — | ecosystem | S | HYGIENE |
 | P10-07 | Decide R4-B's proposal: add a §6 failure mode to CPROC for "a target that moves faster than a round" | H0911 `:541-544` | [VERIFIED 2026-10-04: no such text in CPROC] | OWNER-DECISION | — | juniper-ml | S | HYGIENE |
 | P10-08 | Decide R4-B's proposal: graduate `ci_tools_pin_census_remote.py` into `util/`, with its self-test in CI | H0911 `:545-546` | [VERIFIED 2026-10-04: still under `util/ad-hoc/`; no `.github/` or `tests/` reference] | OWNER-DECISION | — | juniper-ml | M | HYGIENE |
-| P10-09 | Decide whether H0911's termination deviation stands: round 5 changed a disposition and three numbers, and was confirmed by self-check, not a round 6 | H0911 `:443-447` ("The owner may judge that differently") | [NOT RE-PROBED — text only; unchanged on main] | OWNER-DECISION | — | juniper-ml | S | HYGIENE |
+| P10-09 | Decide whether H0911's termination deviation stands: round 5 changed a disposition and three numbers, and was confirmed by self-check, not a round 6 | H0911 `:443-447` ("The Overtoad may judge that differently") | [NOT RE-PROBED — text only; unchanged on main] | OWNER-DECISION | — | juniper-ml | S | HYGIENE |
 | P10-10 | Create the throwaway repository that tests empty-environment-name behaviour, only if Wave 4 takes the conditional shape | H0911 `:303-305`; DOCKERHUB procedure `:175` | [VERIFIED 2026-10-04: P10C files it under "MOVED TO P4", but P4's file has 0 hits for "throwaway" or "conditional"] | OWNER-ACTION (creates a repo); BLOCKED-ON P4's Wave-4 shape choice | P4 | new repo | S | UNBLOCKER |
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options; the source's recommendation | Blocks | Source |
 |---|---|---|---|---|
@@ -73,13 +73,13 @@ Abbreviations below stand for these files (all paths from the juniper-ml root):
 | OD-6 | Merge approval: P9-06, P10-02 | Per-session approval; the sweeper may merge unseen | Closing both records | P9C item 4; P10C item 2 |
 | OD-7 | Worktree cleanup signal (P9-16, P10-06) | — | Disk hygiene | P9C, P10C Git state |
 | OD-8 (P10-07, P10-08) | R4-B's two proposals | "left for a separate decision" | — | H0911 `:541-546` |
-| OD-9 (P10-09) | Accept the ci-tools banner's termination deviation? | R5 recommended self-check; "the owner may judge that differently" | — | H0911 `:443-447` |
-| OD-10 (P10-10) | Throwaway repo for Wave 4's conditional shape | B1 dissented ("startable"); filed owner-gated | P4 Wave 4 (conditional shape only) | H0911 `:549-551` |
+| OD-9 (P10-09) | Accept the ci-tools banner's termination deviation? | R5 recommended self-check; "the Overtoad may judge that differently" | — | H0911 `:443-447` |
+| OD-10 (P10-10) | Throwaway repo for Wave 4's conditional shape | B1 dissented ("startable"); filed Overtoad-gated | P4 Wave 4 (conditional shape only) | H0911 `:549-551` |
 
 ## 3. Cross-path dependencies
 
 - **P9-01 → P8 (soft)**: P8's file (`:86`) asks that consensus rounds launch only when no other arc is mid-round, because all paths share the usage windows.
-- **P9 ↔ P10**: no shared item. They share merge mechanics: the owner's sweeper, strict rulesets, signed commits.
+- **P9 ↔ P10**: no shared item. They share merge mechanics: the Overtoad's sweeper, strict rulesets, signed commits.
 - **P9-12 ↔ P6**: adjacent engines, one word apart. P6's only structure-screen item is closed (ml#2000, perf-lane file `:233`), so the advisory engine has no live collision [VERIFIED 2026-10-04: grep].
 - **P9-17 → P1**: the misnamed backup script is P1's artifact, and P1 does not carry it.
 - **P10-03 ↔ P2**: X7 / canopy#661 is carried only by P10. P2's two handoffs have 0 hits for `661`/`X7` [VERIFIED 2026-10-04]. The sibling keepalive test belongs to P2's canopy-selection residue [NOT RE-PROBED].
@@ -144,7 +144,7 @@ Next actions:
 
 Next actions:
 1. **P10-04**: 6f floor, drop the ignore, close #182.
-2. **P10-01**: the banner edit at the new path. Its merge (P10-02) is owner-gated.
+2. **P10-01**: the banner edit at the new path. Its merge (P10-02) is Overtoad-gated.
 3. **P10-03**: X7 diagnosis, coordinated with P2.
 
 ## 8. What this report cannot support

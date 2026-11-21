@@ -22,7 +22,7 @@
 > above is superseded; of the B-phase only **B4** (point native conformance at production `CascorModel`;
 > retire the test-only `CascorModelCoreAdapter`) remains, and it has no PR/branch yet. **`juniper-service-core`
 > 0.2.0 is LIVE on PyPI** (#502 merged), clearing the A-phase publish-blocker — the A-phase remains gated
-> on B4 + the three owner decisions (DR-1 / soak-OQ-17 / manager-appetite); see
+> on B4 + the three Overtoad decisions (DR-1 / soak-OQ-17 / manager-appetite); see
 > `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md`.
 
 > **What this is.** A build plan for the **B-phase** of the juniper-cascor refactor (WS-6, sub-phase
@@ -64,7 +64,7 @@
 - **Out of scope (6a / A-phase — separate, deferred per DR-1):** turning cascor's `src/api/**` into
   re-export shims over `juniper_service_core`. Blocked on OUT-11 being **published + soaked**. The
   B-phase aligns to the seam's *shape* only (source-level), importing nothing from service-core.
-- **Owner boundaries (DO-NOT-TOUCH):** WS-5 (canopy) and OUT-11 (service-core T2) are owned by
+- **The Overtoad boundaries (DO-NOT-TOUCH):** WS-5 (canopy) and OUT-11 (service-core T2) are owned by
   concurrent sessions. This plan reads service-core for seam shape but changes nothing there.
 
 ### §0.1 Validation record (2026-06-19)

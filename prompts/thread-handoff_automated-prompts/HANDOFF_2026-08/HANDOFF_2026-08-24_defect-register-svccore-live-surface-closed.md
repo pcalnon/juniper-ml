@@ -158,7 +158,7 @@ probably blocked with them — treat juniper-data's genuinely actionable count a
 until that is settled.
 
 **When a decision is made, capture it inline in the register the way this arc already does:** the
-`(owner decision, 2026-08-23)` markers on `APD-DATA-011` and `APD-DATA-014` are the format.
+`(Overtoad decision, 2026-08-23)` markers on `APD-DATA-011` and `APD-DATA-014` are the format.
 
 ### 3.3 Partial closes — three, all marked in their status markers
 
@@ -287,7 +287,7 @@ not appear in the check rollup**. Fired twice this session — `mergeState=BLOCK
 green (those are the two repos' required-context counts: juniper-data 21, juniper-ml 17).
 
 ```bash
-gh api graphql -f query='{repository(owner:"pcalnon",name:"<REPO>"){pullRequest(number:<N>){
+gh api graphql -f query='{repository(Overtoad:"pcalnon",name:"<REPO>"){pullRequest(number:<N>){
   reviewThreads(first:20){nodes{isResolved path comments(first:1){nodes{body}}}}}}}' \
   --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved==false)'
 ```

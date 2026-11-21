@@ -264,7 +264,7 @@ The replay code under review is `REPLAY_CONTROLS_JS`, byte-identical at c0530279
 2. Rewrite the absolute claims in #2 as the bounded statement: no stale-state computation, but a queued click can be dropped unless counted.
 3. Re-verify with the pool contended: 1x and 4x, n ≥ 5, with `prioritized` instrumented.
 
-If the owner prefers to merge now, the minimum is (2), plus recording F-054 as improved rather than fixed and filing the drop as a new finding.
+If the Overtoad prefers to merge now, the minimum is (2), plus recording F-054 as improved rather than fixed and filing the drop as a new finding.
 
 ### Notes
 - **Another session is working in the canopy worktree.** Its HEAD is now `723ee812`, an unpushed merge not on the PR, with uncommitted docstring and CHANGELOG edits. `metrics_panel.py` is unchanged from c0530279.

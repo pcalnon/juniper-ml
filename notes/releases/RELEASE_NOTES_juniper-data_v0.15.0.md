@@ -33,7 +33,7 @@
   to `csv_import`, `equities` and `equities_seq` (which inherits `EquitiesParams`).
 
   **This REVERSES a deliberate, documented, test-pinned rule.** "A client cannot opt *out* of the
-  operator's choice" was the design until the owner ruled on 2026-09-09 that refusing partial data
+  operator's choice" was the design until the Overtoad ruled on 2026-09-09 that refusing partial data
   is a **caller** right — the partial-data contract's "option 3", fail the load completely. The
   three `or settings.*` sites became
   `settings.X if params.allow_truncation is None else params.allow_truncation`:
@@ -212,7 +212,7 @@
   the census did not run on as verified. Follow-up 6a of juniper-ml
   `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-08_container-registry-rollout-wave-2-opened-and-the-cuda-class-in-three-shapes.md`.
 - **BREAKING (contract): `equities` and `equities_seq` go to `generator_version` 4.0.0, and the
-  share history they serve is now causal.** Six owner rulings taken 2026-09-09, shipped together
+  share history they serve is now causal.** Six Overtoad rulings taken 2026-09-09, shipped together
   because each changes artifact content and the version is hashed into `dataset_id` -- which is the
   only thing stopping a cached artifact of the old shape from answering a request made against the
   new one. Every `equities` / `equities_seq` dataset ID changes once.

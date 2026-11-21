@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (documentation verification)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- verification for the second round-42 fix-forward of the register and primer
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 The II.11 example's module docstring promised "RFC 9457 problem details on every error path". The
 post-merge refutation lane of juniper-ml#2080 / #2075

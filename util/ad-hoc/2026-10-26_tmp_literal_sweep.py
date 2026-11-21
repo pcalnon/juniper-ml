@@ -26,7 +26,7 @@
 #   prompts/, reports/ file: what happened, which a remediation does not rewrite), scratch
 #   (the repo's own gitignored tmp/).
 #
-#   Scope (the owner's revised ruling, 2026-10-26: a counting script chooses its scope
+#   Scope (the Overtoad's revised ruling, 2026-10-26: a counting script chooses its scope
 #   deliberately, never by .gitignore or a tool's defaults). By default the sweep searches
 #   the repo with its own tmp/ excluded by an explicit root-anchored glob, so the exclusion
 #   holds in a repo whose .gitignore does not name tmp/; a nested tmp/ is still searched.

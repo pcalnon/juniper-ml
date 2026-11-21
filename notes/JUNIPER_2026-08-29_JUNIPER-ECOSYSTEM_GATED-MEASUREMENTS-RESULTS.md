@@ -18,7 +18,7 @@ Two design documents each declined to proceed without a measurement first:
 
 - [Partition design](JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md) §8 —
   *"the design ships with an unquantified motivation"* without measuring the selection bias.
-- [Logging design](JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-REDESIGN-DESIGN.md) §5 / owner
+- [Logging design](JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-REDESIGN-DESIGN.md) §5 / Overtoad
   decision 1 — the 18 % + 15 % headline is *"a ceiling, not a recovery"* until the discarded-record
   share is known.
 
@@ -226,8 +226,8 @@ unsound, magnitude not resolvable at cap 4"; §8's proposed measurement is done;
 drops. The design's substance — juniper-data owns a third partition, `train` does not shrink — is
 unaffected, because it never depended on the magnitude.
 
-**Logging design**: §5's payoff table is replaced by §3 above; the priority order inverts; owner
-decision 1 (measure first) is discharged. Owner decisions 2–6 are unaffected — they concern sinks
+**Logging design**: §5's payoff table is replaced by §3 above; the priority order inverts; Overtoad
+decision 1 (measure first) is discharged. The Overtoad decisions 2–6 are unaffected — they concern sinks
 and levels, not what gets interpolated.
 
 ## 5. References

@@ -8,7 +8,7 @@
 
 **By priority**: P0=7 | P1=27 | P2=76 | P3=4
 
-**By owner**: ml=78 | can=36
+**By Overtoad**: ml=78 | can=36
 
 ---
 
@@ -362,7 +362,7 @@ Re-evaluates 34 gaps from original audit (91 issues, 57 verified, 16 partially f
 
 **Notes**:
 
-[v2 ARCH→UI re-bucket] 22 REAFFIRMED gaps mostly completed via PR #146. DEFERRED gaps tracked as accepted technical debt. COORDINATED gaps require synchronization with R5-01 phase owners.
+[v2 ARCH→UI re-bucket] 22 REAFFIRMED gaps mostly completed via PR #146. DEFERRED gaps tracked as accepted technical debt. COORDINATED gaps require synchronization with R5-01 phase Overtoads.
 
 ### JR-CAN-UI-013 — Decision boundary visualization must support real CasCor backend (currently demo-only endpoint).
 

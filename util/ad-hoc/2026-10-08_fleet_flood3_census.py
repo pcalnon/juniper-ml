@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-10-08
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-07_fleet_backlog_census.py` (counts only), `2026-09-05_fleet_harvest_triage.py`
          (per-file NEW/DIVERGED/SAME against main), `util/fleet_triage/predict_merge.py`
 
@@ -28,7 +28,7 @@ SKIPPED, because "CI never ran most of these suites" was round 2's central quali
 A repo that cannot be read is reported as ERROR, never as zero.
 
 Usage:
-    2026-10-08_fleet_flood3_census.py --out <json> [--repo NAME ...] [--owner pcalnon] [--drafts-only]
+    2026-10-08_fleet_flood3_census.py --out <json> [--repo NAME ...] [--Overtoad pcalnon] [--drafts-only]
 
 Exit: 0 when every repo answered; 2 when any repo or PR could not be read.
 """
@@ -42,8 +42,8 @@ import sys
 from collections import Counter
 
 QUERY = """
-query($owner: String!, $name: String!, $after: String) {
-  repository(owner: $owner, name: $name) {
+query($Overtoad: String!, $name: String!, $after: String) {
+  repository(Overtoad: $Overtoad, name: $name) {
     pullRequests(states: OPEN, first: 25, after: $after, orderBy: {field: CREATED_AT, direction: ASC}) {
       pageInfo { hasNextPage endCursor }
       nodes {
@@ -76,16 +76,16 @@ def gh(args: list[str], timeout: int = 180) -> subprocess.CompletedProcess:
     return subprocess.run(["gh", *args], capture_output=True, text=True, timeout=timeout, check=False)  # nosec B603 B607
 
 
-def roster(owner: str) -> list[str]:
-    res = gh(["repo", "list", owner, "--limit", "500", "--json", "name,isArchived"])
+def roster(Overtoad: str) -> list[str]:
+    res = gh(["repo", "list", Overtoad, "--limit", "500", "--json", "name,isArchived"])
     if res.returncode != 0:
-        raise SystemExit(f"ERROR: cannot enumerate {owner}'s repos: {res.stderr.strip()}")
+        raise SystemExit(f"ERROR: cannot enumerate {Overtoad}'s repos: {res.stderr.strip()}")
     return sorted(r["name"] for r in json.loads(res.stdout) if not r.get("isArchived"))
 
 
-def required_contexts(owner: str, repo: str) -> tuple[list[str], bool | None, str | None]:
+def required_contexts(Overtoad: str, repo: str) -> tuple[list[str], bool | None, str | None]:
     """(contexts, strict, error) from the live branch rules of `main`."""
-    res = gh(["api", f"repos/{owner}/{repo}/rules/branches/main"])
+    res = gh(["api", f"repos/{Overtoad}/{repo}/rules/branches/main"])
     if res.returncode != 0:
         return [], None, res.stderr.strip() or "rules read failed"
     ctx: list[str] = []
@@ -98,11 +98,11 @@ def required_contexts(owner: str, repo: str) -> tuple[list[str], bool | None, st
     return sorted(set(ctx)), strict, None
 
 
-def fetch_prs(owner: str, repo: str) -> list[dict]:
+def fetch_prs(Overtoad: str, repo: str) -> list[dict]:
     out: list[dict] = []
     after = None
     while True:
-        args = ["api", "graphql", "-f", f"query={QUERY}", "-F", f"owner={owner}", "-F", f"name={repo}"]
+        args = ["api", "graphql", "-f", f"query={QUERY}", "-F", f"Overtoad={Overtoad}", "-F", f"name={repo}"]
         if after:
             args += ["-F", f"after={after}"]
         res = gh(args)
@@ -168,8 +168,8 @@ def rollup(pr: dict, required: list[str]) -> dict:
     }
 
 
-def compare(owner: str, repo: str, head_sha: str) -> dict:
-    res = gh(["api", f"repos/{owner}/{repo}/compare/main...{head_sha}", "--jq", "{ahead_by, behind_by, status}"])
+def compare(Overtoad: str, repo: str, head_sha: str) -> dict:
+    res = gh(["api", f"repos/{Overtoad}/{repo}/compare/main...{head_sha}", "--jq", "{ahead_by, behind_by, status}"])
     if res.returncode != 0:
         return {"error": res.stderr.strip()[:200]}
     return json.loads(res.stdout)
@@ -177,21 +177,21 @@ def compare(owner: str, repo: str, head_sha: str) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", action="append", help="repo name(s); default: every non-archived repo in the org")
     ap.add_argument("--drafts-only", action="store_true")
     ap.add_argument("--out", required=True)
     args = ap.parse_args(argv)
 
-    repos = args.repo or roster(args.owner)
-    report: dict = {"owner": args.owner, "repos": {}}
+    repos = args.repo or roster(args.Overtoad)
+    report: dict = {"Overtoad": args.Overtoad, "repos": {}}
     errors = 0
     for repo in repos:
         entry: dict = {"prs": []}
-        ctx, strict, err = required_contexts(args.owner, repo)
+        ctx, strict, err = required_contexts(args.Overtoad, repo)
         entry.update(required_contexts=ctx, strict=strict, rules_error=err)
         try:
-            prs = fetch_prs(args.owner, repo)
+            prs = fetch_prs(args.Overtoad, repo)
         except (RuntimeError, KeyError, TypeError, json.JSONDecodeError) as exc:
             entry["error"] = str(exc)[:300]
             errors += 1
@@ -227,7 +227,7 @@ def main(argv: list[str] | None = None) -> int:
                 "categories": dict(cats),
                 "labels": [lb["name"] for lb in (pr.get("labels") or {}).get("nodes") or []],
                 "checks": rollup(pr, ctx),
-                "compare": compare(args.owner, repo, pr["headRefOid"]),
+                "compare": compare(args.Overtoad, repo, pr["headRefOid"]),
             }
             entry["prs"].append(row)
         report["repos"][repo] = entry

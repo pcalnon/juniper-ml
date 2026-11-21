@@ -130,7 +130,7 @@ This is a security-bearing minor release of `juniper-canopy` v0.10.0. Its image 
 
 ### Fixed
 
-- **A 429 never says `Retry-After: 0`, and the wait it names is rounded up (APD-ECO-016; owner ruling 2026-11-09).**
+- **A 429 never says `Retry-After: 0`, and the wait it names is rounded up (APD-ECO-016; Overtoad ruling 2026-11-09).**
   `RateLimiter.check` in `src/security.py` reported `int(window - elapsed)`, which truncates. A rejection in a
   window's last second therefore carried `Retry-After: 0` and `X-RateLimit-Reset: 0`, telling a client to retry at
   once into a limiter that rejects again, and every other fractional remainder was a second short (9.4s left said 9).
@@ -161,7 +161,7 @@ This is a security-bearing minor release of `juniper-canopy` v0.10.0. Its image 
   - Tests: `test_cascor_staging_declared_params.py` (`TestMnistGetsTheDeclaredParamFilter`) and
     `test_recurrence_request.py`. The `mnist` expectations that pinned its Noise field changed in
     `test_restart_modal_restages_what_it_shows.py` and `test_empty_axis_commit_and_restage_zeros.py`.
-- **Unit-lane tests no longer talk to whatever listens on the host's Juniper service ports** (the owner's ruling 17 of 2026-11-09 in juniper-ml's Cursor flood-4 arc; as of this release its record, `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, lists rulings 1 to 14 in §8 and not this one). A census of the CI unit lane at
+- **Unit-lane tests no longer talk to whatever listens on the host's Juniper service ports** (the Overtoad's ruling 17 of 2026-11-09 in juniper-ml's Cursor flood-4 arc; as of this release its record, `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, lists rulings 1 to 14 in §8 and not this one). A census of the CI unit lane at
   `b4b01904` (CI's selector, 8290 tests) found 20 unmocked connects to `127.0.0.1:8050` from 16 tests and 2 to
   `127.0.0.1:8200` from 2 (a race: any of the four relay tests in
   `src/tests/unit/backend/test_cascor_service_adapter_boundary.py` can dial, so the count varies by run). Ten of
@@ -202,10 +202,10 @@ This is a security-bearing minor release of `juniper-canopy` v0.10.0. Its image 
   directory guard walks subdirectories and could not see a module at this level; restoring the old layout fails it.
   At this change the unit lane selected 8,224 of 8,228 collected tests, up from 8,182 of 8,186: the 40 of this suite plus the
   guard's 2. The twin of juniper-cascor#734. Separately, the Codecov step in `.github/workflows/ci.yml` now passes
-  `token: ${{ secrets.CODECOV_TOKEN }}`, as juniper-data's does, after the owner added the secret on 2026-10-29.
+  `token: ${{ secrets.CODECOV_TOKEN }}`, as juniper-data's does, after the Overtoad added the secret on 2026-10-29.
   Until then its uploads were refused ("Token required - not valid tokenless upload") inside a step that stays
   green under `fail_ci_if_error: false`: all 24 in the six `ci.yml` runs from 2026-10-28 20:56Z to 2026-10-29
-  19:41Z. A Dependabot PR reads the Dependabot secret store, which did not hold the token then, so its upload stayed tokenless until the owner added the token there on 2026-11-04. Found by the Cursor flood-3 evaluation: juniper-ml
+  19:41Z. A Dependabot PR reads the Dependabot secret store, which did not hold the token then, so its upload stayed tokenless until the Overtoad added the token there on 2026-11-04. Found by the Cursor flood-3 evaluation: juniper-ml
   `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §4.
 - **The lockfile regen could have committed an empty `requirements.lock` without failing.** The commit step built
   its payload with `--arg contents "$(base64 -w0 requirements.lock)"`. A failure inside a command substitution used
@@ -226,7 +226,7 @@ This is a security-bearing minor release of `juniper-canopy` v0.10.0. Its image 
   `src/tests/regression/test_lockfile_regen_empty_payload.py` now fails as the real CLI does, and eight new cases
   pin both diagnostics, the mask and gh's exit status; `docs/ci_cd/CICD_MANUAL.md`, `CICD_REFERENCE.md` and `CICD_QUICK_START.md`
   describe the new log lines (they documented the old ending, juniper-canopy#808).
-  `.github/workflows/lockfile-update.yml` banner 0.1.3. Cursor flood-4 evaluation, owner ruling 17 (2026-11-09).
+  `.github/workflows/lockfile-update.yml` banner 0.1.3. Cursor flood-4 evaluation, Overtoad ruling 17 (2026-11-09).
 - **`claude.yml`'s header said `ANTHROPIC_API_KEY` is set at the organization level.** Juniper repos are
   user-owned, so no organization secret can reach them; the key is a repository secret here, added 2026-10-10.
   The header now says so, and the three CI docs that repeated the claim (`docs/ci_cd/CICD_REFERENCE.md`,
@@ -282,7 +282,7 @@ This is a security-bearing minor release of `juniper-canopy` v0.10.0. Its image 
   generator has a parameter for it (`recurrence_request.staged_typed_fields`: all four for spiral, none for
   `equities` or a sequence generator, Samples and Noise otherwise), driven by the type alone
   (`show_restart_dataset_fields`), and Confirm re-stages exactly the rendered fields through one builder
-  (`_restart_restage_payload`) that the Restart plan also reads. This keeps the owner's 2026-09-22 ruling that
+  (`_restart_restage_payload`) that the Restart plan also reads. This keeps the Overtoad's 2026-09-22 ruling that
   "Confirm re-stages exactly what the modal displays" (point 4 of §5.6.1 of juniper-ml's
   `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`): the plan now names the registry defaults and
   the model a re-stage carries, every value it does not send, and whether anything is re-staged at all. The
@@ -341,24 +341,24 @@ This is a security-bearing minor release of `juniper-canopy` v0.10.0. Its image 
 
 ### Changed
 
-- **`agents-md-touch-up.yml` pins `actions/checkout` to a commit SHA (owner ruling 2026-11-03).** It checked out with
+- **`agents-md-touch-up.yml` pins `actions/checkout` to a commit SHA (Overtoad ruling 2026-11-03).** It checked out with
   the `v7.0.1` tag, the only tag-only `actions/checkout` in `.github/workflows/`. It now uses
   `3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1`, the commit that tag resolves to and the pin every other
   workflow here uses, so behaviour is unchanged. A census of the nine Juniper repositories' `main` on 2026-11-01 found
   249 `actions/checkout` uses, 242 pinned to that SHA; the seven tag-only ones were this workflow's copies, one per
   repository. juniper-data#503 pinned juniper-data's, and this change is one of the seven that pin the rest.
-- **A failed Bandit SARIF upload now fails `Security Scans` on a pull request (owner ruling 2026-10-30).**
+- **A failed Bandit SARIF upload now fails `Security Scans` on a pull request (Overtoad ruling 2026-10-30).**
   `.github/workflows/ci.yml`'s upload step is `continue-on-error: ${{ github.event_name != 'pull_request' }}`, as in
   juniper-cascor#735. No ruleset here requires the `Bandit` check that code scanning creates from the upload, so a
   failed upload was silent: juniper-canopy#780 found the step uploading nothing while `Security Scans` stayed green.
   `Security Scans` is required, so a PR now shows the failure, with the cause in the step log. Pushes and dispatches
   still tolerate it. `docs/ci_cd/CICD_MANUAL.md` says so. Found in the 2026-10-08 flood-3 disposition (juniper-ml
   `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` §8).
-- **Temporary files go in the repo's gitignored `tmp/`, never `/tmp` (owner directive, 2026-10-26), and the owner's
+- **Temporary files go in the repo's gitignored `tmp/`, never `/tmp` (Overtoad directive, 2026-10-26), and the Overtoad's
   rulings on it are applied.** `/tmp/` is ignored, and `AGENTS.md` § Temporary files carries the rule and the
   rulings, retention included. `juniper-check-doc-links` passes `--exclude tmp` in the pre-commit hook and in CI,
   and `.dockerignore` lists `tmp/`; nothing keeps pytest out of it, and counting scripts are to choose their scope
-  as to `tmp/` deliberately (the owner's revised ruling). To stay under the memory budget, `AGENTS.md`'s Test
+  as to `tmp/` deliberately (the Overtoad's revised ruling). To stay under the memory budget, `AGENTS.md`'s Test
   Environment Variables table moved verbatim to `docs/AGENTS_REFERENCE.md`.
 - **The dash floor is `dash>=4.0.0`** (`pyproject.toml`; `conf/requirements_ci.txt`, which `requirements.txt` and
   `requirements_ci.txt` link to), and `conf/conda_environment.yaml` pins `dash=4.4.1` with dash 4's two new run
@@ -366,7 +366,7 @@ This is a security-bearing minor release of `juniper-canopy` v0.10.0. Its image 
   lock's 4.4.1, which has since moved to 4.5.0, CI's 4.4.1 pip lane and 4.1.0 conda lane, every live drive in the E2E
   ledger), and a floor that nothing tests is
   how F-CANOPY-069 stayed invisible: the two conda files (`conf/conda_environment.yaml` and `conf/conda_environment_cpu.yaml`, both `dash=3.3.0`) were the environments on 3.x, and nobody drove them. This release moves only `conf/conda_environment.yaml`: `conf/conda_environment_cpu.yaml` still pins `dash=3.3.0`, below the new floor. The fix itself does not depend on the dash version; a 3.3.0 leg of this tree is alive too.
-- **The app opts out of FastAPI's native telemetry (owner ruling 2026-11-09).** FastAPI 0.142 added OpenTelemetry
+- **The app opts out of FastAPI's native telemetry (Overtoad ruling 2026-11-09).** FastAPI 0.142 added OpenTelemetry
   instrumentation of its own, with tracing, metrics, logs and operation spans on by default, and the lock pins FastAPI
   0.162.5. `src/main.py` now builds `app` with `telemetry=`, those four switches and `auto_configure` set to `False`,
   as juniper-data does (juniper-data#454), so FastAPI's instrumentation cannot overlap canopy's configured

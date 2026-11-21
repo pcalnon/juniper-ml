@@ -3,7 +3,7 @@
 
 **Entry point:** adversarial: attack the round-3 fix pass, plus a ledger of every round-3 finding.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` and the PRs named in the brief.
 
 **Ran:** 2026-09-23T01:01:55Z to 2026-09-23T01:42:44Z, read-only. Agent `agent-a9312208b5c44d2c7`.
 
@@ -18,15 +18,15 @@ You are round-4 Lane B (analysis review) in an independent-agent consensus revie
 READ-ONLY (hard): do not edit, create or delete files in any repo. Do not commit, push, comment, merge, close, approve, or approve deployments. The harness isolates this session to the juniper-ml worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl`. Inside it, run only read-only `git diff`, `git show` and `git log`; the objects are fetched. Do not run `git fetch`. Use `gh api` or GraphQL for everything else. Use plain commands only: the harness refuses shell loops over variables that call gh or git, `$(...)` feeding a command, and complex one-liners. If a command is refused, put the logic into a Python script under your scratch dir. Copy scripts into your scratch dir before running mutated versions. Scratch dir: `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/97c72736-b353-43fe-9e6f-efaa8cf3be0c/scratchpad/lanes/r4a/` (create it). **Everything below is FROZEN for this review.**
 
 THE FIX PASS UNDER REVIEW is juniper-ml PR #2020 commit `f68380dd` (head), against the round-3 head `4855bf8c`. Get it with `git diff 4855bf8c f68380dd`. It touches:
-1. `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`, the status banner. Changed areas:
+1. `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`, the status banner. Changed areas:
    - the "What has moved" blockquote, including the worker `v0.6.1` facts;
    - note b's image and pin-drift lines;
    - note c;
    - note d's list of later documents;
-   - note f, the X7 flake: five runs, the mechanism paragraph, and ownership;
+   - note f, the X7 flake: five runs, the mechanism paragraph, and Overtoadship;
    - note g, the worktrees (30 plus 2);
    - Corrections 1's census bullets and Corrections 2;
-   - the remaining-work lists: the owner-gated, startable, claimed-repin and authored items;
+   - the remaining-work lists: the Overtoad-gated, startable, claimed-repin and authored items;
    - the verification block;
    - the rewritten `### Validation record for this banner` (sizing, lane table, deviations, conduct disclosures, reconciliation, instrument).
 2. `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`:
@@ -62,14 +62,14 @@ OUTPUT. Only your final message is returned. Give numbered findings. Each has: t
 **Round 4, Lane B: review of the round-3 fix pass (juniper-ml#2020 `f68380dd` against `4855bf8c`)**
 
 Conventions for this report:
-- Bare `L` numbers are lines of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` at `f68380dd`.
+- Bare `L` numbers are lines of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` at `f68380dd`.
 - `census_remote.py` means `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`, and `mutation_check.py` means `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`.
 
 `f68380dd` is not in the local object store. I read it through `gh api …/compare/4855bf8c...f68380dd` and `contents?ref=`, and the worktree copies have identical sha256.
 
 ## Findings
 
-**1. L44–45, "Its publish run, `35795531350`, waits on the owner's `pypi` deployment approval", and L319–320, "The `0.6.1` wheel waits on the owner's `pypi` deployment approval (run `35795531350`)".**
+**1. L44–45, "Its publish run, `35795531350`, waits on the Overtoad's `pypi` deployment approval", and L319–320, "The `0.6.1` wheel waits on the Overtoad's `pypi` deployment approval (run `35795531350`)".**
 - **Verdict:** REFUTED. These were already stale when the commit was made. **MAJOR**: an Owner-gated item is actually done.
 - **Evidence:**
   - PyPI shows `juniper_cascor_worker-0.6.1` uploaded at 2026-09-23T00:37:07Z.
@@ -83,7 +83,7 @@ Conventions for this report:
 - **Verdict:** REFUTED. The fact moved before the commit, in text the fix pass re-asserted. **MAJOR**: a disposition changes.
 - **Evidence:**
   - juniper-data#421 ("the container image can generate equities -- yfinance joins the image lock") merged at 00:56:08Z as `68c3cd7c`.
-  - Its body opens: "Owner decision, 2026-09-22: the juniper-data container image must be able to generate the equities datasets."
+  - Its body opens: "The Overtoad decision, 2026-09-22: the juniper-data container image must be able to generate the equities datasets."
   - The post-merge census run itself reads juniper-data at `68c3cd7c`.
   - No data release has been cut since v0.15.0.
 - **Fix:** "Ruled; lock fixed by data#421; ships with the next juniper-data release."

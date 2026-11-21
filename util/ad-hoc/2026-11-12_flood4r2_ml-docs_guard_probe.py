@@ -8,7 +8,7 @@ Author: Paul Calnon
 Created: 2026-11-12
 Status: ad-hoc -- investigation (claim evidence for the Cursor flood-4 round-2 docs carrier: drafts juniper-ml#2490
         and juniper-ml#2470, both written for the guard before 1.3.0)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (round 2, rulings 8 and 3);
          tests/test_claude_agent_guard.py (``GuardTestCase.run_guard``, whose invocation this copies)
 
@@ -135,7 +135,7 @@ def main(argv: list[str]) -> int:
         sample = run_guard("gpg --list", home, repo)
     wording = {
         "deny_is_one_json_object_and_exit_0": sample["exit"] == 0 and sample["stdout_json_objects"] == 1,
-        "reason_says_owner_run_under_D11": "OWNER-run under D11" in sample["reason"],
+        "reason_says_Overtoad_run_under_D11": "OWNER-run under D11" in sample["reason"],
         "reason_says_do_not_retry_or_look_for_a_way_around": "do not retry it or look for a way around the guard" in sample["reason"],
         "sample_reason": sample["reason"],
     }

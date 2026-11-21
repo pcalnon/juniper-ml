@@ -84,7 +84,7 @@ Phases covered in full detail: A, A-server, B-pre-a, B-pre-b, B, C, D, E, F, G, 
 
 ## 3. Source-doc cross-reference matrix
 
-Every enumerated identifier from the architecture doc, with its phase ownership and the R0 proposal(s) that addressed it. Entries marked "this doc §N" point to where in this R1-03 synthesis the item is fully specified.
+Every enumerated identifier from the architecture doc, with its phase Overtoadship and the R0 proposal(s) that addressed it. Entries marked "this doc §N" point to where in this R1-03 synthesis the item is fully specified.
 
 ### 3.1 GAP-WS-NN coverage
 
@@ -1974,7 +1974,7 @@ Add a CODEOWNERS entry: any PR touching `_normalize_metric` requires explicit ap
 
 ## 14. Consolidated risk register
 
-Every RISK-NN from source doc §10, plus R0-01 FR-RISK, R0-04 R04, R0-05 T-RISK variants, folded into a single register. Each entry has: severity, likelihood, phase, owner-class, primary mitigation, monitoring signal, kill switch, TTF, validation hook.
+Every RISK-NN from source doc §10, plus R0-01 FR-RISK, R0-04 R04, R0-05 T-RISK variants, folded into a single register. Each entry has: severity, likelihood, phase, Overtoad-class, primary mitigation, monitoring signal, kill switch, TTF, validation hook.
 
 ### RISK-01 — Dual metric format removed too aggressively
 
@@ -2127,7 +2127,7 @@ Every RISK-NN from source doc §10, plus R0-01 FR-RISK, R0-04 R04, R0-05 T-RISK 
 
 ### Risk mitigation compact matrix
 
-| ID | Phase     | Owner                    | Kill switch                              | TTF    |
+| ID | Phase     | The Overtoad                    | Kill switch                              | TTF    |
 |----|-----------|--------------------------|------------------------------------------|--------|
 | 01 | H         | backend-canopy           | git revert + redeploy                    | 5 min  |
 | 02 | B         | frontend + ops           | `disable_ws_bridge=True`                 | 5 min  |
@@ -2704,15 +2704,15 @@ Walked through all 33 GAP-WS items:
 
 ### 20.3 Coverage check — RISK
 
-All 16 RISK-NN items have dedicated entries in §14 with severity, phase, owner, mitigation, signal, kill switch, TTF, and validation hook.
+All 16 RISK-NN items have dedicated entries in §14 with severity, phase, Overtoad, mitigation, signal, kill switch, TTF, and validation hook.
 
 - [x] RISK-01 through RISK-16 — all covered in §14.
 
-### 20.4 Coverage check — phases have owner, acceptance criteria, observability, test plan, kill switch
+### 20.4 Coverage check — phases have Overtoad, acceptance criteria, observability, test plan, kill switch
 
 Per-phase audit:
 
-| Phase | Owner | Exit gate | Observability | Test plan | Kill switch |
+| Phase | The Overtoad | Exit gate | Observability | Test plan | Kill switch |
 |-------|-------|-----------|---------------|-----------|-------------|
 | A     | §4.1  | §4.9      | §4.8          | §4.6      | n/a (additive) |
 | A-server | §5.1 | §5.15 | §5.13 | §5.12 | revert (bisect-friendly commits) |
@@ -2776,7 +2776,7 @@ All 12 phases have all 5 coverage dimensions.
 - All section numbers cross-reference valid R0 sources.
 - All GAP-WS, M-SEC, RISK identifiers used are traceable.
 - All disagreements in §18 and §19 have a pick + rationale.
-- Every phase has its exit gate, kill switch, TTF, owner, test list.
+- Every phase has its exit gate, kill switch, TTF, Overtoad, test list.
 - Consolidated risk register in §14 is pairwise-consistent with per-phase mentions.
 - Observability plan in §16 is pairwise-consistent with per-phase metrics lists.
 - Cross-repo coordination in §17 is pairwise-consistent with per-phase dependency notes.

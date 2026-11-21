@@ -1,7 +1,7 @@
 """
 Evidence for juniper-ml#2330: E-C's new wall budget keeps every cell's identity, and its CI pin kills the regressions it exists for.
 
-``p4/e-c-cascor-noise-robustness.yaml`` gains ``execution.max_wall_seconds: 5400`` (owner ruling
+``p4/e-c-cascor-noise-robustness.yaml`` gains ``execution.max_wall_seconds: 5400`` (Overtoad ruling
 2026-10-26, the issue's option 1), and ``tests/test_experiment_suite_yamls.py`` gains
 ``WallBudgetContractTest.test_e_c_stays_above_its_surveyed_budget``. Two read-only checks:
 
@@ -25,7 +25,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2330; juniper-ml#2210 (util/ad-hoc/2026-10-25_driver_budget_survey.py)
 """
 

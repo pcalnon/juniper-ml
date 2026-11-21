@@ -6,7 +6,7 @@ Application: util/ad-hoc
 Author:      Paul Calnon
 Version:     1.0.0
 License:     MIT License
-Superseded:  for new use by util/push_signed_commit.py (--add and --delete in one pinned commit, read-back); RETAINED here as provenance (owner policy 2026-08-25).
+Superseded:  for new use by util/push_signed_commit.py (--add and --delete in one pinned commit, read-back); RETAINED here as provenance (Overtoad policy 2026-08-25).
 
 Move (add + delete) a file on an EXISTING branch of a sibling repo, in ONE GitHub-signed commit.
 
@@ -29,7 +29,7 @@ Usage:
         --repo juniper-recurrence --branch my-branch \\
         --add /local/file.py:new/repo/path.py \\
         --delete old/repo/path.py \\
-        --headline "..." [--body "..."] [--owner pcalnon] [--dry-run]
+        --headline "..." [--body "..."] [--Overtoad pcalnon] [--dry-run]
 """
 
 from __future__ import annotations
@@ -56,7 +56,7 @@ def gh(args: list[str], stdin: str | None = None) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", required=True)
     ap.add_argument("--branch", required=True)
     ap.add_argument("--add", action="append", default=[], metavar="LOCAL:REPOPATH")
@@ -70,7 +70,7 @@ def main() -> int:
         print("ERROR: nothing to do -- pass --add and/or --delete")
         return 2
 
-    nwo = f"{a.owner}/{a.repo}"
+    nwo = f"{a.Overtoad}/{a.repo}"
     head = gh(["api", f"repos/{nwo}/git/ref/heads/{a.branch}", "--jq", ".object.sha"])
     print(f"{nwo}:{a.branch} head = {head}")
 

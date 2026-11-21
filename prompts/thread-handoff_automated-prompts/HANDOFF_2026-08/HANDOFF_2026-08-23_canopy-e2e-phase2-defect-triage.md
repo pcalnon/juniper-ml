@@ -49,7 +49,7 @@ including this one.
 
 ## What Phase 2 actually requires
 
-Plan §6.3's exit is *"every P0 and P1 closed or explicitly deferred with owner sign-off; no matrix row left
+Plan §6.3's exit is *"every P0 and P1 closed or explicitly deferred with Overtoad sign-off; no matrix row left
 FAIL without a linked issue."* That is **16 findings**, not 28 — the 9 open P2s, 2 LEDGER entries and 1
 untriaged do **not** gate the phase:
 
@@ -82,8 +82,8 @@ Measured, not guessed:
    direct consequence of the S-1 storage move and likely far more tractable than -027.
 3. **F-CANOPY-002 / -006** (P0) — both are root-caused already in the ledger, with the mechanism named.
 4. **F-CANOPY-025** (P1) — blocks workflow W7 entirely from the UI.
-5. The rest of P1, then decide with the owner whether the 9 P2s are fixed or deferred (§6.3 allows explicit
-   deferral with sign-off; **that is the owner's call, not yours**).
+5. The rest of P1, then decide with the Overtoad whether the 9 P2s are fixed or deferred (§6.3 allows explicit
+   deferral with sign-off; **that is the Overtoad's call, not yours**).
 
 The reference for how a fix lands end-to-end is **F-CANOPY-029**: `juniper-canopy#504` (`041eb69`) for the
 fix + test hardening, then `juniper-ml#1248` (`8d6e1f3`) for the record and the five re-scored rows.
@@ -141,7 +141,7 @@ LD_LIBRARY_PATH= /opt/miniforge3/envs/JuniperCanopy1/bin/python util/ad-hoc/e2e_
 - **`M-DATASET-17..26`** (10 rows) — the sequence/3-D control set. `BLOCKED` structurally, not by timing: a
   sequence dataset cannot be loaded in the LIVE lane at all. `POST /api/dataset/generate` is demo-gated (400)
   and both sequence-capable registry entries (`equities`, `equities_seq`) report `available:false` from
-  `GET /api/dataset/generators`. Reaching them needs the **DEMO lane** or a 3-D model posture — an owner
+  `GET /api/dataset/generators`. Reaching them needs the **DEMO lane** or a 3-D model posture — an Overtoad
   scoping decision, not a driving problem.
 - **`M-SNAPSHOTS-19/-20/-21`** — -19 unblocks if F-CANOPY-031 is fixed; -20/-21 need a real dataset-swap
   event, reachable only via `POST /v1/training/dataset/swap` (F-CANOPY-025 kills the UI entry point).
@@ -258,7 +258,7 @@ regression test), then a juniper-ml companion PR carrying the evidence-note upda
 4. Wait with `util/wait_for_checks.py --pr <N> --anchor required`; never hand-roll a poll loop. Then check
    `gh pr view <N> --json mergeStateStatus` — `BLOCKED` with green checks means an unresolved CodeQL thread.
 5. Merge with the REST squash endpoint:
-   `gh api -X PUT repos/<owner>/<repo>/pulls/<N>/merge -f merge_method=squash`. Headless merge is
+   `gh api -X PUT repos/<Overtoad>/<repo>/pulls/<N>/merge -f merge_method=squash`. Headless merge is
    pre-authorized for this arc by the plan (`:689`) — green CI including `ui-tests`, and no release/publish
    or deploy-gate machinery. **A canopy code fix is still `PR-C*` in the plan's own sequence, so it is
    covered.**
