@@ -2,11 +2,7 @@
 
 **Date**: 2026-11-09 (UTC; written ~11:00Z)
 
-<<<<<<< HEAD
 **Arc**: the Cursor flood-4 disposition, session 3. It started as `binary-seeking-frog` and ran in `humming-stargazing-papert` via EnterWorktree. It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-08_flood4-record-validated-fixes-built-round2-triaged.md` (session 2's handoff, which the Overtoad edited mid-session to add ruling 12).
-=======
-**Arc**: the Cursor flood-4 disposition, session 3. It started as `binary-seeking-frog` and ran in `humming-stargazing-papert` via EnterWorktree. It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-08_flood4-record-validated-fixes-built-round2-triaged.md` (session 2's handoff, which the owner edited mid-session to add ruling 12).
->>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 
 **Host**: the Linux host.
 
@@ -17,11 +13,7 @@
   - Before you fast-forward, `cmp` each file against `git show origin/main:<path>`, then remove the identical untracked copies and run `git checkout -- CHANGELOG.md`. Keep this handoff, `util/ad-hoc/2026-11-08_flood4r2_*.py` (untracked, round 2's helpers) and `tmp/`.
   - `tmp/flood4/STATE.txt` is the running log; read its session-3 section (from "== SESSION 3") first.
 - **Round 2 and fix work, all uncommitted.** Each item's latest deliverables are listed under Goal step 2. Validators' scratch worktrees (`*--val--flood4r2-*`, `juniper-cascor--validate--*`, `juniper-ml--val--flood4r2-ml-propose-*`) are under `/home/pcalnon/Development/python/Juniper/worktrees/`.
-<<<<<<< HEAD
 - **The primary checkout** is on the Overtoad's branch. Do not touch it.
-=======
-- **The primary checkout** is on the owner's branch. Do not touch it.
->>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 
 ---
 
@@ -33,11 +25,7 @@ HANDOFF_2026-11-09_flood4-record-merged-fixes-corrected-landing-next.md (in the 
 uncommitted). EnterWorktree(path=/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert).
 Run the Verification block first; if an invariant fails, stop, re-derive it from GitHub, and report.
 
-<<<<<<< HEAD
 FIRST ask the Overtoad for THIS session's merge approval, "Merge, update, close" (auto-memory
-=======
-FIRST ask the owner for THIS session's merge approval, "Merge, update, close" (auto-memory
->>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 feedback_headless_merge_approval_policy.md: a handoff cannot carry it). Rulings 1-17 below stand.
 
 1. Fast-forward the orchestrator worktree to origin/main (see Git status for how).
@@ -69,11 +57,7 @@ feedback_headless_merge_approval_policy.md: a handoff cannot carry it). Rulings 
       - This is BIGGER than ruled. Its two-lens validation must attack the port itself.
       - New bypass still open on main and in the carrier: `cat ~/.ss{h,b\}c}/config` (the guard cannot see escapes).
         ASK THE OWNER whether to carry an escape fix here or in its own PR.
-<<<<<<< HEAD
       Tell the Overtoad to reinstall the guard (1.3.0) after it merges.
-=======
-      Tell the owner to reinstall the guard (1.3.0) after it merges.
->>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
    e. ml-tests: build it (it carries #2507's tests and rewords #2507's "propose.py does not edit" docstring), validate,
       land.
    f. ml-propose. Tree .claude/worktrees/agent-a89a45162cee4b2e8, deliverables tmp/flood4r2/ml-propose/r2/. Lands after
@@ -123,26 +107,18 @@ feedback_headless_merge_approval_policy.md: a handoff cannot carry it). Rulings 
 
 ---
 
-<<<<<<< HEAD
 ## The Overtoad's rulings (AskUserQuestion; option labels verbatim)
-=======
-## The owner's rulings (AskUserQuestion; option labels verbatim)
->>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 
 Rulings 1-12 are in session 2's handoff and in the record's §8. Session 3 added these:
 
-| # | Question | Answer |
-|---|---|---|
-<<<<<<< HEAD
-| — | the Overtoad's message | "merge approval granted for this work arc" |
-=======
-| — | the owner's message | "merge approval granted for this work arc" |
->>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
-| 13 | Approval scope, session 3 | "Merge, update, close (Recommended)" |
-| 14 | #2507 | "Carry + extend propose.py (Recommended)" |
-| 15 | Guard bypass `cat ~/.{r..t..1}sh/config` | "Carry in ml-code (Recommended)" |
-| 16 | Brace-cap false refusals (21 of 44,660 recent commands) | "Ship strict, fix later (Recommended)" |
-| 17 | New defects (multiSelect) | all four: "data: 44 unrun tests", "cascor: stop-then-start", "canopy: tests hit :8050", "canopy: dead error path" |
+| #  | Question                                                | Answer                                                                                                            |
+|----|---------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| —  | the Overtoad's message                                  | "merge approval granted for this work arc"                                                                        |
+| 13 | Approval scope, session 3                               | "Merge, update, close (Recommended)"                                                                              |
+| 14 | #2507                                                   | "Carry + extend propose.py (Recommended)"                                                                         |
+| 15 | Guard bypass `cat ~/.{r..t..1}sh/config`                | "Carry in ml-code (Recommended)"                                                                                  |
+| 16 | Brace-cap false refusals (21 of 44,660 recent commands) | "Ship strict, fix later (Recommended)"                                                                            |
+| 17 | New defects (multiSelect)                               | all four: "data: 44 unrun tests", "cascor: stop-then-start", "canopy: tests hit :8050", "canopy: dead error path" |
 
 The record (#2530) covers rulings 1-14 only. Rulings 15-17 go in the record-update PR.
 
