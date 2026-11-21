@@ -68,7 +68,7 @@ What each PR actually contains, from `git show <sha> -- <file>` and `git log -S`
   - 5 (#325, #328, #339, #389, #1139) have **no `pull_request` run at all**. Two independent queries agree: by `head_sha`, and a branch-plus-event list of 71 runs whose earliest is 06-15.
   - #1139's 08:10–08:40 window shows only the scheduled run.
   - So "suppressed" did happen on this repo as recently as 2026-08-17.
-  - Also, #1304, #1517 and #421–#1057 were released by owner re-run too. That is 12 of 13 parked PRs; only #1806 used close/reopen.
+  - Also, #1304, #1517 and #421–#1057 were released by Overtoad re-run too. That is 12 of 13 parked PRs; only #1806 used close/reopen.
 
 ## 3. Advisory-soak findings
 

@@ -104,8 +104,8 @@ Re-derived by the §1 script; per-repo splits re-derived the same way.
 | Cross-client `APD-ECO-*` | 7 | decision-shaped; `-001` unlocks `CCLIENT-001`; `-007` now also carries `CCLIENT-012`'s removal-date half |
 | `juniper-service-core` | 7 | **all latent** (`.websocket.*` / `workers/`, no consumer) — still do not fix as live |
 | `juniper-cascor-client` | 2 | `-001` (blocked on `APD-ECO-001`), `-008` (envelope sniffing — design-shaped) |
-| `juniper-rclient` | 2 | `-004` (dict vs same-repo server models — ECO-004-adjacent), `-005` (three-name identity — owner-flavored, Low conf) |
-| `juniper-cascor` | 2 | `-003` (response_model on 46 routes — large); `-005` **owner decision** (primer self-contradiction, unchanged) |
+| `juniper-rclient` | 2 | `-004` (dict vs same-repo server models — ECO-004-adjacent), `-005` (three-name identity — Overtoad-flavored, Low conf) |
+| `juniper-cascor` | 2 | `-003` (response_model on 46 routes — large); `-005` **Overtoad decision** (primer self-contradiction, unchanged) |
 | `juniper-ml` | 1 | `-001` — primer-flagged as judgement |
 | `juniper-data-client` | 0 | swept |
 

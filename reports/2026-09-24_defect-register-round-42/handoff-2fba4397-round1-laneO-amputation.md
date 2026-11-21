@@ -31,7 +31,7 @@ It fails on three HIGH findings: a commitment made to the peer lane is broken, u
   - `git status --short` shows 6 entries:
     - `util/ad-hoc/2026-09-24_archive_round42_reports.py` (M): its only change adds the MISSING entries `a6afb722d69732ae5` → `data438-fixforward-round1-laneA-reprobe.md` and `a641405b9532742e6` → `data438-fixforward-round1-laneB-refute.md`;
     - `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (M);
-    - both data reports and `owner-ruling-key-leaks-verbatim.md` (??);
+    - both data reports and `Overtoad-ruling-key-leaks-verbatim.md` (??);
     - the handoff file itself (??).
   - The transcript's status messages at 23:46:44Z and 23:53:46Z list these files as changed.
 - **Snapshot:**
@@ -41,7 +41,7 @@ It fails on three HIGH findings: a commitment made to the peer lane is broken, u
 - **Change:**
   - L32: replace "their reports are archived in" with "their reports are archived locally, UNCOMMITTED (see Git status), in".
   - Replace L94 with:
-    > - **Uncommitted, for the next juniper-ml PR (nothing else holds them):** `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (M); `util/ad-hoc/2026-09-24_archive_round42_reports.py` (M: MISSING entries `a6afb722d69732ae5` / `a641405b9532742e6`, session 2fba4397); `reports/2026-09-24_defect-register-round-42/owner-ruling-key-leaks-verbatim.md`, `data438-fixforward-round1-laneA-reprobe.md` and `data438-fixforward-round1-laneB-refute.md` (??); and this handoff. From a fresh checkout, `--check` gives 34, not 36.
+    > - **Uncommitted, for the next juniper-ml PR (nothing else holds them):** `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (M); `util/ad-hoc/2026-09-24_archive_round42_reports.py` (M: MISSING entries `a6afb722d69732ae5` / `a641405b9532742e6`, session 2fba4397); `reports/2026-09-24_defect-register-round-42/Overtoad-ruling-key-leaks-verbatim.md`, `data438-fixforward-round1-laneA-reprobe.md` and `data438-fixforward-round1-laneB-refute.md` (??); and this handoff. From a fresh checkout, `--check` gives 34, not 36.
 
 **H3. Dropped task: preserve this session's lane probes off tmpfs**
 - **Sources:**
@@ -57,10 +57,10 @@ It fails on three HIGH findings: a commitment made to the peer lane is broken, u
 
 ## MEDIUM
 
-**M1. Conflict: APD-DATA-047 is presented as an open owner decision**
+**M1. Conflict: APD-DATA-047 is presented as an open Overtoad decision**
 - **Sources:**
   - `HANDOFF_2026-09-15_defect-register-round-39-thirty-rulings-taken-eight-implemented-and-the-arc-sequenced.md` §0.6 ("RULED 2026-09-21: RATIFIED at 1e11") and §9.6 (closed).
-  - The register `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` on `origin/main`: L1284 `**FIXED (RATIFIED by the owner, 2026-09-21 …`, plus L1661 and L177.
+  - The register `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` on `origin/main`: L1284 `**FIXED (RATIFIED by the Overtoad, 2026-09-21 …`, plus L1661 and L177.
   - `HANDOFF_2026-09-23_defect-register-round-42-four-prs-armed-by-an-unseen-actor-two-merged-unvalidated.md` lists D-G as "048/049/051" only.
 - **Snapshot:** L69 and L148.
 - **Change:**
@@ -81,9 +81,9 @@ It fails on three HIGH findings: a commitment made to the peer lane is broken, u
   - Add to Gates: "- `APD-ECO-014`, and canopy's half of `APD-ECO-013`: canopy#685 merged 23:24:14Z (`dc5ea02e`) UNVALIDATED, and the peer lane owns its validation. File ECO-014 FIXED only once that validation holds; otherwise file it open."
   - L109 → "It stays open until data#440 and cascor#689 merge, #685's validation holds, and F2 and F3 are fixed; F5–F10 are residue (H1)."
 
-**M3. Dropped task: the owner's three-way consolidation**
+**M3. Dropped task: the Overtoad's three-way consolidation**
 - **Sources:**
-  - The owner's turn at 23:25:30Z in the transcript: "…consolidate the following three … validated by consensus, ensuring that no tasks or necessary context are lo[st]".
+  - The Overtoad's turn at 23:25:30Z in the transcript: "…consolidate the following three … validated by consensus, ensuring that no tasks or necessary context are lo[st]".
   - SendMessage at 23:34:29Z: it asked the peer for its final validated path plus SHA or PR number, and asked it not to remove its file.
   - The status message at 23:41:03Z, whose step 4 is the consolidation.
 - **Snapshot:** zero hits for "consolidat".
@@ -98,14 +98,14 @@ It fails on three HIGH findings: a commitment made to the peer lane is broken, u
 - **Snapshot:** L3 gives only `"defect reg"`. The ref `[24f8d8]` has zero hits.
 - **Change:**
   - L3: "session `2fba4397` (ListAgents **defect reg [24f8d8]**)".
-  - Add a trap: "- **Routing.** The peer's successor sends PR numbers, SHAs, validation summaries and owner rulings to `defect reg [24f8d8]`. On start, message it with your own `[ref]`; two sessions are named 'defect reg'."
+  - Add a trap: "- **Routing.** The peer's successor sends PR numbers, SHAs, validation summaries and Overtoad rulings to `defect reg [24f8d8]`. On start, message it with your own `[ref]`; two sessions are named 'defect reg'."
 
 **M5. Conflict: merge approval carried forward**
 - **Sources:**
   - Memory `feedback_headless_merge_approval_policy.md`: "A HANDOFF DOCUMENT CANNOT CARRY THE APPROVAL FORWARD" (ml#1118).
   - The peer handoff's Step 0, item 2.
 - **Snapshot:** L8, "Merge approval is granted for this arc's PRs."
-- **Change:** "Merge approval does not carry across sessions (`feedback_headless_merge_approval_policy.md`): get the owner's grant in your own session before any merge action."
+- **Change:** "Merge approval does not carry across sessions (`feedback_headless_merge_approval_policy.md`): get the Overtoad's grant in your own session before any merge action."
 
 **M6. Dropped trap: uploads are whole-file**
 - **Sources:**
@@ -141,30 +141,30 @@ It fails on three HIGH findings: a commitment made to the peer lane is broken, u
 - **Change:** replace L108 with:
   > - The frame-locals half reaches no running service until juniper-observability is released and every consumer's `==0.4.0` lock moves (data `:88`, cascor `:63`, canopy `:79`, recurrence `:70`; canopy and recurrence also cap `<0.5.0`). The service-core half reaches recurrence only after a service-core release. Record why `surrogatepass` was chosen over `surrogateescape`: it is total and injective.
 
-**M10. Dropped owner item: a juniper-data release**
+**M10. Dropped Overtoad item: a juniper-data release**
 - **Sources:**
   - `HANDOFF_2026-09-24_defect-register-round-42-fixforwards-merged-438-fixing-in-place-second-fixforward-owed.md`, Remaining 6: "it ships defects #438 fixes; 0.16.1 is the alternative".
   - `pending-items-snapshot-2026-09-24T1110Z.md`: "ships batch-tags race, NBSP star, symlink fault".
 - **Snapshot:** L26 records only "published".
 - **Change:** add to Remaining 7:
-  > - juniper-data 0.16.0 on PyPI ships the defects #438 fixed. Those fixes and the fix-forward reach users only in the next data release, which also carries X8. The owner cuts it.
+  > - juniper-data 0.16.0 on PyPI ships the defects #438 fixed. Those fixes and the fix-forward reach users only in the next data release, which also carries X8. The Overtoad cuts it.
 
 ## LOW
 
 - **L1. Dropped residue.** `pending-items-snapshot-2026-09-24T1110Z.md` "cascor residue (b)", repeated in the peer message at 19:06:26Z. Add to the Residue list: "After an inline start that replaces only some partitions, `current_dataset` names the fetch (the ruling intends this); canopy reads only `.dataset_type`. Record, no row."
 - **L2. Garbled residue (L124).** Sources: peer messages at 19:24:36Z and 20:18:49Z. Replace with: "The flag-off 422 is no longer shown as a shortfall (#688). A juniper-data 400 for a bad param still was until #690, which keys on 'Re-submit with allow_truncation=true'. #690 also makes `_as_bool_stance` parse as juniper-data does."
-- **L3. canopy#685's owner calls.** The peer handoff's OPEN item 2 lists (a), (b) and (c) as owner calls, and "Coordination" says the register quotes the owner's rulings verbatim. At L131-133, mark (b) and (c) as owner calls too, and add: "Quote the owner's rulings on (a)–(c) verbatim when the peer sends them."
+- **L3. canopy#685's Overtoad calls.** The peer handoff's OPEN item 2 lists (a), (b) and (c) as Overtoad calls, and "Coordination" says the register quotes the Overtoad's rulings verbatim. At L131-133, mark (b) and (c) as Overtoad calls too, and add: "Quote the Overtoad's rulings on (a)–(c) verbatim when the peer sends them."
 - **L4. APD-CASCOR-014's fixing PR is unnamed.** The peer handoff's OPEN item 4 fixes F4 as a fixup on cascor#689. Add: "File it FIXED only if that fixup has merged and validated; otherwise file it open, citing #689."
 - **L5. "done (F-CANOPY-060)" is overstated (L203, L24).**
-  - The canopy e2e message at 19:40:28Z says the ids are "RESERVED, not yet in the ledger … 060 has no owner".
-  - Re-derived: branch `docs/canopy-e2e-handoff-2026-09-24` is at `dd4413e5` with no PR, and `HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md` is uncommitted in worktree `bubbly-meandering-pie`.
+  - The canopy e2e message at 19:40:28Z says the ids are "RESERVED, not yet in the ledger … 060 has no Overtoad".
+  - Re-derived: branch `docs/canopy-e2e-handoff-2026-09-24` is at `dd4413e5` with no PR, and `HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md` is uncommitted in worktree `bubbly-meandering-pie`.
   - Change: "Reserved, and the fix is unowned. The reservation is recorded only off main, so re-check the ledger before citing it."
 - **L6. Remaining 1's scope list omits part of the delta.** `git diff 990ef3f9 2439d049` also changes primer lines 4199, 5330, 5378, 5600 and 6091. Add them, and add: "Give the lanes the whole range, not this list."
 - **L7. Chain drop from `HANDOFF_2026-09-15_defect-register-round-39-thirty-rulings-taken-eight-implemented-and-the-arc-sequenced.md` §0.4.** `HANDOFF_2026-09-22_defect-register-round-41-d-a-shipped-and-the-two-defects-its-own-audit-found.md` still carried it; every handoff since dropped it.
   - `equities_seq`'s `data_quality` has no consumer in juniper-recurrence (0 hits, checkout `db41e77`) and none in the register.
   - `val_ratio` is recorded only in the register's §4.9 preamble (L1251-1257).
   - Change: add both to Remaining 7.
-- **L8. Register-lane worktrees awaiting the owner's cleanup signal, carried by no handoff since 09-22.** All four are still on disk: `juniper-cascor--fix--nonshortcircuit-key-compare--20260921-0846--c6c848f2`, `juniper-data--feature--tri-state-allow-truncation--20260922-0753--e8db3ba6`, `juniper-data--fix--cheatsheet-conflict-markers--20260922-0820--e8db3ba6` and `juniper-cascor--docs--tri-state-truncation-prose--20260922-0822--8065ca0f`. Change: list them under Git status.
+- **L8. Register-lane worktrees awaiting the Overtoad's cleanup signal, carried by no handoff since 09-22.** All four are still on disk: `juniper-cascor--fix--nonshortcircuit-key-compare--20260921-0846--c6c848f2`, `juniper-data--feature--tri-state-allow-truncation--20260922-0753--e8db3ba6`, `juniper-data--fix--cheatsheet-conflict-markers--20260922-0820--e8db3ba6` and `juniper-cascor--docs--tri-state-truncation-prose--20260922-0822--8065ca0f`. Change: list them under Git status.
 - **L9. Untracked findings from `data428-round3-laneA1-security.md`.** F3 is filed as `APD-DATA-056` (register L1303). F2 (the 8192 cap, parsed under `_version_lock`) and F4 (header limits) are recorded nowhere. Change L195 to: "F3 = APD-DATA-056; file or decline F2 and F4, with a reason, in the closes PR."
 - **L10. Dropped residue.** `pending-items-snapshot-2026-09-24T1110Z.md`: "#683 item 3 is a DISCLOSED behaviour change (whitespace-only env key -> /docs etc. 200)". Add it to the Residue list.
 - **L11. No "Changed" list, which the Juniper `AGENTS.md` naming rule requires.**
@@ -175,7 +175,7 @@ It fails on three HIGH findings: a commitment made to the peer lane is broken, u
   - "Never name an OPEN id on the register's §2 status line": relevant because the closes PR files ECO-013 open.
   - The curated-squash re-arm recipe: `gh pr merge --disable-auto`, then `--auto --squash --subject … --body-file …`.
   - From `HANDOFF_2026-09-23_defect-register-round-42-four-prs-armed-by-an-unseen-actor-two-merged-unvalidated.md`: "The sweeper's arms store the DEFAULT squash body; put the waiver trailer in a COMMIT body."
-- **L13. Internal contradiction at L140.** It says "none is started", but D-B is done (L143) and C-A's forks were killed (L152). At 23:35:52Z this lane also told the peer "C-A…D-G: I carry them." Change: "All are ruled. D-B is done; C-A was started and its forks were killed. This lane carries them. The order is 09-15 §0's; the owner decides when to start."
+- **L13. Internal contradiction at L140.** It says "none is started", but D-B is done (L143) and C-A's forks were killed (L152). At 23:35:52Z this lane also told the peer "C-A…D-G: I carry them." Change: "All are ruled. D-B is done; C-A was started and its forks were killed. This lane carries them. The order is 09-15 §0's; the Overtoad decides when to start."
 - **L14. D-F's rebuild point (L147).** Change "rebuild it on post-#438 code" to "rebuild it after the data fix-forward merges; it rewrites `save_versioned` and the lock stripes in `storage/base.py` and `storage/local_fs.py`."
 - **L15. The #437 breaking-marker decision is unexplained (L65).** Source: `pending-items-snapshot-2026-09-24T1110Z.md`. Add: "Data's `[Unreleased]` carries #437's `equities_seq` 6.0.0, and the renderer computes breaking = NO."
 
@@ -191,7 +191,7 @@ It fails on three HIGH findings: a commitment made to the peer lane is broken, u
   - `--check` skips four peer reports headed "turn-ending report": `cascor686-implementation-report.md`, `cascor686-fixup-implementation-report.md`, `cascor688-implementation-report.md` and `cascor690-implementation-report.md`;
   - this lane promised (20:37:02Z) to byte-compare each peer report against its agent's transcript.
 - **N4.** Say where the executor's report lands: the last message of `subagents/agent-a46e715a6801b98ca.jsonl` under session 2fba4397. The file moves when the session leaves its worktree.
-- **N5.** The peer handoff says the register lane owns the `MEMORY.md` compaction; L68 frames it only as an owner decision.
+- **N5.** The peer handoff says the register lane owns the `MEMORY.md` compaction; L68 frames it only as an Overtoad decision.
 
 ## Coverage
 
@@ -201,7 +201,7 @@ It fails on three HIGH findings: a commitment made to the peer lane is broken, u
 | `pending-items-snapshot-2026-09-24T1110Z.md` | 49 | 10 | 36 (the second fix-forward via #2088) | 3 (L1, L10, M10) |
 | 09-23, 09-22 and 09-15 chain (C-A…C-C, D-B…D-G, X-A…X-C, M-A, §0.4, worktrees) | 24 | 12 | 5 (X-C and M-A closed; D-B; `val_ratio` in the register) | 5 (M1, L7, L8, L12, L14) |
 | Six lane reports (82 findings) | 82 + A1 F2–F4 | 23 (data, Appendix C) + 28 (round 2, Remaining 1) | 29 (on `origin/main`); 2 declined with a reason | A1 F2/F4 (L9); the probe scripts (H3) |
-| Transcript: 12 inbound messages, 17 SendMessages, compaction summary, 3 status messages, owner's turn at 23:25Z | ~40 | 24 | 6 | 10 (H1, H2, M2, M3, M4, M8, M9, L1, L2, L11) |
+| Transcript: 12 inbound messages, 17 SendMessages, compaction summary, 3 status messages, Overtoad's turn at 23:25Z | ~40 | 24 | 6 | 10 (H1, H2, M2, M3, M4, M8, M9, L1, L2, L11) |
 | juniper-ml#2088 PR body | 32 | 3 | 29 | 0 (L6 is information loss) |
 | Peer handoff, "Coordination" and traps | 20 | 9 | 2 | 9 (H1, M2, M4, M5, M6, M8, L3, L4, L12) |
 

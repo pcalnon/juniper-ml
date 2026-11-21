@@ -79,9 +79,9 @@ cd /home/pcalnon/Development/python/Juniper/juniper-ml && git checkout main && g
 
 Q-6 (one-cascor-per-checkout / H-7 shared `logs/juniper_cascor.log`), Q-7 + W-12, F-P1-2 (the
 native Grafana squatting `:3000`), PF threshold ratification (plan §12), F-P1-3b (direct-CLI
-profiling priority). ml open issues #1011 / #1012 are the owner-decision branch-protection pair.
+profiling priority). ml open issues #1011 / #1012 are the Overtoad-decision branch-protection pair.
 
-### 4. Not mine, do not merge without checking ownership
+### 4. Not mine, do not merge without checking Overtoadship
 
 ml#1096 (`fix/release-train-propose-signed-commits`) was open at handoff time and belongs to a
 concurrent session.

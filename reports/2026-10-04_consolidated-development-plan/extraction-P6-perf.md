@@ -39,16 +39,16 @@ measured_at: 2026-10-04T20:53:43Z – 21:02:47Z (all probes). juniper-ml `origin
 | P6-01 | Add a nullable `candidate_epochs_completed: list[int] \| None` to cascor `training_step` rows (not a new row kind). Check the golden snapshots and the canopy tiles. | consolidated handoff item 1; rulings note §6 | [VERIFIED 2026-10-04: cascor `95cdc562` — `_process_training_results` :2986, `epochs_completed` :3035, `on_epoch_end` :258 / `kind` :267, `manager.py` :2058 = `output_epoch` (avoid), drain :2332, call :2386; search `candidate_epochs_completed` → 0; 0 open cascor PRs] [CHANGED SINCE HANDOFF: fixture path, see §5 item 1] | STARTABLE | — | juniper-cascor | M | UNBLOCKER |
 | P6-02 | Build the PF-2 axis-1 suite (pool × `candidate_epochs`, base ≈2000) and a reducer that reads the field and excludes volatile fields. | item 1; re-spec §2, §5 | Not built. [VERIFIED 2026-10-04: the driver saves `metrics_history.json` verbatim at `run_experiment.py:1103`; `metrics_history_count` defaults to 1000 (`:128`). Whether 1000 covers every row is unverified] | BLOCKED-ON P6-01 (a merged or pinned cascor tree; no release needed) | P6-01; must not share host time with P6-03, P5-4, P7-P2.1 | juniper-ml | M | RESEARCH |
 | P6-03 | Run PF-3 (14 cells, ~7 h per pass) only in a quiet window, with the sampler beside it. Check load at launch. Pick and quote the cascor SHA (`0d2d826` pin or post-flip `95cdc562`). | item 2; rulings note §6; suite header | [NOT RE-PROBED — host state]. No commit since `514b6c24` (09-24) records a run [VERIFIED git log]. The pin worktree exists [VERIFIED ls] | WAIT-QUIET-WINDOW | serialize with P6-02, P6-18, P5-4, P7-P2.1 | juniper-ml (+cascor tree) | L | RESEARCH |
-| P6-04 | Present the D6 recount as counts only. The owner decides advisory or blocking. | item 3; rulings note §5.4; D6 note §4 | The advisory is still non-blocking, with reference `{100: 68, 200: 68}` [VERIFIED: cascor `test_candidate_epochs_completed_advisory.py:125`]. Since 10-03 09:00Z: 30 runs, only 2 dependabot heads plus main `95cdc562` [VERIFIED actions/runs]. Counter not re-run (prohibited) | OWNER-DECISION | P6-05 | juniper-cascor | S | DATA-INTEGRITY |
+| P6-04 | Present the D6 recount as counts only. The Overtoad decides advisory or blocking. | item 3; rulings note §5.4; D6 note §4 | The advisory is still non-blocking, with reference `{100: 68, 200: 68}` [VERIFIED: cascor `test_candidate_epochs_completed_advisory.py:125`]. Since 10-03 09:00Z: 30 runs, only 2 dependabot heads plus main `95cdc562` [VERIFIED actions/runs]. Counter not re-run (prohibited) | OWNER-DECISION | P6-05 | juniper-cascor | S | DATA-INTEGRITY |
 | P6-05 | Record the 10-03 recount (0 firings / 36 SHAs / 168 legs; control 4/4) in rulings note §5.4. | residue | [VERIFIED 2026-10-04 grep: the figure exists only in the consolidated handoff; §5.4 holds 09-23's 0/6/28] | STARTABLE | — | juniper-ml | S | HYGIENE |
-| P6-06 | Put APD-ML-002..006 to the owner as one menu. | item 4; register §4.9 park block | [VERIFIED: "UNPARKED, and NOT thereby actionable" on main; last register commit `5af9d722` (09-24)]. Tagged ALSO P3, but P3 does not carry them (§5 item 6) | OWNER-DECISION | — | juniper-ml | S | DATA-INTEGRITY |
+| P6-06 | Put APD-ML-002..006 to the Overtoad as one menu. | item 4; register §4.9 park block | [VERIFIED: "UNPARKED, and NOT thereby actionable" on main; last register commit `5af9d722` (09-24)]. Tagged ALSO P3, but P3 does not carry them (§5 item 6) | OWNER-DECISION | — | juniper-ml | S | DATA-INTEGRITY |
 | P6-07 | APD-ML-003: make `expand_cells`' four repro shapes exit 2. Repair both the docstring and the REFERENCE exit-code table. | register row; structure-screen handoff §8.2 | [VERIFIED: contract `run_suite.py:28-30`, `expand_cells` :318, `except SuiteError` :887, REFERENCE heading :5207] | BLOCKED-ON P6-06 | — | juniper-ml | S | USER-FACING |
 | P6-08 | APD-ML-002: fix `_headline_metrics` (4 of its 6 names exist nowhere) and add the first tests for the registry `metrics` columns. | register; structure-screen handoff §8.1 | [VERIFIED: `run_suite.py:585`, names unchanged; companion guards now at :755 / :778 / :797] | BLOCKED-ON P6-06 | P5-3 (ml#2064 edits `eval_scalars`, `stats_summary.py:225`) | juniper-ml | M | DATA-INTEGRITY |
 | P6-09 | APD-ML-004: make an `_emit_stats` failure visible, and pin a failure test. | register; structure-screen handoff §8.3 | [VERIFIED: `run_experiment.py:1166`, `stats_error` :1181 / :1184] | BLOCKED-ON P6-06 | — | juniper-ml | S | DATA-INTEGRITY |
 | P6-10 | APD-ML-005: guard `eval_aggregate` / `eval_std` the way `plots_recurrence.py` does. | register; structure-screen handoff §8.4 | [VERIFIED: `stats_summary.py:238-239`, :329] | BLOCKED-ON P6-06 | same file as P5-3 | juniper-ml | S | DATA-INTEGRITY |
 | P6-11 | APD-ML-006: rule on the disk re-render coupling. Keep the test-pinned `present` fallback. | register; structure-screen handoff §8.5 | [VERIFIED: `stats_summary.py:340` unchanged] | OWNER-DECISION | P6-06 | juniper-ml | S | HYGIENE |
 | P6-12 | Take the next falsy-guard batch on in-file evidence (`run_experiment.py:397`, `stats_summary.py:274`). Re-take the sweep over ml#2002's `or {}` sites before quoting "needs nothing". | consolidated handoff §C; structure-screen handoff §5 | [VERIFIED: both lines present; ml#2002's sites now :451, :650, :955] | STARTABLE (not register rows) | coordinate with P6-08..10 | juniper-ml | S | HYGIENE |
-| P6-13 | Put the PF-2 axis-3 gating menu to the owner: ~5 paired dataset seeds per cell, and roc_auc, raw f1 or chance-adjusted f1. | item 5; re-spec §4.3 | Unchanged since 09-24 [VERIFIED git log] | OWNER-DECISION | P6-14 | juniper-ml | S | RESEARCH |
+| P6-13 | Put the PF-2 axis-3 gating menu to the Overtoad: ~5 paired dataset seeds per cell, and roc_auc, raw f1 or chance-adjusted f1. | item 5; re-spec §4.3 | Unchanged since 09-24 [VERIFIED git log] | OWNER-DECISION | P6-14 | juniper-ml | S | RESEARCH |
 | P6-14 | Ratify the PF thresholds: the exit condition of the F-P3 phase. Every suite still says "unratified". | phasing note §1.1, §5; suites README | Not carried as its own item by the consolidated handoff | OWNER-DECISION | — | juniper-ml | M | RESEARCH |
 | P6-15 | ICV residuals 1–2: the re-pin path in the `result_queue.get()` unpickle, and why the re-pin depends on op shape. | ICV note §7 | Open and optional [NOT RE-PROBED; no commit since 09-24] | STARTABLE | — | juniper-ml | M | RESEARCH |
 | P6-16 | ICV residual 3: read the ICV inside a live listener. Needs a new mechanism (`ptrace_scope`=1; standing rule against modifying cascor). | ICV note §7 | As P6-15 | OWNER-DECISION | — | juniper-ml / cascor | M | RESEARCH |
@@ -56,20 +56,20 @@ measured_at: 2026-10-04T20:53:43Z – 21:02:47Z (all probes). juniper-ml `origin
 | P6-18 | Optionally run PF-5/6/7 (report-only forever). | P2 plan 2.3 | Never executed [NOT RE-PROBED — host state] | WAIT-QUIET-WINDOW | serialize with P6-03 | juniper-ml | M | RESEARCH |
 | P6-19 | Decide whether PF-8 gets a committed parallel cascor suite under `suites/perf/`. | P2 plan 4.2 / §4 | README still says "Not checked in" [VERIFIED] | OWNER-DECISION | — | juniper-ml | S | RESEARCH |
 | P6-20 | Optional experiment-scoped alerts. | P2 plan 5.2 | [VERIFIED: deploy `prometheus/alert_rules.yml` has 0 positive `host-experiment` selectors and 82 exclusions] | OWNER-DECISION | — | juniper-deploy | S | HYGIENE |
-| P6-21 | Owner picks the title extraction rule. Any repair of the 91 artifacts is gated on `scan --check`. | tail re-probe §5; consolidated handoff §D | [NOT RE-PROBED — repo script]. Corpus and scanner unchanged since 10-03 [VERIFIED git log] | OWNER-DECISION | — | juniper-ml | M | DATA-INTEGRITY |
+| P6-21 | The Overtoad picks the title extraction rule. Any repair of the 91 artifacts is gated on `scan --check`. | tail re-probe §5; consolidated handoff §D | [NOT RE-PROBED — repo script]. Corpus and scanner unchanged since 10-03 [VERIFIED git log] | OWNER-DECISION | — | juniper-ml | M | DATA-INTEGRITY |
 | P6-22 | Scope the `JR-ML-OBS-003` Detail-selection defect. | tail re-probe §5 | [VERIFIED: `id_assignments.yaml:459-463`, status `designed`, priority P0]. No entry point in the sources | OWNER-DECISION | — | juniper-ml | S (scoping) | DATA-INTEGRITY |
 | P6-23 | R-1's second clause: cascor must not report `succeeded` when per-candidate allocation failures leave zero installable candidates. | tail re-probe §4 | [NOT RE-PROBED] | STARTABLE (no ruling recorded as needed) | — | juniper-cascor | M | DATA-INTEGRITY |
 | P6-24 | F-P4-7: why the noise-free spiral is harder. | tail re-probe §4 | Open, no entry point | OWNER-DECISION | — | cascor / ml | S (scoping) | RESEARCH |
 | P6-25 | E-C noise rows 0.10 / 0.20 at cap 128 (untested). | tail re-probe §4 | Open, minor | OWNER-DECISION | host time | juniper-ml | S | RESEARCH |
 | P6-26 | W-12 `csv_import` corpus (un-parked by Q-7; scope widened). | phasing note §2 row C | Open; Q-7 itself is closed (§5 item 5) | OWNER-DECISION | — | cascor / recurrence | M | RESEARCH |
 | P6-27 | G-16 refusal half: add a fixture that withholds an optional dependency. | tail re-probe §0.1 | Untestable in JuniperData [NOT RE-PROBED] | STARTABLE | — | juniper-data | S | HYGIENE |
-| P6-28 | Record whether the owner's rider on the withdrawn 0.5% threshold is honoured or retired. | 09-07 handoff §8 | Recorded nowhere | OWNER-DECISION | — | juniper-ml | S | HYGIENE |
+| P6-28 | Record whether the Overtoad's rider on the withdrawn 0.5% threshold is honoured or retired. | 09-07 handoff §8 | Recorded nowhere | OWNER-DECISION | — | juniper-ml | S | HYGIENE |
 | P6-29 | Optional: test why `thread16` first diverges at candidate phase 20. | D1 debt note §4 | Hypothesis untested | STARTABLE (structural) | — | juniper-ml | M | RESEARCH |
 | P6-30 | Remove the converged worktrees `reflective-mixing-pearl` and `idempotent-wibbling-dongarra`, plus `lively-marinating-truffle` and `gentle-kindling-pascal`, after a cleanliness check. | item 7; Git state | [VERIFIED: all 4 registered; HEADs `f8e04b11`, `514b6c24`, `d721fc78` and `d594a9d3` are ancestors of `cf711cf4`; cleanliness not probed] | OWNER-ACTION | — | juniper-ml | S | HYGIENE |
 | P6-31 | Ship the BLAS-2 default with its deployment note in the next cascor release. | consolidated handoff, P4 dependency | [VERIFIED: cascor CHANGELOG `[Unreleased]` already carries the entry and a "Deployment note"; latest release v0.11.0 (GitHub 09-09, PyPI 09-10); deploy `docker-compose.yml` and `.env.example` set 0 BLAS vars] | OWNER-ACTION (release cut) | P4 item 5 | juniper-cascor | S | USER-FACING |
 | P6-32 | Revisit the re-spec §1 axis-2 ceiling once juniper-data#432 is fixed. | consolidated handoff deps | [VERIFIED: #432 OPEN, 0 comments, no labels, updated 09-23] | BLOCKED-ON data#432 | P6-33 | juniper-ml | S | HYGIENE |
 | P6-33 | Assign juniper-data#432 an `APD-DATA-*` id (register lane). | deps; 09-24 handoff item 7 | Unassigned, and P3's handoff never mentions #432 [VERIFIED grep] | STARTABLE (P3's session) | — | juniper-ml (register) | S | HYGIENE |
-| P6-34 | Non-perf: owner rules which closed-arc entries `MEMORY.md` retires. First fix the gates that do not read hook text. | structure-screen handoff §7 | [CHANGED SINCE HANDOFF: 25,189 B, was 25,125 on 10-03] | OWNER-DECISION | all paths | auto-memory | S | HYGIENE |
+| P6-34 | Non-perf: Overtoad rules which closed-arc entries `MEMORY.md` retires. First fix the gates that do not read hook text. | structure-screen handoff §7 | [CHANGED SINCE HANDOFF: 25,189 B, was 25,125 on 10-03] | OWNER-DECISION | all paths | auto-memory | S | HYGIENE |
 | P6-35 | Non-perf: reword the malformed-pyproject reason in `env_floor_drift_check.py`. | structure-screen handoff §7 | [VERIFIED: `:384` unchanged] | STARTABLE | ALSO P10 | juniper-ml | S | HYGIENE |
 | P6-36 | Make `register_status_crosscheck.py` able to catch §2 count drift. | structure-screen handoff §7 | [VERIFIED: keyed on `**FIXED`; unchanged since `b0e496dc` (09-05)] | STARTABLE | ALSO P3 | juniper-ml | S | HYGIENE |
 | P6-37 | Fix the requirements plan's stale "thin indexes" text (ml#1462 made those views full projections). | tail re-probe §0.1 ("plan §97") | [VERIFIED: still present, now at `…REQUIREMENTS-IDENTIFICATION-PLAN.md:99`] | STARTABLE | — | juniper-ml | S | HYGIENE |
@@ -78,7 +78,7 @@ measured_at: 2026-10-04T20:53:43Z – 21:02:47Z (all probes). juniper-ml `origin
 
 "P5-3", "P5-4" and "P7-P2.1" are P5 items 3 and 4 and P7 item P2.1.
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options, and the source's recommendation | Blocks | Source |
 |---|---|---|---|---|
@@ -188,12 +188,12 @@ Untraceable:
 
 ## 7. Path assessment
 
-**Urgency** is low to moderate. Nothing here is safety-critical. The data-integrity rows (APD-ML-002, -004, -005) are long-standing silent losses and are owner-gated.
+**Urgency** is low to moderate. Nothing here is safety-critical. The data-integrity rows (APD-ML-002, -004, -005) are long-standing silent losses and are Overtoad-gated.
 
 **Leverage:**
 
 - P6-01 is the only startable item that unblocks another one, axis 1, which is the last unbuilt PF-2 axis. It needs no host time and no release.
-- The owner menu (P6-06) unblocks five fixes and settles how they sequence against P5 item 3.
+- The Overtoad menu (P6-06) unblocks five fixes and settles how they sequence against P5 item 3.
 - PF-3 is purely host-bound.
 
 **Cost:**
@@ -205,7 +205,7 @@ Untraceable:
 **Recommended next actions, in order:**
 
 1. **P6-01.** Open the cascor PR for the additive field. Check the golden `metrics_post_train.json`, the canopy tiles, and the history count.
-2. **P6-05, then P6-04, P6-06 and P6-13 in one owner sitting.** Record the recount first. Then put the D6 counts, the APD-ML menu (with OD-3 and the ordering against P5 item 3) and the axis-3 menu.
+2. **P6-05, then P6-04, P6-06 and P6-13 in one Overtoad sitting.** Record the recount first. Then put the D6 counts, the APD-ML menu (with OD-3 and the ordering against P5 item 3) and the axis-3 menu.
 3. **One host-time schedule** serializing PF-3 (P6-03), P6-02, P5's V-3 and P7's P2.1 A/B. PF-3 still waits for the ruled quiet window.
 
 ## 8. What this report cannot support

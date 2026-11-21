@@ -45,7 +45,7 @@ All three PRs are open, none is merged or armed, and each has green required che
 ## Deviations, undone items and observations
 - **`surrogatepass` instead of the brief's `surrogateescape`.** `surrogateescape` raises on `"\ud800"`, which a JSON-decoded key list can carry. It also maps `"\xe9"` and `"\udcc3\udca9"` to the same bytes. `surrogatepass` is total and injective, so a key matches exactly when the strings are equal.
 - **Not changed anywhere:** the root juniper-ml `CHANGELOG.md`, every `docs/REFERENCE.md`, and the defect register. So there are no sections or line ranges to pass on. For the root CHANGELOG, the precedent is #993, #1082, #1300 and #1974, which put sub-package fixes only in the sub-package CHANGELOG.
-- **Owner steps still needed, since no Release or tag was cut:**
+- **The Overtoad steps still needed, since no Release or tag was cut:**
   - The Sentry half reaches data, canopy and cascor's service path only after an observability release plus raising their `juniper-observability>=0.4.0` floors.
   - The service-core half reaches recurrence only after a service-core release.
 - **Not added:** a drift-gate guard for the bytes compare, because that section belongs to the register session.

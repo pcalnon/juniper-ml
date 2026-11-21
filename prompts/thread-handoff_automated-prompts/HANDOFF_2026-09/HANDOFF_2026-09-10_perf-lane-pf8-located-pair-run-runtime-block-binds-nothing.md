@@ -32,7 +32,7 @@ and advanced the micro-cut half of its item 3: the occupancy probe ran (twice), 
 the probe landed inside the band, and micro reference `0003` was cut at the best condition the arc
 has seen — at ambient, not on a quiet host; item 3's PF-3 half is now BLOCKED for a new reason.
 `juniper-ml#1877` is **MERGED** and the worktree is clean; this handoff is the only thing left to
-land. What remains is **five owner decisions** (one of them, item 4.2's hazard, itself now
+land. What remains is **five Overtoad decisions** (one of them, item 4.2's hazard, itself now
 optional), one host-bound item, two optional builds, and one standing rule (item 2.3). The
 probe note's consensus validation (its §9) overturned or narrowed three of the session's
 first-draft claims; every shipped surface, `CHANGELOG.md` included, carries the corrected wording —
@@ -40,7 +40,7 @@ read §3 below before quoting any figure.
 
 ### Work list, in order
 
-1. **Five owner decisions are open — put them to the owner in the session's closing report (no
+1. **Five Overtoad decisions are open — put them to the Overtoad in the session's closing report (no
    issues, no PRs for them); do NOT take them yourself:**
    - **NEW — the `runtime:` block** (probe note §4, §6 item 4). `runtime.blas_threads` /
      `runtime.num_processes` / `runtime.eval_metrics_enabled`, wherever an experiment YAML carries
@@ -48,7 +48,7 @@ read §3 below before quoting any figure.
      by the driver, accepted by the cascor service, and **read by nothing on either path**. With
      the process env unpinned the listener's *initial* output pass burns ~11 cores and runs ~8×
      slower than with `OMP/MKL/OPENBLAS_NUM_THREADS=2 CASCOR_NUM_PROCESSES=4` exported (the other
-     91% of steps differ by +9.3 to +10.4%; `step_count` identical). Counter-evidence the owner
+     91% of steps differ by +9.3 to +10.4%; `step_count` identical). Counter-evidence the Overtoad
      must see (probe note §4.3, last bullet): cascor#531 measured a BLAS cap *slowing* the
      candidate phase 1.52× and moving its epoch count — only the output phase is measured here,
      so the decision needs both phases measured under the same budget. Implement (launcher
@@ -78,7 +78,7 @@ read §3 below before quoting any figure.
    best-conditioned cut; it does **not** supersede under the quiet-host rule of that same cascor
    reference. `--benchmark-compare=0003`, never `--benchmark-compare-fail`. PF-3 is no longer
    merely host-bound — see the block above.
-3. **Optional, S, if the owner rules "implement"**: `util/experiment_stack.bash` exports
+3. **Optional, S, if the Overtoad rules "implement"**: `util/experiment_stack.bash` exports
    `JUNIPER_CASCOR_BLAS_THREADS` (or the three BLAS variables) from `runtime.blas_threads` and
    `CASCOR_NUM_PROCESSES` from `runtime.num_processes` at cascor bring-up; the driver's
    `environment.thread_env` capture already records the result; a **new baseline** must be cut
@@ -93,7 +93,7 @@ read §3 below before quoting any figure.
 ### Do NOT do these
 
 - Do not wire `runtime.blas_threads` into the launcher, cascor, or the driver as a "fix" — it is
-  an owner decision, and it changes the speed regime of every service-path figure recorded.
+  an Overtoad decision, and it changes the speed regime of every service-path figure recorded.
 - Do not launch PF-3 (`pf3-cascor-pool-scaling.yaml`) as written — its second axis is a no-op.
 - Do not quote the +11.3% as a cost of two **unpinned** runs, or as more than three pairs on one
   day. Two unpinned runs were not measured; the phase structure predicts two start-aligned
@@ -211,7 +211,7 @@ python3 util/ad-hoc/2026-09-10_pf8_occupancy_analyse.py --parallel ~/.local/stat
     --control ~/.local/state/juniper-experiments/suites/pf8-occupancy-probe-20260910T094028Z ~/.local/state/juniper-experiments/suites/pf8-occupancy-probe-20260910T094842Z \
     --trace ~/.local/state/juniper-experiments/suites/pf8-occupancy-trace-20260910.tsv | tail -8   # ratio 1.1125, +11.3%, COMPARABLE
 S=~/.local/state/juniper-experiments/baselines/cascor-micro/Linux-CPython-3.13-64bit; python3 util/ad-hoc/2026-09-10_micro_reference_compare.py --base $S/0002_*.json --other $S/0003_*.json | head -5   # median 0.9945, 7 outside
-grep -n "runtime.num_processes" util/experiments/suites/perf/pf3-cascor-pool-scaling.yaml   # 3 hits: the header comments at :3 and :7 and the axis at :34, still there until the owner rules
+grep -n "runtime.num_processes" util/experiments/suites/perf/pf3-cascor-pool-scaling.yaml   # 3 hits: the header comments at :3 and :7 and the axis at :34, still there until the Overtoad rules
 ls ~/.local/state/juniper-experiments/baselines/cascor-micro/Linux-CPython-3.13-64bit/   # 0001_*, 0002_*, 0003_a51b7c58*
 ```
 
@@ -243,7 +243,7 @@ REFUSE the pinned one, the baseline or the reader drifted — stop.
 ## 6. Traps this session paid for
 
 1. **`@dataclass` in a path-loaded module dies at import** unless the module is registered in
-   `sys.modules` before `exec_module` — `dataclasses` resolves the owner module through it and
+   `sys.modules` before `exec_module` — `dataclasses` resolves the Overtoad module through it and
    gets `None`. Every `_load()` helper in `tests/` that omits the line works only because its
    script has no dataclass.
 2. **The worktree classifier refuses `git -C <sibling>` inside an `&&` list but accepts it
@@ -283,7 +283,7 @@ REFUSE the pinned one, the baseline or the reader drifted — stop.
 The predecessor's §7, and §8 of
 `HANDOFF_2026-09-07_perf-lane-wave0-closed-and-three-decisions-ruled.md` (CLI-experimentation arc
 tail), are untouched and still open; the backup, canopy E2E, defect register, P5, soak, partition
-and service-core arcs have other owners. The probe note's §7 lists eight residual uncertainties
+and service-core arcs have other Overtoads. The probe note's §7 lists eight residual uncertainties
 (the window-definition ~8%, the between-suite 34%, the ≥ 60 s cell departure, n = 3 on one day
 among them) — read it before quoting any figure from §3 into a new document.
 

@@ -9,7 +9,7 @@
 
 ## Handoff goal
 
-Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.5.1). **P1's code is complete.** What remains: finish W1.11 once juniper-data 0.17.0 is on PyPI; the 2c snapshots-dir reconciliation if canopy Lane B lands; then, once the owner rules or releases, P2 onward. The owner rulings and releases are the owner's.
+Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.5.1). **P1's code is complete.** What remains: finish W1.11 once juniper-data 0.17.0 is on PyPI; the 2c snapshots-dir reconciliation if canopy Lane B lands; then, once the Overtoad rules or releases, P2 onward. The Overtoad rulings and releases are the Overtoad's.
 
 ### Completed this session (all merged 2026-10-08 unless stated)
 
@@ -38,13 +38,13 @@ Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_
 
 ### Remaining work (in order)
 
-1. **W1.11 finish (after the owner approves the PyPI publish).**
+1. **W1.11 finish (after the Overtoad approves the PyPI publish).**
    - The juniper-data `v0.17.0` Release was cut 2026-10-08 23:48Z and its GHCR image published. PyPI publish run `37861468866` awaits approval; PyPI served 0.16.0 at handoff.
    - Once PyPI serves 0.17.0, verify it: PyPI JSON plus a wheel probe per `util/ad-hoc/2026-09-10_verify_published_wheels.py` showing `equities_seq` `regression` / 6.0.0. Also check GHCR `tags/list`.
    - Then for each draft: record the image checks in #243's CHANGELOG, run the resolver pre-flight for #2190, and run #245's smoke with `--published`.
    - Mark the three PRs ready and merge with `safe_merge.py`, **only with a merge approval granted in that session**.
    - Update the plan's W1.11 row and the M1 note.
-2. **W1.13 release train** (owner): recurrence 0.6.0, model 0.4.0, data-client 0.6.0, canopy 0.9.0 → remaining pins → re-run the smoke. Until recurrence 0.6.0 ships #192, neither canopy nor the driver can attribute an operation against the published 0.5.0.
+2. **W1.13 release train** (Overtoad): recurrence 0.6.0, model 0.4.0, data-client 0.6.0, canopy 0.9.0 → remaining pins → re-run the smoke. Until recurrence 0.6.0 ships #192, neither canopy nor the driver can attribute an operation against the published 0.5.0.
 3. **2c snapshots-dir clash**: canopy Lane B "2c" (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`) has not landed. `util/experiment_stack.bash` uses W1.10's `${RUN_DIR}/snapshots`, and `isolated_stack.bash` sets none. Whichever lands second reconciles.
 4. **Follow-ups the agents flagged** (not yet filed):
    - The canopy restart modal still offers `n_samples` / `noise` for sequence datasets.
@@ -53,7 +53,7 @@ Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_
    - The suite's `per_run_timeout_seconds` isn't checked to cover dataset + wall budgets.
    - `save_model` via `POST /v1/model/snapshots` with `expect_operation_id`.
    - Gateway 502/504 aren't followed by canopy.
-5. **Owner items** (unchanged; keep "Applied pending ruling" current):
+5. **The Overtoad items** (unchanged; keep "Applied pending ruling" current):
    - Dates; confirm R1–R8 (R2, R3, R7 applied as recommended; R8 as its alternative); R5.
    - W5.8 (B) vs W5.11; W5.9 / W5.10.
    - F-P8 Major + the W5.7 guard; re-rate F-P4's severity.
@@ -66,7 +66,7 @@ Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_
 - **Mechanics that held**:
   - Five task-executors ran in parallel on disjoint files, in worktrees cut from `origin/main`.
   - `util/open_signed_pr.py`; `util/safe_merge.py --execute` (read the `MERGED` line); `gh api -X PUT …/update-branch` for a BEHIND PR.
-  - The owner's armed auto-merge net sometimes wins the race, which is fine.
+  - The Overtoad's armed auto-merge net sometimes wins the race, which is fine.
 - **Worktree hook refusals**: loops, variables around git/gh, `git ... && python3 util/open_signed_pr.py` compounds. Run git and gh as single plain commands.
 - **Host trap**: the local image tags `juniper-data:0.16.0`, `juniper-recurrence:0.5.0`, `juniper-canopy:0.8.1` and `juniper-cascor:0.11.0` are dev builds; run published images by GHCR digest. The image `juniper-data-w111:main-462da218` was left for re-running the slip-rule smoke.
 - **A concurrent canopy session** (worktree `…f055-f058-f068-request-ack-pacer…`) was editing `dashboard_manager.py`; do not touch it.

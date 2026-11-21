@@ -6,7 +6,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 ---
 
 ## Verdict
-SAFE AFTER FIXES. Most checkable claims hold, but A6 and A9 together would lead a successor to delete the last references to two ledger-cited commits before the owner has made the call that A6 reserves to them.
+SAFE AFTER FIXES. Most checkable claims hold, but A6 and A9 together would lead a successor to delete the last references to two ledger-cited commits before the Overtoad has made the call that A6 reserves to them.
 
 ## Findings
 
@@ -100,7 +100,7 @@ These held. Evidence is `gh`, git, ps/ss or file reads.
 - **Freeze evidence:** 193 OK, 103/103, 33/37, 76 tests, 360 passed / 42 skipped, 111/111, 46/46, and 35/40 with 5 broken.
 - **Worktree state:** 2a has 4 files staged. 2b has 8 staged, plus `values.yaml` modified; that file equals `d589dd95`'s and differs from `main`'s.
 - **Merges:** recurrence `db41e77e` (#186). Deploy #230–#232 with the stated SHAs and times. Canopy has exactly six commits since the freeze. #676, #677 and #678 predate it. #680 is X11, #681 is F1/F2, #682 is X8.
-- **A6's owner-side actions:** all times hold. The update-branches were at 23:16:06Z and 23:17:08Z. The #2045 disarm and re-arm were at 23:48:47Z and 23:48:52Z. cascor-worker#196 merged at 01:21:37Z. #676's re-run started at 01:22:32Z. The draft/ready pair was at 03:04:45Z and 03:05:02Z. #676's description was edited at 10:54:54Z.
+- **A6's Overtoad-side actions:** all times hold. The update-branches were at 23:16:06Z and 23:17:08Z. The #2045 disarm and re-arm were at 23:48:47Z and 23:48:52Z. cascor-worker#196 merged at 01:21:37Z. #676's re-run started at 01:22:32Z. The draft/ready pair was at 03:04:45Z and 03:05:02Z. #676's description was edited at 10:54:54Z.
 - **A2 citations at `7ab994e5`:** `:8404`, `:8410`, `:8442-8444`, `:8359`, `:8381`, `main.py:517`, `security.py:350` and test `:41-42` all match.
 - **Other A-lane citations at `7ab994e5`:** the `limits.py` sentence and cascor#690 (OPEN, `78e99414`, removes #687's sentence) match. So do `:467-472`, `test_poll_gating:312-313`, `app_config.yaml:170,181`, `hdf5_snapshots_panel:533`, `test_p2_wave_batch_a:179-190`, the `_GATED_POLL_INTERVALS` comment, plan §6.3 `:357-360`, and the ledger's items 0–17.
 - **Wave 3 and X10:** the five snapshot sites, `_require_service_adapter` gating seven routes, `.h5`/`.hdf5`, `initialize()` returning True, and `selection_is_live` all match. So do §8 and §11.4, and § B's claim terms and date.
@@ -117,7 +117,7 @@ These held. Evidence is `gh`, git, ps/ss or file reads.
 ## Could not check
 - ListAgents names (`defect reg [042116]`). I have no tool for them.
 - PyPI file times. Only GitHub was allowed; the Actions job times are consistent with them.
-- The owner's answer, checked only through the ledger. I did not read session transcripts, to avoid PII.
+- The Overtoad's answer, checked only through the ledger. I did not read session transcripts, to avoid PII.
 - The 26 worktrees and 20 branches of W5; those are past actions.
 - C's "superseded drafts" on content. I checked paths only: one sampled file is identical to `main` and one differs. The guard refused a scripted compare, and the content probe is not on my allowlist because it runs `git worktree list`.
 - Lane B's unittest, census and `check_open_pinned_pr` outputs, which rule 5 barred me from running.

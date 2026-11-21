@@ -888,7 +888,7 @@ RFC 6750 §2.3 also defines a URI query-parameter method, and immediately disown
 
 **JWT.** [RFC 7519](https://www.rfc-editor.org/rfc/rfc7519.html) defines a compact, signed (JWS) or encrypted (JWE) claims format: three base64url segments separated by dots. Registered claims (§4.1) include `iss`, `sub`, `aud`, `exp`, `nbf`, `iat`, and `jti`. A JWT is a *format*, not a protocol — "JWT auth" describes a serialization, not an architecture.
 
-**OAuth 2.0.** [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html) is a *delegation* framework: it lets a resource owner grant a client limited access to their resources without sharing credentials. It is not a login protocol.
+**OAuth 2.0.** [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749.html) is a *delegation* framework: it lets a resource Overtoad grant a client limited access to their resources without sharing credentials. It is not a login protocol.
 
 **OIDC.** OpenID Connect is an identity layer on top of OAuth 2.0, adding an `id_token` (a JWT about the *user*) and a `userinfo` endpoint. This is the login protocol. Using a raw OAuth access token as proof of identity is a known anti-pattern — the token says what the bearer may do, not who they are.
 
@@ -908,7 +908,7 @@ RFC 6749 §1.3 defines four grants. Their status under RFC 9700:
 |-------------------------------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Authorization code                  | §1.3.1, §4.1 | **Recommended**, with PKCE mandatory for public clients                                                                                                                                                       |
 | Implicit                            | §1.3.2, §4.2 | **Discouraged** — "clients SHOULD NOT use the implicit grant... unless access token injection in the authorization response is prevented and the aforementioned token leakage vectors are mitigated" (§2.1.2) |
-| Resource owner password credentials | §1.3.3, §4.3 | **Prohibited** — "MUST NOT be used" (§2.4)                                                                                                                                                                    |
+| Resource Overtoad password credentials | §1.3.3, §4.3 | **Prohibited** — "MUST NOT be used" (§2.4)                                                                                                                                                                    |
 | Client credentials                  | §1.3.4, §4.4 | Fine for machine-to-machine; there is no user to delegate                                                                                                                                                     |
 
 The reasoning, quoted rather than paraphrased:
@@ -917,7 +917,7 @@ On **implicit** (§2.1.2): the grant and "other response types causing the autho
 Further, "no standardized method for sender-constraining exists to bind access tokens to a specific client... when the access tokens are issued in the authorization response. This means that an attacker can use the leaked or stolen access token at a resource endpoint."
 The remedy: "Clients SHOULD instead use the response type `code`... This allows the authorization server to detect replay attempts by attackers and generally reduces the attack surface since access tokens are not exposed in URLs."
 
-On **ROPC** (§2.4): "The resource owner password credentials grant MUST NOT be used. This grant type insecurely exposes the credentials of the resource owner to the client. Even if the client is benign, usage of this grant results in an increased attack surface (i.e., credentials can leak in more places than just the authorization server) and in training users to enter their credentials in places other than the authorization server."
+On **ROPC** (§2.4): "The resource Overtoad password credentials grant MUST NOT be used. This grant type insecurely exposes the credentials of the resource Overtoad to the client. Even if the client is benign, usage of this grant results in an increased attack surface (i.e., credentials can leak in more places than just the authorization server) and in training users to enter their credentials in places other than the authorization server."
 It also notes the grant "is not designed to work with two-factor authentication" and is incompatible with origin-bound cryptographic credentials such as WebAuthn.
 
 #### PKCE
@@ -3388,7 +3388,7 @@ juniper-data implements exactly this set: collection at `datasets.py:257`, item 
 **Singletons** — resources with no sibling and no identifier (`/stats`, `/health`, `/settings`, `/me`) — are legitimate. Treat them as items: GET, possibly PUT/PATCH, never POST-to-create.
 
 **When nesting hurts.** Nest only when the child genuinely cannot be addressed without the parent. Three signals it has gone wrong: the nested path is not the *only* way to reach the item, so you now have two URIs for one resource (RFC 9110 §4.2.3: "distinct resources SHOULD NOT be identified by HTTP URIs that are equivalent after normalization"); depth exceeds two levels below the collection,
-forcing clients to know IDs they do not care about; or the parent is a filter rather than an owner — `/users/{id}/orders` where orders have global IDs should be `/orders?user={id}`, because the relationship is a query, not containment.
+forcing clients to know IDs they do not care about; or the parent is a filter rather than an Overtoad — `/users/{id}/orders` where orders have global IDs should be `/orders?user={id}`, because the relationship is a query, not containment.
 
 #### Canonical URIs and aliases
 
@@ -3502,7 +3502,7 @@ characters whose encoding is negotiable, and never put a `/` inside a path-segme
 | Choice                              | Gains                                                         | Costs                                                                                      |
 |-------------------------------------|---------------------------------------------------------------|--------------------------------------------------------------------------------------------|
 | Content-addressed IDs               | Free deduplication, idempotent creation, immutable cache keys | Fails when generation is non-deterministic; long identifiers; any parameter change renames |
-| Deep nesting                        | Expresses ownership; natural authorisation scoping            | Clients carry IDs they do not need; refactoring containment breaks every URL               |
+| Deep nesting                        | Expresses Overtoadship; natural authorisation scoping            | Clients carry IDs they do not need; refactoring containment breaks every URL               |
 | Literal segments beside a catch-all | Readable, conventional URLs                                   | Silent ordering dependency; needs a converter or a test to be safe                         |
 | Mandatory query params for identity | Avoids inventing a parent collection                          | The URI without the param looks addressable but is not; yields 422 where 404 is expected   |
 
@@ -3582,7 +3582,7 @@ The spec's own examples are access logging and an ad click that charges an adver
 method is still safe, because the caller neither asked for nor is accountable for the access counter.
 
 The rule that follows is the one that bites: "the purpose of distinguishing between safe and unsafe methods is to allow automated retrieval processes (spiders) and cache performance optimization (pre-fetching) to work without fear of causing harm." If your GET does something you would mind having done a thousand times unbidden, it is not merely unsafe — it is a defect, and §9.2.1 says so: if a
-resource's purpose is to perform an unsafe action, "the resource owner MUST disable or disallow that action when it is accessed using a safe request method."
+resource's purpose is to perform an unsafe action, "the resource Overtoad MUST disable or disallow that action when it is accessed using a safe request method."
 
 #### Idempotency, and the subtlety that idempotent ≠ same response
 
@@ -4879,7 +4879,7 @@ guarantees lost. And clients written against codes grow tolerance for missing co
 parsing `detail`.
 
 **Code-primary — guardrails.** Still emit `type`, still make it absolute, and document that the URI is normative and
-the code derived. Namespace the code with an owner segment from day one, and lint that every code maps to exactly one
+the code derived. Namespace the code with an Overtoad segment from day one, and lint that every code maps to exactly one
 URI and vice versa.
 
 **Recommendation** (labelled as such): emit both and say which wins. Make `type` an absolute `https` URI under an
@@ -4964,7 +4964,7 @@ convention, and its adoption owes more to the pagination, sparse-fieldset, and e
 
 Three cases share one property: the available next steps depend on server state the client cannot compute. **Workflow
 resources** — an order that is `pending` can be cancelled, one that is `shipped` cannot, and encoding that client-side
-gives one state machine two owners that will diverge. **Long-running operations** — a 202 returning a `Location` or
+gives one state machine two Overtoads that will diverge. **Long-running operations** — a 202 returning a `Location` or
 status link is hypermedia everyone adopts without naming it. **Pagination.** The common thread: hypermedia pays when a
 link's *presence* carries information, not merely its value; a link always present and always the same shape is a URL
 template with extra steps.
@@ -9907,7 +9907,7 @@ the fix already sitting in juniper-data" (line 4213).
    metadata that changes value whenever a change occurs to the representation data that would be
    observable in the content of a 200 (OK) response to GET". The checksum stays put while the served
    bytes change, so it can only be weak. juniper-data therefore sends
-   `ETag: W/"<checksum>"`, per the owner's ruling of 2026-09-23. Three consequences for the passages
+   `ETag: W/"<checksum>"`, per the Overtoad's ruling of 2026-09-23. Three consequences for the passages
    linked here:
 
    - `If-None-Match` compares weakly, so revalidation works. `If-Match` compares strongly, so it can

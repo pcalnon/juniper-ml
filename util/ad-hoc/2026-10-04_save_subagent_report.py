@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author:      Paul Calnon
 Created:     2026-10-04
 Status:      ad-hoc -- validation record
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-09-22_archive_consensus_reports.py (whose extraction and screen this reuses)
              util/ad-hoc/2026-10-04_archive_phase_b_round_reports.py (which assembles the saved files)
 

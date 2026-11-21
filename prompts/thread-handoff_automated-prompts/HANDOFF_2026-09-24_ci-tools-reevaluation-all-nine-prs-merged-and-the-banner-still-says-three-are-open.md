@@ -2,17 +2,17 @@
 
 > **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_ci-tools-reevaluation-consolidated.md` (consolidated handoff for the ci-tools re-evaluation). History only; do not act on this file's items.
 
-**Session**: "ci tools", the re-evaluation of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`
-**Predecessor**: `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`. Its status banner is this arc's main artifact.
+**Session**: "ci tools", the re-evaluation of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`
+**Predecessor**: `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`. Its status banner is this arc's main artifact.
 **Container-registry arc tip**: `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`
-**Validation**: **none for this handoff**, by the owner's instruction. The banner it describes passed five consensus rounds. The record is § "Validation record for this banner" of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`.
+**Validation**: **none for this handoff**, by the Overtoad's instruction. The banner it describes passed five consensus rounds. The record is § "Validation record for this banner" of `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`.
 
 ---
 
 ## Handoff goal
 
 Continue the ci-tools re-evaluation arc. First, make the post-merge edit to the status banner of
-`HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`. Then pick up a
+`HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`. Then pick up a
 startable item.
 
 ### Completed (SHAs are merge commits)
@@ -20,7 +20,7 @@ startable item.
 - **juniper-ml#2020** merged as `b6580529` on 2026-09-23, blob-verified (25 files, 0 differ). It
   added:
   - the status banner and its validation record to
-    `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`;
+    `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`;
   - a Status line to
     `HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md`;
   - `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`, which censuses every
@@ -42,7 +42,7 @@ startable item.
   - juniper-cascor#673, `e7c24896`, merged 2026-09-23 13:54Z. **Not blob-verified yet.**
   - Pins: juniper-deploy#227, `a725f69b` (data `0.15.0`), and juniper-deploy#229, `d589dd95`
     (worker `0.6.1`). This session merged #229 through `util/safe_merge.py`, blob-verified. The
-    owner's sweeper merged the rest.
+    Overtoad's sweeper merged the rest.
 - **Issues filed**:
   - juniper-canopy#661: the X7 flake;
   - juniper-recurrence#182: the 6f starlette watch;
@@ -54,7 +54,7 @@ startable item.
     ml#2036 moved the first of these from `:3023`.
 - **Memory** (outside git):
   - created `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`. Another session
-    has since rewritten it with the owner's ruling;
+    has since rewritten it with the Overtoad's ruling;
   - updated `project_container_registry_rollout_2026-09-08.md` (the arc_agi, X7 and census bullets);
   - updated `reference_canopy_x7_timing_tests_flake_on_ci_runners.md` to point at canopy#661;
   - added one pointer to `MEMORY.md`.
@@ -64,7 +64,7 @@ startable item.
 1. **Blob-verify juniper-cascor#673.** Compare `gh api repos/pcalnon/juniper-cascor/commits/e7c24896`
    against the PR's final head, file by file.
 2. **Make the post-merge edit to the banner** of
-   `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`. The banner
+   `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`. The banner
    dates its state to 2026-09-23 01:50 UTC and still calls three merged PRs open. Change these
    anchors:
    - "In flight when this was written" in the one-minute block: all three merged, with the SHAs
@@ -83,7 +83,7 @@ startable item.
    update-branch, and #2020's last commit postdates round 5. Handoff PRs carry no CHANGELOG entry.
 3. **Optional.** In `project_container_registry_rollout_2026-09-08.md`, change the line "PRs opened:
    … ml#2020" to record the outcomes.
-4. **Startable, not owner-gated.** The banner's § "Where the remaining work lives" lists them:
+4. **Startable, not Overtoad-gated.** The banner's § "Where the remaining work lives" lists them:
    - **Diagnose X7** (canopy#661) before changing any bound.
    - **arc_agi's version bump** (data#427). The allow-list in data's
      `juniper_data/tests/unit/test_val_emission_guards.py` must name arc_agi.
@@ -104,7 +104,7 @@ startable item.
 
 ### Key context
 
-- **The PR sweeper is the owner's.** He ruled on 2026-09-24: "Mine: fix forward". It readies, arms
+- **The PR sweeper is the Overtoad's.** He ruled on 2026-09-24: "Mine: fix forward". It readies, arms
   and merges open PRs as `pcalnon`, with the DEFAULT squash body. Do not fight it. When a PR must be
   validated before it merges, validate the pushed branch before opening the PR. See
   `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`.
@@ -112,7 +112,7 @@ startable item.
   `gh api -X PUT repos/pcalnon/<repo>/pulls/<n>/update-branch`.
 - **Census exit 0** means "none of the shapes it parses", not "clean". Its limits are in its
   docstring. `--ref REPO=REF` and `--local REPO=PATH` simulate a merge.
-- **`MEMORY.md` is at the load limit** of about 25,000 characters. The owner's target is 20 KB, and
+- **`MEMORY.md` is at the load limit** of about 25,000 characters. The Overtoad's target is 20 KB, and
   it overrides the hook's 17.1 KB request (`feedback_memory_index_target_is_20kb.md`). Never strip a
   hook.
 - **The tip's banner is stale on three facts.** The banner of
@@ -137,7 +137,7 @@ gh pr view 673 --repo pcalnon/juniper-cascor --json state,mergeCommit --jq '"\(.
 python3 util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py --self-test   # 103 passed, 0 failed
 python3 util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py      # 42 of 42 mutations killed
 python3 util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py              # expect exit 0 and two passing AMBIGUOUS lines
-grep -n 'In flight when this was written\|: open\.\|, open)\|is open as juniper-deploy#229' prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md
+grep -n 'In flight when this was written\|: open\.\|, open)\|is open as juniper-deploy#229' prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md
 ```
 
 ### Git status
@@ -145,5 +145,5 @@ grep -n 'In flight when this was written\|: open\.\|, open)\|is open as juniper-
 - The worktree is `.claude/worktrees/jolly-wibbling-pearl`, on branch `worktree-jolly-wibbling-pearl`.
   It holds uncommitted copies of ml#2020's files, all merged in `b6580529`. Nothing else in it is
   uncommitted except this handoff, which has its own PR. Removing the worktree still needs the
-  owner's signal.
+  Overtoad's signal.
 - This handoff's PR was opened but not merged by this session.

@@ -11,7 +11,7 @@
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 # Status:        ad-hoc -- one-off
-# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:       juniper-canopy#646, juniper-canopy#650
 #
 # Description:
@@ -23,12 +23,12 @@
 #    four CI lanes install their dependencies -- so main's own pipeline is the confirmation that
 #    matters, not the PR's.
 #
-#    Usage:  bash util/ad-hoc/2026-09-22_wait_for_main_pipeline.bash <owner/repo> <sha> [timeout-s]
+#    Usage:  bash util/ad-hoc/2026-09-22_wait_for_main_pipeline.bash <Overtoad/repo> <sha> [timeout-s]
 #####################################################################################################################################################################################################
 
 set -uo pipefail
 
-REPO="${1:?usage: $0 <owner/repo> <sha> [timeout-s]}"
+REPO="${1:?usage: $0 <Overtoad/repo> <sha> [timeout-s]}"
 SHA="${2:?sha required}"
 TIMEOUT="${3:-2400}"
 

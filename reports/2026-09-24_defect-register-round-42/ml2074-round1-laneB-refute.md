@@ -108,9 +108,9 @@ Line numbers are at the PR head. Quote the phrase to find each one.
 
 **12. LOW: stale counting sentences left in the §2 paragraph this PR rewrote, and nearby.**
 - "Four were FILED BY a fix for the others": `-054` is a fifth.
-- "**Ten of those carry owner rulings taken 2026-09-09** and are actionable": most are now fixed.
+- "**Ten of those carry Overtoad rulings taken 2026-09-09** and are actionable": most are now fixed.
 - §2.2: "The only unauthenticated memory-exhaustion vector in the register…": `APD-ECO-009` is another.
-- The park note on `APD-DATA-047` ("no row… is awaiting an owner decision") lists two ways it is false. It is now false a third way, with eight new rows awaiting rulings.
+- The park note on `APD-DATA-047` ("no row… is awaiting an Overtoad decision") lists two ways it is false. It is now false a third way, with eight new rows awaiting rulings.
 
 **13. LOW: `APD-ML-007` says "a Release body cannot be re-cut".** That is a comment in `ceremony.py:431`, not a GitHub constraint: `gh release edit` can change the notes. The row also predates the cut: v0.16.0 was cut at 08:52Z, 12 minutes after this commit, at `39d1cab`, with 41 bullets and "Breaking changes: YES". Its PyPI publish run is still "waiting".
 
@@ -119,7 +119,7 @@ Line numbers are at the PR head. Quote the phrase to find each one.
 - `docs/REFERENCE.md`, in the entry this PR edited, still says the same, still calls docs-full-check "the only job that clones the siblings" (`release-train.yml` clones them too), and still has no marker-text caveat.
 
 **15. NITs.**
-- `-054`: "Remedy of record" (the owner deferred the remedy), and "change the served bytes" where juniper-data's docstring says "can change".
+- `-054`: "Remedy of record" (the Overtoad deferred the remedy), and "change the served bytes" where juniper-data's docstring says "can change".
 - The new park bullets group three, three and two rows. §1 defines that as a group-level park, while the §4.9 intro promises row-level sentences. There is precedent in ML-002 to -006.
 - A duplicated "(seven since juniper-ml#1974)" parenthetical.
 - `-013`'s Source cell still says "the single write".
@@ -157,7 +157,7 @@ Line numbers are at the PR head. Quote the phrase to find each one.
   - primer `9466` / `9595-9597` / `9599-9601`.
 - The promotion-history paragraph is right, and so is the "ten original copy-drift rows" claim.
 - `APD-ML-008` is faithful to both round-4 reports.
-- All four owner rulings match the transcripts. None is recorded more broadly than given. "0.x may break v1" is recorded more narrowly: only under -017/-032, although the question also covered D-C and D-D.
+- All four Overtoad rulings match the transcripts. None is recorded more broadly than given. "0.x may break v1" is recorded more narrowly: only under -017/-032, although the question also covered D-C and D-D.
 - The 44 tests pass (skipped=3).
 
 ## What this evidence cannot support

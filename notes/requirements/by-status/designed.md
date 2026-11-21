@@ -6,7 +6,7 @@
 
 **By category**: ARCH=33 | OBS=12 | SEC=12 | WS=11 | TRAIN=10 | UI=9 | DEP=6 | TEST=2 | API=1 | TOOL=1
 
-**By owner**: ml=93 | cas=3 | can=1
+**By Overtoad**: ml=93 | cas=3 | can=1
 
 ---
 
@@ -1170,7 +1170,7 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Notes**:
 

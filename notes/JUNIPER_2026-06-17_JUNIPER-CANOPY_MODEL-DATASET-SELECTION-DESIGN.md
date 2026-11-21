@@ -205,12 +205,12 @@ blocking and persistent. canopy#652 pins that distinction in
 `dataset-primary` remains implementable and is not foreclosed; D5's "swappable" property is
 intact. This records which way the switch is set, not that it was welded.
 
-**4. Scope: the restart modal is a recorded exception (owner ruling, 2026-09-22).**
+**4. Scope: the restart modal is a recorded exception (Overtoad ruling, 2026-09-22).**
 canopy#652 changed the **sidebar** gate only. The restart-confirmation modal's opener
 (`open_restart_confirm_modal` in `src/frontend/dashboard_manager.py`) still replaces a stranded,
 non-`⊥` dataset with the first enabled option. It does this when an availability change strands the
 dataset between the gate firing and the modal opening. The question "does model-primary-by-clearing
-bind this site too?" was put to the owner. The ruling is **no: keep the swap in the modal.** The modal
+bind this site too?" was put to the Overtoad. The ruling is **no: keep the swap in the modal.** The modal
 is a confirmation dialog, and it shows the operator the swapped value before anything is re-staged:
 Confirm re-stages exactly what the modal displays, and refuses `⊥`. Its existing rationale, "never
 seed the field with a value its own list disables", therefore stands.

@@ -6,8 +6,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-26
-Status: ad-hoc — one-off (the record PR of the "c9-landed-h6-audited-owner-decides" session)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (the record PR of the "c9-landed-h6-audited-Overtoad-decides" session)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18, §18.1, §18.2, §18.3);
          notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md (§8);
          util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py (what was applied);
@@ -41,7 +41,7 @@ import sys
 PLAN = "notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md"
 HANDOFF_DIR = "prompts/thread-handoff_automated-prompts/"
 PREV_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md"
-THIS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-owner.md"
+THIS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-Overtoad.md"
 APPLY = "util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py"
 EVIDENCE = "util/ad-hoc/2026-10-26_turing_h6_apply_evidence.py"
 BACKUP = "~/.local/state/juniper/quarantine/2026-10-26-vscode-mcp/"
@@ -50,15 +50,15 @@ BACKUP = "~/.local/state/juniper/quarantine/2026-10-26-vscode-mcp/"
 
 VERSION_OLD = "- **Version**: 1.4.8 — v1.4.7 plus"
 VERSION_NEW = (
-    "- **Version**: 1.4.9 — v1.4.8 plus H6's application: the owner resumed H6, and the agent applied the H6 audit's §8 to "
-    "VS Code's user `mcp.json` and `settings.json` on turing, for every synced host, leaving the token's rotation to the owner "
+    "- **Version**: 1.4.9 — v1.4.8 plus H6's application: the Overtoad resumed H6, and the agent applied the H6 audit's §8 to "
+    "VS Code's user `mcp.json` and `settings.json` on turing, for every synced host, leaving the token's rotation to the Overtoad "
     "(§18's opening; §18.1; §18.2's H6 row; erratum E-H6-APPLY in §18.3; 2026-10-26). v1.4.8 was v1.4.7 plus"
 )
 
 INTRO_OLD = f"its handoff, `{PREV_HANDOFF}`, is now the arc's main handoff."
 INTRO_NEW = (
     f"its handoff is `{PREV_HANDOFF}`. Two sessions continued from it: \"cached-enchanting-cosmos-84\" took H3, and "
-    "\"c9-landed-h6-audited-owner-decides\" (v1.4.9) applied H6 once the owner resumed it. The latter's handoff, "
+    "\"c9-landed-h6-audited-Overtoad-decides\" (v1.4.9) applied H6 once the Overtoad resumed it. The latter's handoff, "
     f"`{THIS_HANDOFF}`, is now the arc's main handoff."
 )
 
@@ -68,30 +68,30 @@ RULING_OLD = (
     "E-H4-WHEEL's wheel build.\n"
 )
 RULING_NEW = RULING_OLD + (
-    "- **H6 resumed (2026-10-26).** The owner's session prompt listed H6's decisions to complete: the scope first; VS Code's "
+    "- **H6 resumed (2026-10-26).** The Overtoad's session prompt listed H6's decisions to complete: the scope first; VS Code's "
     "Serena entry removed before E-H4-WHEEL's wheel build; the Hugging Face token rotated; markitdown removed and Context7 kept; "
     "autostart and the gallery off; and the 20 unused inputs deleted. The scope stood as ruled on 2026-10-25: every synced host. "
-    "The agent applied everything but the rotation, which needs the owner at huggingface.co. The prompt named no form for the "
+    "The agent applied everything but the rotation, which needs the Overtoad at huggingface.co. The prompt named no form for the "
     "Hugging Face entry, so the agent applied the audit's recommended token-less one (§8.4; E-H6-APPLY).\n"
 )
 
-H6_CELL_OLD = "| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions deferred** (owner, 2026-10-25) |"
+H6_CELL_OLD = "| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions deferred** (Overtoad, 2026-10-25) |"
 H6_CELL_NEW = "| H6 | **done: applied** (AGENT, 2026-10-26); audited (the `auditor` agent); **token rotation and the first sync OWNER** |"
 
 H6_TAIL_OLD = (
-    "None of the four servers has ever started from VS Code on turing (E-H6) The owner deferred the decisions on 2026-10-25 "
+    "None of the four servers has ever started from VS Code on turing (E-H6) The Overtoad deferred the decisions on 2026-10-25 "
     "(§18.1). When they resume, the changes cover every synced host and the agent makes them. SER-P1's order stands: VS Code's "
     "Serena entry goes before E-H4-WHEEL's wheel build |"
 )
 H6_TAIL_NEW = (
-    "None of the four servers has ever started from VS Code on turing (E-H6). The owner deferred the decisions on 2026-10-25 "
+    "None of the four servers has ever started from VS Code on turing (E-H6). The Overtoad deferred the decisions on 2026-10-25 "
     f"and resumed them on 2026-10-26 (§18.1). **Applied** on turing at 2026-10-27T00:32:24Z (2026-10-26 local) by `{APPLY}`, "
     f"after a backup with the token redacted to `{BACKUP}`. `oraios/serena` and `microsoft/markitdown` are gone, "
     "`upstash/context7` is unchanged, `huggingface` runs token-less, and only `context7_api_key` remains of the 21 inputs. "
     "`chat.mcp.autostart` is `never` and `chat.mcp.gallery.enabled` is `false`. The script's `--check` holds 8 of 8 and its "
     "`--self-test` 15 of 15, and the audit's inventory shows the two kept servers and the one input. SER-P1's order held: uv's "
     "cache had no cryptography 50 wheel. Settings Sync carries the change to the other hosts once VS Code next runs on turing. "
-    "Rotating the token is the owner's (E-H6-APPLY) |"
+    "Rotating the token is the Overtoad's (E-H6-APPLY) |"
 )
 
 E_CUT_END = "so the entries of juniper-ml#2335 and juniper-ml#2338 ride 0.11.2.\n"
@@ -111,7 +111,7 @@ ERRATUM = (
     f"  - **The backup.** `{BACKUP}` (mode 0700, files 0600) holds both files and a `MANIFEST.json`: one redaction in "
     "`mcp.json`, none in `settings.json`. The script re-read both copies and found no `hf_`-shaped string before it edited "
     "anything.\n"
-    "  - **The Hugging Face entry's form.** The owner asked for the token's rotation, not for a form. The agent applied §8.4's "
+    "  - **The Hugging Face entry's form.** The Overtoad asked for the token's rotation, not for a form. The agent applied §8.4's "
     "recommended token-less entry, which gets only the anonymous tool set (HF-T1). `--hf password-input` references a read-only "
     "token through a password input instead, and `--hf remove` drops the server.\n"
     "  - **Every synced host.** Settings Sync carries the user `mcp.json` (H6-X3). In 1.108.2's bundle both settings are "
@@ -126,7 +126,7 @@ ERRATUM = (
     "MCP server, and `amp.mcpServers` is empty. `~/.claude/settings.json` holds a 23-server `mcpServers` block with an unpinned "
     "Serena, but Claude Code reads MCP servers from `~/.claude.json` and `.mcp.json`, not from `settings.json`. So E-H4-WHEEL "
     "no longer waits on H6, provided the first sync keeps turing's version.\n"
-    "  - **Still the owner's:** rotating the token at huggingface.co; opening VS Code on turing once, so that Settings Sync "
+    "  - **Still the Overtoad's:** rotating the token at huggingface.co; opening VS Code on turing once, so that Settings Sync "
     "uploads the change; and K13 before either kept server is used (H6-X2). Optional, from §8.5: \"Chat: Reset Tool "
     "Confirmations\", `workbench.mcp.resetTrust`, and `workbench.mcp.removeStoredInput` for any value stored under a deleted "
     "input.\n"
@@ -144,8 +144,8 @@ EVIDENCE_LINE = (
 PREV_OLD = "\n\n- **From:** the 2026-10-26 session on turing named \"modular-meandering-crayon-bf\""
 PREV_NEW = (
     "\n\n- **Continued (2026-10-26, plan v1.4.9).** Two sessions took this handoff. \"cached-enchanting-cosmos-84\" (760fde) "
-    "took H3. \"c9-landed-h6-audited-owner-decides\" (bd4cfc) applied H6 on turing once the owner resumed it, and its handoff, "
-    f"`{THIS_HANDOFF}`, is now the arc's main handoff. The other owner steps below still stand; H6's item under Agent next is "
+    "took H3. \"c9-landed-h6-audited-Overtoad-decides\" (bd4cfc) applied H6 on turing once the Overtoad resumed it, and its handoff, "
+    f"`{THIS_HANDOFF}`, is now the arc's main handoff. The other Overtoad steps below still stand; H6's item under Agent next is "
     "done." + PREV_OLD
 )
 

@@ -1,10 +1,10 @@
 # HANDOFF 2026-08-23 — snapshot retention (§6.4) and arc closeout
 
 > **Continue the juniper-cascor / juniper-ml snapshot-lifecycle arc.** Handoff items 1–4 and 6
-> are closed; **item 5 (retention) is the remaining work**, and it is an owner decision, not an
+> are closed; **item 5 (retention) is the remaining work**, and it is an Overtoad decision, not an
 > implementation task.
 
-**FIRST ACTION: put §2.3's three questions to the owner** — item 5 is blocked on them and
+**FIRST ACTION: put §2.3's three questions to the Overtoad** — item 5 is blocked on them and
 nothing else in §2 can proceed without the answers. **While waiting, land §3 item 1**: a
 one-line unshipped fix (`Invalid format: None` names nothing), fully specified and ready.
 
@@ -18,7 +18,7 @@ written as "the prior handoff's §3" or given a path in the table below.
 | **§6.4 — the retention policy this handoff is about** | `notes/JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_SNAPSHOT-LIFECYCLE-MANAGEMENT-DESIGN.md` § "6.4 Phase 4 — Retention policy" |
 | Stage-1 findings (root causes, §7.1 counters) | `notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_SNAPSHOT-CLASSIFICATION-STAGE-1-FINDINGS.md` |
 | S-2 cohort characterisation | `notes/JUNIPER_2026-08-22_JUNIPER-CASCOR_S2-COHORT-CHARACTERISATION.md` |
-| Predecessor handoff (its §2.4 scheme, §3 item list, §3.2/§3.4 owner prose) | [`HANDOFF_2026-08-22_snapshot-classification-and-metadata-reconstruction.md`](HANDOFF_2026-08-22_snapshot-classification-and-metadata-reconstruction.md) |
+| Predecessor handoff (its §2.4 scheme, §3 item list, §3.2/§3.4 Overtoad prose) | [`HANDOFF_2026-08-22_snapshot-classification-and-metadata-reconstruction.md`](HANDOFF_2026-08-22_snapshot-classification-and-metadata-reconstruction.md) |
 
 **Root-cause taxonomy** (used as bare letters below; cohort letter == cause letter):
 
@@ -65,7 +65,7 @@ nothing new can join the 273.
 
 ## 2. THE REMAINING WORK — item 5, retention (§6.4)
 
-An **owner decision**. Do not build deletion tooling before it is ratified.
+An **Overtoad decision**. Do not build deletion tooling before it is ratified.
 
 ### 2.1 The cohort table (this is what the decision keys on)
 
@@ -88,7 +88,7 @@ cascor operations", flagged as a deliberate overgeneralisation. **It does not ho
 the dysfunctional rate ~0.8% (≤ ~126 archive-wide, plausibly zero). Category 2 (*fails to
 train*) is **empty**. They are under-trained, not broken.
 
-### 2.3 What §6.4 needs from the owner
+### 2.3 What §6.4 needs from the Overtoad
 
 1. Do B's 273 get deleted, quarantined, or kept? Unloadable AND unrecoverable — the only
    cohort where deletion loses nothing not already lost.
@@ -217,7 +217,7 @@ outcome-based rule files healthy networks as dysfunctional.
 4. **cascor's training defaults are sized for real runs, not probes**: `candidate_pool_size=40`,
    `candidate_epochs=400`, `output_epochs=10000`, `max_iterations=1e6`. A naive `fit()` is
    minutes per network. For probes: `CASCOR_NUM_PROCESSES=1`, `pool=3`, `candidate_epochs=30`.
-   (The `max_epochs`-vs-`output_epochs` split itself is a **settled owner decision** recorded
+   (The `max_epochs`-vs-`output_epochs` split itself is a **settled Overtoad decision** recorded
    in `cascade_correlation.py` — "Do not 'fix' this by forwarding `max_epochs`." It is also
    AGENTS.md's 4th resident hazard. Pin both; do not re-litigate.)
 5. **`train_output_layer` calls `create_snapshot()` unconditionally.** Set

@@ -4,7 +4,7 @@
 **Repository:** pcalnon/juniper-ml (package + plan land here; consumers roll out per-repo)
 **Author:** Paul Calnon (drafted by the planner agent)
 **Document Type:** Implementation plan / roadmap
-**Status:** Draft — awaiting owner ratification (decision list §8)
+**Status:** Draft — awaiting Overtoad ratification (decision list §8)
 **Last Updated:** 2026-08-07
 **Context:** Port the flood-remediation sequence-safety screens (Proposal P2 gates G1/G2/G3) from
 two hand-copied inline trees into the published `juniper-ci-tools` package, then fan out to the
@@ -48,7 +48,7 @@ dogfoods") mandates the same shape here.
 **Goal.** Make the two screens a single PyPI-distributed source of truth in `juniper-ci-tools`,
 fan the *advisory* net out to all eight repos, delete the two inline copies, and gate against
 resurrection — with **zero ruleset changes anywhere** (every gate stays advisory; promotion to
-required is a later per-repo owner call).
+required is a later per-repo Overtoad call).
 
 **In scope:** package migration; a GitHub-Release ceremony; per-PR + post-merge advisory workflows
 in the six new repos; retrofitting ml + cascor to consume the package.
@@ -231,12 +231,12 @@ lockstep + drift tests pass; modules pass ci-tools **ruff** (`select E,F,W,B,I,N
 `juniper-symbol-loss-check --help` / `juniper-docs-additions-check --help` resolve; default-scope
 run byte-identical to the pre-migration util script on a fixture repo.
 
-### Wave 1 — release (owner ceremony)
+### Wave 1 — release (Overtoad ceremony)
 
 1.1 Author `notes/releases/RELEASE_NOTES_juniper-ci-tools_v0.8.0.md` from
     `notes/templates/TEMPLATE_RELEASE_NOTES.md`.
 1.2 Cut a **GitHub Release** with tag `juniper-ci-tools-v0.8.0` (never a bare `git push <tag>`) —
-    `publish-ci-tools.yml` fires on the release event: TestPyPI (install-verify) → **owner-gated
+    `publish-ci-tools.yml` fires on the release event: TestPyPI (install-verify) → **Overtoad-gated
     PyPI (Gate 2)**. The release-train `detect` will also classify it (`BUMPED_NOT_RELEASED` →
     `RELEASED`).
 
@@ -301,16 +301,16 @@ FAILs a planted heading deletion; the pin admits 0.8.0.
 
 Fleet-triage packaging (stays ml-native v1); per-repo Slack notify; per-repo full-battery
 `main-verify` jobs; promotion of any advisory workflow to a **required** status check (a per-repo
-owner call after soak); the `[tool.juniper_sequence_safety]` pyproject config surface (D2); the
+Overtoad call after soak); the `[tool.juniper_sequence_safety]` pyproject config surface (D2); the
 ml#1004-class ergonomic label hatch per repo (labels are honored via `--advisory`, but wiring the
 label read into each consumer workflow beyond the two default labels is deferred); ruleset /
 `required_signatures` / bypass-actor changes.
 
-## 7. Risks & open questions (owner)
+## 7. Risks & open questions (Overtoad)
 
 - **R1 — `required_signatures` on all 8 repos.** Rollout-PR commits that reach `main` must be signed.
   Owner-merge via the GitHub UI produces a GitHub-signed merge commit (fine). A **headless**
-  task-executor must either be owner-merged or use GitHub-signed API commits (the release-train
+  task-executor must either be Overtoad-merged or use GitHub-signed API commits (the release-train
   `createCommitOnBranch` pattern); a plain headless `git push` of unsigned commits will be blocked.
 - **R2 — ci-tools ruff over the migrated modules.** ci-tools lints `select E,F,W,B,I,N` (512). The
   screens were written under ml's flake8/black; expect a few B/N nits — a Wave-0 fix, not a redesign.
@@ -319,7 +319,7 @@ label read into each consumer workflow beyond the two default labels is deferred
 - **R4 — mis-set scope = false green.** A wrong `--scope` silently screens nothing (or over-scopes to
   noise). Mitigation: the Wave-2 per-repo acceptance step plants a deletion and asserts a FAIL.
 - **R5 — canopy/data CI cost.** Mitigated by screens-only `main-verify` (seconds; AST + git) and a
-  per-PR advisory job that adds seconds to already-heavy CI. Owner confirm acceptable (D5).
+  per-PR advisory job that adds seconds to already-heavy CI. The Overtoad confirm acceptable (D5).
 - **R6 — release timing + latent pin drift.** Consumers already pin `<0.7.0` (excludes 0.7.1); 0.8.0
   needs a ceiling widen anyway. Decide whether to cut 0.8.0 during or after the live storm and
   whether to heal the dep-docs pin in the same PRs (D4/D7).
@@ -333,7 +333,7 @@ get the symbol screen at all (minimal `tests/**` scope) or docs-screen-only (D3)
 vs the live storm, and do we heal the pre-existing `<0.7.0` dep-docs pin ceiling in the Wave-2 PRs
 (D4/D7)?
 
-## 8. Decision list (owner)
+## 8. Decision list (Overtoad)
 
 | ID | Decision | Recommendation |
 |---|---|---|
@@ -343,7 +343,7 @@ vs the live storm, and do we heal the pre-existing `<0.7.0` dep-docs pin ceiling
 | D4 | Heal latent `<0.7.0` dep-docs pin drift in Wave-2 PRs | Yes (widen to `<0.9.0`) |
 | D5 | Consumer `main-verify` battery | Defer — screens-only |
 | D6 | Docs `--min-run` per repo | Keep 5; raise on deploy if docs FP noise appears |
-| D7 | Release timing vs storm | Owner call (recommend after the storm quiesces) |
+| D7 | Release timing vs storm | The Overtoad call (recommend after the storm quiesces) |
 | D8 | Promote any advisory workflow to required | Later, per-repo, after soak (out of scope now) |
 
 ## 9. Per-wave acceptance criteria

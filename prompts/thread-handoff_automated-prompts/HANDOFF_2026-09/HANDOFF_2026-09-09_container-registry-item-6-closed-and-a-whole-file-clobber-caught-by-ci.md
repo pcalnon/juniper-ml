@@ -1,6 +1,6 @@
 # HANDOFF 2026-09-09 — Container registry: item 6 is closed, and a whole-file clobber was caught by CI
 
-**Session**: container-registry rollout, follow-ups 6b–6g (the no-owner half of item 6)
+**Session**: container-registry rollout, follow-ups 6b–6g (the no-Overtoad half of item 6)
 **Predecessor**: `HANDOFF_2026-09-08_container-registry-rollout-wave-2-opened-and-the-cuda-class-in-three-shapes.md`
 
 ---
@@ -9,12 +9,12 @@
 
 ---
 
-Continue the **container-registry rollout**. **Every no-owner follow-up in item 6 is now closed or
-verified-blocked**; what remains is **owner-gated** (items 1, 3, 4, 5, 7 of the predecessor) plus one
-new owner gate this session found. Merge approval for this arc's PRs was granted on 2026-09-09 and is
+Continue the **container-registry rollout**. **Every no-Overtoad follow-up in item 6 is now closed or
+verified-blocked**; what remains is **Overtoad-gated** (items 1, 3, 4, 5, 7 of the predecessor) plus one
+new Overtoad gate this session found. Merge approval for this arc's PRs was granted on 2026-09-09 and is
 **per-session** — obtain your own before merging anything. Predecessor:
 `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-08_container-registry-rollout-wave-2-opened-and-the-cuda-class-in-three-shapes.md`
-— it holds the design of record, the definition of done, every owner-gate command, and the traps this
+— it holds the design of record, the definition of done, every Overtoad-gate command, and the traps this
 document does not repeat.
 
 **Ecosystem root**: `/home/pcalnon/Development/python/Juniper/` — `cd` there first. Paths beginning
@@ -104,7 +104,7 @@ one-line edit (`util/ad-hoc/2026-09-09_fix_ml6g_reference_clobber.bash`); the br
 commit is accounted for by an intended edit. Their worktrees were cut from `origin/main` minutes
 before use, and those repos' `main` did not move underneath them.
 
-### Remaining work — all owner-gated
+### Remaining work — all Overtoad-gated
 
 The predecessor's items 1, 3, 4, 5 and 7 stand **unchanged**; go there for the commands. Current state
 re-probed at 2026-09-10 ~01:00 UTC:
@@ -115,7 +115,7 @@ re-probed at 2026-09-10 ~01:00 UTC:
   item-3 Pi pull should target a post-#179 image, not `dispatch-9890a23`.
 - **Item 1 (first publish in recurrence and canopy)** — unchanged, and both repos' `main` carries the
   corrected identity check.
-- **NEW owner gate — `juniper-recurrence-model` v0.3.0 was never published.** Its Release was cut
+- **NEW Overtoad gate — `juniper-recurrence-model` v0.3.0 was never published.** Its Release was cut
   2026-09-09 07:22 UTC, but run **34323535743** has been `status=waiting` on the **`pypi` environment's
   approval gate** ever since (`gh api repos/pcalnon/juniper-recurrence/actions/runs/34323535743/pending_deployments`
   → `env=pypi approvers=pcalnon`). PyPI's latest is **0.2.0**. Approving a deploy is yours alone — do
@@ -123,7 +123,7 @@ re-probed at 2026-09-10 ~01:00 UTC:
   is correct for what PyPI serves today and is documented as known staleness in the lock's own header
   and in `juniper-recurrence/CHANGELOG.md`. **Regenerate that lock once 0.3.0 publishes** — `pyproject`
   allows `<0.4.0`, so it will be picked up.
-- **NEW owner gate — the `juniper-ci-tools` 0.9.0 ceiling fan-out.** 6g is a MINOR bump (it adds public
+- **NEW Overtoad gate — the `juniper-ci-tools` 0.9.0 ceiling fan-out.** 6g is a MINOR bump (it adds public
   API), per the 2026-09-05 ruling that a downstream cap never understates a SemVer bump. juniper-ml's
   own 13 pin lines are widened to `<0.10.0` in ml#1869. **The other 8 repos still cap `<0.9.0`, so the
   0.9.0 wheel would reach none of them**: 3 workflow pin lines each in canopy, cascor, cascor-client,
@@ -185,7 +185,7 @@ basis, not a regression.
 
 Local `main` is clean in every primary checkout. **No local branch was ever pushed**: every remote
 commit in this session was created through the GitHub API and is GitHub-signed. Worktrees created this
-session — leave them alone; cleanup is a separate, owner-signalled step, and `worktree remove` deletes
+session — leave them alone; cleanup is a separate, Overtoad-signalled step, and `worktree remove` deletes
 ignored files silently:
 
 ```

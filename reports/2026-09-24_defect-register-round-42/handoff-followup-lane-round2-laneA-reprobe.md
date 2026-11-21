@@ -22,7 +22,7 @@ I found 1 HIGH, 3 MEDIUM, 4 LOW and 2 NIT problems in the revised `HANDOFF_2026-
   - The canopy reflog records "update by push" at 22:55:30Z and 22:55:40Z.
   - The local branch's upstream is `refs/heads/pr-683`, so a plain `git push` from that worktree lands there.
   - No Claude transcript contains the push. The branch config carries a `vscode-merge-base` key, so VS Code is likely (unproven).
-- **Corrected text:** "…unsigned, and pushed at 22:55Z to stray remote branches `pr-63` and `pr-683` (no PR). Surface them to the owner; do not delete them unasked."
+- **Corrected text:** "…unsigned, and pushed at 22:55Z to stray remote branches `pr-63` and `pr-683` (no PR). Surface them to the Overtoad; do not delete them unasked."
 
 **MEDIUM-2. `095a2108` did not edit `main`'s copy.**
 - **Text:** "`main`'s copy of `…cascor678_followup_mutation_check.py` was later edited by `095a2108`", and the trap "later commits edit merged files (`095a2108`)".
@@ -107,7 +107,7 @@ I found 1 HIGH, 3 MEDIUM, 4 LOW and 2 NIT problems in the revised `HANDOFF_2026-
   - `rate_limit_enabled` defaults to False.
   - The stub comment is contradicted by `ci.yml:170`.
   - cascor `:4766` holds on `main` and `:4841` at #690's head.
-- **Messages and ownership:**
+- **Messages and Overtoadship:**
   - 20:25:20Z and 20:42:33Z are real.
   - At 23:34-23:35Z the register lane reported the consolidation request and took the drift marker and C-A…D-G.
   - The traps match the predecessor handoff's lines 87-89.

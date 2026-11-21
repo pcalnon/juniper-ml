@@ -212,7 +212,7 @@ produces `dispatch-<sha>` and the `merge` job's arch verification passes.
 
 ⚠ **That dispatch is the only public, irreversible action in this document** — it creates a
 new GHCR package per repo, and all five repos are public so the packages inherit public
-visibility. **Confirm with the owner before the first one.** (A session's `gh` token
+visibility. **Confirm with the Overtoad before the first one.** (A session's `gh` token
 typically lacks `read:packages`, so you cannot audit existing packages to check.)
 
 ⚠ **Do not register `publish-image` as a required status check.** It is `paths:`-filtered,
@@ -223,7 +223,7 @@ that never runs — the same orphaned-check failure mode as a CI-skip marker.
 release** (the worker included — its last is v0.5.0, 2026-07-23, predating the workflow).
 There is no pinnable ref today. Chain: Wave 2 merged → a release cut per repo → pin.
 Detect with `gh release list --repo pcalnon/<repo>` across worker, cascor, canopy, data,
-recurrence. **Cutting those releases is an owner action and appears nowhere on this list.**
+recurrence. **Cutting those releases is an Overtoad action and appears nowhere on this list.**
 
 - `docker-compose.yml` has **13 `image:` lines, 9 of them Juniper**, mapping to **5 unique
   images**: canopy ×3 (L620/764/855), cascor ×2 (L197/391), **data ×2 (L134 and L487)**,
@@ -245,7 +245,7 @@ recurrence. **Cutting those releases is an owner action and appears nowhere on t
 **5. Wave 4 — Docker Hub** as a second push target. Needs `DOCKERHUB_TOKEN` per repo.
 Answer OQ-1 first.
 
-**6. Owner decisions — surface, do not guess** (plan §6): **OQ-1** Docker Hub posture for
+**6. The Overtoad decisions — surface, do not guess** (plan §6): **OQ-1** Docker Hub posture for
 multi-GB images; **OQ-2** a `:X.Y.Z-cuda` variant (note item 1 makes today's image
 accidentally CUDA — that is a bug, not OQ-2 being answered); **OQ-3** Pi capacity, now
 disk/bandwidth as well as RAM; **OQ-4** a versioned stack manifest.
@@ -363,7 +363,7 @@ the published image was built from — those are different facts.
 **The local `juniper-cascor-worker` checkout is 2 commits behind and still contains the
 pre-#173 workflow**, which will mislead anyone reading it directly. `git fetch` first.
 
-**Leave every worktree alone** — cleanup is a separate, owner-signalled step, and
+**Leave every worktree alone** — cleanup is a separate, Overtoad-signalled step, and
 `worktree remove` deletes ignored files silently. Listed for orientation only. Three arc
 worktrees remain (all clean, all with merged PRs), plus two older worker worktrees from
 earlier arcs (`--docs--handoff-word-count--…`, `--fix--mv-screened-base--…`).

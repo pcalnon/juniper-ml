@@ -1,4 +1,4 @@
-# HANDOFF — decision 11's release train is cut; six PyPI gates await the owner, two trains remain
+# HANDOFF — decision 11's release train is cut; six PyPI gates await the Overtoad, two trains remain
 
 **Date**: 2026-09-09 (**re-evaluated 2026-09-22/23 in §10**: §1–§4 are CLOSED, and every §5 row now has a disposition or a ticket) · **Session**: <https://claude.ai/code/session_014FMjGiN9yK9ppfkUiBnao5>
 **Worktree**: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fancy-marinating-nova`
@@ -38,7 +38,7 @@ Sibling repos: §1's table.
    `util/ad-hoc/2026-09-08_push_signed_commit.py` for a follow-up commit on an existing one. Do not
    run `git commit`, `git tag` or `gh release create --verify-tag` locally; do not `git push`.
 2. **Six packages are on TestPyPI, cut as GitHub Releases, and parked at the `pypi` environment
-   gate.** That gate is the owner's, never the session's (memory `feedback_deploy_approvals_paul_manages`).
+   gate.** That gate is the Overtoad's, never the session's (memory `feedback_deploy_approvals_paul_manages`).
    Until each is approved, `pip install` from PyPI still serves the pre-decision-11 versions and
    `POST /v1/crossval` in a PyPI-installed juniper-recurrence stays broken. The run URLs are in §2.
 3. **`util/release_train/propose.py` and `ceremony.py` read the sibling checkouts on disk as inputs.**
@@ -64,7 +64,7 @@ Sibling repos: §1's table.
 ## 1. Goal statement
 
 Continue the decision-11 release train (design §9.5). **Wave 1 is cut: six of eight trains are at the
-owner's PyPI gate.** Remaining: the owner's six approvals; the recurrence app's floor bump + 0.5.0;
+Overtoad's PyPI gate.** Remaining: the Overtoad's six approvals; the recurrence app's floor bump + 0.5.0;
 juniper-ml's floors + 0.8.0; the documentation that records the released versions.
 
 **Merged and verified this session** (each read back from `origin/main` or the GitHub API):
@@ -94,12 +94,12 @@ this arc is open in a sibling repo at handoff.** Closed unmerged: juniper-data#3
 juniper-recurrence#155 (anyio fix; another session's #154 landed the identical filter six minutes
 earlier).
 
-**Next actions, in order.** (1) Owner approves the six gates in §2. (2) §3 — the app's floor bump and
+**Next actions, in order.** (1) The Overtoad approves the six gates in §2. (2) §3 — the app's floor bump and
 0.5.0, then juniper-ml's floors and 0.8.0. (3) §4 — documentation. (4) §5 — carried forward.
 
 ---
 
-## 2. Six deployments pending owner approval
+## 2. Six deployments pending Overtoad approval
 
 Each run is parked with `Publish to TestPyPI = success` and `Publish to PyPI = waiting`. TestPyPI serves
 the version (HTTP 200 on `https://test.pypi.org/pypi/<pkg>/<ver>/json`); PyPI does not yet (404).
@@ -233,7 +233,7 @@ cd /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fancy-m
 git fetch -q origin && git status --short && git log --oneline -1 origin/main
 # Every sibling PR of this arc should read MERGED; a control that must resolve:
 gh pr view 159 --repo pcalnon/juniper-recurrence --json state,mergedAt --jq '"\(.state) \(.mergedAt)"'   # MERGED 2026-09-09T07:41:24Z
-# Gate state per package (waiting = still the owner's; success = approved). Control: the run id must resolve.
+# Gate state per package (waiting = still the Overtoad's; success = approved). Control: the run id must resolve.
 gh run view 34322900465 --repo pcalnon/juniper-data-client --json jobs --jq '.jobs[] | "\(.name)\t\(.status)\t\(.conclusion)"'
 gh run view 34324270593 --repo pcalnon/juniper-recurrence   --json jobs --jq '.jobs[] | "\(.name)\t\(.status)\t\(.conclusion)"'
 # PyPI truth (200 once approved; TestPyPI is already 200 for all six):
@@ -310,7 +310,7 @@ Decision 12 and hf/kaggle entries under "What actually remains"); the plan (a da
 
 | claim | state on 2026-09-22/23 |
 | --- | --- |
-| §2: six PyPI gates await the owner | **All approved.** Each is on PyPI with a 2026-09-10 upload: data-client 0.5.0, data 0.14.0, cascor 0.11.0, canopy 0.7.0, recurrence-model 0.3.0, recurrence-client 0.3.0 |
+| §2: six PyPI gates await the Overtoad | **All approved.** Each is on PyPI with a 2026-09-10 upload: data-client 0.5.0, data 0.14.0, cascor 0.11.0, canopy 0.7.0, recurrence-model 0.3.0, recurrence-client 0.3.0 |
 | §3a: recurrence app 0.5.0 | On PyPI (2026-09-11) |
 | §3b: juniper-ml 0.8.0 | On PyPI (2026-09-11), since superseded by 0.9.0 (2026-09-22) |
 | §3: model-core 0.3.2 (optional) | On PyPI (2026-09-11) |
@@ -327,14 +327,14 @@ and a dropped item read identically in a summary, so each was re-derived from so
 
 | §5 item | disposition | evidence |
 | --- | --- | --- |
-| S-1 hf/kaggle stores | Owner ruled 2026-09-22: **conform** → juniper-data#422, **merged 2026-09-23 as `ce436819`**, closing #411. Not yet released | The ruling is recorded in #422's description (its first paragraph). #411's own body still calls the decision open |
+| S-1 hf/kaggle stores | The Overtoad ruled 2026-09-22: **conform** → juniper-data#422, **merged 2026-09-23 as `ce436819`**, closing #411. Not yet released | The ruling is recorded in #422's description (its first paragraph). #411's own body still calls the decision open |
 | S-2 | Released in model-core 0.3.2 | PyPI |
 | S-3 … S-8 (straggler scheme) | Fixed; unchanged | §5 above |
 | plan R-2, consumers accept silently | **Done** | cascor `src/api/lifecycle/manager.py:3701` (at `f6ee8de`) `def _resolve_validation_split`: refuses by default; `X_test` promotion only behind `JUNIPER_CASCOR_ALLOW_MISSING_VALIDATION_SPLIT`, warning that metrics are SELECTED-ON |
 | plan R-9, harness rejects validation | **Done** (ml#1761) | `util/experiments/run_experiment.py` `RECURRENCE_SPLITS`; `tests/test_run_experiment.py` `test_recurrence_bad_dataset_split_rejected` |
 | plan §9 S-5, juniper-ml homes | **Done**: no stale site | `util/snapshot_attribute.py` rebuilds the whole view by `np.vstack`; `prompts/agent_templates/data/ecosystem.yaml` `npz_contract` lists six keys |
-| plan §9 S-7 → canopy#559 | Owner ruled 2026-09-22: **advisory check** → juniper-canopy#663 (a re-cut of #659, which was closed), **merged 2026-09-23 as `cc3588a8`**, closing #559. Not yet released | — |
-| Chunk 5, §6.2 compensation | **Had been silently dropped** → juniper-data#424, with an owner question | canopy `src/validation_gate.py:50` disables "Fill synthetically" pending it |
+| plan §9 S-7 → canopy#559 | The Overtoad ruled 2026-09-22: **advisory check** → juniper-canopy#663 (a re-cut of #659, which was closed), **merged 2026-09-23 as `cc3588a8`**, closing #559. Not yet released | — |
+| Chunk 5, §6.2 compensation | **Had been silently dropped** → juniper-data#424, with an Overtoad question | canopy `src/validation_gate.py:50` disables "Fill synthetically" pending it |
 | Chunk 7 (a) plots / attribution | **Done** (see S-5) | — |
 | Chunk 7 (b) design §7 snapshot provenance | **Done.** This is NOT Decision 12: cascor tags every run's metrics | `manager.py:2035` `metrics["split"] = self._reported_split_name()` |
 | Chunk 7 (c) re-baseline, decision 4 | **Not started** → juniper-ml#2034 | — |
@@ -353,7 +353,7 @@ and a dropped item read identically in a summary, so each was re-derived from so
   and a 204 does not prove a listener. #178 is still open. **The one end-to-end attempt failed on
   token scope.** juniper-data run 35808713744 (2026-09-23 02:01Z) re-sent 0.15.0's dispatch and got
   `403 Resource not accessible by personal access token`. `CROSS_REPO_DISPATCH_TOKEN` reaches data,
-  cascor and canopy, but not juniper-recurrence. The fix is the owner's (10.5).
+  cascor and canopy, but not juniper-recurrence. The fix is the Overtoad's (10.5).
 - **N-2, unreleased majors**: **closed.**
   - juniper-data 0.15.0 is on PyPI (2026-09-22), with `equities` and `equities_seq` at `VERSION 5.0.0`,
     read from the wheel. data#410 is closed.
@@ -388,7 +388,7 @@ and a dropped item read identically in a summary, so each was re-derived from so
 
 ### 10.5 In flight, and outstanding
 
-**This session's PRs: all merged.** The owner granted merge approval for them in this session's task request. That grant is per-session and does not carry forward to a successor. Each merge went through `util/safe_merge.py` after every required context was green on the head that merged.
+**This session's PRs: all merged.** The Overtoad granted merge approval for them in this session's task request. That grant is per-session and does not carry forward to a successor. Each merge went through `util/safe_merge.py` after every required context was green on the head that merged.
 
 - juniper-data#422, **merged 2026-09-23 06:22Z as `ce436819`**, closing #411. It conforms the stores:
   - three partitions, no `*_full`, `VERSION 3.0.0`;
@@ -406,9 +406,9 @@ and a dropped item read identically in a summary, so each was re-derived from so
 - juniper-ml#2043 carries the Decision 12 spec, its verification script, this §10, the 2026-09-12
   handoff's correction, and the `docs/REFERENCE.md` and partition-plan updates.
 
-**Owner decisions:**
+**The Overtoad decisions:**
 
-- Release cuts, which are the owner's:
+- Release cuts, which are the Overtoad's:
   - cascor, to ship #672;
   - juniper-data, to ship #422 (BREAKING for store callers, so the release notes must say so);
   - canopy, to ship #663;
@@ -439,7 +439,7 @@ and a dropped item read identically in a summary, so each was re-derived from so
   success.
 - recurrence#178:
   - the two residual gaps: the concurrency group, and polling for the dispatched run after the 204;
-  - after the owner widens the token, re-run
+  - after the Overtoad widens the token, re-run
     `gh workflow run notify-consumers.yml -R pcalnon/juniper-data -f version=0.15.0`, and expect a
     `repository_dispatch` run in juniper-recurrence.
 - juniper-ml#2034 (decision 4) and juniper-cascor#677 (V-3).
@@ -509,7 +509,7 @@ curl -s https://pypi.org/pypi/juniper-cascor/json | python3 -c "import sys,json;
     - the arc_agi condition in spec §14 B-1;
     - "unseeded" → "unseeded generator";
     - "the encoding held" narrowed to the choice of encoding;
-    - five, not six, open owner questions;
+    - five, not six, open Overtoad questions;
     - a fourth wrong citation (spec C-4);
     - R-7's missing locations;
     - bench's scope in R-1;
@@ -530,8 +530,8 @@ curl -s https://pypi.org/pypi/juniper-cascor/json | python3 -c "import sys,json;
   its verification script's 15 passes nor its golden vectors say anything about the defects in §14.
   They exercise the encoding and the digest's construction. The gate's identity, version and legality
   logic, and its enforcement of canonical JSON and the dtype allowlist, exist only as prose. Its OQs
-  are the owner's, and are not ripe until v2.
+  are the Overtoad's, and are not ripe until v2.
 - **"Merged" is not "released".** #422, #663, cascor#672 and ml#2033 are on `main` only. Until the
-  owner cuts releases, PyPI serves the behaviour this §10 calls fixed.
+  Overtoad cuts releases, PyPI serves the behaviour this §10 calls fixed.
 - **"Released" in 10.1 means "on PyPI"** (HTTP 200 and upload time). Nothing here re-verified the
   behaviour of those wheels. The successor's §8.5 did that for seven of the nine.

@@ -3,7 +3,7 @@
 **Project**: juniper-ml
 **Author**: Paul Calnon
 **Date**: 2026-08-24
-**Status**: Analysis — prepares owner decision #4 (the forward-only cap) and its enforcement surface
+**Status**: Analysis — prepares Overtoad decision #4 (the forward-only cap) and its enforcement surface
 **Relates to**: [`JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md) §P0
 **Operator surface**: [`docs/REFERENCE.md` § MEMORY.md Index Check](../docs/REFERENCE.md#memorymd-index-check)
 
@@ -46,7 +46,7 @@ for a mechanism whose failure mode is **silent**.
 | **rows added since eviction** | **237** |
 
 New rows run **1.64x** the corpus mean. That is why the byte cap binds while the row cap
-doesn't, and it is precisely what owner decision #4 — a forward-only cap on **new** entries —
+doesn't, and it is precisely what Overtoad decision #4 — a forward-only cap on **new** entries —
 was designed to stop. It has not shipped, and the interval since eviction is a clean
 measurement of what its absence costs: **665 bytes/day**.
 

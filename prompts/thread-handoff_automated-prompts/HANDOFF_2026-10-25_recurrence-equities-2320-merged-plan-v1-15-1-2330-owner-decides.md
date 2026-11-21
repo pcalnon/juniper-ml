@@ -1,4 +1,4 @@
-# Thread Handoff — Recurrence × Equities: #2210 landed (juniper-ml#2320); consolidated plan v1.15.1; juniper-ml#2330 with the owner
+# Thread Handoff — Recurrence × Equities: #2210 landed (juniper-ml#2320); consolidated plan v1.15.1; juniper-ml#2330 with the Overtoad
 
 **Date**: 2026-10-25
 **Host**: turing (Darwin, Intel x86_64; no commit signing; bash 3.2). Every landing goes through `util/open_signed_pr.py`, `util/push_signed_commit.py` or `util/ad-hoc/2026-10-17_push_signed_with_retry.py`.
@@ -11,9 +11,9 @@
 
 ## Goal
 
-Apply the owner's choice for **juniper-ml#2330**, then work through the carried items below.
+Apply the Overtoad's choice for **juniper-ml#2330**, then work through the carried items below.
 
-**Not the juniper-ml 0.11.2 cut.** The owner ruled the version 0.11.2 on 2026-10-25. A second ruling, made the same day in the Linux-host session "equitites recurrence" [ad9009] and relayed to this session, gives the cut to that arc's successor thread. It starts from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_recurrence-equities-servers-floors-landed-smokes-pass-0-11-2-cut-next.md`. Session [42fe25] dropped its claim. Open no 0.11.2 proposal, ceremony or Release from this thread.
+**Not the juniper-ml 0.11.2 cut.** The Overtoad ruled the version 0.11.2 on 2026-10-25. A second ruling, made the same day in the Linux-host session "equitites recurrence" [ad9009] and relayed to this session, gives the cut to that arc's successor thread. It starts from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_recurrence-equities-servers-floors-landed-smokes-pass-0-11-2-cut-next.md`. Session [42fe25] dropped its claim. Open no 0.11.2 proposal, ceremony or Release from this thread.
 
 This session (turing session 11, "recurrence equities" [42fe25], started from the v1.7.16 handoff) did the following:
 
@@ -25,12 +25,12 @@ This session (turing session 11, "recurrence equities" [42fe25], started from th
   - The nine recurrence suites moved 1200/1800 → 4500, against a 3900 s worst case. The 20 cascor suites already cleared theirs; the tightest are pf2-axis2 and pf3, at 2330 vs 2400.
   - `util/ad-hoc/2026-10-25_driver_budget_survey.py --project-dir <Juniper root>` reproduces the survey.
   - The post-merge re-check passed on `main` `c86a5e5e`, and `util/ad-hoc/2026-10-25_apply_driver_budget_docs.py --check` is clean there.
-- **The out-of-scope finding is juniper-ml#2330**, filed by session [c5454d] at its owner's request. `p4/e-c-cascor-noise-robustness.yaml` fails `WallBudgetContractTest` whenever its sibling base resolves; CI never sees it.
-- **Consolidated plan v1.15.1** (#2334) records #2320's merge and re-check, #2330 as a §6 Group C owner item, R-ML-SERVERS's floors (ml#2326) and the 0.11.2 version ruling.
+- **The out-of-scope finding is juniper-ml#2330**, filed by session [c5454d] at its Overtoad's request. `p4/e-c-cascor-noise-robustness.yaml` fails `WallBudgetContractTest` whenever its sibling base resolves; CI never sees it.
+- **Consolidated plan v1.15.1** (#2334) records #2320's merge and re-check, #2330 as a §6 Group C Overtoad item, R-ML-SERVERS's floors (ml#2326) and the 0.11.2 version ruling.
 
 ## Remaining work, in order
 
-1. **juniper-ml#2330: the owner chooses.** The discussion was opened on 2026-10-25, and this session recommended option 1.
+1. **juniper-ml#2330: the Overtoad chooses.** The discussion was opened on 2026-10-25, and this session recommended option 1.
    - **Option 1:** `execution.max_wall_seconds: 5400` in `util/experiments/suites/p4/e-c-cascor-noise-robustness.yaml`, plus a comment citing #2330.
      - It is a one-line change. The worst case becomes 180 + 120 + 5400 + 30 + 120 = 5850 s, under its 7200 s timeout.
      - Cell ids and `config_sha256` are unchanged, because the execution block is a forwarded flag.
@@ -42,7 +42,7 @@ This session (turing session 11, "recurrence equities" [42fe25], started from th
 2. **Re-check #2334 after merge**, about an hour later:
    - `git show origin/main:notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md | grep -c "^- \*\*Version\*\*: 1.15.1"` should print 1, or show a later version that keeps the v1.15.1 lines;
    - `python3 -I util/ad-hoc/2026-10-25_consolidated_plan_v1_15_1_session_record.py --check` on a tree at `main` should exit 0.
-3. **Owner items carried** from v1.7.16:
+3. **The Overtoad items carried** from v1.7.16:
    - the parent `Juniper/AGENTS.md` RELEASED paragraph;
    - the recurrence-client 0.3.1 release;
    - juniper-config-tools 0.2.0;
@@ -59,7 +59,7 @@ This session (turing session 11, "recurrence equities" [42fe25], started from th
 - **Sequence Safety** fails a renamed or shrunk symbol. Waive it in a commit body with `Allow-Symbol-Loss: <kind>:<qualified.name>[, ...]`, for example `method:TimeoutOrderingContractTest.test_...` or `func:_driver_validator`. The squash keeps it.
 - **Attribute macOS failures against a pristine `git archive` export**, run one after the other, never at the same time. On #2320 the 13 affected suites failed the same 13 names (memory `turing-juniper-ml-darwin-test-failures`).
 - **Under the worktree guard**, a heredoc append and a `gh` poll loop are refused. Use the Edit tool, and small `python3 -I` pollers in the scratchpad.
-- **Two arcs can claim one cut.** Put competing claims to the owner side by side, and drop yours when the owner rules for the other. A stopped `safe_merge` leaves auto-merge armed, so run `gh pr merge N --disable-auto` before re-pushing.
+- **Two arcs can claim one cut.** Put competing claims to the Overtoad side by side, and drop yours when the Overtoad rules for the other. A stopped `safe_merge` leaves auto-merge armed, so run `gh pr merge N --disable-auto` before re-pushing.
 
 ## Verification commands for the new thread
 
@@ -67,7 +67,7 @@ This session (turing session 11, "recurrence equities" [42fe25], started from th
 gh pr view 2320 --repo pcalnon/juniper-ml --json state,mergeCommit -q '.state + " " + .mergeCommit.oid'   # MERGED f7a1442d...
 gh pr view 2334 --repo pcalnon/juniper-ml --json state -q .state   # MERGED (consolidated plan v1.15.1)
 gh pr view 2332 --repo pcalnon/juniper-ml --json state -q .state   # MERGED (recurrence plan v1.7.18)
-gh issue view 2330 --repo pcalnon/juniper-ml --json state -q .state   # OPEN until the owner's option lands
+gh issue view 2330 --repo pcalnon/juniper-ml --json state -q .state   # OPEN until the Overtoad's option lands
 ```
 
 ## Git state

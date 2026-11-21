@@ -109,7 +109,7 @@ Everything was run against `origin/main` `4ab6da58`, with siblings from `git arc
   - `:242`: "service-core's copy of the compare is not a gate site at all".
   - "`_FORK_REPOS` is read in exactly three places".
   - `:1539-1541`: "watched by nothing: it is not a gate site".
-- **What is missing:** the owner's 2026-09-23 ruling "Yes, same gate PR", which made service-core a site, is not recorded anywhere in the register.
+- **What is missing:** the Overtoad's 2026-09-23 ruling "Yes, same gate PR", which made service-core a site, is not recorded anywhere in the register.
 
 **T2-5, LOW. A contradiction the round-3 fix left in a sentence it edited.**
 - `:22` still says "recommends a drift check that does not exist".
@@ -122,9 +122,9 @@ Everything was run against `origin/main` `4ab6da58`, with siblings from `git arc
 **T2-7, LOW. The X-B ruling as written goes beyond the recorded options.**
 - **Where:** `:1459-1462`: "set when data is bound (… inline data sets null), kept … by `reset()`".
 - **Evidence:** the only record of the options (#2032's body) says "Follow the loaded data … a run on retained partial data says so" versus "null because nothing was fetched". It is about Stop → Start and does not mention `reset()`.
-- The X-A entry marks its own reading as "this entry's reading, not the owner's words"; this entry has no such marker.
-- cascor#678's comment on `reset()` cites "owner ruling 2026-09-23" for this behaviour.
-- **Fix:** add the reading marker, or confirm with the owner.
+- The X-A entry marks its own reading as "this entry's reading, not the Overtoad's words"; this entry has no such marker.
+- cascor#678's comment on `reset()` cites "Overtoad ruling 2026-09-23" for this behaviour.
+- **Fix:** add the reading marker, or confirm with the Overtoad.
 
 **T2-8, LOW. The route count names no commit.**
 - **Where:** `:1550`: "measured: 55 method-path pairs … the 25 parameterless GETs". #2032's body repeats "all 55".
@@ -147,7 +147,7 @@ Everything was run against `origin/main` `4ab6da58`, with siblings from `git arc
 | L1: "CORS last one open" | **FOLDED WRONGLY** (T2-1). |
 | L1: "promoted to ENFORCED" | **FOLDED WRONGLY** (T2-2). |
 | L1: "a drift check against service-core would catch these" | **FOLDED WRONGLY, in part** (T2-6). |
-| L2: "True when written" | FOLDED CORRECTLY. The round-40 handoff's §4 says "an owner decision is owed". |
+| L2: "True when written" | FOLDED CORRECTLY. The round-40 handoff's §4 says "an Overtoad decision is owed". |
 | L3: the skip env var | FOLDED CORRECTLY. The skip check is at `auth_posture.py:106-112`, before `real_keys` and `require_auth`, and in the same order in both published wheels. |
 | L4: the quote | FOLDED CORRECTLY, then overtaken by canopy#678 (T2-9). |
 | L5: Helm | FOLDED CORRECTLY. `k8s/` sets no `REQUIRE_AUTH` anywhere. |
@@ -178,7 +178,7 @@ Everything was run against `origin/main` `4ab6da58`, with siblings from `git arc
 ## What this evidence cannot support
 - **Canopy mutations:** the behavioural check ran on service-core only, because canopy's module imports `secrets_util`. For canopy I show only that the gate stays green, not that canopy's own suite would catch each mutation.
 - **Not verified:** ECO-008's "(3) cross-site `text/plain` POST … 200" claim. It needs a live canopy.
-- **The owner's option wording** for X-B and ECO-008 is not in any artifact I found, so T2-7 is a provenance gap, not proof of an unauthorized ruling.
+- **The Overtoad's option wording** for X-B and ECO-008 is not in any artifact I found, so T2-7 is a provenance gap, not proof of an unauthorized ruling.
 - **Docs Full Check was not dispatched** (read-only), so the canopy sites are still unobserved in CI. The local equivalent passes.
 - **Mutation realism:** M1–M7 are constructed. I claim they are plausible regressions, not that anyone has made one.
 

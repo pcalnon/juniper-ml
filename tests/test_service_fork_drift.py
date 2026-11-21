@@ -5,7 +5,7 @@ service-tier middleware and security code that ``juniper-service-core`` also
 ships, and ``juniper-canopy`` maintains its own ``APIKeyAuth`` -- a fourth copy of
 the key-handling code, which this gate could not name until ``APD-ECO-008``
 (2026-09-22) and which is a site of the two key-handling guards only. The shared
-package's own copy is a site of those two guards as well (owner ruling
+package's own copy is a site of those two guards as well (Overtoad ruling
 2026-09-23): ``juniper-recurrence`` imports it, so a regression there reaches a
 service with no change of its own. That is the single most productive defect shape in the 2026-08-14
 ecosystem defect register: **a guard adopted in one copy of near-identical code
@@ -219,7 +219,7 @@ GUARDS: tuple[Guard, ...] = (
             ForkSite("juniper-cascor", _CASCOR_SECURITY, ("isinstance(k, str)", "k.strip()")),
             # APD-ECO-008: canopy's copy, fixed by juniper-canopy#660.
             ForkSite("juniper-canopy", _CANOPY_SECURITY, ("isinstance(k, str)", "k.strip()")),
-            # The canonical copy itself (owner ruling 2026-09-23). Unwatched until then,
+            # The canonical copy itself (Overtoad ruling 2026-09-23). Unwatched until then,
             # although recurrence imports it and would inherit a regression unseen.
             ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, ("isinstance(k, str)", "k.strip()")),
         ),
@@ -248,7 +248,7 @@ GUARDS: tuple[Guard, ...] = (
             # exactly one key, so this changes no timing there today; it holds the copy
             # to the same shape as its siblings, which is the class this gate exists for.
             ForkSite("juniper-canopy", _CANOPY_SECURITY, ("matched = False", "return matched")),
-            # The shared package, which recurrence imports (owner ruling 2026-09-23).
+            # The shared package, which recurrence imports (Overtoad ruling 2026-09-23).
             ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, ("matched = False", "return matched")),
         ),
     ),

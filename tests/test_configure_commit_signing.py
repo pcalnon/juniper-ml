@@ -7,7 +7,7 @@ Application: host tooling regression tests
 Author:      Paul Calnon
 License:     MIT License
 
-``notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`` signs the owner's
+``notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`` signs the Overtoad's
 commits in the Juniper tree through one conditional include. That covers three paths:
 
 - the terminal;
@@ -271,16 +271,16 @@ class ApplyTest(SigningHarness):
         code, report = self.tool_json("--apply", "--dry-run", "--gpg-program", str(self.gpg))
         self.assertEqual((code, report["writes"]), (0, []))
 
-    def test_r_s8_backups_are_made_once_and_an_owner_include_is_kept(self):
-        owner_inc = self.home / "owner.inc"
-        owner_inc.write_text("[core]\n\teditor = vi\n", encoding="utf-8")
-        self.git("config", "--global", "--add", INCLUDE_KEY, str(owner_inc))
+    def test_r_s8_backups_are_made_once_and_an_Overtoad_include_is_kept(self):
+        Overtoad_inc = self.home / "Overtoad.inc"
+        Overtoad_inc.write_text("[core]\n\teditor = vi\n", encoding="utf-8")
+        self.git("config", "--global", "--add", INCLUDE_KEY, str(Overtoad_inc))
         with open(self.home / ".gitconfig", "a", encoding="utf-8") as fh:
             fh.write("[commit]\n\tgpgsign = false\n")
         code, report = self.tool_json("--apply", "--gpg-program", str(self.gpg))
-        self.assertEqual(code, 1, "the owner's later global gpgsign=false still wins; --check is the guarantee, not position")
+        self.assertEqual(code, 1, "the Overtoad's later global gpgsign=false still wins; --check is the guarantee, not position")
         self.assertIn("commit.gpgsign=false (global", self.checks(report)["repo:juniper-ml"]["message"])
-        self.assertEqual(self.git("config", "--global", "--get-all", INCLUDE_KEY).stdout.split(), [str(owner_inc), INCLUDE_VALUE])
+        self.assertEqual(self.git("config", "--global", "--get-all", INCLUDE_KEY).stdout.split(), [str(Overtoad_inc), INCLUDE_VALUE])
         self.git("config", "--global", "--unset", "commit.gpgsign")
         backup = self.home / f".gitconfig.bak-{TODAY}-pre-commit-signing"
         backup.write_text("an earlier backup\n", encoding="utf-8")
@@ -315,7 +315,7 @@ class ApplyTest(SigningHarness):
         self.assertIn("no sound gpg program", proc.stderr)
         self.assertEqual(tree_digest(self.home), before)
 
-    def test_remove_undoes_apply_exactly_and_keeps_the_owner_include(self):
+    def test_remove_undoes_apply_exactly_and_keeps_the_Overtoad_include(self):
         original = (self.home / ".gitconfig").read_bytes()
         self.apply()
         code, report = self.tool_json("--remove")
@@ -323,14 +323,14 @@ class ApplyTest(SigningHarness):
         self.assertEqual([w["action"] for w in report["writes"]], ["unset", "remove-section", "delete", "rmdir"])
         self.assertEqual((self.home / ".gitconfig").read_bytes(), original)
         self.assertFalse(self.include.parent.exists())
-        owner_inc = self.home / "owner.inc"
-        owner_inc.write_text("[core]\n\teditor = vi\n", encoding="utf-8")
-        self.git("config", "--global", "--add", INCLUDE_KEY, str(owner_inc))
+        Overtoad_inc = self.home / "Overtoad.inc"
+        Overtoad_inc.write_text("[core]\n\teditor = vi\n", encoding="utf-8")
+        self.git("config", "--global", "--add", INCLUDE_KEY, str(Overtoad_inc))
         self.apply()
         code, report = self.tool_json("--remove")
         self.assertEqual(code, 0)
         self.assertNotIn("remove-section", [w["action"] for w in report["writes"]])
-        self.assertEqual(self.git("config", "--global", "--get-all", INCLUDE_KEY).stdout.split(), [str(owner_inc)])
+        self.assertEqual(self.git("config", "--global", "--get-all", INCLUDE_KEY).stdout.split(), [str(Overtoad_inc)])
 
     def test_remove_refuses_to_delete_an_edited_include_and_dry_run_writes_nothing(self):
         self.apply()
@@ -369,7 +369,7 @@ class ApplyTest(SigningHarness):
         # Round 2, N18: "managed" means byte for byte what --apply writes, comments included.
         self.apply()
         with open(self.include, "a", encoding="utf-8") as fh:
-            fh.write("# the owner's note\n")
+            fh.write("# the Overtoad's note\n")
         code, report = self.tool_json("--remove")
         self.assertEqual(code, 1)
         self.assertTrue(self.include.exists())

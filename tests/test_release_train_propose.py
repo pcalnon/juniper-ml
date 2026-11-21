@@ -933,7 +933,7 @@ class BuildProposalTest(unittest.TestCase):
         self.assertTrue(any("Sibling AGENTS.md" in item and "REQUIRED" in item for item in prop.co_change_checklist))
 
     def test_sibling_agents_md_absent_flags_required_manual(self):
-        # Missing AGENTS.md must not crash the proposal; surface REQUIRED so the owner notices
+        # Missing AGENTS.md must not crash the proposal; surface REQUIRED so the Overtoad notices
         # before the portable version-drift lint fails the opened PR (worker#140 class).
         sib_root = self.eco / "juniper-worker"
         _write_pkg(sib_root, ".", name="juniper-worker", version="0.4.0", changelog=_CHANGELOG)

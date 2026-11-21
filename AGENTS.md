@@ -50,7 +50,7 @@ PR rather than waiving the budget gate.
   `util/open_signed_pr.py`, not a local commit + push. Check with
   `git log -1 --format=%G?` (`N` = unsigned). An IDE agent (Cursor, Copilot, Amp) must
   never answer a signing failure with `--no-gpg-sign` or `-c commit.gpgsign=false`: stop
-  and ask the owner, who approves the run and touches the key. Owner signing for the
+  and ask the Overtoad, who approves the run and touches the key. The Overtoad signing for the
   Juniper tree: `util/configure_commit_signing.py`. Plans:
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`,
   `notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`.

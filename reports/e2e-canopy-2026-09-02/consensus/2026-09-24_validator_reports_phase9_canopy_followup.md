@@ -555,7 +555,7 @@ Other claims I tried and could not break:
 - **The ledger IDs:** F-CANOPY-056, 057 and 059 are not on juniper-ml `origin/main`, and `docs/canopy-e2e-phase9` has no remote branch. The cross-references resolve only if the ledger lands first, as the ledger itself plans.
 - **Signing:** `b07943d6` is GPG-signed (G), not unsigned as the brief says.
 
-**SECRETS/PII:** I printed no environment variables, tokens or credential files, and the one GraphQL query asked for no email field. One slip: `git log --format=%GS` and `git cat-file commit b07943d6` printed the owner's email in local tool output only. Nothing was sent to any external service.
+**SECRETS/PII:** I printed no environment variables, tokens or credential files, and the one GraphQL query asked for no email field. One slip: `git log --format=%GS` and `git cat-file commit b07943d6` printed the Overtoad's email in local tool output only. Nothing was sent to any external service.
 
 ---
 
@@ -581,7 +581,7 @@ FINDINGS
      - The next plain start "trains on" the data that is still bound (`:2899-2901`).
    - Evidence (canopy): the Replay confirmation modal calls it "read-only playback" (`src/frontend/components/hdf5_snapshots_panel.py:533`), and so does the proxy route's docstring (`src/main.py:2985`). Both predate this pass. The E2E evidence ledger (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`) has no entry for this.
    - Fix: add one clause, for example: "Starting one, from the page or with this POST, also loads the snapshot's network in place of cascor's live one, and neither Reset nor a Stop restores it: save a snapshot first."
-   - Changes a number/disposition/action? **Yes: an ACTION** (one clause in the note, and possibly a new ledger entry for the "read-only" wording, the owner's call).
+   - Changes a number/disposition/action? **Yes: an ACTION** (one clause in the note, and possibly a new ledger entry for the "read-only" wording, the Overtoad's call).
 
 2. **NIT: the FAQ's "no Stop is on screen" has lost what it referred to.**
    - Quoted text, from `REPLAY_V2_FAQ.md:32-33`: "Against cascor a Stop does not clear the session (F-CANOPY-056), and today no Stop is on screen (F-CANOPY-059)."
@@ -644,7 +644,7 @@ WHAT YOU COULD NOT CHECK
 - There was no live cascor, so the Reset behaviour and the network swap come from reading source, not from a run.
 - The census was run at the merge parent 05f2dfc2, not at #676's original base.
 
-SECRETS/PII: I printed no environment variables, tokens or credential files. I requested no email field from GitHub, and used no `git cat-file commit` and no `%GS`, `%ae` or `%ce` formats. The `%B` bodies I was told to read, and the `git interpret-trailers --parse` output, show only the `Co-Authored-By` bot address `noreply@anthropic.com`, not the owner's. No slip. No repo file was changed; all scratch work stayed in `mktemp -d` extracts under the session scratchpad.
+SECRETS/PII: I printed no environment variables, tokens or credential files. I requested no email field from GitHub, and used no `git cat-file commit` and no `%GS`, `%ae` or `%ce` formats. The `%B` bodies I was told to read, and the `git interpret-trailers --parse` output, show only the `Co-Authored-By` bot address `noreply@anthropic.com`, not the Overtoad's. No slip. No repo file was changed; all scratch work stayed in `mktemp -d` extracts under the session scratchpad.
 
 ---
 

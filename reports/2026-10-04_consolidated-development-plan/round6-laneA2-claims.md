@@ -50,7 +50,7 @@
 
 There is no BLOCKER.
 
-- **R6A2-01 does not leak a credential.** If the owner upgrades with pip, the wheel replaces the editable install and the fix arrives. It is rated MAJOR because §9's "Hard" edge and the mid-wave timing rest on a premise the environment contradicts.
+- **R6A2-01 does not leak a credential.** If the Overtoad upgrades with pip, the wheel replaces the editable install and the fix arrives. It is rated MAJOR because §9's "Hard" edge and the mid-wave timing rest on a premise the environment contradicts.
 - **The trio's exposure to an unreleased data-client** comes from the primary checkout's HEAD, which no cap or cut order governs.
 
 ## Checked and holds (short)

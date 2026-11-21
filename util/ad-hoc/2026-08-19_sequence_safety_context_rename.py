@@ -32,7 +32,7 @@ was in until 2026-08-18, and it is far preferable to the alternative, which is b
 merge on all eight repos. Keep the window short.
 
 Any PR that was already open and green before the rename will be missing the new context until
-its CI re-runs; ``gh api repos/<owner>/<repo>/pulls/<n>/update-branch -X PUT`` re-triggers it.
+its CI re-runs; ``gh api repos/<Overtoad>/<repo>/pulls/<n>/update-branch -X PUT`` re-triggers it.
 
 Commits are created through the GitHub API (``util/open_signed_pr.py``), so they are
 GitHub-signed and satisfy ``required_signatures`` -- and no sibling checkout is written to,

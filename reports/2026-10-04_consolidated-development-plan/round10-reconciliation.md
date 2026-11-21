@@ -121,7 +121,7 @@ None. The lanes overlapped on seven themes and agreed on each: the read (R10A-01
 
 ## Slips on the lanes' constraints
 
-None reached a repository or printed a real value. The owner may want to know:
+None reached a repository or printed a real value. The Overtoad may want to know:
 
 - **Lane A**: one command refused by the guard and re-issued plainly; two inline Python reads of one PR-file line outside the line read, printing only counts and indices; scratch copies of real repository files made with `git archive`, `tar`, `cp` and redirects; the shared `JuniperCascor1` Python run without `PYTHONDONTWRITEBYTECODE` (no bytecode was written); and KEY mode writing a synthetic value's words to a scratch file, confirmed by count.
 - **Lane B1**: one loop refused by the guard and re-run plainly; two files copied into its scratch with `cp` (the scanner tarball, checked against its pin, and the gate's generated `b9.toml`); a `find` that listed three paths in Lane A's scratch, none opened; and one command's output (a public round-9 report) saved by the harness to a tool-result file, not read.

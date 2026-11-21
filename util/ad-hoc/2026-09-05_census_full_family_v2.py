@@ -6,7 +6,7 @@ Sub-Project: juniper-ecosystem
 Author:      Paul Calnon
 Status:      ad-hoc, single-use (partition arc, decision 11)
 Created:     2026-09-05
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     juniper-data#369; supersedes 2026-09-05_census_full_family.py
 
 Why a v2 exists

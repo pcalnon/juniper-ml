@@ -15,7 +15,7 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
 - SPEC v0.2.0: read in full, lines 1–733.
 - `HANDOFF_2026-09-24_partition-arc-spec-v2-round-2-recorded-v3-next-three-prs-await-0-16-0.md` (H-0924): read in full.
 - `HANDOFF_2026-09/HANDOFF_2026-09-23_partition-arc-residue-stores-conformed-canopy-advisory-decision-12-spec-unsound.md` (H-0923): read in full.
-- `HANDOFF_2026-09/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md` (H-0909): §10 only (lines 283–537), which includes §10.2 and §10.5.
+- `HANDOFF_2026-09/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-Overtoad.md` (H-0909): §10 only (lines 283–537), which includes §10.2 and §10.5.
 - `reports/partition-provenance-spec-v2-review-2026-09-23/`:
   - `README.md` and `S3-executability.md`: in full;
   - `S1-grounding.md`: findings 1–3 and 12–13, plus the finding headings;
@@ -49,7 +49,7 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
 | P5-01f | R2-6 / HO (a): the floor is "the first juniper-data release whose wheel emits the block"; pin the number only at the cut | §15; HO 1(a) | [CHANGED SINCE HANDOFF: EQ W1.11 (EQ:389) now plans juniper-data **0.17.0** for X8, without the block] | as P5-01 | P4, EQ | ml | in P5-01 | UNBLOCKER |
 | P5-01g | R2-7 / HO (b): W10's precondition is a recurrence release carrying W4's cap, plus an `[all]` dry-run. Also handle juniper-ml `[recurrence]` `<0.6.0` against a recurrence 0.6.0 (S3-F1) | §15; HO 1(b) | [VERIFIED 2026-10-04: ml `pyproject.toml:105` reads `juniper-recurrence>=0.5.0,<0.6.0`] | as P5-01 | P4, EQ | ml | in P5-01 | UNBLOCKER |
 | P5-01h | R2-8: a W6 CI job that tests against the PUBLISHED client | §15 (S3-F2) | [VERIFIED 2026-10-04: data `ci.yml:273,434,494,601,905` still install the client `@main`] | as P5-01 | — | ml | in P5-01 | DATA-INTEGRITY |
-| P5-01i | R2-9 / HO (d): drop "0.6.1 is a PATCH"; either release a MINOR or ask the owner in §16 | §15 (S3-F4) | as P5-01 | as P5-01 | OD-7 | ml | in P5-01 | HYGIENE |
+| P5-01i | R2-9 / HO (d): drop "0.6.1 is a PATCH"; either release a MINOR or ask the Overtoad in §16 | §15 (S3-F4) | as P5-01 | as P5-01 | OD-7 | ml | in P5-01 | HYGIENE |
 | P5-01j | R2-10 / HO (e): name, per consumer and for both OQ-2 answers, a status field, a setting and a caveat slot that something reads; add a canopy line to §16 | §15 (S3-F5) | [NOT RE-PROBED — S3-F5: cascor's `_validation_warning` is written but never read] | as P5-01 | — | ml | in P5-01 | DATA-INTEGRITY |
 | P5-02 | Fold every MINOR and NIT, each by lane id: S1-F3…F13, S2-F4…F11, S3-F6…F12 and S4-D4…D15. This includes the lock pins (S3-F9), the docs/CHANGELOG/deploy-tag/operator-note omissions (S3-F11), and the clash with the existing `juniper_data/provenance.py` (S3-F12) | §15 | [VERIFIED 2026-10-04: §15 unchanged; all 4 reports present] | STARTABLE | P5-01 | ml | M | HYGIENE |
 | P5-03 | Fold four inputs that no round has reviewed (see the list after this table) | HO 1(f); this extraction | [VERIFIED 2026-10-04: probes listed after this table] | STARTABLE | P5-01, EQ | ml | S | DATA-INTEGRITY |
@@ -57,19 +57,19 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
 | P5-05 | Re-pin `…_v2_citation_check.py` (`PINS`, :44-50) to the main heads at freeze time | HO 1 | [CHANGED SINCE HANDOFF: heads are now data `29be6d35`, data-client `75f15a62`, cascor `95cdc562`, canopy `1b2dd438`, recurrence `be081fae` (unchanged) and ml `cf711cf4`. The siblings' local `origin/main` refs equal these heads] | STARTABLE | P5-01 | ml | S | HYGIENE |
 | P5-06 | Review round 3: fresh lanes on frozen v3, at least one on identity/versioning/legality; archive every report verbatim; record in a new section | HO 1; traps | [VERIFIED 2026-10-04: v3 does not exist] | BLOCKED-ON P5-01..05 | P8 (soft) | ml | M | UNBLOCKER |
 | P5-07 | Post v3 and round 3's outcome on juniper-data#423 | HO "Mirror rulings" | [VERIFIED 2026-10-04: #423 OPEN, 2 comments, the last on 2026-09-23T21:21Z (round 2)] | BLOCKED-ON P5-06 | — | data (issue) | S | HYGIENE |
-| P5-08 | W3: the owner rules in SPEC §16 (OD-1…OD-7), mirrored on #423 | SPEC §16, W3 | [VERIFIED 2026-10-04: every §16 row is "—" except OQ-4] | OWNER-DECISION; BLOCKED-ON P5-06 | — | ml, data | S | UNBLOCKER |
+| P5-08 | W3: the Overtoad rules in SPEC §16 (OD-1…OD-7), mirrored on #423 | SPEC §16, W3 | [VERIFIED 2026-10-04: every §16 row is "—" except OQ-4] | OWNER-DECISION; BLOCKED-ON P5-06 | — | ml, data | S | UNBLOCKER |
 | P5-09 | New juniper-data PR from fresh main carrying #434's round-3 NITs (see the notes after this table) | HO goal item 2 | [VERIFIED 2026-10-04: main has only the weak `test_cached_store.py:187`; main's bound test (:214-237) has no `exc_info` check; the #434 worktree holds the strict form (:188, :238) and the wording (CHANGELOG :29-30); main's wording sits at `CHANGELOG.md:407`, inside `[0.16.0]` (:161-421); #434 merged at head `ae5a3b18`, whose last real commit is `ac6bdc8b`] | STARTABLE (merge: OWNER-ACTION, a per-session grant) | P3 item 1 (CHANGELOG `[Unreleased]`) | data | S | HYGIENE |
 | P5-10 | Optional: lock the cached store's warned-id set (a round-3 NIT judged benign) | HO #434 residue | [UNVERIFIED — from H-0924; lane D's report is unarchived] | STARTABLE | — | data | S | HYGIENE |
 | P5-11 | ml#2064: show `eval_metrics.final` (split, n_samples) in `stats_summary.py` `eval_scalars` (:225) and `plots_cascor.py` `render_eval_metrics` (:193); label the in-loop scores; make a run with no `final` block say so; add tests | HO goal item 3 | [VERIFIED 2026-10-04: #2064 OPEN with 0 comments; both sites still read the top-level (in-loop val) f1/precision/recall/roc_auc; no PR] | BLOCKED-ON P6 (index rule for `util/experiments/`) | P6 item 4 (same file) | ml | S | DATA-INTEGRITY |
 | P5-12 | ml#2034 step 3: re-measure the pre-decision-11 corpora (T6, the P3 thresholds, attribution), pinning `sizing_mode: carve`; then close #2034 | HO 3; #2034 comment | [VERIFIED 2026-10-04: #2034 OPEN; step 2 is ml#2066, merged as `f9c81d80`] | BLOCKED-ON P5-11 | P6 (box time); P5-13 (the B−A input) | ml | L | RESEARCH |
 | P5-13 | V-3 compute per cascor#677's plan (see the notes after this table) | HO goal item 4 | [VERIFIED 2026-10-04: #677 OPEN, plan only, no PR. At 21:00Z: load 3.43/3.60/3.14 on 16 cores and `clamscan` running about 9.9 h, so by P6's definition this is not a quiet window; no `:8230` listener] | WAIT-QUIET-WINDOW | P6 (PF-3 needs the same windows) | cascor, ml | M | RESEARCH |
-| P5-14 | data-client follow-ups to #212: reword the `ci.yml:801` comment to "a later run in the receiver's concurrency group"; add `--max-time` at :817, :828 and :839; find an owner for #213 | HO goal item 5 | [VERIFIED 2026-10-04: both still true on `75f15a62`; #213 is OPEN with no PR] | STARTABLE (optional) | — | data-client | S | HYGIENE |
+| P5-14 | data-client follow-ups to #212: reword the `ci.yml:801` comment to "a later run in the receiver's concurrency group"; add `--max-time` at :817, :828 and :839; find an Overtoad for #213 | HO goal item 5 | [VERIFIED 2026-10-04: both still true on `75f15a62`; #213 is OPEN with no PR] | STARTABLE (optional) | — | data-client | S | HYGIENE |
 | P5-15 | Fix cascor-worker's stale fallback `__version__` | HO goal item 6 | [CHANGED SINCE HANDOFF: juniper-data's fallback is now `"0.16.0"`, which matches its version. cascor-worker `__init__.py:35` is still `"0.6.0"` against 0.6.1] | STARTABLE | — | cascor-worker | S | HYGIENE |
 | P5-16 | recurrence `load_sequence_data` promises `ValueError`, but a `KeyError` escapes data-client `contract.py:72` | HO 6 | [VERIFIED 2026-10-04: the docstring is at ~:69-71; `contract.py:72` reads `arrays[f"{NPZ_KEY_X}_train"]`] | STARTABLE | EQ W0.6 / F-S9 (same function) | recurrence or data-client | S | HYGIENE |
 | P5-17 | cascor `publish.yml`'s TestPyPI check imports from the checkout | HO 6 | [VERIFIED 2026-10-04: checkout, then `from juniper_cascor import __version__` (:51) at the repo root, where `juniper_cascor/` exists. Since cascor#672 (unreleased) the printed value comes from metadata, so only the import path is wrong] | STARTABLE | — | cascor | S | HYGIENE |
-| P5-18 | Release cuts: cascor (#672), canopy (#663), juniper-data next (#437 X8, #436, #438, #440 and P3's fix-forward), recurrence (the #188 `<0.17.0` cap) | HO owner list | [VERIFIED 2026-10-04: PyPI cascor 0.11.0, canopy 0.8.1, data 0.16.0, recurrence 0.5.0, with no newer GitHub Releases; data main is 9 ahead of v0.16.0 and recurrence main 19 ahead of v0.5.0] | OWNER-ACTION | P4; the data cut needs P3 item 1 | cascor, canopy, data, recurrence | M | UNBLOCKER |
-| P5-19 | data#424: does §6.2's generate-shortfall survive decision 9, or is canopy's disabled "Fill synthetically" retired? | HO owner list | [VERIFIED 2026-10-04: #424 OPEN with 0 comments; canopy `validation_gate.py:50` holds the reason, and :110-113 disable the option] | OWNER-DECISION | P2 | data, canopy | S | USER-FACING |
-| P5-20 | Close cascor#582, with #677 as its residue? | HO owner list | [VERIFIED 2026-10-04: OPEN, last activity 2026-08-29] | OWNER-DECISION | P4 item 7 | cascor | S | HYGIENE |
+| P5-18 | Release cuts: cascor (#672), canopy (#663), juniper-data next (#437 X8, #436, #438, #440 and P3's fix-forward), recurrence (the #188 `<0.17.0` cap) | HO Overtoad list | [VERIFIED 2026-10-04: PyPI cascor 0.11.0, canopy 0.8.1, data 0.16.0, recurrence 0.5.0, with no newer GitHub Releases; data main is 9 ahead of v0.16.0 and recurrence main 19 ahead of v0.5.0] | OWNER-ACTION | P4; the data cut needs P3 item 1 | cascor, canopy, data, recurrence | M | UNBLOCKER |
+| P5-19 | data#424: does §6.2's generate-shortfall survive decision 9, or is canopy's disabled "Fill synthetically" retired? | HO Overtoad list | [VERIFIED 2026-10-04: #424 OPEN with 0 comments; canopy `validation_gate.py:50` holds the reason, and :110-113 disable the option] | OWNER-DECISION | P2 | data, canopy | S | USER-FACING |
+| P5-20 | Close cascor#582, with #677 as its residue? | HO Overtoad list | [VERIFIED 2026-10-04: OPEN, last activity 2026-08-29] | OWNER-DECISION | P4 item 7 | cascor | S | HYGIENE |
 | P5-21 | W4: widen the client caps `<0.6.0` in canopy (`pyproject:192`, an extra) and recurrence (`:54`, core) | SPEC §11.3 | [VERIFIED 2026-10-04: both caps are on main] | BLOCKED-ON P5-08 | EQ W1.13 may widen them first | canopy, recurrence | S | DATA-INTEGRITY |
 | P5-22 | W5: data-client `provenance.py`, with fakes that mint re-derived ids, the vector tests, and a release | §11.3 | [VERIFIED 2026-10-04: PyPI 0.5.0; main is 23 ahead, CI-only changes] | BLOCKED-ON P5-08, P5-21 | EQ (contends for 0.6.0) | data-client | M | DATA-INTEGRITY |
 | P5-23 | W6: the producer (builder, nonce argument, `partition_facts` in 16 generators, route insertion, store builders, VERSION bumps, fleet tests), then a release | §11.3 | [VERIFIED 2026-10-04: no code exists; the insertion point is now `routes/datasets.py:390-392`] | BLOCKED-ON P5-22 and P3 item 1 | P3, P4 | data | L | DATA-INTEGRITY |
@@ -81,7 +81,7 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
 | P5-29 | W12: the ml plot loaders run the gate and record its status, and never refuse | §11.3 | [NOT RE-PROBED] | BLOCKED-ON P5-22 and P6 coordination | P6 | ml | S | DATA-INTEGRITY |
 | P5-30 | Correct stale docs of record: `docs/REFERENCE.md:5789` ("v1 draft"), `:5792` (stores "not yet released", but they shipped in 0.16.0), and the 2026-09-23 update in the plan's §10 | residue | [VERIFIED 2026-10-04: grep on main] | STARTABLE | — | ml | S | HYGIENE |
 | P5-31 | Remove merged-task worktrees: data #431, data-client #212, ml `warm-prancing-yeti` and `rippling-wobbling-torvalds` (check first), and #434 only after P5-09. Keep `…spec-v2-pin…90ad035e` | HO Git state | [VERIFIED 2026-10-04: all exist (`ls`); dirty state not probed] | OWNER-ACTION (isolated sessions are refused cross-worktree git) | P5-09 | data, data-client, ml | S | HYGIENE |
-| P5-32 | At the next data release, check that the release-event notify job's "Confirm the consumer started a run" step and the recurrence bench run are both green | HO owner item (closure bar) | [CHANGED SINCE HANDOFF: recurrence#178 was CLOSED 2026-10-03T10:16Z by pcalnon on `workflow_dispatch` run 37114403856 (4/4 steps success) and bench run 37114410788. No release-event run has happened since] | BLOCKED-ON P5-18 | P4 | data, recurrence | S | HYGIENE |
+| P5-32 | At the next data release, check that the release-event notify job's "Confirm the consumer started a run" step and the recurrence bench run are both green | HO Overtoad item (closure bar) | [CHANGED SINCE HANDOFF: recurrence#178 was CLOSED 2026-10-03T10:16Z by pcalnon on `workflow_dispatch` run 37114403856 (4/4 steps success) and bench run 37114410788. No release-event run has happened since] | BLOCKED-ON P5-18 | P4 | data, recurrence | S | HYGIENE |
 
 **P5-03: the four unreviewed inputs.**
 
@@ -104,7 +104,7 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
 - Set `max_epochs` and `output_epochs` to the same value.
 - Write the result up beside V-2.
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options, and the source's recommendation | Blocks | Source |
 |---|---|---|---|---|
@@ -114,7 +114,7 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
 | OD-4 | OQ-3: `source_sha256`? | Yes for csv_import; defer HF/Yahoo/SEC | W6 | §12 |
 | OD-5 | OQ-5: does canopy call the gate? Plus a new §16 line: does canopy enforce legality, or only advise? | Yes, at both sites. The legality-refusal mode is open (R2-10) | W8 | §12, §15 |
 | OD-6 | OQ-6: enforce from the first release? | Enforce. "Report-only" has no mechanism yet (S3-F10) | W5/W6 | §12 |
-| OD-7 | The number for W11's release | The owner's rule (cascor-client#155) says a MINOR; v3 may still put the question to the owner | W11 | §15 R2-9 |
+| OD-7 | The number for W11's release | The Overtoad's rule (cascor-client#155) says a MINOR; v3 may still put the question to the Overtoad | W11 | §15 R2-9 |
 | OD-8 | data#424 | Build §6.2's generate-shortfall, or retire canopy's disabled option | canopy UI | HO |
 | OD-9 | Close cascor#582, with #677 as its residue? | — | — | HO |
 | OD-10 | The four release cuts (P5-18) | — | P5-27, P5-32 | HO |
@@ -127,7 +127,7 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
   - P5-27 needs a recurrence release carrying a widened client cap.
   - P5-01f and P5-03(iii) need the numbers P4 actually cuts.
   - P5-32 rides the next data release.
-- **P4 → P5.** P4's item 7 also carries #582 and #423 as owner questions.
+- **P4 → P5.** P4's item 7 also carries #582 and #423 as Overtoad questions.
 - **P5 → P3.** The `routes/datasets.py` dependency appears only in the index and in P3's handoff, not in HO.
   - P5-23 (W6) must follow P3's item 1, the data fix-forward. Its branch `fix/conditional-requests-round4-followups` is at `94ce8b1f` and touches `routes/datasets.py`. It has no PR and is now **2 ahead / 6 behind** main.
   - P5-09 shares data `CHANGELOG.md` `[Unreleased]` with that branch.
@@ -150,7 +150,7 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
 1. **The only copy of P5-09's diff is uncommitted** in `worktrees/juniper-data--fix--arc-agi-task-ids-unicode-429--20260923-1422--ce436819`. Any sweep destroys it, so harvest it before P5-31.
 2. **`[0.16.0]` in juniper-data's CHANGELOG must stay byte-identical to the tag** (P3's precedent). A release cut under an open PR silently moves its `[Unreleased]` bullets into the released heading; this happened twice in this arc.
 3. **Freeze v3 while the round-3 lanes run.** Record findings in a new section, and archive every lane report: lane D's report was lost.
-4. **The owner's PR sweeper un-drafts and merges.** Drafting is not a hold, so validate before pushing to a PR branch.
+4. **The Overtoad's PR sweeper un-drafts and merges.** Drafting is not a hold, so validate before pushing to a PR branch.
 5. **A negated closing keyword still closes.** "Does not close pcalnon/juniper-data#423" in a v3 PR body would close the Decision 12 tracker.
 6. **Unrelated releases consume version numbers.** This is R2-6, and it now applies to data 0.17.0 and data-client 0.6.0. Pin a floor only after reading the wheel.
 7. **W11's refusal is non-overridable.** If a VERSION bump lands without its emission, deploy builds from source onto a named volume and the refusals become permanent (S3-F3).
@@ -160,7 +160,7 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
 
 ## 5. Discrepancies
 
-1. **recurrence#178.** HO says it is OPEN and should close only after "a release's own notify job" goes green. It is CLOSED: the owner's account closed it on 2026-10-03 on a `workflow_dispatch` re-run.
+1. **recurrence#178.** HO says it is OPEN and should close only after "a release's own notify job" goes green. It is CLOSED: the Overtoad's account closed it on 2026-10-03 on a `workflow_dispatch` re-run.
 2. **#431's confirmation step.** HO's "Evidence…" section says this step "has never run green in Actions". Run 37114403856 shows the step "Confirm the consumer started a run" with conclusion success. HO's own DONE note contradicts the same claim.
 3. **Remote branches.** The four ml remote branches HO lists as present are deleted, so HO's `git branch -r | grep -i provenance` returns nothing.
 4. **Main heads have moved** in data, data-client, cascor and canopy (P5-05). Data main is 9 ahead of v0.16.0; the P4 handoff said 7, and the extra 2 are dependabot merges.

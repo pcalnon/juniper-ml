@@ -122,8 +122,8 @@ MUTANTS = [
         "cookies whatever the headers' shape (round-1 OM08, round-2 NIT)",
         True,
     ),
-    Mutant("O7-header-set-without-sec-websocket-protocol", _OBS, _SENTRY, (('        "sec-websocket-protocol",\n', ""),), "owner ruling: the four header names", True),
-    Mutant("O8-header-set-without-proxy-authorization", _OBS, _SENTRY, (('        "proxy-authorization",\n', ""),), "owner ruling: the four header names", True),
+    Mutant("O7-header-set-without-sec-websocket-protocol", _OBS, _SENTRY, (('        "sec-websocket-protocol",\n', ""),), "Overtoad ruling: the four header names", True),
+    Mutant("O8-header-set-without-proxy-authorization", _OBS, _SENTRY, (('        "proxy-authorization",\n', ""),), "Overtoad ruling: the four header names", True),
     Mutant("O3-skip-library-frames", _OBS, _SENTRY, ((_FRAME_GUARD, '                if isinstance(frame, dict) and frame.get("in_app") is not False:\n'),), "F6", True),
     # The OLD suite already killed O4: its wire tests' frames are application code (``in_app: True``,
     # under the project root), so skipping them left ``vars`` on the wire. Measured by this script's

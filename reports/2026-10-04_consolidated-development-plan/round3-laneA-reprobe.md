@@ -20,8 +20,8 @@
 
 | ID | Severity | Plan location (v1.2) | Plan says | Re-derived (command / file:line → result) | Proposed correction |
 | --- | --- | --- | --- | --- | --- |
-| R3A-01 | MAJOR | §5 L546 (see L532, L547) | R-RECURRENCE-SEC is "a patch for W1.14". It carries "the 502 key-relay fix" and is ready when "W1.14 merged and validated" | `compare/juniper-recurrence-v0.5.0...main` shows 21 commits, including #172 `feat(snapshots)` (new routes) and #190 `feat(cli,api)` (a new `TrainResponse` field). `[Unreleased]` holds only Added and Changed. `util/release_train/detect.py:828-838` therefore proposes MINOR, i.e. **0.6.0**, the version P12 reserves for Phase 1 (P12 plan L509, L574). A cut from `main` (L532) is also "the first recurrence release carrying P12 W1.x" (L547), and it would skip that row's cap-PR gates | Owner ruling in §6 A1, one of: (a) 0.5.1 from the v0.5.0 tag plus W1.14, as an exception to L532; (b) 0.6.0 from `main`, merged into the P12-chain row with its gates |
-| R3A-02 | MAJOR | §4 Wave 2 L500 | "W5.1 review → R5 → Phase 1 … → M0" | In the P12 plan, R5 gates only W5.4 (L752 "Gates", L676). M0 is P0's milestone, and only W0.1's service-core half is still open for it (L508). The handoff (L13) and the plan's own §2 (L223) say Phase 1 is next. As written, Phase 1 stalls behind an owner ruling | "M0 (after W0.1's service-core half) · Phase 1 → M1 · W5.1 review → R5 → W5.4" |
+| R3A-01 | MAJOR | §5 L546 (see L532, L547) | R-RECURRENCE-SEC is "a patch for W1.14". It carries "the 502 key-relay fix" and is ready when "W1.14 merged and validated" | `compare/juniper-recurrence-v0.5.0...main` shows 21 commits, including #172 `feat(snapshots)` (new routes) and #190 `feat(cli,api)` (a new `TrainResponse` field). `[Unreleased]` holds only Added and Changed. `util/release_train/detect.py:828-838` therefore proposes MINOR, i.e. **0.6.0**, the version P12 reserves for Phase 1 (P12 plan L509, L574). A cut from `main` (L532) is also "the first recurrence release carrying P12 W1.x" (L547), and it would skip that row's cap-PR gates | The Overtoad ruling in §6 A1, one of: (a) 0.5.1 from the v0.5.0 tag plus W1.14, as an exception to L532; (b) 0.6.0 from `main`, merged into the P12-chain row with its gates |
+| R3A-02 | MAJOR | §4 Wave 2 L500 | "W5.1 review → R5 → Phase 1 … → M0" | In the P12 plan, R5 gates only W5.4 (L752 "Gates", L676). M0 is P0's milestone, and only W0.1's service-core half is still open for it (L508). The handoff (L13) and the plan's own §2 (L223) say Phase 1 is next. As written, Phase 1 stalls behind an Overtoad ruling | "M0 (after W0.1's service-core half) · Phase 1 → M1 · W5.1 review → R5 → W5.4" |
 | R3A-03 | MINOR | Overview L77; S0.11 L429 | The key "reaches every `/v1/train` caller and the service log"; the fix adds "a route test" | `map_data_error` is also reached from `routers/predict.py:60-62` (the dataset form) and `routers/crossval.py:74-76`. Both log `exc` at WARNING | Name all three routes. Test `map_data_error` itself |
 | R3A-04 | MINOR | §7.2 L719 | "the experiment launcher refuses `JuniperCascor1` until W0.1's service-core half lands" | The only preflight call is inside `recurrence_up()`: `experiment_stack.bash:815-858` (call at L832), and `isolated_stack.bash:434-473`, which runs only with `--with-recurrence` (L563). The isolated stack's override is `JUNIPER_E2E_SKIP_ENV_PREFLIGHT`. The `--cascor` runs in §7.2 are unaffected | "…refuses **recurrence legs** on `JuniperCascor1`…", naming both override variables |
 | R3A-05 | MINOR | XC-FLEET L318 | canopy#701: "Re-run CI. Content matches `main`" | canopy#701 is now `dirty`. It and the merged canopy#702 both edit `CHANGELOG.md`, and `pull_request` CI does not run on a conflicted PR | "Rebase (resolve `CHANGELOG.md`) or close" |
@@ -36,7 +36,7 @@
   - F-S10 is at L146 and W1.14 at L401 of the P12 plan on `main`.
   - `_common.py:55` relays `{exc}` in a 502. `training.py:58-60` logs it and maps it.
   - The client wraps `RequestException` as "Request failed: …" (`client.py:349-350`).
-  - W1.14 is effort S and needs owner acceptance. No key was printed.
+  - W1.14 is effort S and needs Overtoad acceptance. No key was printed.
 - **Item 2.**
   - ml#2151 merged at 22:31:34Z and changed 7 files.
   - ml#2154 is open and clean, by `juniper-release-train[bot]`, opened 08:32:53Z. It had no auto-merge arm at 10:49Z, which is P9-14's datum.
@@ -77,4 +77,4 @@
 
 - Any state after 10:51Z.
 - That lines outside the v1.1→v1.2 diff are correct.
-- Which branch of R3A-01 the owner picks.
+- Which branch of R3A-01 the Overtoad picks.

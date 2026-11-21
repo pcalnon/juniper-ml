@@ -7,7 +7,7 @@
 - **Version**: 0.7.1
 - **Last Updated**: 2026-09-10
 - **Status**: DESIGN — decision 5 RULED 2026-09-10 as **A2-bind with a `_default` setter** (§9.1); §11 is the implementation design. Landing is gated on P1.1 (§11.7)
-- **Answers**: [`JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`](JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md) §13 decision 5, and the owner's follow-on question about serving logging as **both** class and instance calls
+- **Answers**: [`JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`](JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md) §13 decision 5, and the Overtoad's follow-on question about serving logging as **both** class and instance calls
 - **Measured at**: juniper-cascor `origin/main` `53c0338`, Python 3.13.13 (`JuniperCascor1`)
 
 > **Documents referenced here**, by short name, full filename given once:
@@ -26,7 +26,7 @@ ROADMAP §13 decision 5 asks whether "per-logger levels" (#573 scope 3) means **
 loggers** or **named sub-loggers on the class**, and states that per-instance "means
 de-classmethod-ing `isEnabledFor` and breaking ~1,200 call sites. This decides whether P4 is M or L."
 
-The owner declined to pick from that framing and asked for the investigation first, plus a specific
+The Overtoad declined to pick from that framing and asked for the investigation first, plus a specific
 further question:
 
 > *"what issues, risks, performance impacts, and concerns would arise from having both class based
@@ -94,7 +94,7 @@ around does not discriminate between the options.
 `cls` to the class and runs fine — measured at **88–97 ns** against **84–90 ns** for `Logger.debug(...)`,
 a **+2 … +8 ns** difference (§4).
 
-So the convenience the owner describes — "accessible as both class and object calls" — is *not* what
+So the convenience the Overtoad describes — "accessible as both class and object calls" — is *not* what
 is missing today. What is missing is that both access paths reach the **same class-level state**.
 Every level knob is a class attribute: `_log_level` (`logger.py:193`), `_level_logger_name` (`:164`),
 `_level_logger_config` (`:162`), `_level_number_cache` (`:221`), `_logging_file` (`:140`). `Logger`
@@ -209,7 +209,7 @@ Recommended shape:
    from `self.logger = Logger` to `self.logger = <factory>("candidate_unit")` — plus the two indirect
    binds at `cascade_correlation.py:667` and `spiral_problem.py:310`.
 
-This delivers precisely what the owner asked for — one fully-functional logging path reachable both
+This delivers precisely what the Overtoad asked for — one fully-functional logging path reachable both
 as class calls and as per-instance calls, with per-call-site tuning — **and it is faster on the hot
 path than the status quo**, because the 967-site majority moves from classmethod dispatch to instance
 dispatch.
@@ -224,7 +224,7 @@ dispatch.
 
 ## 6. Issues, risks and concerns of a dual-access design
 
-Answering the owner's question directly. These apply to the recommendation in §5 as much as to the
+Answering the Overtoad's question directly. These apply to the recommendation in §5 as much as to the
 rejected mechanisms, except where noted.
 
 | # | concern | severity | notes |
@@ -263,7 +263,7 @@ expensive, and none of them is needed.
 
 ## 8. Decisions already ruled, recorded here for the implementer
 
-Taken by the owner on 2026-09-09 against ROADMAP §13; §13.1 of that document is the canonical record.
+Taken by the Overtoad on 2026-09-09 against ROADMAP §13; §13.1 of that document is the canonical record.
 
 | # | decision | ruling |
 |---|----------|--------|
@@ -283,7 +283,7 @@ pre-#598, published on PyPI at 0.1.0 — is being brought back into line rather 
 
 ## 9. The decision, and how it was taken
 
-**The question put to the owner:** which shape delivers per-logger levels? Four were tabled:
+**The question put to the Overtoad:** which shape delivers per-logger levels? Four were tabled:
 
 - **(a) A — two bindings, two implementations.** `Logger` keeps its classmethods; a factory returns
   per-logger instances with plain instance methods. M-sized, faster on the hot path, hazard-free —
@@ -309,7 +309,7 @@ implementation. §5 stands as the argument for two *bindings*; §10 supersedes i
 
 ### 9.1 RULED 2026-09-10 — A2-bind, with a `_default` setter
 
-The owner selected **A2**, in its `-bind` form, and directed that `_default` be a **setter that
+The Overtoad selected **A2**, in its `-bind` form, and directed that `_default` be a **setter that
 reassigns the bound attributes** rather than relying on mutate-in-place discipline. §11 is the
 implementation design; §10 records the measurement that chose between A2's two forms.
 
@@ -462,7 +462,7 @@ deliverable now is this design plus the verified prototype; the first cascor PR 
 
 ## 12. References
 
-- [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) — the issue and owner scope
+- [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) — the issue and Overtoad scope
 - **ROADMAP** §13 decision 5, §7 (Phase 4), P4-G1…P4-G4
 - **RECON** N-3 / N-3a (the level-state split), N-2 (forkserver), §3.1 (the call-site census method)
 - **DESIGN** §7 decisions 1–6, and §7.1 (the swallowed-pytest protocol)

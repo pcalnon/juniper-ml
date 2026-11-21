@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — investigation (suite strength evidence for the turing bring-up H2 change)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task H2, §11, D11);
          .claude/agents/{macos-host-sme,signing-auth-sme,k8s-node-sme}.md; tests/agent_contract_support.py;
          tests/test_{macos_host_sme,signing_auth_sme,k8s_node_sme}_contract.py;

@@ -41,7 +41,7 @@ Ordering hazard (plan, do not demote)
 -------------------------------------
 The cut must land on the target's ``main`` with its PRIMARY checkout pulled BEFORE any
 worktree carries the trimmed file. A trimmed worktree over an untrimmed ancestor loads
-BOTH copies, so context goes UP. ``ship`` prints the reminder; the pull is an owner step.
+BOTH copies, so context goes UP. ``ship`` prints the reminder; the pull is an Overtoad step.
 """
 from __future__ import annotations
 
@@ -188,7 +188,7 @@ PLAN: dict[str, dict] = {
              "Per-workflow reference for `.github/workflows/`, including the contract each job must not break."),
         ],
     },
-    # juniper-canopy PR2 of two (owner decision 2026-08-29), run AFTER PR1 merged. Moves the
+    # juniper-canopy PR2 of two (Overtoad decision 2026-08-29), run AFTER PR1 merged. Moves the
     # remaining reference-shaped material into a NEW docs/AGENTS_REFERENCE.md, scaffolded below.
     #
     # Safe to move now BECAUSE the hazards block landed first (canopy#538): the payload-keys
@@ -213,7 +213,7 @@ PLAN: dict[str, dict] = {
              "Route-by-route REST contracts and the WebSocket message envelope."),
         ],
     },
-    # juniper-cascor, Tier A (owner decision 2026-08-29), into a docs/REFERENCE.md this repo does
+    # juniper-cascor, Tier A (Overtoad decision 2026-08-29), into a docs/REFERENCE.md this repo does
     # not yet have -- scaffolded below.
     #
     # Tier A as agreed was NINE sections; TWO were dropped after running the hazard triage, under
@@ -259,7 +259,7 @@ PLAN: dict[str, dict] = {
              "The runtime and development dependencies, and what each one is relied on for."),
         ],
     },
-    # worker and deploy, added 2026-08-29 (owner decision to cut them). Section choice follows a
+    # worker and deploy, added 2026-08-29 (Overtoad decision to cut them). Section choice follows a
     # rule this arc arrived at the hard way: EXCLUDE any section carrying a score>=2 hazard
     # candidate from 2026-08-28_hazard_triage.py, because a relocation turns a resident fact into a
     # reference someone must know to look up. Excluded here:
@@ -830,7 +830,7 @@ def cmd_raise(repo: str) -> int:
         f"Seeded 2026-08-25 at 11,578 chars (zero slack, advisory soak); raised 2026-08-26 to {old:,} "
         f"(+2,120 measured slack) when --advisory was removed (plan P5 step d). RAISED AGAIN "
         f"{dt.date.today().isoformat()} to {new:,} under an Allow-Ceiling-Raise: {GOVERNED} trailer. "
-        f"This raise is a POLICY ceiling, not a slack-derived one: it is {cfg['why']}. The owner chose "
+        f"This raise is a POLICY ceiling, not a slack-derived one: it is {cfg['why']}. The Overtoad chose "
         f"a raise over a cut for this repo on 2026-08-28 (plan P5 step e scoping). At the re-measured "
         f"burn the headroom is ~{(new - chars) // max(1, _rate(growth)) if _rate(growth) else 0} days; "
         f"revisit with a real cut if {GOVERNED} approaches {new:,}. Growth past the ceiling FAILS the "
@@ -869,7 +869,7 @@ def cmd_raise(repo: str) -> int:
     msg = (
         f"chore(p5): raise the {GOVERNED} ceiling {old:,} -> {new:,}; cut deferred for this repo\n"
         "\n"
-        f"Plan §P5 step e scoping, owner decision 2026-08-28: {repo} takes a ceiling raise\n"
+        f"Plan §P5 step e scoping, Overtoad decision 2026-08-28: {repo} takes a ceiling raise\n"
         "INSTEAD of a cut. Its AGENTS.md is 11,578 chars across 6 sections and it has no\n"
         "docs/REFERENCE.md; splitting a file that small buys little, while its 2,120 headroom\n"
         f"is ~15 days at the re-measured ~{_rate(growth)} chars/day.\n"
@@ -908,7 +908,7 @@ def cmd_raise(repo: str) -> int:
     body.write_text(
         f"""## Summary
 
-Plan §P5 **step e scoping**, owner decision 2026-08-28: `{repo}` takes a **ceiling raise instead of a
+Plan §P5 **step e scoping**, Overtoad decision 2026-08-28: `{repo}` takes a **ceiling raise instead of a
 cut**. Its `{GOVERNED}` is 11,578 chars across 6 sections and it has **no `docs/REFERENCE.md`** —
 splitting a file that small buys little, while its 2,120 headroom is **~15 days** at the re-measured
 ~{_rate(growth)} chars/day.

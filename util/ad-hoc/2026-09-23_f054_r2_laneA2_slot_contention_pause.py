@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (executed by Claude Code, consensus Lane A2)
 Created: 2026-09-23
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: canopy#670 (F-CANOPY-054); juniper-canopy worktree fix/f054-replay-block-clientside;
          v1 = c0530279 (PR as opened), v2 = 85415f3c (local freeze, not pushed)
 

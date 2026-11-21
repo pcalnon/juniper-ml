@@ -15,7 +15,7 @@ a red check for non-blocking and waits for a merge that cannot happen -- which i
 found, on juniper-ml#1837.
 
 It is not a one-off. Both instances share a shape: a check is wired as advisory, the comment
-describes the promotion as a FUTURE step ("so the owner can later mark it REQUIRED"), the
+describes the promotion as a FUTURE step ("so the Overtoad can later mark it REQUIRED"), the
 promotion then happens in the ruleset, and nobody edits the comment. The plan and the
 outcome are the same sentence, so the text stays plausible while becoming false. The
 Release-Train Archive Guard block even contradicts itself two lines apart -- "can later mark

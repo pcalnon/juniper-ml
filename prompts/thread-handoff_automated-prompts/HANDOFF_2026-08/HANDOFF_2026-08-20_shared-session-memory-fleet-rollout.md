@@ -14,7 +14,7 @@ Continue the **shared-session-memory** effort in `juniper-ml`. Plan:
 its §4a/§4b execution logs are authoritative for what shipped.
 
 **Plan phases P0–P4 and P0b are complete. P5 (fleet rollout) has not started**, and
-the owner-set level target was not reached. Six items remain.
+the Overtoad-set level target was not reached. Six items remain.
 
 ### Completed (15 PRs, all merged)
 
@@ -73,10 +73,10 @@ other 7. **File a tracking issue per repo — none exists.** Per repo:
 **2. Parent `Juniper/AGENTS.md`** — 11,016 **bytes**, additive to every session in all
 9 repos, in a directory that is **not a git repo** (no VCS, no CI, no gate). Owner
 decision #8 says "yes, separately" and picks no approach, so **the first action is an
-owner question, not an edit**: (a) `git init` the parent so it can carry a gate,
+Overtoad question, not an edit**: (a) `git init` the parent so it can carry a gate,
 (b) hand-cut it to a pure index, or (c) push content down into the 9 repo files.
 
-**3. `MEMORY.md` forward-only cap** (correction C7; owner decision #4 = 120 bytes on
+**3. `MEMORY.md` forward-only cap** (correction C7; Overtoad decision #4 = 120 bytes on
 **new** entries, no rewriting existing rows). Eviction shipped; the cap did not.
 Now 124 lines / 17,209 bytes against a hard **200-line / 25,000-byte** cap that
 truncates **silently, newest-first**. **The blocker is that there is no enforcement
@@ -104,11 +104,11 @@ row per session: date, task, fact needed, followed Y/N, which pointer), a start
 marker (count from `500508b`), and a definition of "miss". Ladder, fixed in advance:
 *index row → CI gate or hook → path-scoped rule*. **Never re-inline** — that is how
 the file reached 170K. Caveat (plan §7.6): a path-scoped rule is **lost at
-compaction**. Owner decision #7 keeps Proposal A's Skills as an optional later probe
+compaction**. The Overtoad decision #7 keeps Proposal A's Skills as an optional later probe
 if the soak shows a real problem.
 
 **6. The level axis is not closed, and P0b is half-done.**
-`AGENTS.md` is 43,720 chars against owner decision #2's target of **32,443**
+`AGENTS.md` is 43,720 chars against Overtoad decision #2's target of **32,443**
 (still recorded in `conf/memory_budget.json` as `"Target after P3: 32443"`). Per-PR
 return has fallen — the remainder is many small sections — but candidates remain.
 Separately, P0b specified *"prune merged worktrees **and rebase the rest so their
@@ -159,7 +159,7 @@ with no content edit and no risk.
   `gh pr list` before opening anything.
 - **The budget ceiling is itself ungated.** Raising `ceiling_chars` in
   `conf/memory_budget.json` passes the check — the downward-only ratchet is defeated
-  by one line. Treat a diff touching that file as a policy change requiring the owner;
+  by one line. Treat a diff touching that file as a policy change requiring the Overtoad;
   adding a base-vs-head ceiling comparison is the first P5 hardening item.
 - **The two waivers are different species.** `Allow-Docs-Rewrite:` is a one-shot
   per-range demotion — attach only after the screen fires **and** G3 `--expect-removals`

@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-05
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Round 3's correction pass on the ledger's Phase 10 (and F-CANOPY-057's tense), as exact-match edits.
 
@@ -87,7 +87,7 @@ SUBS = [
     ("  - **F-CANOPY-065 (P1, OPEN):** `/api/set_params`'s", "  - **F-CANOPY-065 (P1, conditionally; OPEN):** `/api/set_params`'s"),
     (
         "| O3 | the same | the same | filed as F-CANOPY-065, P1 (re-rated in round 1), OPEN |",
-        "| O3 | the same | the same | filed as F-CANOPY-065, P1 if the owner's question goes that way (re-rated in round 1), OPEN |",
+        "| O3 | the same | the same | filed as F-CANOPY-065, P1 if the Overtoad's question goes that way (re-rated in round 1), OPEN |",
     ),
     ("20. **F-CANOPY-065 (P1).**", "20. **F-CANOPY-065 (P1, conditionally).**"),
     # --- F-CANOPY-067 in the Summary (both lanes' MAJOR) ---

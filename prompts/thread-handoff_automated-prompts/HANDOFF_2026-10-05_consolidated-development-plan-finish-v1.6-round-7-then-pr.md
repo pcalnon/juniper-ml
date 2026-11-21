@@ -5,7 +5,7 @@
 
 > **CONSUMED 2026-10-08 by the same session, `1d83ae70`.** It resumed on 2026-10-05 after the usage limit reset, finished v1.6.0 and ran round 7, then sat idle from 23:20Z until 2026-10-08T10:13Z.
 > It then re-ran the live census, froze v1.7.0, reconciled rounds 7 to 11 and ran rounds 8 to 12 (on v1.7.0 to v1.11.0). Session `3e8595eb` reconciled round 12 into v1.12.0 and ran round 13.
-> The plan landed on 2026-10-10 as v1.12.1, a record of v1.12.0 with round 13 unreconciled, together with its reports and the arc's handoffs, in one PR that session `560c1ec5` opened and merged on the owner's approval given in that session; v1.13.0 follows.
+> The plan landed on 2026-10-10 as v1.12.1, a record of v1.12.0 with round 13 unreconciled, together with its reports and the arc's handoffs, in one PR that session `560c1ec5` opened and merged on the Overtoad's approval given in that session; v1.13.0 follows.
 > The plan's Validation record records the outcome. This file is kept as the archived mid-arc handoff.
 
 ---
@@ -108,13 +108,13 @@ The branch is `worktree-unified-orbiting-fountain` @ `cf711cf4`. Nothing is stag
 - **Next:**
   - Gate v5. It fixes R7A-01 (the same-line swallow), R7B1-01 (code-spanned, bold, italic and underscored names), R7B1-02 (a line-bounded rule for API keys, tokens and passwords), R7B1-03 (F-S10's refusal texts), R7B1-05's items 1–5, R7B1-06 (a repeated `--scan-dir`), R7B1-08 (a BOM over other content), R7A-02 and R7B1-09 (a byte-bounded overlap), and R7A-03 (the path skip applied to the key only). It also prints START-END lines for R7B1-04. Each fix gets its own regression case.
   - Plan v1.7.0 takes the 49 round-7 findings, plus the drift since 10:25Z, from a census at 22:33Z:
-    - P12 Phase 1 wave 1 merged, with R2 and R3 applied as recommended and R8's alternative applied, all pending the owner's ruling. That covers data-client#222, recurrence#191, #192 and #193, canopy#722, data#451, deploy#242 and ml#2164.
+    - P12 Phase 1 wave 1 merged, with R2 and R3 applied as recommended and R8's alternative applied, all pending the Overtoad's ruling. That covers data-client#222, recurrence#191, #192 and #193, canopy#722, data#451, deploy#242 and ml#2164.
     - The W5.1 review is done (ml#2168), and P12's plan is at v1.4.1. P12's new handoff is `HANDOFF_2026-10-05_recurrence-equities-consensus-round2-p1-wave1-in-flight.md`.
     - P2-01/02 are done (ml#2157).
     - R-DC-PATCH now needs a maintenance branch from `v0.5.0`.
     - The fleet is 104 drafts.
   - Then `round7-reconciliation.md`, round 8 on the corrections, and the PR.
-- **Slips to report to the owner:**
+- **Slips to report to the Overtoad:**
   - Lane A wrote a gitignored `.pyc` under `util/ad-hoc/__pycache__/`.
   - Lane B1 read the first 4 bytes of every file of 2 MB or less in six checkouts, which may have included `.env` files; only a count was printed.
   - Lane B1 ran a recursive `grep -c` over juniper-deploy, which matched nothing.

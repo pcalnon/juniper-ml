@@ -3,7 +3,7 @@
 
 **Entry point:** repository contents at remote `main`, with its own census built first.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T19:55:12Z to 2026-09-22T20:08:53Z, read-only. Agent `agent-a7ad2af2b2e3ac827`.
 
@@ -17,7 +17,7 @@ You are Lane A3 (measurement re-creation) in an independent-agent consensus revi
 
 READ-ONLY RULES (hard): do not edit/create/delete files in any repo or worktree (your own scratch files are fine); do not commit, push, comment, merge or approve anything. Worktree-isolated harness: do NOT run `git` against any repo except reading `git diff`/`git show` in the juniper-ml worktree below; for the other repos use `gh api` (e.g. `gh api repos/pcalnon/<repo>/tarball/main > file.tgz`, or the contents/trees API) and python. The harness refuses shell loops over variables that touch gh/git, and refuses very complex one-liners — write a small python script into your scratch dir /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/97c72736-b353-43fe-9e6f-efaa8cf3be0c/scratchpad/lanes/a3/ (create it) and run it with python3.
 
-REPOS (owner pcalnon): juniper-ml, juniper-canopy, juniper-cascor, juniper-cascor-client, juniper-cascor-worker, juniper-data, juniper-data-client, juniper-deploy, juniper-recurrence.
+REPOS (Overtoad pcalnon): juniper-ml, juniper-canopy, juniper-cascor, juniper-cascor-client, juniper-cascor-worker, juniper-data, juniper-data-client, juniper-deploy, juniper-recurrence.
 
 STEP 1 — your own census, BEFORE reading the author's script: at each repo's remote main (record the SHA), find every `juniper-ci-tools` version specifier. Report (i) the number of LIVE pins — non-comment lines in `.github/workflows/*.yml|*.yaml` — per repo and in total, and the distinct ranges among them (the claim under test: 54 live pins, all `>=0.9.0,<0.10.0`; per repo ml 13, canopy 6, cascor 6, cascor-client 5, worker 5, data 5, data-client 5, deploy 3, recurrence 6); note a pin can be written as `pip install "..."`, as a workflow-level `env:` value like `CI_TOOLS_PIN:`, or in a requirements line; (ii) every current-state DOCUMENT (AGENTS.md, README.md, docs/**, scripts, non-ad-hoc util/**) that states an install RANGE with an upper bound which differs from what that repo's CI installs. The author claims exactly these were stale before their fixes: juniper-ml `docs/REFERENCE.md` (dependency-docs job text `>=0.1.0,<0.2.0`, the lockfile-refresh "Tooling" row `>=0.1.0,<0.8.0`, the flood-remediation install hint `>=0.8.0,<0.10.0`), juniper-ml `util/fleet_triage/predict_merge.py` (three printed/docstring install hints `>=0.8.0,<0.9.0`), and juniper-canopy `AGENTS.md:517` (`>=0.5.1,<0.6.0`). Find anything the author MISSED (other repos, other phrasing such as `juniper-ci-tools 0.6.x` or `<0.7`), and anything the author flagged that is NOT actually stale.
 

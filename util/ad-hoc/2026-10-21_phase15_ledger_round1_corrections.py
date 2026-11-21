@@ -6,8 +6,8 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-21
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
-# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
+# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : ledger Phase 15 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);
 #               util/ad-hoc/2026-10-20_phase15_items31_32_apply.py (the pass this corrects);
 #               reports/e2e-canopy-2026-09-02/consensus/2026-10-20_validator_reports_phase15_round1.md (the reports)
@@ -177,12 +177,12 @@ BANNER_NEW = """> **SUPERSEDED 2026-10-21** by `HANDOFF_2026-10-21_canopy-phase1
 > Its item 1 (juniper-ml#2291 merged 2026-10-20T13:59:34Z), item 2 (item 32: canopy#760, F-CANOPY-069 FIXED, the dash
 > floor 4.0.0) and item 3 (item 31: canopy#761, F-CANOPY-028 FIXED, the manual's row idiom) are done, recorded as
 > Phase 15 of `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`; its items 4 to 6 carry there as
-> items 27, 25, 28, 29 and 26's second step, and its item 7 (the parent's items 5 and 7, the owner batch) as that
+> items 27, 25, 28, 29 and 26's second step, and its item 7 (the parent's items 5 and 7, the Overtoad batch) as that
 > handoff's last remaining item; new item 33.
 """
 
 # ----------------------------------------------------------------------------- the handoff, whole
-HANDOFF_TEXT = """# HANDOFF 2026-10-21 — P2 canopy Lane A: Phase 15 recorded. Items 32 and 31 are DONE: F-CANOPY-069 is FIXED (canopy#760; the dash floor is 4.0.0) and F-CANOPY-028 is FIXED (canopy#761). 0 open P0, 4 open P1, 10 open P2. Next are item 27, the Linux host's items 25, 28 and 29, item 26's second step and the owner's item 33
+HANDOFF_TEXT = """# HANDOFF 2026-10-21 — P2 canopy Lane A: Phase 15 recorded. Items 32 and 31 are DONE: F-CANOPY-069 is FIXED (canopy#760; the dash floor is 4.0.0) and F-CANOPY-028 is FIXED (canopy#761). 0 open P0, 4 open P1, 10 open P2. Next are item 27, the Linux host's items 25, 28 and 29, item 26's second step and the Overtoad's item 33
 
 **Written**: 2026-10-21 by the session in juniper-ml worktree `.claude/worktrees/sequential-coalescing-boot` on host
 turing (macOS; no trio; throwaway legs from copies of the E2 tree), at a phase boundary, as its PR was opened. The
@@ -192,9 +192,9 @@ usage-credit error cut off Lane 15-A after it had run all five steps (its record
 15-B before it wrote anything. Round 1 changed one action's parameter (item 27's leg must serve canopy `main`).
 ROUND2_SUMMARY_PLACEHOLDER (ledger Phase 15, Consensus record).
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, authoritative for P2.
-Its items 5 and 7 and the owner batch O1–O17 carry over. This file supersedes
+Its items 5 and 7 and the Overtoad batch O1–O17 carry over. This file supersedes
 `HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`.
-**Merge approval**: the owner granted it for this session: its two canopy PRs and this PR ("save, merge, and PR
+**Merge approval**: the Overtoad granted it for this session: its two canopy PRs and this PR ("save, merge, and PR
 handoff", 2026-10-21). It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
@@ -204,8 +204,8 @@ Continue P2 Lane A (the juniper-canopy E2E validation arc) from
 (juniper-ml). Read it in full, then the parent `HANDOFF_2026-10-03_canopy-consolidated.md`. Run the verification
 commands first. Merge approval is not carried: ask before the first merge. Item 27 is a demo leg on turing serving
 canopy `main` (not the E2 tree, which is still `571743db`) and the Live Switch modal's allow arm; items 25, 28 and 29
-need the Linux host and the trio; item 33 is the owner's (turing's E2 canopy env is below canopy's floor); item 26's
-second step waits on the owner's O17 ruling; the canopy release that ships both fixes is owner-gated.
+need the Linux host and the trio; item 33 is the Overtoad's (turing's E2 canopy env is below canopy's floor); item 26's
+second step waits on the Overtoad's O17 ruling; the canopy release that ships both fixes is Overtoad-gated.
 
 **Completed:**
 
@@ -246,14 +246,14 @@ second step waits on the owner's O17 ruling; the canopy release that ships both 
 **Remaining, in order:**
 
 1. **Land this session's PR** if it has not merged: `python3 util/wait_for_checks.py --pr N`, query
-   `reviewThreads(isResolved:false)`, ask the owner, then `python3 util/safe_merge.py --pr N --execute` and read its
+   `reviewThreads(isResolved:false)`, ask the Overtoad, then `python3 util/safe_merge.py --pr N --execute` and read its
    `MERGED` line. Afterwards, and again an hour later (a concurrent whole-file upload can revert a merged change, the
    #2262 trap), on a fresh `origin/main`: `python3 -B util/ad-hoc/e2e_finding_triage.py | tail -7` prints 80 / 63 /
    1 / 2 / 14 with no open P0 line, and `git show origin/main:notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md | grep -c '^## Phase 15'`
    prints 1. A revert costs one replay: `util/ad-hoc/2026-10-20_phase15_rebuild_shared_files_for_landing.py`.
 ROUND3_ITEM_PLACEHOLDER
 3. **Item 27** (the Live Switch allow arm, F-CANOPY-055/-025): a demo leg on turing serving canopy `main`
-   (`aeeaf29b` or later). The E2 tree is still `571743db`; re-sync it from an up-to-date canopy primary (the owner
+   (`aeeaf29b` or later). The E2 tree is still `571743db`; re-sync it from an up-to-date canopy primary (the Overtoad
    pulls primaries; the worktree guard refuses `git -C`), or use `~/.local/state/juniper/turing-e2/trees/juniper-canopy-f028`
    after proving it equal to `main` with `util/ad-hoc/2026-10-20_e2_tree_blob_sha_check.py --ref main` (it differs
    only in `requirements.lock`). Then
@@ -263,20 +263,20 @@ ROUND3_ITEM_PLACEHOLDER
    It clicks through the Live Switch modal, which Phase 15's probe only fired; on `main` the spinner must close
    after the swap.
 4. **Items 25 and 28** on the Linux host, against the trio (ledger Phase 12). **Item 29**, the Linux host.
-5. **Item 33** (owner): bring turing's `JuniperCanopy1` env to canopy's floor (`pip install -e .` there resolves
+5. **Item 33** (Overtoad): bring turing's `JuniperCanopy1` env to canopy's floor (`pip install -e .` there resolves
    dash 4.4.1, `comm` and `janus`; or rebuild from the corrected `conf/conda_environment.yaml`), re-run the lanes the
    E2 record cites, and record an erratum in the bring-up plan's E2 section; the dash 3.x scratch venvs
    (`JuniperCanopy1-dash304/-dash32/-dash34`) can go then.
-6. **Item 26's second step** once the owner rules (O17).
-7. **The canopy release** that ships canopy#760 and #761 (owner-gated, P4). Until it is cut, PyPI's canopy 0.9.0 (the
+6. **Item 26's second step** once the Overtoad rules (O17).
+7. **The canopy release** that ships canopy#760 and #761 (Overtoad-gated, P4). Until it is cut, PyPI's canopy 0.9.0 (the
    newest release, 2026-10-17) keeps the colliding pairs, the Live Switch spinner that can stick under dash 4, the
    pin loss and the `dash>=3.0.0` floor. Check with `gh release list --repo pcalnon/juniper-canopy --limit 2`.
 8. **Cleanup on turing**, after the PR merges: the worktree `sequential-coalescing-boot` holds two local unsigned
    freeze commits (round 1 `6f933d07`, round 2 ROUND2_FREEZE_PLACEHOLDER): never push its branch; remove the
-   worktree through `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md` (owner, or a later session).
+   worktree through `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md` (Overtoad, or a later session).
    The fix trees `~/.local/state/juniper/turing-e2/trees/juniper-canopy-f069` and `-f028` can go once item 27 has its
    own tree. canopy deleted both fix branches on merge.
-9. Then the parent's items 5 and 7, and the owner batch O1–O17.
+9. Then the parent's items 5 and 7, and the Overtoad batch O1–O17.
 
 **Traps learned:**
 

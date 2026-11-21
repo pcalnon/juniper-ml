@@ -47,7 +47,7 @@
 | 18 | One checksum, two byte strings: in-memory sorts keys; `CachedDatasetStore` differs by cache state | Same id and checksum on both stores. LocalFS keeps generator order (X_train, y_train, …); in-memory is sorted. Cached store: 1st read `92fa9ce7…`, 2nd read `d015c26b…`, same ETag | REPRODUCED |
 | 19 | "another numpy or zlib could do the same" | Not tested | NO ARTIFACT |
 | 20 | RFC 9110 §8.8.1 quote (L9897-9899) | Verbatim, located in §8.8.1; a one-word mutation is not found | REPRODUCED |
-| 21 | `W/"<checksum>"` per the owner's 2026-09-23 ruling | Live `W/"995412b1…"`. The ruling is recorded in #428's PR body, juniper-data's CHANGELOG, `http_cache.py`, and APD-DATA-054 in #2074 | REPRODUCED (secondary records) |
+| 21 | `W/"<checksum>"` per the Overtoad's 2026-09-23 ruling | Live `W/"995412b1…"`. The ruling is recorded in #428's PR body, juniper-data's CHANGELOG, `http_cache.py`, and APD-DATA-054 in #2074 | REPRODUCED (secondary records) |
 | 22 | `If-None-Match` compares weakly; `If-Match` compares strongly, so only `*` matches | Live: INM `W/"c"` → 304, `"c"` → 304, other → 200; IM `W/"c"`, `"c"` and `"sha(served)"` → 412, `*` → 200. §13.1.1 and §13.1.2 sentences verbatim | REPRODUCED |
 | 23 | `If-Range` takes only a strong validator (§13.1.5) | "A client MUST NOT generate an If-Range header field containing an entity tag that is marked as weak." is verbatim in §13.1.5 | REPRODUCED |
 | 24 | PATCH can be made conditional on a strong metadata ETag; the precondition is optional; no 428 | Live: no precondition → 200; stale `If-Match` → 412 and nothing written; current → 200 with a new ETag equal to sha256(body); the artifact's tag → 412; `If-None-Match: *` → 412. No `428` in non-test code | REPRODUCED |

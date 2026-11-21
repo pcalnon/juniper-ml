@@ -75,18 +75,18 @@ def actions_status() -> str:
     return "unknown (no Actions component)"
 
 
-def head_sha(owner: str, repo: str, pr: int) -> str:
-    return json.loads(gh("pr", "view", str(pr), "--repo", f"{owner}/{repo}", "--json", "headRefOid"))["headRefOid"]
+def head_sha(Overtoad: str, repo: str, pr: int) -> str:
+    return json.loads(gh("pr", "view", str(pr), "--repo", f"{Overtoad}/{repo}", "--json", "headRefOid"))["headRefOid"]
 
 
-def runs_on(owner: str, repo: str, sha: str) -> list[dict]:
-    out = gh("run", "list", "--repo", f"{owner}/{repo}", "--commit", sha, "--limit", "50", "--json", "databaseId,name,status,conclusion")
+def runs_on(Overtoad: str, repo: str, sha: str) -> list[dict]:
+    out = gh("run", "list", "--repo", f"{Overtoad}/{repo}", "--commit", sha, "--limit", "50", "--json", "databaseId,name,status,conclusion")
     return json.loads(out)
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", required=True)
     ap.add_argument("--pr", type=int, required=True)
     ap.add_argument("--poll-seconds", type=int, default=120)
@@ -110,19 +110,19 @@ def main() -> int:
         status = actions_status()
     print(f"{time.strftime('%H:%M:%S')} Actions = {status} (accepted) after {int(time.time() - t0)} s", flush=True)
 
-    sha = head_sha(args.owner, args.repo, args.pr)
+    sha = head_sha(args.Overtoad, args.repo, args.pr)
     rerun = 0
-    for run in runs_on(args.owner, args.repo, sha):
+    for run in runs_on(args.Overtoad, args.repo, sha):
         if run.get("status") == "completed" and (run.get("conclusion") or "") in RERUN_CONCLUSIONS:
             print(f"re-running {run['name']} ({run['databaseId']}, was {run['conclusion']})", flush=True)
-            subprocess.run(["gh", "run", "rerun", str(run["databaseId"]), "--repo", f"{args.owner}/{args.repo}"], check=False)
+            subprocess.run(["gh", "run", "rerun", str(run["databaseId"]), "--repo", f"{args.Overtoad}/{args.repo}"], check=False)
             rerun += 1
     print(f"re-ran {rerun} run(s) on {sha[:8]}", flush=True)
 
     if args.no_merge:
         return 0
     safe_merge = Path(__file__).resolve().parents[2] / "util" / "safe_merge.py"
-    cmd = [sys.executable, str(safe_merge), "--pr", str(args.pr), "--repo", args.repo, "--owner", args.owner, "--execute", "--timeout", str(args.merge_timeout)]
+    cmd = [sys.executable, str(safe_merge), "--pr", str(args.pr), "--repo", args.repo, "--Overtoad", args.Overtoad, "--execute", "--timeout", str(args.merge_timeout)]
     print("handing off to:", " ".join(cmd), flush=True)
     return subprocess.run(cmd, check=False).returncode
 

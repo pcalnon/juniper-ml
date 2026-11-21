@@ -3,7 +3,7 @@
 
 **Entry point:** adversarial: amputation and executability.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T19:55:49Z to 2026-09-22T20:20:36Z, read-only. Agent `agent-a765f117f302f2596`.
 
@@ -17,7 +17,7 @@ You are Lane B2 (analysis review: AMPUTATION + EXECUTABILITY) in an independent-
 
 READ-ONLY RULES (hard): do not edit/create/delete files in any repo; do not commit, push, comment, merge, close or approve anything. Worktree-isolated harness: only read-only `git diff`/`git show`/`git log` inside the juniper-ml worktree below; use `gh api` for other repos; plain commands only (the harness refuses shell loops over variables touching gh/git and very complex one-liners). Scratch dir: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/97c72736-b353-43fe-9e6f-efaa8cf3be0c/scratchpad/lanes/b2/.
 
-WORKTREE (frozen): /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl. `git diff` there shows every uncommitted change: a status banner + header lines + four in-place notes in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`; two SHA corrections in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md`; three range edits in `docs/REFERENCE.md`; three in `util/fleet_triage/predict_merge.py`; plus an untracked new script `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`. The `__VALIDATION_RECORD__` placeholder in the banner is intentional (to be filled after this review). Also review the diffs of juniper-deploy#227 and juniper-canopy#655 (`gh pr diff N --repo pcalnon/<repo>`).
+WORKTREE (frozen): /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/jolly-wibbling-pearl. `git diff` there shows every uncommitted change: a status banner + header lines + four in-place notes in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-Overtoad-item-is-closed.md`; two SHA corrections in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md`; three range edits in `docs/REFERENCE.md`; three in `util/fleet_triage/predict_merge.py`; plus an untracked new script `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`. The `__VALIDATION_RECORD__` placeholder in the banner is intentional (to be filled after this review). Also review the diffs of juniper-deploy#227 and juniper-canopy#655 (`gh pr diff N --repo pcalnon/<repo>`).
 
 CHECK:
 1. AMPUTATION / CONTRADICTION: Does the banner contradict anything still stated elsewhere in the same document (the goal section, "Remaining work", "Verification commands", "Git state", "Validation record") without an in-place note? Does it contradict the later chain (`HANDOFF_2026-09-15_...`, `HANDOFF_2026-09-17_...`, `HANDOFF_2026-09-22_ten-prs-landed-...` in the same directory, read from the worktree which equals origin/main) or the design of record `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`? Did the in-place edits damage the original text (e.g. a note inserted mid-list or mid-code-block in a way that breaks rendering or meaning)?
@@ -31,7 +31,7 @@ OUTPUT (final message only is returned): numbered findings — location (file:li
 
 ## Final report
 
-1. **L76–80 (the "Where the remaining work lives" section) — MISLEADING, MAJOR.** The bullet labels juniper-deploy#227, juniper-canopy#655 and "this banner's own juniper-ml PR" as **"Not owner-gated"**. The only merge-approval rule ("obtain your own before merging anything") is in the goal at L113–114, and L12 tells the reader not to use the goal. `feedback_headless_merge_approval_policy.md` says every merge needs Paul's explicit approval in that session. deploy#227 is `mergeStateStatus: CLEAN` right now, so it could be merged on the spot. **Fix:** "not owner-gated to prepare; merging each still needs the owner's explicit approval in your session."
+1. **L76–80 (the "Where the remaining work lives" section) — MISLEADING, MAJOR.** The bullet labels juniper-deploy#227, juniper-canopy#655 and "this banner's own juniper-ml PR" as **"Not Overtoad-gated"**. The only merge-approval rule ("obtain your own before merging anything") is in the goal at L113–114, and L12 tells the reader not to use the goal. `feedback_headless_merge_approval_policy.md` says every merge needs Paul's explicit approval in that session. deploy#227 is `mergeStateStatus: CLEAN` right now, so it could be merged on the spot. **Fix:** "not Overtoad-gated to prepare; merging each still needs the Overtoad's explicit approval in your session."
 
 2. **L36 vs L76–78 — CONTRADICTION, MAJOR.** L36 says the census found the same class "in two more places, **now fixed too**". canopy#655 is OPEN (BLOCKED, unit legs pending), and the juniper-ml half is uncommitted. The census against remote `main` still exits 1 on 7 lines. The counts also disagree: "two more places" (L36), "three … install ranges" (L77), and in fact 7 lines in 3 files across 2 repos. **Fix:** "fixes opened, not merged: canopy#655 (AGENTS.md:517) and this PR (docs/REFERENCE.md:3754/6392/7072, predict_merge.py:57/180/234)."
 
@@ -80,7 +80,7 @@ OUTPUT (final message only is returned): numbered findings — location (file:li
 
 16. **L77, L88, L102 — MINOR.** "This banner's own juniper-ml PR" is unnumbered, and `__VALIDATION_RECORD__` is still a placeholder. Fill both before merging.
 
-17. **L110–113 — MINOR.** The goal's "Nothing is left that does not need the owner" and "ran to completion across all nine repos" were false when written (the two stale cascor pins, Corrections 1). There is no in-place marker; L12's "do not paste" mitigates this.
+17. **L110–113 — MINOR.** The goal's "Nothing is left that does not need the Overtoad" and "ran to completion across all nine repos" were false when written (the two stale cascor pins, Corrections 1). There is no in-place marker; L12's "do not paste" mitigates this.
 
 18. **OK — checked and clean:**
     - **Verification commands:** all 9 run as literal shell and print the values stated. The census reports 54 live pins in one range and exits 1. The others return `…juniper-ci-tools-0.9.0 packaging-26.3`, `[]`, `[]`, `0`, `true`, `0`, `43785fe0 b374f285` and `8`. The jq quoting is correct.

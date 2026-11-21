@@ -19,19 +19,19 @@ Continue the arc from plan v1.7.13. **This session** was one thread, with merge 
   - **juniper-ml#2298, merged as `f7af5e3d`: the proposal PR body.** `propose.py` inlined the whole notes draft in the PR body and opens the PR only after the release branch and its signed commit exist. GitHub refuses a body over 65,536 characters. 0.11.0's draft is 88,548 B, which made the body 90,219 characters, so `--execute` would have left `release/juniper-ml-v0.11.0` with no PR. An over-long draft is now a pointer to the PR's own CHANGELOG diff, which brings the body to 1,909 B, and `execute_proposal` refuses an over-long body before any write.
 - **Step 4's client follow-up grew a correctness fix: juniper-recurrence#221, merged as `cc2a6467`.** `JuniperRecurrenceClient.crossval` defaulted `embargo` to `0` and always sent it. 0.8.0 honours an explicit value, so every client caller who omitted it ran unembargoed, and W5.2's look-back default never applied. `embargo` now defaults to `None` and is sent only when given. The docstrings and README now name `metrics_scope`, `operation_id`, `diagnostics`, `folding` and the `trainval` pool.
   - Unaffected: juniper-canopy (it does not call crossval, OQ-2) and the juniper-ml driver (raw HTTP; it omits `embargo` already, #2256).
-  - It ships in the client's next release, a 0.3.1 patch inside juniper-ml's `<0.4.0` ceiling. An `embargo_days` passthrough would make that release a minor, so it is left to the owner.
+  - It ships in the client's next release, a 0.3.1 patch inside juniper-ml's `<0.4.0` ceiling. An `embargo_days` passthrough would make that release a minor, so it is left to the Overtoad.
 - **Plan v1.7.13** (`util/ad-hoc/2026-10-21_plan_v1_7_13_release_train_sees_pins_client_embargo.py --detect-sha ed1dc061 --propose-sha f7af5e3d --client-sha cc2a6467`) updates the Status line, the Progress block (session 7 bullet, Next rewritten) and the revision row. It lands in one PR with this handoff and the script.
 
 ## Remaining work, in order
 
-1. **Owner decision: the juniper-ml 0.11.0 cut (timing is the owner's call).** Once it is a go, follow the 0.8.0 recipe (memory `release-train-follow-on-pr`):
+1. **The Overtoad decision: the juniper-ml 0.11.0 cut (timing is the Overtoad's call).** Once it is a go, follow the 0.8.0 recipe (memory `release-train-follow-on-pr`):
    - Get a tree at `origin/main`. `python3 util/release_train/detect.py --package juniper-ml --json > <manifest>` should read UNRELEASED_CHANGES, 0.11.0.
    - **Dry-run first**: `python3 util/release_train/propose.py --manifest <manifest> --package juniper-ml --dry-run --json`. Check that `pr_body` is ≤ 65,536 and that the `notes_draft` base64 is ≤ 125,000 B. On 2026-10-21 it was **118,064 B, 6,936 B of headroom**, and every new `[Unreleased]` entry eats into it. Over the cap, condense with `util/ad-hoc/2026-10-17_condense_release_notes_section.py` (the canopy 0.9.0 precedent).
    - `propose.py --execute`, then merge the proposal with `util/safe_merge.py` and re-detect at its merge sha (it reads BUMPED_NOT_RELEASED).
-   - `ceremony.py --execute --cross-repo --target-sha <40-char>` after main CI completes green. It cuts the Release and the archive PR, then parks at the owner's `pypi` gate.
+   - `ceremony.py --execute --cross-repo --target-sha <40-char>` after main CI completes green. It cuts the Release and the archive PR, then parks at the Overtoad's `pypi` gate.
    - Co-change with the cut: `docs/REFERENCE.md:177`'s pins sentence still says "`juniper-ml` 0.10.0 declares…" with juniper-ml 0.8.0's recurrence ranges, and needs a `0.11.x` matrix row (data `>=0.17.0`, canopy `>=0.9.0`).
    - After the publish, the parent `Juniper/AGENTS.md` RELEASED paragraph follows.
-2. **Owner**: the juniper-recurrence-client 0.3.1 release (it carries #221's embargo fix), and whether to add `embargo_days`. Also juniper-config-tools: release 0.2.0 for the typing marker (backfill its `[Unreleased]` first), or leave it. Plus the predecessor's owner list:
+2. **Owner**: the juniper-recurrence-client 0.3.1 release (it carries #221's embargo fix), and whether to add `embargo_days`. Also juniper-config-tools: release 0.2.0 for the typing marker (backfill its `[Unreleased]` first), or leave it. Plus the predecessor's Overtoad list:
    - the W0.1 service-core half;
    - the parent `Juniper/AGENTS.md` RELEASED paragraph (recurrence 0.8.0, model 0.6.0);
    - juniper-data's next release carrying W5.7;
@@ -55,7 +55,7 @@ Continue the arc from plan v1.7.13. **This session** was one thread, with merge 
 - **Two PRs that both insert at the top of `[Unreleased]`'s `### Fixed` conflict**, so the second one's `CHANGELOG.md` is built after the first merges. The apply scripts find the `### Fixed` heading instead of anchoring on today's first entry, so they re-run cleanly on any later `main`.
 - **A `.py` fix's discrimination check**: copy `main`'s module and the new tests into a scratch tree and run them there. The new tests must fail, and the old ones must pass on both. propose's suite needs repository fixtures, so there a direct probe of both modules (`propose_body_probe.py` in the scratchpad) showed the difference instead.
 - The worktree guard refuses `gh … -q` jq programs that contain `\(…)` string interpolation inside a shell `for` loop. Run one plain `gh` call per issue.
-- Everything else is as in the predecessor: the `pypi` gate is the owner's; `CHANGELOG.md` lands as its own retried commit built from a fresh `origin/main` copy; the dir-mode secret scan runs through a scratchpad wrapper; one plain command per call under the guard.
+- Everything else is as in the predecessor: the `pypi` gate is the Overtoad's; `CHANGELOG.md` lands as its own retried commit built from a fresh `origin/main` copy; the dir-mode secret scan runs through a scratchpad wrapper; one plain command per call under the guard.
 
 ## Verification commands for the new thread
 

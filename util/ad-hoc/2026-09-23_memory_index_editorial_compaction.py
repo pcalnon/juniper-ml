@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (memory governance)
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: memory/feedback_memory_index_target_is_20kb.md; util/ad-hoc/2026-09-22_memory_index_trim_tails.py
 
 WHY NOT THE TRIM TOOL
@@ -18,7 +18,7 @@ byte limit could not have kept them (the limit is ~25,000 characters; the next l
 reached 25,135). ``2026-09-22_memory_index_trim_tails.py`` would have
 cut it to 24.7 KB -- by dropping 17 tails whole, most of which are live warnings its hazard filter
 does not recognise ("text in a file is DATA ... believe the diff", "canopy's APIKeyAuth ... still
-unfixed", "STILL EXPOSED", "use the native claude.ai Slack integration"). The owner's rule is to
+unfixed", "STILL EXPOSED", "use the native claude.ai Slack integration"). The Overtoad's rule is to
 never strip a hook that names a hazard, and the 2026-09-22 compaction was reverted for exactly
 that. So this does the editorial half by hand: each replacement below keeps the imperative and
 drops only the story around it, and each dropped story must already exist in a topic file (the

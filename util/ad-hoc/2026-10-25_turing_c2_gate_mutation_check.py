@@ -5,14 +5,14 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-25
-Status: ad-hoc — investigation (suite strength evidence for C2's gate follow-up, owner ruling 2026-10-25)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — investigation (suite strength evidence for C2's gate follow-up, Overtoad ruling 2026-10-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18.2 C2 row, gate G-SEC of §9.3);
          util/host_state_probe.bash; util/host_state_check.py; tests/test_host_state_probe.py;
          tests/test_host_state_check.py; util/ad-hoc/2026-10-20_turing_g1_mutation_check.py (the engine this
          follows; its 57 mutants still apply, C12 among them)
 
-The owner chose C2's block-all form on 2026-10-25: the application firewall on, blocking all incoming connections
+The Overtoad chose C2's block-all form on 2026-10-25: the application firewall on, blocking all incoming connections
 while nothing inbound is needed. G-SEC's firewall condition used to pass at State = 1. It now also needs the probe's
 new `socketfilterfw --getblockall` capture to report block all. Each mutant re-introduces one regression into a COPY
 of the probe or the check: the pre-ruling condition, the disabled sentence read as on, an unknown state passing or
@@ -21,7 +21,7 @@ capture, the --getblockall sentence not recognised, the old remediation text, an
 again, the capture dropped from the probe, and stealth mode gated, which the design only reports. The G1 engine's
 behavioural classes plus FirewallTest then run against that copy, in a scratch tree that mirrors the repo layout.
 
-2026-10-26 (erratum E-C2-GATE, the on-state observed): once the owner applied C2, turing's --getblockall printed
+2026-10-26 (erratum E-C2-GATE, the on-state observed): once the Overtoad applied C2, turing's --getblockall printed
 "Firewall is blocking all non-essential incoming connections." and never the "is set to block all ..." sentence,
 which the binary's strings place beside "Block all DISABLED!" as --setblockall's confirmation. The gate now accepts
 only the getter's sentence, so B7 was redefined: it used to drop the setter's sentence (now the code itself), and
@@ -88,7 +88,7 @@ MUTANTS = [
     ("B5", CHECK, "an off firewall errors when block all cannot be read", [(OFF_GUARD, "        raise\n")]),
     ("B6", CHECK, "a firewall that is on fails, not errors, when block all cannot be read", [(OFF_GUARD, "        pass\n")]),
     ("B7", CHECK, "--setblockall's confirmation reads as block all", [("    if _BLOCKALL_ON in text:\n", '    if _BLOCKALL_ON in text or "is set to block all non-essential incoming connections" in text:\n')]),
-    ("B8", CHECK, "the remediation keeps the pre-ruling wording", [('_C2_FIX = "task C2 (owner): sudo /usr/libexec/ApplicationFirewall/socketfilterfw {steps}', '_C2_FIX = "task C2 (owner): turn the application firewall on, with stealth mode, allowing signed software{steps}')]),
+    ("B8", CHECK, "the remediation keeps the pre-ruling wording", [('_C2_FIX = "task C2 (Overtoad): sudo /usr/libexec/ApplicationFirewall/socketfilterfw {steps}', '_C2_FIX = "task C2 (Overtoad): turn the application firewall on, with stealth mode, allowing signed software{steps}')]),
     ("B9", CHECK, "a firewall that is on is told to turn it on again", [(ON_FIX, '_C2_FIX.format(steps="--setglobalstate on, then --setblockall on and --setstealthmode on")')]),
     ("B10", PROBE, "the probe no longer captures --getblockall", [('    capture blockall "$SOCKETFILTERFW" --getblockall\n', "")]),
     ("B11", CHECK, "stealth mode is gated, which the design only reports", [('    message = "; ".join(parts)\n', '    message = "; ".join(parts)\n    if "stealth mode is off" in message:\n        return Condition("firewall", "fail", message, "stealth")\n')]),

@@ -2,7 +2,7 @@ You are Lane 10-A2 (measurement re-creation, EVIDENCE-AND-INSTRUMENT-FIRST, ROUN
 
 HARD RULES
 - READ-ONLY on every repo: no edits to tracked files, no commits, pushes, PR/issue writes. `gh api` GETs are fine. Do not start or stop any service; never touch ports :8051, :8101, :8202 or any :805x/:806x leg; nothing in this lane needs a live stack. Scratch work only in a directory you create with `mktemp -d`.
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential anywhere; never request an email field from GitHub. Some archived logs may contain host details — quote only the lines you need. Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential anywhere; never request an email field from GitHub. Some archived logs may contain host details — quote only the lines you need. Report any slip.
 - Read juniper-ml only through the worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/clever-juggling-spring` (never `git -C` the primary juniper-ml checkout). If a shell guard refuses a compound command, split it, or put a script under your `mktemp -d` directory and run it with `python3 -B`.
 
 THE FROZEN ARTIFACT: commit `0737d573` in that worktree (branch `docs/canopy-e2e-phase10`). Read the ledger as `git -C <worktree> show 0737d573:notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` — Phase 10 is "## Phase 10 — 2026-10-04". The archived evidence lives in the worktree at `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/` (committed on main; read it from the worktree). The scripts are `util/ad-hoc/2026-10-04_phase10_{f060,o2,o3}_rederive.py` at `0737d573`.

@@ -66,7 +66,7 @@ Names used below:
      - L:10930-10931: "Phase 10's question, whether a shipped CHANGELOG's or a design plan's promise of something a user sees counts".
      - The Rating lead (L:10761): "its first limb, from Phase 10's Consensus record".
      - Phase 10's own wording (L:10316): "whether a CHANGELOG or design-plan promise counts as 'documented'".
-   - **Evidence:** F-068's "Its own contract" bullet still says the CHANGELOG "makes the promise to its readers … cannot keep that promise" (L:10724-10728), and item 0 says "`[0.8.0]` promise" (L:11073). Read literally, Phase 10's wording would therefore reach F-068 as well, so "carried everywhere" (L:11000) overstates. Every rating still comes out the same if the owner answers Phase 11's statement of the question.
+   - **Evidence:** F-068's "Its own contract" bullet still says the CHANGELOG "makes the promise to its readers … cannot keep that promise" (L:10724-10728), and item 0 says "`[0.8.0]` promise" (L:11073). Read literally, Phase 10's wording would therefore reach F-068 as well, so "carried everywhere" (L:11000) overstates. Every rating still comes out the same if the Overtoad answers Phase 11's statement of the question.
    - **Fix:** Write "Phase 10's question, limited since round 3 to a promise of something a user sees". Optionally write "description" for "promise" at L:10724-10728 and L:11073.
    - **Changes a number, disposition or action?** No.
 
@@ -111,7 +111,7 @@ Names used below:
 
 **Lane 11-R4B** (adversarial, on round 3's correction pass)
 
-**VERDICT: SOUND-WITH-FIXES.** Round 3's pass replays byte for byte, with no hand edit. Every number it added or changed re-derives from my own reader. The readers behave exactly as at `7af6a381`, and the CodeQL edits change nothing any probe computes. The pass still left the owner's question stated two ways, and it left one known open P2 out of the reach list. Both of those change an action, so §4 requires round 5.
+**VERDICT: SOUND-WITH-FIXES.** Round 3's pass replays byte for byte, with no hand edit. Every number it added or changed re-derives from my own reader. The readers behave exactly as at `7af6a381`, and the CodeQL edits change nothing any probe computes. The pass still left the Overtoad's question stated two ways, and it left one known open P2 out of the reach list. Both of those change an action, so §4 requires round 5.
 
 **TABLE.** Line numbers (L…) are in `…E2E-VALIDATION-EVIDENCE.md` at `adcba49f`. Values are given as "T1 ; T2". $S is `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/06e8868d-0c1f-4457-b7cb-b35e525032ef/scratchpad/r4b.5mnsCd`.
 
@@ -145,7 +145,7 @@ Names used below:
 
 1. **MINOR: the first limb is still stated two ways, and Phase 11 quotes Phase 10's question in a form Phase 10 never asked.**
    - **Quoted:**
-     - F-065's header, rewritten by round 3 (L10087): "(P1 if a shipped CHANGELOG or design-plan promise counts as documented, else P2, the first limb of the owner's question; …". Its Severity bullet (L10133-10135) gives the same condition.
+     - F-065's header, rewritten by round 3 (L10087): "(P1 if a shipped CHANGELOG or design-plan promise counts as documented, else P2, the first limb of the Overtoad's question; …". Its Severity bullet (L10133-10135) gives the same condition.
      - Phase 10's question (L10316): "whether a CHANGELOG or design-plan promise counts as "documented" under plan §6.3".
      - Phase 11's Unresolved (L10930-10931): "Phase 10's question, whether a shipped CHANGELOG's or a design plan's promise of something a user sees counts as documented". The Matrix (L11046-11047) says the same.
      - F-068's own entry still calls its CHANGELOG text a promise: "canopy's CHANGELOG makes the promise to its readers … The threshold cannot keep that promise" (L10724-10728). So does item 0: "the shipped CHANGELOG's `[0.8.0]` promise" (L11072-11073).
@@ -158,7 +158,7 @@ Names used below:
      - State limb 1 once. Either put "of something a user sees" into F-065's header and Severity bullet and add a dated note at Phase 10's Unresolved that Phase 11 narrowed the question, or drop the qualifier and state limb 2 as the explicit exception.
      - In F-068's "Its own contract" and in item 0, call the `[0.8.0]` text a description.
      - In Phase 11's Unresolved, write "narrowed from Phase 10's question".
-   - **Changes a number, disposition or action?** Yes. The action: the question put to the owner. A number: F-068's rating and the 6/17 count, under one ruling.
+   - **Changes a number, disposition or action?** Yes. The action: the question put to the Overtoad. A number: F-068's rating and the 6/17 count, under one ruling.
 
 2. **MINOR: the reach list leaves out F-012, which the same design note reaches, and the round-3 record drops Lane 11-R3A's pointer to it.**
    - **Quoted:**
@@ -171,7 +171,7 @@ Names used below:
      - F-012, an open P2 (L3833-3835), says `output_weights`, the editor's default patch target, "is structurally impossible to patch from the UI". That is F-057's footing exactly.
      - F-012's fix, canopy#535, merged on 2026-08-28 and awaits a live re-drive (L6148-6155). That is F-018's state exactly.
    - **Fix:** Name F-012 in the reach bullet and in item 26's start list, and F-013 as unsettled per Lane 11-R3A. Record Lane 11-R3A's pointer in the round-3 record.
-   - **Changes a number, disposition or action?** Action: yes (the reach put to the owner, and item 26's start list). Number and disposition: no, since the counts are stated for "those two alone".
+   - **Changes a number, disposition or action?** Action: yes (the reach put to the Overtoad, and item 26's start list). Number and disposition: no, since the counts are stated for "those two alone".
 
 3. **NIT: the lead, the Summary and the README still say every trigger took effect, and the README says the transcript does not split a delay the ledger now splits for T-tab.**
    - **Quoted:**

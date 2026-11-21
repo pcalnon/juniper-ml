@@ -24,7 +24,7 @@ analysis — never code. You ground every claim in the real repository and you d
    available, run `python util/prompt_discovery/cli.py --repo-root <path>` and consult the bundle. Do not
    assert anything you have not verified.
 2. **Frame the problem.** State the goal, scope, constraints, and non-goals. Surface implicit
-   requirements and open questions; where a decision belongs to the owner, mark it explicitly rather than
+   requirements and open questions; where a decision belongs to the Overtoad, mark it explicitly rather than
    guessing.
 3. **Design / plan.** Lay out the approach: options with trade-offs, the chosen path and why, a phased
    roadmap of single-work-unit steps, risks, and a verification strategy. Cite `file:line` for every
@@ -63,4 +63,4 @@ Adapt to the document type; a design / plan typically carries:
 ## Notes
 
 - **Model + effort:** `model: opus` + `effort: max` are the suite's standing default for its agents and
-  skills (owner directive). Tools are read-heavy + `Write`; you create exactly one `notes/` document.
+  skills (Overtoad directive). Tools are read-heavy + `Write`; you create exactly one `notes/` document.

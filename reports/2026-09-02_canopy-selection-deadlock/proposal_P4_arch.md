@@ -129,7 +129,7 @@ sequence generators** — `equities_seq`, `multi_sine`, `mackey_glass`, `ar_p`, 
 `delay_product` — and **canopy exposes exactly one of them.** The recurrence/LMU model could train on
 all six today. **Five ready-to-use 3-D datasets are invisible to the dashboard**, not because of a
 gate, but because a hand-written tuple in canopy has never been updated. That is the drift cost of
-the current ownership model, already incurred, measurable, and it is 5× larger than the deadlock this
+the current Overtoadship model, already incurred, measurable, and it is 5× larger than the deadlock this
 brief is about.
 
 ### 2.2 juniper-recurrence / juniper-recurrence-model — the model service
@@ -293,10 +293,10 @@ The organising principle, and it is not "put it all in one place":
 > **Properties belong to the producer. Requirements belong to the consumer. The predicate belongs to
 > the presenter. The vocabulary belongs to a shared package. The instances never do.**
 
-| Fact | Rightful owner | Why |
+| Fact | Rightful Overtoad | Why |
 |---|---|---|
 | Dataset **properties** — rank, `task_type`, temporal character, label | **juniper-data** | It is the only party that is *necessarily* correct when a generator is added, removed, or changes shape. It already ships per-generator metadata over the same wire (`GET /v1/generators`, consumed at `dashboard_manager.py:2713-2740`). |
-| Model **requirements** — accepted ranks, task types, Δt need, family/variant/version/status | **the serving service** (juniper-recurrence for LMU, juniper-cascor for cascor) | It is the party that will actually *fail closed* under FR9 of `…MODEL-DATASET-SELECTION-DESIGN.md` §5.9. Any other owner is by construction a copy that can be wrong. |
+| Model **requirements** — accepted ranks, task types, Δt need, family/variant/version/status | **the serving service** (juniper-recurrence for LMU, juniper-cascor for cascor) | It is the party that will actually *fail closed* under FR9 of `…MODEL-DATASET-SELECTION-DESIGN.md` §5.9. Any other Overtoad is by construction a copy that can be wrong. |
 | The **predicate**, faceting, search, reason phrasing, lifecycle presentation | **juniper-canopy** | It is presentation. It must keep working with every service down; `…MODEL-DATASET-SELECTION-DESIGN.md` §5.8 already requires "the sidebar summary shows the last-known model … training is not blocked by a picker load error". |
 | The **descriptor types + the predicate function + the vocabulary** (`ndim`, `task_type` values, temporal enum) | **juniper-model-core** (published sub-package, `juniper-ml/juniper-model-core/`) | One definition of the words, importable by canopy, cascor and recurrence, so a schema change is a compile-time event in three repos instead of a silent runtime divergence. |
 | The **instances** (which models exist, which generators exist) | **nobody shared** | *This is the trap.* Moving `MODELS` / `DATASET_TYPES` into a shared package does **not** fix drift — it relocates the hand-maintained copy one layer up and adds a release cycle between the truth and the copy. |
@@ -372,7 +372,7 @@ adding a null state.
    `…MODEL-DATASET-SELECTION-DESIGN.md` §5.6 requires the notice; today there is none on either side.
 
 **Where compatibility knowledge lives afterwards.** Exactly where it lives now: canopy's local
-`model_registry.py`. **This proposal deliberately changes nothing about ownership.** Owner on a new
+`model_registry.py`. **This proposal deliberately changes nothing about Overtoadship.** The Overtoad on a new
 model or dataset: still a canopy PR — unchanged, and still wrong at scale. That is the honest cost,
 and it is why P4-A is a *fix*, not an *architecture*.
 
@@ -446,7 +446,7 @@ variant, implements it alongside). **Resolves OQ-6 → model-primary.** Leaves D
 
 **Migration path + phasing.** Ships first: fix Defect 2 and Defect 4 (§5) — those are prerequisites,
 not follow-ups. Then G1+G2 (they go red, proving the bug). Then the secondary Select action + notice
-(they go green). Deferred: everything about ownership. **Fully reversible** — one callback Output and
+(they go green). Deferred: everything about Overtoadship. **Fully reversible** — one callback Output and
 one button; revert restores today's behaviour exactly.
 
 ---
@@ -637,7 +637,7 @@ contract; `juniper-model-core` owns the *schema and the predicate* (never the in
 **Where compatibility knowledge lives afterwards.** Model requirements: **the service that serves the
 model**, in the repo that ships it, changed in the same commit that changes the model. Dataset
 properties: juniper-data (P4-B). Vocabulary + predicate: `juniper-model-core`, versioned and pinned.
-Presentation + facets + the offline seed: canopy. **Owner on a new model: the model's author, in
+Presentation + facets + the offline seed: canopy. **The Overtoad on a new model: the model's author, in
 their own repo. FR14 becomes true across repos** — which is the requirement the design of record
 wrote down (`…MODEL-DATASET-SELECTION-DESIGN.md` FR14: "Adding a model/variant for benchmarking is
 registry-only") and which is *false today* the moment the model is served by another service.

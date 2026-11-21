@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-09-23
 # Status:     ad-hoc — investigation
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    item 18 (A-N2) of prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-23_canopy-selection-six-prs-queued-live-swap-mirror-staged.md;
 #             §12.4 of notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md;
 #             evidence in reports/2026-09-23_canopy-a-n2-generate-stage-train-render/

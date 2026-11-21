@@ -4,13 +4,13 @@
 
 - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_partition-arc-spec-v2-round-2-recorded-v3-next-three-prs-await-0-16-0.md`. This is the assigned source. It **declares no validation round**: it has no "Validation" line, and only its §5 caveats were checked by hand. Every claim in it that was not re-probed below is tagged `[UNVERIFIED — from HANDOFF_2026-09-24_partition-arc-spec-v2-round-2-…md, which was not validated]`.
 - **Required predecessor**, read in full and carried: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-23_partition-arc-residue-stores-conformed-canopy-advisory-decision-12-spec-unsound.md`. It declares no validation round either.
-- **Carried by reference**: §10.2 and §10.5 of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md`. The 09-23 handoff names that §10 as the arc's state of record. That §10 was validated in a consensus round, recorded in its §10.7.
+- **Carried by reference**: §10.2 and §10.5 of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-Overtoad.md`. The 09-23 handoff names that §10 as the arc's state of record. That §10 was validated in a consensus round, recorded in its §10.7.
 
 **Supersedes**: `HANDOFF_2026-09-24_partition-arc-spec-v2-round-2-recorded-v3-next-three-prs-await-0-16-0.md`. That file carries a SUPERSEDED banner. Its predecessors were already superseded by it and are not edited.
 
 **Aliases used below**:
 
-- **H-0909** is `HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md`.
+- **H-0909** is `HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-Overtoad.md`.
 - **H-0923** is `HANDOFF_2026-09-23_partition-arc-residue-stores-conformed-canopy-advisory-decision-12-spec-unsound.md`.
 - **H-0924** is `HANDOFF_2026-09-24_partition-arc-spec-v2-round-2-recorded-v3-next-three-prs-await-0-16-0.md`.
 - **SPEC** is `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md`.
@@ -65,7 +65,7 @@ Remaining work, in order:
    (c) W11 and FIRST_EMITTING_VERSION are conditional on OQ-1 = yes, and the "no" branch is written out;
        bump each generator's VERSION in the same PR as its emission, and fill W11 from W6's own
        verified list (R2-5);
-   (d) drop the "0.6.1 is a PATCH" argument: release 0.7.0, or put the question to the owner in §16;
+   (d) drop the "0.6.1 is a PATCH" argument: release 0.7.0, or put the question to the Overtoad in §16;
    (e) name the status, override and caveat surfaces per consumer, under both OQ-2 answers, and add
        a canopy line to §16 (R2-10);
    (f) restate S1-F3: recurrence main caps juniper-data <0.17.0 in [bench] (recurrence#188,
@@ -74,7 +74,7 @@ Remaining work, in order:
    Update util/ad-hoc/2026-09-23_partition_provenance_v2_reference_gate.py with a vector per R2
    cluster, notably R2-1: an unknown scheme with a changed core must be `unverifiable`, not refused.
    Re-pin util/ad-hoc/2026-09-23_partition_provenance_v2_citation_check.py to the current main heads.
-   Then run review ROUND 3 with fresh lanes on frozen text. Only after that, ask the owner to rule (§16).
+   Then run review ROUND 3 with fresh lanes on frozen text. Only after that, ask the Overtoad to rule (§16).
 2. [agent] A juniper-data follow-up PR carrying #434's round-3 NITs. They were never committed: the
    strict exc_info assertions in juniper_data/tests/unit/test_cached_store.py, and the CHANGELOG
    /versions?name= wording, which now sits in the RELEASED [0.16.0] section, so word the fix as a new
@@ -88,13 +88,13 @@ Remaining work, in order:
    [ALSO P6]
 5. [agent, optional] juniper-data-client follow-ups to #212: the comment should read "a later run in
    the receiver's concurrency group"; the three POSTs get a --max-time. juniper-data-client#213 is open
-   and has no owner.
+   and has no Overtoad.
 6. [agent, minor, not ticketed] Stale fallback __version__ literals (juniper-data, cascor-worker);
    recurrence data.py:69-77 promises ValueError, but a KeyError can escape from data-client's
    contract.py:72; cascor publish.yml's TestPyPI check imports from the checkout.
 
 Owner-only (never do these; never approve deploy gates; merge approval is per-session, so ask again):
-- **DONE 2026-10-03.** The owner widened the token. Verified the same day: notify-consumers run 37114403856 in juniper-data was green, and the `repository_dispatch` bench run it started in juniper-recurrence (37114410788) was green too. The original item follows, for context.
+- **DONE 2026-10-03.** The Overtoad widened the token. Verified the same day: notify-consumers run 37114403856 in juniper-data was green, and the `repository_dispatch` bench run it started in juniper-recurrence (37114410788) was green too. The original item follows, for context.
   Widen CROSS_REPO_DISPATCH_TOKEN (the PAT in juniper-data) to pcalnon/juniper-recurrence with
   Contents: Read and write, AND Actions: Read. #431's confirm step needs Actions: Read. 0.16.0's
   notify job got a 403 again on 2026-09-24. recurrence#178 is OPEN; close it once a release's own
@@ -115,10 +115,10 @@ closing keywords, safe_merge exit 0, a release cut under an open PR, and freezin
 ## Dependencies on other paths
 
 - **P5 spec v3, item 1(a), depends on P4 (juniper-data releases).** juniper-data 0.16.0 is published `[VERIFIED 2026-10-03: PyPI JSON 0.16.0 uploaded 2026-09-24T18:35:40]` and carries no provenance block. The next data release will carry X8 (#437), #436, #438 and #440, which all merged after the tag commit `[VERIFIED 2026-10-03: data CHANGELOG on main]`. If P4 cuts it before W6 lands, the block-bearing release moves to 0.18.0 or later.
-- **P5 owner item "widen CROSS_REPO_DISPATCH_TOKEN" is shared with P4**, where it gates Wave 4. The grant is pcalnon/juniper-recurrence with Contents: Read and write and Actions: Read (H-0924 §1). One owner action closes both. recurrence#178 closes only after a release's own notify job goes green.
+- **P5 Overtoad item "widen CROSS_REPO_DISPATCH_TOKEN" is shared with P4**, where it gates Wave 4. The grant is pcalnon/juniper-recurrence with Contents: Read and write and Actions: Read (H-0924 §1). One Overtoad action closes both. recurrence#178 closes only after a release's own notify job goes green.
 - **P5 W10 (the meta-package floors) depends on P4's juniper-recurrence release.** The <0.17.0 data cap is only on recurrence main (#188, 2026-10-02). The client cap `juniper-data-client>=0.4.2,<0.6.0` is still on main `[VERIFIED 2026-10-03: recurrence pyproject on main]`. canopy main also still caps `juniper-data-client>=0.5.0,<0.6.0` `[VERIFIED 2026-10-03: canopy pyproject:192 on main]`.
 - **P5 items 3–4 touch P6 (perf lane).** #2064 edits `util/experiments/`, which is in P6's residue area. V-3 compute must wait for P6's lane to be quiet, because the 09-23 plan on cascor#677 notes that PF-1 holds the box.
-- **P5 owner release cuts (cascor #672, canopy #663) are P4's release-train items.**
+- **P5 Overtoad release cuts (cascor #672, canopy #663) are P4's release-train items.**
 
 ## Context the remaining work needs
 
@@ -139,7 +139,7 @@ closing keywords, safe_merge exit 0, a release cut under an open PR, and freezin
 
   The MINORs and NITs, with lane ids, are listed in that §15. The full text is in `reports/partition-provenance-spec-v2-review-2026-09-23/S{1..4}-*.md`.
 - **Store ids before and after 0.16.0 (bears on R2-4).** Until #422, only the generator route hashed `generator_version` into `dataset_id`. The stores built `hf-<name>-<rows>`, so every released wheel up to 0.15.0 behaves the old way. 0.16.0 is the first wheel with the stores on `generate_dataset_id` `[NOT RE-PROBED — from H-0923 Key context and H-0909 §10.4, validated by H-0909's §10.7 consensus]`.
-- **R2-6 recurs.** Round 2 moved the block to "0.17.0" because #433 had taken 0.16.0. But juniper-data main already holds unreleased X8 (#437, equities_seq 6.0.0), #436, #438 and #440, both unrelated to the block, and the owner's release cadence is days. v3 should not hard-code 0.17.0, and a `>=X` floor must name a release whose wheel is proven to emit the block (read it from the wheel). This is a new observation from this consolidation; no round has reviewed it.
+- **R2-6 recurs.** Round 2 moved the block to "0.17.0" because #433 had taken 0.16.0. But juniper-data main already holds unreleased X8 (#437, equities_seq 6.0.0), #436, #438 and #440, both unrelated to the block, and the Overtoad's release cadence is days. v3 should not hard-code 0.17.0, and a `>=X` floor must name a release whose wheel is proven to emit the block (read it from the wheel). This is a new observation from this consolidation; no round has reviewed it.
 - **§11.2's data-client "0.6.0" still holds**: data-client PyPI is 0.5.0 `[VERIFIED 2026-10-03: PyPI JSON]`.
 - **Pins for the citation checker**:
   - v2's pins: data `90ad035e`, data-client `9bc8870a`, cascor `f7a6d573`, canopy `894a2cc7`, recurrence `9b240253`, ml `c2bcb96c`;
@@ -147,7 +147,7 @@ closing keywords, safe_merge exit 0, a release cut under an open PR, and freezin
   - the 09-24 source said cascor main moved at `0e016a7c`, shifting `manager.py` lines `[UNVERIFIED — from HANDOFF_2026-09-24_partition-arc-spec-v2-round-2-…md, which was not validated]`. Re-pin to fresh heads in any case.
 - **Reference-gate run** (the 09-24 source reports 52 PASS / 0 FAIL / 0 SKIP at data `90ad035e`) `[UNVERIFIED — from HANDOFF_2026-09-24_partition-arc-spec-v2-round-2-…md, which was not validated; not re-run here, since no test runs are allowed in this consolidation]`. It runs in env `JuniperData` against the pin worktree `worktrees/juniper-data--verify--spec-v2-pin--20260923-1545--90ad035e`, which still exists `[VERIFIED 2026-10-03: ls]`.
 - **What the reference gate cannot support**: it implements v2's text, not a shipped gate, and round 2 found defects (R2-1) that its vectors did not cover.
-- **Process rules for the round** (owner precedent, from both handoffs):
+- **Process rules for the round** (Overtoad precedent, from both handoffs):
   - freeze the artifact while lanes review it; the 09-24 thread broke this on #434 at 4e38930;
   - aim at least one lane at identity, versioning and legality;
   - record the findings in a new section, and do not re-edit the frozen text (`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md` §9 precedent);
@@ -168,7 +168,7 @@ closing keywords, safe_merge exit 0, a release cut under an open PR, and freezin
 - **A negated closing keyword still closes.** #185's "Neither closes #178" shut recurrence#178. The keywords are close, closes, closed, fix, fixes, fixed, resolve, resolves and resolved. A bare `#N` means the PR's own repo. Scan every PR body before merge (memory `reference_negated_closing_keyword_still_closes.md`).
 - **`util/safe_merge.py` can exit 0 having refused** ("went BEHIND 3 times"). Read its log for `MERGED`. In a contended lane, arm native auto-merge (SQUASH, `commitBody` null, `--match-head-commit`), then run `update-branch` once.
 - **A release proposal merged under an open PR moves that PR's `[Unreleased]` bullet into the released heading, with no conflict.** This happened twice in this arc: #433 under #431 and #434, and #428's duplicate `[0.16.0]` heading, which #435 folded. The ceremony now has `--target-sha` (juniper-ml#2071) `[VERIFIED 2026-10-03: ml main log]`.
-- **The owner's PR sweeper merges and un-drafts unseen.** #431 and #434 were drafted to wait for the cut, and both merged within an hour (22:58Z and 23:22Z on 09-23). Both precede v0.16.0's tagged commit `39d1cab2` (#435, dated 08:14:12Z on 09-24; the Release was published 08:52:14Z), so they shipped in it `[VERIFIED 2026-10-03: compare API, both ancestors of 39d1cab2]`. Drafting is not a hold.
+- **The Overtoad's PR sweeper merges and un-drafts unseen.** #431 and #434 were drafted to wait for the cut, and both merged within an hour (22:58Z and 23:22Z on 09-23). Both precede v0.16.0's tagged commit `39d1cab2` (#435, dated 08:14:12Z on 09-24; the Release was published 08:52:14Z), so they shipped in it `[VERIFIED 2026-10-03: compare API, both ancestors of 39d1cab2]`. Drafting is not a hold.
 - **Rival implementations.** Check for an open or just-merged PR on the same issue before starting, and again before merging (H-0923 §4: recurrence#180 and data#425 lost to parallel recurrence#181 and data#426).
 - **A PR body goes stale with every follow-up commit.** canopy#663's mutation and suite counts had to be re-patched before merge (H-0923 §4). Re-verify the body before merging item 2's PR and #2064's.
 - **A red `Notify consumer repos` job follows every juniper-data release until the token is widened.** The `pypi` job, not the run, is the publish verdict (H-0909 §10.5).
@@ -180,19 +180,19 @@ closing keywords, safe_merge exit 0, a release cut under an open PR, and freezin
 - **The memory index is near its load limit.** Add a pointer only with an equal trim (`feedback_memory_index_target_is_20kb.md`).
 - **"Merged" is not "released"**: #663 and #672 are on main only. `[VERIFIED 2026-10-03: PyPI canopy 0.8.1, cascor 0.11.0, both pre-merge]`
 
-### Owner rulings in force (carried)
+### The Overtoad rulings in force (carried)
 
 - **2026-09-22: conform the stores.** Implemented by #422.
 - **2026-09-22: canopy runs `validate_npz_contract` as advisory only** (canopy#559 / #663).
 - **2026-09-05: a downstream cap never lowers a SemVer bump** (cascor-client#155, canopy#584). This is the rule behind R2-9.
 - **2026-09-24: #428, #431 and #434 fold into the one `[0.16.0]` section, with `[Unreleased]` left empty** (#435 body).
-- **Decision 12 was ruled 2026-09-03 but is unspecified.** The owner asked on 2026-09-22 for it to be specified before it is built. OQ-4 is answered by #422; OQ-1, 2, 3, 5 and 6 are open.
+- **Decision 12 was ruled 2026-09-03 but is unspecified.** The Overtoad asked on 2026-09-22 for it to be specified before it is built. OQ-4 is answered by #422; OQ-1, 2, 3, 5 and 6 are open.
 
 ### Evidence that cannot be over-read
 
 - #422's stores ran only against mocked sources.
 - #431's confirmation step has never run green in Actions. 0.16.0's notify job failed at the Dispatch step (403), so "Confirm the consumer started a run" was skipped `[VERIFIED 2026-10-03: job 107777269559 steps]`.
-- The recurrence bench run 36046705575 (success, 2026-09-24T19:13Z) was a **manual replay** by the owner's account, not the sender `[VERIFIED 2026-10-03: run actor + P4 handoff HANDOFF_2026-09-24_data-0-16-0-on-pypi-and-pinned-…md]`.
+- The recurrence bench run 36046705575 (success, 2026-09-24T19:13Z) was a **manual replay** by the Overtoad's account, not the sender `[VERIFIED 2026-10-03: run actor + P4 handoff HANDOFF_2026-09-24_data-0-16-0-on-pypi-and-pinned-…md]`.
 - V-3's "arm A = arm B's network" rests on reading the code `[UNVERIFIED — from H-0924 §5, which was not validated]`.
 - The #2034 inventory is one agent's sweep; only two of its claims were re-checked `[UNVERIFIED — from H-0924 §5, which was not validated]`. One of them is T6's `split: "validation"` with no `final` block. The other is #2064's figures: 0.9187 in-loop against 0.8997 held-out.
 
@@ -228,20 +228,20 @@ python3 util/ad-hoc/2026-09-23_partition_provenance_v2_citation_check.py | tail 
 | recurrence#178 gap 1: concurrency group per version | H-0923 item 3 | Merged | recurrence#185 ca9609f0 `[VERIFIED 2026-10-03: GraphQL]` |
 | recurrence#178 gap 2: poll for the dispatched run after the 204 | H-0923 item 3 | Merged and released in 0.16.0. Never exercised green (token 403) | data#431 35b44cc1, an ancestor of v0.16.0 `[VERIFIED 2026-10-03: compare API]` |
 | juniper-data-client#211: bare curl | H-0923 item 4 | Merged; #211 closed. Optional NITs are carried as item 5 | data-client#212 cabc40bf `[VERIFIED 2026-10-03: GraphQL]` |
-| Merge data#431, then #434, only after the v0.16.0 cut | H-0924 item 2 | **Moot.** `[CHANGED SINCE HANDOFF: both merged 2026-09-23 (22:58Z, 23:22Z), before the cut, and shipped IN 0.16.0. #435's owner-ruled fold put their entries in [0.16.0]]` | GraphQL mergedAt; compare API; data#435 body |
+| Merge data#431, then #434, only after the v0.16.0 cut | H-0924 item 2 | **Moot.** `[CHANGED SINCE HANDOFF: both merged 2026-09-23 (22:58Z, 23:22Z), before the cut, and shipped IN 0.16.0. #435's Overtoad-ruled fold put their entries in [0.16.0]]` | GraphQL mergedAt; compare API; data#435 body |
 | Commit and push #434's round-3 NITs before `gh pr ready` | H-0924 §3 | **Not done.** `[CHANGED SINCE HANDOFF: #434 merged at head ae5a3b18 without them]`. Re-scoped as open item 2 | main `test_cached_store.py:187` weak form; worktree holds the strict form |
 | Merge data-client#212 | H-0924 item 3 | Merged 2026-09-23 22:30Z | GraphQL |
 | Merge juniper-ml#2066; check #2060's post-merge run | H-0924 item 4 | Both done. #2066 merged f9c81d80. #2060's Post-Merge Main Verification run 35922423838 succeeded | GraphQL; `gh run list --commit 0f269c2b` `[VERIFIED 2026-10-03]` |
 | juniper-ml#2034 step 1 (inventory) and step 2 (markers) | H-0923 item 5 / H-0924 §1 | Done. Step 3 (the re-measurement) waits on #2064 (item 3) | #2066 merged; #2034 OPEN |
-| Release cut juniper-data 0.16.0 | H-0923 / H-0924 owner list | Done | PyPI 0.16.0 2026-09-24T18:35:40 `[VERIFIED 2026-10-03]` |
-| Release cut juniper-ml 0.10.0 | H-0923 owner list | Done | PyPI 0.10.0 `[VERIFIED 2026-10-03]` |
-| Re-run `notify-consumers.yml -f version=0.15.0` after the token is widened | H-0923 / H-0924 owner list | Superseded. The next release's own notify job is the test. 0.16.0's notify job got a 403 again, and the owner replayed by hand (run 36046705575, success). The token item stays open | job 107777269559 log; recurrence run API `[VERIFIED 2026-10-03]` |
+| Release cut juniper-data 0.16.0 | H-0923 / H-0924 Overtoad list | Done | PyPI 0.16.0 2026-09-24T18:35:40 `[VERIFIED 2026-10-03]` |
+| Release cut juniper-ml 0.10.0 | H-0923 Overtoad list | Done | PyPI 0.10.0 `[VERIFIED 2026-10-03]` |
+| Re-run `notify-consumers.yml -f version=0.15.0` after the token is widened | H-0923 / H-0924 Overtoad list | Superseded. The next release's own notify job is the test. 0.16.0's notify job got a 403 again, and the Overtoad replayed by hand (run 36046705575, success). The token item stays open | job 107777269559 log; recurrence run API `[VERIFIED 2026-10-03]` |
 | hf/kaggle stores conform (S-1) | H-0909 §10.2 | Merged as #422; released in 0.16.0 | PyPI and changelog `[VERIFIED 2026-10-03]` |
-| canopy#559 advisory check | H-0909 §10.2 | Merged as #663; **unreleased**. The cut is carried as an owner item | GraphQL; PyPI canopy 0.8.1 |
+| canopy#559 advisory check | H-0909 §10.2 | Merged as #663; **unreleased**. The cut is carried as an Overtoad item | GraphQL; PyPI canopy 0.8.1 |
 | Rival-implementation check: look for an open or just-merged PR on the same issue before starting and again before merging | H-0923 §4 | A standing practice, carried into the traps | — |
 | `docs/REFERENCE.md` and plan §10 updates once #422 merged | H-0909 §10.5 | Done in juniper-ml#2043 | H-0909 §10.5 `[NOT RE-PROBED — from HANDOFF_2026-09-09_…md, validated by its §10.7 consensus]` |
 | V-2 | H-0909 §10.4 | Measured 2026-08-29 (+0.0088, 95 % CI [−0.0136, +0.0311]); only V-3 is owed | `notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_GATED-MEASUREMENTS-RESULTS.md` `[NOT RE-PROBED — from HANDOFF_2026-09-09_…md §10.4, validated by consensus]` |
-| juniper-data-client#213 (dispatch runs cancelled by receivers' pushes) | H-0924 Completed | Correction posted; the issue is still OPEN with no work item. Carried in item 5 as "no owner" | GraphQL `[VERIFIED 2026-10-03]` |
+| juniper-data-client#213 (dispatch runs cancelled by receivers' pushes) | H-0924 Completed | Correction posted; the issue is still OPEN with no work item. Carried in item 5 as "no Overtoad" | GraphQL `[VERIFIED 2026-10-03]` |
 
 ## Git state
 

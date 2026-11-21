@@ -4,7 +4,7 @@
 **Sub-Project**: CLI test / validation / experimentation program (plan §10.4, Wave 6.3)
 **Author**: Paul Calnon
 **Date**: 2026-08-08
-**Status**: EVALUATED — 9/9 criteria evidenced; one sub-arm (Grafana dashboard render) pending the F-P1-2 owner decision
+**Status**: EVALUATED — 9/9 criteria evidenced; one sub-arm (Grafana dashboard render) pending the F-P1-2 Overtoad decision
 **Plan of record**: [JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md](JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) §10.4
 **Pre-decision-11, selected-on (annotated 2026-09-23, juniper-ml#2034).** Measured before juniper-data 0.13.0 / juniper-cascor 0.11.0, on a two-way artifact whose `X_test` fed patience and early stopping in-loop and was then reported, so these scores are **selected-on, not held-out**. Retained as measured, and not comparable with a later result (`JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md` §7).
 
@@ -55,7 +55,7 @@ Stack `20260808T223507Z-2836` (data + recurrence only), config `p3-bench-parity.
 
 Two criteria from one pair of runs: reproducibility (arms a≡b) and service-vs-bench comparability (arm a ≡ bench to report precision). Run dirs preserved under the stack's `RUN_DIR/p3-{a,b}/`; teardown attested.
 
-## 3. F-P1-2 context package — the :3000 Grafana squatter (owner decision, parked until blocking)
+## 3. F-P1-2 context package — the :3000 Grafana squatter (Overtoad decision, parked until blocking)
 
 Facts (probed read-only 2026-08-08):
 
@@ -69,7 +69,7 @@ Options when a dashboard render is actually needed:
 2. **Stop/disable the native service** (`sudo systemctl disable --now grafana-server`) — frees `:3000` for the stack; native dashboards (if any) go dormant but are not deleted.
 3. **Recover the native instance's credentials** (`sudo grafana-cli admin reset-admin-password …`) and inspect whether it is actually in use before choosing 1 or 2.
 
-Recommendation when it blocks: option 1 to unblock immediately; option 3 then 2 if the native install turns out to be incidental. No action taken now per the owner's direction.
+Recommendation when it blocks: option 1 to unblock immediately; option 3 then 2 if the native install turns out to be incidental. No action taken now per the Overtoad's direction.
 
 > **Update (2026-08-16) — F-P1-2 is CLOSED, and every fact in this context package is wrong.**
 > Do not act on the options above; none is needed, and none was performed.
@@ -90,7 +90,7 @@ Recommendation when it blocks: option 1 to unblock immediately; option 3 then 2 
 >
 > **Two real defects surfaced while probing, neither Juniper's** (closure note §5): `grafana-server`
 > is in a hard restart loop (**12,763** restarts and climbing — it can never bind a port Domotz
-> owns; owner-directed remedy is a systemd drop-in repointing it to `:3002`), and the deploy
+> owns; Overtoad-directed remedy is a systemd drop-in repointing it to `:3002`), and the deploy
 > Grafana mounts the repo-committed `secrets.example` placeholder while its live password comes from
 > `secrets/` — latent today (read-once at init), but a volume re-init would set a publicly-known
 > admin password.

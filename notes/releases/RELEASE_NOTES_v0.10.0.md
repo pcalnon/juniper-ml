@@ -35,7 +35,7 @@
   unused `import statistics`, which CodeQL flagged and which blocked the merge. It is kept
   because it is the provenance of the retained
   `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json`. Under the
-  ad-hoc retention policy (`util/ad-hoc/README.md`) retirement is owner-directed only, so
+  ad-hoc retention policy (`util/ad-hoc/README.md`) retirement is Overtoad-directed only, so
   committing was the only move open to a session. The note is verbatim under a banner. The
   banner names `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md` as
   the record, and says the older instrument reads `torch.get_num_threads()` and has no ICV
@@ -55,11 +55,11 @@
   signature verified, parent == pin, blob shas, deletions gone). It reuses `open_signed_pr`'s helpers
   and carries no copy of the mutation. Hermetic suite `tests/test_push_signed_commit.py` (its `gh` stub enforces
   `expectedHeadOid` like GitHub), wired into `ci.yml`; `docs/REFERENCE.md` documents both. The
-  ad-hoc drivers are **retained** as provenance (owner policy 2026-08-25) with a "Superseded" header
-  line each; retiring them is an owner decision.
+  ad-hoc drivers are **retained** as provenance (Overtoad policy 2026-08-25) with a "Superseded" header
+  line each; retiring them is an Overtoad decision.
 - **PF-2 axis 2 is built, and the suite path's real ceiling is 5,882 points per spiral, not the
   10,000 it was ruled on** (`util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`,
-  new). The owner ruled D4's axis-2 range on 2026-09-22 as "10,000 now, in-process later". Running
+  new). The Overtoad ruled D4's axis-2 range on 2026-09-22 as "10,000 now, in-process later". Running
   the top cell found the ceiling is lower: juniper-data's additive sizing treats
   `n_points_per_spiral` as the TRAIN count and adds val and test on top, 1.7x at the suite's split,
   and `MAX_POINTS` (10,000) bounds that inflated TOTAL. A request of 10,000 becomes an internal
@@ -76,7 +76,7 @@
 - **D1's epoch-count debt is paid: a BLAS cap of 2 leaves every count, and every bit, where the
   old default put it** (`notes/JUNIPER_2026-09-23_JUNIPER-ECOSYSTEM_PERF-LANE-D1-EPOCH-COUNT-DEBT.md`,
   `util/ad-hoc/2026-09-23_d1_epoch_count_sweep.py`, `util/ad-hoc/2026-09-23_d1_epoch_debt_reduce.py`,
-  all new). The owner ruled D1 on 2026-09-23 as "pay the debt, then flip": change cascor's
+  all new). The Overtoad ruled D1 on 2026-09-23 as "pay the debt, then flip": change cascor's
   `configure_blas_threads()` default from "do nothing" to 2 only if the cap does not move the epoch
   count. The 09-16 width sweep emitted stage counts rather than epoch counts. Every structural
   count it had was also pinned to its budget: 4 of 4 hidden units in all 39 arms, and an output
@@ -94,7 +94,7 @@
   capped threads ran 16-wide and a matrix that *varied* the key measured one configuration N
   times. `eval_metrics_enabled` was the worst of the three because the schema *herds* authors
   into it: `service:` rejects it with *"belongs in `runtime:` (process env)"*. Implemented via
-  the environment route the owner ruled for, resolved **before the first `--up`** so a bad
+  the environment route the Overtoad ruled for, resolved **before the first `--up`** so a bad
   value refuses the suite rather than one cell. A width the **suite names** beats the H-11
   parallel budget (this is what makes PF-3's axis expressible); a width merely **inherited**
   from a base config does not, so no parallel run can silently oversubscribe itself.
@@ -122,7 +122,7 @@
   request w1→1 … w16→16), so this is a real invariance and not an inert axis. **The historical
   `52` is therefore an observation of unknown provenance, not evidence of instability** — the
   leading suspect is a different tree, which this measurement cannot separate.
-  Whether to *build* the exact-match gate remains the owner's call: only 2 of the 4 cells would
+  Whether to *build* the exact-match gate remains the Overtoad's call: only 2 of the 4 cells would
   be real assertions (at budgets 10 and 50 the count equals the request), and the gate's
   reference is tree-sensitive by construction.
 - **The measurement existed already, UNCOMMITTED, and three searches missed it.** A complete
@@ -134,7 +134,7 @@
   the `/tmp` one: **`util/ad-hoc/` placement protects work from `/tmp` reaping, not from never
   being committed**, and to `git`, to CI and to the next session an uncommitted file in a
   sibling worktree is indistinguishable from one that does not exist. That worktree is locked;
-  the lock is currently the only thing preserving it. **Owner action**: commit those two files,
+  the lock is currently the only thing preserving it. **The Overtoad action**: commit those two files,
   or retire them in favour of this one. Also recorded, because the shape recurs: this session's
   searches used `d6-epochs-spread` / `epochs_spread`, patterns taken from the *evidence
   directory's* name, and the instrument is `epochs_completed_spread` — neither is a substring.
@@ -145,7 +145,7 @@
 - **BREAKING (resolution): `[servers]` now floors `juniper-data>=0.15.0`, because 0.14.0 still serves the
   `equities` generators at the contract 0.15.0 replaced.** Read from the published wheels, not a
   checkout: 0.14.0 ships `equities` and `equities_seq` at `VERSION = "3.0.0"`, 0.15.0 at `"5.0.0"`.
-  The two majors between them are the owner rulings of juniper-data#395 -- `adj_close` leaves the
+  The two majors between them are the Overtoad rulings of juniper-data#395 -- `adj_close` leaves the
   default feature matrix because `close / adj_close` encodes dividends paid *after* each row, and
   the SEC share history becomes an as-of join on the FILED date, so a restated period no longer
   rewrites when a value became knowable -- and the regression fix of juniper-data#404. PyPI never
@@ -165,7 +165,7 @@
   is breaking. Applied by `util/ad-hoc/2026-09-22_raise_data_floor_0_15_0.py`, which asserts each
   site's exact text, requires exactly one match apiece, and refuses to open this section unless
   `[Unreleased]` is empty.
-- **Owner rulings recorded for the four `Not decided:` clauses of D1, D2, D4 and D6**
+- **The Overtoad rulings recorded for the four `Not decided:` clauses of D1, D2, D4 and D6**
   (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`, new §5 plus
   a pointer under each clause). D2: `blas_threads` / `num_processes` / `eval_metrics_enabled`
   ratified as-is, with no second knob. D4 axis 2: 10,000 now, in-process later (the suite path's

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Record the owner's rulings of 2026-09-09 on the open post-primer rows, and file the one new row
+Record the Overtoad's rulings of 2026-09-09 on the open post-primer rows, and file the one new row
 they produced.
 
 Project: juniper-ml
@@ -8,12 +8,12 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-09
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: HANDOFF_2026-09-09_defect-register-round-38-the-three-way-prompt-shipped-and-two-corrections-that-reversed-themselves.md;
          util/ad-hoc/register_close_cascor640.py
 
 Thirteen rulings, taken interactively. They END the empty set for the rows named below: a ruling
-from the owner is the thing §2 says is required, and unlike the note withdrawn earlier today it is
+from the Overtoad is the thing §2 says is required, and unlike the note withdrawn earlier today it is
 not derived from a handoff or a PR body.
 
 The rulings, and the evidence each was taken against:
@@ -36,7 +36,7 @@ The rulings, and the evidence each was taken against:
 Not recorded here because it is a contract change rather than a defect row: option 3 becomes a
 caller right via an explicit tri-state `allow_truncation: true | false | null`. That reverses the
 premise of juniper-data's `test_request_cannot_opt_out_of_deployment_allow_truncation`, which pins
-the behaviour the owner has now overruled — see the handoff and the partial-data arc memory.
+the behaviour the Overtoad has now overruled — see the handoff and the partial-data arc memory.
 """
 from __future__ import annotations
 
@@ -62,17 +62,17 @@ def sub(old: str, new: str, label: str) -> None:
 # ---- 1. The park block becomes a rulings block. ----------------------------------------------
 sub(
     "- `APD-DATA-039` — **actionable** for the versioned key + TTL; **the refresh horizon (how far back to\n"
-    "  regenerate) is an owner decision.**\n"
-    "- `APD-DATA-040`, `APD-DATA-041`, `APD-DATA-042`, `APD-DATA-043` — **parked: owner decision.** Each changes\n"
+    "  regenerate) is an Overtoad decision.**\n"
+    "- `APD-DATA-040`, `APD-DATA-041`, `APD-DATA-042`, `APD-DATA-043` — **parked: Overtoad decision.** Each changes\n"
     "  the artifact's content and needs a `generator_version` bump; first-publication vs latest-filed\n"
     "  (`-040`) is a design choice, not a bug fix.\n"
-    "- `APD-DATA-044` — **parked: owner decision**, in the same batch as `-040`…`-043`: treating an all-zero or\n"
+    "- `APD-DATA-044` — **parked: Overtoad decision**, in the same batch as `-040`…`-043`: treating an all-zero or\n"
     "  placeholder series as `unrescued` (like the empty-units case) is the obvious remedy, but it changes which\n"
     "  universes pass the default `fail` policy, so it ships with the same `generator_version` bump.\n"
-    "- `APD-CASCOR-008` — **parked: owner decision** (derive the set from juniper-data's `/v1/generators`, or\n"
+    "- `APD-CASCOR-008` — **parked: Overtoad decision** (derive the set from juniper-data's `/v1/generators`, or\n"
     "  keep the list and narrow it to the reachable member).\n",
     "> **OWNER RULINGS, 2026-09-09.** Taken interactively, on evidence re-derived in the same session.\n"
-    "> These **end the empty set** for the rows below — a ruling from the owner is exactly what §2 requires,\n"
+    "> These **end the empty set** for the rows below — a ruling from the Overtoad is exactly what §2 requires,\n"
     "> and unlike the note withdrawn earlier the same day it is not derived from a handoff or a PR body.\n"
     "> Every one of them changes artifact content, so they ship together behind one `generator_version`\n"
     "> bump on `equities` / `equities_seq`.\n"
@@ -115,15 +115,15 @@ sub(
     "2. -011 ruling",
 )
 sub(
-    "- `APD-DATA-045` — **parked: owner decision**, with `APD-DATA-039`, whose cache-key half is its\n"
-    "  mechanism: a staleness bound is exactly the refresh-horizon question the owner has not ruled on.\n",
+    "- `APD-DATA-045` — **parked: Overtoad decision**, with `APD-DATA-039`, whose cache-key half is its\n"
+    "  mechanism: a staleness bound is exactly the refresh-horizon question the Overtoad has not ruled on.\n",
     "- `APD-DATA-046` — **filed 2026-09-09, deferred by the same ruling.** The remedy of record is a\n"
     "  share-class-aware lookup (resolve the count for the requested ticker's class, not the CIK's\n"
-    "  default); the owner ruled to file it now and do it later in this development path.\n",
+    "  default); the Overtoad ruled to file it now and do it later in this development path.\n",
     "3. -045 line replaced by -046",
 )
 sub(
-    "- `APD-CASCOR-013` — **parked: owner decision.** Clearing the annotation is one line, but *when* it\n"
+    "- `APD-CASCOR-013` — **parked: Overtoad decision.** Clearing the annotation is one line, but *when* it\n"
     "  clears is a contract question (at every start, or only when a new dataset is fetched), and the\n"
     "  answer changes what a client polling `/v1/training/status` sees between runs.\n",
     "- `APD-CASCOR-013` — **RULED: actionable.** Clear the annotation at the **start of every run**. The\n"
@@ -144,7 +144,7 @@ sub(
 # ---- 3. APD-CASCOR-011 closes, WON'T FIX with the marker inside. ------------------------------
 sub(
     "| APD-CASCOR-011 | `--allow-truncated-datasets` is inert on `main.py`'s own run path",
-    "| APD-CASCOR-011 | **FIXED (WON'T FIX — owner ruled 2026-09-09 to keep the flag; the inertness is now documented, not silent, by [juniper-cascor#640](https://github.com/pcalnon/juniper-cascor/pull/640))** — `--allow-truncated-datasets` is inert on `main.py`'s own run path",
+    "| APD-CASCOR-011 | **FIXED (WON'T FIX — Overtoad ruled 2026-09-09 to keep the flag; the inertness is now documented, not silent, by [juniper-cascor#640](https://github.com/pcalnon/juniper-cascor/pull/640))** — `--allow-truncated-datasets` is inert on `main.py`'s own run path",
     "6. -011 closed",
 )
 
@@ -159,11 +159,11 @@ sub(
 sub(
     "and `APD-CASCOR-009` / `APD-CASCOR-010` / `APD-CASCOR-012` ([juniper-cascor#640](https://github.com/pcalnon/juniper-cascor/pull/640)) are FIXED and ten are open — **27 open in all**, 17 primer + 10 post-primer.",
     "`APD-CASCOR-009` / `APD-CASCOR-010` / `APD-CASCOR-012` and (WON'T FIX) `APD-CASCOR-011` ([juniper-cascor#640](https://github.com/pcalnon/juniper-cascor/pull/640)) are FIXED and ten are open — **27 open in all**, 17 primer + 10 post-primer. "
-    "**Ten of those carry owner rulings taken 2026-09-09** and are actionable; see the rulings block under [§4.9](#49-filed-after-the-primer).",
+    "**Ten of those carry Overtoad rulings taken 2026-09-09** and are actionable; see the rulings block under [§4.9](#49-filed-after-the-primer).",
     "8. §2 status line",
 )
 
-sub("**Last Updated**: 2026-09-09\n", "**Last Updated**: 2026-09-09 (owner rulings)\n", "9. header date")
+sub("**Last Updated**: 2026-09-09\n", "**Last Updated**: 2026-09-09 (Overtoad rulings)\n", "9. header date")
 
 REG.write_text(text)
 

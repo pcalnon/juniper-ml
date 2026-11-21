@@ -96,10 +96,10 @@ I found two HIGH findings. The document's F5 fix is wrong, and canopy#685 has me
   - All six exist and are clean.
   - The #690 worktree's HEAD is the PR head. The #685, #689 and #440 worktrees hold unsigned local commits that are tree-identical to their PR heads (for #685, to `4a8af2a0`, its head when written).
   - The stale branch `fix/shortfall-mixed-provenance-and-678-followups` exists at `e452a660`. The `-v2`, #683, #687 and ml#2086 branches are deleted.
-- **Owner rulings:**
+- **The Overtoad rulings:**
   - "Keep while fetched splits stay" and "Mine: fix forward" were answered at 07:32:48Z.
   - "Fix everywhere now (Recommended)" was answered at 18:30:09Z; its option text says "Up to four PRs".
-  - **"Split: old does follow-ups" is supported only as a claim relayed by "defect reg [977fa8]".** The owner's own answer in this session (08:01:26Z) was "Resume both here", which is consistent with the split.
+  - **"Split: old does follow-ups" is supported only as a claim relayed by "defect reg [977fa8]".** The Overtoad's own answer in this session (08:01:26Z) was "Resume both here", which is consistent with the split.
   - "defect reg [24f8d8]" is [977fa8]'s successor.
 - **Files and traps:**
   - 18 untracked files: 1 handoff, 12 reports and 5 harnesses. Both predecessor files exist.

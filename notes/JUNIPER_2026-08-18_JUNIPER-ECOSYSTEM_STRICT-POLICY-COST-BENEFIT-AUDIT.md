@@ -32,7 +32,7 @@ independently demonstrated twice in the last three weeks (§6.1).
 ## 1. Scope
 
 Audit the cost and the benefit of `required_status_checks.strict_required_status_checks_policy: true`
-("require branches to be up to date before merging") on the 9 owner (`pcalnon`) repositories:
+("require branches to be up to date before merging") on the 9 Overtoad (`pcalnon`) repositories:
 `juniper-ml`, `juniper-cascor`, `juniper-canopy`, `juniper-data`, `juniper-data-client`,
 `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-deploy`, `juniper-recurrence`.
 
@@ -108,7 +108,7 @@ the flood analysis was written. `juniper-recurrence`'s ruleset was created `stri
 ("POST"), with two equal-length pre-adoption comparison windows** `[2026-07-08, 2026-07-29)` ("PRE", the
 Cursor-storm window) and `[2026-06-17, 2026-07-08)` ("PRE2", calm).
 
-**A-3. Merge settings, all 9 (`gh api repos/pcalnon/<r> --jq '…'`).** `owner.type=User`, `private=false`,
+**A-3. Merge settings, all 9 (`gh api repos/pcalnon/<r> --jq '…'`).** `Overtoad.type=User`, `private=false`,
 `allow_update_branch=false`, squash+merge+rebase all enabled. `allow_auto_merge=true` on **juniper-ml
 only**; `false` on the other 8.
 
@@ -128,7 +128,7 @@ juniper-recurrence    2026-08-18T03:18:00-05:00  n=9  seq=1   prev_n=8  prev_seq
 ```
 
 Corroborated by `gh issue view 1011 --repo pcalnon/juniper-ml` → `CLOSED closed=2026-08-18T08:22:12Z
-[owner-decision] Promote per-PR Sequence Safety to a required check`, and
+[Overtoad-decision] Promote per-PR Sequence Safety to a required check`, and
 `gh pr view 1166` → `MERGED 2026-08-18T09:42:39Z chore(sequence-safety): promote the per-PR screen to
 required, fleet-wide`.
 
@@ -148,7 +148,7 @@ with an ellipsis, and an equality test silently drops long branch names (this un
 first pass — see §10 U-1).
 
 **Evidence** (`scratchpad/sync_v2.py`, driving the dumps from
-`gh api graphql -F owner=pcalnon -F name=<repo> -f query=@prq.graphql`):
+`gh api graphql -F Overtoad=pcalnon -F name=<repo> -f query=@prq.graphql`):
 
 ```
 === POST (strict=true): merged in [2026-07-29, 2026-08-19) ===
@@ -297,7 +297,7 @@ strict=true) → **0.59**.
 **+0.20 syncs per merge — about one third of the observed rate**. The other two thirds is merge volume:
 at ≤44 merges/week the rate is 0.00–0.11 *with `strict` off*, and juniper-cascor shows 0.00 at 13
 merges/week off and 1.15 at 55 merges/week on. **[ESTIMATE — confounded]**: the PRE window is the storm,
-during which the owner was already refreshing stale branches voluntarily
+during which the Overtoad was already refreshing stale branches voluntarily
 (`…FLOOD-REMEDIATION-ANALYSIS.md:41`: "With strict=false, each of the 125 cursor PRs was manually
 true-merged; stale branches were refreshed via GitHub-web **Update branch**"). So the strict=false
 baseline at high volume is *elevated by behaviour*, and the true marginal effect could be larger than
@@ -329,7 +329,7 @@ paying a tax to relax, and the 2 high-traffic repos are the ones where collision
 
 ## 5. Findings — is the gate even binding? (criterion H)
 
-### H-1 — `major` — 1.9% of merges land with a RED head; `strict` does not bind the owner
+### H-1 — `major` — 1.9% of merges land with a RED head; `strict` does not bind the Overtoad
 
 **Evidence** (`scratchpad/final_head_state.py`; per merged PR, `check-runs` on the PR's final commit):
 
@@ -353,11 +353,11 @@ TOTAL                     430    421     8     1      0   1.9%
 ```
 
 Bypass actors on juniper-ml (`gh api repos/pcalnon/juniper-ml/rulesets/13805432 --jq '.bypass_actors[]'`):
-`DeployKey mode=always`, **`RepositoryRole id=5 mode=always`** (admin = owner), `Integration 29110
+`DeployKey mode=always`, **`RepositoryRole id=5 mode=always`** (admin = Overtoad), `Integration 29110
 always`, `Integration 1143301 always`, `Integration 4362741 pull_request`.
 
 This confirms the flood analysis's own caveat verbatim (`…FLOOD-REMEDIATION-ANALYSIS.md:523`): "**RepositoryRole-5
-admin bypass still lets the owner click merge past it** — so it informs, it does not bind."
+admin bypass still lets the Overtoad click merge past it** — so it informs, it does not bind."
 
 ### H-2 — `major` — ~12% of freshness-synced PRs merged before the re-test could finish
 
@@ -528,7 +528,7 @@ Enumerating juniper-ml's non-`main-verify` `main` failures in the POST window wi
 Of the 4 that did come from PR merges, two (`bb2ed045e`, `136718321`) failed on
 `Pre-commit (Python 3.12/3.13/3.14)` — i.e. the `--all-files` union class (§7, V-3).
 
-**Recommended fix**: routing owner commits through PRs would remove more `main` breakage than any change to
+**Recommended fix**: routing Overtoad commits through PRs would remove more `main` breakage than any change to
 `strict`. Out of scope here; flagged as the higher-yield lever.
 
 ---
@@ -645,20 +645,20 @@ covered by the sequence-safety screens, which is precisely why they were built a
 
 ### G-1 — `major` — Merge queue: permanently unavailable; verified in-repo, **not** independently verifiable from GitHub docs
 
-`gh api repos/pcalnon/<r> --jq '.owner.type'` returns **`User` for all 9**, and no ruleset carries a
+`gh api repos/pcalnon/<r> --jq '.Overtoad.type'` returns **`User` for all 9**, and no ruleset carries a
 `merge_queue` rule (rule sets are exactly the 8 listed in A-1). ml#1128 (CLOSED 2026-08-17T09:45:35Z)
 records the empirical UI check:
 
 > "GitHub's availability statement: *Pull request merge queues are available in any public repository owned
 > by an organization, or in private repositories owned by organizations using GitHub Enterprise Cloud.*
-> `juniper-ml` is `visibility: public` but `owner.type: **User**` … Confirmed empirically: **"Require merge
+> `juniper-ml` is `visibility: public` but `Overtoad.type: **User**` … Confirmed empirically: **"Require merge
 > queue" is absent** from the Add-rule list … Two independent confirmations agree."
 
 **Could not verify externally.** `WebFetch` of
 `https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue`
 and of `.../managing-rulesets/available-rules-for-rulesets` returned pages that **do not contain** that
 availability sentence in the fetched content ("there are **no statements** specifying which repository
-types … support merge queues"). The claim rests on in-repo evidence plus the API-verified `owner.type=User`.
+types … support merge queues"). The claim rests on in-repo evidence plus the API-verified `Overtoad.type=User`.
 Treated as **established but not externally corroborated**; it does not change the recommendation, since a
 queue being available would only strengthen the case for keeping an equivalent guarantee.
 
@@ -771,7 +771,7 @@ real. There is no repo where relaxing buys more than it costs.
 | M-2 | Use `gh api -X PUT /repos/pcalnon/<repo>/pulls/<N>/update-branch` rather than a local rebase | One call, server-side, GitHub-signed (satisfies `required_signatures`); no checkout | runbook §8.1; proven twice on ml#1134 |
 | M-3 | Enable `allow_auto_merge` on the 8 repos where it is `false`, and route merges through `--auto` | Merges the instant the fresh run is green, shrinking the re-invalidation window that costs ~15% of syncs | A-3, C-3 |
 | M-4 | Batch merges into windows rather than interleaving all day | The tax is superlinear in merge rate: ml 0.59 at 76 merges/week vs 0.99 at 128 | C-4 |
-| M-5 | Route owner commits through PRs instead of pushing to `main` | Removes the **largest** single source of post-adoption `main` breakage (5 of ml's 9) | B-5 |
+| M-5 | Route Overtoad commits through PRs instead of pushing to `main` | Removes the **largest** single source of post-adoption `main` breakage (5 of ml's 9) | B-5 |
 
 **Record correction (not optional if the analysis is to stay trustworthy):** amend
 `…FLOOD-REMEDIATION-ANALYSIS.md:222-233` (and `:291`, `:565`, `:588`, `:666`) — the verified prevention
@@ -788,7 +788,7 @@ table.
 |---|---|---|
 | **U-1** | Exact sync counts are a **lower bound** | GraphQL `messageHeadline` truncates; the corrected prefix matcher (C-1) recovers truncated cases but a rebase-based sync (force-push, no merge commit) leaves no detectable artifact. Force-push events could not be counted: `timelineItems(itemTypes:[HEAD_REF_FORCE_PUSHED_EVENT]).totalCount` **ignores the `itemTypes` filter** (it returned the total timeline-item count — ml PR values 4–21 with a mode of 6, clearly not force-pushes), so that axis was dropped rather than reported wrongly. |
 | **U-2** | juniper-ml `main` push-run history before 2026-07-27T03:17:41Z | GitHub's `actions/runs` list API caps at 1000 results. ml is therefore absent from both PRE windows in B-4 (marked TRUNCATED in the tool output). |
-| **U-3** | The merge-queue availability sentence, from GitHub's own docs | Three `WebFetch` attempts against the merge-queue and rulesets doc pages returned content that does not contain it (G-1). Established from in-repo evidence + API-verified `owner.type=User` instead. |
+| **U-3** | The merge-queue availability sentence, from GitHub's own docs | Three `WebFetch` attempts against the merge-queue and rulesets doc pages returned content that does not contain it (G-1). Established from in-repo evidence + API-verified `Overtoad.type=User` instead. |
 | **U-4** | Whether GitHub auto-merge auto-updates a behind branch under `strict` | `WebFetch` of the auto-merge doc page: "there is **no information** about whether auto-merge automatically updates a pull request branch that is out of date". Indirect in-repo evidence says no: juniper-ml has `allow_auto_merge=true` and still recorded 173 manual web "Update branch" clicks (C-1). Recorded as **uncertain**; M-3's benefit is the shortened window, not automatic updating. |
 | **U-5** | The counterfactual "damage that did not happen" | Unobservable by construction. The benefit figures in §6 are a **floor**, not a total. |
 | **U-6** | Whether the sequence-safety screens will catch the flood class in practice | Required for 0–8 hours as of writing (A-4). No soak. |
@@ -832,11 +832,11 @@ gh api repos/pcalnon/<repo>/rulesets/<id>/history/<version_id> \
   --jq '"\(.updated_at) \([.state.rules[]?|select(.type=="required_status_checks")|.parameters.strict_required_status_checks_policy]|join(","))"'
 
 # A-3 merge settings
-gh api repos/pcalnon/<repo> --jq '{owner:.owner.type,private,allow_auto_merge,allow_update_branch}'
+gh api repos/pcalnon/<repo> --jq '{Overtoad:.Overtoad.type,private,allow_auto_merge,allow_update_branch}'
 
 # B/C-1 merged PRs with commit lists (GraphQL; `gh pr list --json commits` exceeds the node budget)
-gh api graphql -F owner=pcalnon -F name=<repo> -f query='
-  query($owner:String!,$name:String!,$cursor:String){repository(owner:$owner,name:$name){
+gh api graphql -F Overtoad=pcalnon -F name=<repo> -f query='
+  query($Overtoad:String!,$name:String!,$cursor:String){repository(Overtoad:$Overtoad,name:$name){
     pullRequests(states:MERGED,first:25,after:$cursor,orderBy:{field:UPDATED_AT,direction:DESC}){
       pageInfo{hasNextPage endCursor}
       nodes{number title createdAt mergedAt headRefName author{login}

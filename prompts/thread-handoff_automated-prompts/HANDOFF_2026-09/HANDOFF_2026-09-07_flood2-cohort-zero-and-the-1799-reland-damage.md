@@ -121,7 +121,7 @@ four today, but that is a live query, not a manifest.
 #1623, #1628 (carrier #1787); #1673, #1676 (carrier #1784). The other six — #1635, #1638,
 #1639, #1641, #1646, #1649 — were closed against **#1797** 37.5 hours before #1799 merged and
 were **not** this arc's.
-**Open at handoff:** #1808, #1809, #1811, #1812 (owner PRs, armed), #1814.
+**Open at handoff:** #1808, #1809, #1811, #1812 (Overtoad PRs, armed), #1814.
 
 **Two screens landed after the decisions they are credited with informing.**
 `2026-09-05_fleet_supersession_scan.py` and `_fleet_dup_adjudicate.py` reached `main` at
@@ -157,7 +157,7 @@ critical, all pre-dating the arc.
 | 8 | **Lockfile automation cannot trigger CI.** #1806 was `app/github-actions`-authored, so `GITHUB_TOKEN` suppressed `pull_request` — 5 checks, zero required contexts. **DO NOT** rely on close/reopen: it fired 26 checks that went **red**; a human branch-update commit landed it. Durable fix is a PAT-gated arm | PR #1806 timeline |
 | 9 | **`main` carries 102 structural problems across 21 files** — which is why the CI gate is delta-scoped. (`ci.yml:1061` says 104/23; re-measured today it is 102/21.) The 6 unfenced lines in `docs/REFERENCE.md` are **#1746's residue from 2026-09-05**, not pre-existing — fence them, do not ratify them as `base 6` | `git blame -L 3014,3030 origin/main` → `bcc89c45` |
 | 10 | **juniper-data#340 must NOT be merged** — it drops the `ndim >= 2` guard, so a 1-D empty array reports `n_features=0` instead of 2 | disposition analysis §8 |
-| 11 | Remaining §8 items: the round-1 escalation trigger (owner's call) and the 22 harvestables whose production half is absent | that file's §8 |
+| 11 | Remaining §8 items: the round-1 escalation trigger (Overtoad's call) and the 22 harvestables whose production half is absent | that file's §8 |
 
 **Corrected, so it is not re-derived:** `Verify AGENTS.md Last Updated` is **not** a
 fleet-wide conflict generator. It has an explicit same-day exemption

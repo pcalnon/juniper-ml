@@ -564,7 +564,7 @@ nothing to review.
   trimming of the residual file, sit in the WARN band.
 
 **Why this matters more than it looks.** The repo's most recent standing lesson (`40230d2`,
-ml#1165) is that a net **−4 line** reformat destroyed three owner-decision blockquotes and was
+ml#1165) is that a net **−4 line** reformat destroyed three Overtoad-decision blockquotes and was
 nearly waived as a reflow. The measurement above shows the screen's classification of that shape
 is `small-deletion / WARN`. So the discipline "token-diff before waiving; restore, don't waive"
 is not a supplement to the screen — for the migration's own edit shape, **it is the only
@@ -888,7 +888,7 @@ resolves AV-V3). This is a prerequisite, not a phase.
 | AV-O2a | **B** | §7.5 presents the post-split loss of docs-screen coverage as a *benefit* ("screens get quieter"). It is a total loss of coverage on 92% of the corpus (AV-G1). This is the one place a proposal's stated weakness list is not merely incomplete but inverted. |
 | AV-O2b | **C** | Does not name the concurrent-merge red-main class for its own ceiling. With 200 lines / 18,000 chars and C's stated ~1,700 chars of headroom, four PRs at +400 chars each — all individually green — turn main red. A named this class for its corpus cap; C's ceiling is tighter and its file is hotter. |
 | AV-O2c | **A** | §16 lists seven things A does not solve and omits that A itself writes to the ungoverned parent (AV-O1), and that its gates have no negative controls (AV-V2). |
-| AV-O2d | **D** | Phase 5 requires a repo-tracked `.claude/settings.json` (verified gitignored; verified none exists). That file also carries **permissions**. Having agents author the permission surface is in tension with the suite's own standing rule that no agent may change permission settings; it must be an owner-authored artifact, and D should say so. |
+| AV-O2d | **D** | Phase 5 requires a repo-tracked `.claude/settings.json` (verified gitignored; verified none exists). That file also carries **permissions**. Having agents author the permission surface is in tension with the suite's own standing rule that no agent may change permission settings; it must be an Overtoad-authored artifact, and D should say so. |
 | AV-O2e | **All four** | None costs the fleet-wide coordination of changing the shared `Sequence Safety` required context (AV-G1's fix touches nine repos), nor the ~20% observed miss rate on the `main-verify.yml` battery sync (AV-G5). |
 | AV-O2f | **All four** | None governs `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (158 commits, 64,267 chars), the demonstrated displacement target. It costs no tokens, so gating it would be wrong — but its *rate* should be reported, and only D does that. |
 
@@ -979,7 +979,7 @@ The argument:
    even a WARN: the #801/#803 wholesale-section-deletion class returns permanently for 92–100% of
    the corpus, in a repo with 23 concurrent session worktrees.
 4. This is not hypothetical. This repo has already shipped a **net −4 line** reformat
-   (`76e4513`) that destroyed three substantive owner-decision blockquotes and was nearly waived
+   (`76e4513`) that destroyed three substantive Overtoad-decision blockquotes and was nearly waived
    as cosmetic; the restoration is `40230d2` (ml#1165), and the standing lesson recorded from it
    is *"token-diff before waiving — restore, don't waive."* The measurement above shows the screen
    classifies that shape as WARN. So the lesson is not a supplement to the screen; for this edit

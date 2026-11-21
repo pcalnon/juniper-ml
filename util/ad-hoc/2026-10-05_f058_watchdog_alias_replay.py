@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-05
-# Status      : ad-hoc — investigation; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — investigation; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Replay canopy's metrics-store strand watchdog over a MEASURED lane timeline, at every sampling phase.
 

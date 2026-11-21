@@ -1,7 +1,7 @@
 # Handoff — Cursor flood-3 follow-ups: fixes delivered, juniper-ml#2062 fixed (ml#2333), juniper-ml 0.11.3 at the PyPI gate
 
 **Date**: 2026-10-26 (UTC)
-**Arc**: Cursor flood-3 disposition (2026-10-08) and the owner-requested follow-ups (2026-10-08 to 2026-10-26)
+**Arc**: Cursor flood-3 disposition (2026-10-08) and the Overtoad-requested follow-ups (2026-10-08 to 2026-10-26)
 **Record of the arc**: `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, written `…FLOOD-3-DISPOSITION.md` below. Its §4 lists the defects, §8 the open items and §9 the files changed. juniper-ml#2352, which lands this file, makes its fifth update.
 **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-10_flood3-followups-released-ci-tools-0-9-1-at-pypi-gate.md` (ml#2208), written `HANDOFF_2026-10-10_…gate.md` below. § Residue closes or carries each of its six items.
 **Host**: the Linux host, session worktree `.claude/worktrees/enchanted-sniffing-popcorn`. Commits go only through GraphQL `createCommitOnBranch` (`util/open_signed_pr.py`, `util/push_signed_commit.py`); a local `git commit` hangs on the YubiKey.
@@ -11,29 +11,29 @@
 
 ## Goal
 
-Continue the flood-3 follow-up arc. Everything the owner asked for is done except:
+Continue the flood-3 follow-up arc. Everything the Overtoad asked for is done except:
 
-- **the juniper-ml 0.11.3 `pypi` gate** (publish run 40306687867), which only the owner approves;
+- **the juniper-ml 0.11.3 `pypi` gate** (publish run 40306687867), which only the Overtoad approves;
 - **after it publishes:** check the published metadata and record the release (Remaining work, item 2).
 
-The open §4 defects in `…FLOOD-3-DISPOSITION.md` stay backlog; the owner has not asked for them.
+The open §4 defects in `…FLOOD-3-DISPOSITION.md` stay backlog; the Overtoad has not asked for them.
 
-The owner's last request in this arc, verbatim: "let's publish ml#2062 changes once 0.11.2 deployment is complete. then let's get an updated handoff prompt for this work arc, commit, push, PR, and merge it. merge approval granted." Their rulings for it (2026-10-25): ml#2062's fix is option "(a+) each server's own extras", and its version is "0.11.3, patch".
+The Overtoad's last request in this arc, verbatim: "let's publish ml#2062 changes once 0.11.2 deployment is complete. then let's get an updated handoff prompt for this work arc, commit, push, PR, and merge it. merge approval granted." Their rulings for it (2026-10-25): ml#2062's fix is option "(a+) each server's own extras", and its version is "0.11.3, patch".
 
 ## Completed (verified on `main`, GitHub or PyPI)
 
-- **Delivering the released fixes**: item 3 of `HANDOFF_2026-10-10_…gate.md`, requested by the owner on 2026-10-10. Their ruling was "cascor+data now; canopy/recurrence via W1.13", where W1.13 is a task in `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`. `…FLOOD-3-DISPOSITION.md` §8 "Delivered" has the detail. In short:
+- **Delivering the released fixes**: item 3 of `HANDOFF_2026-10-10_…gate.md`, requested by the Overtoad on 2026-10-10. Their ruling was "cascor+data now; canopy/recurrence via W1.13", where W1.13 is a task in `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`. `…FLOOD-3-DISPOSITION.md` §8 "Delivered" has the detail. In short:
   - **Locks.** juniper-recurrence#199, juniper-canopy#739, juniper-data#478 and juniper-cascor#711 move only the two pins.
   - **Floors and releases.**
     - The floors rode juniper-data#479 and juniper-cascor#712, and canopy 0.9.0 through W1.13.
     - juniper-data 0.17.1 reached PyPI on 2026-10-23 at 23:49Z (juniper-data run 38084468369).
     - juniper-cascor 0.12.0 reached PyPI on 2026-10-25 at 18:13Z (juniper-cascor run 38085392643).
-    - The owner approved both gates. The archives are juniper-ml#2215 and #2216.
+    - The Overtoad approved both gates. The archives are juniper-ml#2215 and #2216.
   - **Images.** juniper-deploy#258 pins data 0.17.1 and cascor 0.12.0, beside canopy 0.9.0 and recurrence 0.8.0.
 - **The meta-package floors.**
   - `[tools]`: juniper-ml#2314, in 0.11.1. Another session cut 0.11.1 (#2319, #2321); it reached PyPI on 2026-10-25 at 18:03Z.
   - `[servers]`: juniper-ml#2326 (squash `f823b0b7`; R-ML-SERVERS in §5 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`) floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`.
-    - The recurrence-arc session cut it as 0.11.2 (#2339, #2341). 0.11.2 reached PyPI on 2026-10-26 at 08:38:39Z, after the owner approved run 40247789317.
+    - The recurrence-arc session cut it as 0.11.2 (#2339, #2341). 0.11.2 reached PyPI on 2026-10-26 at 08:38:39Z, after the Overtoad approved run 40247789317.
     - **The two security patches have reached `[servers]` since 0.11.0, through canopy 0.9.0's unconditional floors** (see § Corrections).
 - **juniper-ml#2062 is fixed by juniper-ml#2333.** It squash-merged as `da5e8de3` at 2026-10-26 09:10:06Z, with option (a+), and did not ride 0.11.2.
   - `[servers]` is now:
@@ -58,7 +58,7 @@ The owner's last request in this arc, verbatim: "let's publish ml#2062 changes o
     - its notes are one `### Fixed` section (#2062 and #2330), labelled PATCH.
   - **Archive ml#2350** (`notes/releases/RELEASE_NOTES_v0.11.3.md`) merged by its armed auto-merge at 10:31:48Z as `8b2221d3`. The archive on `main` matches the Release body (`diff -B`).
   - **Publish run 40306687867**: Build and Validate and Publish to TestPyPI succeeded, and Publish to PyPI is `waiting`. `pending_deployments` lists `pypi` (environment id 12341743943), and the ceremony's second `--execute` reported `PENDING_PYPI_APPROVAL`.
-  - **Two `[Unreleased]` PRs were open at the cut.** Each was settled with its owner, a turing session, by message:
+  - **Two `[Unreleased]` PRs were open at the cut.** Each was settled with its Overtoad, a turing session, by message:
     - ml#2345 re-applied its entry under #2333's `### Fixed` and merged first (`278c6139`), so it rides 0.11.3;
     - ml#2346 reverted its CHANGELOG change until after the cut, then merged as `89f5af48`, with its entry under `[Unreleased]`.
 - **Records:**
@@ -73,7 +73,7 @@ The owner's last request in this arc, verbatim: "let's publish ml#2062 changes o
    - **Missing both deadlines does not lose the release.** `gh workflow run publish.yml --repo pcalnon/juniper-ml --ref v0.11.3` starts a fresh run (`publish.yml` has `workflow_dispatch` for this).
      - Its TestPyPI leg no-ops (`skip-existing: true`), and it waits at a new `pypi` gate.
      - A new version is needed only if PyPI took a partial upload.
-2. **After it publishes.** The merge approval does not carry over (Key context), so a new session needs the owner's approval for any merge here.
+2. **After it publishes.** The merge approval does not carry over (Key context), so a new session needs the Overtoad's approval for any merge here.
    - Read the run's `Publish to PyPI` job as `success`.
    - Probe the version endpoint, `https://pypi.org/pypi/juniper-ml/0.11.3/json`, for 200. The project JSON and pip's index lag behind it: pip's index first served 0.11.2 to a 60-second poll at 08:51:38Z, 13 minutes after the upload.
    - Run the `requires_dist` check in § Verification. It must print exactly the three `[servers]` lines.
@@ -85,25 +85,25 @@ The owner's last request in this arc, verbatim: "let's publish ml#2062 changes o
      - Re-read the bullet first: peer sessions edit this unversioned file.
      - The recurrence arc's `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_recurrence-equities-juniper-ml-0-11-2-published-plans-v1-7-20-v1-15-2.md` leaves the 0.11.3 records to this arc.
    - Update `…FLOOD-3-DISPOSITION.md` in three places, in one signed docs PR edited from a fresh `origin/main` worktree. The session worktree's copy is old.
-     - the header `**Updated**` line, which says 0.11.3 "waits at the owner's `pypi` gate";
+     - the header `**Updated**` line, which says 0.11.3 "waits at the Overtoad's `pypi` gate";
      - §8's "**Owner's:**" gate bullet under "Resolved (2026-10-26)";
      - §9: a line naming that PR.
 3. **Backlog, unrequested.** This session fixed none of it and did not re-probe it. The authority is `…FLOOD-3-DISPOSITION.md`:
    - **§4**: its 14 rows whose status reads open (5), open (low) (8) or open (latent) (1), and the "Still open (low)" `claude.yml` header clause in its `ANTHROPIC_API_KEY` row;
    - **§8**: the "Not done, deliberately" `tests/test_service_fork_drift.py` guard, which first needs an `APD-` row in §4.9 of `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`;
    - also APD-ML-002, tracked in that same register.
-4. **Cleanup, the owner's.** § Cleanup inventory lists every worktree and branch, and which ones to leave alone. Run it from each repo's primary checkout, and inspect each worktree before forcing its removal: most are dirty.
-5. **Owner decision: errata to published release notes** (§ Corrections has the evidence). A Release body cannot be re-cut, but `gh release edit` can change it, and this arc used that command to fill placeholders. Nothing was edited here.
+4. **Cleanup, the Overtoad's.** § Cleanup inventory lists every worktree and branch, and which ones to leave alone. Run it from each repo's primary checkout, and inspect each worktree before forcing its removal: most are dirty.
+5. **The Overtoad decision: errata to published release notes** (§ Corrections has the evidence). A Release body cannot be re-cut, but `gh release edit` can change it, and this arc used that command to fill placeholders. Nothing was edited here.
    - **juniper-ml 0.11.2 is security-relevant and under-warns.** Its Priority line reads: "upgrade every environment installed through `juniper-ml[servers]` without `[tools]`; `[tools]` and `[all]` already floor both patches, since 0.11.1". Its intro says "only juniper-cascor 0.12.0 floors them unconditionally".
      - In fact canopy 0.9.0 has carried both shared patches into `[servers]` and `[all]` since 0.11.0.
      - 0.11.2's real security content is cascor 0.12.0's **own** fixes: #689, #710, and `APIKeyAuth` checking every key.
      - An `[all]` install, or a `[servers]`+`[tools]` one, at 0.11.0 or 0.11.1 can still hold cascor 0.11.0. The notes tell those users they are covered.
      - The Medium rating and the CWE-201/755/770 list still hold, on that basis.
      - The text appears in the Release v0.11.2 body, `notes/releases/RELEASE_NOTES_v0.11.2.md` and `CHANGELOG.md`'s `[0.11.2]` entry.
-     - The owner gave the 0.11.2 rating ruling ("Same as 0.11.1", 2026-10-25) while this session was reporting the false premise. The rating still holds, on cascor's own fixes.
+     - The Overtoad gave the 0.11.2 rating ruling ("Same as 0.11.1", 2026-10-25) while this session was reporting the false premise. The rating still holds, on cascor's own fixes.
    - **juniper-ml 0.11.3 is milder.** "which `[servers]` now applies for the first time" holds for data's own requirement, but reads as if the patch floors were new. It appears in `CHANGELOG.md`, the Release v0.11.3 body and `notes/releases/RELEASE_NOTES_v0.11.3.md`.
    - **juniper-ml 0.11.1 over-warns `[all]` users**, who gained nothing over 0.11.0. This is harmless.
-6. **Not this arc's.** The recurrence arc's owner items, listed in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_recurrence-equities-juniper-ml-0-11-2-published-plans-v1-7-20-v1-15-2.md`, stay with that arc. So do its plans' copies of the false claim; § Corrections lists them, and that session has been told.
+6. **Not this arc's.** The recurrence arc's Overtoad items, listed in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_recurrence-equities-juniper-ml-0-11-2-published-plans-v1-7-20-v1-15-2.md`, stay with that arc. So do its plans' copies of the false claim; § Corrections lists them, and that session has been told.
 
 ## Corrections
 
@@ -119,7 +119,7 @@ The owner's last request in this arc, verbatim: "let's publish ml#2062 changes o
   - memories `project_juniper_data_registry_needs_api_extra.md` (with its `MEMORY.md` line) and `project_recurrence_equities_p0_arc_2026-10-04.md`;
   - this file;
   - correction comments on ml#2326 (the origin) and ml#2333.
-- **Left to the owner** (Remaining work, item 5): the published notes of 0.11.2, and more mildly 0.11.3 and 0.11.1, with the `CHANGELOG.md` entries that match them.
+- **Left to the Overtoad** (Remaining work, item 5): the published notes of 0.11.2, and more mildly 0.11.3 and 0.11.1, with the `CHANGELOG.md` entries that match them.
 - **Left to the recurrence arc**, whose session was told on 2026-10-26:
   - `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, around lines 705 and 963;
   - `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, around lines 922-923.
@@ -129,7 +129,7 @@ The owner's last request in this arc, verbatim: "let's publish ml#2062 changes o
 
 ## Key context and traps
 
-- **Merge approval.** The owner's "merge approval granted" (2026-10-25) covered ml#2333, the 0.11.3 proposal and archive, and ml#2352, this file's PR. It ended with this session. A new session needs the owner's approval for any merge (memory `feedback_headless_merge_approval_policy.md`).
+- **Merge approval.** The Overtoad's "merge approval granted" (2026-10-25) covered ml#2333, the 0.11.3 proposal and archive, and ml#2352, this file's PR. It ended with this session. A new session needs the Overtoad's approval for any merge (memory `feedback_headless_merge_approval_policy.md`).
 - **Never approve a `pypi` gate from a session.** Never put a secret in argv.
 - **A release cut under open `[Unreleased]` PRs** (memory `reference_release_cut_under_an_open_pr_changelog_automerges_silently.md`). Right before the proposal merges, every open PR touching `CHANGELOG.md` must have merged already, or carry no CHANGELOG change. The unsafe sequence is a re-cut before the proposal merges and a merge after it: update-branch then files the bullet under the released heading.
 - **Re-cutting a PR onto a moved `main`.** Replay its apply script in a fresh `origin/main` worktree, then run `util/ad-hoc/2026-10-08_fleet_flood3_reset_pr_branch.py`. It makes one signed commit on a temporary branch, then force-moves the PR ref, guarded on the old tip. A whole-file upload onto a stale branch reverts `main`.
@@ -152,7 +152,7 @@ The owner's last request in this arc, verbatim: "let's publish ml#2062 changes o
     - `cd <shared checkout> && git …`;
     - `git -C` into sibling juniper-ml worktrees.
   - Allowed: `cd <centralized worktree> && git …`, `git worktree add|remove <literal path>`, `gh … --jq`, `grep -P` / `cut` on `gh` output, and small `python3 -I` pollers in the scratchpad.
-- **The Cursor fleet keeps running**, by owner decision (`…FLOOD-3-DISPOSITION.md` §8). Docs PRs conflict by construction, so consolidation stays the default disposition.
+- **The Cursor fleet keeps running**, by Overtoad decision (`…FLOOD-3-DISPOSITION.md` §8). Docs PRs conflict by construction, so consolidation stays the default disposition.
 
 ## Verification
 
@@ -164,7 +164,7 @@ git log --oneline -5 origin/main
 gh pr view 2333 --repo pcalnon/juniper-ml --json state,mergeCommit --jq '"\(.state) \(.mergeCommit.oid)"'   # MERGED da5e8de3db34…
 gh pr view 2350 --repo pcalnon/juniper-ml --json state,mergeCommit --jq '"\(.state) \(.mergeCommit.oid)"'   # MERGED 8b2221d3e952… (the archive)
 gh release view v0.11.3 --repo pcalnon/juniper-ml --json tagName,targetCommitish,publishedAt --jq '"\(.tagName) \(.targetCommitish) \(.publishedAt)"'   # v0.11.3 a771a5b86378418b16861a66f30247783a248382 2026-10-26T10:20:47Z
-gh run view 40306687867 --repo pcalnon/juniper-ml --json jobs --jq '.jobs[] | .name + " " + .status + " " + (.conclusion // "")'   # Publish to PyPI: waiting until the owner approves
+gh run view 40306687867 --repo pcalnon/juniper-ml --json jobs --jq '.jobs[] | .name + " " + .status + " " + (.conclusion // "")'   # Publish to PyPI: waiting until the Overtoad approves
 gh api repos/pcalnon/juniper-ml/actions/runs/40306687867/pending_deployments --jq '.[].environment.name'   # pypi (empty once approved)
 curl -s -o /dev/null -w '%{http_code}\n' https://pypi.org/pypi/juniper-ml/0.11.3/json   # 404 until published, then 200
 python3 -I -c "import json,urllib.request as u; r=json.load(u.urlopen('https://pypi.org/pypi/juniper-ml/0.11.3/json'))['info']['requires_dist']; s=[x for x in r if 'extra == \"servers\"' in x]; print(s); assert len(s)==3 and all('[' in x.split(';')[0] for x in s), s"   # after publish: exactly the three [servers] lines, each with its extras marker (0.11.2 fails the assert)
@@ -175,7 +175,7 @@ gh pr list --repo pcalnon/juniper-ml --state open
 
 Checked item by item against git, GitHub and PyPI on 2026-10-26:
 
-1. **juniper-ci-tools 0.9.1's `pypi` gate**: closed. The owner approved it, and it has been on PyPI since 2026-10-21 21:53Z.
+1. **juniper-ci-tools 0.9.1's `pypi` gate**: closed. The Overtoad approved it, and it has been on PyPI since 2026-10-21 21:53Z.
 2. **The touch of `…FLOOD-3-DISPOSITION.md`**: closed, and since exceeded. ml#2315 was its third update, ml#2326 the fourth, and ml#2352 is the fifth.
 3. **Delivering the released fixes**: closed (§ Completed).
    - The fixes it listed as "on `main` but in no release" have shipped: cascor#689 and #710 are ancestors of cascor's `v0.12.0` tag, and canopy `v0.9.0` compares key bytes.
@@ -183,7 +183,7 @@ Checked item by item against git, GitHub and PyPI on 2026-10-26:
 4. **The §4 backlog**: carried, with `…FLOOD-3-DISPOSITION.md` as the authority (Remaining work, item 3).
    - The "widen the `base64` row" instruction is done: the row names six repos.
    - So is "fix the five-touch wording" in §8.
-5. **Cleanup**: still the owner's.
+5. **Cleanup**: still the Overtoad's.
    - All 14 targets are still listed by `git worktree list`; the rubric lane found their HEADs unchanged.
    - `melodic-hugging-rabin` is now unlocked.
    - The optional `cursor/*` branches and the leave-alone worktrees are carried in § Cleanup inventory.
@@ -236,7 +236,7 @@ Checked item by item against git, GitHub and PyPI on 2026-10-26:
   1. Run `git worktree unlock` if it is still locked.
   2. Run `git worktree remove --force`.
   3. Run `git branch -d worktree-enchanted-sniffing-popcorn`; its head `2a69b817` is on `main`.
-- **Optional, the owner's call:** the 91 `cursor/*` head branches of closed flood-3 PRs that `HANDOFF_2026-10-10_…gate.md` counted. The repos now hold more `cursor/*` branches from later floods, so today's totals are not comparable.
+- **Optional, the Overtoad's call:** the 91 `cursor/*` head branches of closed flood-3 PRs that `HANDOFF_2026-10-10_…gate.md` counted. The repos now hold more `cursor/*` branches from later floods, so today's totals are not comparable.
 - **Leave these alone; they are not this arc's:**
   - `.claude/worktrees/agent-adf6f6f72c38b89d8`. The predecessor's other leave-alone worktree, `agent-a0cc83f337e9b068d`, is gone.
   - `juniper-canopy--control--pre-731-main--20261010-0600--4f69524b`;
@@ -299,4 +299,4 @@ Each lane was told to refute, and none edited anything. The author re-probed eac
 **Settled, not applied:**
 - **"The simulator verdict on `278c6139` was not saved."** The author saw that run print "0 suite(s) regressed by the proposal".
 - **Command refusals.** The lanes saw different refusals for the same command forms, so the trap now says refusals vary by session.
-- **Length.** The goal statement (Goal, Completed and Remaining work) is about 1,430 words, above the ~1,200-word target of `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`; the document is about 3,500. Most of the excess is the owner's erratum decision. The cleanup inventory now has its own section.
+- **Length.** The goal statement (Goal, Completed and Remaining work) is about 1,430 words, above the ~1,200-word target of `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`; the document is about 3,500. Most of the excess is the Overtoad's erratum decision. The cleanup inventory now has its own section.

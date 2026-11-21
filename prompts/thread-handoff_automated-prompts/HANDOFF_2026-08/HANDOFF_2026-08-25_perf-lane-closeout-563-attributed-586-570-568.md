@@ -28,7 +28,7 @@ run from the juniper-ml repo root unless stated.
 | **cascor#586** — 7/7 CLI workers failed the graceful stop at cap 16, ~35 s/run serial teardown inside `fit()` (0/7 at cap 4, 0/7 service; the instrument reads it as `train_other` 37±1 s = 7 × 5 s joins + ~2 s of real post-round work). Cause: workers hang at interpreter exit on the advisory-queue **feeder flush**; fix = `cancel_join_thread` on progress/instrumentation queues + parent-side drain + a **shared** join deadline | cascor#587 **MERGED** (`76f4d51b`) | **FIXED** in code; live re-measure owed (§3.1) |
 | The 1.817 span ratio does **not** reproduce on the current build: nrun-anchored **1.32** (≈ all #586), whole-process **1.09** — the service now spends MORE in candidate and output than the CLI | #571 comment | pre-F1 series remains historical (pred. §1.5) |
 | Work term post-#566: cli/svc **0.861** at cap 4, **0.876** at cap 16 (was 1.230 at cap 16 pre-#566); both arms work-deterministic (epochs sd 0) | evidence note §5; #571 comment | reconciled — the "1.308" was the candidate-*phase* ratio, never a work value |
-| Ad-hoc scripts are **RETAINED** (owner decision 2026-08-25): no retirement deadlines; `Retire when:` lines read `RETAINED (…) Previously: <condition>` | ml#1356 MERGED (`e91e2dae`); `util/ad-hoc/README.md` Lifecycle | policy — never delete an ad-hoc script as routine cleanup |
+| Ad-hoc scripts are **RETAINED** (Overtoad decision 2026-08-25): no retirement deadlines; `Retire when:` lines read `RETAINED (…) Previously: <condition>` | ml#1356 MERGED (`e91e2dae`); `util/ad-hoc/README.md` Lifecycle | policy — never delete an ad-hoc script as routine cleanup |
 
 ### 1.1 Documents this handoff is shorthand for
 
@@ -81,9 +81,9 @@ recorded", not "always tip": during T6's checkout freeze (§4.4) the census must
 | 1 | **§3.1 re-measure both merged fixes live** (G4 decomposition at cap 16 for #587; worker census for #588) | **T6 window** (§4.4) |
 | 2 | **§3.2 cascor#569 — F3 preload, now unblocked** | after §3.1's census reads clean; the fork-safety audit (code reading) can start now |
 | 3 | **§3.3 cascor#579 — the post-#563 worker profile** (never run; "#563 caused the 9×" is still a correlation) | T6 window — **share item 1's cell**, it is one cap-4 run |
-| 4 | **§3.4 cross-arm parity: #582 / #572 / #530 / #578** — decisions, not measurements | owner decides #578 and #582's option |
-| 5 | **§3.5 the tracked-but-untouched items**: #573 (logging redesign, owner-timed), #550 (CodeQL/model-core Wave 2) | owner |
-| — | pred. §4.8 deferred list: cap series re-measure, cap-128 3-seed spread (cost-gate first), retrospective corpus re-validation — **inherited; its #530/#572 bullets are absorbed into §3.4; raise the last one with the owner, do not absorb** | T6 window / owner |
+| 4 | **§3.4 cross-arm parity: #582 / #572 / #530 / #578** — decisions, not measurements | Overtoad decides #578 and #582's option |
+| 5 | **§3.5 the tracked-but-untouched items**: #573 (logging redesign, Overtoad-timed), #550 (CodeQL/model-core Wave 2) | Overtoad |
+| — | pred. §4.8 deferred list: cap series re-measure, cap-128 3-seed spread (cost-gate first), retrospective corpus re-validation — **inherited; its #530/#572 bullets are absorbed into §3.4; raise the last one with the Overtoad, do not absorb** | T6 window / Overtoad |
 
 ### 3.1 Re-measure both merged fixes (first, and it needs the host)
 
@@ -276,9 +276,9 @@ The two arms are each deterministic but disagree (11,310 vs 13,140 candidate epo
 in-loop at `api/lifecycle/manager.py`, anchor text `new_val_x = torch.tensor(arrays["X_test"]`; CLI
 trains with `(no val data)`) and **#572/#530** (construction-time global-stream offsets; service seed
 pinned to 42). **#578** is the baseline-tier decision that depends on them. None needs a run; all
-need the owner to pick an option (each issue lists them). Do not build tooling here first.
+need the Overtoad to pick an option (each issue lists them). Do not build tooling here first.
 
-### 3.5 Tracked, untouched, owner-timed
+### 3.5 Tracked, untouched, Overtoad-timed
 
 **#573** logging redesign (design doc first; carry `_log_at_level`'s per-record `open()` and the
 unconditional `print()` into it — those two findings are recorded in **pred. §4.13**, NOT in the
@@ -406,7 +406,7 @@ then list untruncated** — `head` on a reference sweep is never acceptable. Sam
   candidate round) is the cheapest discriminator for #582/#572. **#582 carries it as a comment
   (2026-08-25T22:59Z); #572 still does not** — add it there before doing §3.4.
 - **pred. §4.8** deferred list: cap-series re-measure, cap-128 3-seed spread (cost-gate first),
-  retrospective corpus re-validation (**owner decides**); its #530/#572 bullets now live in §3.4.
+  retrospective corpus re-validation (**Overtoad decides**); its #530/#572 bullets now live in §3.4.
 - **pred. §6** operational notes (env, `JUNIPER_EXP_HEALTH_TIMEOUT=180`, py-spy ancestor rule,
   the 637 MB cap-64 log, `--down --all-mine` scope) and **pred. §6.2**, the per-category tooling
   list — in the predecessor's own words, *"'now cheap' claims are only true if you know which
@@ -447,10 +447,10 @@ then list untruncated** — `head` on a reference sweep is never acceptable. Sam
 
 | item | state | action |
 | --- | --- | --- |
-| `worktrees/juniper-cascor--fix--568-cli-import-hygiene--20260825-0730--fa649d0b` | branch `fix/568-cli-import-hygiene` — **#588 MERGED** (`d2d10697`) | **removed by this session after the merge** (ran only pytest; snapshot check read 0). Local branch deleted. **`delete_branch_on_merge` is OFF on juniper-cascor** — merged remote branches persist until deleted by hand (#587's `fix/586-worker-shutdown-hang` still exists on origin; #588's was deleted by the owner) |
-| cascor local branches `diag/seed-instability-at-56{2,3,5}`, `diag/forkserver-import-audit` | **local-only provenance refs** for the evidence note §3.2 and #570 (each = base + one "NOT for merge" diag commit); their worktrees are already removed | **keep**; never push, never delete without updating the evidence note's provenance table. **`diag/forkserver-import-audit` tracks `origin/main`** (`git branch -vv` → `[origin/main: ahead 1, behind N]`) — never `git pull` while it is checked out, it would merge main into a provenance ref; the owner may `git branch --unset-upstream diag/forkserver-import-audit` |
+| `worktrees/juniper-cascor--fix--568-cli-import-hygiene--20260825-0730--fa649d0b` | branch `fix/568-cli-import-hygiene` — **#588 MERGED** (`d2d10697`) | **removed by this session after the merge** (ran only pytest; snapshot check read 0). Local branch deleted. **`delete_branch_on_merge` is OFF on juniper-cascor** — merged remote branches persist until deleted by hand (#587's `fix/586-worker-shutdown-hang` still exists on origin; #588's was deleted by the Overtoad) |
+| cascor local branches `diag/seed-instability-at-56{2,3,5}`, `diag/forkserver-import-audit` | **local-only provenance refs** for the evidence note §3.2 and #570 (each = base + one "NOT for merge" diag commit); their worktrees are already removed | **keep**; never push, never delete without updating the evidence note's provenance table. **`diag/forkserver-import-audit` tracks `origin/main`** (`git branch -vv` → `[origin/main: ahead 1, behind N]`) — never `git pull` while it is checked out, it would merge main into a provenance ref; the Overtoad may `git branch --unset-upstream diag/forkserver-import-audit` |
 | `worktrees/juniper-cascor--fix--candidate-seed-derivation--20260823--362b88b1` (`rescue/candidate-seed-derivation-wip`) and `…--diag--seeds-and-balance--20260821-2115--362b88b1` (`rescue/seeds-and-balance-diag-wip`) | pred. §6.1 rows; **still present, 28 `.h5` between them**; their `util/ad-hoc/*.patch` twins verified on `main` | **Redundancy is uneven** (verified by content diff): `seeds-and-balance` ≡ its `.patch` ≡ the `diag/seed-instability-at-56x` commit content; but `candidate-seed-derivation-wip` (81 lines: network-owned seed RNG + `DIAG:` seed log + worker-profile dispatcher + `DIAG-ENV` census) ≡ **its `.patch` ONLY** — no `diag/*` branch carries it, its substance shipped as #566/#567, and the patch no longer applies to `origin/main` in either direction. Provenance only. **Owner's call to remove**: copy the 28 `.h5` out first (`worktree remove` deletes them), then `git branch -D` (both unmerged, unpushed) |
-| pred. §6.1's `exp--determinism-postarc` (detached `234c203`), `fix--logger-frame-resolution` (`be346be`), `exp--residual-wall-gap` (detached `362b88b`) | **ALL THREE STILL PRESENT** — `git -C /home/pcalnon/Development/python/Juniper/juniper-cascor worktree list`; `.h5` counts **100 / 73 / 450**. (An earlier draft of this table said "no longer listed" — that was a `../juniper-cascor` path resolving nowhere from the session worktree; a validator caught it.) `determinism-n20-postarc/provenance.json:cascor_src` still points at the postarc tree | pred. §6.1's dispositions stand unchanged: **postarc — keep, do not move its HEAD** (it is the §1.1 provenance link); the other two — removable **only after** the snapshot check, ~620 un-indexed models between them; **owner's call** |
+| pred. §6.1's `exp--determinism-postarc` (detached `234c203`), `fix--logger-frame-resolution` (`be346be`), `exp--residual-wall-gap` (detached `362b88b`) | **ALL THREE STILL PRESENT** — `git -C /home/pcalnon/Development/python/Juniper/juniper-cascor worktree list`; `.h5` counts **100 / 73 / 450**. (An earlier draft of this table said "no longer listed" — that was a `../juniper-cascor` path resolving nowhere from the session worktree; a validator caught it.) `determinism-n20-postarc/provenance.json:cascor_src` still points at the postarc tree | pred. §6.1's dispositions stand unchanged: **postarc — keep, do not move its HEAD** (it is the §1.1 provenance link); the other two — removable **only after** the snapshot check, ~620 un-indexed models between them; **Overtoad's call** |
 | this session's ml worktree `.claude/worktrees/adaptive-soaring-codd` | branch `docs/handoff-2026-08-25-perf-lane-closeout` off `origin/main` `84f52793`; only this file (untracked until committed) | the handoff PR |
 | `Juniper/juniper-cascor` primary checkout | at **`d2d10697` = `origin/main`** (#588), clean — synced by another session late 2026-08-25 | the service arm runs from here. **FROZEN during T6's window** (§4.4) — no pull/commit/dirty tree; §3.1 pins to its HEAD rather than advancing it |
 

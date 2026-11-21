@@ -96,7 +96,7 @@ Measured in-process on the pinned venv, at main `df21367d`, at `e2f87aae` and at
 
 **L6. The register contradicts the §1 rule that stated omissions 3 and 4 rely on.** This is pre-existing, from juniper-ml#2080 (`f2688a95`).
 - …DEFECT-REGISTER.md:1635 says "`APD-DATA-057` — filed 2026-09-24; actionable, needs no ruling."
-- §1 (L127, L143) says rows become actionable only by owner ruling. L1320-1326 records exactly this wording ("no owner ruling is needed … so a session may action them") as struck.
+- §1 (L127, L143) says rows become actionable only by Overtoad ruling. L1320-1326 records exactly this wording ("no Overtoad ruling is needed … so a session may action them") as struck.
 - The correction applied §1 to APD-ML-008's silent-path remedy, but not to DATA-057's structurally similar one.
 - **Fix:** cite a ruling for DATA-057, or park it, or state the exception in §1.
 

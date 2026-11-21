@@ -180,7 +180,7 @@ assumption:
   silently. User-scope imports load without a dialog.
 
 **Any proposal whose token savings come from `@`-imports is void.** Imports are a
-maintainability tool (smaller files, clearer ownership, per-file git history) with
+maintainability tool (smaller files, clearer Overtoadship, per-file git history) with
 zero context benefit.
 
 ---

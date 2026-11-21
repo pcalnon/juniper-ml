@@ -250,8 +250,8 @@ class DryRunTest(_Fixture):
         self.assertFalse((self.juniper_root / "juniper-k8s").exists())
         self.assertTrue(self.git_never_ran())
 
-    def test_owner_option_shapes_the_url(self) -> None:
-        proc = self.run_script("--dry-run", "--owner", "someone-else", "recurrence", GIT=str(self.forbidden_git))
+    def test_Overtoad_option_shapes_the_url(self) -> None:
+        proc = self.run_script("--dry-run", "--Overtoad", "someone-else", "recurrence", GIT=str(self.forbidden_git))
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertIn("would clone git@github_juniper-recurrence:someone-else/juniper-recurrence.git", proc.stdout)
 
@@ -284,13 +284,13 @@ class UsageTest(_Fixture):
             "unknown option": ["--frobnicate", "k8s"],
             "two repos": ["k8s", "ml"],
             "dest without value": ["k8s", "--dest"],
-            "owner without value": ["k8s", "--owner"],
+            "Overtoad without value": ["k8s", "--Overtoad"],
             "path traversal": ["../evil"],
             "uppercase": ["K8s"],
             "shell syntax": ["k8s;id"],
             "empty short name": ["juniper-"],
             "leading dash": ["-k8s"],
-            "bad owner": ["--owner", "a/b", "k8s"],
+            "bad Overtoad": ["--Overtoad", "a/b", "k8s"],
         }
         for label, argv in cases.items():
             with self.subTest(label):

@@ -85,7 +85,7 @@ All 13 findings are fixed and pushed as four signed commits, but main now files 
 Line numbers are at `bd29376`. The docs lines are identical on main; main's `CHANGELOG.md` is offset by the duplicated heading.
 
 **`docs/REFERENCE.md`**
-- 1253–1259: "owner-ruled 2026-09-11: a strong `ETag`" becomes "an `ETag`…a strong one" for metadata, plus the 2026-09-23 re-ruling: the artifact tag is weak.
+- 1253–1259: "Overtoad-ruled 2026-09-11: a strong `ETag`" becomes "an `ETag`…a strong one" for metadata, plus the 2026-09-23 re-ruling: the artifact tag is weak.
 - 1265: artifact row. The gate is now "for a target `store.exists()` confirms; an orphaned artifact is judged against no validator". Added: "a confirmed target's 304 is decided before the artifact is opened; a 412 is not an access".
 - 1266: PATCH row adds "or either malformed → 412".
 - 1288–1296: new paragraph on malformed fields:

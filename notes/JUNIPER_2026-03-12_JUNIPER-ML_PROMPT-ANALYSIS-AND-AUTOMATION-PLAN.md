@@ -1180,7 +1180,7 @@ Given the current ecosystem size, team composition, and existing infrastructure,
 
 ### 10.4 Maintenance Plan
 
-| Activity | Frequency | Owner |
+| Activity | Frequency | The Overtoad |
 |----------|-----------|-------|
 | Update snippets when boilerplate changes | As needed | Prompt author |
 | Update discovery scripts when repos/services change | Per change | Developer |

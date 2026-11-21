@@ -7,7 +7,7 @@ Application:  canopy E2E validation arc -- item 30 (the Network Editor rows need
 Author:       Paul Calnon
 Created:      2026-10-20
 Status:       ad-hoc -- investigation
-Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:      util/ad-hoc/2026-10-20_turing_cascor_leg.bash (the leg); util/ad-hoc/e2e_p1wave_redrive.py --step f011 (the
               W5-07 UI path, restore from the Snapshots tab, which the Linux-host drives used);
               notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md (Phase 13, item 30)

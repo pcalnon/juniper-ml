@@ -29,13 +29,13 @@ Argue against the ledger. In particular:
    tree or the 0.9.0 wheel, one host, dash 4.2.0 only, the allow arm not driven, the minutes not reachable). Is that
    list complete? Does any limit undercut a FIXED, by the ledger's own precedents (how Phases 2, 5, 6 and 10 marked
    fixes FIXED, HEALED or "verified live"; F-CANOPY-059's FIXED on a throwaway stack; F-CANOPY-035's
-   FIXED-FOR-ONE-VICTIM)? Would any precedent require "FIXED IN CODE" without "verified live", or an owner sign-off?
+   FIXED-FOR-ONE-VICTIM)? Would any precedent require "FIXED IN CODE" without "verified live", or an Overtoad sign-off?
 2. **Is anything in Phase 12 stated as observed that was inferred, synthetic, or copied from the PR body?** The PR
    body and the CHANGELOG are the fix author's claims; the ledger must not launder them as the ledger's own
    observations. Find each place where Phase 12 relies on the PR body or the handoff
    (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-08_canopy-pacer-731-landed-phase12-owed.md`) rather
    than on an artifact, and say whether it is labelled as such.
-3. **The counts and ratings logic** (§ "Matrix effect and counts"): 79 / 56 / 1 / 2 / 20; 4 P1; 16 P2; the owner's
+3. **The counts and ratings logic** (§ "Matrix effect and counts"): 79 / 56 / 1 / 2 / 20; 4 P1; 16 P2; the Overtoad's
    two-limbed question; "the second limb moves no count now"; O17. Check with `python3 -B util/ad-hoc/e2e_finding_triage.py`.
 4. **The dropped reader change** (item 24's push-order comparison, § Instruments): is the reason to drop it sound?
 5. **Items 27, 28 and 29**, and the closures of items 0, 24, Phase 9's item 5 and the correction to item 18: is

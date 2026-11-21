@@ -191,7 +191,7 @@ class LedgerIsScreened(unittest.TestCase):
         """SEVEN of the eight. A porcelain status line, a diff stat, an `ls -t`.
 
         Folding these into the content count would overstate the exposure 8x on
-        the number that feeds owner decision 8 -- whether the leak invalidates its
+        the number that feeds Overtoad decision 8 -- whether the leak invalidates its
         runs -- which changes the DENOMINATOR of every rate in the arc.
         """
         for listing in (
@@ -233,7 +233,7 @@ class LedgerIsScreened(unittest.TestCase):
 
     def test_the_ledger_flag_is_separate_from_contaminated(self) -> None:
         """NOT folded into ``contaminated``. Whether a ledger read invalidates its
-        run is owner decision 8 and is unsettled; rolling it in would decide it by
+        run is Overtoad decision 8 and is unsettled; rolling it in would decide it by
         implementation, and would silently change every prior contamination
         verdict."""
         with TemporaryDirectory() as t:

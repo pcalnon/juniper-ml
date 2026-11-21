@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-10-08
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-05_wire_harvested_test.py` (round 2's wirer, which predates the 2026-09-10 relocation)
 
 WHY THIS EXISTS

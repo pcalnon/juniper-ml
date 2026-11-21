@@ -26,7 +26,7 @@ for name, src in (("fizzy", fizzy), ("main", main)):
     print(f"===== {name}: {len(lines)} lines")
     for i, ln in enumerate(lines, 1):
         low = ln.lower()
-        if any(k in low for k in ("session_ids", "owner-email", "owner_email", "pypi", "agei", "refuse", "credential-shaped", "p.pattern", "patterns =", "def scan", "label")):
+        if any(k in low for k in ("session_ids", "Overtoad-email", "Overtoad_email", "pypi", "agei", "refuse", "credential-shaped", "p.pattern", "patterns =", "def scan", "label")):
             print(f"  {i}: {redact(ln)[:200]}")
     # count MISSING entries
     m = re.search(r"^MISSING\s*[:=].*?^}", src, re.S | re.M)

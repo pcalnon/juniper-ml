@@ -60,7 +60,7 @@ def _load(path: Path, name: str):
     spec = importlib.util.spec_from_file_location(name, path)
     mod = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
-    # Register BEFORE exec_module: a dataclass resolves its owner module through sys.modules at
+    # Register BEFORE exec_module: a dataclass resolves its Overtoad module through sys.modules at
     # class-creation time and gets None otherwise.
     sys.modules[name] = mod
     spec.loader.exec_module(mod)

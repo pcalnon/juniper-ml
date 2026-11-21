@@ -74,4 +74,4 @@ functions.
 5. Record, do not file: the top status bar (the fast lane's `update_unified_status_bar`) also never
    updated in A1's windows, and A2 saw `latency-display` hold 1 of 6–10 delivered values. That is
    F-CANOPY-004's accepted class, now observed violating its own contract (no population in 100 s against
-   20–40 s). The disposition belongs to the owner.
+   20–40 s). The disposition belongs to the Overtoad.

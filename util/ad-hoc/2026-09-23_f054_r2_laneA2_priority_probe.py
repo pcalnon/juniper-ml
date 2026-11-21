@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (executed by Claude Code, consensus Lane A2)
 Created: 2026-09-23
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: canopy#670 (F-CANOPY-054); 2026-09-23_f054_r2_laneA2_slot_contention_pause.py
 
 Why: getPriority (dash_renderer.dev.js :1592-1616) begins each pass with

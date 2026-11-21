@@ -72,7 +72,7 @@ Repos in this ecosystem advance **same-day**, and **multiple Claude sessions run
 
 ## 5. Recommended first move
 
-Complete §0 (verify state), confirm #42 is merged + its worktree cleaned, then bring a **B4 design proposal** (the highest-severity remaining finding) for owner review before executing — consistent with the design-first cadence used throughout this effort.
+Complete §0 (verify state), confirm #42 is merged + its worktree cleaned, then bring a **B4 design proposal** (the highest-severity remaining finding) for Overtoad review before executing — consistent with the design-first cadence used throughout this effort.
 
 ---
 

@@ -13,11 +13,11 @@ All dates UTC. A bare §N means this document; register-anatomy terms ("the §2 
 "§4.2", "a §5.1 row") always name sections of the register.
 
 **Read this first: this session closed NO register rows.** It spent itself on the predecessor's §0
-items 1 and 2, on owner-directed release work, and on repairing what validation found. The register
+items 1 and 2, on Overtoad-directed release work, and on repairing what validation found. The register
 is exactly where round 30 left it — 74 fixed / 22 open.
 
 That is a shortfall against the mandate, not a neutral outcome — **but it is also not "everything
-left is owner-gated"**, which is the excuse this lineage is at risk of settling into. Measured:
+left is Overtoad-gated"**, which is the excuse this lineage is at risk of settling into. Measured:
 **14 of the 22 carry explicit register park text; 8 do not** (§0.2 lists both sets). The register's
 own §4.1 lesson block records **over-parking three times** — "a bucket label is not a rationale…
 a member with no stated reason is unexamined, not deferred" — and records zero instances of an
@@ -39,7 +39,7 @@ closing one hastily.
    **Two are executable now, by the register's own precedent** — a session may author a disposition;
    `APD-SVCCORE-007` closed as **disclosure only** (:951) and `APD-SVCCORE-013`/`-016` as
    **docstring / WON'T FIX** (:984), both settled by the §6 "triage before actioning" instruction
-   with no owner approval recorded:
+   with no Overtoad approval recorded:
    - `APD-RCLIENT-005` — close **WON'T FIX**, pinning the rationale. Its complaint is a false
      positive: `juniper-recurrence-client` is a sub-package of the `juniper-recurrence` monorepo, so
      `[project.urls] -> pcalnon/juniper-recurrence` (`pyproject.toml:49-52`) is CORRECT, and
@@ -61,7 +61,7 @@ closing one hastily.
    both substantive.
 
    **Under the plan this is a PATCH (0.6.1), and 0.6.1 escapes NOTHING. Put the choice to the
-   owner; do not assume a minor.** Two validation rounds fought over this and round 2 won on the
+   Overtoad; do not assume a minor.** Two validation rounds fought over this and round 2 won on the
    text: plan §6 (`notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md:296-308`)
    derives the bump from exactly two signals, and its only "adds API surface" escalator is scoped to
    **`Security`**, NOT to `Fixed`. service-core files #1332 under `### Fixed`
@@ -73,7 +73,7 @@ closing one hastily.
    (`juniper_service_core/__init__.py:193`, lazy map `:276`) — but "new public surface ⇒ minor" is a
    rule **the plan does not contain**, and all three call sites are inside the package. register:627
    records that `.websocket.*` and `workers/` have **no production consumer at all**. So a minor buys
-   no consumer anything while firing the whole cascade below. **0.7.0 is an owner OVERRIDE (which N4
+   no consumer anything while firing the whole cascade below. **0.7.0 is an Overtoad OVERRIDE (which N4
    explicitly permits), not a content-determined bump.**
 
    Also do not read `detect`'s `minor` as evidence: `propose_semver` computes
@@ -99,7 +99,7 @@ closing one hastily.
    (`juniper-cascor/requirements.lock:65`, `juniper-data/requirements.lock:83`, both `==0.6.0`),
    green-while-stale under constraint-mode (§6) and needing the manual refresh in §5.3.
 
-   **Deliverable: an owner packet in the register:580-590 three-option shape** — PATCH 0.6.1
+   **Deliverable: an Overtoad packet in the register:580-590 three-option shape** — PATCH 0.6.1
    (plan-conformant, zero cascade) vs MINOR 0.7.0 (override; 5-site escape + 3 ungated strings +
    2 lockfiles) — not a settled minor. Building that packet is session work; choosing is Paul's.
 4. **Paul — `juniper-observability` is `UNRELEASED_CHANGES / minor` with a warning**:
@@ -197,7 +197,7 @@ round 1). Seven claims falsified; the full record is §10 of its archive. Two we
 just in the handoff, and are fixed. Round 2 overturned two of round 1's own conclusions — see §9.
 
 **`juniper-doc-tools` 0.1.2 is live on PyPI** (uploaded `2026-08-30T06:27:39Z`; wheel + sdist).
-Shipped as a **patch, not the detector's minor** — owner decision. First end-to-end exercise of the
+Shipped as a **patch, not the detector's minor** — Overtoad decision. First end-to-end exercise of the
 release-train **ceremony** mode in this repo (§6).
 
 ---
@@ -206,11 +206,11 @@ release-train **ceremony** mode in this repo (§6).
 
 | Repository | Open | Assessment |
 |---|---:|---|
-| `juniper-data` | 13 | the ten-row REST group is owner-routed (§4.1); `-016`/`-018`/`-019` design-shaped |
-| `APD-ECO-*` | 4 | `-001`/`-004`/`-007` owner decisions; `-003` see below |
+| `juniper-data` | 13 | the ten-row REST group is Overtoad-routed (§4.1); `-016`/`-018`/`-019` design-shaped |
+| `APD-ECO-*` | 4 | `-001`/`-004`/`-007` Overtoad decisions; `-003` see below |
 | `juniper-recurrence-client` | 2 | `-004` deferred; `-005` — **see the warning below** |
 | `juniper-cascor-client` | 1 | `-008` envelope sniffing — design-shaped; needs a **cascor server** decision (below) |
-| `juniper-cascor` | 1 | `-005` owner decision |
+| `juniper-cascor` | 1 | `-005` Overtoad decision |
 | `juniper-ml` | 1 | `-001` — release-train question first |
 
 **`APD-ECO-003` is NOT simply "the cheap one."** Its facts hold (all three anchors dead;
@@ -325,7 +325,7 @@ branch that was just created. Fetch siblings before an `--execute --cross-repo` 
 then read `BLOCKED` with three required jobs pending. Not a waiter defect: `safe_merge.py` had done
 an **update-branch**, producing a new head and a fresh required-check run. Diagnose before acting —
 compare the PR's `headRefOid` against the commit you pushed. Its args are `--repo <bare-name>
---owner <owner>`; passing `--repo pcalnon/juniper-ml` yields `pcalnon/pcalnon/juniper-ml`.
+--Overtoad <Overtoad>`; passing `--repo pcalnon/juniper-ml` yields `pcalnon/pcalnon/juniper-ml`.
 
 With `delete_branch_on_merge: true` on all nine repos (verified), merged branches vanish — so
 `git branch -r` showing your branch means a **stale local ref**, not a leftover. `git fetch --prune`
@@ -378,7 +378,7 @@ pre-commit.
   fallback keeps remote messages at `:384-385`), so `feat:` commits in *unrelated* parts of
   juniper-ml raise a sub-package's bump. Observability's `minor` is driven purely by that — its
   `[Unreleased]` is empty, so no heading exists to blame. The plan says it outright (N4: "**Not** a
-  versioning oracle … *proposals* the owner may override"). Read the diff, and check whether the
+  versioning oracle … *proposals* the Overtoad may override"). Read the diff, and check whether the
   package gained public surface.
 - **Choosing patch over minor avoided a live cascade.** 0.2.0 would have escaped doc-tools' `<0.2.0`
   ceiling and fired the co-change path across five extras tables plus two workflow pins — on a real
@@ -438,13 +438,13 @@ falsifies the standing memory `reference_precommit_files_skips_untracked`); the 
 `<0.7.0` strings; §0.4's heading-heuristic misattribution; and §3's unreproducible "13 wholly dead".
 
 **Round 2 again overturned round 1, twice, and both reversals are load-bearing here.** Round 1
-concluded that *no* open row is actionable without an owner and that py.typed guards should be the
+concluded that *no* open row is actionable without an Overtoad and that py.typed guards should be the
 successor's first act. Round 2 showed only **14 of 22** carry register park text, that
 `APD-RCLIENT-005` and `APD-CCLIENT-008` are executable under the register's own
 disclosure/won't-fix precedent (:951, :984), and that py.typed is **off-mandate**. It also refuted
 the minor-bump justification this document had adopted from round 1 — the plan's "adds API surface"
 escalator is scoped to `Security`, not `Fixed`, so service-core is a plan-conformant **PATCH** and
-0.7.0 is an owner override. **Two lineage rounds running, round 2 has reversed round 1's routing.
+0.7.0 is an Overtoad override. **Two lineage rounds running, round 2 has reversed round 1's routing.
 Do not skip it.**
 
 For the successor validating THIS document: attack §0.2's 14/8 split (recount the park text

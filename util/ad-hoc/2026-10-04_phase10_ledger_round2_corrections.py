@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-04
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Round 2's correction pass on the ledger's Phase 10 (and F-CANOPY-057's owed re-rating), as exact-match edits.
 
@@ -40,8 +40,8 @@ SUBS = [
     ),
     # --- Summary ---
     (
-        "- **Two declined:** the selection arc's O4 (an environment artifact) and O9 (a design question, the owner's).",
-        "- **Two declined:** the selection arc's O4 (an environment artifact) and O9 (a design question, the owner's).\n"
+        "- **Two declined:** the selection arc's O4 (an environment artifact) and O9 (a design question, the Overtoad's).",
+        "- **Two declined:** the selection arc's O4 (an environment artifact) and O9 (a design question, the Overtoad's).\n"
         "- **F-CANOPY-057 re-rated P2.** canopy#684 corrected the manual and FAQ that its P1 rested on, the re-rating\n"
         "  its entry said was owed with that merge (found in round 2).",
     ),
@@ -81,7 +81,7 @@ SUBS = [
         "  page open, which is F-CANOPY-067's trigger (a cascor restart's burst is empty).",
     ),
     # --- F-CANOPY-065 ---
-    ("(P1, canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**", "(P1 if a shipped CHANGELOG promise counts as documented, else P2, the owner's question; canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**"),
+    ("(P1, canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**", "(P1 if a shipped CHANGELOG promise counts as documented, else P2, the Overtoad's question; canopy repo; observed 2026-09-23 by the canopy selection arc's A-N2 run as its O3; re-rated P1 in round 1 of this phase's validation; OPEN).**"),
     ("(`src/tests/integration/test_n5_apply_params_ux.py:308`)", "(`src/tests/integration/test_n5_apply_params_ux.py:309`)"),
     (
         "    with the same result, and unwrapping the ack in `_apply_params_hot` alone recovered all four WS keys and\n"
@@ -93,7 +93,7 @@ SUBS = [
         "  example never appears. This ledger already treats a promise outside the manual as documented: F-CANOPY-057\n"
         "  is P1 on the manual and a FAQ. The values themselves land.",
         "  example never appears. No manual or REFERENCE text makes this promise, so the P1 holds only if a shipped\n"
-        "  CHANGELOG or design-plan promise counts as documented under plan §6.3, the owner's question (Consensus\n"
+        "  CHANGELOG or design-plan promise counts as documented under plan §6.3, the Overtoad's question (Consensus\n"
         "  record); if not, F-CANOPY-065 is P2. Round 1 also cited F-CANOPY-057 as a precedent. Round 2 withdrew that:\n"
         "  F-CANOPY-057's P1 rested on the manual, and has lapsed (its status). The values themselves land.",
     ),

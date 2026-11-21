@@ -4,7 +4,7 @@
 **Target**: a fresh Claude Code session started in `/home/pcalnon/Development/python/Juniper/juniper-ml`.
 **Scope**: Item 0 (bootstrap sync) + two work items, across juniper-ml, juniper-canopy, juniper-recurrence (+ scoped decisions for juniper-cascor, juniper-data).
 
-Every `file:line` below was verified 2026-07-18 (juniper-ml @ `27521e5`; sibling repos at their on-disk mains) and re-probed by independent validator agents. **Re-verify each anchor at current HEAD before editing — treat any drifted anchor as a stop-and-re-ground signal, not something to power through.** Do not invent env vars, flags, paths, or config keys: if a needed signal does not exist, stop and ask the owner.
+Every `file:line` below was verified 2026-07-18 (juniper-ml @ `27521e5`; sibling repos at their on-disk mains) and re-probed by independent validator agents. **Re-verify each anchor at current HEAD before editing — treat any drifted anchor as a stop-and-re-ground signal, not something to power through.** Do not invent env vars, flags, paths, or config keys: if a needed signal does not exist, stop and ask the Overtoad.
 
 ---
 
@@ -34,11 +34,11 @@ If the checkout is dirty, or `git checkout main` fails because `main` is held by
 
 ### Item 1 — Per-service SEC-F01 adoption (the substantive item)
 
-Goal per service: depend on `juniper-service-core>=0.5.0` and call `enforce_auth_posture(...)` at startup, before binding, mirroring the E-8 floors-check adoption. One PR per repo, in its own worktree (central `worktrees/` dir, house naming), owner merges — never self-merge.
+Goal per service: depend on `juniper-service-core>=0.5.0` and call `enforce_auth_posture(...)` at startup, before binding, mirroring the E-8 floors-check adoption. One PR per repo, in its own worktree (central `worktrees/` dir, house naming), Overtoad merges — never self-merge.
 
 **`require_auth` wiring (read this first)**: neither canopy nor recurrence has an existing require-auth flag today (verified: canopy `src/settings.py` carries only sub-feature flags like `browser_control_auth_enabled`; recurrence `settings.py` has none).
-So for this wave: **call with `require_auth=False`** — the loud-WARNING posture, which already closes the silent-open gap by making OPEN visible at boot — and in each PR description propose a `JUNIPER_<SVC>_REQUIRE_AUTH`-style flag (with a suggested per-profile default) as the owner-approved follow-up that flips the posture to CRITICAL-and-refuse.
-Do not add such a flag without owner approval.
+So for this wave: **call with `require_auth=False`** — the loud-WARNING posture, which already closes the silent-open gap by making OPEN visible at boot — and in each PR description propose a `JUNIPER_<SVC>_REQUIRE_AUTH`-style flag (with a suggested per-profile default) as the Overtoad-approved follow-up that flips the posture to CRITICAL-and-refuse.
+Do not add such a flag without Overtoad approval.
 
 **1a. juniper-canopy (anchored — do first; the pattern repo):**
 
@@ -57,7 +57,7 @@ Do not add such a flag without owner approval.
 
 - **Verified: neither repo's `pyproject.toml` depends on `juniper-service-core` today.** Adoption therefore means adding a new runtime dependency (stdlib-only import; light) plus the startup call.
 - Verified starting anchors — cascor: app factory `src/api/app.py`, uvicorn entries `src/server.py` / `src/main.py` (packages live directly under `src/`; there is **no** `src/cascor/`). data: app under `juniper_data/api/`; `Settings` with the server-side `api_keys` field at `juniper_data/api/settings.py:93` / `:129`. DISCOVER the exact pre-bind call sites from there.
-- Because "new dependency in cascor/data" is an architecture call, present the per-repo plan (call site, key source, `require_auth` wiring, test) to the owner via `AskUserQuestion` or in the PR description **before** merging — or deliver as draft PRs. Do not silently expand scope.
+- Because "new dependency in cascor/data" is an architecture call, present the per-repo plan (call site, key source, `require_auth` wiring, test) to the Overtoad via `AskUserQuestion` or in the PR description **before** merging — or deliver as draft PRs. Do not silently expand scope.
 
 ### Item 2 — Verify-and-close the release-train pin co-change fix (ml#661)
 
@@ -69,7 +69,7 @@ Origin-session validators already confirmed all of this at `27521e5` (`propose.p
 ## Key context / gotchas
 
 - **Concurrent sessions are active in this ecosystem** (release-train work shipped 3 PRs in parallel with the origin session). Before opening any PR: `gh pr list` in the target repo as a dup-guard, and re-check `git log origin/main` freshness.
-- **juniper-ml main enforces `required_signatures`**: automation commits made with `-c commit.gpgsign=false` leave PRs BLOCKED even when all checks are green (gh auto-merge is disabled repo-wide). Owner merges handle this; do not use `--admin` except for the notes-archive-only exemption class.
+- **juniper-ml main enforces `required_signatures`**: automation commits made with `-c commit.gpgsign=false` leave PRs BLOCKED even when all checks are green (gh auto-merge is disabled repo-wide). The Overtoad merges handle this; do not use `--admin` except for the notes-archive-only exemption class.
 - The HO-2 incident class is the *reason* for Item 1: an empty/placeholder secret silently disables `APIKeyAuth` and the service serves open with a healthy health check. `JUNIPER_SKIP_AUTH_POSTURE_CHECK` is the escape hatch — mention it in each adoption PR.
 - Never paste local pytest failure output into public places without scrubbing: pytest's failure repr can include `subprocess.run`'s `env` kwarg, with `ANTHROPIC_API_KEY` near the visible front (observed first-hand in the origin session's failure paste).
 - juniper-service-core's dependency-free top-level `import juniper_service_core` guarantee must survive (auth_posture is stdlib-only; nothing to do, just don't break it).
@@ -96,8 +96,8 @@ If the pin reads `<0.5.0` or the propose suite reports ~34 tests, you are on the
 ## Acceptance criteria
 
 1. Item 0 done: juniper-ml primary checkout on current main; stale local release branch deleted (or a clean report of why not).
-2. canopy + recurrence PRs open (owner-merge), each: floor `>=0.5.0`, one `enforce_auth_posture(..., require_auth=False, ...)` call at the anchored startup site wired to the real resolved keys, the `JUNIPER_<SVC>_REQUIRE_AUTH` follow-up proposed in the PR description, one regression test, repo's full local gate green.
-3. cascor + data: a concrete, evidence-backed adoption proposal (or draft PR) each, with the new-dependency decision explicitly surfaced to the owner — no unilateral merge.
+2. canopy + recurrence PRs open (Overtoad-merge), each: floor `>=0.5.0`, one `enforce_auth_posture(..., require_auth=False, ...)` call at the anchored startup site wired to the real resolved keys, the `JUNIPER_<SVC>_REQUIRE_AUTH` follow-up proposed in the PR description, one regression test, repo's full local gate green.
+3. cascor + data: a concrete, evidence-backed adoption proposal (or draft PR) each, with the new-dependency decision explicitly surfaced to the Overtoad — no unilateral merge.
 4. ml#661 verification comment posted with evidence (tests run + co-change artifact list confirmed).
 
 ## Validation record

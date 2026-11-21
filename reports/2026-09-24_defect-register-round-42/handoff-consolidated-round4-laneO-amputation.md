@@ -2,7 +2,7 @@
 
 # Round 4, lane O: amputation hunt of the consolidated handoff
 
-**Verdict:** PASS WITH CORRECTIONS. Nothing r3 carried is lost, and every passage that moved kept all its facts. The new text brings 3 MEDIUM findings: one wrong completion test, one gap in preserving evidence, and one undercount of the owner's decisions. There are also 4 LOW, 9 NIT and 0 HIGH findings.
+**Verdict:** PASS WITH CORRECTIONS. Nothing r3 carried is lost, and every passage that moved kept all its facts. The new text brings 3 MEDIUM findings: one wrong completion test, one gap in preserving evidence, and one undercount of the Overtoad's decisions. There are also 4 LOW, 9 NIT and 0 HIGH findings.
 
 ## Documents cited
 - **r4, under test:** `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/2fba4397-7d9b-4929-8ca2-375b8168e1c8/scratchpad/hc4/consolidated_r4_frozen.md`. It is a draft of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_defect-register-round-42-consolidated-both-lanes-validations-and-closes-pr-owed.md`.
@@ -55,11 +55,11 @@ None.
 **M3. "Five parked rows" undercounts the register (r4 L283, new text).**
 - **Quote:** "**[R] The register's five parked rows.** Its §4 notes (about L1626-L1630) park `APD-DATA-054`, `-055` and `-056`, and `APD-ML-007` and `-008` … ask all five together … (the rows are at about L1301-L1305)."
 - **Evidence:**
-  - At `b82d12d7`, §4 also parks `APD-ECO-009`, `-010` and `-011` (L1619-L1625) and `APD-ECO-012` (L1632-L1634), with the same "awaiting an owner ruling, do not action".
+  - At `b82d12d7`, §4 also parks `APD-ECO-009`, `-010` and `-011` (L1619-L1625) and `APD-ECO-012` (L1632-L1634), with the same "awaiting an Overtoad ruling, do not action".
   - The rows are at L1298-L1300 and L1306.
   - r4 names none of the four anywhere, and none of documents 1-3 records asking them.
   - `APD-DATA-057`'s park bullet (L1635-L1637) is closed by Appendix A's gate instead.
-- **Replace L283 with:** "**[R] The register's parked rows.** Its §4 notes (about L1619-L1637) park nine rows as "filed 2026-09-24; awaiting an owner ruling, do not action": `APD-ECO-009`, `-010`, `-011` and `-012`; `APD-DATA-054`, `-055` and `-056`; and `APD-ML-007` and `-008` (`APD-DATA-057`'s park bullet closes it at Appendix A's gate). No round-42 handoff records asking them. This file carries `-055`'s `If-Match` half and `-008`'s remedy (above); ask all nine together, each with its row's own question (the rows are at about L1298-L1306)."
+- **Replace L283 with:** "**[R] The register's parked rows.** Its §4 notes (about L1619-L1637) park nine rows as "filed 2026-09-24; awaiting an Overtoad ruling, do not action": `APD-ECO-009`, `-010`, `-011` and `-012`; `APD-DATA-054`, `-055` and `-056`; and `APD-ML-007` and `-008` (`APD-DATA-057`'s park bullet closes it at Appendix A's gate). No round-42 handoff records asking them. This file carries `-055`'s `If-Match` half and `-008`'s remedy (above); ask all nine together, each with its row's own question (the rows are at about L1298-L1306)."
 
 ### LOW
 

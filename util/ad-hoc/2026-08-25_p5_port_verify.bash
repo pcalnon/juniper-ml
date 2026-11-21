@@ -7,7 +7,7 @@
 # Author: Paul Calnon
 # Created: 2026-08-25
 # Status: ad-hoc — migration (P5 fleet rollout, plan §P5 step d; tracking issue ml#1326)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related: util/ad-hoc/2026-08-25_p5_port_memory_budget.py (renders what this verifies);
 #          juniper-cascor#585 (the port that was RED on a test in a DIFFERENT file, which is
 #          why the FULL suite runs here and not just the ported one)

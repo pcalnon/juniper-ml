@@ -24,7 +24,7 @@ and a **default severity**.
 **`overall == PASS` iff** zero `blocker` ∧ zero `major` findings ∧ every `hallucination_risk[].grounded == true`.
 A finding the validator cannot back with reproducible **evidence** (an exact command + observed output)
 is auto-downgraded to `minor` (prevents validator false-positives). The Skill's fix loop is bounded
-(max 3 rounds, abort on no-progress) and escalates to the owner on exhaustion (§5.1).
+(max 3 rounds, abort on no-progress) and escalates to the Overtoad on exhaustion (§5.1).
 
 ## Verdict contract (pinned; full schema ships with the validator in PR 3)
 
@@ -60,7 +60,7 @@ is auto-downgraded to `minor` (prevents validator false-positives). The Skill's 
   *drop a source finding* or *flatten a source disagreement* — the two faithfulness defects this suite's
   own dogfooding exposed. Keep it `major`, not a blocker, so it informs rather than hard-fails.)
 - **R1.2 — No scope-creep** (`major`). The prompt introduces no requirement absent from the task
-  description (and not an owner-approved expansion). *Decide:* every prompt directive traces back to the
+  description (and not an Overtoad-approved expansion). *Decide:* every prompt directive traces back to the
   task or an approved expansion; an untraceable directive fails.
 - **R1.3 — Faithful objective** (`major`). The `## Primary Objective` restates the task's intent and
   desired outcome without distortion. *Decide:* paraphrase mismatch or added/dropped goal fails.
@@ -149,9 +149,9 @@ be ambiguous about which of two things is meant.* (`major`)
 bad by boxing the agent into a predetermined, possibly wrong design.* (`minor`→`major`)
 
 - The prompt states the **what/why** and the constraints, leaving implementation latitude **unless the
-  owner pinned a specific design**.
+  Overtoad pinned a specific design**.
 - *Decide:* a prompt that over-specifies the *how* (mandating a brittle/incorrect implementation the
-  task did not call for) fails; a prompt faithfully relaying an owner-pinned design does not.
+  task did not call for) fails; a prompt faithfully relaying an Overtoad-pinned design does not.
 
 ---
 

@@ -704,7 +704,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertLess(session_id_index + 1, len(last_invocation_args))
             self.assertRegex(last_invocation_args[session_id_index + 1], UUID_REGEX)
             self.assertIn("--worktree", last_invocation_args)
-            # Bare, as claudey sends it (owner ruling, 2026-11-06): the next argument is an option, never a value
+            # Bare, as claudey sends it (Overtoad ruling, 2026-11-06): the next argument is an option, never a value
             self.assertIn("--remote-control", last_invocation_args)
             self.assertTrue(last_invocation_args[last_invocation_args.index("--remote-control") + 1].startswith("-"))
             self.assertNotIn("--dangerously-skip-permissions", last_invocation_args)
@@ -1495,7 +1495,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "--effort", "high", "--", "hello"])
 
     def test_remote_control_goes_bare_and_refuses_a_value(self) -> None:
-        """``--remote-control`` never takes a value (owner ruling, 2026-11-04): a word after it is refused, not forwarded.
+        """``--remote-control`` never takes a value (Overtoad ruling, 2026-11-04): a word after it is refused, not forwarded.
 
         Claude Code reads a word after ``--remote-control`` as the session's name. A following flag or the end of the input
         leaves the flag bare; ``0`` (true) turns it on and ``1`` (false) off, as for the other flags here.
@@ -1670,7 +1670,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertEqual(invocations, [])
 
     def test_usage_flag_prints_usage_and_exits_with_failure(self) -> None:
-        """``-u`` / ``--usage`` print the usage text and exit 1 (owner ruling, 2026-11-04); ``-h`` / ``--help`` exit 0."""
+        """``-u`` / ``--usage`` print the usage text and exit 1 (Overtoad ruling, 2026-11-04); ``-h`` / ``--help`` exit 0."""
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
             for flag, expected_status in (("-u", 1), ("--usage", 1), ("-h", 0), ("--help", 0)):
@@ -1684,7 +1684,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
     def test_version_flags_report_claude_codes_version_only(self) -> None:
         """``-v``, ``--version``, ``-V`` and ``--claude-version`` report Claude Code's version, never this script's.
 
-        Owner rulings: ``--version`` on 2026-11-04, and ``-v``, as ``claude -v`` does, on 2026-11-06 -- until then ``-v`` printed this
+        The Overtoad rulings: ``--version`` on 2026-11-04, and ``-v``, as ``claude -v`` does, on 2026-11-06 -- until then ``-v`` printed this
         script's version. ``--version`` once sat in this script's version pattern as well, and ``-V`` / ``--claude-version`` were
         checked against ``--version`` alone, so both exited 1.
         """
@@ -1751,12 +1751,12 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         definitions = [line for line in script_text.splitlines() if re.match(r'^(export )?[A-Z][A-Z0-9_]*_FLAGS="[^"`]*"$', line)]
         probe = "\n".join(definitions) + "\n" + "\n".join(f'printf "%s\\n" "${{{name}}}"' for name in pattern_names)
         resolved = subprocess.run(["/bin/bash", "-c", probe], capture_output=True, text=True, check=True).stdout.splitlines()
-        owners: dict[str, list[str]] = {}
+        Overtoads: dict[str, list[str]] = {}
         for name, value in zip(pattern_names, resolved, strict=True):
             for flag in (token.strip() for token in value.split("|")):
-                owners.setdefault(flag, []).append(name)
+                Overtoads.setdefault(flag, []).append(name)
         assert len(pattern_names) > 10, f"found only {len(pattern_names)} VALID_PATTERNS entries"
-        return {flag: names for flag, names in owners.items() if len(names) > 1}
+        return {flag: names for flag, names in Overtoads.items() if len(names) > 1}
 
     def test_no_input_flag_selects_two_parsers(self) -> None:
         """Each input flag belongs to one pattern: ``--version`` once sat in two, and whichever came first won."""
@@ -1819,7 +1819,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
 
         ``--effort 0`` (true) is deliberately not pinned: it sends the script default, ``EFFORT_DEFAULT`` (``auto`` today),
         and Claude Code 2.1.316-2.1.319 warns "Unknown --effort value 'auto'" and ignores it, so that default is an open
-        question for the owner, not behaviour to lock in.
+        question for the Overtoad, not behaviour to lock in.
         """
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--effort", "1", "--prompt", "hello"])
         self.assertEqual(args, ["--resume", VALID_UUID, "--", "hello"])

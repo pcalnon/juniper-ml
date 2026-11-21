@@ -41,7 +41,7 @@ Usage
         --add /local/path/file.py:src/path/file.py \\
         --message "fix(x): the follow-up" \\
         [--add ...] [--delete REPOPATH ...] [--commit-body TEXT | --commit-body-file FILE] \\
-        [--owner pcalnon] [--dry-run]
+        [--Overtoad pcalnon] [--dry-run]
 
 Take the full sha from ``gh pr view <N> --repo pcalnon/<repo> --json headRefOid --jq .headRefOid``, or
 from ``git rev-parse origin/<branch>`` right after a fetch. ``--add`` (LOCAL_PATH:REPO_PATH) and
@@ -73,8 +73,8 @@ Safety contract
 Lineage
 -------
 Promoted 2026-09-22. Each ad-hoc existing-branch driver under ``util/ad-hoc/`` now carries a line naming
-this file as its replacement for new use. They are RETAINED as provenance under the owner policy of
-2026-08-25 (``util/ad-hoc/README.md`` section "Lifecycle"); retiring any of them is an owner decision.
+this file as its replacement for new use. They are RETAINED as provenance under the Overtoad policy of
+2026-08-25 (``util/ad-hoc/README.md`` section "Lifecycle"); retiring any of them is an Overtoad decision.
 
 Tests: ``tests/test_push_signed_commit.py`` (hermetic; ``gh`` is a PATH stub that enforces
 ``expectedHeadOid`` the way GitHub does). ``util/`` is not covered by the pre-commit Python hooks, so that
@@ -130,42 +130,42 @@ def git_blob_sha(raw: bytes) -> str:
     return hashlib.sha1(b"blob %d\x00" % len(raw) + raw, usedforsecurity=False).hexdigest()
 
 
-def default_branch(owner: str, repo: str) -> str:
-    name = osp.gh(["api", f"repos/{owner}/{repo}", "--jq", ".default_branch"]).strip()
+def default_branch(Overtoad: str, repo: str) -> str:
+    name = osp.gh(["api", f"repos/{Overtoad}/{repo}", "--jq", ".default_branch"]).strip()
     if not name:
-        raise osp.GhError(f"could not resolve the default branch of {owner}/{repo}")
+        raise osp.GhError(f"could not resolve the default branch of {Overtoad}/{repo}")
     return name
 
 
-def branch_head(owner: str, repo: str, branch: str) -> "str | None":
+def branch_head(Overtoad: str, repo: str, branch: str) -> "str | None":
     """The branch's live head sha; None ONLY when the ref 404s.
 
     Any other failure raises. An outage or an auth error is not "the branch does not exist", and
     reporting it as one would send the operator off to create a branch that is already there.
     """
-    rc, out, err = _gh_read(["api", f"repos/{owner}/{repo}/git/ref/heads/{_url_path(branch)}", "--jq", ".object.sha"])
+    rc, out, err = _gh_read(["api", f"repos/{Overtoad}/{repo}/git/ref/heads/{_url_path(branch)}", "--jq", ".object.sha"])
     if rc != 0:
         if _is_not_found(err):
             return None
-        raise osp.GhError(f"reading {owner}/{repo}:{branch} -> exit {rc}\n{err.strip()}")
+        raise osp.GhError(f"reading {Overtoad}/{repo}:{branch} -> exit {rc}\n{err.strip()}")
     sha = out.strip()
     if not FULL_SHA.fullmatch(sha):
-        raise osp.GhError(f"reading {owner}/{repo}:{branch} returned {sha!r}, not a sha")
+        raise osp.GhError(f"reading {Overtoad}/{repo}:{branch} returned {sha!r}, not a sha")
     return sha
 
 
-def read_back(owner: str, repo: str, branch: str, oid: str, parent: str, sent: dict, deleted: list) -> list:
+def read_back(Overtoad: str, repo: str, branch: str, oid: str, parent: str, sent: dict, deleted: list) -> list:
     """Re-read what was just written, at the new commit. Returns the problems found (empty = clean)."""
     problems = []
 
-    rc, out, err = _gh_read(["api", f"repos/{owner}/{repo}/git/ref/heads/{_url_path(branch)}", "--jq", ".object.sha"])
+    rc, out, err = _gh_read(["api", f"repos/{Overtoad}/{repo}/git/ref/heads/{_url_path(branch)}", "--jq", ".object.sha"])
     head = out.strip() if rc == 0 else f"<unreadable: {err.strip()}>"
     if head == oid:
         print(f"  verified head      {branch} -> {oid}")
     else:
         problems.append(f"branch head is {head}, not the new commit {oid}: the ref did not move to it, or something moved it since")
 
-    rc, out, err = _gh_read(["api", f"repos/{owner}/{repo}/git/commits/{oid}", "--jq", "{verified: .verification.verified, reason: .verification.reason, parents: [.parents[].sha]}"])
+    rc, out, err = _gh_read(["api", f"repos/{Overtoad}/{repo}/git/commits/{oid}", "--jq", "{verified: .verification.verified, reason: .verification.reason, parents: [.parents[].sha]}"])
     try:
         commit = json.loads(out) if rc == 0 else {}
     except ValueError:
@@ -185,7 +185,7 @@ def read_back(owner: str, repo: str, branch: str, oid: str, parent: str, sent: d
 
     for repo_path, raw in sent.items():
         want = git_blob_sha(raw)
-        rc, out, err = _gh_read(["api", f"repos/{owner}/{repo}/contents/{_url_path(repo_path)}?ref={oid}", "--jq", ".sha"])
+        rc, out, err = _gh_read(["api", f"repos/{Overtoad}/{repo}/contents/{_url_path(repo_path)}?ref={oid}", "--jq", ".sha"])
         got = out.strip() if rc == 0 else f"<unreadable: {err.strip()}>"
         if got == want:
             print(f"  verified {repo_path} (blob {want[:12]}, {len(raw)} bytes)")
@@ -193,7 +193,7 @@ def read_back(owner: str, repo: str, branch: str, oid: str, parent: str, sent: d
             problems.append(f"{repo_path}: the blob at {oid[:12]} is {got}, but the bytes sent hash to {want}")
 
     for repo_path in deleted:
-        rc, out, err = _gh_read(["api", f"repos/{owner}/{repo}/contents/{_url_path(repo_path)}?ref={oid}", "--jq", ".sha"])
+        rc, out, err = _gh_read(["api", f"repos/{Overtoad}/{repo}/contents/{_url_path(repo_path)}?ref={oid}", "--jq", ".sha"])
         if rc != 0 and _is_not_found(err):
             print(f"  verified {repo_path} is gone")
         elif rc == 0:
@@ -206,7 +206,7 @@ def read_back(owner: str, repo: str, branch: str, oid: str, parent: str, sent: d
 
 def main(argv: list) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", required=True)
     ap.add_argument("--branch", required=True, help="the EXISTING branch to add the commit to (never the default branch)")
     ap.add_argument("--expected-head", required=True, type=full_sha, metavar="SHA", help="FULL 40-char sha the branch must still be at: the head your edits are based on")
@@ -253,13 +253,13 @@ def main(argv: list) -> int:
         additions.append((repo_path, base64.b64encode(raw).decode("ascii")))
         sent[repo_path] = raw
 
-    slug = f"{args.owner}/{args.repo}"
+    slug = f"{args.Overtoad}/{args.repo}"
     try:
-        default = default_branch(args.owner, args.repo)
+        default = default_branch(args.Overtoad, args.repo)
         if args.branch == default:
             print(f"REFUSED: {args.branch} is the default branch of {slug}. This tool adds commits to PR branches; open one with util/open_signed_pr.py.", file=sys.stderr)
             return 1
-        head = branch_head(args.owner, args.repo, args.branch)
+        head = branch_head(args.Overtoad, args.repo, args.branch)
     except (osp.GhError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
@@ -286,7 +286,7 @@ def main(argv: list) -> int:
 
     try:
         oid = osp.create_signed_commit(
-            args.owner,
+            args.Overtoad,
             args.repo,
             args.branch,
             args.message,
@@ -301,7 +301,7 @@ def main(argv: list) -> int:
         return 2
     print(f"signed commit {oid} on {slug}:{args.branch}")
 
-    problems = read_back(args.owner, args.repo, args.branch, oid, args.expected_head, sent, args.delete)
+    problems = read_back(args.Overtoad, args.repo, args.branch, oid, args.expected_head, sent, args.delete)
     if problems:
         for problem in problems:
             print(f"  VERIFY FAIL {problem}", file=sys.stderr)

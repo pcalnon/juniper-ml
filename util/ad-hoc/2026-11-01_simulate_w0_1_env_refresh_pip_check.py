@@ -5,8 +5,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-01
-Status: ad-hoc — one-off (grounds the W0.1 option put to the owner on 2026-11-01)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (grounds the W0.1 option put to the Overtoad on 2026-11-01)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/recurrence_env_preflight.bash (the check this predicts); juniper-recurrence AGENTS.md
          § "Host environment the experiment launchers actually serve from" (the W0.1 recipe)
 
@@ -18,7 +18,7 @@ their last install (recurrence 0.5.0, model 0.3.0, data-client 0.5.0) while the 
 util/recurrence_env_preflight.bash evaluates stale pins. A wider refresh re-installs those editables with --no-deps,
 which rewrites their metadata, and a refreshed requirement can collide with an old install still in the env. The
 preflight refuses on any pip-check line that names a closure distribution, so the collision has to be predicted
-before the owner is asked to run anything.
+before the Overtoad is asked to run anything.
 
 The script reads installed metadata through importlib.metadata and the refreshed packages' pyproject.toml files,
 then evaluates every base requirement (markers evaluated with no extra) against the simulated installed set. It

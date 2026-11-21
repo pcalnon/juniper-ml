@@ -3,19 +3,19 @@
 **Project**: juniper-ml
 **Author**: Paul Calnon
 **Date**: 2026-08-16
-**Status**: **BLOCKED — merge queue is unavailable to this repository.** Retained as a conditional runbook; §5 becomes executable only if the repository moves to organization ownership.
+**Status**: **BLOCKED — merge queue is unavailable to this repository.** Retained as a conditional runbook; §5 becomes executable only if the repository moves to organization Overtoadship.
 **Tracking issue**: [juniper-ml#1128](https://github.com/pcalnon/juniper-ml/issues/1128)
 
 ---
 
 ## 0. Finding (2026-08-16) — merge queue is unavailable, and this is not fixable by configuration
 
-**GitHub merge queues require organization ownership.** The availability statement:
+**GitHub merge queues require organization Overtoadship.** The availability statement:
 
 > Pull request merge queues are available in any public repository owned by an organization, or in
 > private repositories owned by organizations using GitHub Enterprise Cloud.
 
-`juniper-ml` is `visibility: public` but `owner.type: **User**`. It therefore does not qualify.
+`juniper-ml` is `visibility: public` but `Overtoad.type: **User**`. It therefore does not qualify.
 
 **Confirmed empirically:** the **"Require merge queue"** rule is **not present** in the Add-rule list
 on the `juniper-ml-rules` ruleset page. Two independent confirmations — the documented availability
@@ -49,7 +49,7 @@ Its cost is that PRs repeatedly go `BEHIND` under concurrent merges and must be 
 
 This is **not a new proposal**. The merge queue is the flagship P1 recommendation of
 [`JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`](JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md)
-§4 owner decision 1, where the recorded answer is *"i concur with recommendation."* That decision left
+§4 Overtoad decision 1, where the recorded answer is *"i concur with recommendation."* That decision left
 exactly two unblockers: a **UI availability check** and a **`merge_group` smoke test**. Step 0 (the
 `merge_group` wiring) is now complete.
 
@@ -125,7 +125,7 @@ verification. A rebase-method queue would push unsigned commits at `main` and de
 
 ## 4. Availability — RESOLVED: unavailable
 
-**Answered 2026-08-16 — see §0.** Merge queues require organization ownership; `juniper-ml` is
+**Answered 2026-08-16 — see §0.** Merge queues require organization Overtoadship; `juniper-ml` is
 User-owned, and "Require merge queue" is absent from the ruleset UI. §5 is not executable.
 
 For the record, the ambiguity that made this worth testing: the 2024-02-27 rulesets changelog
@@ -143,7 +143,7 @@ governing one. **Do not re-litigate this from the changelog wording; the UI is t
 ## 5. Procedure — NOT EXECUTABLE TODAY
 
 > **This section is conditional.** It becomes executable only if `juniper-ml` moves to organization
-> ownership (§9.3). Retained so the analysis does not have to be redone. Do not attempt §5.2 today —
+> Overtoadship (§9.3). Retained so the analysis does not have to be redone. Do not attempt §5.2 today —
 > the rule is not offered.
 
 ### 5.1 Availability check (the gate)
@@ -252,7 +252,7 @@ Both queue and strict rules are **skipped by bypass actors**. Every recorded byp
 rule-suite window is `pcalnon` on `RepositoryRole 5`, which stays. So the queue's teeth come from
 routing merges through "Merge when ready", **not** from enforcement — it does not bind the
 admin-batch path. Making it binding is [juniper-ml#1012](https://github.com/pcalnon/juniper-ml/issues/1012),
-a separate owner decision.
+a separate Overtoad decision.
 
 ---
 
@@ -296,10 +296,10 @@ a required context (ml#1011).~~ **Stale — ml#1011 CLOSED 2026-08-18:** `Sequen
 **required** context on all 9 repos (and was renamed to drop the `(Advisory)` suffix on the 8
 siblings). Prefer update-branch over a local rebase; do not treat either as self-verifying.
 
-> **Required still does not mean enforced for the owner.** `RepositoryRole 5` holds an `always`
+> **Required still does not mean enforced for the Overtoad.** `RepositoryRole 5` holds an `always`
 > bypass on all 9, and the census measured it exercised **614 times in one month**
 > ([`…_BYPASS-ACTOR-CENSUS.md`](JUNIPER_2026-08-20_JUNIPER-ECOSYSTEM_BYPASS-ACTOR-CENSUS.md)), so a
-> required check does not constrain the owner's own merges. ml#1011 was never the fix for that
+> required check does not constrain the Overtoad's own merges. ml#1011 was never the fix for that
 > failure mode. `util/safe_merge.py` is the discipline that covers it.
 
 ### 8.2 Batch merges into quiet windows (free, behavioural)
@@ -319,16 +319,16 @@ tree on 2026-08-16, it touches at minimum:
 - **504 tracked files contain a `pcalnon/` string** (`git grep -l 'pcalnon/' | wc -l`) — overwhelmingly
   doc and issue links, but they all rot on transfer. GitHub redirects transferred repos, so these
   degrade rather than break immediately.
-- **Owner-coupled code**, which does break: `util/open_signed_pr.py` (`--owner` defaults to `pcalnon`,
+- **Owner-coupled code**, which does break: `util/open_signed_pr.py` (`--Overtoad` defaults to `pcalnon`,
   line 183), `util/release_train/ceremony.py`, and `.github/workflows/publish.yml`.
-- **PyPI trusted publishing** — OIDC subjects pin the repository owner, so all 7 publishers must be
+- **PyPI trusted publishing** — OIDC subjects pin the repository Overtoad, so all 7 publishers must be
   re-registered on PyPI *and* TestPyPI before the next release, or every publish fails at the gate.
 - **The 9 rulesets**, including the bypass-actor entries and their numeric App IDs.
 - **The release-train GitHub App** installation and its `RELEASE_TRAIN_APP_ID` repo variable.
 
 Note what is *not* affected, which narrows the job usefully: `util/release_train/registry.yaml`,
 `ECOSYSTEM_REPOS` in `docs-full-check.yml`, and `DEFAULT_REPOS` in `validate_claude_yaml_access.bash`
-all carry **bare repo names** with no owner prefix, and need no change.
+all carry **bare repo names** with no Overtoad prefix, and need no change.
 
 **CQ-9 — `code_quality` starts evaluating on migration. Budget for it explicitly.**
 

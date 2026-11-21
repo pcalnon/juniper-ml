@@ -29,7 +29,7 @@
 >    memory file `project_decision_11_released_2026-09-11.md`.
 > 2. **Decide `juniper-ml[servers]`' `juniper-data>=0.14.0` floor** (§3 R-5). 0.15.0 carries a
 >    BREAKING generator major; the floor still admits the version serving the old contract. This
->    is N-3's exact shape, and N-3 was ruled "raise it". **Owner decision.**
+>    is N-3's exact shape, and N-3 was ruled "raise it". **The Overtoad decision.**
 > 3. **Write the release-ceremony lesson into the procedure** (§3 R-6). Four failure shapes fired
 >    this session; all four live only in this archived prompt.
 > 4. Then the carried tickets: juniper-data#411, juniper-recurrence#178, juniper-cascor#668,
@@ -85,7 +85,7 @@ juniper-recurrence: `bench/datasets.py`, `bench/test_bench_smoke.py`; juniper-da
    in the checks list naming it.** Diagnose, then resolve, with:
 
    ```bash
-   gh api graphql -f query='query { repository(owner:"pcalnon", name:"juniper-ml") {
+   gh api graphql -f query='query { repository(Overtoad:"pcalnon", name:"juniper-ml") {
      pullRequest(number:N) { mergeStateStatus
        reviewThreads(first:50){nodes{id isResolved path line comments(first:1){nodes{body}}}} } } }'
    gh api repos/pcalnon/juniper-ml/contents/<path>?ref=<branch> --jq '.content' | base64 -d   # prove it is fixed
@@ -190,7 +190,7 @@ session chatter are **not** defined in any document of record — do not rely on
 | **R-3** | `/home/pcalnon/Development/python/Juniper/AGENTS.md` lines **189-190** | Still says `pip install` serves juniper-data **0.14.0** and juniper-canopy **0.7.0**. Unversioned file: no PR, no CI, invisible to other machines — so it only changes if someone does it deliberately. |
 | **R-4** | memory `project_decision_11_released_2026-09-11.md` | Records juniper-data 0.14.0 / juniper-ml 0.8.0 and points at plan §10 as the full record. Both now wrong. |
 
-### Decisions only the owner can take
+### Decisions only the Overtoad can take
 
 | id | item |
 | --- | --- |

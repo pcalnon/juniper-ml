@@ -13,9 +13,9 @@ turing (macOS, no Juniper service, no reach to the trio), at a phase boundary, a
 **Consensus**: two rounds on 2026-10-19 (three lanes, then two on the corrections); round 2 changed no number,
 disposition or action, so the review ended there.
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, authoritative for P2.
-Its item 4 is now DONE; its items 5 and 7 and the owner batch O1–O17 carry over. This file supersedes
+Its item 4 is now DONE; its items 5 and 7 and the Overtoad batch O1–O17 carry over. This file supersedes
 `HANDOFF_2026-10-08_canopy-pacer-731-landed-phase12-owed.md`.
-**Merge approval**: the owner granted it in this session for this session's PR. It is NOT carried: ask again.
+**Merge approval**: the Overtoad granted it in this session for this session's PR. It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
 
@@ -49,7 +49,7 @@ documents sweep and runs anywhere.
     (a restart now waits for the stale bound, then a tick and a round trip); item 24's reader change is dropped
     with a reason.
   - **Counts**: 79 findings, 56 fixed, 1 accepted, 2 withdrawn, **20 open**: 0 P0, **4 P1** (F-CANOPY-064, F-CANOPY-065,
-    F-CASCOR-001, F-CASCOR-002), 16 P2. The owner's §6.3 question's second limb moves no count now; its first limb
+    F-CASCOR-001, F-CASCOR-002), 16 P2. The Overtoad's §6.3 question's second limb moves no count now; its first limb
     still decides F-CANOPY-065 (4/16 or 3/17) and reaches F-057, -018, -012 and -013 (item 26).
   - New items 27 (F-055's Live Dataset Switch allow arm), 28 (the first live run on the shipped pacer, and one
     injected failure) and 29 (worktree housekeeping on the Linux host).
@@ -61,7 +61,7 @@ documents sweep and runs anywhere.
 **Remaining, in order:**
 
 1. **Land this session's PR** if it has not merged: `python3 util/wait_for_checks.py`, query
-   `reviewThreads(isResolved:false)` (a CodeQL thread blocks the merge while every check is green), ask the owner,
+   `reviewThreads(isResolved:false)` (a CodeQL thread blocks the merge while every check is green), ask the Overtoad,
    then `python3 util/safe_merge.py --execute` and read its `MERGED` line.
 2. **Item 25: census triggers fired from the page**, on the merged code (canopy 0.9.0 or later, a verify leg on the
    Linux host). Schedule each trigger as its own task when the shim sees `AddWatched` (`setTimeout(…, 0)`), timestamp
@@ -70,7 +70,7 @@ documents sweep and runs anywhere.
    so a mid-request Apply release is reachable only by a request issued after the release, or by a clamp set while
    a request is in flight and released before its ack, which E-3's 60 s never allows on an idle page.
 3. **Item 26: the manual sweep.** Every open finding against canopy's manual (canopy `docs/USER_MANUAL.md`),
-   F-CANOPY-012 and F-CANOPY-013 first; then, once the owner rules (O17), canopy's `CHANGELOG.md` and the design
+   F-CANOPY-012 and F-CANOPY-013 first; then, once the Overtoad rules (O17), canopy's `CHANGELOG.md` and the design
    plans. Whatever the ruling, the CAN-015g/h design note
    (`notes/JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`) and its "every CAN-015g
    item has merged" need a dated correction.
@@ -78,7 +78,7 @@ documents sweep and runs anywhere.
    never on the pacer: a demo leg serving 0.9.0 or later whose training may be started (never the trio), with the
    experimental-functions toggle on. It can show the arm reaches the paced bar; it cannot discriminate from the old
    code (Phase 9). Record in F-CANOPY-025's and F-CANOPY-055's entries.
-5. **Item 28: the first live run on the shipped pacer**, when the trio's canopy is restarted on 0.9.0 (owner, O13) or
+5. **Item 28: the first live run on the shipped pacer**, when the trio's canopy is restarted on 0.9.0 (Overtoad, O13) or
    on any leg serving the merged tree: the F-058 census through `util/ad-hoc/2026-10-08_f058_census_v2_on_pacer_leg.py`
    and the status-bar census once each; and on a restartable leg, one injected failure (stop the leg ~10 s with a page
    open) and the lane's wait before its first applied answer, against the stale bound.
@@ -86,7 +86,7 @@ documents sweep and runs anywhere.
    `juniper-canopy--fix--f055-f058-f068-request-ack-pacer--20261008-1713--3029d07d` and juniper-ml worktree
    `agile-napping-popcorn` (once its staged copies are confirmed to be what #2196 merged), per
    `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`.
-7. Then the parent's items 5 and 7, and the owner batch O1–O17.
+7. Then the parent's items 5 and 7, and the Overtoad batch O1–O17.
 
 **Traps learned:**
 

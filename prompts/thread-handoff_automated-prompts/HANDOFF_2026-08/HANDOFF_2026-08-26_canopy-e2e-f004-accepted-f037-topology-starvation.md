@@ -1,6 +1,6 @@
 # HANDOFF 2026-08-26 — Canopy E2E: F-CANOPY-004 ACCEPTED; F-CANOPY-037 is the new sole open P0/P1
 
-Continue the juniper-canopy E2E validation arc. **Headline: the owner's four decisions were taken and
+Continue the juniper-canopy E2E validation arc. **Headline: the Overtoad's four decisions were taken and
 executed, F-CANOPY-004 is now ACCEPTED under a documented freshness contract, and a NEW P0/P1 —
 F-CANOPY-037 — replaces it as the gate on the topology row block. Ledger: 41 findings / 25 fixed /
 1 accepted / 15 open (1 P0/P1 · 2 P1 · 12 P2). Matrix 298/298, 0 unfilled.** Predecessor:
@@ -20,7 +20,7 @@ Stack is **DOWN**, E2E ports 8101/8202/8051 free, deploy containers on 8050/8201
 healthy (**never touch them**). cascor primary is now **`c6cd2f0`**, not the old `67d7ea3` pin — a peer
 advanced it; the delta is only the forkserver preload (cascor#592) + a CI gate.
 
-## Owner decisions taken (all four, this session)
+## The Overtoad decisions taken (all four, this session)
 
 1. **F-CANOPY-004 → ACCEPTED**, contract now **and** migration scheduled. Contract: clientside immediate ·
    interaction render **≤16 s** · fresh-session population **≤40 s** · during-run steady-state best-effort.

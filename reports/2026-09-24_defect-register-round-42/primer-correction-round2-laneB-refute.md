@@ -123,7 +123,7 @@ Nothing in the repo links to either heading anchor, so markers fit (102, 110 and
 - Rendering and slugs were checked with markdown-it-py plus an emulated GitHub slugger, not GitHub's own renderer, which would have meant sending repo content out.
 - The sweep was regex-based: 9 concept families, 619 hits. I read every hit on or near a juniper-data mention and all of I.3, I.7, I.9, II.2, II.3, II.5, II.6, II.11 and A.6; I only sampled general teaching elsewhere.
 - The register-cite extraction is a heuristic.
-- The 2026-09-23 owner ruling is corroborated only by secondary records.
+- The 2026-09-23 Overtoad ruling is corroborated only by secondary records.
 - I did not read the uncommitted round-3 work, which could change the batch route.
 - PyPI state and merge order may change at any moment.
 

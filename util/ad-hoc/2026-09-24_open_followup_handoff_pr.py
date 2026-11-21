@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use; wraps util/open_signed_pr.py
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 util/open_signed_pr.py takes one `--add LOCAL:REPOPATH` per file, and this PR carries about ninety,
 which a session sandbox will not let a shell loop assemble. This takes the list from

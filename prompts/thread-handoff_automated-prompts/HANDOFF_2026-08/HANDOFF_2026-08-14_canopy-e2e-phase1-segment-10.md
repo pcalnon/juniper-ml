@@ -7,7 +7,7 @@
 ---
 
 Continue Phase 1 live click-by-click validation of the juniper-canopy E2E arc. Segment 9 **drove the W6
-restart-confirm owner gate** that the previous three segments deferred, and **resolved F-CANOPY-019's open
+restart-confirm Overtoad gate** that the previous three segments deferred, and **resolved F-CANOPY-019's open
 question**. Run-id `20260811T010700Z`; per-run TSV `reports/e2e/20260811T010700Z/statuses.tsv`, **119 rows**.
 
 **Branch.** Segment 9 rides `arc/canopy-e2e-phase1-seg9` (signed tip `fc2993b`), open as **evidence PR

@@ -3,7 +3,7 @@
 - **Project**: Juniper — juniper-recurrence (with juniper-data, juniper-data-client, juniper-canopy, juniper-ml experiment stack)
 - **Author**: Paul Calnon
 - **Date**: 2026-10-03
-- **Status**: Validation complete after two rounds; plan **upheld with corrections** at v1.2.0. One item is left to the owner: the milestone dates (§7). Planning only — no code changed, nothing committed, no GitHub objects created or modified.
+- **Status**: Validation complete after two rounds; plan **upheld with corrections** at v1.2.0. One item is left to the Overtoad: the milestone dates (§7). Planning only — no code changed, nothing committed, no GitHub objects created or modified.
 - **Validates**: [`JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) (v1.0.0 → v1.1.0 after round 1 → v1.2.0 after round 2)
 - **Procedure**: [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md) (§2 lanes, §4 iteration, §5 reconciliation, §7 minimum record)
 - **Precedent followed**: [`JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md`](JUNIPER_2026-09-05_JUNIPER-CANOPY_SELECTION-DEADLOCK-CONSENSUS-VALIDATION.md)
@@ -106,7 +106,7 @@ B2 dissented that the matrix should itself be P0; the reconciler kept it in P1 a
 - **ENV attribution (F-E1).** Oracle, A1, A3: shadow vs as-served on the identical request is a measurement; no alternative explanation was found.
 - **Flat `equities` refusal (F-S4) and canopy's metrics-panel honesty (F-C10)** hold as verified controls; neither is a work item.
 - **Driver outcome defect (F-D1) and `_headline_metrics` key mismatch (F-D2)** hold as stated (oracle, A1, A2).
-- **R4 as a note, not a ruling** (B1-r2 Q5, HELD): the note states an invariant (pooled-train normalisation leaks into early full-view folds) with a scoped remedy; no competing valid leakage policy was offered, so there is nothing for the owner to choose between.
+- **R4 as a note, not a ruling** (B1-r2 Q5, HELD): the note states an invariant (pooled-train normalisation leaks into early full-view folds) with a scoped remedy; no competing valid leakage policy was offered, so there is nothing for the Overtoad to choose between.
 - **No P0 forward dependency** (B1-r2 Q1, HELD): W0.2 → W0.1 is intra-phase order; W0.3 reserves semantics for W5.4 without needing it; W0.7 defines the constant W5.3 extends; W0.8 runs by hand.
 - **F-D10 accepted without a work item** (round 1): `isolated_stack.bash` roots its scratch tree under `/tmp` by design and writes no script source there, so the ecosystem rule is not breached; the plan's §3.2 row records the disposition.
 
@@ -114,8 +114,8 @@ B2 dissented that the matrix should itself be P0; the reconciler kept it in P1 a
 
 ## 7. Unresolved dissent
 
-**Milestone dates.** B1-r2 (Q7) judged v1.1.0's M1 non-credible for one owner plus agents and would "dissent from M1's date until every required release has an owned work item and a slip policy". v1.2.0 supplies both (W1.13; the W1.11 slip rule) and rebaselines: M0 2026-10-24, M1 2026-11-21, M2/M3 2026-12-12, M4 2027-01-15.
-The new dates are the author's estimate and were **not** put back through a reviewer; the plan marks every milestone "owner to confirm date". The reconciler records this as the one open item rather than claiming the dates are validated.
+**Milestone dates.** B1-r2 (Q7) judged v1.1.0's M1 non-credible for one Overtoad plus agents and would "dissent from M1's date until every required release has an owned work item and a slip policy". v1.2.0 supplies both (W1.13; the W1.11 slip rule) and rebaselines: M0 2026-10-24, M1 2026-11-21, M2/M3 2026-12-12, M4 2027-01-15.
+The new dates are the author's estimate and were **not** put back through a reviewer; the plan marks every milestone "Overtoad to confirm date". The reconciler records this as the one open item rather than claiming the dates are validated.
 
 No other dissent remains. The round-1 B2 placement dissent was resolved in B2's favour in round 2.
 
@@ -134,7 +134,7 @@ No other dissent remains. The round-1 B2 placement dissent was resolved in B2's 
 
 ## 9. Disposition
 
-The plan is **upheld with corrections** at v1.2.0 and lints clean (`markdownlint-cli2@0.17.2`, repo `.markdownlint.yaml`, 0 errors). The owner decisions it now waits on, in the order the plan needs them:
+The plan is **upheld with corrections** at v1.2.0 and lints clean (`markdownlint-cli2@0.17.2`, repo `.markdownlint.yaml`, 0 errors). The Overtoad decisions it now waits on, in the order the plan needs them:
 
 | Decision | Gates | Plan's recommendation |
 | --- | --- | --- |

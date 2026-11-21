@@ -2,7 +2,7 @@
 
 > **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_k8s-primer-consolidated.md` (consolidated handoff for the k8s primer path). History only; do not act on this file's items.
 
-**Date**: 2026-09-24 · **Originating session**: `k8s` · **Status**: primer NOT started. **This handoff is UNVALIDATED**: the owner asked for no validation and for minimal token use, so treat every "lead" below as a hypothesis to check.
+**Date**: 2026-09-24 · **Originating session**: `k8s` · **Status**: primer NOT started. **This handoff is UNVALIDATED**: the Overtoad asked for no validation and for minimal token use, so treat every "lead" below as a hypothesis to check.
 
 ## Goal
 
@@ -16,10 +16,10 @@ Continue: write the Kubernetes primer specified verbatim below as one markdown f
 
 1. Create a worktree per the repo convention; use a branch like `docs/k8s-primer`.
 2. Ground in the repos: read `juniper-deploy/AGENTS.md`. Find existing charts and manifests (`find /home/pcalnon/Development/python/Juniper/juniper-deploy -name Chart.yaml -o -name '*.yaml' -path '*k8s*'`). Find the image names, registries and architectures, the metrics endpoints (juniper-observability, juniper-service-core), and the service ports and env vars (parent `Juniper/CLAUDE.md`).
-3. Measure the real hardware over ssh where you can. Linux: `nproc; free -g; lsblk; ip -br a; cat /etc/os-release`. Mac: `sysctl -n hw.physicalcpu hw.logicalcpu hw.memsize; sw_vers`. Only `turing` (the Mac) is named. `~/.ssh/config` on this workstation probably names the other hosts; otherwise ask the owner. Never invent hostnames or IPs. Use placeholders (`<server>`, `<pi-01>`…`<pi-08>`) plus an inventory table the owner fills in, and commit no secrets.
+3. Measure the real hardware over ssh where you can. Linux: `nproc; free -g; lsblk; ip -br a; cat /etc/os-release`. Mac: `sysctl -n hw.physicalcpu hw.logicalcpu hw.memsize; sw_vers`. Only `turing` (the Mac) is named. `~/.ssh/config` on this workstation probably names the other hosts; otherwise ask the Overtoad. Never invent hostnames or IPs. Use placeholders (`<server>`, `<pi-01>`…`<pi-08>`) plus an inventory table the Overtoad fills in, and commit no secrets.
 4. Check every version or currency claim against a primary source at authoring time (kubernetes.io, project docs via context7 or WebFetch), and record the verification date in the primer.
 5. Draft `notes/JUNIPER_<YYYY-MM-DD>_JUNIPER-ECOSYSTEM_KUBERNETES-PRIMER.md`. The naming rules are in `notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`. Structure it as ordered phases, each with three layers: architecture, then analysis and best practice, then commands. Add a hardware-profile matrix (server-only, Pi-only, Mac-VM, any combination) plus inventory groups, so any category can be dropped. Say explicitly when a profile loses control-plane HA.
-6. Validate by consensus. Brief at least 3 independent validator agents (Agent tool) per the memory `feedback_multi_agent_adversarial_validation_sop.md`. Each validator re-derives claims from primary sources, and briefs carry no secrets or PII. Fix what they find and repeat until a round finds no defects. Do not call the Workflow tool unless the owner opts in.
+6. Validate by consensus. Brief at least 3 independent validator agents (Agent tool) per the memory `feedback_multi_agent_adversarial_validation_sop.md`. Each validator re-derives claims from primary sources, and briefs carry no secrets or PII. Fix what they find and repeat until a round finds no defects. Do not call the Workflow tool unless the Overtoad opts in.
 7. Run pre-commit (markdownlint's 512-character line limit applies to table rows too) and the doc-link check. Open the PR with `util/open_signed_pr.py`: commits must be GitHub-signed, and local gpg signing hangs when headless. Merge with `util/safe_merge.py` and read its `MERGED` line, because exit 0 does not prove a merge.
 
 ## Original request (verbatim; this is the spec)

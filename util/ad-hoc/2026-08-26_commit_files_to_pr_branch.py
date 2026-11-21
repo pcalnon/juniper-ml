@@ -6,7 +6,7 @@ Application : cross-repo tooling (ad-hoc)
 Author      : Paul Calnon
 Version     : 0.1.0
 License     : MIT License
-Superseded  : for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
+Superseded  : for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (Overtoad policy 2026-08-25).
 
 Add a GitHub-signed follow-up commit to an EXISTING PR branch on any Juniper repo.
 
@@ -24,7 +24,7 @@ Usage
         --repo juniper-canopy --branch fix/phase4-docs-truth-up-d2-d5-version \\
         --message "fix(truth-up): seed nn_init_output_weights on mount" \\
         --add /local/path/dashboard_manager.py:src/frontend/dashboard_manager.py \\
-        [--add LOCAL:REPOPATH ...] [--body-file path] [--owner pcalnon]
+        [--add LOCAL:REPOPATH ...] [--body-file path] [--Overtoad pcalnon]
 
 Every ``--add`` uploads the WHOLE local file to REPOPATH (same contract as
 open_signed_pr.py): base the local copies on the branch's current content.
@@ -43,7 +43,7 @@ from pathlib import Path
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     ap.add_argument("--repo", required=True)
     ap.add_argument("--branch", required=True, help="existing PR head branch")
     ap.add_argument("--message", required=True, help="commit headline")
@@ -51,7 +51,7 @@ def main() -> int:
     ap.add_argument("--add", action="append", required=True, metavar="LOCAL:REPOPATH", help="whole-file upload (repeatable)")
     args = ap.parse_args()
 
-    full = f"{args.owner}/{args.repo}"
+    full = f"{args.Overtoad}/{args.repo}"
     head = subprocess.run(["gh", "api", f"repos/{full}/git/ref/heads/{args.branch}", "-q", ".object.sha"], capture_output=True, text=True, check=True).stdout.strip()
     print(f"expectedHeadOid: {head}")
 

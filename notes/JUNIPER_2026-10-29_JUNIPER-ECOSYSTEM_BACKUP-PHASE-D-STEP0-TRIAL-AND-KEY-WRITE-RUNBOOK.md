@@ -2,8 +2,8 @@
 
 **Author**: Paul Calnon (drafted by Claude Code, session `backup-ac11-passed-transcript-count-zero-then-phase-d`)
 **Date**: 2026-10-29
-**Status**: validated in four rounds (seven lanes). §3 records the owner's rulings of 2026-10-30 and the departures not
-yet put to the owner, which the sitting asks about before step 0. To be run by the owner in Phase D's sitting.
+**Status**: validated in four rounds (seven lanes). §3 records the Overtoad's rulings of 2026-10-30 and the departures not
+yet put to the Overtoad, which the sitting asks about before step 0. To be run by the Overtoad in Phase D's sitting.
 **Related**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-29_backup-ac11-passed-transcript-count-zero-then-phase-d.md`
 (juniper-ml#2387); `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md` §6.4;
 `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` §7.3.2 and §8
@@ -38,7 +38,7 @@ Artifacts this design adds or changes (one signed PR, to merge before step 0 is 
 
 - **If a tool, path or flag is not where this document, the handoff, the assessment or D says, stop and report it;
   never substitute one** (the handoff's Continue item 1). Where this document departs from them on purpose (§3), it
-  wins, once the owner has ruled on that departure.
+  wins, once the Overtoad has ruled on that departure.
 - **Root shell** for every command below except where it says "pcalnon shell". In it, `~` is `/root`; write `~pcalnon`.
   **Never type `sudo` inside the root shell**: `sudo` resets the environment, which drops the `TMPDIR` set below.
 - **Checkout**: the primary, `~pcalnon/Development/python/Juniper/juniper-ml`, at `origin/main` **including this design's PR**.
@@ -236,7 +236,7 @@ J | grep -c 'Unknown option supplied'                             # 1 -- the pla
 J | grep 'Unknown option supplied' | grep -c 'phase-d-trial-unknown-option-marker'    # 1 -- that one line is the marker
 J | grep -c 'signin.html'                                         # 0 -- the password is set, so no sign-in URL
 J | grep -c -e 'No database encryption key was found' -e 'but no key was specified' -e 'encryption key is blacklisted' -e 'Database encryption key is required'    # 0
-J | grep -v 'phase-d-trial-unknown-option-marker' | grep -c -i -e 'exception' -e 'error'    # 0 expected; if not, the owner reads those lines and says what they are, no values
+J | grep -v 'phase-d-trial-unknown-option-marker' | grep -c -i -e 'exception' -e 'error'    # 0 expected; if not, the Overtoad reads those lines and says what they are, no values
 journalctl -k --since "$T0" --no-pager | grep 'type=1326' | grep 'sig=31' | grep -c " uid=$(id -u duplicati) "    # 0 -- no seccomp KILL of a duplicati process
 ```
 
@@ -279,7 +279,7 @@ Before any re-run, run `systemctl reset-failed duplicati-trial.service`: the cop
 | `ExecMainStatus=78` | the wrapper refused | Paste the wrapper's `FATAL:` line's first clause; it names an option or a path, never a value. A copy problem is harness: fix and re-run. Anything else, decide together. |
 | exit 100 with "address already in use" | harness: the port | Re-check `ss -ltn`; pick another port in the `sed`, and re-run from the install lines. |
 | the marker count is not exactly 1 | console logging did not reach the journal, so the AC-14 and error counts are void | Decide together; it is not by itself a directive finding. |
-| no SIGSYS and no `Server has started` (an exception), or counts off after a start (`Unknown option supplied` above 1, `signin.html` above 0, the credential line 0, a non-zero error count, a death in the `sleep 20`) | possibly a directive (`ProcSubset=pid`, AF_NETLINK), possibly a wrong option word | The owner reads the lines and says the exception's type and message, or the option name, no values. Decide together whether a directive is the cause; if so, **pause Phase D at step 0**. |
+| no SIGSYS and no `Server has started` (an exception), or counts off after a start (`Unknown option supplied` above 1, `signin.html` above 0, the credential line 0, a non-zero error count, a death in the `sleep 20`) | possibly a directive (`ProcSubset=pid`, AF_NETLINK), possibly a wrong option word | The Overtoad reads the lines and says the exception's type and message, or the option name, no values. Decide together whether a directive is the cause; if so, **pause Phase D at step 0**. |
 
 **"Pause Phase D at step 0" means:**
 
@@ -347,7 +347,7 @@ The handoff's trust conditions stand, plus two:
 4. **new**: `distinct-key-hashes=1`;
 5. **new**: a "match" counts for Procedure A **only if it names an `ENV_ACTIVE_KEY/<variant>` label**. A match on any
    other candidate (`ENV_C_KEY_n`, `ENV_C_PASSPHRASE*`, `PASSPHRASE*`, `L`) is outside the O-1/O-2 ruling: **stop**, and
-   the owner rules. Those candidates were excluded on 09-21 (D §5.4), so such a match is a surprise.
+   the Overtoad rules. Those candidates were excluded on 09-21 (D §5.4), so such a match is a surprise.
 
 ### 2.2 On an `ENV_ACTIVE_KEY` match: decide the route at step 7, before anything is placed (root shell)
 
@@ -360,11 +360,11 @@ python3 util/ad-hoc/2026-10-03_rekey_gate.py --unrewritten /root/phase-d-tmp/pro
 ```
 
 - **Both exit 0: Procedure A.** Steps 8 onward follow it, and the write happens at step 9.
-- **The dry run refuses: stop, and the owner rules.** Its refusals are: the form cannot be delivered, a blob under
+- **The dry run refuses: stop, and the Overtoad rules.** Its refusals are: the form cannot be delivered, a blob under
   another key, a missing column, or "NONE" after the probe matched (the two disagree: check `--env` and `--db` are the
   probe's own paths). A0 is the fallback, but never on the dry run's word alone, and the `.env` is kept. Nothing was
   written.
-- **`--unrewritten` exits non-zero.** The re-key will refuse at step 12 until the owner's remedy (the assessment's note
+- **`--unrewritten` exits non-zero.** The re-key will refuse at step 12 until the Overtoad's remedy (the assessment's note
   6a: delete saved connection strings in the UI, or orphaned rows with `sqlite3`). Decide now between that and A0.
 - **Read `--unrewritten`'s line even at exit 0.** A column reading `absent` is a table the frozen 09-18 schema lacks,
   or a read failure, since the gate reports any `OperationalError` as absent: say which columns. Step 12's own
@@ -393,7 +393,7 @@ SIGQUIT from just before the create until it has decided. So:
   `duplicati-settings-key` there, and re-run. A `REFUSED: … already exists` is not this case: that file predates the run, so look at it first.
 
 **On any non-zero exit, run `ls -la /etc/credstore` and say what is there**: a failed removal prints a WARNING and still
-exits 1. The `.env` is kept, and nothing further runs until the owner rules.
+exits 1. The `.env` is kept, and nothing further runs until the Overtoad rules.
 
 Then step 9's tail, as the assessment's §6.4 step 9 and the handoff's Remaining §1 step 9 give it:
 
@@ -429,7 +429,7 @@ stays in the cache and the pragma is a guard. This host's SQLite is 3.46.1 throu
 `TEMP_STORE=1`, so the pragma is honoured; lane B measured 0 temporary files in 18 runs with it. The re-key's own copies
 already go to `/root/.cache/duplicati-rekey` (root's home on `/`).
 
-## 3. Departures from the documents, for the owner to approve
+## 3. Departures from the documents, for the Overtoad to approve
 
 1. **Step 0(b) is a runtime unit plus a drop-in, not `systemd-run -p …`.** The assessment's §6.4 step 0, D §7.3.2, the
    AC-12 row and D's O-12 all say `systemd-run`.
@@ -458,7 +458,7 @@ already go to `/root/.cache/duplicati-rekey` (root's home on `/`).
 8. **A failed trial pauses Phase D at step 0** (§1.4). The documents carry no such branch. The fix PR, then a re-run of
    step 0, step 1 and step 3's stage gate, all come before step 6.
 
-**Owner rulings, 2026-10-30** (asked by the designing session at 2026-10-29 23:19 CDT, before round 3 reported; answered
+**The Overtoad rulings, 2026-10-30** (asked by the designing session at 2026-10-29 23:19 CDT, before round 3 reported; answered
 2026-10-30 03:18 CDT):
 
 - **The trial's form (item 1):** approved as the question put it: the runtime copy plus one drop-in carrying the
@@ -467,7 +467,7 @@ already go to `/root/.cache/duplicati-rekey` (root's home on `/`).
 - **The no-`/tmp` directive:** `PrivateTmp=yes` is accepted for Phase D and recorded (§4).
 - **The sitting** (steps 0 to 14) runs in a fresh thread, from this document and the handoff this design's PR lands.
 
-**Not yet put to the owner** (lane R4, R4-1). The sitting asks about all three before step 0:
+**Not yet put to the Overtoad** (lane R4, R4-1). The sitting asks about all three before step 0:
 
 - item 2's later parts: the trial's inputs under `/usr/local/lib/duplicati-trial/` (added by round 3, R3-1, after the
   question was written), and the drop-in's `DUPLICATI_ENV_FILE` and `Description=`;
@@ -478,7 +478,7 @@ A ruling against one of them changes this document first: a fix PR, then step 0,
 
 **Still open:** AC-14's Phase E ruling (§5).
 
-## 4. Temporary files: the observations for an owner ruling (the 2026-10-26 no-`/tmp` directive)
+## 4. Temporary files: the observations for an Overtoad ruling (the 2026-10-26 no-`/tmp` directive)
 
 - **(a) The .NET runtime's diagnostic socket goes to `$TMPDIR`, else `/tmp`.** The live server has
   `/tmp/dotnet-diagnostic-1397393-110564528-socket` open now (2026-10-29). Phase D's own runs no longer add any: the
@@ -503,7 +503,7 @@ A ruling against one of them changes this document first: a fix PR, then step 0,
 - **Where it is measured instead.** The trial runs production's option words with console logging on, and the planted
   marker shows the logging reached the journal. So §1.4's count of exactly 1, the marker, is the measurement. Step 10
   keeps its count, but its 0 is not evidence.
-- **Owner ruling, Phase E:**
+- **The Overtoad ruling, Phase E:**
   - add `--log-console --log-level=Warning` to `DAEMON_OPTS` (a blessed change), or
   - re-point AC-14 at the server's own log.
 - **Adding `--log-console` needs an AC-8 check first.** Job runs log in non-isolating scopes, so every job warning would
@@ -554,7 +554,7 @@ trial wrapper's lower-case `settings encryption key: systemd credential …` lin
 | R3-2 only SIGTERM was tested | the deferral test runs SIGTERM, SIGINT, SIGHUP and SIGQUIT; two mutants |
 | R3-3, R3-4, R3-5 the "last line" wording; "neither line"; the `TMPDIR` check's place | tool 1.3.0 docstring; §2.3 |
 | R3-6 a SIGQUIT core with the key in memory | tool 1.3.0 (`RLIMIT_CORE` 0); the deferral test's two `(0, 0)` checks (R4-3) |
-| R4-1 §3 and the 10-30 handoff (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_backup-phase-d-design-merged-then-sitting.md`) overstated the rulings: three departures were never put to the owner, and the date was 10-29 | §3 (the rulings as asked and answered, 2026-10-30; the rest pending, asked before step 0); the 10-30 handoff |
+| R4-1 §3 and the 10-30 handoff (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_backup-phase-d-design-merged-then-sitting.md`) overstated the rulings: three departures were never put to the Overtoad, and the date was 10-29 | §3 (the rulings as asked and answered, 2026-10-30; the rest pending, asked before step 0); the 10-30 handoff |
 | R4-2 the 10-30 handoff dropped the handoff's stop-and-report rule, its snap-mount verify line and its Remaining §2 | the 10-30 handoff; §0 (the rule) |
 | R4-3 two probe mutants survived: the block after the create; the core limit after the key is read | the deferral test also signals inside the write (from the first `fsync`) and records the core limit as `active_key` is entered; three mutants added (33) |
 | R4-4 the signal test fails under `nohup` or in a background job, which inherit ignored signals | the test's driver restores the four signals' defaults and unblocks them |

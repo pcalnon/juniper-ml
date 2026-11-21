@@ -10,7 +10,7 @@ Status:      ad-hoc (decision-11 release train); candidate for util/ promotion
 Related:     util/open_signed_pr.py (opens a NEW branch + PR; refuses an existing
              branch), util/release_train/propose.py (opens release-proposal PRs
              whose branches this script then completes)
-Superseded:  for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
+Superseded:  for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (Overtoad policy 2026-08-25).
 
 Why this exists
 ---------------
@@ -31,7 +31,7 @@ Usage
         --repo juniper-data-client --branch release/juniper-data-client-v0.5.0 \
         --add /local/edited/__init__.py:juniper_data_client/__init__.py \
         --message "chore(release): bump the carriers the train does not know about" \
-        [--commit-body-file body.txt] [--delete repo/path] [--owner pcalnon] [--dry-run]
+        [--commit-body-file body.txt] [--delete repo/path] [--Overtoad pcalnon] [--dry-run]
 
 Exit 0 = commit landed (or --dry-run), 1 = refused (branch missing / no changes),
 2 = hard error. Reads local file contents in binary and base64-encodes them, so any
@@ -52,10 +52,10 @@ sys.path.insert(0, str(HERE.parent))  # util/ -- for open_signed_pr
 import open_signed_pr as osp  # noqa: E402
 
 
-def branch_head(owner: str, repo: str, branch: str) -> str | None:
+def branch_head(Overtoad: str, repo: str, branch: str) -> str | None:
     """The branch's current head sha, or None when the ref does not exist."""
     try:
-        out = osp.gh(["api", f"repos/{owner}/{repo}/git/ref/heads/{branch}", "--jq", ".object.sha"])
+        out = osp.gh(["api", f"repos/{Overtoad}/{repo}/git/ref/heads/{branch}", "--jq", ".object.sha"])
     except osp.GhError:
         return None
     return out.strip() or None
@@ -63,7 +63,7 @@ def branch_head(owner: str, repo: str, branch: str) -> str | None:
 
 def main(argv: list) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--owner", default=os.environ.get("JUNIPER_RELEASE_TRAIN_OWNER", "pcalnon"))
+    ap.add_argument("--Overtoad", default=os.environ.get("JUNIPER_RELEASE_TRAIN_OWNER", "pcalnon"))
     ap.add_argument("--repo", required=True)
     ap.add_argument("--branch", required=True)
     ap.add_argument("--add", action="append", default=[], metavar="LOCAL:REPOPATH")
@@ -90,12 +90,12 @@ def main(argv: list) -> int:
         raw = Path(local).read_bytes()
         additions.append((repo_path, base64.b64encode(raw).decode("ascii")))
 
-    head = branch_head(args.owner, args.repo, args.branch)
+    head = branch_head(args.Overtoad, args.repo, args.branch)
     if head is None:
-        print(f"refused: branch {args.branch} does not exist on {args.owner}/{args.repo}", file=sys.stderr)
+        print(f"refused: branch {args.branch} does not exist on {args.Overtoad}/{args.repo}", file=sys.stderr)
         return 1
 
-    print(f"repo={args.owner}/{args.repo} branch={args.branch} head={head}")
+    print(f"repo={args.Overtoad}/{args.repo} branch={args.branch} head={head}")
     for repo_path, _ in additions:
         print(f"  add    {repo_path}")
     for repo_path in args.delete:
@@ -105,7 +105,7 @@ def main(argv: list) -> int:
         return 0
 
     try:
-        oid = osp.create_signed_commit(args.owner, args.repo, args.branch, args.message, additions, head, deletions=args.delete or None, commit_body=body)
+        oid = osp.create_signed_commit(args.Overtoad, args.repo, args.branch, args.message, additions, head, deletions=args.delete or None, commit_body=body)
     except osp.GhError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

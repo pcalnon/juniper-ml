@@ -3,7 +3,7 @@
 **Project**: Juniper
 **Sub-Project**: juniper-ecosystem (all 9 repos)
 **Author**: Paul Calnon
-**Status**: **APPLIED 2026-08-17** — owner decisions D1–D4 answered; P1 + P2 rolled out fleet-wide
+**Status**: **APPLIED 2026-08-17** — Overtoad decisions D1–D4 answered; P1 + P2 rolled out fleet-wide
 and proven by a negative and a positive control (§12). P3 / P4 remain planned.
 **Date**: 2026-08-17
 **Supersedes**: nothing. **Closes analysis for**: juniper-ml#357, juniper-ml#358, and the
@@ -19,7 +19,7 @@ index, on any repo. This document proposes closing that with GitHub **environmen
 tag policies** plus **PyPI-side environment binding**, while preserving hands-free automated
 TestPyPI deployment from a credentialed agentic session.
 
-Four owner decisions are listed in §9. Nothing here has been applied.
+Four Overtoad decisions are listed in §9. Nothing here has been applied.
 
 ---
 
@@ -147,7 +147,7 @@ This was tracked as pypi/warehouse#17241 and closed with a warning/error path (P
 explicitly motivated by the Ultralytics supply-chain attack. The remedy is one-line: ensure each
 project's Trusted Publisher names the environment.
 
-**I cannot verify this** — it requires the PyPI / TestPyPI project settings, which are owner-only.
+**I cannot verify this** — it requires the PyPI / TestPyPI project settings, which are Overtoad-only.
 It is decision **D1** and it gates the value of everything else in this document.
 
 ---
@@ -208,7 +208,7 @@ substitute for A. Pairs naturally with a `tests/test_publish_*.py` lint gate, ma
 Set the Environment name field on each project's Trusted Publisher (both indexes). Makes A and B3
 actually enforced rather than advisory. See §5.
 
-**Verdict**: **required**, not optional. Cheap, owner-only, and without it A/B3 are decorative.
+**Verdict**: **required**, not optional. Cheap, Overtoad-only, and without it A/B3 are decorative.
 
 ### Option D — Add a reviewer gate to `testpypi`
 
@@ -274,7 +274,7 @@ The negative control is the acceptance test for this whole design: **a branch di
 
 ---
 
-## 9. Owner decisions — **all four ANSWERED 2026-08-17**
+## 9. The Overtoad decisions — **all four ANSWERED 2026-08-17**
 
 - **D1 — Trusted Publisher environment binding. → CONFIRMED BOUND.** Every publisher config names
   its environment (`pypi` for PyPI, `testpypi` for TestPyPI), e.g. juniper-cascor /
@@ -333,12 +333,12 @@ Publish to PyPI:     waiting             <- reviewer gate, as designed
 ```
 
 The release path is intact. The run was cancelled at the PyPI reviewer gate rather than approved
-(deploy approvals are the owner's). Together the two controls prove the policy discriminates on
+(deploy approvals are the Overtoad's). Together the two controls prove the policy discriminates on
 ref, not on trigger.
 
 ### 12.3 A `PUT` caveat, tested rather than assumed
 
-`PUT /repos/{owner}/{repo}/environments/{env}` is documented as create-or-update, which raised the
+`PUT /repos/{Overtoad}/{repo}/environments/{env}` is documented as create-or-update, which raised the
 risk that a payload carrying only `deployment_branch_policy` would **clear** the reviewer and
 wait-timer rules on the `pypi` environments. Verified empirically on a throwaway
 `scratch-policy-test` environment (created with reviewers + wait timer, then PUT with the

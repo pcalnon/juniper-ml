@@ -28,7 +28,7 @@ runs ``gh release create <tag>`` with no ``--target``, so ``v0.16.0`` tags a tre
 contains all three PRs, whatever the CHANGELOG says. The notes are rendered from the FIRST
 ``## [0.16.0]`` match (``changelog_version_section``), which today holds #428's entries ALONE:
 the published notes would drop #421, #422, #426, #427 and #429 and could not be re-cut. The
-owner ruled 2026-09-24: fold #428 into 0.16.0 (and with it #431 and #434), leaving an empty
+Overtoad ruled 2026-09-24: fold #428 into 0.16.0 (and with it #431 and #434), leaving an empty
 ``[Unreleased]``. This is the 2026-09-22 0.15.0 precedent
 (``2026-09-22_fold_pr418_into_juniper_data_0_15_0.py``) with one deliberate difference: that
 fold left a duplicate ``### Changed`` heading, which #428 later repaired as a defect (a

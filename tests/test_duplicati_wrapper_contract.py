@@ -385,7 +385,7 @@ class WrapperEnvContract(_Scratch):
 
     def test_unset_the_production_default_requires_mnt_backups(self):
         """R5A NIT-3 / F01: the default mount itself was unpinned (`${DUPLICATI_REQUIRE_MOUNT-}` survived). A PATH stub for
-        `mountpoint` answers "not a mountpoint" and records what it was asked, so this holds on the owner's host (where
+        `mountpoint` answers "not a mountpoint" and records what it was asked, so this holds on the Overtoad's host (where
         /mnt/Backups IS mounted) and on CI (where it is not) alike, and never reads the real mount table."""
         bindir = self.tmp / "mp-bin"
         bindir.mkdir()

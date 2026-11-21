@@ -78,11 +78,11 @@ This is a minor release of `juniper-data` that carries two security fixes. First
   `huggingface-hub`, `peewee`, `platformdirs`, `python-dotenv`, `pytz`, `soupsieve`). The wheel's declared requirements are
   unchanged; this is the image.
 - **`equities_seq` is declared `regression`, not `classification`, and its `generator_version`
-  is 6.0.0** (X8, owner ruling 2026-09-24). The generator emits two targets: a one-hot next-day
+  is 6.0.0** (X8, Overtoad ruling 2026-09-24). The generator emits two targets: a one-hot next-day
   direction (`y_*`) and a next-day close (`y_reg_*`). `task_type` has no word for "both".
   - The one model that trains on it, juniper-recurrence's LMU, reads `y_reg_*` by key, and
     juniper-canopy already labelled it `regression`. So the two vocabularies disagreed, and the
-    owner ruled that juniper-data changes its label.
+    Overtoad ruled that juniper-data changes its label.
   - **What changes:** `POST /v1/datasets` dispatches meta on the registry's `task_type`, so an
     `equities_seq` artifact's `n_classes` and `class_distribution` are now `null`. The arrays,
     the checksum and every other meta field are unchanged.
@@ -102,7 +102,7 @@ This is a minor release of `juniper-data` that carries two security fixes. First
     records the reason for the 6.0.0 bump.
   - *Moved here from `[0.16.0]`: #437 merged at 09:14Z on 2026-09-24, after `v0.16.0` was tagged at `39d1cab2`, so 0.16.0 does not carry it.*
 - **Under `fundamentals_fill="drop"`, a `purchase_date` after `start_date` is refused** (W1.8,
-  F-P2). This applies the plan's recommended R3 pending the owner's ruling (alternatives: a
+  F-P2). This applies the plan's recommended R3 pending the Overtoad's ruling (alternatives: a
   documented finite sentinel; dropping rows without refusing).
   - **Before:** `cost_basis` is NaN on every row before the purchase session (APD-DATA-042), and
     `drop` removed only the rows lacking shares, so such a request minted a non-finite
@@ -220,7 +220,7 @@ This is a minor release of `juniper-data` that carries two security fixes. First
   - the workflow-table row, now marked **Required** and linked to a new section, Sequence Safety
     (required check), with the ruleset query, the Quality Gate distinction, and the waivers. The
     `Allow-Symbol-Loss:` / `Allow-Docs-Rewrite:` commit trailers are what the post-merge
-    `main-verify.yml` honours. The owner labels `allow-symbol-loss` / `docs-rewrite` demote the
+    `main-verify.yml` honours. The Overtoad labels `allow-symbol-loss` / `docs-rewrite` demote the
     matching per-PR screen to WARN-only and do not reach the post-merge net;
   - the Main Verify row, which called that net advisory. It runs after the merge, so it is not a
     PR status check and cannot block the merge; a finding turns its run red and upserts a tracking
@@ -251,7 +251,7 @@ This is a minor release of `juniper-data` that carries two security fixes. First
   bytes. So `validate` matches exactly when the strings are equal. `surrogateescape` raises on
   `"\ud800"` and maps `"\xe9"` and `"\udcc3\udca9"` to the same bytes. The keys stay in a `list`,
   and juniper-ml's `tests/test_service_fork_drift.py` markers (`blank-api-key-filter`,
-  `nonshortcircuit-key-compare`) are unchanged. Owner ruling "Fix everywhere now" (2026-09-24),
+  `nonshortcircuit-key-compare`) are unchanged. The Overtoad ruling "Fix everywhere now" (2026-09-24),
   landing the same compare in juniper-service-core and juniper-cascor.
   **Sentry:** juniper-data configures Sentry only through juniper-observability's
   `configure_sentry` (`juniper_data/api/app.py`), so there is no local setting to change. It

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (consensus round 3 fix pass)
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- single-use verification; read-only (GitHub REST reads only)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Runs probe_first_pass on ONE repo with a small sample, so the check costs a few dozen calls.
 Usage: python3 check_first_pass_window.py [repo] [n]

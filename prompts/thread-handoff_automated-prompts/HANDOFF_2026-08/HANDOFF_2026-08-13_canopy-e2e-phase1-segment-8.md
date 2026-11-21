@@ -1,7 +1,7 @@
 # HANDOFF 2026-08-13 — Canopy E2E Phase 1: segment 8
 
 Continue Phase 1 live click-by-click validation of the juniper-canopy E2E arc. Segment 7 closed the
-Network Editor and Replay tabs and re-drove W11 behind an owner-approved training run. Work is COMMITTED
+Network Editor and Replay tabs and re-drove W11 behind an Overtoad-approved training run. Work is COMMITTED
 and PUSHED on branch `arc/canopy-e2e-phase1-seg7` (worktree `mighty-dancing-token`, tip `3018e7c`).
 Run-id `20260811T010700Z`.
 

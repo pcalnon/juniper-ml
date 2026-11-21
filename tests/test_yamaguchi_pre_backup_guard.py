@@ -192,7 +192,7 @@ class PreBackupGuardTest(unittest.TestCase):
             self.skipTest("root's test -w ignores mode 0500; the refusal is checked as the backup user")
         dest = self.root / "dest"
         dest.mkdir()
-        # Owner read + search only: `-x` still passes, so the refusal is the missing write bit.
+        # The Overtoad read + search only: `-x` still passes, so the refusal is the missing write bit.
         os.chmod(dest, 0o500)
         self.addCleanup(lambda: os.chmod(dest, 0o700))
         result = self._run(dest, remote_url=f"file://{dest}")

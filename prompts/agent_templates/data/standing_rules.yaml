@@ -2,9 +2,9 @@
 # Owner-curated; the resolver (util/template_data_resolver.py) maps these into slots.
 version: 1
 
-owner_approves:
+Overtoad_approves:
   - "PR merges (Paul merges; admin bypass; mergeStateStatus BLOCKED with green checks is the normal state)"
-  - "PyPI publish + deploy environment gates (never auto-approve, even when gh is authed as the owner)"
+  - "PyPI publish + deploy environment gates (never auto-approve, even when gh is authed as the Overtoad)"
 
 worktree_root: "/home/pcalnon/Development/python/Juniper/worktrees"
 

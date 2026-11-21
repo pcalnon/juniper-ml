@@ -2,7 +2,7 @@
 
 **Date**: 2026-11-04 (UTC)
 
-**Arc**: the `scripts/wake_the_claude.bash` / `claudey` launcher arc, in session `856140dc-d1b5-46cb-b0d6-7163d63ded7b`. It began with the owner's request to fix and merge juniper-ml#2396, then took up the follow-ups juniper-ml#2405 reported. On 2026-11-04 the owner ruled:
+**Arc**: the `scripts/wake_the_claude.bash` / `claudey` launcher arc, in session `856140dc-d1b5-46cb-b0d6-7163d63ded7b`. It began with the Overtoad's request to fix and merge juniper-ml#2396, then took up the follow-ups juniper-ml#2405 reported. On 2026-11-04 the Overtoad ruled:
 
 - "merge approval granted for all work arc PRs including #2405";
 - "let's fix the prompt issue …";
@@ -15,7 +15,7 @@
 
 **Git status**:
 
-- The primary checkout `/home/pcalnon/Development/python/Juniper/juniper-ml` is on `main`, clean, at `b22126a4`, behind `origin/main`. This session pulled it once, to `6201f94b`, at the owner's request. Other actors have moved it since.
+- The primary checkout `/home/pcalnon/Development/python/Juniper/juniper-ml` is on `main`, clean, at `b22126a4`, behind `origin/main`. This session pulled it once, to `6201f94b`, at the Overtoad's request. Other actors have moved it since.
 - No local commit was made in this arc. The arc's own commits are GitHub-signed `createCommitOnBranch` commits. `b7382bfa` and `98fc8b2b` are merge commits from `update-branch`, made by GitHub.
 - The arc's three worktrees are listed under A4.
 
@@ -35,7 +35,7 @@ Completed so far:
 - juniper-ml#2405 merged (db131f7b): wake_the_claude.bash's -v sets its own version, the nohup-log and
   claude-not-found errors print with debug off, and LauncherScriptVariableTests was added.
 - juniper-ml#2438 merged (1c18106d, 2026-11-04T21:31:17Z; main-verify run 41916861704 succeeded): the
-  owner's 2026-11-04 rulings, plus two Cursor review findings.
+  Overtoad's 2026-11-04 rulings, plus two Cursor review findings.
   wake_the_claude.bash:
   - sends the prompt last, after "--", whichever flag supplied it;
   - the word after a prompt flag is the prompt, whatever it starts with;
@@ -52,22 +52,22 @@ Completed so far:
 
 Remaining work:
 - A. This arc:
-  - ask the owner the four A2 questions;
-  - bring the owner a proposal for each of the five Cursor launcher drafts (#2403, #2404, #2406, #2407,
+  - ask the Overtoad the four A2 questions;
+  - bring the Overtoad a proposal for each of the five Cursor launcher drafts (#2403, #2404, #2406, #2407,
     #2440);
   - propose JR-ML-ARCH-263's status change (A5);
-  - clean up the three worktrees and branches, but only on the owner's word (A4).
+  - clean up the three worktrees and branches, but only on the Overtoad's word (A4).
 - B. Every open PR in the nine repositories: 58 at 21:14Z (juniper-ml 41, juniper-data 9,
   juniper-canopy 8, none elsewhere), 55 of them Cursor drafts, all opened 2026-11-04. No session owns
-  this batch. Ask the owner how to record it, triage read-only (B2), then evaluate, fix and test.
-  Every merge, close, retarget or update-branch needs the owner's explicit approval, per PR or named
+  this batch. Ask the Overtoad how to record it, triage read-only (B2), then evaluate, fix and test.
+  Every merge, close, retarget or update-branch needs the Overtoad's explicit approval, per PR or named
   group.
 
 Key context:
 - No approval carries over from this session or this document (auto-memory
   feedback_headless_merge_approval_policy.md).
 - ARMED: juniper-ml#2360 (DIRTY on purpose) and #2271 (BEHIND). Making either mergeable merges it.
-  Never resolve, update or disarm either without the owner.
+  Never resolve, update or disarm either without the Overtoad.
 - util/safe_merge.py never checks a PR's base branch. canopy#796's base is
   fix/mnist-declared-params-778 (its PR, canopy#788, merged, but the branch still exists). Merging #796
   would put it into that dead branch, with no checks. Never merge a PR whose base is not main.
@@ -84,14 +84,14 @@ Key context:
 
 | PR | Merge commit | What it did | Evidence |
 |---|---|---|---|
-| juniper-ml#2396 (the owner's branch `feat/enhancements-to-claude-scripts`) | `6201f94b` | The launcher parser rewrite. This session's commit `b7e3312c` repaired its regression suites. | It merged from head `e3824ed7`, on the owner's approval for #2396 alone. |
+| juniper-ml#2396 (the Overtoad's branch `feat/enhancements-to-claude-scripts`) | `6201f94b` | The launcher parser rewrite. This session's commit `b7e3312c` repaired its regression suites. | It merged from head `e3824ed7`, on the Overtoad's approval for #2396 alone. |
 | juniper-ml#2405 | `db131f7b` (2026-11-04T12:03:38Z) | <ul><li>`SCRIPT_VERSION="1.0.0"`, which no inherited value overrides.</li><li>`--remote-control <name>` restored. #2438 removed it again.</li><li>The nohup-log and claude-not-found errors print to stderr.</li><li>`PROMPT_FILE_DEFAULT` / `PROMPT_PATH_DEFAULT` deleted.</li><li>6 tests added, among them `LauncherScriptVariableTests`.</li></ul> | `safe_merge.py` printed `MERGED #2405 at b7382bfa via squash`. `b7382bfa` is the verified head, not the squash commit. |
 | juniper-ml#2438 | `1c18106d` (2026-11-04T21:31:17Z, from the verified head `98fc8b2b`) | The 2026-11-04 rulings and the two review findings. Its PR body has the before/after table. | <ul><li>Commits `8711c41d` and `9b390d74`, both GitHub-verified.</li><li>107 tests pass on the head and on `main`.</li><li>Against #2405's scripts, 45 of the 107 fail, all 17 new or rewritten tests among them.</li><li>The three tests for the review fix also fail against `8711c41d`.</li><li>Pre-commit: for the second commit, the final pass's log shows exit 0. The first commit's passing re-run was not logged. CI's Pre-commit jobs passed on both heads.</li><li>CodeQL prescreen: 0 alerts.</li><li>Symbol-loss: one LOST finding, the renamed remote-control test, waived by `Allow-Symbol-Loss` in both commits. The waiver appears twice, mid-message, in the squash body.</li><li>`main-verify` run `41916861704`: success.</li></ul> |
 
 **#2438's review.** Two Cursor threads (2026-11-04 12:19Z) blocked the first merge. `safe_merge.py` refused with "2 unresolved review thread(s)" and disarmed.
 
 - **The `--prompt` thread:** a value starting with `--` was parsed as a flag, so `--prompt --dangerously-skip-permissions` injected that flag. Fixed in `9b390d74`.
-- **The remote-control thread:** it was about remote control combined with the `--dangerously-skip-permissions` that claudey's shipped `DEBUG=TRUE` adds. The owner answered "Keep both on", and the reply cites that ruling.
+- **The remote-control thread:** it was about remote control combined with the `--dangerously-skip-permissions` that claudey's shipped `DEBUG=TRUE` adds. The Overtoad answered "Keep both on", and the reply cites that ruling.
 
 Both threads are resolved.
 
@@ -109,12 +109,12 @@ Both threads are resolved.
 ### A. This arc
 
 1. **#2438 on `main`: done at handoff.** Verification confirms it. If the launcher suites (Verification step 2) fail on a later `main`, the cause is new.
-2. **Ask the owner.** #2438 decides none of these, so do nothing without the answers.
+2. **Ask the Overtoad.** #2438 decides none of these, so do nothing without the answers.
    1. **`-v`.** It still prints wake_the_claude.bash's own version, the minimal reading of "a script-version specific flag". Claude Code's CLI uses `-v, --version` for its version. Should `-v` follow `--version`? That means moving `-v` from `SCRIPT_VERSION_FLAGS` to `MODEL_VERSION_FLAGS` in `scripts/wake_the_claude.bash`. Removing it from one list alone makes `-v` exit 1, and `test_no_input_flag_selects_two_parsers` forbids a flag in both. The two tests that use `-v` change too.
    2. **claudey's own `-v` / `--version`.** They print claudey's version (`0.1.1`). Should the "`--version` is Claude Code's" ruling apply to claudey too?
    3. **A prompt file for claudey.** It has none: its parser rejects any argument it does not know. Should it gain `--file` / `--path`? If it does, it must stop sending its default `--prompt` alongside them, because wake_the_claude.bash prefers `--prompt` over a file.
    4. **`default_interactive_session_claude_code.bash`.** It sends a bare `--worktree` but no `--remote-control`. Should it match claudey's new defaults?
-3. **The Cursor launcher drafts.** All five touch files #2438 changed. Bring the owner a keep, update or close proposal for each, with the overlap evidence. Close only when the owner confirms that PR: `.claude/agents/fleet-supervisor.md` § Two-key DUP-CLOSE rule ("a false close = LOST REAL WORK").
+3. **The Cursor launcher drafts.** All five touch files #2438 changed. Bring the Overtoad a keep, update or close proposal for each, with the overlap evidence. Close only when the Overtoad confirms that PR: `.claude/agents/fleet-supervisor.md` § Two-key DUP-CLOSE rule ("a false close = LOST REAL WORK").
 
    | PR | Branched from | Note |
    |---|---|---|
@@ -124,7 +124,7 @@ Both threads are resolved.
    | #2407 (`tests/test_claude_interactive.py`) | `b22126a4` | Conflicts with #2438. Some of its pins predate the on-by-default worktree and remote control. |
    | #2440 (docs: claudey defaults, prompt after `--`, version flags) | stacked on `fix/wake-the-claude-prompt-guard`; retargeted to `main` at 21:31:20Z | DIRTY. Head `a96e4916`. It carries `8711c41d`, so it conflicts in `CHANGELOG.md`, the cheatsheet, `scripts/wake_the_claude.bash` and both launcher test files. |
 
-4. **Cleanup, on the owner's word only.** Never run `util/remove_stale_worktrees.bash`.
+4. **Cleanup, on the Overtoad's word only.** Never run `util/remove_stale_worktrees.bash`.
    - **Worktree** `/home/pcalnon/Development/python/Juniper/worktrees/juniper-ml--fix--wake-the-claude-followups--20261104-0331--b22126a4`.
      - Branch `fix/wake-the-claude-followups` (#2405, merged; its remote branch is deleted).
      - Clean, with no `tmp/`.
@@ -135,12 +135,12 @@ Both threads are resolved.
      - First confirm each changed file's `git hash-object` equals `git rev-parse 1c18106d:<path>`. Then `git worktree remove --force <path> && git worktree prune && git branch -D fix/wake-the-claude-prompt-guard`.
    - **Worktree** `/home/pcalnon/Development/python/Juniper/worktrees/juniper-ml--docs--handoff-2026-11-04-launcher-arc--20261104-1532--1c18106d`.
      - Branch `docs/handoff-2026-11-04-launcher-arc`, where this handoff was checked before upload. Remove it once its PR has merged.
-   - **Local branch** `feat/enhancements-to-claude-scripts`, at `5ae5a5ec`, #2396's pre-repair tip. The owner deferred deleting it and running `git fetch --prune` (2026-11-03 22:52Z: "let's defer the branch cleanup for now").
-   - **The primary checkout**: fast-forward it only if the owner asks.
+   - **Local branch** `feat/enhancements-to-claude-scripts`, at `5ae5a5ec`, #2396's pre-repair tip. The Overtoad deferred deleting it and running `git fetch --prune` (2026-11-03 22:52Z: "let's defer the branch cleanup for now").
+   - **The primary checkout**: fast-forward it only if the Overtoad asks.
 5. **JR-ML-ARCH-263** (`notes/requirements/by-area/ARCH.md`).
    - Its source is HSK-21 in `notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md`, lines 3201-3215: the `# TODO: this isn't going to stderr?????` comment.
    - `599bf93c` removed that comment on 2026-06-14 (01:28Z). #2438 does not touch it.
-   - Propose the status change to the owner.
+   - Propose the status change to the Overtoad.
 
 ### B. Every open PR in the nine repositories
 
@@ -155,7 +155,7 @@ Both threads are resolved.
 | PR | State | Disposition |
 |---|---|---|
 | #2360 (the repo `tmp/` convention; +3057/−122, 43 files) | ARMED since 2026-10-27; DIRTY (conflicts with `main` in `.github/workflows/ci.yml`, `CHANGELOG.md`, `docs/REFERENCE.md`) | Belongs to the canopy E2E arc. It stays DIRTY on purpose until canopy E2E Phase 16 lands and its baseline is regenerated. The auto-memory `project_canopy_e2e_validation_arc_2026-08-08.md` says: "#2360 last, after Phase 16 lands + its baseline regenerated". A conflict fix would let the armed net merge it. Never resolve, update or disarm it. |
-| #2271 (`idleCompaction` local setting, +1) | ARMED since 2026-10-19, every check green, BEHIND | Under the `strict` ruleset, an armed PR that is BEHIND waits forever, and an `update-branch` merges it. Ask the owner. |
+| #2271 (`idleCompaction` local setting, +1) | ARMED since 2026-10-19, every check green, BEHIND | Under the `strict` ruleset, an armed PR that is BEHIND waits forever, and an `update-branch` merges it. Ask the Overtoad. |
 
 juniper-ml#2415 (`0368c3a2`) and #2423 (`834e79aa`) merged after the first census, taken at 12:14Z.
 
@@ -197,15 +197,15 @@ Two caveats:
 - **The docs cluster:**
   - Seventeen docs drafts each touch the same four files: `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, `docs/DOCUMENTATION_OVERVIEW.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md`. They are #2404, #2406, #2409, #2412, #2417, #2418, #2422, #2424, #2426, #2428, #2432, #2433, #2437, #2440, #2442, #2444 and #2446.
   - All 136 pairs conflict.
-  - §8 of the flood-3 record makes consolidation the default for such a cluster. Propose one consolidated signed PR to the owner.
+  - §8 of the flood-3 record makes consolidation the default for such a cluster. Propose one consolidated signed PR to the Overtoad.
 
 **Procedure:**
 
-1. **Ownership.** No session owns the batch. Ask the owner whether its dispositions go into the flood-3 record's next update or into a new record. If another live session turns out to claim it (check `ListAgents` and the owner's word), yield.
+1. **Ownership.** No session owns the batch. Ask the Overtoad whether its dispositions go into the flood-3 record's next update or into a new record. If another live session turns out to claim it (check `ListAgents` and the Overtoad's word), yield.
 2. **Triage (read-only).** Nothing here writes to GitHub.
    - **Fetch** in each primary checkout: `git -C /home/pcalnon/Development/python/Juniper/<repo> fetch -q origin`. If SSH is refused, use `GIT_TERMINAL_PROMPT=0 git -C <that checkout> fetch -q https://github.com/pcalnon/<repo>.git '+refs/heads/*:refs/remotes/origin/*'`, without `--prune`.
    - **Script verdicts.** From the juniper-ml checkout, run `python3 util/fleet_triage/predict_merge.py --batch --json --repo-root /home/pcalnon/Development/python/Juniper/<repo>`. It returns a verdict per PR (MERGE-CLEAN, NEEDS-UPDATE-BRANCH, DAMAGED-FIX-FIRST or CONFLICT), a cluster map and a suggested order. It never judges duplicates. Treat an ERROR or a skip as unscreened.
-   - **Duplicate and supersession calls** come from the `fleet-supervisor` agent (`.claude/agents/fleet-supervisor.md`). The owner confirms them under the two-key rule. Use the agent for verdicts only, and never let it delegate a fix to `task-executor`: that agent commits locally, which hangs on the YubiKey here.
+   - **Duplicate and supersession calls** come from the `fleet-supervisor` agent (`.claude/agents/fleet-supervisor.md`). The Overtoad confirms them under the two-key rule. Use the agent for verdicts only, and never let it delegate a fix to `task-executor`: that agent commits locally, which hangs on the YubiKey here.
 3. **Each PR.**
    1. **Classify a red check before fixing.**
       - Run `gh pr checks N --repo pcalnon/<repo> --required` and read the latest run of each check.
@@ -221,19 +221,19 @@ Two caveats:
       - Confirm the package imports from the extract (`<pkg>.__file__`), not from an editable install.
       - Delete the extract afterwards. Until #2360 lands, juniper-ml's doc-link hook scans `tmp/`.
    4. **Mutation-check every new test** against the code it pins.
-   5. **Before any push or update-branch**, run `gh pr view N --repo pcalnon/<repo> --json autoMergeRequest,isDraft`, and stop if the PR is armed. The owner's sweeper un-drafts and arms PRs, and its merges are intended (auto-memory `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`). A fix that turns a draft green can therefore merge it, so push only what you would accept on `main`. An update-branch (`gh api -X PUT repos/pcalnon/<repo>/pulls/N/update-branch`) also starts CI. It is never a rebase, because a rebase re-creates the commits unsigned. Get the owner's go-ahead before running it across the batch.
+   5. **Before any push or update-branch**, run `gh pr view N --repo pcalnon/<repo> --json autoMergeRequest,isDraft`, and stop if the PR is armed. The Overtoad's sweeper un-drafts and arms PRs, and its merges are intended (auto-memory `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`). A fix that turns a draft green can therefore merge it, so push only what you would accept on `main`. An update-branch (`gh api -X PUT repos/pcalnon/<repo>/pulls/N/update-branch`) also starts CI. It is never a rebase, because a rebase re-creates the commits unsigned. Get the Overtoad's go-ahead before running it across the batch.
    6. **Push fixes forward** with `python3 util/push_signed_commit.py --repo <repo> --branch <head-branch> --expected-head <full SHA> --add <local file>:<repo path> --message "<subject>" --commit-body-file <file>`.
       - Build each file from `git -C <checkout> show <expected-head>:<path>`: the base that counts is the branch head's blob, not `main`'s.
       - For a CHANGELOG or cheatsheet conflict, follow auto-memory `reference_changelog_conflict_signed_update_branch.md`.
       - Prove a resolution with `git merge-tree` exiting 0 before you upload.
    7. **Validate with independent agents.** Have each fix-forward or re-land checked by independent agents (auto-memory `feedback_multi_agent_adversarial_validation_sop.md`) before asking for approval.
-4. **Merge only after the owner approves the named PR or group.**
-   - Refuse any PR whose base is not `main`. `safe_merge.py` does not check the base. Retarget first, with the owner's approval (`gh api -X PATCH repos/pcalnon/<repo>/pulls/N -f base=main`), then let CI run.
+4. **Merge only after the Overtoad approves the named PR or group.**
+   - Refuse any PR whose base is not `main`. `safe_merge.py` does not check the base. Retarget first, with the Overtoad's approval (`gh api -X PATCH repos/pcalnon/<repo>/pulls/N -f base=main`), then let CI run.
    - Run `gh pr ready N --repo pcalnon/<repo>`: `safe_merge.py` refuses a draft.
    - Start `python3 util/safe_merge.py --pr N --repo <bare-repo-name> --execute` in the background, and only when `pgrep -af safe_merge.py` shows none running for that repository from any session.
    - Read its `MERGED` line. Exit 0 does not mean merged, and the SHA it prints is the verified head, not the squash commit.
    - A Cursor review thread blocks the merge until it is resolved, as it did on #2438. Fix or answer each thread, then resolve it.
-5. **Record each disposition** in the record the owner names. Archive the next handoff in `prompts/thread-handoff_automated-prompts/`.
+5. **Record each disposition** in the record the Overtoad names. Archive the next handoff in `prompts/thread-handoff_automated-prompts/`.
 
 ---
 
@@ -274,7 +274,7 @@ for r in juniper-ml juniper-cascor juniper-data juniper-data-client juniper-casc
 # 2. the launcher suites on main (invariant: "Ran 107 tests" and OK)
 export TMPDIR=/home/pcalnon/Development/python/Juniper/juniper-ml/tmp GIT_CEILING_DIRECTORIES=/home/pcalnon/Development/python/Juniper/juniper-ml/tmp
 W="$TMPDIR/verify-launchers-$$"; mkdir -p "$W" && git archive origin/main | tar -x -C "$W" && (cd "$W" && python3 -m unittest tests/test_wake_the_claude.py tests/test_claude_interactive.py 2>&1 | tail -3); rm -rf "$W"
-# 3. this arc's worktrees (invariant: the three under A4, unless the owner had them removed)
+# 3. this arc's worktrees (invariant: the three under A4, unless the Overtoad had them removed)
 git worktree list | grep -E 'wake-the-claude|handoff-2026-11-04-launcher-arc'
 # 4. no merge in flight (invariant: no output)
 pgrep -af safe_merge.py | grep -v pgrep

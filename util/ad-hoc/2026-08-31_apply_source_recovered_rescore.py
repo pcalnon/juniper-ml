@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the owner's 2026-08-31 re-score to the source-recovered backlog.
+"""Apply the Overtoad's 2026-08-31 re-score to the source-recovered backlog.
 
 Project:     Juniper
 Sub-Project: juniper-ml
@@ -88,7 +88,7 @@ def main() -> int:
     for r in targets:
         note = (r.get("note") or "").strip()
         reason = (
-            "owner decision 2026-08-31: correct answer reached from source, not via the "
+            "Overtoad decision 2026-08-31: correct answer reached from source, not via the "
             "relocated pointer. Scorer's contemporaneous note: " + note[:400]
         )
         print(f"  {'APPLY' if args.apply else 'DRY  '} {r.get('probe_id'):34s} {r.get('obs_id')}")

@@ -77,7 +77,7 @@ A tabular summary of every decision that must be made. Full details in §3. Each
 Legend for "Who decides":
 - **TL** = Tech lead / project lead (Paul Calnon)
 - **Sec** = Security reviewer or project lead acting in that role
-- **Ops** = Operations / deployment owner
+- **Ops** = Operations / deployment Overtoad
 - **R3** = Round 3 consolidation agents (default if nobody takes it)
 - **R5** = Round 5 final canonical plan (last-resort fallback)
 
@@ -99,7 +99,7 @@ Legend for "Deadline":
 | D-05 | REST polling fallback cadence during disconnect | 100 ms / 1 Hz | **1 Hz** (R1-01, R1-03, R1-04, R1-05) | TL | Pre-B | Low — 3-line JS change, not user-visible |
 | D-06 | NetworkVisualizer in Phase B scope | full cytoscape migration / minimum WS wiring / defer entirely | **minimum WS wiring in B, deep migration deferred if cytoscape** (R1-05) | TL | Pre-B | Low — first commit of Phase B can verify render tech |
 | D-07 | `ws-metrics-buffer` store shape | bare array / `{events, gen, last_drain_ms}` object | **structured object** (R1-05 §4.7) | TL | Pre-B | Low — Dash callback false-negative risk |
-| D-08 | GAP-WS-24 ownership split | bundled / split into 24a (browser) + 24b (canopy backend) | **split** (R1-05 §4.8) | TL | Pre-B | None — ownership clarification |
+| D-08 | GAP-WS-24 Overtoadship split | bundled / split into 24a (browser) + 24b (canopy backend) | **split** (R1-05 §4.8) | TL | Pre-B | None — Overtoadship clarification |
 | D-09 | Phase B-pre effort estimate | 1 day (source doc) / 2 days (R0-02) / 2.5 days (R0-06) | **2 days B-pre-b + 0.5 day B-pre-a** (R1-05 §4.9) | TL | Pre-B-pre-a | Low — schedule slippage only |
 | D-10 | `disable_ws_auth` naming | negative-sense (source doc) / `ws_security_enabled` positive (R0-02) | **keep negative for v1** (R1-05 §4.10) OR **positive-sense** (R1-02, R1-03 take opposite) | TL | Pre-B-pre-b | Low — rename is a trivial follow-up |
 | D-11 | Phase 0-cascor carve-out from Phase B | carve out 2-day cascor-only phase / keep in Phase B | **carve out** (R1-03, R1-04, R1-05; R1-01 silently adopts; R1-02 silently adopts) | TL | Pre-P0 | **High** — Phase B PR size and review burden |
@@ -257,14 +257,14 @@ This section details every decision in §2. Each has: Question, Why it matters, 
 - **Cost of deferring**: Low — Dash false-negative risk.
 - **Source**: R1-05 §4.7, R0-01 §7
 
-### 3.8 D-08: GAP-WS-24 browser-vs-server ownership split
+### 3.8 D-08: GAP-WS-24 browser-vs-server Overtoadship split
 
 - **Question**: Is GAP-WS-24 (browser latency instrumentation) one item or split into 24a (browser emitter) + 24b (canopy backend `/api/ws_latency` endpoint)?
-- **Why it matters**: Clean ownership for the Phase B PR.
+- **Why it matters**: Clean Overtoadship for the Phase B PR.
 - **Recommended default**: **Split** (24a frontend, 24b canopy backend; both ship in Phase B)
 - **Who decides**: TL
 - **Decision deadline**: Pre-B
-- **Cost of deferring**: None — ownership clarification.
+- **Cost of deferring**: None — Overtoadship clarification.
 - **Source**: R1-05 §4.8
 
 ### 3.9 D-09: Phase B-pre effort estimate
@@ -1185,7 +1185,7 @@ Target: 1000-1700 lines. Actual: ~1050 lines including this self-audit. Within e
 - [x] DID frame the plan around decisions
 - [x] Every decision has a recommended default (no "TBD")
 - [x] Every decision has a deadline
-- [x] Every decision has an owner role
+- [x] Every decision has an Overtoad role
 - [x] Every decision has a cost-of-deferral level
 - [x] Disagreements with R1 inputs are explicit and justified (§7)
 - [x] Did not modify any other file

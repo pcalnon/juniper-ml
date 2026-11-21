@@ -11,7 +11,7 @@
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 # Status:        ad-hoc -- one-off
-# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:       juniper-canopy#650, juniper-ml#1966
 # Superseded:    for new use by util/push_signed_commit.py (append to an existing branch) and util/open_signed_pr.py (create a branch); RETAINED here as provenance.
 #
@@ -76,7 +76,7 @@ def main() -> int:
     a = ap.parse_args()
 
     src = Path(a.src_dir)
-    owner, name = a.repo.split("/")
+    Overtoad, name = a.repo.split("/")
 
     base_sha = gh(["api", f"repos/{a.repo}/commits/{a.base}", "-q", ".sha"])
     print(f"base {a.base} = {base_sha}")
@@ -111,7 +111,7 @@ def main() -> int:
     variables = {
         "input": {
             "branch": {
-                "repositoryNameWithOwner": f"{owner}/{name}",
+                "repositoryNameWithOwner": f"{Overtoad}/{name}",
                 "branchName": a.branch,
             },
             "message": {"headline": a.title, "body": body},

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-19
 Status: ad-hoc — landing helper (the commit-signing PR; tasks K2, K3, K4)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md (§9 K2-K4,
          §11 landing); util/configure_commit_signing.py; tests/test_configure_commit_signing.py
 
@@ -60,7 +60,7 @@ MUTANTS_KILLED = "50 of 50"
 CI_ANCHOR = "          python3 -m unittest -v tests/test_headless_signing_preflight.py\n"
 CI_BLOCK = (
     "          # tests/test_configure_commit_signing.py: commit-signing plan R-S1..R-S19 (bring-up B4a, gate G-SIGN).\n"
-    "          # util/configure_commit_signing.py installs the owner's signing for the Juniper tree as one includeIf\n"
+    "          # util/configure_commit_signing.py installs the Overtoad's signing for the Juniper tree as one includeIf\n"
     "          # (gitdir/i: on the root, rendered from realpaths) plus an include file, and checks it without\n"
     "          # credentials. Real git on temp checkouts under a temp HOME with every GIT_* scrubbed and a\n"
     "          # Homebrew-shaped recording fake gpg: terminal, IDE-argv, merge, cherry-pick and annotated-tag\n"
@@ -96,7 +96,7 @@ REF_SUITE_BULLET = (
     "(with and without `-S`), an argv carrying Cursor's injected config keys, a merge, a cherry-pick and an annotated tag. A "
     "lightweight tag now fails (plan S4). A linked worktree checked out outside the root signs (R-S11). A repo outside the root "
     "is untouched (R-S12), and so are `$HOME` and a root spelled through symlinks (R-S15).\n"
-    "  - **D11.** Its `GIT_CONFIG_COUNT` keeps a plain agent commit from calling gpg, and it does not mask the owner-effective "
+    "  - **D11.** Its `GIT_CONFIG_COUNT` keeps a plain agent commit from calling gpg, and it does not mask the Overtoad-effective "
     "values `--check` judges. Its boundary is pinned too: `-S`, `-c include.path=` and `--config-env` still sign (R-S4).\n"
     "  - **Refusals.** These exit 2 before any write: an unpinned key (R-S1); an unsound `gpg.program` (R-S2); a program outside a "
     "known GnuPG install, unless vouched for (R-S18); a root at or above `$HOME`, a glob in the root, and an include under the "
@@ -112,7 +112,7 @@ REF_SUITE_BULLET = (
     "the legacy key and `enableAutoApprove`, and a rule that matches the empty string protects nothing, as in VS Code. A "
     "catch-all allow rule is named, and so is an unconditional Amp `Bash allow`; Amp's rules are first-match (R-S14).\n"
     "  - **Writes.** `--apply --dry-run` writes nothing and exits like `--check` (R-S6). A second `--apply` changes no byte "
-    "(R-S7). Backups are made once, and an owner include survives (R-S8). `--apply` will not write through a symlinked "
+    "(R-S7). Backups are made once, and an Overtoad include survives (R-S8). `--apply` will not write through a symlinked "
     "include or into a writable directory (R-S17). `--remove` restores `~/.gitconfig` byte for byte, keeps an include another "
     "root still uses, and refuses to delete an include that differs from what `--apply` writes, even by a comment. An audit "
     "hook proves no `~/.gnupg` or `~/.ssh` open and no gpg run, and a snapshot of the temp `HOME` proves `--apply` changes "
@@ -122,7 +122,7 @@ REF_SUITE_BULLET = (
 )
 REF_UTIL_ANCHOR = "Tests: `tests/test_headless_signing_preflight.py`.\n"
 REF_UTIL_BULLET = (
-    "- `util/configure_commit_signing.py` -- The owner's commit signing for the Juniper tree, in a terminal and in the IDEs:\n"
+    "- `util/configure_commit_signing.py` -- The Overtoad's commit signing for the Juniper tree, in a terminal and in the IDEs:\n"
     "  `python3 util/configure_commit_signing.py [--check | --apply [--dry-run] | --remove [--dry-run]] [--json] [--root DIR] "
     "[--signing-key KEYSPEC] [--gpg-program PATH] [--include-file PATH] [--ide-settings FILE]...`.\n"
     "  - **`--apply`** writes `~/.config/git/juniper-signing.gitconfig`: the pinned `user.signingkey`, `commit.gpgsign`, "
@@ -131,11 +131,11 @@ REF_UTIL_BULLET = (
     "only when it differs, after one dated backup. It never edits IDE settings or a repository's config, never runs gpg, and "
     "never reads `~/.gnupg` or `~/.ssh`.\n"
     "  - **`--apply`** stops with exit 2 before any write when the include, or its directory, is a symlink or unsafe.\n"
-    "  - **`--remove`** undoes exactly that, with `--fixed-value`. It keeps an owner include of the same pattern, and an "
+    "  - **`--remove`** undoes exactly that, with `--fixed-value`. It keeps an Overtoad include of the same pattern, and an "
     "include file that another include still points at.\n"
     "  - **`--check`** (the default) only reads. Git's repo-local variables are scrubbed (D11's `GIT_CONFIG_COUNT` among them), "
-    "so an agent session judges the owner's configuration. It checks:\n"
-    "    - each checkout's owner-effective values and the program's soundness;\n"
+    "so an agent session judges the Overtoad's configuration. It checks:\n"
+    "    - each checkout's Overtoad-effective values and the program's soundness;\n"
     "    - planted local or worktree `gpg.*`, `include*`, `core.sshCommand`, `core.hooksPath` and `core.fsmonitor`, in each "
     "checkout and each of its linked worktrees;\n"
     "    - the include file's integrity;\n"
@@ -150,7 +150,7 @@ REF_UTIL_BULLET = (
 CHANGELOG_ENTRY = (
     f"- **Commit signing for the terminal and the IDEs** (`{PLAN}`, VALIDATED after two consensus rounds; it extends arc B of\n"
     f"  `{BRINGUP}`).\n"
-    f"  - **What the tool does.** `{TOOL}` installs and verifies the owner's signing for every checkout under\n"
+    f"  - **What the tool does.** `{TOOL}` installs and verifies the Overtoad's signing for every checkout under\n"
     '    `~/Development/python/Juniper/` with one `includeIf "gitdir/i:~/Development/python/Juniper/"`, which points at\n'
     "    `~/.config/git/juniper-signing.gitconfig`. That file holds yamaguchi's values: `user.signingkey` pinned to the full\n"
     "    fingerprint with `!`, `commit.gpgsign` and `tag.gpgsign`, plus an absolute `gpg.program` in a known GnuPG install.\n"
@@ -166,7 +166,7 @@ CHANGELOG_ENTRY = (
     "  - **The other modes.** `--remove` undoes `--apply` exactly.\n"
     f"  - **Tests and evidence.** `{SUITE}` pins R-S1..R-S19, and `{MUTATION}` kills {MUTANTS_KILLED} mutants.\n"
     f"  - **Doc changes.** `{BRINGUP}` gains §19 (v1.4.0). The AGENTS.md unsigned-commit hazard gains the IDE-agent rule.\n"
-    "  - **Applied on turing (2026-10-20).** An owner commit in the tree now fails closed until the owner imports the public\n"
+    "  - **Applied on turing (2026-10-20).** An Overtoad commit in the tree now fails closed until the Overtoad imports the public\n"
     "    key and learns the card stubs (bring-up B2/B3). The first `gpg --card-status` writes the stubs, so no card goes into\n"
     "    turing until the agent guard (C8) is installed, the guard rules (K12) are merged and re-installed, and the IDE-agent\n"
     "    approval rules (K13) are in place. The touch policy (S11) is set at that first insertion.\n"
@@ -176,7 +176,7 @@ AGENTS_OLD = "  `git log -1 --format=%G?` (`N` = unsigned). Plan:\n  `notes/JUNI
 AGENTS_NEW = (
     "  `git log -1 --format=%G?` (`N` = unsigned). An IDE agent (Cursor, Copilot, Amp) must\n"
     "  never answer a signing failure with `--no-gpg-sign` or `-c commit.gpgsign=false`: stop\n"
-    "  and ask the owner, who approves the run and touches the key. Owner signing for the\n"
+    "  and ask the Overtoad, who approves the run and touches the key. The Overtoad signing for the\n"
     "  Juniper tree: `util/configure_commit_signing.py`. Plans:\n"
     "  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`,\n"
     "  `notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`.\n"
@@ -192,13 +192,13 @@ REF_HISTORY_ANCHOR = "; the drift script above counts, so re-run it rather than 
 REF_HISTORY_MARKER = "with commit-signing K2's `tests/test_configure_commit_signing.py`"
 BRINGUP_SECTION = f"""## 19. Commit signing for the terminal and the IDEs (v1.4.0, 2026-10-20)
 
-`{PLAN}` (the signing plan; VALIDATED after two consensus rounds) extends arc B to the owner's IDE commits, from Cursor and VS Code. It also replaces the git-config half of B4. Where it and this plan disagree on B3, B4 or B5, the signing plan wins.
+`{PLAN}` (the signing plan; VALIDATED after two consensus rounds) extends arc B to the Overtoad's IDE commits, from Cursor and VS Code. It also replaces the git-config half of B4. Where it and this plan disagree on B3, B4 or B5, the signing plan wins.
 
 ### 19.1 Task changes
 
 | Task | Change |
 |---|---|
-| B4 | **Split.** **B4a (AGENT, at the owner's request on 2026-10-19):** `python3 {TOOL} --apply` writes the four signing values to `~/.config/git/juniper-signing.gitconfig`, and includes that file from `~/.gitconfig` with `[includeIf "gitdir/i:~/Development/python/Juniper/"]` rather than `git config --global` (signing plan S1). Applied on turing on 2026-10-20; every repo check passes. **B4b (OWNER):** the UID check, plus the touch policy as signing-plan S11 rules it |
+| B4 | **Split.** **B4a (AGENT, at the Overtoad's request on 2026-10-19):** `python3 {TOOL} --apply` writes the four signing values to `~/.config/git/juniper-signing.gitconfig`, and includes that file from `~/.gitconfig` with `[includeIf "gitdir/i:~/Development/python/Juniper/"]` rather than `git config --global` (signing plan S1). Applied on turing on 2026-10-20; every repo check passes. **B4b (OWNER):** the UID check, plus the touch policy as signing-plan S11 rules it |
 | B2, B3 | Any `gpg --card-status` writes the card's stubs, and signing is live once the public key (B2) is there too. So no card goes into turing until C8 is installed, the guard rules (K12) are merged and re-installed, and the IDE-agent approvals (K13) are done. The touch policy is set at that first insertion, before B2 and B3 (signing plan §1, §9, §13) |
 | B5 | Widened to the signing plan's I-SIGN matrix: the terminal, both Source Control views, both integrated terminals, an agent-session negative control, and IDE-agent prompt rows. It still depends on A3 |
 | new | **Signing plan K12:** guard rules that deny `-c include.path=`, `--config-env` in both forms, signing-key writes at any scope, and writes to `.git/hooks/`, a repository's config, `~/.gitconfig`, `~/.config/git/` and the system gitconfigs; also the tool's `--apply`. **Signing plan K13:** IDE-agent approvals |
@@ -209,7 +209,7 @@ BRINGUP_SECTION = f"""## 19. Commit signing for the terminal and the IDEs (v1.4.
 - **E-B4-SCOPE.** `git config --global` becomes the conditional include. Repositories outside the Juniper tree, and temp repositories under `$TMPDIR`, gain no signing requirement.
 - **E-B4-GPG.** `gpg.program` is the literal `/usr/local/bin/gpg`, which is what `$(brew --prefix)/bin/gpg` evaluates to. It is absolute because an IDE launched from the Dock does not get the shell's PATH, and on turing `gpg2` exists only under the demoted MacPorts path.
 - **E-G-SIGN.** Gate G-SIGN (§9.3) is evaluated inside the checkouts. It needs `{TOOL} --check` to exit 0 and I-SIGN T1–T5 to verify. `git config --global --get` cannot see an include.
-- **E-ACTIVE.** From 2026-10-20, an owner commit in the Juniper tree on turing fails closed ("gpg failed to sign the data") until B2 and B3 are done. Before, it would have landed unsigned and so been unmergeable. Agent sessions are unaffected (D11).
+- **E-ACTIVE.** From 2026-10-20, an Overtoad commit in the Juniper tree on turing fails closed ("gpg failed to sign the data") until B2 and B3 are done. Before, it would have landed unsigned and so been unmergeable. Agent sessions are unaffected (D11).
 - **E-D11-S.** D11's environment does not stop an explicit `-S`, `-c include.path=` or `--config-env=commit.gpgsign=…`, measured with a fake gpg. So no card goes into turing until C8 and K12 are in place, and D11 item 2's touch policy follows the S11 ruling.
 - **E-D5-LINE.** The §17.2 D5 row's `~/.bash_profile:87` is `:92` as of 2026-10-19.
 

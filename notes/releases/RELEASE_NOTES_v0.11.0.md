@@ -25,8 +25,8 @@
 
 ### Added
 
-- **The agent guard protects the owner's signing configuration (K12)** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, S9). With the YubiKey stubs
-  learned, an agent that could rewrite the owner's signing configuration could obtain the owner's signature. It could
+- **The agent guard protects the Overtoad's signing configuration (K12)** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, S9). With the YubiKey stubs
+  learned, an agent that could rewrite the Overtoad's signing configuration could obtain the Overtoad's signature. It could
   point `gpg.program` or `core.hooksPath` at its own program, plant a repository-local key that outranks the include,
   drop a `post-commit` hook inside a cached-touch window, or re-enable signing past D11 with `git -c include.path=` or
   `--config-env`.
@@ -38,11 +38,11 @@
   - `tests/test_claude_agent_guard.py` pins 63 Bash cases (42 denied, 21 allowed) and 18 file cases (10 denied, 8
     allowed), and the self-test runs 40 checks.
   - `util/ad-hoc/2026-10-20_k12_guard_mutation_check.py` kills 18 of 18 mutants, each by its own pin test.
-  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install
+  - The Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install
     the new copy. No YubiKey goes into turing until then: the first `gpg --card-status` writes the card stubs (plan §1).
 - **Commit signing for the terminal and the IDEs** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, VALIDATED after two consensus rounds; it extends arc B of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
-  - **What the tool does.** `util/configure_commit_signing.py` installs and verifies the owner's signing for every checkout under
+  - **What the tool does.** `util/configure_commit_signing.py` installs and verifies the Overtoad's signing for every checkout under
     `~/Development/python/Juniper/` with one `includeIf "gitdir/i:~/Development/python/Juniper/"`, which points at
     `~/.config/git/juniper-signing.gitconfig`. That file holds yamaguchi's values: `user.signingkey` pinned to the full
     fingerprint with `!`, `commit.gpgsign` and `tag.gpgsign`, plus an absolute `gpg.program` in a known GnuPG install.
@@ -58,7 +58,7 @@
   - **The other modes.** `--remove` undoes `--apply` exactly.
   - **Tests and evidence.** `tests/test_configure_commit_signing.py` pins R-S1..R-S19, and `util/ad-hoc/2026-10-19_commit_signing_mutation_check.py` kills 50 of 50 mutants.
   - **Doc changes.** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` gains §19 (v1.4.0). The AGENTS.md unsigned-commit hazard gains the IDE-agent rule.
-  - **Applied on turing (2026-10-20).** An owner commit in the tree now fails closed until the owner imports the public
+  - **Applied on turing (2026-10-20).** An Overtoad commit in the tree now fails closed until the Overtoad imports the public
     key and learns the card stubs (bring-up B2/B3). The first `gpg --card-status` writes the stubs, so no card goes into
     turing until the agent guard (C8) is installed, the guard rules (K12) are merged and re-installed, and the IDE-agent
     approval rules (K13) are in place. The touch policy (S11) is set at that first insertion.
@@ -141,7 +141,7 @@
     summary line counts `flagged` cells when there are any; `--dry-run` prints each banded cell's bands;
     `suite_manifest.json` records them.
   - **The R5 band**, on `util/experiments/suites/p4/e-h-recurrence-real-data.yaml`'s equities row only:
-    `cv_r2 ∈ [-1.0, +0.5]` and `cv_r2_std ≤ 0.5`, both `gate` (the owner accepted the W5.1 note's amended
+    `cv_r2 ∈ [-1.0, +0.5]` and `cv_r2_std ≤ 0.5`, both `gate` (the Overtoad accepted the W5.1 note's amended
     recommendation on 2026-10-18). Row-scoped because the irregular-sine control's `cv_r2 0.975` would fail
     `+0.5` under a suite-level band. Re-measured on W5.2's trainval population on 2026-10-19 before encoding
     (1,522 windows, five expanding folds, embargo = look-back 64): the bare 0.7.0 default scores `-0.298` /
@@ -175,7 +175,7 @@
     the curses build until B1), the agent socket and `no-allow-external-cache`. It lists every failure and
     exits 0 / 1 / 2. The D11 override fails as "signing disabled by construction". The card checks of the
     original design (`notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md`)
-    stay owner-run.
+    stay Overtoad-run.
   - `tests/test_headless_signing_preflight.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
   - `util/ad-hoc/2026-10-17_turing_b7_mutation_check.py` (new) shows that the suite kills 18 of 18 mutants.
 - **`util/git_remote_alias_check.py`, the G-ALIAS gate** (turing bring-up task G2,
@@ -252,7 +252,7 @@
   option (a), would break agent `git fetch` and push over ssh.
   - `util/claude_agent_guard.py` (new) is a PreToolUse hook with 15 rules. It only denies, never allows, and it
     fails closed.
-  - `util/install_claude_agent_guard.bash` (new, owner-run) installs a checksummed copy, self-tests it, and prints
+  - `util/install_claude_agent_guard.bash` (new, Overtoad-run) installs a checksummed copy, self-tests it, and prints
     or merges the settings entry plus 8 `permissions.deny` rules.
   - `tests/test_claude_agent_guard.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
   - `util/ad-hoc/2026-10-17_turing_c8_guard_mutation_check.py` (new) shows that the suite kills 18 of 18 mutants.
@@ -313,14 +313,14 @@
   - New: `util/ad-hoc/2026-10-10_gitleaks_probe.py`, `…_gitleaks_finding_inspect.py`,
     `…_gitleaks_rule_mutation_check.py` and `…_secret_assignment_corpus_survey.py`. These are the
     measurements behind the change; none of them prints a value.
-  - Owner action, not done here: enable `secret_scanning_non_provider_patterns` on the repository.
+  - The Overtoad action, not done here: enable `secret_scanning_non_provider_patterns` on the repository.
 - **`util/ad-hoc/2026-10-08_run_ci_regression_suites.py`, and the flood-3 record's follow-up
   statuses.**
   - The script runs exactly CI's hand-maintained regression list locally, one process per suite as
     CI does. A repo-wide lint suite judges files a change never touched, so "the suites I edited
     pass" is not the question CI asks.
   - `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` now records the
-    owner-requested follow-up:
+    Overtoad-requested follow-up:
     - three `ANTHROPIC_API_KEY` secrets added;
     - the five §4 defects fixed, across nine repos;
     - the data-client `t` / `dt` check accepted as written;
@@ -334,7 +334,7 @@
   disposed of on 2026-10-08: 25 merged as themselves, 78 carried into six consolidation PRs (ml#2182,
   ml#2184, data#475, canopy#729, cascor#709, data-client#230), 10 superseded and 3 closed as
   incorrect. The record holds a per-PR table rendered from the verdicts and each PR's live state, the
-  defects the evaluation found on `main` (three are owner decisions: an `ANTHROPIC_API_KEY` secret in
+  defects the evaluation found on `main` (three are Overtoad decisions: an `ANTHROPIC_API_KEY` secret in
   three client repos, the data-client `t` / `dt` tolerance, and releases that would ship the
   non-ASCII-key and Sentry frame-locals fixes), and the process traps hit. The tooling: the census,
   the signed one-commit re-cut, the gated close, the renderer, post-merge blob verification, and the
@@ -380,7 +380,7 @@
   (`util/release_train/ceremony.py`). By default the Release tags the owning repo's `main` as it is
   at cut time, while the notes come from the `--ecosystem-root` checkout. The two agree only if
   nothing merged in between, and on 2026-09-23/24 three juniper-data PRs did: #428, #431 and #434,
-  between the owner's approval of the 0.16.0 notes (pinned at `7125e161`) and the cut. #428 left a
+  between the Overtoad's approval of the 0.16.0 notes (pinned at `7125e161`) and the cut. #428 left a
   duplicate `## [0.16.0]` heading on `main`, and the section parser takes the first match, so a cut
   of `main` would have published only #428's bullets. With a full 40-character sha, the tag lands on
   that commit (`gh release create --target`). The S8 precondition then reads **every** completed CI
@@ -397,7 +397,7 @@
   `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md`.
 - **The publish-environment drift gate covers the `dockerhub` environments**
   (`tests/test_publish_env_policy_drift.py`). Wave 4's Docker Hub credential will live in a
-  tags-only `dockerhub` environment in the five image repos (Option B, owner ruling 2026-09-22), and
+  tags-only `dockerhub` environment in the five image repos (Option B, Overtoad ruling 2026-09-22), and
   nothing watched those settings. The gate now checks each one against its own tag set, `v*` and
   `juniper-*-v*`, where `pypi` has six. It also checks that no `DOCKERHUB_*` secret or variable sits
   at repository scope, where every workflow on every ref could read it. That check reads names only:
@@ -430,7 +430,7 @@
     in an env with torch.
 - **PF-2 axis 3, built and RUN** (`util/experiments/suites/perf/pf2-axis3-cascor-spiral-count.yaml`
   and `util/ad-hoc/2026-09-23_pf2_axis3_reduce.py`, both new; PF-2 re-spec §4.2).
-  - Owner decision D4 ruled this axis in, and it was dropped from two successive handoff work
+  - The Overtoad decision D4 ruled this axis in, and it was dropped from two successive handoff work
     lists.
   - Test roc_auc is 0.961 / 0.834 / 0.672 / 0.746 for 2 / 3 / 4 / 5 spirals. The three passes are
     bit-identical, which shows the observable is load-insensitive. It is one seed, so 5 scoring
@@ -478,7 +478,7 @@
     deleted the installed unit, because a dpkg vendor unit exists under `/usr/lib/systemd/system/`. The
     re-key now removes its drop-in with `rm` and `daemon-reload`, then asserts which unit systemd loads.
   - **Rounds 3 to 7, folded in.** The procedure changes:
-    - **Retention (owner ruling, 2026-10-08).** Retention is suspended through recovery, in the job and in the
+    - **Retention (Overtoad ruling, 2026-10-08).** Retention is suspended through recovery, in the job and in the
       server's default options. It is restored as `2W:1D,6M:1W,2Y:1M,5Y:2M` only after AC-4's first drill
       passes, and the five dlists that first pass deletes are copied aside first.
     - **The start-up sequence.** Step 8 stores `paused-until=0` while no server runs. Step 10 ends with a
@@ -565,8 +565,8 @@
   -- the E-G scheme × embargo sweep -- still sends it, and on recurrence ≤ 0.7.0 an omitted value is
   still the service's 0. `tests/test_run_experiment.py` pins the omission.
 - **`[recurrence]` now floors `juniper-recurrence>=0.6.1`**, the release that carries the recurrence floors ruling
-  (M1 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-18 UTC). The floor was `>=0.6.0`.
-  - **Why 0.6.0 was not enough.** 0.6.0 shipped without the owner's 2026-10-10 floors ruling: it still
+  (M1 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; Overtoad ruling 2026-10-18 UTC). The floor was `>=0.6.0`.
+  - **Why 0.6.0 was not enough.** 0.6.0 shipped without the Overtoad's 2026-10-10 floors ruling: it still
     admitted `juniper-recurrence-model>=0.3.0` and `juniper-data-client>=0.4.2`. Over a 0.5.0
     environment, `pip install -U juniper-recurrence` kept model 0.3.0 and data-client 0.5.0,
     `pip check` was clean, and the service started without the W1.4 rules (`float32`, finite `dt`,
@@ -585,7 +585,7 @@
     requires exactly one match apiece.
 - **`util/isolated_stack.bash` hands the `--with-recurrence` leg `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${RUN_DIR}/snapshots`
   and creates that directory before `serve`** (item 2c of
-  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, owner
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, Overtoad
   ruling 2026-10-18: the name is W1.10's, which `util/experiment_stack.bash` already ships; canopy Lane B
   adopts it in juniper-canopy#751). Unexported, the service wrote a CWD-relative `recurrence-snapshots/`
   (F-D9). `tests/test_isolated_stack_script.py` pins the variable and the directory.
@@ -596,7 +596,7 @@
   escaped: model 0.4.0 was published on 2026-10-13, and recurrence 0.6.0 and canopy 0.9.0 on
   2026-10-17.
   - **The two ceilings rise to the next minor**: `<0.5.0` for the model, `<0.7.0` for the app.
-  - **Two floors rise, each to a security release** (owner ruling, 2026-10-18 UTC).
+  - **Two floors rise, each to a security release** (Overtoad ruling, 2026-10-18 UTC).
     - `juniper-canopy>=0.9.0`, up from `>=0.8.1`. 0.9.0 is rated High. It refuses an outbound key
       with padding, a line break or a non-ASCII character where the key is read. It keeps a
       padded `CANOPY_API_KEY` out of the logs and Sentry, compares every API key without
@@ -628,7 +628,7 @@
   juniper-data releases that serve `equities_seq` as `classification`** (W1.11 and F-P4 of
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`). Every published juniper-data up to 0.16.0 serves `equities_seq` with
   `task_type: classification` and `n_classes: 2`, and the two the old `>=0.15.0` floor admitted,
-  0.15.0 and 0.16.0, serve it at generator `5.0.0` (0.14.0 was `3.0.0`). juniper-data#437 (owner ruling X8)
+  0.15.0 and 0.16.0, serve it at generator `5.0.0` (0.14.0 was `3.0.0`). juniper-data#437 (Overtoad ruling X8)
   relabelled it `regression` at `6.0.0` after v0.16.0 was cut, and 0.17.0 is the release that
   carries it. The arrays did not change, and a recurrence fit reads `y_reg_*` under either
   version. What changed is the producer's stored metadata, and with it the `dataset_id`, which
@@ -650,7 +650,7 @@
   lands with that bump. Applied
   by `util/ad-hoc/2026-10-08_raise_data_floor_0_17_0.py`, which asserts each site's exact text
   and requires exactly one match apiece.
-- **PF-2 axis 2 is RUN, with no knee, so the owner's in-process follow-up does not fire**
+- **PF-2 axis 2 is RUN, with no knee, so the Overtoad's in-process follow-up does not fire**
   (`notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` §3 RESULT; the
   `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml` header;
   `util/experiments/suites/perf/README.md`; `util/ad-hoc/2026-09-23_pf2_axis2_reduce.py`, new).
@@ -660,7 +660,7 @@
   sizes. The D4 ruling sends the top end in-process only on a knee, so it stays on the suite path.
   This holds at `spiral-smoke`'s budgets only. `step_count` is 8 in every cell because the
   budget fixes it, and it is never compared.
-- **Perf lane, 2026-09-23/24: the D6 count, three owner rulings, PF-2 axis 1 blocked, and the
+- **Perf lane, 2026-09-23/24: the D6 count, three Overtoad rulings, PF-2 axis 1 blocked, and the
   Python 3.14 micro reference**
   (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md` §5.4 and
   new §6; `notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` §1, §2,
@@ -670,7 +670,7 @@
     blocking. A throwaway `workflow_dispatch` branch with the reference drifted fired on 4 of 4
     legs, and all 4 still passed, so the zero is not vacuous. CI's CPU-only torch 2.14.0 observed
     the same 68 as the torch 2.11.0+cu130 reference.
-  - **Owner rulings (§6).** PF-3 waits for a quiet window. It opened at 02:39 and closed within
+  - **The Overtoad rulings (§6).** PF-3 waits for a quiet window. It opened at 02:39 and closed within
     minutes, so PF-3 was not launched. The micro cut went ahead LOADED:
     `Linux-CPython-3.14-64bit/0001`, cascor `0e016a7`, 1-minute load 5.5–6.6. PF-2 axis 1's
     count will be published from cascor.
@@ -746,7 +746,7 @@
   `create_branch` when the encoded archive exceeds 125,000 B. That default is the figure measured from turing
   for the GraphQL request body, which is not yet established as GitHub's own limit rather than that host's
   weak link (re-diagnosed 2026-10-18: GitHub's GraphQL frontend drops a request that runs past about 7-10 s);
-  `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides it after a runner-side measurement (owner ruling
+  `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides it after a runner-side measurement (Overtoad ruling
   2026-10-18). The HALT names the condenser as the remedy, never an invented body.
   `tests/test_release_train_ceremony.py` pins the file transport, the HALT, the env override, that re-entry
   is not blocked by the cap, and the `OSError` mapping; the release-train operator runbook §4 and
@@ -835,7 +835,7 @@
   - **The outcome is derived from those records, never from `acceptance.ok`.** Acceptance also
     collects plot errors and, once W5.4 lands, metric-band failures, so a plot that cannot render
     still leaves the run `succeeded` (exit 1). A degraded run exits `EXIT_ACCEPTANCE` (1): the plan's
-    recommended ruling R6, applied pending the owner's. The cascor path is unchanged: it has no
+    recommended ruling R6, applied pending the Overtoad's. The cascor path is unchanged: it has no
     predict / crossval / save_model phases, and its optional `snapshot_at_end` is a non-essential
     collect step that does not fail acceptance.
   - **The suite.** `degraded` joins `TERMINAL_OUTCOMES`; the summary line reads
@@ -1009,7 +1009,7 @@
   so a quoted `"true"` reads false. Tests pin the whole chain, from the entry to the plan, the
   `cut_release` action, `create_release`'s kwarg and the gh argv, plus exactly one flagged package
   per repo. Five mutations, one per link and one on the registry data, each fail the new tests. The
-  six badges were moved by hand the same day, on the owner's approval. That fires nothing, because
+  six badges were moved by hand the same day, on the Overtoad's approval. That fires nothing, because
   all 24 release-triggered workflows in the nine repos subscribe to `published` only
   (`util/ad-hoc/2026-09-23_release_trigger_types_census.py`, new). The procedure's §11.7 records it.
 - **Release notes: "Breaking changes" missed three registered house styles, and both section

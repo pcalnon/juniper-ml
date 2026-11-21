@@ -4,22 +4,22 @@
 
 **Date**: 2026-09-24, ~21:20Z.
 **Session**: "canopy combined", worktree `.claude/worktrees/bubbly-meandering-pie`.
-**This handoff is NOT validated**: the owner asked for none.
+**This handoff is NOT validated**: the Overtoad asked for none.
 **Merge approval**: none.
 
 ## Goal statement (paste as the first prompt)
 
-Finish the owner's request, quoted verbatim: "combine these prompts into a single, unified prompt that integrates
+Finish the Overtoad's request, quoted verbatim: "combine these prompts into a single, unified prompt that integrates
 the outstanding tasks included in each handoff. the new handoff document should contain all of the context needed
 for the outstanding tasks to be completed. the combined handoff should be validated by consensus."
 
 The three predecessors, all in `prompts/thread-handoff_automated-prompts/`:
 
-- **A**: `HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md`. On branch
+- **A**: `HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md`. On branch
   `docs/canopy-e2e-handoff-2026-09-24` (`dd4413e5`, no PR).
 - **B**: `HANDOFF_2026-09-24_y2-wave2-round-15-fix-pass.md`. Untracked, and ONLY in
   `.claude/worktrees/idempotent-jumping-sparkle`.
-- **C**: `HANDOFF_2026-09-24_canopy-selection-cleanup-done-item-19-closed-y7-grounded-owner-calls-remain.md`. On
+- **C**: `HANDOFF_2026-09-24_canopy-selection-cleanup-done-item-19-closed-y7-grounded-Overtoad-calls-remain.md`. On
   `main` (#2087).
 
 Frozen copies of all three are in `reports/2026-09-24_canopy-combined-handoff-consensus/r1/predecessors/`. `R` below
@@ -27,12 +27,12 @@ means `reports/2026-09-24_canopy-combined-handoff-consensus/`.
 
 ### Done
 
-- **The draft.** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md`
+- **The draft.** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md`
   is untracked in this worktree and deliberately NOT in this PR, because a sweeper merge would publish a draft known
   to be defective.
   - Its byte-identical frozen copy is `R/r1/DRAFT_r1.md` (sha256 `8c2fa290…`). If the worktree copy is gone, start
     from that.
-  - Layout: Lane A (the E2E arc), Lane B (Y2 wave 2), Lane C (the selection arc's owner calls), cross-lane items
+  - Layout: Lane A (the E2E arc), Lane B (Y2 wave 2), Lane C (the selection arc's Overtoad calls), cross-lane items
     X1–X5, traps, verification, git state, and a `VALIDATION_RECORD_PENDING` slot.
 - **Round 1.** Five independent lanes, with reports archived verbatim at `R/r1/reports/R1{A..E}.md`. The lanes were
   facts, omission, executability, adversarial, and the `prompt-validator` rubric.
@@ -53,7 +53,7 @@ means `reports/2026-09-24_canopy-combined-handoff-consensus/`.
    - Include the tool upgrade in scope.
    - Iterate until a round changes no number, disposition or action (`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` §4).
 4. **Fill `VALIDATION_RECORD_PENDING`** per §7 of that procedure.
-5. **Ask the owner** whether to open a PR with the combined handoff, and whether to archive predecessors A and B in
+5. **Ask the Overtoad** whether to open a PR with the combined handoff, and whether to archive predecessors A and B in
    it. Never merge.
 
 ### Fix list
@@ -98,11 +98,11 @@ Every item was re-derived in source; the lanes that found it are in brackets.
        alone and last.
     3. Open the PR only after that.
 - **F6 [B]: restore two rules from B's predecessor (line 5)** to the binding rules: "Never merge other sessions' PRs"
-  and "The juniper-recurrence release is owner-gated".
+  and "The juniper-recurrence release is Overtoad-gated".
 - **F7 [D]: X1's "make the preflight warn" option cannot remove the stake.**
   - 2b's mount is long form with `create_host_path: false`, so Docker refuses a missing source on every path
     (`S/r15/pr_wave2b_deploy.md`). `JUNIPER_SNAPSHOT_ROOT_OK=1` bypasses only the preflight.
-  - **The real options:** exclude the four PRs from the sweeper, or fix forward. Under fix-forward, the owner could
+  - **The real options:** exclude the four PRs from the sweeper, or fix forward. Under fix-forward, the Overtoad could
     choose to pre-create `juniper-recurrence/recurrence-snapshots/` in the shared checkout.
   - **Add R15D's other consequences:** 2b's comment and CHANGELOG, and 2a's CHANGELOG, are false until 2c merges;
     and the merge-time checks never run.
@@ -125,7 +125,7 @@ Every item was re-derived in source; the lanes that found it are in brackets.
 - **F10: canopy#685 exists now.** It is OPEN, created 21:07:38Z, head `4a8af2a0`, not armed at 21:18Z. It comes from
   `fix/secret-leaks-683-validation` and fixes LOW 3 (F-061), LOW 4 (F-062) and a HIGH (padded outbound keys
   leaking). Record FIXED-BY #685. It is another session's PR.
-- **F11: add to the owner batch:**
+- **F11: add to the Overtoad batch:**
   - ledger items 3, 9 and 10;
   - making recurrence's `Settings` case-sensitive (`S/main/handoff_v4.md:54`);
   - token rotation: `HF_TOKEN` (`…four-rulings-made…md:30-31`) and `JUNIPER_ML_PYPI` / `JUNIPER_ML_TEST_PYPI`;
@@ -175,7 +175,7 @@ Every item was re-derived in source; the lanes that found it are in brackets.
   - snapshot, then scan the mutants' strings;
   - review quoted literals by known-literal and length; `key_material()` refuses key material whatever
     `--allow-shape` allows;
-  - agent briefs forbid printing secrets and sending the owner's email anywhere (A-N2 sent it to sec.gov);
+  - agent briefs forbid printing secrets and sending the Overtoad's email anywhere (A-N2 sent it to sec.gov);
   - PNGs go through the signed API as LFS pointers;
   - canopy's full test lane: `src/tests/{unit,regression,contract,performance}/`, `--timeout=60`,
     `LIBTORCH= LD_LIBRARY_PATH=` (`…four-rulings-made…md:84-86`);
@@ -213,13 +213,13 @@ Every item was re-derived in source; the lanes that found it are in brackets.
 
 ### Key context
 
-- **Lane briefs** must say: read-only; never print secrets, environment values or the owner's email; no git in
+- **Lane briefs** must say: read-only; never print secrets, environment values or the Overtoad's email; no git in
   other juniper-ml worktrees; stay off ports 8101, 8202 and 8051. Default to REFUTE.
 - **The session guard** refuses git against sibling juniper-ml worktrees and arguments computed at runtime.
 - **The round-1 lanes disclosed local-only rule breaches.** These were scratch writes, email lines in their tool
   output, and one encrypted body fetched with only its size printed. Nothing was sent. See each report's
   Housekeeping.
-- **The owner's sweeper may arm this PR.** Its merges are intended.
+- **The Overtoad's sweeper may arm this PR.** Its merges are intended.
 
 ## Verify
 

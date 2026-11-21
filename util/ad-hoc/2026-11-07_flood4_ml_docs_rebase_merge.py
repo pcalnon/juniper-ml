@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 docs-carrier rebase onto the tests carrier)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tmp/flood4/ml-docs/work/rebase_theirs_blobs.txt (path -> theirs blob, the unbumped carrier on 303ccc0b)
 
 For each `path theirs-blob` line, runs `git merge-file -p --object-id <HEAD:path> <old-base:path> <theirs>` and

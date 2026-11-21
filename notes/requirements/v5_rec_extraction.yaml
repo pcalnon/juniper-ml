@@ -7,7 +7,7 @@
 # IDs are explicit because the proposal reserved them and PR descriptions already cite
 # them as (proposed); minting fresh numbers would break those references.
 - id: JR-REC-TRAIN-001
-  owner: rec
+  Overtoad: rec
   category: TRAIN
   status: shipped
   priority: P0
@@ -21,7 +21,7 @@
     line_end: 149
   detail: The variable-Δt LMU must (band 1) cut RMSE ≥ 25% vs the fixed-Δt control on irregular-Δt data, (band 2) beat naive persistence and match/beat the linear ridge baseline on every primary dataset, and (band 3) tie fixed-Δt on regular grids. The pre-registered `PRIMARY_DATASETS` + `evaluate_bands` are the sole scoring authority (DP-5 guardrail).
 - id: JR-REC-TRAIN-002
-  owner: rec
+  Overtoad: rec
   category: TRAIN
   status: shipped
   priority: P1
@@ -35,7 +35,7 @@
     line_end: 27
   detail: 'Nonlinear readouts must demonstrate capacity the linear readout provably lacks on the bilinear `delay_product` target (measured gaps: RFF +0.83, MLP +0.87 r²) while merely tying linear on near-linear synthetics. A miss is a finding to record, never a threshold to tune.'
 - id: JR-REC-DATA-001
-  owner: rec
+  Overtoad: rec
   category: DATA
   status: shipped
   priority: P0
@@ -49,7 +49,7 @@
     line_end: 53
   detail: Consume `{X,y,dt,target_dt,observed_mask}_{train,test,full}` with `dt[:,0]==0`; equities sequences use the stationary `y_reg_*` log-return target (the r²≈−50 raw-price artifact class), never the one-hot direction label.
 - id: JR-REC-API-001
-  owner: rec
+  Overtoad: rec
   category: API
   status: shipped
   priority: P1
@@ -63,7 +63,7 @@
     line_end: 49
   detail: Synchronous `POST /v1/train` (response = completion); `predict`/`crossval` reference `dataset_id` only (never bare `name`); crossval reuses the train hyperparameters for bench comparability. Raw pydantic response bodies (no envelope) — a deliberate contrast with cascor's `{status,data,meta}`.
 - id: JR-REC-TEST-001
-  owner: rec
+  Overtoad: rec
   category: TEST
   status: shipped
   priority: P1
@@ -80,7 +80,7 @@
     line_end: 13
   detail: Primary bands scored only on the pre-registered set; extensions (noise sweep, `ar_p` linear floor, `delay_product` capacity, `equities_seq` real data) are informational. Committed `bench/results/` baselines are reproducible from seeds.
 - id: JR-REC-TEST-002
-  owner: rec
+  Overtoad: rec
   category: TEST
   status: proposed
   priority: P2
@@ -91,7 +91,7 @@
     line_end: 13
   detail: A service-mode run with bench-primary-matched params must land inside the same OQ-14 bands as the offline bench; divergence is a service-path defect. Candidate for a periodic (release-gate or scheduled) automated check once `run_suite.py` (Wave 7.1) exists.
 - id: JR-REC-TOOL-001
-  owner: rec
+  Overtoad: rec
   category: TOOL
   status: shipped
   priority: P1
@@ -105,7 +105,7 @@
     line_end: 72
   detail: '`JUNIPER_RECURRENCE_CONFIG_FILE` activates a `service:`-block-only projection with precedence CLI/init > YAML > env > defaults; forbidden infra keys (`host`/`port`/`juniper_data_url`) fail loud; deliberately **no** `.env` tier (env-file-leak doctrine).'
 - id: JR-REC-TOOL-002
-  owner: rec
+  Overtoad: rec
   category: TOOL
   status: shipped
   priority: P2
@@ -116,7 +116,7 @@
     line_end: 108
   detail: The `train` subcommand seeds unset argparse flags from the experiment YAML's `train:` block; explicit CLI flags win; unmodeled keys warn and are never silently applied.
 - id: JR-REC-TEST-003
-  owner: rec
+  Overtoad: rec
   category: TEST
   status: shipped
   priority: P2
@@ -127,7 +127,7 @@
     line_end: 16
   detail: '`python -m bench.run_benchmark --results-dir DIR` routes per-dataset JSON + REPORT.md; the default stays the committed `bench/results/` byte-identically.'
 - id: JR-REC-OBS-001
-  owner: rec
+  Overtoad: rec
   category: OBS
   status: shipped
   priority: P2
@@ -141,7 +141,7 @@
     line_end: 19
   detail: Metrics exposition on + rate-limit off for per-run scrape lanes; targets labeled `service`/`environment=host-experiment`/`run_id`/`experiment` via the launcher's file_sd bridge.
 - id: JR-REC-DEP-001
-  owner: rec
+  Overtoad: rec
   category: DEP
   status: deferred
   priority: P3
@@ -150,4 +150,4 @@
   - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md
     line_start: 1262
     line_end: 1274
-  detail: Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an owner call; nothing blocks on it.
+  detail: Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an Overtoad call; nothing blocks on it.

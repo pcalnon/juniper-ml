@@ -24,8 +24,8 @@
 
 | # | from | what |
 | --- | --- | --- |
-| 1 | #573 scope 1 | A console sink that can be turned off independently of the file sink. **Owner decision 4 stands: the stream stays stdout** (provisional). This item is about *disableability*, not relocation |
-| 2 | #573 scope 2 | Richer sinks — a sink abstraction, formatted and optionally colourised console output, explicit rotation with a single owner |
+| 1 | #573 scope 1 | A console sink that can be turned off independently of the file sink. **The Overtoad decision 4 stands: the stream stays stdout** (provisional). This item is about *disableability*, not relocation |
+| 2 | #573 scope 2 | Richer sinks — a sink abstraction, formatted and optionally colourised console output, explicit rotation with a single Overtoad |
 | 3 | #573 scope 3 | Per-logger levels, from config file **and** environment variable |
 | 4 | #573 scope 4 | Structured export — JSON as a second sink; the ELK shipper itself stays deferred |
 | 5 | RECON N-3 / N-3a / N-3b | **The level system**: the guard predicate and the emit filter read disjoint state; `is_valid_level` returns `True` for everything; one contradicting level table |
@@ -114,7 +114,7 @@
 4. **P3.4 without P3.3 is a regression.** A persistent handle converts Path A from open-by-name —
    which *survives* Path C's rotation — into a held descriptor, which follows the renamed inode and
    appends to `.1` forever while the live file, the one ~17 juniper-ml consumers glob first, stays
-   near-empty. Nothing errors. **P3.3 (rotation owner) runs BEFORE P3.4 (persistent handle).**
+   near-empty. Nothing errors. **P3.3 (rotation Overtoad) runs BEFORE P3.4 (persistent handle).**
 5. **The mirror gate is one-directional.** `test_drift.py:78` walks the **package** tree
    (`(self.package_root / d).rglob("*.py")`), so a file that exists only in `src/` is never compared.
    P3.1 adds `src/log_config/sinks.py`; drift stays green while the package ships a logging tree
@@ -406,8 +406,8 @@ volume win and most of the design risk.
 | --- | --- | --- |
 | **P3.1** Sink abstraction | (a) a minimal sink protocol; (b) a registry on `Logger` — **first fix the shadowed binding** at `logger.py:136`/`:155` (see below); (c) route `_log_at_level`'s tail through it, **each sink with its own byte contract**; (d) add the new module to the package tree in the same PR (trap 5) | P0.4, P2, **P5.1** |
 | **P3.2** Independently disableable console sink | (a) an **explicit switch** (env + config) defaulted per §13 decision 2. Do **not** condition on "stdout is redirected" — the only runtime signal is `isatty()`, false for a redirect *and* a pipe *and* systemd, i.e. false always for the service; (b) TTY-gated colourisation, console sink only, **never** the file sink | P3.1 |
-| **P3.3** Rotation with a single owner *(before P3.4)* | (a) **give the file one owner.** Path C's `RotatingFileHandler` (`api/observability.py:110-115`, 10 MB / 5 backups) rotates the same file Path A appends to per record and Path B holds open. Either the sink owns rotation for all three paths, or the paths get distinct files; (b) document rotation as a property of the file sink; (c) confirm the `.N` glob ~17 juniper-ml consumers use still holds | P0.3, P3.1, P5.1 |
-| **P3.4** Persistent file handle | (a) hold one handle for the process lifetime; (b) flush per record (owner decision 2); (c) **open in append mode (`O_APPEND`)**; (d) **open lazily, relative to forkserver start** (RECON N-2); (e) preserve create-on-demand and the `FileNotFoundError` retry (F-2b); (f) survive P3.3's rollover. Constraints (b), (c), (d) and (f) explained below | **P3.3** |
+| **P3.3** Rotation with a single Overtoad *(before P3.4)* | (a) **give the file one Overtoad.** Path C's `RotatingFileHandler` (`api/observability.py:110-115`, 10 MB / 5 backups) rotates the same file Path A appends to per record and Path B holds open. Either the sink owns rotation for all three paths, or the paths get distinct files; (b) document rotation as a property of the file sink; (c) confirm the `.N` glob ~17 juniper-ml consumers use still holds | P0.3, P3.1, P5.1 |
+| **P3.4** Persistent file handle | (a) hold one handle for the process lifetime; (b) flush per record (Overtoad decision 2); (c) **open in append mode (`O_APPEND`)**; (d) **open lazily, relative to forkserver start** (RECON N-2); (e) preserve create-on-demand and the `FileNotFoundError` retry (F-2b); (f) survive P3.3's rollover. Constraints (b), (c), (d) and (f) explained below | **P3.3** |
 
 **P3.1(b) — the shadowed binding.** `logger.py:136` sets `_file_name = "file"` (the destination name);
 `:155` overwrites it with `"filename"` (the format field). `Logger._file_name` is therefore
@@ -417,7 +417,7 @@ volume win and most of the design risk.
 
 **P3.4's constraints, in detail.**
 
-- **(b) flush per record** is owner decision 2, and its reason travels with it: *"a complete log for a
+- **(b) flush per record** is Overtoad decision 2, and its reason travels with it: *"a complete log for a
   crashed run outweighs the throughput; a truncated log is how several analyses in this arc went
   wrong."* It is the obvious thing to trade away once an I/O cost is measured — do not, without
   re-taking the decision.
@@ -455,7 +455,7 @@ green; per-run bytes down by the factor P0.3 measured.
   test against; `PIPE_BUF` is.
 - **P3-G4 — the fallbacks stay on the table.** Per-PID files (changes the artifact layout ~17 scripts
   depend on) and a parent writer thread (cleanest, most machinery, itself a fork-safety hazard).
-  Owner decision 3 is explicitly provisional, **and its premise — `fork` — is refuted**; it has never
+  The Overtoad decision 3 is explicitly provisional, **and its premise — `fork` — is refuted**; it has never
   been re-issued against the forkserver model. P3.4 is where it is confirmed or replaced.
 - **P3-G5 — colour never reaches the file sink.**
 - **P3-G6 — no reduction in what is logged, checked on the RIGHT stream.** A file-sink record count is
@@ -511,7 +511,7 @@ per-logger config entry → global config → default.
 
 | | |
 | --- | --- |
-| **Strengths** | Addresses owner-raised scope. Retires the remaining per-record level resolution as a side effect |
+| **Strengths** | Addresses Overtoad-raised scope. Retires the remaining per-record level resolution as a side effect |
 | **Weaknesses** | **P4.1 may find the phase is L, not M.** If per-logger means per-instance, it is an API break across ~1,200 Path-A call sites; if it means named sub-loggers on the class, it is tractable. That is a scoping decision, not an implementation detail |
 | **Opportunities** | A per-logger level is what makes the ~872 live Path-A suppressed-by-default sites cheap to turn on selectively — the operator need behind the whole f-string argument |
 | **Threats** | Precedence chains are where silent misconfiguration lives. A per-logger var that loses when it should win produces *no error* — just the wrong records |
@@ -532,7 +532,7 @@ per-logger config entry → global config → default.
 
 **Purpose.** #573 scope 4's prerequisite, and the reconciliation of the fork that already exists.
 
-**Reframed.** D-4 and owner decision 6 say "no second implementation local to cascor". One is
+**Reframed.** D-4 and Overtoad decision 6 say "no second implementation local to cascor". One is
 **already there and deliberate**: `api/observability.py:75-119` forks `configure_logging` with its
 rationale in-source at `:81-83`. The decision is not "avoid a fork" but "reconcile the one we have."
 
@@ -651,7 +651,7 @@ Neither had a home in the first draft.
   triggered) and `juniper-cascor-worker` depends on it. Every edit to a byte-gated tree therefore
   carries a mirror re-extraction **and a package release** before the worker sees it. P0.6 settles the
   policy; each phase that touches those trees states its release obligation.
-- **Ownership.** Every step marked "live stack? yes" needs an owner and a slot: P0.1, P0.3, P3-G3,
+- **Ownership.** Every step marked "live stack? yes" needs an Overtoad and a slot: P0.1, P0.3, P3-G3,
   P4-G2, P5.3. They contend for the GPU, they carry the reaper hazard, and per trap 1 they destroy
   each other's evidence if they share a log dir.
 
@@ -687,7 +687,7 @@ allocates a closure per call **even when suppressed**, a new per-call cost at ~8
 
 ---
 
-## 13. Open decisions for the owner
+## 13. Open decisions for the Overtoad
 
 | # | decision | why it cannot be defaulted |
 | --- | --- | --- |
@@ -696,12 +696,12 @@ allocates a closure per call **even when suppressed**, a new per-call cost at ~8
 | 3 | **P5.1** — upstream, keep, or narrow the `configure_logging` fork? | (a) moves a fleet-wide pin **and deletes the only rotator**; (c) recommended, leaves a documented divergence |
 | 4 | **P0.6 / mirror** — is `juniper-cascor-model`'s logger backported in Wave 2, or frozen? | `test_drift.py`'s docstring promises Wave 2. Until decided, every logger change has an undefined obligation to a second tree **and to a published package** |
 | 5 | **P4.1** — per-instance loggers, or named sub-loggers on the class? | Per-instance means de-classmethod-ing `isEnabledFor` and breaking ~1,200 call sites. This decides whether P4 is M or L |
-| 6 | **Owner decision 5 is still open and still yours.** The call-site migration scope was deferred pending the analysis; the analysis was delivered and its recommendation overturned by measurement. **This roadmap schedules P6 but does not take the decision** | The design reserved it explicitly. It must not become planned work by default |
+| 6 | **The Overtoad decision 5 is still open and still yours.** The call-site migration scope was deferred pending the analysis; the analysis was delivered and its recommendation overturned by measurement. **This roadmap schedules P6 but does not take the decision** | The design reserved it explicitly. It must not become planned work by default |
 | 7 | **§7.1's swallowed-pytest investigation** | Still unexplained, and P0.5 has surfaced a candidate mechanism (`conftest.py`'s session-scoped `_log_at_level` no-op). The design's protocol stands: reproduce the disappearance, then distinguish pytest capture, a `capsys`/`-s` interaction, the logger's `print`, and stream buffering — **and only then** propose a fix. **Explicitly not a blocker** on the rest |
 
 ### 13.1 Responses and Decisions
 
-Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical record.
+Ruled by the Overtoad **2026-09-09** unless noted. This subsection is the canonical record.
 
 1. **RESOLVED 2026-09-22 — measured 16.70 %, so P2 RUNS.** P0.1 and P0.2 are done: 32 profiles at
    cascor `8065ca0f`, i.e. after every Phase 1 merge. Worker self time **37.00 s**; attributable
@@ -777,7 +777,7 @@ Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical
    [`JUNIPER_2026-09-09_JUNIPER-CASCOR_LOGGING-PER-LOGGER-LEVELS-DESIGN.md`](JUNIPER_2026-09-09_JUNIPER-CASCOR_LOGGING-PER-LOGGER-LEVELS-DESIGN.md)
    §10–§11. **Nothing lands until P1.1** — per-logger state over an already-disjoint guard/emit pair
    multiplies the states, and the design's acceptance check is guard/emit agreement *per logger*.
-   *(Superseded framing, kept for the record:)* The owner declined the M-vs-L framing and directed
+   *(Superseded framing, kept for the record:)* The Overtoad declined the M-vs-L framing and directed
    that the analysis and recommendation be written into a design document before an approach is
    chosen, with an added question about serving logging as **both** class and instance calls.
    Delivered as [`JUNIPER_2026-09-09_JUNIPER-CASCOR_LOGGING-PER-LOGGER-LEVELS-DESIGN.md`](JUNIPER_2026-09-09_JUNIPER-CASCOR_LOGGING-PER-LOGGER-LEVELS-DESIGN.md).
@@ -790,14 +790,14 @@ Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical
    FASTER per call** than the status quo. Every one-name-dispatches-on-receiver mechanism measured
    3–6× the status quo (+190 to +438 ns on a 646,016-call path).
 6. **UPDATE 2026-09-22 (transcribed here 2026-09-23 — the ruling had reached only cascor#675's commit
-   body): P6.4 RULED, hot files ONLY.** The owner authorised `%`-args conversion in
+   body): P6.4 RULED, hot files ONLY.** The Overtoad authorised `%`-args conversion in
    `candidate_unit.py` and `cascade_correlation.py`; shipped as
    [cascor#675](https://github.com/pcalnon/juniper-cascor/pull/675), 220 sites. Residue at `e052ef8`:
    51 mechanical hot-file sites refused (40 by the hazard-5 0-dim-tensor screen, 11 for implicit
    concatenation, `!r` or an `if`/`and` field) and **236** outside the hot files — **widening needs a
    fresh ruling.** P6.1 remains authorised and undone: `src/cascade_correlation/backups/` is still
    tracked. *(Original text follows.)*
-   **P6.1 + P6.2 + P6.3 authorised; P6.4 open.** P6.4 is held pending the owner's review of the
+   **P6.1 + P6.2 + P6.3 authorised; P6.4 open.** P6.4 is held pending the Overtoad's review of the
    affected lines, supplied 2026-09-09 from
    `juniper-ml/util/ad-hoc/2026-09-09_p64_fstring_classify.py`: **775** live Path-A f-string sites —
    **507 (65.4 %)** mechanical `{name}`, **215 (27.7 %)** expression args (evaluated eagerly either
@@ -875,7 +875,7 @@ Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical
 
 <details><summary>Decision 10's superseded pre-#667 framing</summary>
 
-**P7 Option D foreclosure — STILL OPEN. The owner's call.** §11 holds that lazy message
+**P7 Option D foreclosure — STILL OPEN. The Overtoad's call.** §11 holds that lazy message
     callables and a queued/deferred P7 writer "must not be adopted independently". Wiring
     `log_if_enabled` at a real call site **takes that decision**. The measurement §11 asked for was
     taken 2026-09-21 (`util/ad-hoc/2026-09-21_p14_guard_idiom_bench.py`, independently re-created as
@@ -921,7 +921,7 @@ structurally, not cosmetically:
 | P6.1 called "free" — the always-on symbol-loss screen fires on it | P6-G3 with the `Allow-Symbol-Loss:` trailer requirement; "free" struck |
 | Seven per-record closures, not two | P2.2/P2.3 rewritten |
 | `test_logger_frame_resolution.py` is what P2.1 **breaks**, not what protects it | P2.1(c) specifies the one-hop-preserving implementation |
-| Owner decisions 4 and 5 had been dropped or converted to planned work | decision 4 restated in §1 scope item 1; decision 5 restored as §13 item 6 |
+| The Overtoad decisions 4 and 5 had been dropped or converted to planned work | decision 4 restated in §1 scope item 1; decision 5 restored as §13 item 6 |
 | Conversion hazards 2 and 3 (precision-as-parsing-change; tuple splat) dropped | restored to P6 Threats |
 | Cross-repo script paths unprefixed | path convention added at the head |
 
@@ -944,7 +944,7 @@ disposition or action — the procedure's stopping condition. Round 3 is not war
 
 ## 15. References
 
-- [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) — the issue and owner scope
+- [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) — the issue and Overtoad scope
 - [cascor#598](https://github.com/pcalnon/juniper-cascor/pull/598) — the shipped remediation
 - [cascor#563](https://github.com/pcalnon/juniper-cascor/pull/563), [#569](https://github.com/pcalnon/juniper-cascor/issues/569), [#570](https://github.com/pcalnon/juniper-cascor/issues/570), [#579](https://github.com/pcalnon/juniper-cascor/issues/579)
 - [`…LOGGING-CURRENT-STATE-RECONCILIATION.md`](JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-CURRENT-STATE-RECONCILIATION.md) — the evidence base

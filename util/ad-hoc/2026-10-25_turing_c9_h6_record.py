@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-25
 Status: ad-hoc — one-off (the C9 and H6 record PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18, §18.2, §18.3);
          notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md (the H6 audit);
          util/claude_agent_guard.py (C9); util/ad-hoc/2026-10-21_turing_h5_decision_record.py (the pattern)
@@ -21,8 +21,8 @@ nothing is written.
 The edits:
   plan  1. the Version line, 1.4.5 -> 1.4.6. Only from 1.4.5: another version is reported and left alone;
         2. §18's opening paragraph: this session and its handoff, now the arc's main handoff;
-        3. §18.2's C9 row (landed; its installation is the owner's);
-        4. §18.2's H6 row (audited; the decisions are the owner's);
+        3. §18.2's C9 row (landed; its installation is the Overtoad's);
+        4. §18.2's H6 row (audited; the decisions are the Overtoad's);
         5. §18.3 gains errata E-C9 and E-H6;
   the option-B handoff:  6. a pointer to its successor;
   the arc's handoff:     7. a pointer to its successor.
@@ -40,8 +40,8 @@ import sys
 PLAN = "notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md"
 HANDOFF_DIR = "prompts/thread-handoff_automated-prompts/"
 ARC_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md"
-OPTION_B_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md"
-THIS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md"
+OPTION_B_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h5-option-b-applied-Overtoad-b4-b5.md"
+THIS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-25_turing-c9-landed-h6-audited-Overtoad-decides.md"
 AUDIT = "notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md"
 INVENTORY = "util/ad-hoc/2026-10-25_turing_h6_vscode_mcp_inventory.py"
 MUTATION = "util/ad-hoc/2026-10-25_turing_c9_guard_mutation_check.py"
@@ -64,24 +64,24 @@ INTRO_NEW = (
     f"audit ran in the session after that (v1.4.6), whose handoff, `{THIS_HANDOFF}`, is now the arc's main handoff."
 )
 
-C9_PREFIX = "| C9 | **new** (owner ruling 2026-10-21; AGENT) |"
+C9_PREFIX = "| C9 | **new** (Overtoad ruling 2026-10-21; AGENT) |"
 C9_ROW = (
     "| C9 | **landed** (AGENT); **install OWNER** (C8's step) | juniper-ml#@PR@ (`@SHA@`): `util/claude_agent_guard.py` 1.2.0 adds "
     "MCP-EDIT-PATH, MCP-REGISTER-BASH and MCP-REGISTER-FILE. Its settings matcher now names the eight built-in tools plus Serena "
     "v1.7.0's 19 edit tools and its shell (`--settings-matcher`, which `util/install_claude_agent_guard.bash` now reads). "
     "MCP-EDIT-PATH resolves each Serena path against the payload `cwd`, `CLAUDE_PROJECT_DIR` and the checkout holding each, "
-    "literally and through `realpath`. It denies `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the owner's git "
+    "literally and through `realpath`. It denies `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the Overtoad's git "
     "configuration, `~/.claude.json` and any `.mcp.json`, a `replace_in_files` include glob that names one of them, and a `repl` "
     "that sets `disableAllHooks` or an approval key. A memory name is judged as `.serena/memories/<name>.md`, and "
     "`execute_shell_command` gets the Bash rules. MCP-REGISTER-BASH denies `mcp add*` whatever the command word, `--mcp-config`, "
     "and any mention of `~/.claude.json`, a `.mcp.json` or the approval keys; MCP-REGISTER-FILE denies writer calls on those files "
     "and settings writes that set either key. `util/mcp_setup.bash` keeps working. `tests/test_claude_agent_guard.py` gains 10 "
     f"tests (48 in all), the self-test runs 50 checks, and `{MUTATION}` kills @MUTANTS@ mutants, each by its own pin (E-C9). "
-    "**It takes effect** when the owner re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` "
+    "**It takes effect** when the Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` "
     "(C8); H3's C9 dependency is met then |"
 )
 
-H6_PREFIX = "| H6 | **new** (v1.4.5, owner, O-5 of the H5 risk analysis; AGENT, P2) |"
+H6_PREFIX = "| H6 | **new** (v1.4.5, Overtoad, O-5 of the H5 risk analysis; AGENT, P2) |"
 H6_ROW = (
     f"| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions OWNER** | `{AUDIT}`, landed with this record, with its "
     f"evidence script `{INVENTORY}`. The script prints VS Code's MCP configuration as a default-deny projection, with no env, "
@@ -116,7 +116,7 @@ ERRATA = (
     "uv's cache, and that also lets VS Code's unpinned Serena entry start. Remove or pin that entry first (SER-P1).\n"
     "  - **H4's Serena reports usage.** Serena v1.7.0 calls `https://oraios-software.de/serena_usage.php` on every start unless "
     "`SERENA_USAGE_REPORTING=false` (`src/serena/agent.py:725-735` at `949a27ef`), and `util/mcp_setup.bash` writes "
-    "`\"env\": {}`. Candidate follow-up (AGENT; the owner decides): set the variable in the entry, with `tests/test_mcp_setup.py`'s "
+    "`\"env\": {}`. Candidate follow-up (AGENT; the Overtoad decides): set the variable in the entry, with `tests/test_mcp_setup.py`'s "
     "pins.\n"
     "  - **Settings Sync.** VS Code syncs the user `mcp.json` (H6-X3), so the Hugging Face token also sits in the sync service, "
     "and an edit made on turing reaches every synced host. Decide the scope of the H6 changes first.\n"
@@ -130,7 +130,7 @@ ERRATA = (
 OPTION_B_OLD = "\n\n- **From:** the 2026-10-21 session on turing now named \"mac dev\""
 OPTION_B_NEW = (
     "\n\n- **Continued (2026-10-25, plan v1.4.6).** C9 landed (juniper-ml#@PR@) and H6's audit ran; the arc's state and next "
-    f"steps are in `{THIS_HANDOFF}`. The owner steps below (B.4, B.5, C0 and C2) still stand."
+    f"steps are in `{THIS_HANDOFF}`. The Overtoad steps below (B.4, B.5, C0 and C2) still stand."
     + OPTION_B_OLD
 )
 

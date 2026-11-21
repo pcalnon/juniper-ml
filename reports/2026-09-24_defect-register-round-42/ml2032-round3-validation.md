@@ -49,7 +49,7 @@
    - Line 22: "§2.3 groups fifteen entries", against line 240's "Sixteen".
 
    These are the kind of claim, with no id in them, that the register's own warning at line 180 describes.
-2. **Line 1401: "(True when written, 2026-09-21 …)".** It contradicts the PR's own lines 1354-1356 ("that had to be settled before code"), §0.3 of `HANDOFF_2026-09-15_defect-register-round-39-…` and §4 of the round-40 handoff ("an owner decision is owed", 2026-09-21). `APD-CASCOR-008` was awaiting a decision on the day that sentence was written.
+2. **Line 1401: "(True when written, 2026-09-21 …)".** It contradicts the PR's own lines 1354-1356 ("that had to be settled before code"), §0.3 of `HANDOFF_2026-09-15_defect-register-round-39-…` and §4 of the round-40 handoff ("an Overtoad decision is owed", 2026-09-21). `APD-CASCOR-008` was awaiting a decision on the day that sentence was written.
 3. **Lines 1505-1507: "the boot fails under `require_auth`, and otherwise logs "running OPEN" (with `JUNIPER_SKIP_AUTH_POSTURE_CHECK` set it logs … SKIPPED instead)".** The skip returns before `require_auth` is checked, so with the skip set the boot does not fail even when `require_auth` is on.
 4. **Lines 1509-1510: "the same posture canopy documents for "no key set"".** No canopy file contains that phrase and no filename is given. The nearest are `src/security.py:5` ("disabled when unset") and `:370` ("no key configured").
 5. **Line 1514: "juniper-deploy … defaults `JUNIPER_CANOPY_REQUIRE_AUTH=true`".** That is Compose only. `k8s/helm/juniper/templates/canopy-deployment.yaml` sets `CANOPY_API_KEY_FILE` but never sets `REQUIRE_AUTH`. The conclusion still holds, because the key comes from a stripped file.

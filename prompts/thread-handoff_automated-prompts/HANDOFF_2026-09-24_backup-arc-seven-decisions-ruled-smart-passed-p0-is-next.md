@@ -11,7 +11,7 @@ record is
 
 No **host** action in §8 or §10.2 is a session's to perform. These are:
 
-1. **Shepherd ml#2067 to merge** — `mergeable_state=blocked`, 4 files. Needs owner merge approval.
+1. **Shepherd ml#2067 to merge** — `mergeable_state=blocked`, 4 files. Needs Overtoad merge approval.
 2. **Archive and commit this handoff.** It is committed nowhere (see Git state).
 3. **Record a disposition for a dropped change.** Closing ml#2045 dropped a real `+56/−50` divergence in
    `util/ad-hoc/smart_checks_backup-sda.bash` (its copy `export`s every constant and is mode 0755).
@@ -78,7 +78,7 @@ set**, so "gate nothing" is true only of P0 and the rotation.
   1397393, listening on `127.0.0.1:8300`. It is the **empty** server holding zero backup definitions.
   **Never start or restart it** — `/home/duplicati/.config/Duplicati` is `drwxrwxrwx`, so the next start
   fails the 0700 gate. **P0 step 2 stops it**, after step 1's freeze. Do not stop it before then.
-- **Nothing under `/mnt/Backups/Ubuntu/` is DELETED OR MOVED**, with exactly one owner-signed exception:
+- **Nothing under `/mnt/Backups/Ubuntu/` is DELETED OR MOVED**, with exactly one Overtoad-signed exception:
   P1 step 4 copies the passphrase escrow out of the Dropbox root, then deletes the in-tree copy (S-4).
   ("Changed" is the wrong word — §7.4's script chowns the tree under D-14, and §10.2 step 7 swaps staging
   in as the live destination.)
@@ -137,7 +137,7 @@ is entirely absent.
 cd /home/pcalnon/Development/python/Juniper/juniper-ml
 git fetch origin main && git log origin/main --oneline -1
 D=notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md
-git show origin/main:$D | grep -c '^### 10.1 Owner rulings'   # expect 1
+git show origin/main:$D | grep -c '^### 10.1 The Overtoad rulings'   # expect 1
 git show origin/main:$D | grep -c 'UMask=0027'                # expect >=1  (D-14 ruled)
 git show origin/main:$D | grep -c '^### 10.2 D-2 execution'   # expect 1
 git show origin/main:$D | grep -c 'nvme0n1p5'                 # expect 2    (note 10.2b)

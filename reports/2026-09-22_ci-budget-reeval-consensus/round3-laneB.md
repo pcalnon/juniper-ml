@@ -50,13 +50,13 @@ The round-2 fix broke one probe and left a blind spot in the C2 rule, a wrong so
 - **Fix:** update the body with `gh api -X PATCH repos/pcalnon/juniper-ml/pulls/2017 -F body=@…` before asking for merge approval.
 
 **M6 (action): the PR head moved after the freeze.**
-- The owner pushed `6f17aea5` at 01:07Z, a CodeQL "Unused import" fix that removes `rest_pages` from the import in `round2-laneA/r2a_spans.py`.
+- The Overtoad pushed `6f17aea5` at 01:07Z, a CodeQL "Unused import" fix that removes `rest_pages` from the import in `round2-laneA/r2a_spans.py`.
 - This worktree's untracked copy still has the old import, so pushing whole files from here would undo that fix. Build the round-3 fixes on `6f17aea5`.
 - The handoff's GIT STATE note ("identical to the PR head") is no longer true for that file. I did not review `6f17aea5`.
 
 ### MINOR
 
-**m1: several OWNER DECISION 2 premises are wrong.** This covers the first §1 block of `HANDOFF_2026-09-09_…slack-deficit.md` and the dissent comment above `REPO_TIMEOUTS` in `util/safe_merge.py`. The structure is balanced, and everywhere I checked the owner's ruling is stated as covering the three raises only.
+**m1: several OWNER DECISION 2 premises are wrong.** This covers the first §1 block of `HANDOFF_2026-09-09_…slack-deficit.md` and the dissent comment above `REPO_TIMEOUTS` in `util/safe_merge.py`. The structure is balanced, and everywhere I checked the Overtoad's ruling is stated as covering the three raises only.
 - (a) "Every re-measure of an already-pinned budget has raised it" is false. Re-measures raised 6 of 24 pinned readings (09-08: 1 of 6; 09-09: 2 of 9; 09-22: 3 of 9) and lowered none (`r3b_budget_history.py`). The accurate wording is "no re-measure has lowered one".
 - (b) "The one lowering" is wrong: there were two. `c3cf3951` (2026-08-19, ml#1183) cut the fleet-wide default from 1800 to 900 s "sized from measurement", and `27d3fc15` raised it to 2400 the next day.
 - (c) The pre-start reading of the "do NOT raise a budget to absorb a queue" paragraph was written in `3cab4783` (2026-09-09, ml#1851), the same commit that wrote the paragraph. The 2026-09-10 WITHDRAWN (1) note (`db627616`) retracted only its reasoning. The paragraph itself is unedited since, as the text says.
@@ -82,7 +82,7 @@ The round-2 fix broke one probe and left a blind spot in the C2 rule, a wrong so
 
 **m4:** "Set S in the same command" invites `S=<dir> python3 … "${S:?…}"`. That form aborts, because the expansion happens before the assignment (exit 127 here). It fails safe. Write `S=<dir>; python3 …` instead.
 
-**m5:** The PREFLIGHT says the merge request "must put OWNER DECISION 2 to the owner", but DECISION 2 already records the raises as ruled. It should say to cite the 2026-09-22 SHIP ruling instead.
+**m5:** The PREFLIGHT says the merge request "must put OWNER DECISION 2 to the Overtoad", but DECISION 2 already records the raises as ruled. It should say to cite the 2026-09-22 SHIP ruling instead.
 
 ### Other hunt items
 - **Owner's commits (item 6):** nothing clobbered.

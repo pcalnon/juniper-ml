@@ -53,9 +53,9 @@ Peer session (do not redo): **cascor-client#139** (ceiling 34,695) and **recurre
 peer's ml#1375 and ml#1378 were **closed as superseded** by #1376/#1379; their branches are kept
 and #1378's four deltas are already folded into #1379 *[2026-08-26: partly — `measure-growth
 --ref` never reached `main`; see Validation]*. Also done: ml#1239 adjudication comment
-posted (owner closes — main-verify has been green for its last five runs); ml#1326 retitled.
+posted (Overtoad closes — main-verify has been green for its last five runs); ml#1326 retitled.
 
-**A merge run was in progress when this was written.** The peer reported that the owner granted
+**A merge run was in progress when this was written.** The peer reported that the Overtoad granted
 merge authorization for the whole P5 PR set *in the peer's session* and began merging
 sequentially with `util/safe_merge.py --execute` (#139 → #131 → ml#1376 → ml#1379 → ml#1380 →
 data-client#173 → data#291 → cascor-worker#162 → deploy#195), reporting each `mergedAt` on
@@ -102,7 +102,7 @@ repo's re-measured `max` (canopy 1,982; cascor 9,609).
 
 **5. `docs/REFERENCE.md` must exist in cascor and recurrence before any cut** (step e). Unchanged.
 
-**6. Owner decisions carried forward unchanged**: the soak's next step (policy stratum 24/24 =
+**6. The Overtoad decisions carried forward unchanged**: the soak's next step (policy stratum 24/24 =
 100% — rung 1 as stated is a null experiment); parent `Juniper/AGENTS.md` and the worktree
 settings asymmetry (LEAVE IT); MEMORY.md 120-byte cap on new entries only.
 
@@ -186,7 +186,7 @@ body trips the symbol screen as WEAKENED; the waiver goes in the one commit.
   `juniper-deploy--feat--memory-budget-gate--20260825-1852--1bb421a8`. The peer's:
   `…juniper-cascor-client--…--20260825-1826--f5a90304`, `…juniper-recurrence--…--20260825-1848--d9688520`.
 - Older, merged: `juniper-canopy--feat--memory-budget-gate--20260825-0507--04f06ffe`,
-  `juniper-cascor--feat--memory-budget-gate--20260825-0515--c4bbe815` — owner signal + liveness
+  `juniper-cascor--feat--memory-budget-gate--20260825-0515--c4bbe815` — Overtoad signal + liveness
   probe before removal.
 - A throwaway venv for data-client's `[test]` extra lives in the session scratchpad; disposable.
 - The juniper-ml primary checkout was at `45c2f4fc` = `origin/main` when this session started

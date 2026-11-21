@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # Created     : 2026-10-20
 # Status      : ad-hoc -- investigation
-# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : util/ad-hoc/2026-10-20_item30_fixwave_redrive.py (``--step f028``; the ``delay<N>`` and ``forced`` arms);
 #               util/ad-hoc/2026-10-20_turing_canopy_leg.bash and 2026-10-20_f069_fix_leg.bash (the legs);
 #               util/ad-hoc/2026-10-20_f028_apply_fix.py (the tree the fix legs serve);

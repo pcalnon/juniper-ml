@@ -14,11 +14,11 @@ Why this exists
 ---------------
 ``juniper-ml[servers]`` floors ``juniper-data>=0.14.0``. The published 0.14.0 wheel ships the
 ``equities`` and ``equities_seq`` generators at ``VERSION = "3.0.0"``; 0.15.0 ships ``"5.0.0"`` --
-the owner rulings of juniper-data#395 plus the regression fix of juniper-data#404. A fresh
+the Overtoad rulings of juniper-data#395 plus the regression fix of juniper-data#404. A fresh
 resolve already takes 0.15.0, but in an environment that holds 0.14.0,
 ``pip install "juniper-ml[servers]==0.9.0"`` leaves it there (reproduced in a clean venv
 2026-09-22). The floor ADMITS the superseded contract rather than delivering it -- the shape
-0.9.0 fixed for ``juniper-canopy``, and the owner ruled the same way (2026-09-22, in session).
+0.9.0 fixed for ``juniper-canopy``, and the Overtoad ruled the same way (2026-09-22, in session).
 
 This is the canopy script (``2026-09-21_raise_canopy_floor_0_8_1.py``) with the data pin
 substituted, plus one thing that script left to a hand edit: it opens the ``## [0.10.0]``
@@ -87,7 +87,7 @@ _CL_SECTION = f"""## [{_NEW_VER}] - {_RELEASE_DATE}
 - **BREAKING (resolution): `[servers]` now floors `{_NEW_PIN}`, because 0.14.0 still serves the
   `equities` generators at the contract 0.15.0 replaced.** Read from the published wheels, not a
   checkout: 0.14.0 ships `equities` and `equities_seq` at `VERSION = "3.0.0"`, 0.15.0 at `"5.0.0"`.
-  The two majors between them are the owner rulings of juniper-data#395 -- `adj_close` leaves the
+  The two majors between them are the Overtoad rulings of juniper-data#395 -- `adj_close` leaves the
   default feature matrix because `close / adj_close` encodes dividends paid *after* each row, and
   the SEC share history becomes an as-of join on the FILED date, so a restated period no longer
   rewrites when a value became knowable -- and the regression fix of juniper-data#404. PyPI never

@@ -14,7 +14,7 @@
 > **What stands**: effect (c), the +90–165% contention finding at 66 s and 126 s, where `drive` and
 > the resolving instrument agree to ~1x; and §5's step-duration calibration.
 
-**Executes** the owner's 2026-09-01 decisions — cells lengthened to ~60 s (decision 2), step duration
+**Executes** the Overtoad's 2026-09-01 decisions — cells lengthened to ~60 s (decision 2), step duration
 retained (decision 4), plus the **new requirement** for a scenario loading all 16 cores rather than
 leaving the stack effectively-dedicated ones.
 
@@ -51,7 +51,7 @@ load rose 2.82 → 4.74 during that run and the outlier was the **last** cell. T
 magnitude sits beside the historical clamscan figure of **+6.8%** — most likely the same
 phenomenon, sampled at a duration long enough to catch it.
 
-**(c) Core contention: +90% to +165%.** This is the effect the owner's new requirement exposed and
+**(c) Core contention: +90% to +165%.** This is the effect the Overtoad's new requirement exposed and
 the `modest` profile entirely concealed. Under `modest`, twelve of sixteen cores stayed free, so the
 stack still ran on effectively dedicated cores and the measured cost was +0.051%. Remove that
 headroom and the same workload takes **1.9× to 2.6× longer**.
@@ -177,7 +177,7 @@ than the 6.8% the original contention figure would have forced, and it is honest
 be that tight: because the conditions under which it applies are stated rather than assumed.
 
 **Not proposed as ratified.** It rests on a settled-`heavy` measurement that has not been taken (§3),
-and the owner's standing instruction is that thresholds are ratified after analysis, not during it.
+and the Overtoad's standing instruction is that thresholds are ratified after analysis, not during it.
 
 ---
 
@@ -199,7 +199,7 @@ so ~40 s is the empirical floor for scrapeability, not 60 s.
 
 ---
 
-## 6. For the owner
+## 6. For the Overtoad
 
 1. **The 0.5% candidate is withdrawn** as scoped — it was derived at 20 s and fires at 66 s (§1).
 2. **Decide the gate's shape before its number**: host-state precondition, median-of-repeats, or

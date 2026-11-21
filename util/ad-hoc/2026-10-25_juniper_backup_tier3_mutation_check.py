@@ -15,7 +15,7 @@
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 #
 # Status:        ad-hoc -- investigation
-# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:       backup design §7.9 and D-5 (notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md);
 #                util/ad-hoc/2026-10-03_juniper_backup_tier2_mutation_check.py (the tier-2 check this follows)
 #
@@ -109,7 +109,7 @@ MUTATIONS = [
     ("T15", SERVICE, "Environment=JUNIPER_BACKUP_STATE_DIR=%h/.local/state/juniper-backup-full\n", "", "tier 3 sets no state dir, so it takes tier 2's default"),
     ("T16", SERVICE, "JUNIPER_BACKUP_DEVICES=dee46823-4119-4914-ac15-08194ee27d81", "JUNIPER_BACKUP_DEVICES=EBC5-F0A3", "tier 3 writes a tier-2 stick"),
     ("T17", SERVICE, "JUNIPER_BACKUP_DEVICES=dee46823-4119-4914-ac15-08194ee27d81", "JUNIPER_BACKUP_DEVICES=/mnt/JuniperArchive", "tier 3 keeps the superseded §7.9 path, which the fstab deprecates and the scheduler cannot read"),
-    ("T18", SERVICE, "JUNIPER_BACKUP_DIR=Juniper/Backups", "JUNIPER_BACKUP_DIR=Juniper-8.0.0.python", "tier 3 writes tier 2's directory, not the owner's Juniper/Backups"),
+    ("T18", SERVICE, "JUNIPER_BACKUP_DIR=Juniper/Backups", "JUNIPER_BACKUP_DIR=Juniper-8.0.0.python", "tier 3 writes tier 2's directory, not the Overtoad's Juniper/Backups"),
     ("T19", SERVICE, "JUNIPER_BACKUP_PERIOD_DAYS=30", "JUNIPER_BACKUP_PERIOD_DAYS=31", "the period is not monthly's 30"),
     ("T20", SERVICE, "JUNIPER_BACKUP_STALE_DAYS=45", "JUNIPER_BACKUP_STALE_DAYS=21", "tier 3 keeps tier 2's 21-day limit, under its own 30-day period"),
     ("T21", SERVICE, " --label full", "", "the set is not labelled full"),

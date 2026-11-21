@@ -7,12 +7,12 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (generated with Claude Code)
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 consolidation, juniper-data docs carrier)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#509 (left a stale setup-python v7.0.0 row); flood-4 common brief
 
 juniper-data#509 set the claude-code-action row to v1.0.265 and wrote "the other rows are unchanged from that
 2026-10-29 derivation", leaving `actions/setup-python` at v7.0.0 although #507 moved every workflow to v7.1.0.
-This re-derives every row from `.github/workflows/*.yml` (the `uses: owner/repo@<sha> # vX.Y.Z` lines) and
+This re-derives every row from `.github/workflows/*.yml` (the `uses: Overtoad/repo@<sha> # vX.Y.Z` lines) and
 prints each disagreement: version, SHA, or the set of workflow files.
 
     python3 2026-11-07_flood4_data_pin_table_check.py <juniper-data worktree>

@@ -34,7 +34,7 @@
 
 **Detail**:
 
-**Severity:** P1 (soft-blocker) · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P1 (soft-blocker) · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
@@ -49,7 +49,7 @@
 
 **Detail**:
 
-**Severity:** P1 · **Owner repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
+**Severity:** P1 · **The Overtoad repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
 
 **Notes**:
 
@@ -1699,7 +1699,7 @@ Phase 2 P1 fix; data already available in TrainingResults; doc status COMPLETE
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
 
 **Notes**:
 
@@ -6927,7 +6927,7 @@ Added 5 integration tests to `test_network_stats_endpoint.py` (`TestNetworkStats
 
 **Detail**:
 
-**Severity:** P1 (operational — dashboards mislead operators) · **Owner repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
+**Severity:** P1 (operational — dashboards mislead operators) · **The Overtoad repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
 
 **Notes**:
 
@@ -8804,7 +8804,7 @@ logger.warning("Failed to extract network topology: %s: %s", type(e).__name__, e
 
 **Detail**:
 
-**Severity:** P2 · **Owner repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
+**Severity:** P2 · **The Overtoad repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
 
 **Notes**:
 
@@ -8819,7 +8819,7 @@ logger.warning("Failed to extract network topology: %s: %s", type(e).__name__, e
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
@@ -9824,7 +9824,7 @@ Cross-link: panels bind catalog §3.5 (`dataset_post_total`) and §4.7.
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
@@ -10744,7 +10744,7 @@ html.P("Network Growth Triggers:", className="mb-1 fw-bold"),
 
 **Notes**:
 
-[v3 xrepo fuzzy merge: owners=cas,ml, n=2] [v2 remap: BG→TRAIN]
+[v3 xrepo fuzzy merge: Overtoads=cas,ml, n=2] [v2 remap: BG→TRAIN]
 
 ### JR-ML-OBS-094 — GAP-WS-24 splits into 24a (browser JS emitter) + 24b (canopy /api/ws_latency + histogram).
 
@@ -12602,7 +12602,7 @@ Additional tests: nested format unchanged since Phase H, flat format unchanged s
 Consumer audit document: `juniper-ml/notes/code-review/NORMALIZE_METRIC_CONSUMER_AUDIT_2026-04-XX.md` enumerates every consumer:
 frontend MetricsPanel, CandidateMetricsPanel, Prometheus `/api/metrics`, WebSocket drain, debug logger, test fixtures.
 CODEOWNERS: `juniper-canopy/src/backend/normalize_metric.py @<project-lead>` + `juniper-canopy/src/frontend/components/metrics_panel.py @<project-lead>`.
-`.github/CODEOWNERS` branch protection enforces owner review.
+`.github/CODEOWNERS` branch protection enforces Overtoad review.
 
 **Design**:
 
@@ -12610,7 +12610,7 @@ Single PR (P16). Test-only phase; refactoring deferred to follow-up (gated on au
 
 **Notes**:
 
-Entry: Phase B in main. Exit: regression tests pass, CODEOWNERS enforced (test via PR without owner review → must block),
+Entry: Phase B in main. Exit: regression tests pass, CODEOWNERS enforced (test via PR without Overtoad review → must block),
 consumer audit reviewed + merged. Rollback: revert P16 (10 min TTF); CODEOWNERS rule disappears.
 Note: Phase H is NOT a behavior-change gate; it's a documentation + regression-gate phase.
 
@@ -14201,7 +14201,7 @@ Settled position C-36 from R3-03 table; cross-round consensus consolidation
 
 **Detail**:
 
-**Severity:** P2 · **Owner repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
+**Severity:** P2 · **The Overtoad repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
 
 **Notes**:
 
@@ -14794,7 +14794,7 @@ Settled position C-27 from R3-03 table; cross-round consensus consolidation
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** deferred
 
 **Notes**:
 
@@ -14820,7 +14820,7 @@ Settled position C-27 from R3-03 table; cross-round consensus consolidation
 
 **Detail**:
 
-**Severity:** P3 (user-discretion) · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 (user-discretion) · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Notes**:
 
@@ -14898,7 +14898,7 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Notes**:
 
@@ -14913,7 +14913,7 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor-worker · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor-worker · **Status:** deferred
 
 **Notes**:
 

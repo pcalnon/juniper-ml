@@ -272,7 +272,7 @@ scope. **STALE** = was true, overtaken. **WRONG** = not true at the time of writ
 | §6-c | "Log rotation already happens… a rotating file sink must keep that behaviour predictable" | **CONFIRMED and EXPLAINED** | the rotator is **Path C**: `api/observability.py:110` names `log_dir / "juniper_cascor.log"` and `:111-115` wraps it in a `RotatingFileHandler` at 10 MB / 5 backups (`constants_logging.py:276-277`) — the same file Paths A and B write. `logs/` holding exactly `.1`…`.5` matches `backupCount=5`. See N-9 |
 | §7 dec. 2 | flush per record — *"a complete log for a crashed run outweighs the throughput; a truncated log is how several analyses in this arc went wrong"* | **CONFIRMED as a decision, rationale intact** | Path A already achieves it by closing the file every record. The rationale must travel with the decision: per-record flush is the obvious thing to trade away once an I/O cost is measured |
 | §7 dec. 3 | per-process file handle, opened lazily **on first write after fork**; provisional | **PREMISE REFUTED, DECISION SALVAGEABLE** | the premise is `fork`; the pool is `forkserver` (N-2). The decision's *shape* survives, but "after fork" must be re-read as "after forkserver start", and the `O_APPEND` requirement from the same section is what makes it safe at all. **Never formally re-issued against the corrected process model** |
-| §7 dec. 5 | call-site migration scope — *"Still owner's call"* | **STILL OPEN, STILL THE OWNER'S** | the analysis it was deferred pending has been delivered and its recommendation overturned by measurement, so the decision is now *ripe* — but it has not been taken. It is **not** discharged by this roadmap; carried to roadmap §13 item 6 |
+| §7 dec. 5 | call-site migration scope — *"Still Overtoad's call"* | **STILL OPEN, STILL THE OWNER'S** | the analysis it was deferred pending has been delivered and its recommendation overturned by measurement, so the decision is now *ripe* — but it has not been taken. It is **not** discharged by this roadmap; carried to roadmap §13 item 6 |
 | §7 dec. 4 | keep console on stdout | **CONFIRMED as a decision** | but `juniper_observability.configure_logging` uses **stderr** (`logging.py:75`), so "keep stdout" is a divergence from the shared library, not alignment with it |
 | §7.1 | the swallowed-pytest problem is unexplained | **CONFIRMED, still unexplained** | untouched since |
 
@@ -685,7 +685,7 @@ disposition or action. Round 3 is not warranted on this material.
 
 ## 9. References
 
-- [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) — the issue; owner scope, the message-text anchoring rule, the 637 MB leg. **OPEN, zero comments, untouched since 2026-08-24**
+- [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) — the issue; Overtoad scope, the message-text anchoring rule, the 637 MB leg. **OPEN, zero comments, untouched since 2026-08-24**
 - [cascor#598](https://github.com/pcalnon/juniper-cascor/pull/598) (`64ff9ab8`) — the shipped remediation and its post-fix numbers
 - [cascor#563](https://github.com/pcalnon/juniper-cascor/pull/563) — the `inspect` fix; banked, unavailable to this work
 - [cascor#579](https://github.com/pcalnon/juniper-cascor/issues/579) — where the "~30 % is logging-related" brief actually lives

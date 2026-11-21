@@ -49,7 +49,7 @@ The fix bounds the parse, but a worst-case field *at* the cap still costs real s
 - The over-strip set (F1) was enumerated only over `0x00–0xFF`; the reachable set there is `{0x85, 0xA0}`.
 
 ### Credential hygiene
-No slip. The scratch server ran under `env -i` (no inherited secrets) with a self-chosen dummy key `laneA1-scratch-key`; nothing was sent to any external service; the owner's email was never used. I stopped the server I started (SIGTERM; "shutdown complete" logged; port 18431 free); the exit-143 background notice is that expected SIGTERM. No process I did not start was touched.
+No slip. The scratch server ran under `env -i` (no inherited secrets) with a self-chosen dummy key `laneA1-scratch-key`; nothing was sent to any external service; the Overtoad's email was never used. I stopped the server I started (SIGTERM; "shutdown complete" logged; port 18431 free); the exit-143 background notice is that expected SIGTERM. No process I did not start was touched.
 
 ### Scripts I wrote (all under `…/scratchpad/r42/data428-laneA1/`)
 `equiv_proof.py`, `equiv_negative_control.py`, `redos_offline.py`, `redos_scaling.py`, `route_combo_cost.py`, `star_strip.py`, `serve_scratch.py`, `start_server.bash`, `rawhttp.py`, `live_functional.py`, `live_functional2.py`, `live_load.py`, `verify_tree.bash`. Reference extracts: `http_cache_3ecb106.py`, `datasets_3ecb106.py`; the mutated copy `tree-oldregex/`; results JSON `redos_offline_results.json`, `live_functional.json`, `live_functional2.json`, `live_load_results.jsonl`.

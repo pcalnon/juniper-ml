@@ -5,25 +5,25 @@
 
 ## Goal (paste this as the new thread's first prompt)
 
-Continue defect-register round 42 for the Juniper ecosystem. The register is `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`; the API primer is `notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md`. The owner's policy: the PR sweeper is theirs, "validate after merge and fix forward", and merge approval is granted for this arc's PRs. Checks must still pass, and other sessions' PRs are not covered.
+Continue defect-register round 42 for the Juniper ecosystem. The register is `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`; the API primer is `notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md`. The Overtoad's policy: the PR sweeper is theirs, "validate after merge and fix forward", and merge approval is granted for this arc's PRs. Checks must still pass, and other sessions' PRs are not covered.
 
 **Completed:**
 - **juniper-ml#2074** MERGED at 09:57Z (`6aabe4cc`). It closed APD-ECO-008 and filed eight rows. Its body was corrected after merge.
 - **juniper-ml#2080** MERGED at 10:18Z (`f2688a95`), the register fix-forward:
   - moved 50 primer anchors by +3, each proven by content (juniper-ml#1098 inserted three lines at primer line 5758 after the register was created);
   - filed APD-ECO-012 (canopy CORS inside auth, latent) and APD-DATA-057 (data batch-tags unlocked read-modify-write);
-  - recorded both mixed-provenance owner rulings verbatim (`reports/2026-09-24_defect-register-round-42/owner-rulings-verbatim.md`).
+  - recorded both mixed-provenance Overtoad rulings verbatim (`reports/2026-09-24_defect-register-round-42/Overtoad-rulings-verbatim.md`).
 - **juniper-ml#2075** MERGED at 10:25Z (`f4d050c6`), the primer correction v2+v3, with a curated squash body. Main counts: `register_open_set.py` gives 136 rows | 100 fixed | 36 open; the crosscheck says AGREE.
 - **juniper-data#438** is open. It is the round-3 fix-forward of #428, built by the executor. My commit `28fced18` moved #437's CHANGELOG entry out of the released `[0.16.0]`.
-- **v0.16.0.** Another session cut juniper-data v0.16.0 at 08:52Z (tag `39d1cab2`). Its notes equal the tagged section (`util/ad-hoc/2026-09-24_verify_data_0_16_0_notes_match_tag.py`). The PyPI publish (run 35977786108) is WAITING for the owner.
+- **v0.16.0.** Another session cut juniper-data v0.16.0 at 08:52Z (tag `39d1cab2`). Its notes equal the tagged section (`util/ad-hoc/2026-09-24_verify_data_0_16_0_notes_match_tag.py`). The PyPI publish (run 35977786108) is WAITING for the Overtoad.
 - **Validation reports.** Every lane report is archived verbatim through `util/ad-hoc/2026-09-24_archive_round42_reports.py`.
 
 **In flight:**
 1. **Executor `adf9f5dbe46b1b03c`,** resumed at about 11:05Z, is fixing #438 in place. The fixes come from `data438-round1-laneA-reprobe.md` and `data438-round1-laneB-refute.md`: create and batch-create are unlocked; lock files pile up for absent ids; the delete paths fail with ENOSPC; the cached-store claim; the RFC misquote in `http_cache.py`; the "Moved here" sub-bullet I added would publish in the next Release notes; and more.
    - It pushes one signed commit with `--expected-head 28fced18…` and PATCHes the PR body.
    - Its final report is the last assistant message in `/home/pcalnon/.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml--claude-worktrees-hazy-beaming-map/8f86dec2-21ea-43f2-911a-bb2314a822ec/subagents/agent-adf9f5dbe46b1b03c.jsonl`. Read it with the archiver's `last_report()`, and never with `splitlines()`.
-2. **juniper-ml#2081** (probe provenance, 205 files) is green on required checks but BLOCKED by CodeQL: 61 alerts in the probes. The two highs are false positives; the rest are lint-class. **This is the owner's decision:** a CodeQL `paths-ignore` config, dismissing the alerts, or storing the probes as a tarball. The probes are safe on the pushed branch meanwhile.
-3. **Peer "defect reg [042116]"** (session `bc31e993`) is building, under the owner's new **"Key leaks"** ruling ("Fix everywhere now"):
+2. **juniper-ml#2081** (probe provenance, 205 files) is green on required checks but BLOCKED by CodeQL: 61 alerts in the probes. The two highs are false positives; the rest are lint-class. **This is the Overtoad's decision:** a CodeQL `paths-ignore` config, dismissing the alerts, or storing the probes as a tarball. The probes are safe on the pushed branch meanwhile.
+3. **Peer "defect reg [042116]"** (session `bc31e993`) is building, under the Overtoad's new **"Key leaks"** ruling ("Fix everywhere now"):
    - cascor#686's v2 (branch `fix/shortfall-mixed-provenance-and-678-followups-v2`), which supersedes #686 and closes CASCOR-008/-013;
    - the canopy leak fix (`fix/secret-leaks-683-validation`);
    - bytes-compare PRs in juniper-ml (observability and service-core), juniper-data and juniper-cascor.
@@ -43,7 +43,7 @@ Continue defect-register round 42 for the Juniper ecosystem. The register is `no
    - record the peer's residue.
 4. **The canopy nit goes to the canopy E2E ledger, not the register.** `src/frontend/dashboard_manager.py:8410` cuts " The resulting dataset" and so drops juniper-data's truncation warning (`juniper_data/core/limits.py:168`). So do the peer's LOW 3/4, which the canopy leak PR fixes.
 5. **Put the four untracked reports into the next PR**, with the archiver's local MISSING entries: `data438-round1-lane{A-reprobe,B-refute}.md` and `ml2080-round1-lane{A-reprobe,B-refute}.md`.
-6. **Owner decisions** to surface:
+6. **The Overtoad decisions** to surface:
    - #2081's CodeQL;
    - the v0.16.0 PyPI approval (it ships defects #438 fixes; 0.16.1 is the alternative);
    - #437's breaking marker;

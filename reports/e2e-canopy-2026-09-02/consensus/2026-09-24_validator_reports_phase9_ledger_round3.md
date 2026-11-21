@@ -56,15 +56,15 @@ Round 3 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
    - Fix: add those patterns (at minimum `converge_pr`) and say "matching the pattern" instead of "every".
    - Changes a number (update-capable background launches on 09-23 are 44, not 38; 40 name a PR, not 34) and an action. No disposition.
 
-2. **MINOR: owner-question evidence found in round 2 was dropped.**
+2. **MINOR: Overtoad-question evidence found in round 2 was dropped.**
    - Quoted: "The actor is unidentified" (`…E2E-VALIDATION-EVIDENCE.md:8743`) and the later-actions list (`:8732-8736`).
    - Evidence: pushes made as `pcalnon`, PGP-signed locally rather than by web-flow, landed inside the window in which no Claude Code session on this host made a tool call (the PushEvent API):
      - `4c496443` on ml#2058, pushed at 21:45:24Z, two minutes before the pass's first ready;
      - `c666403b` on ml#2045 at 23:47:35Z, 72 s before that PR's disarm and re-arm;
      - a rebase force-push `b0223f18` at 00:00:39Z;
      - ml#2045 was then drafted at 03:04:45Z and readied at 03:05:02Z, with no transcript entries at all on this host between 02:55Z and 03:10Z.
-   - Round 2's report (`…2026-09-24_validator_reports_phase9_ledger_round2.md:468`) raised `4c496443` "for the owner question", and the fix pass did not carry it.
-   - Fix: add these to the account's-actions list and to the owner question.
+   - Round 2's report (`…2026-09-24_validator_reports_phase9_ledger_round2.md:468`) raised `4c496443` "for the Overtoad question", and the fix pass did not carry it.
+   - Fix: add these to the account's-actions list and to the Overtoad question.
    - Changes an action. No number or disposition.
 
 3. **MINOR: F-CANOPY-059 understates its impact.**
@@ -103,7 +103,7 @@ Round 3 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 
 **WHAT YOU COULD NOT CHECK**
 - Any live replay against canopy or cascor. It is not permitted, since it would write cascor.
-- Actors off this host: the GitHub UI, other hosts, cloud sessions, automations. Whether the signed pushes came from the owner's IDE is unknown.
+- Actors off this host: the GitHub UI, other hosts, cloud sessions, automations. Whether the signed pushes came from the Overtoad's IDE is unknown.
 - "259b4d16 stayed open … until about 03:27Z". Its transcript ends at 21:01:29.583Z.
 - The contents of `confirm_step.bash`. I read only the wrapper scripts, which are read-only.
 - dash 4.4.1 line numbers. I checked 4.2.0 only.
@@ -175,7 +175,7 @@ Round 3 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 - **Evidence:**
   - The P0 does follow §6.3's wording: `JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360` and §1.1 at `:43-45`.
   - But F-CANOPY-014 (LEDGER:3907-3909), "the entire replay control surface is dead: play / pause / seek / speed / range / stop all fail", blocked the same workflow and was rated P1.
-- **Fix:** say why the two differ, or put the precedent to the owner in item 15, which already asks about F-059's P0.
+- **Fix:** say why the two differ, or put the precedent to the Overtoad in item 15, which already asks about F-059's P0.
 - **Changes the disposition:** possibly. **Action:** yes.
 
 ### 5. MINOR — the cascor#184 question the ledger leaves "unchecked" is answered by a PR the same paragraph cites
@@ -213,7 +213,7 @@ Round 3 of the consensus validation of the canopy E2E evidence ledger's Phase 9 
 - **Fix:** "committed locally at 20:41Z (`800c20bb`, unpushed)".
 - **Changes a number / disposition / action:** no.
 
-### 8. MINOR — the owner question leaves out evidence the pass already had
+### 8. MINOR — the Overtoad question leaves out evidence the pass already had
 
 - **Quoted:** LEDGER:8723 "one pass over nine PRs, 21:47Z to 22:51Z"; item 15 (LEDGER:9360-9365).
 - **Evidence:**

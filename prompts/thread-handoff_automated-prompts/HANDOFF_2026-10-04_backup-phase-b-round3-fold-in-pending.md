@@ -104,7 +104,7 @@ Read `HANDOFF_2026-10-03_backup-arc-consolidated.md` too: it keeps the traps and
      - Require the timer to be inactive as well as not enabled (R3B N-8).
      - Guard the dry run's "decrypt start done" line.
      - Add a `REKEY_INSTALLED_UNIT` override, so the test stays hermetic once the installer has run on the
-       owner's host.
+       Overtoad's host.
    - **Real-path tests.** 14 of 25 mutants survived.
      - From `R3/r3c-harness/` (`mkstubs.bash`, `t3_installer_real.bash`, `t4_*`; see its README), build a
        stubbed non-dry-run test for the re-key and a real-path test for the installer.
@@ -131,7 +131,7 @@ Read `HANDOFF_2026-10-03_backup-arc-consolidated.md` too: it keeps the traps and
      - AC-4's first drill restores that fileset; it gates §10.2 step 1 and runs after the backup.
      - Lane B's remedies: run AC-4's pre-recovery drill before the first backup; or drop `retention-policy` in
        step 10's edits and restore it after AC-4; or re-target AC-4 and §10.2 step 1.
-     - **This is the owner's choice**: put it to the owner with a recommendation.
+     - **This is the Overtoad's choice**: put it to the Overtoad with a recommendation.
      - Then correct every statement that nothing under `/mnt/Backups/Ubuntu/` is deleted.
        `grep -n 'is deleted or moved'` finds them: in `c3d0e890`'s D at :16, :704 (a unit comment that cites
        the rule), :2080 and :2761, and in A at :204.
@@ -192,9 +192,9 @@ Read `HANDOFF_2026-10-03_backup-arc-consolidated.md` too: it keeps the traps and
 4. **Merge it** with `util/safe_merge.py --execute`, read the `MERGED` line, and verify on `main`. **The merge
    approval was granted in session c9277a65; a new session needs a new grant.**
 5. **B9** as its own PR: a gitleaks content rule plus a hook. Go is at `/snap/bin/go`. The repo setting
-   `secret_scanning_non_provider_patterns` is the owner's to change.
+   `secret_scanning_non_provider_patterns` is the Overtoad's to change.
 
-## Owner actions
+## The Overtoad actions
 
 - **The watchdog deploy has not run.**
   - The primary checkout was synced on 2026-10-05 at 14:23 CDT, after that day's 12:00 run had again exited 2
@@ -252,10 +252,10 @@ The index and the consolidated handoff are hot files that other sessions edit, s
 - nothing under `/mnt/Backups/Ubuntu/` is read beyond `stat`, and nothing there is touched;
 - never read a secret file: `~/.config/duplicati-backup/*`, any `.env` or `*.env`, `/etc/default/duplicati`
   beyond `stat`, `/etc/credstore`, `/etc/duplicati`, or a data-folder database;
-- never print an environment variable or a token, and never send the owner's email or any credential to an
+- never print an environment variable or a token, and never send the Overtoad's email or any credential to an
   external service;
 - no `git stash`; log greps are count-only; no interactive shells (`bash -i` writes `~/.bash_history`);
-- no session performs host actions: those are the owner's.
+- no session performs host actions: those are the Overtoad's.
 
 **Harness traps**:
 

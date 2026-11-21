@@ -6,7 +6,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 ---
 
 ## Verdict
-**SAFE AFTER FIXES.** Archived as written, `DRAFT_r1.md` has two problems. Its A9 cleanup list removes the only remaining anchors of two commits that its own A6 says to keep. And it puts a false premise ("already unreachable") and an unworkable option ("make 2b's preflight warn") to the owner. All fixes are text-level.
+**SAFE AFTER FIXES.** Archived as written, `DRAFT_r1.md` has two problems. Its A9 cleanup list removes the only remaining anchors of two commits that its own A6 says to keep. And it puts a false premise ("already unreachable") and an unworkable option ("make 2b's preflight warn") to the Overtoad. All fixes are text-level.
 
 `S` below means `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/idempotent-jumping-sparkle/reports/2026-09-23_y2-wave2-consensus/session-state/`.
 
@@ -28,7 +28,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
   - Change that A9 bullet to: "…#684 merged, clean, but HELD: its reflogs are the only holders of `26bf27b3` and `96e7b105` (A6)."
   - Add to A6: "Removing a worktree deletes its HEAD reflog. Deleting a branch deletes the branch's reflog."
 
-**2. MAJOR: A6's premise is false, and the owner question is built on it.**
+**2. MAJOR: A6's premise is false, and the Overtoad question is built on it.**
 - **Location:**
   - A6: "…are already UNREACHABLE. They are still in the object store, but no branch holds them, so a `git gc` prune can delete them."
   - Goal statement: "**A6, urgent:** … or accept their loss. Three are already unreachable."
@@ -53,18 +53,18 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
   - `ls …/juniper-recurrence/recurrence-snapshots` returns "No such file or directory".
   - So with a warning preflight, deploy main's full, demo, dev and test bring-ups still fail, just later and at Docker. R15D's "Alternatively…" (`R15D.md:43`) carries this flaw, and the draft passes it on unexamined.
 - **Confidence:** 0.8.
-- **Fix:** "The owner chooses: exclude the four PRs from the sweeper, or accept a fix-forward. Under fix-forward, if 2b lands first, deploy main's recurrence profiles refuse to come up, with the preflight's pull hint, until 2a is merged and the shared checkout is pulled. (Suggestion: creating `juniper-recurrence/recurrence-snapshots/` in the shared checkout before opening 2b removes that on this host.) R15D's warning-preflight alternative does not help: 2b's long-form mount with `create_host_path: false` makes Docker itself refuse a missing source (`pr_wave2b_deploy.md`, 'The mount is long form')."
+- **Fix:** "The Overtoad chooses: exclude the four PRs from the sweeper, or accept a fix-forward. Under fix-forward, if 2b lands first, deploy main's recurrence profiles refuse to come up, with the preflight's pull hint, until 2a is merged and the shared checkout is pulled. (Suggestion: creating `juniper-recurrence/recurrence-snapshots/` in the shared checkout before opening 2b removes that on this host.) R15D's warning-preflight alternative does not help: 2b's long-form mount with `create_host_path: false` makes Docker itself refuse a missing source (`pr_wave2b_deploy.md`, 'The mount is long form')."
 
 **4. MAJOR: the goal statement's only pointer to the details resolves in neither prescribed session.**
-- **Location:** Goal statement, "one combined handoff: juniper-ml `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md`. Read it in full." Session layout sends Lane B to `idempotent-jumping-sparkle` and Lane A to a fresh worktree cut from main.
+- **Location:** Goal statement, "one combined handoff: juniper-ml `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md`. Read it in full." Session layout sends Lane B to `idempotent-jumping-sparkle` and Lane A to a fresh worktree cut from main.
 - **Evidence:**
   - Searching every juniper-ml worktree and the primary finds the file only in `bubbly-meandering-pie`, untracked.
   - `git cat-file -e origin/main:<path>` reports "exists on disk, but not in 'origin/main'".
   - `idempotent-jumping-sparkle` is at `5ea8e273`, so even a merged copy will never appear in its tree.
-  - Git state says "The owner decides whether to open one".
+  - Git state says "The Overtoad decides whether to open one".
   - Everything Lane B needs is only in this file: the fix list, the two overtaken items and the traps.
 - **Confidence:** 0.75.
-- **Fix:** "Read it in full at `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md`. It is untracked there. Reading another worktree's files is allowed; running git there is not. Once its PR merges, `git show origin/main:prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md` also works, including from `idempotent-jumping-sparkle`."
+- **Fix:** "Read it in full at `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/bubbly-meandering-pie/prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md`. It is untracked there. Reading another worktree's files is allowed; running git there is not. Once its PR merges, `git show origin/main:prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md` also works, including from `idempotent-jumping-sparkle`."
 
 **5. MINOR: the X2 hint collides with Lane B's own procedure and tools.**
 - **Location:** X2, "**A pushed branch with no PR keeps a claim alive without exposing it to the sweeper**…"
@@ -73,7 +73,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
   - `util/open_signed_pr.py:46-47` and `:276` refuse a branch that already exists.
   - `S/r15/tools/2026-09-23_open_pinned_pr.py:78-84` hard-code the four branch names and upload through that tool.
   - `util/push_signed_commit.py` only adds a commit to an existing branch.
-  - § B of `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md` requires a branch that "carries the work". Wave 3 and X10 are unstarted.
+  - § B of `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md` requires a branch that "carries the work". Wave 3 and X10 are unstarted.
 - **Confidence:** 0.8.
 - **Fix:** append "For wave 2 this collides with `S/main/PLAN.md` ('nothing is opened or pushed from an unvalidated state'), and `open_signed_pr.py` refuses a branch that already exists. Never push a planned PR branch name to hold a claim; if you must, push an approved-freeze state under another name. Wave 3 and X10 are unstarted, so no branch can carry them. Their claims lapse on the date."
 
@@ -89,16 +89,16 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
 **7. MINOR: B3 blocks on X1 with no default, and the stake is understated.**
 - **Location:** "**B3. Open, then merge, per `S/main/PLAN.md`, after X1 is settled.**"
 - **Evidence:**
-  - The owner's standing ruling covers the default: "Mine: fix forward", and `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md` says "Its merges are intended… fix forward".
+  - The Overtoad's standing ruling covers the default: "Mine: fix forward", and `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md` says "Its merges are intended… fix forward".
   - The opening order (2b→2a→2c→addendum) is the reverse of the merge order, so a sweeper that merges on green likely inverts all of it.
   - The draft drops R15D's other two consequences (`R15D.md:37-38`): 2b's comment is false until 2c, and the merge-time checks never run. 2a's CHANGELOG ("as juniper-ml's `util/isolated_stack.bash` does") is likewise false until 2c merges.
 - **Confidence:** 0.65.
 - **Fix:** "If X1 is unanswered when round 16 approves a freeze, proceed under the standing fix-forward ruling. Run R15D's steps: `gh pr view` all four before each merge, and for any out-of-order merge, run its post-merge checks and a squash blob-compare at once."
 
-**8. MINOR: the "one message" owner batch omits owner-only calls the draft itself records.**
+**8. MINOR: the "one message" Overtoad batch omits Overtoad-only calls the draft itself records.**
 - **Evidence:**
-  - A7's items 3 ("owner: F-CANOPY-004's contract"), 9 ("the owner's question") and 10 ("owner question").
-  - Git state's "The owner decides whether to open one, and whether it also archives the two off-`main` predecessors". B's predecessor exists only untracked in `idempotent-jumping-sparkle`; I verified this with `ls`.
+  - A7's items 3 ("Overtoad: F-CANOPY-004's contract"), 9 ("the Overtoad's question") and 10 ("Overtoad question").
+  - Git state's "The Overtoad decides whether to open one, and whether it also archives the two off-`main` predecessors". B's predecessor exists only untracked in `idempotent-jumping-sparkle`; I verified this with `ls`.
   - B5 defers the leaked-token rotation reminder to the end of Lane B.
   - X4's "explicit decision" to stop the trio names no decider, and C6 waits on it.
 - **Confidence:** 0.75.

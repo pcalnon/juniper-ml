@@ -368,7 +368,7 @@ class GrowingRollupTest(unittest.TestCase):
     def _wave_feeder(self):
         calls = {"n": 0}
 
-        def fake_rollup(_owner, _repo, _pr):
+        def fake_rollup(_Overtoad, _repo, _pr):
             idx = min(calls["n"], len(self.WAVES) - 1)
             calls["n"] += 1
             return list(self.WAVES[idx])

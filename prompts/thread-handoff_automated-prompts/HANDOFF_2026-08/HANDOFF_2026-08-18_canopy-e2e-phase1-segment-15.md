@@ -191,7 +191,7 @@ Finish §3.1 / §3.2 / §3.4 / §3.5 on one run *before* restarting for the data
    if you cannot, record NOT DRIVEN rather than filing a defect.
 7. **§3.6 dataset view (24)** — last of the main blocks, because the W6 route restarts training. **Note the
    driver stops short:** `e2e_w6_dataset_driver.py` deliberately refuses matrix step 16
-   (`#restart-confirm-button`) — its own header calls that "an owner call, not a driver's" — and its step
+   (`#restart-confirm-button`) — its own header calls that "an Overtoad call, not a driver's" — and its step
    registry has no `16`. Staging is automated; the confirm is yours.
 8. **Leftovers needing their own posture, if time remains** — `C2.5-07` (relaunch with
    `JUNIPER_CANOPY_ENABLE_WS_CONTROL_BUTTONS=false`, drive nothing else), the DEMO lane (`C2.4-02`,
@@ -487,7 +487,7 @@ Then:
    `gh api -X PUT repos/pcalnon/juniper-ml/pulls/<N>/merge -f merge_method=squash` — which succeeds where
    `gh pr merge` stalls. Headless merge is pre-authorized for this arc by the plan (`:689-690`), *"each still
    requires green CI including `ui-tests`, and no PR in this arc touches release/publish machinery or a
-   deploy gate"*. (The owner additionally granted blanket approval for this arc's PRs verbally on 2026-08-16,
+   deploy gate"*. (The Overtoad additionally granted blanket approval for this arc's PRs verbally on 2026-08-16,
    in the segment-13/14 session; the plan is the durable source.)
 5. **Wait for CI correctly.** A loop keyed on "zero pending" completes **spuriously** — segment 14's watcher
    announced a settled PR while three required Regression Tests were still pending. A docs-only ml PR reports

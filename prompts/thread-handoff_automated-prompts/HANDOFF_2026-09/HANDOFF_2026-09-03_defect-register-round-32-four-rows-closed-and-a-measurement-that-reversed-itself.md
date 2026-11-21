@@ -22,7 +22,7 @@ the fourth grouping to do so.
 ## 0. Remaining work
 
 1. **Successor, first — validate this document (§8).**
-2. **`APD-DATA-018` is now a clean owner decision, not a research task.** All four generator timings
+2. **`APD-DATA-018` is now a clean Overtoad decision, not a research task.** All four generator timings
    are measured and recorded in §1.6 of
    `notes/JUNIPER_2026-09-01_JUNIPER-DATA_ASYNC-JOB-PATTERN-DECISION-ANALYSIS.md`. The
    recommendation (§4 of that file) is Option 6 — bound the inputs — and it has **two sub-cases**:
@@ -53,7 +53,7 @@ the fourth grouping to do so.
    step 2** of its own recommendation, which is irreconcilable with parking it. This is the
    `APD-ECO-002` shape the register records twice as a mis-park (register:611-617, :906): *a bucket
    label is not a rationale*.
-6. **`APD-ECO-001` needs an owner ASK, not an inherited park.** Its only "owner decision" phrase sits
+6. **`APD-ECO-001` needs an Overtoad ASK, not an inherited park.** Its only "Overtoad decision" phrase sits
    inside `APD-CCLIENT-005`'s verification row (register:974) and refers to `APD-CCLIENT-001` — which
    is FIXED, and whose dependency direction register:525-528 explicitly corrects as having been
    *backwards* in the round-27/28 lineage.
@@ -134,7 +134,7 @@ overturned a proposed disposition three times.
 
 **A precedent correction worth carrying, re-anchored after validation.** §6 of
 `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` (at :1034) scopes triage to
-`Low`-confidence rows, and `APD-CASCOR-005` is `Low` and on that list — yet its own row says "owner
+`Low`-confidence rows, and `APD-CASCOR-005` is `Low` and on that list — yet its own row says "Overtoad
 decision, not a task" (:689) and "Do not unify the three copies unilaterally" (:694). **The
 discriminator is the row-level park, not §6**: `APD-SVCCORE-013`/`-016` carried no row-level park;
 `CASCOR-005` does. State it that way rather than as "§6 does not license disposal".
@@ -341,13 +341,13 @@ park only" framing is rejected there — it reads `APD-DATA-028` as disposable.
   cascor-client has **no `**kwargs` anywhere in its chain** (`_get`/`_post`/`_delete`/`_patch`/
   `_request`): five signatures to thread before any public method can take the kwarg. The row was
   never compared against the other 17.
-- **`APD-DATA-018` is not "a clean owner decision" with one open sub-question.** The equities
+- **`APD-DATA-018` is not "a clean Overtoad decision" with one open sub-question.** The equities
   sub-case is not "one constant" — `generators/equities/generator.py:264` is a bare slice that
   **silently truncates**, so a finite default needs a reject-or-report path beside it. And §4 of
   `notes/JUNIPER_2026-09-01_JUNIPER-DATA_ASYNC-JOB-PATTERN-DECISION-ANALYSIS.md` names a *second*
   undecided question — rejection versus truncation — beside the rows-versus-bytes one.
 
-**Consequence: the set of rows a session may action without asking the owner first is empty.** Both
+**Consequence: the set of rows a session may action without asking the Overtoad first is empty.** Both
 unparked rows need a decision before code. That is now recorded in the register, not just here.
 
 ### F-4 — §8's remediation boxes under-scoped their own files. **FIXED**

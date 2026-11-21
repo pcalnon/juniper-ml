@@ -372,8 +372,8 @@ Citations: `EVIDENCE.md` is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDAT
   - Canopy's `CHANGELOG.md`, under "## [0.8.0] - 2026-09-11" (`:971`) / "### Fixed" (`:1173`), placed there by canopy#624 (`06d8607e`), says the watchdog "re-enables the interval once it has been continuously disabled for `METRICS_STORE_STRAND_TIMEOUT_MS` (30 s …) … because fast recovery would reopen the eviction window above" (`:1221-1226`).
   - The #613 entry in the same section says `running=` "stops that clock for exactly the duration of each fetch" (`:1198-1199`).
   - Phase 11 measured the first promise broken at 28 of 28 fires, and the second at 7 evicting fires.
-  - F-CANOPY-065 is carried as P1 on exactly this footing: a shipped CHANGELOG promise, pending the owner's ruling (`EVIDENCE.md:10114-10121`, `:10302-10304`). It is counted among the 6 open P1.
-- Fix: rate F-CANOPY-068 the way F-CANOPY-065 is rated: P1 if a shipped CHANGELOG promise counts as documented, P2 if not. Add it to the same owner question. While F-CANOPY-065 is carried as P1, the counts become 7 open P1 and 16 open P2.
+  - F-CANOPY-065 is carried as P1 on exactly this footing: a shipped CHANGELOG promise, pending the Overtoad's ruling (`EVIDENCE.md:10114-10121`, `:10302-10304`). It is counted among the 6 open P1.
+- Fix: rate F-CANOPY-068 the way F-CANOPY-065 is rated: P1 if a shipped CHANGELOG promise counts as documented, P2 if not. Add it to the same Overtoad question. While F-CANOPY-065 is carried as P1, the counts become 7 open P1 and 16 open P2.
 - Changes a number/disposition/action? Yes.
 
 **2. MINOR — Phase 11 claims every mid-request re-enable evicts, and leaves the entry's refuted one-period horizon in place.**
@@ -405,7 +405,7 @@ Citations: `EVIDENCE.md` is `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDAT
 - The watchdog's non-firing samples. They are not logged; my grid reconstruction assumes samples every 5,000 ms.
 - Whether the trio's processes were the same before and after the second run. No artifact records it.
 - dash 4.4.1 behaviour, and any training-run regime.
-- The owner's ruling on CHANGELOG promises. Finding 1 is conditional on it.
+- The Overtoad's ruling on CHANGELOG promises. Finding 1 is conditional on it.
 - I did not re-run the 6-of-6 synthetic check, Phase 9's runs, or Lanes B and B1.
 
 **SECRETS/PII:** One slip: my first `git show --stat 1b7cf44b` printed the commit's author line, which contains an email address, into my local tool output. I did not repeat it or send it anywhere. No environment values, tokens or credentials were printed. No repo was written, no service or port was touched, and no browser was driven. My probes are only in my mktemp scratch directory.

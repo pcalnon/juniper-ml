@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-08-31
 # Status:     ad-hoc -- campaign launcher (perf lane P1 -> P3 prerequisite)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md (§4 HOST.json, §5
 #             the derivation rule this run feeds); util/experiments/suites/perf/pf1-cascor-spiral-repeats.yaml
 #

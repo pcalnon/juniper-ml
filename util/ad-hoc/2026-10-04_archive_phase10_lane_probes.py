@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-04
-# Status      : ad-hoc — one-off; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Copy the Phase 10 round-1 lanes' probe scripts out of this session's tmpfs scratchpad into ``util/ad-hoc/``.
 
@@ -49,7 +49,7 @@ def header(lane_label: str, src: Path, comment: str) -> str:
         f"Source: this session's tmpfs scratchpad, {src.parent.name}/{src.name}",
         f"Written by {lane_label}, a review lane (a subagent), not by the orchestrator.",
         "Project: juniper-ml / Sub-Project: ad-hoc tooling / Author: Paul Calnon",
-        "Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)",
+        "Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)",
         "Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;",
         "  reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md",
         "Everything below this block is the lane's file, unmodified.",

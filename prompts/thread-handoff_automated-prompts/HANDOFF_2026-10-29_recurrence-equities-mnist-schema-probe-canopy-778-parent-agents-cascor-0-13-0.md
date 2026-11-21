@@ -1,12 +1,12 @@
 # Thread Handoff — Recurrence × Equities: the cascor primary carries #731 (plan v1.15.8), mnist schema probe, juniper-canopy#778, parent AGENTS.md records cascor 0.13.0
 
 **Date**: 2026-10-29 UTC (this host's clock is local time, UTC−5)
-**Session**: `3ca2d3e4`, the Linux host, worktree `.claude/worktrees/cosmic-puzzling-lovelace`. The owner named it `y1`; `ListAgents` later lists it as `recurrence-equities-cascor-0-13-0-published-plan-v1-15-7`. Commits are signed only through the API (`util/open_signed_pr.py`, `util/push_signed_commit.py`), never `git commit`.
+**Session**: `3ca2d3e4`, the Linux host, worktree `.claude/worktrees/cosmic-puzzling-lovelace`. The Overtoad named it `y1`; `ListAgents` later lists it as `recurrence-equities-cascor-0-13-0-published-plan-v1-15-7`. Commits are signed only through the API (`util/open_signed_pr.py`, `util/push_signed_commit.py`), never `git commit`.
 **Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-28_recurrence-equities-cascor-0-13-0-published-plan-v1-15-7.md` (landed by juniper-ml#2384). Start from this file.
 - That file's item 1, the post-merge re-check, passed.
 - Its item 3.4 (the `mnist` schema question) is answered, and its change is now juniper-canopy#778.
 - Its item 3.8 (the parent `Juniper/AGENTS.md` paragraph) is done.
-- Every other item is carried below. Each was re-checked on 2026-10-29, except §6 A1 / A9 of the consolidated plan, which are the owner's decisions.
+- Every other item is carried below. Each was re-checked on 2026-10-29, except §6 A1 / A9 of the consolidated plan, which are the Overtoad's decisions.
 
 ---
 
@@ -14,7 +14,7 @@
 
 Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, now v1.15.8). Nothing the arc can do alone is open. What remains is:
 
-- the owner's items, which a session surfaces and does not act on;
+- the Overtoad's items, which a session surfaces and does not act on;
 - juniper-canopy#778, which needs a canopy session;
 - follow-ups that are blocked or optional.
 
@@ -68,7 +68,7 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
     - 11 synthetic cases of its `classify_check`. The 4 that must be errors (SIGKILL, the checker's own exit 2, a crash after the report, and silenced stdout) give exit 2.
     - Round 2's two in-venv cases: a present-but-broken `datasets`, and one whose import calls `sys.exit(1)`. Both break juniper-data's own import, so both give 2, with the recorded control failures printed first. The in-venv step now ends with a summary line that the outer probe requires.
   - **The census** (all 16 generators): of canopy's rank-2 generators, only `mnist` and flat `equities` declare no `noise`. `equities` has had a `DECLARED_PARAM_DEFAULTS` entry since canopy#776, so `mnist` is the one left.
-- **juniper-canopy#778 is opened** (20:36:53Z; the owner chose an issue over a handoff-only record). It carries the evidence and the change for a canopy session.
+- **juniper-canopy#778 is opened** (20:36:53Z; the Overtoad chose an issue over a handoff-only record). It carries the evidence and the change for a canopy session.
   - Two reviewers simulated the entry against canopy `main` (`7fb3a159`), and its change list was corrected twice, at 21:16:28Z and after round 2. Item 1 checks the final body. These tests must change:
     - `src/tests/unit/test_recurrence_request.py`: `:350` (`UNDECLARED_RANK2` lists `mnist`), `:372-375` (expects `()` for every declared generator), and `:438-450` (`test_an_undeclared_generator_is_forwarded_as_staged[mnist]` asserts `stage.shaped is None`);
     - `src/tests/regression/test_restart_modal_restages_what_it_shows.py:54` (`"mnist": ("n_samples", "noise")`);
@@ -83,7 +83,7 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
     - `util/ad-hoc/2026-10-26_capture_published_generator_schemas.py:57-58`.
 
     This list comes from two simulations, not from a run of canopy's suite, so the canopy session runs the full suite.
-- **Item 3.8 is done: the parent `Juniper/AGENTS.md` RELEASED paragraph records cascor 0.13.0.** The owner approved the edit after the flood-3 peer `flood3-continuation-cascor-0-13-0-at-pypi-gate` stayed `waiting` through every `ListAgents` call this session.
+- **Item 3.8 is done: the parent `Juniper/AGENTS.md` RELEASED paragraph records cascor 0.13.0.** The Overtoad approved the edit after the flood-3 peer `flood3-continuation-cascor-0-13-0-at-pypi-gate` stayed `waiting` through every `ListAgents` call this session.
   - It was edited at 20:30:11Z and corrected at 21:11:17Z, once the primary had moved.
   - Against the pre-edit text, there are three hunks:
     - `:6` Last Updated (2026-10-27 → 2026-10-29);
@@ -107,7 +107,7 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
       - #778's PR number unassigned to any step;
       - two in-venv exit-contract gaps in the probe.
     - There is no round 3.
-- **Merge approval**: the owner granted it in this session ("merge approval granted"). It covers this session's PRs only and does not carry forward.
+- **Merge approval**: the Overtoad granted it in this session ("merge approval granted"). It covers this session's PRs only and does not carry forward.
 
 ## Remaining work, in order
 
@@ -116,29 +116,29 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
    - `python3 -I util/ad-hoc/2026-10-29_probe_mnist_schema_without_mnist_extra.py --python /opt/miniforge3/envs/JuniperCascor1/bin/python` exits 0.
    - juniper-canopy#778's body names this PR and the probe's final filename. This session edits the body right after opening the PR, so this is a check, not a step.
    - The arc memory `project_recurrence_equities_p0_arc_2026-10-04.md` names this PR, not `ml#TBD`.
-2. **The owner's items.** Surface them; do not act on them.
+2. **The Overtoad's items.** Surface them; do not act on them.
    - **The cascor primary was pulled under the live `:8202` stack** (2026-10-29 20:48:58Z, `5b7d10dc` → `e8e8bf4d`, actor unrecorded).
      - The auto-memory `reference_cascor_primary_frozen_while_any_stack_imports_it.md` says the primary is frozen while any stack imports it.
      - In `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` (v1.15.8), `:791` says the trio runs what the primaries hold, and `:793` says O13 governs a pull of them.
      - The `:8202` uvicorn's next forkserver child imports the new code.
-     - Whether the pull was intended, and whether that stack should keep running, is the owner's call. Never restart the cascor on `:8202` from a session.
+     - Whether the pull was intended, and whether that stack should keep running, is the Overtoad's call. Never restart the cascor on `:8202` from a session.
    - **Register row `APD-ML-002`** (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`).
      - Its "in no juniper-cascor release yet" (`:1304`) and "unreleased" (`:1364`) have been stale since Release v0.13.0 (2026-10-28 00:25:28Z).
      - Its close condition is "until that column exists". By juniper-ml#2381's reading (its body, `:122`), the column exists once a cascor carrying #731 serves the run. A default cascor run launched through `util/experiment_stack.bash` from the canonical checkout now does, and a fresh `[servers]` install resolves 0.13.0. juniper-deploy still pins 0.12.0.
-     - No run has filled the column yet. ml#2381 left the close to the owner: "Closing the row is a five-touch protocol, and the timing depends on the cascor release". The register's "Closing a row — the five touches" is at `:43`, and the recurrence plan's APD-ML-002 lines are `:711` and `:972`.
+     - No run has filled the column yet. ml#2381 left the close to the Overtoad: "Closing the row is a five-touch protocol, and the timing depends on the cascor release". The register's "Closing a row — the five touches" is at `:43`, and the recurrence plan's APD-ML-002 lines are `:711` and `:972`.
    - **juniper-deploy's cascor pin is 0.12.0**: `docker-compose.yml:233` and `:427`, and helm `k8s/helm/juniper/values.yaml:120` ("DEPLOY-15: pinned; bump with juniper-cascor releases"). No deploy PR is open (re-checked 2026-10-29).
-     - Whether 0.13.0, which carries no cascor F-S10 fix, counts as R-CASCOR for the consolidated plan's pin route is the owner's call. That route is §4 Wave 1's Images, §8's juniper-deploy row (`:1232` in v1.15.8, "The pin PR is opened once GHCR serves the image"), and P4-39 / P4-40.
-   - **R-DATA-2: juniper-data 0.17.2** (the consolidated plan's P3-03, P3-09 and W5.7). W5.7 changes a default, so whether a patch may carry it is the owner's call.
+     - Whether 0.13.0, which carries no cascor F-S10 fix, counts as R-CASCOR for the consolidated plan's pin route is the Overtoad's call. That route is §4 Wave 1's Images, §8's juniper-deploy row (`:1232` in v1.15.8, "The pin PR is opened once GHCR serves the image"), and P4-39 / P4-40.
+   - **R-DATA-2: juniper-data 0.17.2** (the consolidated plan's P3-03, P3-09 and W5.7). W5.7 changes a default, so whether a patch may carry it is the Overtoad's call.
      - PyPI serves 0.17.1, and no v0.17.2 Release exists.
      - When 0.17.2 ships, canopy#777's drift job turns red, because juniper-data#486 rewrote the `symbols` description of `equities_seq` and flat `equities`. Re-capture both snapshots then; the job prints the commands. canopy#778 offers folding `mnist` into the tabular re-capture as one option.
    - **juniper-data `notify-consumers.yml`: add juniper-canopy to the matrix.** It is still `repo: [juniper-recurrence]` (`:78`).
      - canopy#777, the listener side, merged 2026-10-27. Only the juniper-data change remains.
      - The diff is in canopy#777's body, and at `juniper-ml/tmp/worktree-cleanup-2026-10-28-canopy-p12/juniper-canopy--feature--juniper-data-schema-drift-check--20261026-1649--da08414f/jd-notify/proposed-juniper-data-notify.diff`.
-     - Only the owner can see whether `CROSS_REPO_DISPATCH_TOKEN` covers canopy. Once the change merges, a `workflow_dispatch` with version `0.17.1` settles it.
-   - **The `index.jsonl` correction row** (`~/.local/state/juniper-experiments/index.jsonl` line 482, correcting line 477; still 482 lines) says `degraded`, where the owner's option said `failed`. Ask the owner. Append another correction row only on the owner's word, and never rewrite either line.
+     - Only the Overtoad can see whether `CROSS_REPO_DISPATCH_TOKEN` covers canopy. Once the change merges, a `workflow_dispatch` with version `0.17.1` settles it.
+   - **The `index.jsonl` correction row** (`~/.local/state/juniper-experiments/index.jsonl` line 482, correcting line 477; still 482 lines) says `degraded`, where the Overtoad's option said `failed`. Ask the Overtoad. Append another correction row only on the Overtoad's word, and never rewrite either line.
    - **juniper-config-tools 0.2.0**: `[Unreleased]` in `juniper-config-tools/CHANGELOG.md` is still empty, with four commits touching the package since `juniper-config-tools-v0.1.0` (PyPI 0.1.0). It must be backfilled before a cut.
    - **W0.1's service-core half.** `util/recurrence_env_preflight.bash` still refuses `JuniperCascor1` with 2 findings: juniper-service-core 0.5.0 against juniper-recurrence 0.5.0's `>=0.6.0,<0.8.0`. Never modify `JuniperCascor1`.
-   - **The consolidated plan's §6 A1 and A9 remainders** are unchanged, and were not re-probed because they are the owner's decisions.
+   - **The consolidated plan's §6 A1 and A9 remainders** are unchanged, and were not re-probed because they are the Overtoad's decisions.
      - A1: P6 OD-2 for APD-ML-003..006, canopy#685 call (a), the data-client source fix, a cascor F-S10 fix (0.13.0 carries none), and host recurrence legs.
      - A9: DC-0.6's two numbers.
 3. **Follow-ups.**
@@ -150,7 +150,7 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
       - From a worktree, `util/experiment_stack.bash` derives another `PROJECT_DIR`. Pair `JUNIPER_EXP_CASCOR_SRC_DIR` with `JUNIPER_EXP_PROJECT_DIR` (`:61-74`).
       - The flood-3 arc's `v0.13.0` checkout is `worktrees/juniper-cascor--release--v0.13.0--20261027-1816--996134e5` (still present), and `juniper-ml/tmp/release-cascor-0.13.0/eco/juniper-cascor` symlinks to it.
         - Its handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-28_flood3-continuation-cascor-0-13-0-at-pypi-gate.md`, keeps it "until 0.13.0 is on PyPI", which is now true.
-        - That handoff removes nothing without an owner signal plus an API check that each PR is merged.
+        - That handoff removes nothing without an Overtoad signal plus an API check that each PR is merged.
         - Never build a campaign on it or remove it from this arc.
    3. canopy#738 and #751 are **issues**, not PRs. Use `gh issue view`, because `gh pr view` cannot resolve them. Both are OPEN, last updated 2026-10-18.
       - #738 is canopy 0.9.x work that the arc only annotates.
@@ -159,21 +159,21 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
       - canopy's capture tool (`util/ad-hoc/2026-10-26_capture_published_generator_schemas.py`) needs a juniper-data checkout with the release tag, because it runs git there.
       - The change itself needs canopy commits.
       - This worktree-isolated juniper-ml session can do neither.
-      - The owner may assign it, or fold it into R-DATA-2's re-capture.
+      - The Overtoad may assign it, or fold it into R-DATA-2's re-capture.
    5. Optional, not run: an E-H suite run with `--shared-equities-cache <abs dir>`.
-   6. **Removing the two canopy worktrees**, both still present: `worktrees/juniper-canopy--fix--declared-param-staging-735-736--20261026-1649--da08414f` and `worktrees/juniper-canopy--feature--juniper-data-schema-drift-check--20261026-1649--da08414f`. Their `tmp/` is archived, and the commands are in `juniper-ml/tmp/worktree-cleanup-2026-10-28-canopy-p12/README.md`. This needs a canopy session or the owner.
+   6. **Removing the two canopy worktrees**, both still present: `worktrees/juniper-canopy--fix--declared-param-staging-735-736--20261026-1649--da08414f` and `worktrees/juniper-canopy--feature--juniper-data-schema-drift-check--20261026-1649--da08414f`. Their `tmp/` is archived, and the commands are in `juniper-ml/tmp/worktree-cleanup-2026-10-28-canopy-p12/README.md`. This needs a canopy session or the Overtoad.
    7. **The predecessor's worktree** `.claude/worktrees/keen-popping-wilkes` is still present.
       - Its gitignored `tmp/s4/` holds session `22169b88`'s scratch: the downloaded 0.13.0 wheel, the helpers, and the reviewers' `validation-a/`, `validation-b/` and `validation-c/`. That handoff says none of it is the only copy of a record.
-      - Removing it is the owner's call under the retention rule. Check its `tmp/` first, because `git worktree remove` deletes it.
+      - Removing it is the Overtoad's call under the retention rule. Check its `tmp/` first, because `git worktree remove` deletes it.
    8. **This worktree's `tmp/`** (`tmp/y1/`, `tmp/2026-10-29-mnist-schema-probe/`, and the reviewers' `tmp/validation-{a,b,c,r2}/`) holds only scratch.
       - The `AGENTS.md` backups that matter are copied to `juniper-ml/tmp/2026-10-29-parent-agents-md-backups/`, in the primary checkout.
-      - Keep that directory until a later session confirms the paragraph. Then it may be deleted, or archived if the owner wants it.
+      - Keep that directory until a later session confirms the paragraph. Then it may be deleted, or archived if the Overtoad wants it.
    9. `MEMORY.md` is 20,940 bytes (2026-10-29, after the backup arc's ml#2385 line), 940 over the 20,000-byte target. The excess is in other arcs' active lines (canopy E2E, backup, perf, and the process and worktree trap groups), which are theirs to compact.
    10. **At the next plan revision**, cite juniper-canopy#778 in the recurrence plan's "Left out of juniper-canopy#776" sentence (`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md:712`, v1.7.23). It is not worth a revision on its own.
    11. **Pre-existing staleness outside P12** in `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, not fixed here and unchanged.
        - The R-CASCOR table row (`:926` in v1.15.8, `:925` in v1.15.7; 507 characters) records only 0.12.0's bypass.
        - §6's mid-wave sitting still says data 0.17.1's (`:1054`; v1.15.7 `:1052`) and cascor 0.12.0's (`:1057`; v1.15.7 `:1055`) gates wait. Both were approved by 2026-10-25.
-       - The plan keeps non-P12 paths at v1.14.0's state by design (its v1.15.0 status note: "Every other path keeps v1.14.0's state and its staleness"). Changing that is the owner's call.
+       - The plan keeps non-P12 paths at v1.14.0's state by design (its v1.15.0 status note: "Every other path keeps v1.14.0's state and its staleness"). Changing that is the Overtoad's call.
 
 ## Rules that held this session
 
@@ -182,7 +182,7 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
 - **A probe's exit contract has to survive its own failure paths.** A failed check must not cascade into an error, and a crashed checker must not read as a result.
 - **A synthetic fixture entry proves the mechanism, not a capture.** A real capture goes through canopy's tool, with its wheel-against-tag provenance. Name extras from the wheel's `provides_extra`: it is `[mnist]`, not "the `datasets` extra".
 - **An uncapped floor moves with every release.** A fresh `[servers]` install resolves cascor 0.13.0 while juniper-deploy pins 0.12.0. Name the path; never write "0.13.0 is (not) running".
-- **An owner question can sit for hours.** This one sat about 18 hours. After the answer, re-probe everything before acting: `main`, PyPI, the peer, and the target file's sha256.
+- **An Overtoad question can sit for hours.** This one sat about 18 hours. After the answer, re-probe everything before acting: `main`, PyPI, the peer, and the target file's sha256.
 - **Back up an unversioned file outside the worktree** (the primary checkout's `tmp/`), re-check its sha256 immediately before each edit, and diff it afterwards.
 - **Carried, still true**:
   - A published wheel is not a running service; name what fills the column.
@@ -191,14 +191,14 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
   - cascor's `publish.yml` builds once per job. Compare `requires_dist`, and check any repo's `publish.yml` before claiming byte-identity.
   - Make a probe check exactly what the record says, and give it a control that fails. Only a failed check exits 1; every other error exits 2.
   - Stamp times from `date -u`, never from inference.
-  - Coordinate with a peer before editing a shared, unversioned file, and never treat silence as agreement. Here the owner's approval replaced the peer's silence.
+  - Coordinate with a peer before editing a shared, unversioned file, and never treat silence as agreement. Here the Overtoad's approval replaced the peer's silence.
   - Grep the whole plan for every item you change.
   - A record of another arc's merge or release is still a record to verify.
   - Before trimming a `MEMORY.md` hook, find its detail in the topic file; gate on the link set, not a count.
   - A waiting `pypi` gate's working deadline is day 30 from the run's `created_at`; day 35 is the outer bound.
   - Fetch and re-check `origin/main` against your paths immediately before every whole-file upload.
   - `push_signed_commit.py --expected-head` needs the FULL sha.
-  - The `pypi` gates and merges are the owner's, and merge approval is per session.
+  - The `pypi` gates and merges are the Overtoad's, and merge approval is per session.
   - A post-publish resolve passes `--no-cache-dir` and `--ignore-installed`.
   - A consolidated-plan line has at most 512 characters.
 - **Tooling on this host**:
@@ -232,7 +232,7 @@ gh api repos/pcalnon/juniper-deploy/contents/docker-compose.yml -H "Accept: appl
 python3 -I -c "import json,urllib.request;print(json.load(urllib.request.urlopen('https://pypi.org/pypi/juniper-data/json'))['info']['version'])"     # 0.17.1 until R-DATA-2
 gh run list --repo pcalnon/juniper-canopy --workflow juniper-data-schema-drift.yml --limit 3    # success until juniper-data's next release
 bash util/recurrence_env_preflight.bash --python /opt/miniforge3/envs/JuniperCascor1/bin/python   # REFUSED (2 findings) until W0.1; read-only
-wc -l ~/.local/state/juniper-experiments/index.jsonl                                            # 482 until the owner rules
+wc -l ~/.local/state/juniper-experiments/index.jsonl                                            # 482 until the Overtoad rules
 grep -c 'def compute_classification_accuracy' /home/pcalnon/Development/python/Juniper/juniper-cascor/src/api/lifecycle/classification_metrics.py   # 1 since 2026-10-29 20:48:58Z
 cat /home/pcalnon/Development/python/Juniper/juniper-cascor/.git/refs/heads/main               # e8e8bf4d... until the primary moves again
 ```

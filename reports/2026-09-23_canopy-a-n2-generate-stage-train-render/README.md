@@ -37,7 +37,7 @@ LMU's own fit duration, from the recurrence log, is in brackets. Final metrics c
 **`equities` is the only candidate.** It generates, stages and trains; what fails is canopy's **Start** on a live
 CasCor model built for a narrower dataset. That is a property of the Start path, and of any dataset wider than the live
 network. It is not a property of the `equities` generator. So the remedy is more likely a Start-path fix, or a
-"use Start fresh" affordance, than disabling the seed. That is the owner's call.
+"use Start fresh" affordance, than disabling the seed. That is the Overtoad's call.
 
 **Ordering.** For CasCor, "generate" happens **inside Start**: cascor's `_reload_dataset` calls juniper-data when it
 consumes the staged config. For the LMU, it happens inside the recurrence service's `POST /v1/train`. The literal order
@@ -314,7 +314,7 @@ python3 util/ad-hoc/2026-09-23_a_n2_drive.py postflight
 python3 util/ad-hoc/2026-09-23_a_n2_drive.py slim
 ```
 
-## Worktrees created (left in place: cleanup is owner-gated)
+## Worktrees created (left in place: cleanup is Overtoad-gated)
 
 - `/home/pcalnon/Development/python/Juniper/worktrees/juniper-data--verify--a-n2-loop--20260923-1415--ce436819`
   (detached at `ce436819`)

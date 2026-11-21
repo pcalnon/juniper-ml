@@ -48,7 +48,7 @@ Two things are incomplete but not false, so they are not findings:
 - I printed no environment variables, tokens, credentials or commit headers or signatures; I read commit text only through `git log -1 --format=%B`.
 - Every fake was built by concatenation, and I printed only labels, booleans and counts.
 - The fake-transcript fixtures are deleted and confirmed gone, and the regenerated report copies are deleted. A sweep of the 68 remaining scratch files found no key material.
-- Nothing was sent to any external service, and the owner's email was not used.
+- Nothing was sent to any external service, and the Overtoad's email was not used.
 
 ---
 

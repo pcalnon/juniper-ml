@@ -39,7 +39,7 @@ def fresh(case: str) -> tuple[Path, Path, Path]:
 
 
 def snap(d: Path, db: Path):
-    r = subprocess.run([sys.executable, str(SNAP), "--src", str(db), "--dest-dir", str(d / "dest"), "--owner", ME], capture_output=True, text=True, env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))
+    r = subprocess.run([sys.executable, str(SNAP), "--src", str(db), "--dest-dir", str(d / "dest"), "--Overtoad", ME], capture_output=True, text=True, env=dict(os.environ, PYTHONDONTWRITEBYTECODE="1"))
     err = [ln for ln in r.stderr.splitlines() if "Error" in ln or "error" in ln][-1:]
     made = sorted(p.name for p in (d / "dest").glob("*")) if (d / "dest").exists() else []
     return r.returncode, err, made

@@ -2,7 +2,7 @@
 
 **Date**: 2026-10-30 UTC (this host's clock is local time, UTC−5)
 **Session**: `6f4d37` (`ListAgents` name `recurrence-equities-mnist-schema-probe-canopy-778-parent-agents-cascor-0-13-0`), the Linux host, worktree `.claude/worktrees/declarative-snuggling-sparrow`. Commits are signed only through the API (`util/open_signed_pr.py`), never `git commit`.
-**Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-29_recurrence-equities-mnist-schema-probe-canopy-778-parent-agents-cascor-0-13-0.md` (landed by juniper-ml#2386). Start from this file. Its item 1 passed. Of its owner items, this session acted on four, each on the owner's word: the index row, the trio stop, the notify matrix and the deploy pin. Its follow-up 3.2, the `test_accuracy` run, is done. Everything else is carried below.
+**Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-29_recurrence-equities-mnist-schema-probe-canopy-778-parent-agents-cascor-0-13-0.md` (landed by juniper-ml#2386). Start from this file. Its item 1 passed. Of its Overtoad items, this session acted on four, each on the Overtoad's word: the index row, the trio stop, the notify matrix and the deploy pin. Its follow-up 3.2, the `test_accuracy` run, is done. Everything else is carried below.
 
 ---
 
@@ -12,7 +12,7 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
 - consolidated **v1.15.9**;
 - recurrence **v1.7.24** (`notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`).
 
-Each is written with an edit script under `util/ad-hoc/` that has `--check`, in the pattern of `util/ad-hoc/2026-10-29_consolidated_plan_v1_15_8_cascor_primary_carries_731.py`. After that come the owner's items, then the follow-ups.
+Each is written with an edit script under `util/ad-hoc/` that has `--check`, in the pattern of `util/ad-hoc/2026-10-29_consolidated_plan_v1_15_8_cascor_primary_carries_731.py`. After that come the Overtoad's items, then the follow-ups.
 
 ## Completed this session (each probed here)
 
@@ -20,12 +20,12 @@ Each is written with an edit script under `util/ad-hoc/` that has `--check`, in 
   - ml#2386 is `110d5e40` on `main`, and the plans read 1.7.23 / 1.15.8.
   - v1.15.8's `--check` exits 0, and `util/ad-hoc/2026-10-29_probe_mnist_schema_without_mnist_extra.py` exits 0 on a freshly built venv.
   - canopy#778's body names ml#2386 and the probe.
-- **The owner answered about 9.6 h after the question.** Every fact below was re-probed after the answer.
-- **Index correction row 483** (owner: "Append 'failed'").
+- **The Overtoad answered about 9.6 h after the question.** Every fact below was re-probed after the answer.
+- **Index correction row 483** (Overtoad: "Append 'failed'").
   - `util/ad-hoc/2026-10-30_index_correction_row_failed.py` (new; `--check`) appended it at 08:25:05Z to `~/.local/state/juniper-experiments/index.jsonl`: run `20261003T091414Z-4ba6`, outcome `failed`, `corrects: {line: 482, outcome: degraded}`.
   - Rows 477 and 482 are byte-identical to the pre-append copy, `juniper-ml/tmp/2026-10-30-recurrence-equities-y2/index.jsonl.before-row-483` (sha256 `3e559f0d…`).
   - The script was tested on copies first: wrong base → 1; second run → "already applied"; a partial last line → 1; a missing file → 2.
-- **The canopy E2E trio is stopped** (the owner: "i don't think the PR was mine. let's stop the :8202 stack", then "Trio via --down").
+- **The canopy E2E trio is stopped** (the Overtoad: "i don't think the PR was mine. let's stop the :8202 stack", then "Trio via --down").
   - The 2026-10-29 20:48:58Z primary pull's actor is still unknown.
   - `:8202` was the canopy E2E arc's trio cascor: data `:8101` pid 2856834, cascor pid 2857489, canopy `:8051` pid 2858037; guard dir `~/.local/state/juniper-experiments/e2e-trio-2026-09-22/`. It also served the service-mode legs `:8052` / `:8053`.
   - The canopy session (`canopy-phase16-round19-frozen-round20-next`) was told first. It replied "No hold needed", with four handling points, all met.
@@ -46,7 +46,7 @@ Each is written with an edit script under `util/ad-hoc/` that has `--check`, in 
 - **`test_accuracy` fills.**
   - `util/ad-hoc/2026-10-30_test_accuracy_731_smoke_suite.yaml` (new) is one spiral-smoke cell on the cascor primary's `src/` at `e8e8bf4d`, run with `JUNIPER_EXP_PROJECT_DIR=/home/pcalnon/Development/python/Juniper`.
   - Suite `test-accuracy-731-smoke-20261030T084056Z`, run `20261030T084056Z-0ac7`: `artifacts/results/metrics_final.json` has `eval_metrics.final.split == "test"` and `accuracy == 0.575`, which equals `aggregate.csv`'s `test_accuracy`. The run took 27 s, its index row is 484, and the stack is torn down.
-  - **APD-ML-002's close condition ("until that column exists") is met by evidence.** The close itself awaits the owner.
+  - **APD-ML-002's close condition ("until that column exists") is met by evidence.** The close itself awaits the Overtoad.
 - **Arc memory** `project_recurrence_equities_p0_arc_2026-10-04.md`: a new state block and a new description. `MEMORY.md` is unchanged.
 
 ## Remaining work, in order
@@ -57,25 +57,25 @@ Each is written with an edit script under `util/ad-hoc/` that has `--check`, in 
    - Write this PR's number into the arc memory's state block.
 2. **Plan revisions** (grep the whole plan for each item; every consolidated-plan line has at most 512 characters).
    - **Consolidated v1.15.9.**
-     - deploy#266 meets §8's juniper-deploy row (`:1232` in v1.15.8, "The pin PR is opened once GHCR serves the image") and P4-39 / P4-40, under the owner's ruling that 0.13.0 counts for R-CASCOR's pin route despite carrying no F-S10 fix.
+     - deploy#266 meets §8's juniper-deploy row (`:1232` in v1.15.8, "The pin PR is opened once GHCR serves the image") and P4-39 / P4-40, under the Overtoad's ruling that 0.13.0 counts for R-CASCOR's pin route despite carrying no F-S10 fix.
      - XC-P12 action 4, §4's P6 line and §5's R-CASCOR sub-bullet now have a filled `test_accuracy`. The trio stop goes under O13, at `:791` / `:793`. data#501 and the token result go wherever the plan carries the notify-matrix item. Index row 483 is new.
    - **Recurrence v1.7.24.**
      - `:711` / `:972` (row 482's `degraded`), and `:712` (the `failed` question is answered: row 483).
      - At `:712`, cite canopy#778 in the "Left out of juniper-canopy#776" sentence.
      - APD-ML-002's lines.
-3. **The owner's items** (surface them; do not act on them).
+3. **The Overtoad's items** (surface them; do not act on them).
    - **Close APD-ML-002**: the five touches in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` (`:43`). `:1304` / `:1364` are stale ("unreleased").
-   - **The parent `Juniper/AGENTS.md` cascor 0.13.0 bullet** (`:240-248`) says "juniper-deploy still pins the 0.12.0 image", which is stale since deploy#266. It is unversioned and shared: get the owner's approval, back it up to the primary's `tmp/`, and check its sha256 before the edit.
+   - **The parent `Juniper/AGENTS.md` cascor 0.13.0 bullet** (`:240-248`) says "juniper-deploy still pins the 0.12.0 image", which is stale since deploy#266. It is unversioned and shared: get the Overtoad's approval, back it up to the primary's `tmp/`, and check its sha256 before the edit.
    - R-DATA-2 (juniper-data 0.17.2; W5.7 is a default change; canopy#777's drift job goes red then by design); juniper-config-tools 0.2.0 (backfill `[Unreleased]` first); W0.1's service-core half (`util/recurrence_env_preflight.bash` still REFUSES `JuniperCascor1`, 2 findings; never modify that env); §6 A1 / A9.
    - juniper-canopy#778 needs a canopy session.
 4. **Follow-ups.**
    - `save_model`'s live run (juniper-ml#2316) is BLOCKED on W0.1.
-   - The canopy worktrees `…declared-param-staging-735-736…` and `…juniper-data-schema-drift-check…`, and the juniper-ml worktrees `keen-popping-wilkes` and `cosmic-puzzling-lovelace`: owner or canopy session. Check each one's `tmp/` before removing it.
+   - The canopy worktrees `…declared-param-staging-735-736…` and `…juniper-data-schema-drift-check…`, and the juniper-ml worktrees `keen-popping-wilkes` and `cosmic-puzzling-lovelace`: Overtoad or canopy session. Check each one's `tmp/` before removing it.
    - `MEMORY.md` is about 20.9 KB, over the 20 KB target; the excess is other arcs'.
 
 ## Rules that held this session
 
-- **Re-probe after a long owner wait.** Here the wait was 9.6 h.
+- **Re-probe after a long Overtoad wait.** Here the wait was 9.6 h.
 - **Notify a peer before stopping its stack, and keep the window you state.** I did not keep it.
 - **A log that is deleted on disk survives only through `/proc/<pid>/fd`, so copy it before the stop.** Copy the live logs after every holder has exited, children included.
 - **A proposed diff is not a complete change.** grep the repo for hidden test pins: `[REPO_NAME]` was one.
@@ -98,7 +98,7 @@ gh api repos/pcalnon/juniper-deploy/contents/docker-compose.yml -H "Accept: appl
 gh api repos/pcalnon/juniper-data/contents/.github/workflows/notify-consumers.yml -H "Accept: application/vnd.github.raw" | grep -n 'repo: \['   # [juniper-recurrence, juniper-canopy]
 ss -ltnpH | grep -E ':(8051|8052|8053|8058|8059|8101|8202) '                          # only the four legs
 cut -f1,2 /home/pcalnon/Development/python/Juniper/juniper-ml/tmp/2026-10-30-trio-stop/MANIFEST.tsv
-grep -n 'juniper-deploy still pins' /home/pcalnon/Development/python/Juniper/AGENTS.md   # stale until the owner approves the edit
+grep -n 'juniper-deploy still pins' /home/pcalnon/Development/python/Juniper/AGENTS.md   # stale until the Overtoad approves the edit
 cat /home/pcalnon/Development/python/Juniper/juniper-cascor/.git/refs/heads/main     # e8e8bf4d... until the primary moves
 ```
 

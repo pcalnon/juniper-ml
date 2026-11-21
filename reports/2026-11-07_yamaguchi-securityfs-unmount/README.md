@@ -2,7 +2,7 @@
 
 These files are the evidence for
 `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md`
-(the RCA). The owner executed
+(the RCA). The Overtoad executed
 `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md`
 (the runbook) on 2026-11-08 to fix the host.
 
@@ -31,12 +31,12 @@ hardware identifiers are kept out. Two unredacted originals are retained locally
 
 | File (UTC of capture) | What it shows | Produced by |
 |---|---|---|
-| `2026-11-08T0823Z_owner-run-runbook-steps-1-to-4.txt` | The owner's terminal output for runbook steps 1–4, verbatim, with times from the host. Step 1 ran on a checkout not yet pulled, so it captured no baseline and left `probe-before.txt` empty. Step 4's `verify` against that empty file listed 22 `UNEXPECTED` lines: an empty baseline, not a regression (RCA §14 F2, F4). | Pasted by the owner; the header was written in the session |
+| `2026-11-08T0823Z_Overtoad-run-runbook-steps-1-to-4.txt` | The Overtoad's terminal output for runbook steps 1–4, verbatim, with times from the host. Step 1 ran on a checkout not yet pulled, so it captured no baseline and left `probe-before.txt` empty. Step 4's `verify` against that empty file listed 22 `UNEXPECTED` lines: an empty baseline, not a regression (RCA §14 F2, F4). | Pasted by the Overtoad; the header was written in the session |
 | `2026-11-08T0851Z_remount-validate-after-remediation-vs-incident-fingerprint.txt` | `verify` on the remediated host against the 02:15Z incident-state fingerprint: E1–E5 `PASS`, and only `mount.*` and `snap_service.*` differ. Re-run with the hardened validator at 09:06Z and again at 09:11Z: byte-identical output (`diff` exit 0). | `bash util/ad-hoc/2026-11-07_securityfs_remount_validate.bash verify reports/2026-11-07_yamaguchi-securityfs-unmount/2026-11-08T0215Z_remount-fingerprint-incident-state.txt` |
 | `2026-11-08T0852Z_make-up-refused-by-image-provenance-preflight.txt` | `make up` refused by the image-provenance preflight before the AppArmor one ran: canopy 0.9.0 and data 0.17.1 are each 2 commits behind their checkouts (RCA §14 F6). | `make -C juniper-deploy up`, colour codes stripped |
 | `2026-11-08T0853Z_probe-after-remediation.txt` | The probe's 10 sections after the remount. Against the before-probe, only the expected changes. securityfs's inodes carry the boot time. | `bash util/ad-hoc/2026-11-07_securityfs_apparmor_probe.bash` |
 | `2026-11-08T0853Z_juniper-deploy-full-suite-after-remediation.txt` | juniper-deploy at `53b948d8`: 409 passed, 48 skipped, **0 failed**. The 17 helm tests that failed in the incident state pass. | `python3 -m pytest tests/ -q -p no:cacheprovider` in the juniper-deploy checkout |
-| `2026-11-08T0857Z_make-up-after-remediation-released-images.txt` | `make up` with the owner's choice to run the released images: all four preflights pass, the AppArmor one with `[OK]`, and all seven containers start. | `JUNIPER_IMAGE_STALE_OK=1 make -C juniper-deploy up`, colour codes stripped |
+| `2026-11-08T0857Z_make-up-after-remediation-released-images.txt` | `make up` with the Overtoad's choice to run the released images: all four preflights pass, the AppArmor one with `[OK]`, and all seven containers start. | `JUNIPER_IMAGE_STALE_OK=1 make -C juniper-deploy up`, colour codes stripped |
 | `2026-11-08T0858Z_make-health-after-remediation.txt` | All four services ready. canopy and data show `STALE`: drift against the checkouts, as chosen. | `make -C juniper-deploy health`, colour codes stripped |
 | `2026-11-08T0905Z_upstream-source-pins.txt` | The 01:10Z pins plus three systemd v259.5 sites behind the F1 correction: `mount_point_is_api()`, the skip in `mount_setup_unit()`, and the refusal in `mount_verify()`. The 01:10Z file is kept unchanged: `tests/test_host_api_filesystems_check.py` parses it. | `bash util/ad-hoc/2026-11-07_upstream_source_pins.bash` |
 | `2026-11-08T0908Z_remount-validate-baseline-gate-check_first-gate-FAILED.txt` | The first version of the validator's baseline gate, failing cases C3 and C10: it passed the probe's report as a baseline. Kept as the evidence for F3. | `python3 util/ad-hoc/2026-11-08_remount_validate_baseline_gate_check.py` |

@@ -198,11 +198,11 @@ class StatusCellIsTheOnlyCloseMarker(unittest.TestCase):
         """The whole-line ``**FIXED`` search is the false-AGREE.
 
         A §5.1 verification cell that *discusses* ``**FIXED`` (\"Booked **FIXED
-        for the ownership half\") used to mark the id table-fixed even when the
+        for the Overtoadship half\") used to mark the id table-fixed even when the
         §4 status cell was still open. The close protocol's fifth touch then
         had nothing left to catch.
         """
-        poisoned = "| APD-DATA-018 | No async job pattern | -- | " "Booked **FIXED for the ownership half only |"
+        poisoned = "| APD-DATA-018 | No async job pattern | -- | " "Booked **FIXED for the Overtoadship half only |"
         text = _register(
             prose="**Zero have since been fixed**.",
             table_rows=[_OPEN],

@@ -9,12 +9,12 @@
 # License:       MIT License
 #
 # Description:
-#   Read-only classifier for a cascor snapshot archive, implementing the owner's classification
+#   Read-only classifier for a cascor snapshot archive, implementing the Overtoad's classification
 #   scheme (handoff 2026-08-22 §2.4) on top of the §6.2 index. Staged, because the five categories
 #   cost between one second and several CPU-days to decide. Writes only a derived sidecar; never
 #   touches a .h5, never deletes anything.
 #####################################################################################################################################################################################################
-"""Classify a cascor snapshot archive into the owner's five categories.
+"""Classify a cascor snapshot archive into the Overtoad's five categories.
 
 Usage:
     python util/snapshot_classify.py --stats                     # index stage (~1s), population table
@@ -111,7 +111,7 @@ WHY THE SIDECAR IS REWRITTEN, NOT APPENDED
 WHY THERE IS NO --prune
     Retention is design §6.4 and is gated on classification, which is what this tool
     produces. Acting on the verdict in the same tool that forms it would prejudge the
-    owner's decision. This tool only reads snapshots. (The live hazard next door:
+    Overtoad's decision. This tool only reads snapshots. (The live hazard next door:
     ``snapshot_cli.py cleanup --keep N`` is count-based and mtime-ordered, and mtime in
     this archive is NOT creation time -- a copy reset them all.)
 
@@ -232,7 +232,7 @@ def hidden_units(row: dict) -> Optional[int]:
 
 
 def assign_category(health: str, attributed: bool) -> str:
-    """Map the two axes onto the owner's single ``category`` label.
+    """Map the two axes onto the Overtoad's single ``category`` label.
 
     One place, so the index stage and the load stage cannot drift into disagreeing
     about the same row -- which they did in the first cut of this tool: attribution was
@@ -555,7 +555,7 @@ def main(argv: "list[str] | None" = None) -> int:
 
 
 def _dispatch(argv: "list[str] | None" = None) -> int:  # noqa: C901 - a CLI dispatch, flat by design
-    parser = argparse.ArgumentParser(description="Classify a cascor snapshot archive into the owner's five categories (handoff §2.4). Read-only.")
+    parser = argparse.ArgumentParser(description="Classify a cascor snapshot archive into the Overtoad's five categories (handoff §2.4). Read-only.")
     parser.add_argument("--root", type=Path, default=None, help=f"Snapshot root (default: ${DEFAULT_ROOT_ENV}, else {DEFAULT_ROOT_FALLBACK})")
     parser.add_argument("--stage", choices=STAGES, default="index", help="How deep to classify (default: index)")
     parser.add_argument("--cascor-src", type=Path, default=None, help=f"Cascor source tree for the load stage (default: ${DEFAULT_CASCOR_SRC_ENV}, else {DEFAULT_CASCOR_SRC_FALLBACK})")

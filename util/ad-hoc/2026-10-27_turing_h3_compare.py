@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-27
 Status: ad-hoc — investigation (turing bring-up task H3: the live validation of the three SME agents)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (H3's row; §9.1's I-H3);
          .claude/agents/macos-host-sme.md and .claude/agents/signing-auth-sme.md (the reports it reads);
          util/host_state_check.py (its --probe-json evaluates the independent probe)

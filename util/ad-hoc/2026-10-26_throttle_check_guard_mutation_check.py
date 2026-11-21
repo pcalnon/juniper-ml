@@ -9,7 +9,7 @@ Version:     0.1.0
 License:     MIT License
 Created:     2026-10-26
 Status:      ad-hoc -- investigation; reads this checkout, fetches sibling files by SHA, writes only under $TMPDIR
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     APD-ECO-015, APD-ML-008; tests/test_service_fork_drift.py;
              notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md
 

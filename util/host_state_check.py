@@ -48,7 +48,7 @@ G-SIGN [signing]
     ``integration``: the I-SIGN record (signing plan K10, recorded by K11), a file that must exist.
 G-SEC [security]
     ``sip`` and ``authenticated-root`` (csrutil), ``firewall`` (socketfilterfw state 1 or 2, blocking all
-    incoming connections: task C2's block-all form, owner ruling 2026-10-25; stealth mode is reported only),
+    incoming connections: task C2's block-all form, Overtoad ruling 2026-10-25; stealth mode is reported only),
     ``filevault`` (fdesetup), ``key-exports`` (no ``*.asc`` or ``*recovery*`` file under ``~/.ssh`` or
     ``~/.gnupg``: task C3) and ``key-modes`` (no non-public file directly in ``~/.ssh`` open to group or
     others: task C4).
@@ -606,9 +606,9 @@ def gate_alias(ctx: Context) -> list[Condition]:
 # G-SIGN
 # ---------------------------------------------------------------------------------------------------------
 PREFLIGHT_CONDITIONS = (
-    ("pinentry", "plan task B1 (owner since erratum E-C8): pinentry-program /usr/local/bin/pinentry-mac in gpg-agent.conf"),
+    ("pinentry", "plan task B1 (Overtoad since erratum E-C8): pinentry-program /usr/local/bin/pinentry-mac in gpg-agent.conf"),
     ("agent-socket", "start gpg-agent: gpgconf --launch gpg-agent"),
-    ("external-cache", "plan task B1, D11 item 3 (owner since erratum E-C8): add no-allow-external-cache to gpg-agent.conf"),
+    ("external-cache", "plan task B1, D11 item 3 (Overtoad since erratum E-C8): add no-allow-external-cache to gpg-agent.conf"),
 )
 
 
@@ -628,7 +628,7 @@ def _signing_config(ctx: Context) -> Condition:
         return Condition("signing-config", "error", f"util/configure_commit_signing.py --check could not evaluate: {'; '.join(errors) or doc.get('summary')}")
     if failed or doc.get("exit_code") != 0:
         detail = "; ".join(f"{c.get('id')}: {c.get('message')}" for c in failed) or str(doc.get("summary"))
-        return Condition("signing-config", "fail", f"util/configure_commit_signing.py --check: {detail}", failing_remediations([c.get("remediation") for c in failed]) or "python3 util/configure_commit_signing.py --apply (task B4a; owner, from a real terminal)")
+        return Condition("signing-config", "fail", f"util/configure_commit_signing.py --check: {detail}", failing_remediations([c.get("remediation") for c in failed]) or "python3 util/configure_commit_signing.py --apply (task B4a; Overtoad, from a real terminal)")
     return Condition("signing-config", "pass", f"util/configure_commit_signing.py --check: {doc.get('summary')}")
 
 
@@ -663,7 +663,7 @@ def _integration(ctx: Context) -> Condition:
             "integration",
             "fail",
             "no I-SIGN record: T1-T5 verified (signing plan K10, which widens B5) is not recorded in expected.yaml",
-            "after B2 and B3, the owner runs the I-SIGN matrix (K10); K11 records it as G-SIGN.integration",
+            "after B2 and B3, the Overtoad runs the I-SIGN matrix (K10); K11 records it as G-SIGN.integration",
         )
     if not (ctx.record_base / rec["record"]).is_file():
         return Condition("integration", "fail", f"the I-SIGN record {rec['record']} (dated {rec['date']}) does not exist", "add the record file, or correct G-SIGN.integration.record")
@@ -685,7 +685,7 @@ def _sip(sec: dict[str, Any]) -> Condition:
     word = _status_word(text, r"System Integrity Protection status:\s*([A-Za-z]+)", "csrutil status")
     if word == "enabled":
         return Condition("sip", "pass", first_line(text))
-    return Condition("sip", "fail", first_line(text), "task C1 (owner): csrutil enable from recoveryOS, then approve the VirtualBox extensions; never csrutil disable (D5)")
+    return Condition("sip", "fail", first_line(text), "task C1 (Overtoad): csrutil enable from recoveryOS, then approve the VirtualBox extensions; never csrutil disable (D5)")
 
 
 def _authenticated_root(sec: dict[str, Any]) -> Condition:
@@ -693,17 +693,17 @@ def _authenticated_root(sec: dict[str, Any]) -> Condition:
     word = _status_word(text, r"Authenticated Root status:\s*([A-Za-z]+)", "csrutil authenticated-root status")
     if word == "enabled":
         return Condition("authenticated-root", "pass", first_line(text))
-    return Condition("authenticated-root", "fail", first_line(text), "task C1 (owner): csrutil authenticated-root enable from recoveryOS")
+    return Condition("authenticated-root", "fail", first_line(text), "task C1 (Overtoad): csrutil authenticated-root enable from recoveryOS")
 
 
 # socketfilterfw --getblockall prints "Firewall <state>." with one of the binary's four block-all states: "is blocking
-# all non-essential incoming connections" when on (turing, 2026-10-26, once the owner applied C2), "has block all state
+# all non-essential incoming connections" when on (turing, 2026-10-26, once the Overtoad applied C2), "has block all state
 # set to disabled" when off (turing, 2026-10-25), "has unknown block all state" or "is in undefined block all state".
 # "Firewall is set to block all non-essential incoming connections" sits beside "Block all DISABLED!" in the strings,
 # the shape of --setblockall's on/off confirmations, and turing's getter never printed it: it is not judged.
 _BLOCKALL_ON = "is blocking all non-essential incoming connections"
 _BLOCKALL_OFF = "has block all state set to disabled"
-_C2_FIX = "task C2 (owner): sudo /usr/libexec/ApplicationFirewall/socketfilterfw {steps} (block all incoming connections while nothing inbound is needed; owner ruling 2026-10-25)"
+_C2_FIX = "task C2 (Overtoad): sudo /usr/libexec/ApplicationFirewall/socketfilterfw {steps} (block all incoming connections while nothing inbound is needed; Overtoad ruling 2026-10-25)"
 
 
 def _blocks_all(text: str) -> bool:
@@ -767,7 +767,7 @@ def _key_exports(sec: dict[str, Any], home: str) -> Condition:
         "key-exports",
         "fail",
         f"{len(paths)} key-export or recovery file(s): {names}",
-        "task C3 (owner): plan D4 steps 1-6 (an offline encrypted backup and a test decrypt before any delete; regenerate the GitHub recovery codes; an exposure assessment)",
+        "task C3 (Overtoad): plan D4 steps 1-6 (an offline encrypted backup and a test decrypt before any delete; regenerate the GitHub recovery codes; an exposure assessment)",
     )
 
 
@@ -832,7 +832,7 @@ def _kubectl(ctx: Context) -> Condition:
     skew = cfg["max_minor_skew"]
     # Decision D7: Docker Desktop installs its own /usr/local/bin/kubectl (turing's 1.22.4 is Docker.app's), so task D3,
     # its upgrade, runs before task D4 (erratum E-H3).
-    fix = f"task D3 (owner) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl {cluster}.x, which needs re-planning under the D6 ruling (erratum E-D6)"
+    fix = f"task D3 (Overtoad) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl {cluster}.x, which needs re-planning under the D6 ruling (erratum E-D6)"
     cap = get_capture(ctx.probe["tools"], "kubectl_version", "kubectl version")
     if cap is not None and not cap.get("found"):
         return Condition("kubectl", "fail", "kubectl not found", fix)
@@ -898,7 +898,7 @@ def _parent_agents_md(ctx: Context) -> Condition:
     want = ctx.expected["gates"]["G-ENV"]["parent_agents_md"]["sha256"]
     path = tilde(str(rec.get("path")), str(ctx.probe.get("home", "")))
     if not rec["exists"]:
-        return Condition("parent-agents-md", "fail", f"{path} is absent", "task E4 (owner): copy yamaguchi's file and record its sha256 here and in HOST.md (decision D9)")
+        return Condition("parent-agents-md", "fail", f"{path} is absent", "task E4 (Overtoad): copy yamaguchi's file and record its sha256 here and in HOST.md (decision D9)")
     text = stdout_of(get_capture(rec, "sha256", "parent AGENTS.md sha256"), "shasum -a 256")
     digest = text.split()[0].lower() if text.split() else ""
     if _SHA256_RE.fullmatch(digest) is None:
@@ -959,14 +959,14 @@ def gate_net(ctx: Context) -> list[Condition]:
 
 
 def _link(cfg: dict[str, Any], name: str, iface: dict[str, Any] | None, interfaces: dict[str, dict[str, Any]]) -> Condition:
-    fix = f"task F2 (owner): a cable, switch port or dongle that links {name} at {cfg['media']}"
+    fix = f"task F2 (Overtoad): a cable, switch port or dongle that links {name} at {cfg['media']}"
     mac = cfg["mac"]
-    owner = next((n for n, i in interfaces.items() if mac and i.get("ether") == mac), None)
+    Overtoad = next((n for n, i in interfaces.items() if mac and i.get("ether") == mac), None)
     if iface is None:
-        moved = f"; the dongle {mac} is {owner}: update G-NET.interface" if owner else ""
+        moved = f"; the dongle {mac} is {Overtoad}: update G-NET.interface" if Overtoad else ""
         return Condition("link", "fail", f"{name} does not exist{moved}", fix)
     if mac and iface.get("ether") != mac:
-        moved = f"; the dongle {mac} is {owner}" if owner else f"; no interface has {mac}"
+        moved = f"; the dongle {mac} is {Overtoad}" if Overtoad else f"; no interface has {mac}"
         return Condition("link", "fail", f"{name} is {iface.get('ether')}, not the dongle {mac}{moved}", "find the dongle with networksetup -listallhardwareports, then update G-NET")
     state = f"{name}: media {iface.get('media') or '<none>'}, status {iface.get('status') or '<none>'}"
     if iface.get("status") == "active" and cfg["media"] in (iface.get("media") or ""):
@@ -977,7 +977,7 @@ def _link(cfg: dict[str, Any], name: str, iface: dict[str, Any] | None, interfac
 def _address(cfg: dict[str, Any], name: str, iface: dict[str, Any] | None, measured: bool) -> Condition:
     want = cfg["reserved_ip"]
     if want is None:
-        return Condition("address", "fail", f"no reserved address is recorded for {name}", "task A6 (owner): a DHCP reservation for the dongle's MAC, recorded as G-NET.reserved_ip and in HOST.md")
+        return Condition("address", "fail", f"no reserved address is recorded for {name}", "task A6 (Overtoad): a DHCP reservation for the dongle's MAC, recorded as G-NET.reserved_ip and in HOST.md")
     if not measured:
         return Condition("address", "error", "ifconfig -a was not captured")
     have = (iface or {}).get("inet") or []

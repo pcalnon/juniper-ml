@@ -85,7 +85,7 @@ demands it, escalate the ordering to Paul rather than deciding unilaterally.
    reject arm, and confirm the entry's deferred registration/metric-leak inference while there. **And
    F-CANOPY-004 (P0/P1) needs a FINDING-level disposition, not just row re-drives**: post-Stage-2 the
    numbers are materially better (interaction renders 3–16 s; fresh-session population 20–40 s) — take an
-   owner decision: accept-and-document a latency contract (close with the numbers) or open the
+   Overtoad decision: accept-and-document a latency contract (close with the numbers) or open the
    WS-migration workstream (JR-CAN-PERF-004); its rows re-drive after that call.
 5. **P2 dispositions are the OWNER's call (§6.3)** — present Paul the open-P2 set (-001, -012, -015,
    -018, -026, -028, -032, -033, -034, -036, -013, F-CASCOR-002) for fixed-vs-deferred sign-off;
@@ -98,10 +98,10 @@ demands it, escalate the ordering to Paul rather than deciding unilaterally.
    dataset-swap event, whose UI entry F-CANOPY-025 killed and canopy#514 restored (drive the Live Switch
    end-to-end and these two come with it), M-DATASET-14 (theme-flip re-drive owed regardless of fixes),
    and the F-CANOPY-004 latency-class rows (after item 4's disposition). **M-DATASET-17..26 (10 BLOCKED
-   rows) still await the owner's DEMO-lane / 3-D-posture scoping decision** — surface it; do not drive
+   rows) still await the Overtoad's DEMO-lane / 3-D-posture scoping decision** — surface it; do not drive
    around it.
 7. **Phase 3** (plan §6.4, the `ui_live` suite) — entry condition is "every P0/P1 closed or
-   owner-deferred": 13 P0/P1-tier findings remain open (1 P0 · 2 P0/P1 · 10 P1), so it is NOT near —
+   Overtoad-deferred": 13 P0/P1-tier findings remain open (1 P0 · 2 P0/P1 · 10 P1), so it is NOT near —
    items 3–4 are the path there. Do not start early.
 8. **Phase 4 (plan §6.5) — still owed, do not lose it again**: the docs-truth-up batch per §11 — the
    D-ledger divergences (D-1 three-writers, D-2, D-3 replay-interval base, D-5 flag-default comment; D-0

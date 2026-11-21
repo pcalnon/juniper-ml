@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (generated with Claude Code)
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 consolidation, juniper-data tests carrier VALIDATION)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#512 #513 #514 #516 #517; flood-4 validation brief (fidelity lens)
 
 Reads only git objects (the carrier worktree's INDEX, the drafts' head commits, origin/main); writes
@@ -86,10 +86,10 @@ def main() -> int:
     for path in carrier_paths:
         idx = blob_of(carrier, f":{path}")
         mainb = blob_of(primary, f"{main_sha}:{path}")
-        owners = [n for n, ps in draft_paths.items() if path in ps]
-        heads = {n: blob_of(primary, f"refs/flood4/pr/{n}:{path}") for n in owners}
+        Overtoads = [n for n, ps in draft_paths.items() if path in ps]
+        heads = {n: blob_of(primary, f"refs/flood4/pr/{n}:{path}") for n in Overtoads}
         same = {n: (b == idx) for n, b in heads.items()}
-        print(f"{path}: index={idx} main={mainb} draft-owners={owners} equal-to-head={same}")
+        print(f"{path}: index={idx} main={mainb} draft-Overtoads={Overtoads} equal-to-head={same}")
         if mainb is not None and idx is not None:
             old = git_bytes(primary, "cat-file", "-p", mainb).decode().splitlines()
             new = git_bytes(carrier, "cat-file", "-p", idx).decode().splitlines()

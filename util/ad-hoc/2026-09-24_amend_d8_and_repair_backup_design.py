@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Record the owner's 2026-09-24 rulings in the backup design, repair its stale text, and stop §8.
+"""Record the Overtoad's 2026-09-24 rulings in the backup design, repair its stale text, and stop §8.
 
 Project:     juniper-ml
 Sub-Project: backup infrastructure
 Author:      Paul Calnon
 Created:     2026-09-24
 Status:      ad-hoc -- document-of-record edit
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md
              sections 6, 8, 10, 11 and 12
              notes/JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md
@@ -36,8 +36,8 @@ What this records, all of it prose:
    re-derived from source go into a STOP block at the top of section 8, and the front matter points at
    it. Rounds 5 to 7 each checked the previous pass's corrections and found more -- in the corrections'
    own text, in older text they now contradicted, in host state the design still described after it had
-   moved, and, in round 7, in what the release lets the owner do today. Fixing the procedure is a
-   separate change; the owner ruled this one narrow on 2026-09-24.
+   moved, and, in round 7, in what the release lets the Overtoad do today. Fixing the procedure is a
+   separate change; the Overtoad ruled this one narrow on 2026-09-24.
 5. ml#2045's DROPPED CHANGES: note 10.2b moved ahead of 10.2c (adopted); four whole tables re-padded to
    column alignment (not adopted). The SMART-script refactor is adopted in its own file, not here.
 6. SECTION 12 ROWS that were owed, and this one.
@@ -92,12 +92,12 @@ STALE = (
     "the next action in this arc is §8's P0 recovery",
     "**two rounds**, plus a third",
     "`nologin` **immediately**",
-    "**Time-critical, owner**: `history -c",
-    "The owner actions §6 lists outside §8",
+    "**Time-critical, Overtoad**: `history -c",
+    "The Overtoad actions §6 lists outside §8",
     "Do this **after** the two live",
     "shred when the editor closes",
     "still unwritten and still recoverable",
-    "listed as owner actions in §8",
+    "listed as Overtoad actions in §8",
     "it is the one check §7.5 item 6",
     "(none depends on the recovery)",
     "grep -c ENCRYPTION /root/.bash_history",
@@ -109,9 +109,9 @@ STALE = (
     "in P0, in that\n  order. Items 5–7",
     "§11's round-3 count, round count",
     "deletes the old copies server-side",
-    "(§8 owner actions)",
+    "(§8 Overtoad actions)",
     "once the migration is accepted (R-6)",
-    "owner-gated exactly as §8 is",
+    "Overtoad-gated exactly as §8 is",
     "editor backups of the unit are the last untested",
     "anything that only reads, such as P0 step −1's review",
     "Items 5–7 run in the same session",
@@ -166,19 +166,19 @@ def edit(tag: str, old: str, new: str, count: int = 1, path: Path = DESIGN) -> N
 edit(
     "front matter: round 4, STOP, order",
     """  - `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`
-- **§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s owner gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder).""",
+- **§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s Overtoad gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder).""",
     f"""  - `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`
   - `{ROUND4}` — rounds 4–8, which found defects in §8's procedure itself
-- **STOP — §8 is held, except what the owner released on 2026-09-24.** Rounds 4–8 found defects in the procedure that can re-lock the recovered database, pass the pre-backup guard without its `TargetURL` check, or copy a cleartext database into the backup Source. The STOP block at the top of §8 lists them and what may run now — P0.5a items 1, 5, 6 and 7, P3's tier-2 fix, §6's sink checklist, S-4's `chmod 0600` and the reads it names — within its two limits (note 10.1g); the rest waits until it is gone.
+- **STOP — §8 is held, except what the Overtoad released on 2026-09-24.** Rounds 4–8 found defects in the procedure that can re-lock the recovered database, pass the pre-backup guard without its `TargetURL` check, or copy a cleartext database into the backup Source. The STOP block at the top of §8 lists them and what may run now — P0.5a items 1, 5, 6 and 7, P3's tier-2 fix, §6's sink checklist, S-4's `chmod 0600` and the reads it names — within its two limits (note 10.1g); the rest waits until it is gone.
 - **§8's order once the STOP is cleared — this and no other, unless the follow-up changes it**: **P0.5a** items 1, 2 and 4, in that order, then **P0 step −1** (a review — all nine scripts §8 invokes are merged; the tenth is a P3 deliverable), then **P0 step 0** (a verification since the 2026-09-22 rulings, §10.1; item (c) after step 1's freeze), then **P0 steps 1–8**, then **P0.5b** (the re-key, same session as step 8 — it needs the recovered data folder), then **P0 steps 9–11**.
-  - P0.5a items 5–7 run alongside, each before the step that needs it: item 7 before step 8's first start, item 5 before step 10's `resume`; item 6, a repository change, lands whenever it is ready and gates nothing (owner ruling 2026-09-24, note 10.1f).
+  - P0.5a items 5–7 run alongside, each before the step that needs it: item 7 before step 8's first start, item 5 before step 10's `resume`; item 6, a repository change, lands whenever it is ready and gates nothing (Overtoad ruling 2026-09-24, note 10.1f).
   - P0.5a item 1 is released now (note 10.1g); if it has already run, this order starts at item 2.""",
 )
 
 edit(
     "front matter: status",
     "- **Status**: VALIDATED (round 2) — consensus round 1 (six validators) and round 2 (four lanes) have both reported, and every finding is applied or recorded as dissent in §11.",
-    "- **Status**: HELD, except what note 10.1g releases — §8 is behind a STOP (rounds 4–8, 2026-09-24). Rounds 1 and 2 are reconciled; round 3 found 15 defects and 13 were applied, D13 is open (note 12a); rounds 4–8 found defects in §8's procedure, which are open (§11). The owner's rulings are in §10.1.",
+    "- **Status**: HELD, except what note 10.1g releases — §8 is behind a STOP (rounds 4–8, 2026-09-24). Rounds 1 and 2 are reconciled; round 3 found 15 defects and 13 were applied, D13 is open (note 12a); rounds 4–8 found defects in §8's procedure, which are open (§11). The Overtoad's rulings are in §10.1.",
 )
 
 # --------------------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ edit(
 edit(
     "R-6: item 7's timing",
     "| O | Kept; `nologin` **immediately**, in §8 P0.5a item 7 — moved out of P4",
-    "| O | Kept; `nologin` in §8 P0.5a item 7, before step 8's first start (owner ruling, note 10.1f; the STOP at the top of §8 asks whether Procedure B's step-7 start must come first) — moved out of P4",
+    "| O | Kept; `nologin` in §8 P0.5a item 7, before step 8's first start (Overtoad ruling, note 10.1f; the STOP at the top of §8 asks whether Procedure B's step-7 start must come first) — moved out of P4",
 )
 
 # --------------------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ the server-side ones, and §10.2 does not say what step 7's swap does with the l
 
 edit(
     "section 6: the shells' sink row is overtaken",
-    "| **Time-critical, owner**: `history -c; unset HISTFILE` in each shell *before* it exits |",
+    "| **Time-critical, Overtoad**: `history -c; unset HISTFILE` in each shell *before* it exits |",
     "| **Overtaken on 2026-09-24** — both shells have exited; note sink-b says what that leaves |",
 )
 
@@ -243,8 +243,8 @@ edit(
 
 edit(
     "section 6: root history is counted now and wiped only after step 3",
-    "| unreadable without root; the design *relies* on them as the last place the 09-18 key may be recorded | owner: count-grep first (`sudo grep -c ENCRYPTION /root/.bash_history`), then wipe once §5.4's search is done |",
-    "| unreadable without root; the design *relies* on them, with the `duplicati` user's (note sink-b), as the last places the 09-18 key may be recorded | owner: count now, never print — `sudo grep -c -i -e encryption -e passphrase -e password /root/.bash_history /root/.viminfo` — and wipe only once P0 step 3 has tested what they hold; the STOP holds step 3 |",
+    "| unreadable without root; the design *relies* on them as the last place the 09-18 key may be recorded | Overtoad: count-grep first (`sudo grep -c ENCRYPTION /root/.bash_history`), then wipe once §5.4's search is done |",
+    "| unreadable without root; the design *relies* on them, with the `duplicati` user's (note sink-b), as the last places the 09-18 key may be recorded | Overtoad: count now, never print — `sudo grep -c -i -e encryption -e passphrase -e password /root/.bash_history /root/.viminfo` — and wipe only once P0 step 3 has tested what they hold; the STOP holds step 3 |",
 )
 
 # A pipe inside a table cell must be written `\|`, and a reader who copies the command out of the raw
@@ -253,7 +253,7 @@ edit(
 edit(
     "section 6: duplicati's viminfo is counted, and wiped only with the history files",
     "| `/home/duplicati/.viminfo` | 14.7 KB, mtime 09-20 17:59 — vim was used as `duplicati` after `.env` was written; viminfo keeps registers and command history | wipe |",
-    "| `/home/duplicati/.viminfo` | 14.7 KB, mtime 09-20 17:59 — vim was used as `duplicati` after `.env` was written; viminfo keeps registers and command history | owner: count now, never print — `sudo grep -c -i -e encryption -e passphrase -e password /home/duplicati/.viminfo` — and wipe it with the history files, once P0 step 3 has tested what they hold (note sink-b) |",
+    "| `/home/duplicati/.viminfo` | 14.7 KB, mtime 09-20 17:59 — vim was used as `duplicati` after `.env` was written; viminfo keeps registers and command history | Overtoad: count now, never print — `sudo grep -c -i -e encryption -e passphrase -e password /home/duplicati/.viminfo` — and wipe it with the history files, once P0 step 3 has tested what they hold (note sink-b) |",
 )
 
 edit(
@@ -286,7 +286,7 @@ edit(
 unit (`/usr/lib/systemd/system/.duplicati.service.swp` — root 0644, world-readable, 0 `ENCRYPTION` lines when
 checked; there is no `duplicati.service~` and no `duplicati.service.d/`), for the window 09-18 20:42–21:03.
 Those are the only untested places; a candidate found there is tested with the probe in seconds. Both are
-root-only reads and are listed as owner actions in §8.""",
+root-only reads and are listed as Overtoad actions in §8.""",
     """**Where the key could still be recorded**: root's `~/.bash_history` and `.viminfo`, for the window 09-18
 20:42–21:03, and `/home/duplicati/.bash_history` and `.viminfo`, whose shells were open during 09-19's key
 failures (note sink-b). The unit's editor swap file, `/usr/lib/systemd/system/.duplicati.service.swp`, is gone
@@ -299,7 +299,7 @@ No §8 step yet extracts a candidate from them without printing it; the follow-u
 
 edit(
     "section 5.3: the root-history search has no section-8 step",
-    "is the one place left to look (§8 owner actions).",
+    "is the one place left to look (§8 Overtoad actions).",
     """is the one place left to look, and only without printing a line — a Repair command there may carry `--passphrase`,
   and §6's row for the file says never print; no §8 step lists that search or a way to run it without printing, and once
   P0 step 3 has tested the file, the release's first limit no longer keeps it (note 10.1g).""",
@@ -329,9 +329,9 @@ edit(
 - **(S-4a)**""",
     """names the three hazards that ride with it.
 - **(S-3c)** D-2's ruling covers `PASSPHRASE` only. `PASSPHRASE_OLD` protects the old archive's ten retained
-  dlists, and `_yamaguchi_frozen_20260826/` — 811 volumes the owner kept as a restore point (YAM §8.25) — sits
+  dlists, and `_yamaguchi_frozen_20260826/` — 811 volumes the Overtoad kept as a restore point (YAM §8.25) — sits
   under `PASSPHRASE` in the Dropbox-synced tree (§4.4), which §10.2 does not re-encrypt and §8 may not delete or
-  move. Both need an owner decision, and any action on them also lifts §8's no-move rule for those paths:
+  move. Both need an Overtoad decision, and any action on them also lifts §8's no-move rule for those paths:
   re-encrypt them — the 811 volumes are 196 GiB, a second pass of §10.2 steps 4–7, since `/` has about 376 GiB
   free for staging (note 10.2b), not the 399 GiB both sets need at once — or move them out of the Dropbox root
   and then **delete forever** the cloud copies, which otherwise stay restorable (§7.5 item 7); or accept the
@@ -345,7 +345,7 @@ edit(
 
 Detection gap behind S-1:""",
     """same terms.
-- **(S-now)** What the rows above let the owner do now (the 2026-09-24 release, note 10.1g): S-4's `chmod 0600`
+- **(S-now)** What the rows above let the Overtoad do now (the 2026-09-24 release, note 10.1g): S-4's `chmod 0600`
   and its copy out of the Dropbox root, and S-7's removal (P0.5a item 5); S-1's detection gap (item 6). Held
   until the STOP at the top of §8 is lifted: S-2's re-key (P0.5b), S-3's line deletion (P1 step 2), S-4's in-tree
   delete, "Delete forever" and account audit (P1 step 4), S-5's and S-6's password work (P0 step 9), and the D-8
@@ -356,7 +356,7 @@ Detection gap behind S-1:""",
 
 edit(
     "P0.5a item 7: the shells have exited",
-    "Do this **after** the two live `su - duplicati` shells in §6's sink checklist have been closed per their own row — closing those is the owner's time-critical action; this makes",
+    "Do this **after** the two live `su - duplicati` shells in §6's sink checklist have been closed per their own row — closing those is the Overtoad's time-critical action; this makes",
     "Do this **after** every `duplicati`-uid shell outside the unit has exited — the two §6 named have (note sink-b), and `ps -u duplicati` should list only the server; this makes",
 )
 
@@ -408,15 +408,15 @@ Dropbox root, and which only P1 step 4 then deletes from the synced tree (S-4)."
 
 edit(
     "P0.5a item 5: the copy is P1 step 4's; the delete stays held",
-    """`chmod 0600` the escrow `env`, and start the S-4 copy-out. The Dropbox "delete forever" and account audit are owner actions.""",
+    """`chmod 0600` the escrow `env`, and start the S-4 copy-out. The Dropbox "delete forever" and account audit are Overtoad actions.""",
     """`chmod 0600` the escrow `env`, then make P1 step 4's copy:
    confirm `/mnt/Backups/Ubuntu/_yamaguchi_keys` does not exist — nothing in this arc creates it, so stop if it does, and into an existing directory `cp -a` nests — then `cp -a` the folder to it, `chmod 0700` the copy (`cp -a` carries the source's `0770`; §7.4) and sha256-verify both sides. The in-tree delete, Dropbox's "Delete forever" and the account audit stay with P1 step 4, which the STOP holds.""",
 )
 
 edit(
     "section 10.2: nothing in it is released",
-    "execute** — it is owner-gated exactly as §8 is, and it runs *after* the recovery, not during it.",
-    "execute** — it is owner-gated, note 10.1g releases none of it, and it runs *after* the recovery, not during it.",
+    "execute** — it is Overtoad-gated exactly as §8 is, and it runs *after* the recovery, not during it.",
+    "execute** — it is Overtoad-gated, note 10.1g releases none of it, and it runs *after* the recovery, not during it.",
 )
 
 edit(
@@ -434,7 +434,7 @@ STOP_BLOCK = f"""> **STOP — §8 is not executable as written (rounds 4–8, 20
 > document (`{ROUND4}`) found defects in the
 > procedure itself. This block stays until a follow-up change fixes items 1–5 and the findings beneath them,
 > settles each open question in its last paragraph, passes its own validation round, and removes it. Until then
-> the owner's 2026-09-24 ruling (note 10.1g) decides what runs:
+> the Overtoad's 2026-09-24 ruling (note 10.1g) decides what runs:
 >
 > - **Held**: P0.5a items 2 and 4, P0, P0.5b, P1, P2 and P4.
 > - **Released**: P0.5a items 1, 5, 6 and 7 — item 1 still before item 4 — and P3's tier-2 fix (its steps 1 and
@@ -535,7 +535,7 @@ for _tag, _heading, _next in (
 edit(
     "STOP marker under P3: released",
     "### P3 — tiers 2 and 3 (following week)\n\n1. **Fix the runner's mount root first",
-    "### P3 — tiers 2 and 3 (following week)\n\n*Steps 1 and 2, the tier-2 fix, are released by the owner's 2026-09-24 ruling (note 10.1g); step 3, tier 3, waits on D-5.*\n\n1. **Fix the runner's mount root first",
+    "### P3 — tiers 2 and 3 (following week)\n\n*Steps 1 and 2, the tier-2 fix, are released by the Overtoad's 2026-09-24 ruling (note 10.1g); step 3, tier 3, waits on D-5.*\n\n1. **Fix the runner's mount root first",
 )
 
 edit(
@@ -546,10 +546,10 @@ P0.5 is printed *after* P0 only because it also carries work that follows the re
 top to bottom would otherwise run the recovery with that path open.""",
     """**Run P0.5a items 1, 2 and 4, in that order, before anything in P0 — item 1 is released and may already have
 run; items 5–7 may run now too (note 10.1g), each before the step that needs it** — item 7 before step 8's first
-start, item 5 before step 10's `resume`; item 6 gates nothing (owner rulings 2026-09-24; the order among items 1,
+start, item 5 before step 10's `resume`; item 6 gates nothing (Overtoad rulings 2026-09-24; the order among items 1,
 2 and 4 is the design's, note 10.1f). Items 1, 2 and 4 take minutes — only item 2's timer restart waits on the recovery, for step 8 — and item 1 closes the path
 by which the service user controls the very binaries steps 0(c), 3, 4 and 7 execute. Item 4 is D-8's one log
-scrub; the owner's 2026-09-24 amendment moved the ruling to match it (§10.1, note 10.1e). P0.5 is printed
+scrub; the Overtoad's 2026-09-24 amendment moved the ruling to match it (§10.1, note 10.1e). P0.5 is printed
 *after* P0 only because it also carries work that follows the recovery; an operator working top to bottom would
 otherwise run the recovery with that path open.""",
 )
@@ -588,7 +588,7 @@ resolves to (note 10.1e).
 Items 5–7 may run now (note 10.1g), and each must be done before the P0 step that needs it: item 7 before step
 8's first start, because a `duplicati`-uid shell is a hole in the confined service's mount mask; item 5 before
 step 10's `resume` fires the first backup, because S-7's cleartext file sits inside the backup Source; and item 6
-at any point, because it is a repository change, not a host one (owner rulings 2026-09-24, notes 10.1f and 10.1g).""",
+at any point, because it is a repository change, not a host one (Overtoad rulings 2026-09-24, notes 10.1f and 10.1g).""",
 )
 
 edit(
@@ -636,10 +636,10 @@ edit(
 
 edit(
     "section 10: preface",
-    """## 10. Owner decisions
+    """## 10. The Overtoad decisions
 
 | ID | Decision | Recommendation |""",
-    """## 10. Owner decisions
+    """## 10. The Overtoad decisions
 
 **Seven of the fourteen are RULED — on 2026-09-22, with D-8's timing amended on 2026-09-24 — and §10.1 is
 binding.** This table keeps the question each ruling answered and the recommendation it was made against, so a
@@ -653,8 +653,8 @@ edit(
     """D-12 and D-13 remain open and keep their recommendations.
 
 | ID | Ruling | Effect in this document |""",
-    """D-12 and D-13 remain open and keep their recommendations. **One ruling has since been amended by the owner:
-D-8's timing, on 2026-09-24** (note 10.1e). The same day the owner ruled which P0.5a items gate P0 (note 10.1f)
+    """D-12 and D-13 remain open and keep their recommendations. **One ruling has since been amended by the Overtoad:
+D-8's timing, on 2026-09-24** (note 10.1e). The same day the Overtoad ruled which P0.5a items gate P0 (note 10.1f)
 and what the STOP block at the top of §8 holds (note 10.1g).
 
 | ID | Ruling | Effect in this document |""",
@@ -673,7 +673,7 @@ NOTES_10_1EF = """- **(10.1e)** **D-8 amended 2026-09-24: the one scrub runs bef
   recovery, takes minutes, must not stay open for days while the recovered server runs) put it in a new P0.5
   bucket, "same session as the recovery", and round 2's split made it P0.5a item 4, before anything in P0.
   Neither pass updated the column, so the ruling and the plan disagreed from the day the ruling was recorded.
-  The owner resolved it for P0.5a on two grounds. **"Once" holds for the families the scrub exists for.** All
+  The Overtoad resolved it for P0.5a on two grounds. **"Once" holds for the families the scrub exists for.** All
   three leaked label families — `LINE: "`, `Exporting Environment Variable` and `Settings Encryption Key:` —
   came from the wrapper, and no committed revision gates them before `64677ab0` (17:48 on 09-20): every one up
   to ml#1967's `6708cb28` (17:26) prints them unconditionally. The leaking passes ran 16:41–17:30 (§4.2 note
@@ -705,14 +705,14 @@ NOTES_10_1EF = """- **(10.1e)** **D-8 amended 2026-09-24: the one scrub runs bef
   design had said "items 1–2" (the front matter) and "items 1 and 2" (the P0 preamble), while P0.5a's intro,
   under the heading "before anything in P0", listed "Items 1, 2, 4, 5, 6 and 7". Round 4 found that the wider
   reading would hold a recovery that has been down since 2026-09-18 on item 6, a repository change that goes
-  through CI, and on item 7, which then waited on the owner closing two `su - duplicati` shells — both since
+  through CI, and on item 7, which then waited on the Overtoad closing two `su - duplicati` shells — both since
   gone (note sink-b).
 - **(10.1g)** **What the STOP holds — ruled 2026-09-24.** Round 6 found that no defect the STOP block at the
   top of §8 then listed touched P0.5a items 1 or 6, or P3, and that items 5 and 7 were questioned only on their
   timing (the block's last paragraph), which running them early satisfies; round 7 added two findings on item
   5's copy, which bind only once P1 step 4 and P0 step 8 run. Holding those items would keep open the 0777
   `bin/` under a `Restart=always` server, the world-readable S-7 file, and tier 2 — broken since 2026-09-07, so
-  with tier 1 down the host had no working backup at all. The owner's ruling, in its own words: hold "P0.5a
+  with tier 1 down the host had no working backup at all. The Overtoad's ruling, in its own words: hold "P0.5a
   items 2 and 4, P0, P0.5b, P1, P2 and P4"; release "P0.5a items 1, 5, 6 and 7 (item 1 still runs before item
   4), P3's tier-2 fix, §6's sink checklist and S-4's `chmod 0600`, with two limits: no history file is wiped
   before P0 step 3 tests the keys it may hold, and no transcript is purged before this arc's reports are
@@ -721,7 +721,7 @@ NOTES_10_1EF = """- **(10.1e)** **D-8 amended 2026-09-24: the one scrub runs bef
   and run no Duplicati binary: P0 step 0(c) calls itself read-only, but it runs `duplicati-cli`, which item 1
   must secure first, with the passphrase, and it needs step 1's freeze, which writes. **"This arc's reports"**
   are every validation round of the arc, any still running and the follow-up's own, archived verbatim into a
-  record merged to `main`. Both readings hold back more than the words alone would; the owner may widen them.
+  record merged to `main`. Both readings hold back more than the words alone would; the Overtoad may widen them.
 """
 
 edit(
@@ -755,7 +755,7 @@ edit(
     "note 10.2a: which copy of the SMART script produced the evidence",
     """  `util/ad-hoc/smart_checks_backup-sda.bash`. An **Extended offline** self-test completed without error
   at lifetime **28,938 h** against **28,941 h** at capture, so the scan is current and covered the""",
-    """  `util/ad-hoc/smart_checks_backup-sda.bash` as ml#2041 landed it (the owner's refactor, adopted 2026-09-24,
+    """  `util/ad-hoc/smart_checks_backup-sda.bash` as ml#2041 landed it (the Overtoad's refactor, adopted 2026-09-24,
   changes neither the commands it runs nor the names it writes). An **Extended offline** self-test completed
   without error at lifetime **28,938 h** against **28,941 h** at capture, so the scan is current and covered the""",
 )
@@ -764,8 +764,8 @@ NOTE_10_2B = """- **(10.2b)** **Staging goes on `nvme0n1p5` (`/`), not on `sda`.
   obvious-looking target, which is exactly the trap: it holds the sole local copy, so staging there puts
   the original and the re-encrypted copy in **one failure domain** for the whole of steps 4–7. The clean
   SMART report above does not change that — it lowers the probability, not the consequence, and the
-  criterion the owner set is that access is *never* lost. `/` has 376 GiB free against the ~203 GiB
-  needed, sits on a different physical device, is **ext4** so ownership and modes survive for D-14's
+  criterion the Overtoad set is that access is *never* lost. `/` has 376 GiB free against the ~203 GiB
+  needed, sits on a different physical device, is **ext4** so Overtoadship and modes survive for D-14's
   read-only model, and is **outside the `/home/pcalnon` backup source**. `sdc3` (`/home`, 1.2 TiB free)
   satisfies the failure-domain test but fails the last one: staging there would sweep 203 GiB of
   ciphertext into the next fileset unless an exclusion were added first — the same class of mistake as
@@ -850,13 +850,13 @@ edit(
   which its brief confined it to, and most of lens B's; each is applied here, listed as follow-up, or — the
   "debug mode" wording of §1, §4 and §5 — acknowledged in note 10.1e and left unchanged. **Round 6** (two
   lenses on round 5's corrections) found the STOP's first exemption wording false and its scope a decision
-  the owner then made (note 10.1g), and host state the design still described that had moved (note sink-b);
+  the Overtoad then made (note 10.1g), and host state the design still described that had moved (note sink-b);
   its findings are applied here or listed as follow-up, four of them only after round 7. **Round 7** (two
   lenses on round 6's corrections) found what the release had made live: a transcript row and a `.viminfo` row
   that carried neither limit, a "read-only" step that runs a Duplicati binary with the passphrase, and text that
   still bound the released items to the recovery session; each is applied here or listed as follow-up. **Round 8**
   (two lenses on round 7's corrections) found a correction recorded as applied but never made (§10.2 step 2's
-  moved-aside `.env`), ruling wording that was not the owner's own (the STOP bullets and note 10.1g now quote the
+  moved-aside `.env`), ruling wording that was not the Overtoad's own (the STOP bullets and note 10.1g now quote the
   ruling), P0.5a item 5's copy-out carrying the escrow's group-writable mode, and two released instructions with
   no safe method (the root-history search and the transcript count); each is applied here or listed as follow-up.
   `{ROUND4}` holds the five rounds' reports verbatim.
@@ -866,7 +866,7 @@ edit(
 edit(
     "section 11: D-14 dissent settled",
     "  4. **The destination permission model — OPEN**, promoted to **D-14** (§10).",
-    """  4. **The destination permission model — SETTLED by owner ruling.** Promoted to **D-14** (§10) while open,
+    """  4. **The destination permission model — SETTLED by Overtoad ruling.** Promoted to **D-14** (§10) while open,
      and **ruled 2026-09-22 for the read-only form** (§10.1).""",
 )
 
@@ -876,11 +876,11 @@ edit(
 
 ROWS_12 = f"""| 2026-09-22 (later) | **Consensus round 3** — one agent reading a frozen document (§11): 15 defects (D1–D15), 13 applied by the `r3-*` edits of `util/ad-hoc/2026-09-22_apply_round2_corrections.py`; D11 and D13 were not (note 12a). Rounds 1–3 landed together as ml#1999 (`43980f13`). |
 | 2026-09-22 (later) | **Design artifacts landed** with ml#1999 — round 3's D11, recorded 2026-09-24. **Changed**: `scripts/duplicati-wrapper.bash` (now v2). **Added**: the twelve other staged artifacts (P0 step −1's nine, `util/systemd/juniper-backup.{{timer,path,service}}`), the round-2 record, `util/ad-hoc/2026-09-22_{{stage_design_artifacts,duplicati_literal_scan,archive_consensus_reports,append_signed_commit}}.py`, `util/ad-hoc/2026-09-22_watch_pr_{{runs,regression_checks}}.bash`. |
-| 2026-09-22 (evening) | **Seven owner rulings recorded** — ml#2029 (`ab434c9b`): §10.1, §10.2, and the artifacts the rulings change. **Changed**: this file, `util/systemd/duplicati.service`, `util/install_duplicati_service.bash`, `util/ad-hoc/2026-09-21_backup_destination_permissions.bash`. **Added**: `util/ad-hoc/2026-09-22_apply_owner_rulings.py`, `util/ad-hoc/2026-09-22_recoverytool_verbs.py`, `util/ad-hoc/2026-09-22_shepherd_automerge.bash`. |
+| 2026-09-22 (evening) | **Seven Overtoad rulings recorded** — ml#2029 (`ab434c9b`): §10.1, §10.2, and the artifacts the rulings change. **Changed**: this file, `util/systemd/duplicati.service`, `util/install_duplicati_service.bash`, `util/ad-hoc/2026-09-21_backup_destination_permissions.bash`. **Added**: `util/ad-hoc/2026-09-22_apply_Overtoad_rulings.py`, `util/ad-hoc/2026-09-22_recoverytool_verbs.py`, `util/ad-hoc/2026-09-22_shepherd_automerge.bash`. |
 | 2026-09-23 | **`sda` SMART PASSED** — ml#2041 (`4b311619`): notes 10.2a and 10.2b, and the D-12a carried item closed. **Changed**: this file. **Added**: nine reports under `reports/smart/`, `util/ad-hoc/smart_checks_backup-sda.bash`, `util/ad-hoc/2026-09-23_record_smart_result.py`. |
 | 2026-09-23 (later) | **§10.2 step 1's drill placed** — ml#2057 (`d15e7c01`): it is AC-4's first drill, run inside P0 step 11, and cannot precede P0 (note 10.2c). **Changed**: this file. **Added**: `util/ad-hoc/2026-09-23_clarify_drill_ordering.py`. |
 | 2026-09-24 | **Front matter reformatted**, content unchanged — ml#2067 (`dcfc024f`), re-landing that part of the closed ml#2045's change to this file (note 12b). **Changed**: this file. **Added**: `util/ad-hoc/2026-09-24_reformat_design_frontmatter.py`, `util/ad-hoc/2026-09-23_pr2045_net_effect.py`. |
-| 2026-09-24 (later) | **D-8 amended; P0's gate and the STOP's scope ruled; §8 behind a STOP** (notes 10.1e–10.1g, 12b). **Changed**: this file; the round-2 record's round-3 count; `util/ad-hoc/smart_checks_backup-sda.bash` (the owner's ml#2045 refactor, adopted but for its mode). **Added**: `{ROUND4}` (rounds 4–8), `util/ad-hoc/2026-09-24_amend_d8_and_repair_backup_design.py`, `util/ad-hoc/2026-09-24_archive_round4_reports.py`. |
+| 2026-09-24 (later) | **D-8 amended; P0's gate and the STOP's scope ruled; §8 behind a STOP** (notes 10.1e–10.1g, 12b). **Changed**: this file; the round-2 record's round-3 count; `util/ad-hoc/smart_checks_backup-sda.bash` (the Overtoad's ml#2045 refactor, adopted but for its mode). **Added**: `{ROUND4}` (rounds 4–8), `util/ad-hoc/2026-09-24_amend_d8_and_repair_backup_design.py`, `util/ad-hoc/2026-09-24_archive_round4_reports.py`. |
 """
 
 NOTES_12 = """Notes on the rows above:
@@ -891,7 +891,7 @@ NOTES_12 = """Notes on the rows above:
   `util/ad-hoc/2026-09-22_backup-design-round2/`; those files are not repeated per row. Round 3's D13 — point
   wrapper v2's `.env` default at §7.3.5's `/etc/duplicati/env` and install that path — changes landed artifacts,
   and is open.
-- **(12b)** What the 2026-09-24 (later) row changed. **The owner's rulings**: D-8's amendment (§10.1's row and
+- **(12b)** What the 2026-09-24 (later) row changed. **The Overtoad's rulings**: D-8's amendment (§10.1's row and
   preamble, note 10.1e, P0.5a item 4, §10.2's heading and step 2) and P0's gate (note 10.1f, the front matter,
   the P0 preamble, P0.5a's heading and intro, R-6). **Leftovers of the 2026-09-22 rulings and of ml#1999's own
   merge**: the front matter's status and order (step −1 a review of nine merged scripts; step 0 a verification;
@@ -903,14 +903,14 @@ NOTES_12 = """Notes on the rows above:
   (a), P0.5a item 7), so §6's rows for them are overtaken and §5.4 names the duplicati history as a key source.
   **The STOP's scope**: note 10.1g, the STOP block's held and released lists, a marker under every §8 phase
   heading, the history-file limit in §6's history rows and note sink-b, and the transcript limit in §6's
-  transcript row. **What the release lets the owner do**: note S-now, §5.3, §5.4, §7.3.1, §7.11, the §8
+  transcript row. **What the release lets the Overtoad do**: note S-now, §5.3, §5.4, §7.3.1, §7.11, the §8
   preamble's S-4 sentence, the P0 preamble, P0.5a's intro and item 5, and §10.2's opening. **Exposures D-2
   does not reach**: note S-3c, cited from the S-2 and S-3 rows. **Defects of fact**: P0 step
   0(c) and note 10.2c called all 877 destination files dindex volumes — 434 are, beside 434 dblocks and 9
   dlists — and set the ">30 minutes" measurement against this destination, when ml#1268 recorded it against the
   old `Ubuntu` archive. The comment inside the tagged `util/ad-hoc/2026-09-22_confirm_a0_premise.bash` block
   still quotes that figure with its "here": a tagged block and its landed copy change together or not at all,
-  and that is left for the §8 follow-up. **ml#2045's dropped changes**: the owner's 2026-09-23 refactor of the
+  and that is left for the §8 follow-up. **ml#2045's dropped changes**: the Overtoad's 2026-09-23 refactor of the
   SMART script (commit `b0223f18`: every constant exported, the clock read error-checked) is adopted with one
   `date` call where it had two — two calls can straddle midnight — and a header that drops the
   `# shellcheck disable=SC2034` directive the exports made dead and no longer calls its device palette the host's

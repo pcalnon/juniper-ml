@@ -5,8 +5,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-04
-Status: ad-hoc -- one-off (the P12 worktree cleanup, owner ruling 2026-11-03)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc -- one-off (the P12 worktree cleanup, Overtoad ruling 2026-11-03)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-04_p12_worktree_cleanup_check.bash (which reports these trees as dirty)
 
 Why

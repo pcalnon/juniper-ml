@@ -51,7 +51,7 @@ Identical code and params — only the data scale differs. (A CUDA OOM from the 
 
 ## 5. Program consequences
 
-- E-A's budget surface and the E-B/E-C spiral rows remain **F-P4-1 measurements**; re-running them against the fixed stack is an owner-scheduled follow-up (a real spiral cell now trains for minutes, not 30–50 s — the E-A grid becomes hours of compute).
+- E-A's budget surface and the E-B/E-C spiral rows remain **F-P4-1 measurements**; re-running them against the fixed stack is an Overtoad-scheduled follow-up (a real spiral cell now trains for minutes, not 30–50 s — the E-A grid becomes hours of compute).
 - P1.1's reference-run metrics tables describe the degenerate fallback dataset, not spiral learning; mechanics validated there (exit codes, artifacts, parity) are unaffected.
 - E-B's difficulty ranking gains its spiral slot only after a re-run; expect spiral ≫ checkerboard at the smoke budget.
 - The one-screen acceptance smoke for the fix: a spiral-baseline run at reduced budget must show `hidden_units > 0` and `train_accuracy` well above 0.505, with staging visible in the manifest (`g6_shape_check` populated).

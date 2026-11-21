@@ -53,9 +53,9 @@
 | R4B-07 The interim rule was not a superset | MINOR | Accepted (re-derived) | The tool's rule drops `\b`; the canary plants `TIER2_PASSPHRASE=`; XC-PRESERVE method restates what the rule matches. `round3-reconciliation.md`'s "superset" stays as the record of round 3 |
 | R4B-08 The job log publishes anyway | MINOR | Accepted (re-derived) | XC-LEAKS intro (`-v` hard-coded) and note 2 (stop the scheduled scan, or a `.gitleaksignore` baseline); §9 XC-LEAKS row |
 | R4B-09 Step 4's place in the order | MINOR | Accepted | XC-LEAKS step 4 marked independent; Wave 0 step 7 |
-| R4B-10 P6-34's gate fix unscheduled | MINOR | Accepted | XC-MEM step 2 and §6 A6: the owner rules whether the snapshots stand in for the gate fix |
+| R4B-10 P6-34's gate fix unscheduled | MINOR | Accepted | XC-MEM step 2 and §6 A6: the Overtoad rules whether the snapshots stand in for the gate fix |
 | R4B-11 The data-client patch had no slot | MINOR | Accepted (re-derived) | §5 R-DC-PATCH, cut before W1.4 merges; recommended order item 1; §9 W1.4 row; Wave 2 P12 notes |
-| R4B-12 The `--skip-env-preflight` flag | MINOR | Accepted | §7.2 names the flag and both variables; all need the owner's OK |
+| R4B-12 The `--skip-env-preflight` flag | MINOR | Accepted | §7.2 names the flag and both variables; all need the Overtoad's OK |
 | R4B-13 The tool is not on `main` | MINOR | Accepted | §9: P1-09, P1-10 and every other pre-push scan wait for this plan's PR; XC-PRESERVE method says so |
 | R4B-14 The cap counted validation agents only | MINOR | Accepted | §1.3: three subagents of any kind, account-wide; no instrument shows the count, so each session caps its own and asks before a round |
 | R4B-15 Pre-sitting work and A1's third ruling | MINOR | Accepted | Wave 0 intro: S0.9, S0.10 and the new S0.12 run before the sitting; step 1 lists A1's W0.1 timing |

@@ -4,7 +4,7 @@
 **Supersedes**: none. The two earlier mid-arc handoffs of this arc are consumed and ride in the same PR.
 
 > **CONSUMED 2026-10-08 by the same session, `1d83ae70`.** It finished round 10's reconciliation into v1.10.0, ran round 11, reconciled it into v1.11.0 and ran round 12, then handed off again (`HANDOFF_2026-10-08_consolidated-development-plan-reconcile-round-12-then-round-13-and-pr.md`).
-> Its "ask the owner again before `util/safe_merge.py`" held: the plan landed on 2026-10-10 as v1.12.1, a record of v1.12.0, in one PR that session `560c1ec5` opened and merged on the owner's approval given in that session; v1.13.0 follows. This file is kept as the archived mid-arc handoff.
+> Its "ask the Overtoad again before `util/safe_merge.py`" held: the plan landed on 2026-10-10 as v1.12.1, a record of v1.12.0, in one PR that session `560c1ec5` opened and merged on the Overtoad's approval given in that session; v1.13.0 follows. This file is kept as the archived mid-arc handoff.
 
 Continue the consolidated-development-plan arc in worktree
 `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/unified-orbiting-fountain`
@@ -12,7 +12,7 @@ Continue the consolidated-development-plan arc in worktree
 
 ## Merge approval
 
-The owner granted merge approval in session `1d83ae70`. **It does not carry over: ask the owner again before running `util/safe_merge.py`.**
+The Overtoad granted merge approval in session `1d83ae70`. **It does not carry over: ask the Overtoad again before running `util/safe_merge.py`.**
 
 ## Completed so far
 

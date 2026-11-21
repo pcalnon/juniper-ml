@@ -52,7 +52,7 @@ need a Juniper client **inside** a server venv, and `juniper-ml[servers]` does n
 - cascor 0.11.0 declares `juniper-data-client` only as an extra, so CC-2 and CC-3 cannot import
   `spiral_problem.data_provider`.
 
-Adding `[clients]` (run BC) covers all three. juniper-ml#2062 records the gap and the owner's options.
+Adding `[clients]` (run BC) covers all three. juniper-ml#2062 records the gap and the Overtoad's options.
 
 ## Findings the probe reports without failing
 

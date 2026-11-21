@@ -43,25 +43,25 @@ Short names used below: **HANDOFF** = `HANDOFF_2026-10-03_dynamic-workflow-harne
 | P8-08 | Open the v4 **update** PR via `open_signed_pr.py` on `design/dynamic-workflow-harness`. The body names every document, puts D-1..D-12 as the ask, and states that no JR id applies. Do not merge | HANDOFF item 4 | [VERIFIED 2026-10-04: the branch is absent on origin (REST 404) and locally. Still true: existing branch refused (:276), DUP-GUARD at :175/:251, base read at :83–84] | BLOCKED-ON P8-07; the merge is OWNER-ACTION | P8-07 | juniper-ml | S | UNBLOCKER |
 | P8-09 | Rewrite the memory file and `MEMORY.md` l.2: v3 is on main (#2110) with D-1..D-12; add the v4 PR number later | HANDOFF item 5 | [CHANGED SINCE HANDOFF: staler. It still says "v2", "UNTRACKED in worktree" and "D-1..D-10", but the files have been tracked since #2110] | STARTABLE (the correction now; the PR number after P8-08) | all paths: `MEMORY.md` is over budget, so re-read it before writing | `~/.claude` | S | HYGIENE |
 | P8-10 | Verify that R1's five reports are verbatim against the predecessor's transcripts before those expire (~2026-10-22) | HANDOFF l.36, l.49 | [VERIFIED 2026-10-04: 12 subagent transcripts sit under the main-repo slug `…/bb39e9fe-…/subagents/` (5 dated 09-22, 7 dated 09-23). `cleanupPeriodDays` is unset, so the 30-day default applies] | STARTABLE (deadline ~10-22) | — | juniper-ml | S | DATA-INTEGRITY |
-| P8-11 | Get the owner's rulings on D-1..D-12 and record them in DESIGN §10.1 ("to be added") with the chosen and rejected options | HANDOFF item 6; DESIGN §10 | [VERIFIED 2026-10-04: §10 is unchanged and there is no §10.1] | OWNER-DECISION | P8-08 (the ask) | juniper-ml | S | UNBLOCKER |
-| P8-12 | Get the owner's ratification of the seed re-scopings "agents" (R6) and "reassigned" (R8); "met" is already inside D-5 | DESIGN §1.2; R1 l.46 | [VERIFIED 2026-10-04: no D-row names R6 or R8] | OWNER-DECISION | P8-08 | juniper-ml | S | UNBLOCKER |
+| P8-11 | Get the Overtoad's rulings on D-1..D-12 and record them in DESIGN §10.1 ("to be added") with the chosen and rejected options | HANDOFF item 6; DESIGN §10 | [VERIFIED 2026-10-04: §10 is unchanged and there is no §10.1] | OWNER-DECISION | P8-08 (the ask) | juniper-ml | S | UNBLOCKER |
+| P8-12 | Get the Overtoad's ratification of the seed re-scopings "agents" (R6) and "reassigned" (R8); "met" is already inside D-5 | DESIGN §1.2; R1 l.46 | [VERIFIED 2026-10-04: no D-row names R6 or R8] | OWNER-DECISION | P8-08 | juniper-ml | S | UNBLOCKER |
 | P8-13 | Re-pick D-9's pilot set. DP-CASCOR-001/T1 (logging P0.4) has already shipped; DP-ECOSYSTEM-001/T1 (APD-ML-005) "needs [a ruling] before code" | DESIGN §4.1–§4.2, D-9 | [CHANGED SINCE HANDOFF: cascor#680 (P0.4) merged 2026-09-23T06:46:30Z. APD-ML-005 is still open (register :1295, :1430)] | OWNER-DECISION, plus a v4 text fix | P7 and P3 paths | juniper-ml | S | UNBLOCKER |
 | P8-14 | Build roadmap P0: `statusline_usage_writer.bash`, `usage_state.py`, `calibrate.py`, `heartbeat.bash`, `install_agents.bash --install-statusline` and 2 tests | DESIGN §11 P0; §0 exemption | [VERIFIED 2026-10-04: none exists. `util/dispatch/` is absent; the installer has 0 hits for `--install-statusline`; there is no `statusLine` in `~/.claude/settings.json`; `~/.claude/juniper-dispatch/` is absent] | STARTABLE per DESIGN §0. Installing the user status line and running calibration bursts is OWNER-ACTION | best after P8-02, because Lane B items 2 and 8 attack §5.1 and §5.3 | juniper-ml, `~/.claude` | M | RESEARCH |
 | P8-15 | Rule D-10 (go/no-go) from `k_7d`, at least 3 weekly windows of `u_7d`, and `c_M` | DESIGN §10 D-10 | [VERIFIED 2026-10-04: no inputs exist because P0 is unbuilt] | OWNER-DECISION | P8-14 plus at least 3 weeks elapsed | — | S | UNBLOCKER |
 | P8-16 | Roadmap P1: the three `conf/` files, `design_path_ledger.py reconcile [--check]`, and its test | DESIGN §11 | [VERIFIED 2026-10-04: `conf/design_paths.yaml` and `conf/dispatch.yaml` are absent] | BLOCKED-ON P8-02, P8-11 (D-3, D-9), P8-13 | — | juniper-ml | M | UNBLOCKER |
 | P8-17 | Roadmap P2: `dispatch_tick.py`, `apply_report.py`, three schemas, and tick tests | DESIGN §11 | [VERIFIED 2026-10-04: unbuilt] | BLOCKED-ON P8-14, P8-16, D-5 | — | juniper-ml | L | UNBLOCKER |
-| P8-18 | Roadmap P3: the `juniper-cycle.js` docs pilot, `--append`, `secret_screen.py`, and the script test | DESIGN §11 | [VERIFIED 2026-10-04: `.claude/workflows/` is absent and `--append` is absent. But see §5 row 5] | BLOCKED-ON P8-17 | — | juniper-ml | M | USER-FACING (owner tooling) |
+| P8-18 | Roadmap P3: the `juniper-cycle.js` docs pilot, `--append`, `secret_screen.py`, and the script test | DESIGN §11 | [VERIFIED 2026-10-04: `.claude/workflows/` is absent and `--append` is absent. But see §5 row 5] | BLOCKED-ON P8-17 | — | juniper-ml | M | USER-FACING (Overtoad tooling) |
 | P8-19 | Roadmap P4: `dispatch-executor`, the Execute stage, `--expect-base` and `--reuse`, the manifest test, and a sandbox task | DESIGN §11 | [VERIFIED 2026-10-04: both flags are absent] | BLOCKED-ON P8-18, P8-15 | — | juniper-ml (and task repos) | L | USER-FACING |
 | P8-20 | Roadmap P5: the Verify stage (`lensesFor`, `VERIFY_PENDING`, retries) | DESIGN §11 | [NOT RE-PROBED — unbuilt by construction] | BLOCKED-ON P8-19 | — | juniper-ml | M | USER-FACING |
 | P8-21 | Roadmap P6: `reap_worktrees.py --dry-run` covering V3 G1–G5, B1, B4, the veto, the manifest gate and the patch-id test, with tmp-repo tests | DESIGN §11 | [NOT RE-PROBED — unbuilt] | BLOCKED-ON P8-19, D-4, D-12 | P8-25 | juniper-ml | M | SAFETY |
-| P8-22 | Roadmap P7: systemd units (`SuccessExitStatus=3`), the standby child, the owner message and its delivery, and heartbeat scheduling; then a dry week | DESIGN §11 | [NOT RE-PROBED — unbuilt] | BLOCKED-ON P8-17..P8-20, D-1, D-6 | — | juniper-ml, host | M | USER-FACING |
+| P8-22 | Roadmap P7: systemd units (`SuccessExitStatus=3`), the standby child, the Overtoad message and its delivery, and heartbeat scheduling; then a dry week | DESIGN §11 | [NOT RE-PROBED — unbuilt] | BLOCKED-ON P8-17..P8-20, D-1, D-6 | — | juniper-ml, host | M | USER-FACING |
 | P8-23 | Roadmap P8: measured medians, the `predict_merge` screen, and a retention cap for `~/.claude/juniper-dispatch/` | DESIGN §11 | [NOT RE-PROBED] | BLOCKED-ON P8-22 (20 cycles) | — | juniper-ml | S | RESEARCH |
 | P8-24 | Roadmap P9: `reap_worktrees.py --execute` | DESIGN §11 | [NOT RE-PROBED] | BLOCKED-ON P8-25, D-4 | — | juniper-ml | S | SAFETY |
 | P8-25 | Ratify V3 as amended (D-12's patch-id B3), including V3 §10 Q3–Q8 | DESIGN §0, §7.3, §13; V3 §10 | [VERIFIED 2026-10-04: V3's Status is "DESIGN, revision 2" with "Supersedes (on ratification)"; Q3–Q8 are all OPEN; no consolidated path carries it] | OWNER-DECISION | P8-02 (Lane A item 3 tests the amendment) | juniper-ml | M | SAFETY |
 | P8-26 | Decide whether to delete the seed branch `design/dynamic-workflow` (`27ea09a1`) after the design merges | HANDOFF item 4 (PR body) | [VERIFIED 2026-10-04: it exists on origin (REST) and locally at `27ea09a1`] | OWNER-ACTION | P8-08 | juniper-ml | S | HYGIENE |
 | P8-27 | Resolve, or record in §12, the R1 residuals the round-2 briefs omit: the cost of calibration bursts and whether 5 per window suffice; the compare-endpoint cost of `--expect-base` | R1 l.30, l.50 | [NOT RE-PROBED — research] | Record in P8-05; measure in P8-14 / P8-19 | — | juniper-ml | S | RESEARCH |
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options; source recommendation | Blocks | Source |
 |---|---|---|---|---|
@@ -69,7 +69,7 @@ Short names used below: **HANDOFF** = `HANDOFF_2026-10-03_dynamic-workflow-harne
 | D-2 | Worktrees under `Juniper/worktrees/`, acknowledging that native `isolation: worktree` puts trees inside the repo | **As specified** | P8-19 | same |
 | D-3 | Ledger shape (three `conf/` files) | **As specified** | P8-16 | same |
 | D-4 | Removal dry-run only until V3 as amended is ratified | **Dry-run only now** | P8-21, P8-24 | same |
-| D-5 | `reserve` 10/15, `slack` 5/5, `dispatch_windows`; "met" means the binding window reaches its target | **Defaults; windows = the owner's sleeping hours** | P8-17 | same |
+| D-5 | `reserve` 10/15, `slack` 5/5, `dispatch_windows`; "met" means the binding window reaches its target | **Defaults; windows = the Overtoad's sleeping hours** | P8-17 | same |
 | D-6 | Decision delivery: cycle record, cross-session message, push | **All three** | P8-22 | same |
 | D-7 | Retired | — | — | same |
 | D-8 | Call-time `effort` overrides vs relaxing the six frontmatter pins | **Call-time only for the pilot** | P8-18 onward | same |
@@ -79,14 +79,14 @@ Short names used below: **HANDOFF** = `HANDOFF_2026-10-03_dynamic-workflow-harne
 | D-12 | Amend V3's B3 to the patch-id landed test | **Amend** | P8-21, P8-24 | same |
 | RS-1 | Ratify the R6 "agents" re-scoping: only editing agents get worktrees, and a blocked task's redo reuses its tree | As written in §1.2 | P8-19 | DESIGN §1.2; R1 l.46 |
 | RS-2 | Ratify the R8 "reassigned" re-scoping: freed cost goes to a standby task in the same cycle | As written | P8-18, P8-22 | same |
-| V3-Q3..Q8 | V3's own questions: delete or rename `remove_stale_worktrees.bash`; backup filters; commit `reports/soak/runs/` (Q5, which V3 calls "the question that actually matters"); a restore drill; peer sweeps; ecosystem scope | No single recommendation; §7.2 argues for owner-plus-veto (Q6) | P8-25, then P8-24 | V3 §10 |
-| B-1 | Delete the seed branch after merge | "owner's call" | — | HANDOFF item 4 |
+| V3-Q3..Q8 | V3's own questions: delete or rename `remove_stale_worktrees.bash`; backup filters; commit `reports/soak/runs/` (Q5, which V3 calls "the question that actually matters"); a restore drill; peer sweeps; ecosystem scope | No single recommendation; §7.2 argues for Overtoad-plus-veto (Q6) | P8-25, then P8-24 | V3 §10 |
+| B-1 | Delete the seed branch after merge | "Overtoad's call" | — | HANDOFF item 4 |
 
 ## 3. Cross-path dependencies
 
 - **P8-02 / P8-06 → all paths (soft, usage windows).** At 20:33Z today, session `652c1204` (P1 backup) was running "Lane A/B/C" rounds. This planning fan-out of 10 agents is running now. According to the INDEX, rounds are also pending in P2 (Y2 wave 2, round 15), P3 (owed validations), P7 (round-2 reconciliation) and P9 (round-6 follow-up).
 - **P8-13 ↔ P7 (logging).** Pilot task T1 targets P7's roadmap. P0.4 has shipped (cascor#680), and P7's next step is P2.1. Any re-picked pilot on P7 must be coordinated with that path.
-- **P8-13 ↔ P3 (register) and P6 (perf lane).** Pilot task DP-ECOSYSTEM-001/T1 is APD-ML-005. That row lives in P3's register and concerns `util/experiments/`, which is P6's quiet-window zone. The register says no row may be actioned without asking the owner.
+- **P8-13 ↔ P3 (register) and P6 (perf lane).** Pilot task DP-ECOSYSTEM-001/T1 is APD-ML-005. That row lives in P3's register and concerns `util/experiments/`, which is P6's quiet-window zone. The register says no row may be actioned without asking the Overtoad.
 - **P8-18 / P8-19 ↔ P9 / P10.** Both of those handoffs cite `util/push_signed_commit.py` (ml#2036) as the signed-append tool, while P8 plans new modes for `open_signed_pr.py`. There is no conflict today. [VERIFIED 2026-10-04: since `25b78f55`, no commit touched `open_signed_pr.py`, the worktree-cleanup scripts, `install_agents.bash`, V3, `claude_interactive.bash` or `task-executor.md`, and none of the 8 open juniper-ml PRs (#2119–#2129) touches them or the harness notes.]
 - **P8-21 / P8-24 / D-12 → V3 ratification (P8-25)**, which no path carries. V3's Q4 and Q8 (Duplicati filters, restore drill) overlap with P1 (backup).
 - **P8-09 ↔ all paths**: every path edits the over-budget `MEMORY.md`.
@@ -117,7 +117,7 @@ Short names used below: **HANDOFF** = `HANDOFF_2026-10-03_dynamic-workflow-harne
 
 ## 6. Residue (open items that HANDOFF does not carry)
 
-- The R6 "agents" and R8 "reassigned" re-scopings, which R1 l.46 "recorded … for the owner to ratify by name". They have no D-row → P8-12.
+- The R6 "agents" and R8 "reassigned" re-scopings, which R1 l.46 "recorded … for the Overtoad to ratify by name". They have no D-row → P8-12.
 - P0 is exempt from the round-2 gate (DESIGN §0, §11) and can start now. HANDOFF mentions it only inside D-10 → P8-14.
 - Roadmap steps P1–P9 are carried only by reference → P8-16..P8-24.
 - V3's ratification and its §10 Q3–Q8 → P8-25.
@@ -135,7 +135,7 @@ Short names used below: **HANDOFF** = `HANDOFF_2026-10-03_dynamic-workflow-harne
 
 1. **P8-03, then P8-02**: amend the briefs and launch round 2 once this planning fan-out has finished and no other path is mid-round.
 2. **P8-04 → P8-05 → P8-07 → P8-08**: archive, reconcile, fold v4 (including the stale pilot and §5 rows 4, 5, 7 and 8), run the gates, and open the v4 PR. That PR asks for D-1..D-12 and RS-1/RS-2.
-3. **Owner (P8-14 / P8-15)**: decide whether P0 starts as soon as round 2 reports, since D-10 cannot be ruled until P0 has collected at least 3 weekly windows of data.
+3. **The Overtoad (P8-14 / P8-15)**: decide whether P0 starts as soon as round 2 reports, since D-10 cannot be ruled until P0 has collected at least 3 weekly windows of data.
 
 The cheap side items can run at any time: P8-10 (before ~10-22), P8-09 and P8-01.
 

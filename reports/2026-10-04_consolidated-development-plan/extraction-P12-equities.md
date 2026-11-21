@@ -81,7 +81,7 @@ measured_at: 2026-10-04T20:54Z–21:13Z (all probes below ran in this window; re
   - `run_suite.py`: `TERMINAL_OUTCOMES` at :81 lacks `degraded`; :585-600 reads the top-level keys.
   - The driver files were last touched 2026-09-23.
   - `pyproject.toml`: :86 `juniper-data>=0.15.0`; :104-106 caps the recurrence extras at `<0.4.0` / `<0.6.0`.
-  - The register says of APD-ML-002…006 that they "need an owner decision before code is written" (:1312-1330).
+  - The register says of APD-ML-002…006 that they "need an Overtoad decision before code is written" (:1312-1330).
   - model-core has had `order=`/`groups=` since tag `juniper-model-core-v0.3.0`.
   - Tag `juniper-observability-v0.4.0` ships `RequestIdMiddleware`.
 - **Q11.** Host (read-only `ls`/`cat`/`ps`):
@@ -131,7 +131,7 @@ measured_at: 2026-10-04T20:54Z–21:13Z (all probes below ran in this window; re
 | P12-20 (W1.10) | `recurrence_up` exports `JUNIPER_RECURRENCE_SNAPSHOTS_DIR` and LOG_LEVEL / LOG_FORMAT | L388 | [VERIFIED: Q10 → absent] | Snapshot half: OWNER-DECISION (O7). Log half: STARTABLE | O7 | ml | S | HYGIENE | **DUPLICATE** of Y2 2c (P2 Lane B) |
 | P12-21 (W1.11) | Release data 0.17.0 (X8); ml floor ≥0.17.0; Compose data pins; canopy→recurrence→data smoke | L389,405 | [VERIFIED: Q2/Q6 → 0.16.0 latest; main 9 ahead; X8 unmarked; Q7 → pins 0.16.0; Q10 → floor ≥0.15.0] | OWNER-ACTION (release cut) | P3 item 1; the #437 marker ruling; recurrence `[bench]` cap PR (Q4) | data, ml, deploy, recurrence | M | UNBLOCKER | **DUPLICATE**: P4 item 5; P3 item 10 [R]; P2 C3/O14 |
 | P12-22 (W1.12) | Recurrence Compose bind mount and `SNAPSHOTS_DIR`; document that there is no restore-on-boot | L390 | [VERIFIED: Q7 → no `volumes:`; Q14 → 2b prepared, never opened] | OWNER-DECISION (O7) | P12-23 (the routes are unreleased) | deploy, recurrence | S | DATA-INTEGRITY | **DUPLICATE** of Y2 2b (P2 Lane B) |
-| P12-23 (W1.13) | Release train: data-client 0.6.0 → model 0.4.0 → recurrence 0.6.0 → canopy 0.9.0; move the pins; re-run the smoke | L391,407 | [VERIFIED: Q2 → none released; Q4/Q8/Q10 → caps `<0.6.0` / `<0.4.0` block it] | OWNER-ACTION (releases) | P12-13…17, P12-21; cap PRs first | 5 repos | M | UNBLOCKER | P4 item 5; P5 spec W3/W4/W10 and its "recurrence release" owner item; P2 Lane B tail |
+| P12-23 (W1.13) | Release train: data-client 0.6.0 → model 0.4.0 → recurrence 0.6.0 → canopy 0.9.0; move the pins; re-run the smoke | L391,407 | [VERIFIED: Q2 → none released; Q4/Q8/Q10 → caps `<0.6.0` / `<0.4.0` block it] | OWNER-ACTION (releases) | P12-13…17, P12-21; cap PRs first | 5 repos | M | UNBLOCKER | P4 item 5; P5 spec W3/W4/W10 and its "recurrence release" Overtoad item; P2 Lane B tail |
 | P12-24 (W2.1) | Catch fit and crossval exceptions; log ERROR with fields; return 500 with an `incident_id` | L413 | [NOT RE-PROBED — Q3] | STARTABLE | — | recurrence | S | USER-FACING | — |
 | P12-25 (W2.2) | `RequestIdMiddleware`; canopy sends `X-Request-ID`; three-service test | L414 | [VERIFIED: Q4 → absent; Q10 → already in observability 0.4.0] | STARTABLE | — | recurrence, canopy | M | USER-FACING | — |
 | P12-26 (W2.3) | INFO for generator params and artifact inventory; WARNING validation summary | L415 | [NOT RE-PROBED — Q3] | STARTABLE | — | recurrence | M | USER-FACING | P5 item 6 (same lines) |
@@ -165,7 +165,7 @@ measured_at: 2026-10-04T20:54Z–21:13Z (all probes below ran in this window; re
 | P12-54 (W5.6) | `--shared-equities-cache` opt-in, with its own runbook section | L465 | [VERIFIED: Q10 → per-run cache only] | STARTABLE | — | ml | S | HYGIENE | CLI plan H-9 |
 | P12-55 (W5.7) | Record dropped symbols in `data_quality`; refuse or flag a lost requested symbol; guard `close > 0` | L466 | [NOT RE-PROBED] | STARTABLE | — | data | S | DATA-INTEGRITY | P3 round-39 §0.4 (`data_quality` has no recurrence consumer) |
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options and the source's recommendation | Blocks | Source |
 | --- | --- | --- | --- | --- |
@@ -183,14 +183,14 @@ measured_at: 2026-10-04T20:54Z–21:13Z (all probes below ran in this window; re
 | O7 | Does Y2 wave 2 continue, who runs it, and how do the sweeper and the merge order interact? | P2's default is fix-forward | P12-20, P12-22, P12-48 | P2 O7 |
 | O8 | Canopy wave-3 gating | A capability test or a third branch | P12-16 | P2 O8 |
 | O12 | Should recurrence `Settings` be case-sensitive? | — | P12-20 | P2 O12 |
-| P4-Q6 | Should data answer a fetch failure with 502/503 rather than 400? | Not yet put to the owner | how F-S9 surfaces (P12-15, P12-33) | P4 item 6 |
+| P4-Q6 | Should data answer a fetch failure with 502/503 rather than 400? | Not yet put to the Overtoad | how F-S9 surfaces (P12-15, P12-33) | P4 item 6 |
 | DC-0.6 | Which arc owns data-client 0.6.0: Decision 12 W3, or W1.13 / W1.4? | Neither source poses it | P12-14, P12-23; P5 spec W3/W4 | spec :527-556; L391 |
 
 ## 3. Cross-path dependencies
 
 **P12 depends on other paths:**
 
-- **P4.** P12-21 and P12-23 are release cuts that need the owner and the ceremony (P4 item 5). The juniper-ml floor changes need a juniper-ml release. Wave 4 (P4 item 3c) edits the `publish-image.yml` files in all five repos, the same workflows P12-23's image publications run, so the two must not run at once.
+- **P4.** P12-21 and P12-23 are release cuts that need the Overtoad and the ceremony (P4 item 5). The juniper-ml floor changes need a juniper-ml release. Wave 4 (P4 item 3c) edits the `publish-image.yml` files in all five repos, the same workflows P12-23's image publications run, so the two must not run at once.
 - **P3.**
   - P12-21 waits on P3 item 1, the data fix-forward (P3 dependency (i)).
   - P12-05 waits on P3 item 3 (validating #685) and on call (a).
@@ -218,7 +218,7 @@ measured_at: 2026-10-04T20:54Z–21:13Z (all probes below ran in this window; re
 
 ## 4. Hazards
 
-1. **Duplicate execution.** Another actor is already running P0 (Q11, Q12): the editable model install, plus four P0 worktrees covering W0.2–W0.7. Dispatch none of these again. Confirm that the session holds the R6 ruling, the APD-ML-002 decision and #685(a). The owner's sweeper arms any PR that opens, so W0.3, W0.4 and W0.5 could merge unruled.
+1. **Duplicate execution.** Another actor is already running P0 (Q11, Q12): the editable model install, plus four P0 worktrees covering W0.2–W0.7. Dispatch none of these again. Confirm that the session holds the R6 ruling, the APD-ML-002 decision and #685(a). The Overtoad's sweeper arms any PR that opens, so W0.3, W0.4 and W0.5 could merge unruled.
 2. **Rival Y2 implementations.** P12-20, P12-22 and P12-48 duplicate the prepared 2b/2c work. Their worktrees hold the only copy, so keep them. X1/F7: if 2b lands before 2a is merged and pulled, every deploy-main bring-up refuses.
 3. **Fragile measurement input.** W0.8's frozen artifact and the 103 evidence files exist only in the primary checkout, excluded by `.git/info/exclude`. A `git clean -x`, a re-clone or a cleanup destroys them, and re-minting refetches from Yahoo and SEC, so the bytes may differ.
 4. **Shared environments.**
@@ -273,21 +273,21 @@ These items appear in the plan's references, but the plan does not carry them:
 
 ## 7. Path assessment
 
-- **Urgency: high.** F-D1 already wrote a false `succeeded` into the shared run index [VERIFIED 2026-10-04: the last row of `~/.local/state/juniper-experiments/index.jsonl` is `c001-0d8782ae` / `20261003T091414Z-4ba6`, `outcome: "succeeded"`; no recurrence run since]. The published stack refuses `equities_seq`. But P0 is already moving in another session, so the binding constraint is now owner decisions and coordination, not dispatch.
+- **Urgency: high.** F-D1 already wrote a false `succeeded` into the shared run index [VERIFIED 2026-10-04: the last row of `~/.local/state/juniper-experiments/index.jsonl` is `c001-0d8782ae` / `20261003T091414Z-4ba6`, `outcome: "succeeded"`; no recurrence run since]. The published stack refuses `equities_seq`. But P0 is already moving in another session, so the binding constraint is now Overtoad decisions and coordination, not dispatch.
 - **Leverage.**
   - W0.1 and W0.6, then W0.8 and W0.9, decide all of P5, W1.1(a) and R5.
   - W1.11 unblocks canopy × `equities_seq` on published images, and helps P4, P2 and P5.
   - W1.13 unblocks juniper-ml 0.11.0.
 - **Cost.**
   - 55 items: 3 L, 1 M–L, 18 M, 2 S–M, 31 S.
-  - 16 owner decisions: 8 from the plan, 8 cross-path.
+  - 16 Overtoad decisions: 8 from the plan, 8 cross-path.
   - Six publications: data, data-client, model, recurrence, canopy and juniper-ml. They span 6 repos plus the host.
   - Plan horizon: 2027-01-15.
 
 **Next actions, in order:**
 
 1. **P12-01…07: coordinate before anything opens.** Identify the session behind Q11/Q12, and give it, or hold its PRs pending, R6, the APD-ML menu and #685(a).
-2. **§2: one owner batch.** R6, APD-ML, #685(a), O7 (dedupe P12-20/22/48), #409+R1, dates. Then R2, R3, R7 and R8 for P1.
+2. **§2: one Overtoad batch.** R6, APD-ML, #685(a), O7 (dedupe P12-20/22/48), #409+R1, dates. Then R2, R3, R7 and R8 for P1.
 3. **P12-08, then P12-09.** Once P12-01's service-core half lands, first copy the frozen artifact somewhere durable. Then run the W0.8 replay outside a PF-3 window: it is the cheapest item with the most information.
 
 ## 8. What this report cannot support

@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-05
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Round 1's correction pass on the ledger's Phase 11 (and the evidence README), its Consensus record included.
 
@@ -46,7 +46,7 @@ ROUND1_RECORD = """- **Round 1**: five lanes on the frozen `1b7cf44b`, briefed s
   round 2.
 - **What round 1 changed:**
   - one rating: F-CANOPY-068, from P2 to P1 if a shipped CHANGELOG promise counts as documented, else P2 (Lane
-    11-B2), the owner's question F-CANOPY-065 already carries. The counts move to 7 open P1 and 16 open P2.
+    11-B2), the Overtoad's question F-CANOPY-065 already carries. The counts move to 7 open P1 and 16 open P2.
     Lane 11-B1, on the opposite brief, kept F-CANOPY-068 a finding of its own: the gate and the second Input
     stay inside F-CANOPY-058 because they do what they are specified to do, and the watchdog does not;
   - the lane timings, now read from each change's innermost record (Lanes 11-A2 and 11-A3, independently):
@@ -82,9 +82,9 @@ ROUND1_RECORD = """- **Round 1**: five lanes on the frozen `1b7cf44b`, briefed s
   sets `has_update` from `has_output`, which is true for any callback with an Output (`:640-645`), so the answer
   is a 200 with empty data, as F-CANOPY-058's entry says. Lane 11-A1's other two points on the shim's docstring
   stand.
-- **Unresolved, for the owner:** whether a shipped CHANGELOG promise counts as documented under plan §6.3, which
+- **Unresolved, for the Overtoad:** whether a shipped CHANGELOG promise counts as documented under plan §6.3, which
   now decides two ratings, F-CANOPY-065's and F-CANOPY-068's.
-- **Slips.** Lanes 11-A2, 11-A3 and 11-B2 each printed a commit's author line, which carries the owner's e-mail
+- **Slips.** Lanes 11-A2, 11-A3 and 11-B2 each printed a commit's author line, which carries the Overtoad's e-mail
   address, into their own local tool output (`git show --stat`). None repeated or sent it.
 - **What the evidence cannot support.** Two idle pages on one host, about 25 minutes each: no rate for a page
   during training, with a live stream or in a full view; nothing live on dash 4.4.1; no stall of minutes on
@@ -247,7 +247,7 @@ SUBS = [
     # --- F-CANOPY-068's header: 6 cascades, and the conditional P1 (Lanes 11-B1 and 11-B2) ---
     (
         "and 7 of the 28 fires started F-CANOPY-058 cascades (P2, canopy repo; found 2026-10-05 by the F-CANOPY-058 census; OPEN).**",
-        "and 7 of the 28 fires evicted a response, 6 of them starting F-CANOPY-058 cascades (P1 if a shipped CHANGELOG promise counts as documented, else P2, the owner's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census; re-rated P1 in round 1 of this phase's validation; OPEN).**",
+        "and 7 of the 28 fires evicted a response, 6 of them starting F-CANOPY-058 cascades (P1 if a shipped CHANGELOG promise counts as documented, else P2, the Overtoad's question; canopy repo; found 2026-10-05 by the F-CANOPY-058 census; re-rated P1 in round 1 of this phase's validation; OPEN).**",
     ),
     (
         "  case\" for that reason (`:2519-2522`; `canopy_constants.py:421-424` says the same). The threshold cannot keep\n"
@@ -304,7 +304,7 @@ SUBS = [
         "  2 to 11 evictions; the seventh stopped at one, its late release falling under a request that was answered in\n"
         "  time. 28 of the 29 evicted responses followed a false fire. Without F-CANOPY-058, an evicting false fire would\n"
         "  cost one answer, a cycle's delay; the longer stalls are F-CANOPY-058's.\n"
-        "- **Rating: P1 if a shipped CHANGELOG promise counts as documented, else P2**, the owner's question that\n"
+        "- **Rating: P1 if a shipped CHANGELOG promise counts as documented, else P2**, the Overtoad's question that\n"
         "  F-CANOPY-065 already carries (Phase 10's Consensus record). Plan §6.3's P1 is \"breaks a documented\n"
         "  behaviour\", and canopy's shipped CHANGELOG promises the behaviour these fires break (Its own contract,\n"
         "  above). If such a promise does not count, it is P2: on its own it delays the chart by a cycle at a time,\n"

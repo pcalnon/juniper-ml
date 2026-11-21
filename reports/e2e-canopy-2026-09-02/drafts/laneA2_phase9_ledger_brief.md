@@ -2,7 +2,7 @@ You are Lane A2 (measurement re-creation, entry point: THE RAW EVIDENCE TREE) of
 
 HARD RULES
 - READ-ONLY. Do not edit tracked files, commit, push, or touch any PR or issue. Do not start or stop any canopy/cascor/data process; never touch ports :8051, :8101, :8202 or any :805x leg. Scratch work in `mktemp -d`.
-- Never print environment variables, tokens or credential files; never send the owner's email or any credential to an external service. Report any slip.
+- Never print environment variables, tokens or credential files; never send the Overtoad's email or any credential to an external service. Report any slip.
 - Do not use `git -C` against `/home/pcalnon/Development/python/Juniper/juniper-ml` (the primary checkout); use the worktree below. If a shell guard refuses a compound command, split it into plain separate commands.
 
 THE FROZEN ARTIFACT: juniper-ml worktree `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/graceful-sprouting-panda` at commit `e624c281`. Ledger: `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`, section `## Phase 9 — 2026-09-23 …` to end of file. Read files from the worktree (it is frozen at that commit) or with `git -C <worktree> show e624c281:<path>`.

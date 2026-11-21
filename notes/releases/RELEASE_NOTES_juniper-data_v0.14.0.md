@@ -91,7 +91,7 @@
 ### Added
 
 - **A fourth rescue rung: `us-gaap:CommonStockSharesIssued`, annotated as its own degraded basis.**
-  Owner decision, 2026-09-05. It rescues the three tickers no other rung reaches.
+  The Overtoad decision, 2026-09-05. It rescues the three tickers no other rung reaches.
 
   **Issued is a different quantity, not a weaker measurement of the same one** — it includes
   treasury stock, so it is ≥ shares outstanding, materially so for a company that has bought back
@@ -150,7 +150,7 @@
 
 ### Changed
 
-- **BREAKING (default): `fundamentals_fill` is now `"nan"`, was `"zero"`.** Owner decision,
+- **BREAKING (default): `fundamentals_fill` is now `"nan"`, was `"zero"`.** The Overtoad decision,
   2026-09-05.
 
   A `market_cap` of `0.0` is a value no listed company can have, and nothing downstream can tell it

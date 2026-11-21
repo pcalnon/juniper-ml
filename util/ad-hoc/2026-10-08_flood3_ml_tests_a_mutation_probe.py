@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-08
 Status: ad-hoc — investigation (Cursor flood #3 evaluation, evaluator ml-tests-a)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood #3 evaluation brief (non-vacuity: "apply 1-3 targeted mutations to the
          production code under test, confirm the new tests fail, restore")
 

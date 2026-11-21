@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-08
 Status: ad-hoc — migration
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: W1.11 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md;
          the 0.15.0 raise this follows, util/ad-hoc/2026-09-22_raise_data_floor_0_15_0.py (ml#2033)
 
@@ -78,7 +78,7 @@ _ENTRY_MARKER = f"`[servers]` now floors `{_NEW_PIN}`"
 _CL_ENTRY = f"""- **BREAKING (resolution): {_ENTRY_MARKER}, so the meta-package stops admitting the
   juniper-data releases that serve `equities_seq` as `classification`** (W1.11 and F-P4 of
   `{_PLAN}`). Every published juniper-data up to 0.16.0 serves `equities_seq` at generator `5.0.0`
-  with `task_type: classification` and `n_classes: 2`. juniper-data#437 (owner ruling X8)
+  with `task_type: classification` and `n_classes: 2`. juniper-data#437 (Overtoad ruling X8)
   relabelled it `regression` at `6.0.0` after v0.16.0 was cut, and 0.17.0 is the release that
   carries it. The arrays did not change, and a recurrence fit reads `y_reg_*` under either
   version. What changed is the producer's stored metadata, and with it the `dataset_id`, which

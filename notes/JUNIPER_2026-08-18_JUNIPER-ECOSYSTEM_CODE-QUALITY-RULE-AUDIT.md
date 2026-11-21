@@ -1,7 +1,7 @@
 # `code_quality` Branch-Ruleset Rule — Fleet Audit
 
 **Project**: Juniper
-**Sub-Project**: juniper-ecosystem (all 9 repos, owner `pcalnon`)
+**Sub-Project**: juniper-ecosystem (all 9 repos, Overtoad `pcalnon`)
 **Author**: Paul Calnon
 **Status**: AUDIT — read-only; nothing was modified
 **Date**: 2026-08-18
@@ -17,7 +17,7 @@ causal attribution.
 | Register assertion | Verdict | Basis |
 |---|---|---|
 | `code_quality` "carries `{severity: errors}` with no reporting tool" | **Half-true, but a category error** | The parameters are exactly that (§2), but `code_quality` has **no tools parameter by design** — it is not a bring-your-own-tool rule (§3). |
-| "…so every *non-bypass* auto-merge waits forever" | **PROVEN FALSE** | `code_quality` evaluated **`pass` 779 times and `fail` 0 times** across 785 rule suites in 9 repos over a 30-day window (§4). A non-owner App's armed auto-merge fired in **3 m 07 s** with the suite recording `result: pass` on all 8 rules (§5). |
+| "…so every *non-bypass* auto-merge waits forever" | **PROVEN FALSE** | `code_quality` evaluated **`pass` 779 times and `fail` 0 times** across 785 rule suites in 9 repos over a 30-day window (§4). A non-Overtoad App's armed auto-merge fired in **3 m 07 s** with the suite recording `result: pass` on all 8 rules (§5). |
 | "…is why bypass actors accumulate" | **PROVEN FALSE** | The blocker that actually failed on the cited PRs was the **`update` ("Restrict updates") rule**, whose failure detail is literally `"Cannot update this protected ref."` (§6). It was removed 2026-08-10; auto-merge started firing hands-free 4 days later, with `code_quality` untouched. |
 | "Fixing it … is higher leverage than any individual removal" | **FALSE** | There is nothing to fix. The rule is inert. |
 | The supporting probe, "probe-confirmed on ml#864" | **INVALID EVIDENCE** | The probe commit was **unsigned** against an active `required_signatures` rule, and the `update` rule was simultaneously in force. Two sufficient non-`code_quality` blockers; the probe isolated nothing (§7). |
@@ -32,7 +32,7 @@ and cited (§9, finding CQ-7).
 
 ## 1. Scope and checklist
 
-**Scope.** The `code_quality` rule on the `main` branch ruleset of the 9 owner-`pcalnon` repos:
+**Scope.** The `code_quality` rule on the `main` branch ruleset of the 9 Overtoad-`pcalnon` repos:
 `juniper-ml`, `juniper-cascor`, `juniper-canopy`, `juniper-data`, `juniper-data-client`,
 `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-deploy`, `juniper-recurrence`.
 
@@ -46,7 +46,7 @@ document. All API calls were `GET` (the only exception being `gh api graphql` re
 | C2 | Exact parameters on each of the 9 repos | Recorded verbatim; differences noted | **Verified** — identical everywhere (§2) |
 | C3 | Does the rule accept a reporting-tool parameter? | Schema inspected | **Verified: it does not** (§3) |
 | C4 | Has `code_quality` ever evaluated to a failure? | Per-rule evaluation census | **Verified fail-free**: 0/785 (§4) |
-| C5 | Is a non-bypass evaluation reachable, and does it satisfy the rule? | A `pass` suite / non-owner merge exists | **Verified pass** (§5) |
+| C5 | Is a non-bypass evaluation reachable, and does it satisfy the rule? | A `pass` suite / non-Overtoad merge exists | **Verified pass** (§5) |
 | C6 | Is any PR currently blocked, or auto-merge armed-but-unfired, because of it? | Live merge-state census | **Verified: none** (§8) |
 | C7 | What actually caused the 2026-07-29 incident the register cites? | Per-rule evaluation of the cited merges | **Verified: the `update` rule** (§6, §7) |
 | C8 | Under what conditions *would* the rule bite? | Product docs + repo config | **Conditional** (§10) |
@@ -189,7 +189,7 @@ and the enablement how-to):
 i.e. **GitHub Team or GitHub Enterprise Cloud**. And `content/code-security/how-tos/maintain-quality-code/enable-code-quality.md`:
 
 > "## Prerequisites
-> * An enterprise owner must have allowed {% data variables.product.prodname_code_quality_short %} in
+> * An enterprise Overtoad must have allowed {% data variables.product.prodname_code_quality_short %} in
 >   your enterprise. …
 > * {% data variables.product.prodname_actions %} must be enabled …"
 > "1. Click **Enable code quality**."
@@ -239,7 +239,7 @@ That is corroborating (not conclusive) evidence that GitHub Code Quality is **no
 A **rule suite** records the per-rule evaluation of a ref update. Critically, the per-rule results are
 computed **independently of bypass**: bypass only decides whether the push is *allowed*, and shows up as
 the suite-level `result: bypass`. Proof that the two axes are independent, from this very dataset: the
-owner holds `RepositoryRole 5 : always` bypass on all 9 repos, yet **141 of his suites are `result:
+Overtoad holds `RepositoryRole 5 : always` bypass on all 9 repos, yet **141 of his suites are `result:
 pass`** (nothing failed, so no bypass was needed) and 620 are `result: bypass` (something failed).
 
 **Therefore every bypass suite is a free counterfactual**: it tells you exactly what would have happened
@@ -360,7 +360,7 @@ waiting-on-an-absent-tool rule (`code_scanning`), and an inert rule (`code_quali
 
 ---
 
-## 5. Is the mechanism reachable, and is it satisfied? (C5) — yes, by a non-owner bot
+## 5. Is the mechanism reachable, and is it satisfied? (C5) — yes, by a non-Overtoad bot
 
 The task asked whether a **non-bypass** merge has ever occurred and whether `code_quality` was satisfied
 on it. It has, and it was.
@@ -385,7 +385,7 @@ gh api /repos/pcalnon/juniper-ml/rulesets/rule-suites/3689919174
 > ```
 
 Suite `result: **pass**` — **not** `bypass`. All eight rules satisfied, `code_quality` among them, by an
-actor who is not the owner.
+actor who is not the Overtoad.
 
 The corresponding PR:
 
@@ -519,7 +519,7 @@ gh pr list --repo pcalnon/juniper-ml --state merged --limit 100 --search "author
 | #1052 | 2026-08-10T00:27:03Z | 2026-08-10T06:26:38Z | **pcalnon** | yes (removed 08:21Z) |
 | **#1108** | **2026-08-14T23:05:06Z** | **2026-08-14T23:08:13Z** | **app/juniper-release-train** | **no** |
 
-Armed auto-merge never fired while `update` was in the ruleset — the owner always had to merge by hand.
+Armed auto-merge never fired while `update` was in the ruleset — the Overtoad always had to merge by hand.
 The first armed auto-merge after `update` was removed fired **on its own, in 3 minutes**.
 `code_quality` was present, unchanged, at `severity: errors`, on **both** sides of that line.
 
@@ -583,7 +583,7 @@ Open-PR census, all 9 repos, 2026-08-18 (`mergeable` warmed with a first GraphQL
   blocking rule**. A PR cannot reach `CLEAN` if `code_quality` is unsatisfiable.
 
   ```bash
-  gh api graphql -f query='{ repository(owner:"pcalnon",name:"juniper-ml"){ pullRequest(number:1168){ mergeable mergeStateStatus } } }'
+  gh api graphql -f query='{ repository(Overtoad:"pcalnon",name:"juniper-ml"){ pullRequest(number:1168){ mergeable mergeStateStatus } } }'
   # {"mergeable":"MERGEABLE","mergeStateStatus":"CLEAN"}
   ```
 
@@ -593,7 +593,7 @@ Open-PR census, all 9 repos, 2026-08-18 (`mergeable` warmed with a first GraphQL
   (`Pre-commit (Python 3.13)` IN_PROGRESS, `Pre-commit (Python 3.14)` QUEUED, `Sequence Safety` QUEUED,
   `Security Scan` QUEUED, …). Ordinary transient state.
 
-**Important control**: `mergeStateStatus` is *not* discounted by the viewer's bypass. The owner holds
+**Important control**: `mergeStateStatus` is *not* discounted by the viewer's bypass. The Overtoad holds
 `always` bypass yet still sees `#1147` as `BLOCKED`. So `#1168`'s `CLEAN` is a genuine "all rules
 satisfied" signal, not a bypass artefact.
 
@@ -605,7 +605,7 @@ gh pr list --repo pcalnon/<repo> --state open --limit 60 --json number,autoMerge
   --jq '.[]|select(.autoMergeRequest!=null)'   # empty for all 9
 ```
 
-The owner's observation that **CodeQL is enabled and reporting on all repos** is confirmed:
+The Overtoad's observation that **CodeQL is enabled and reporting on all repos** is confirmed:
 
 ```bash
 gh api /repos/pcalnon/<repo>/code-scanning/analyses?per_page=5 --jq '[.[]|"\(.tool.name)@\(.created_at[0:10])"]|unique'
@@ -761,7 +761,7 @@ def build_payload(rs: dict) -> dict:
 ## 10. Under what conditions would the claim become true? (C8)
 
 **Conditionally true only under all of**: (1) the account is on GitHub Team or GitHub Enterprise Cloud;
-(2) an enterprise owner has allowed Code Quality; (3) Code Quality is explicitly enabled on the repo;
+(2) an enterprise Overtoad has allowed Code Quality; (3) Code Quality is explicitly enabled on the repo;
 and then (4) analysis is pending, failing, or finding `errors`-severity results.
 
 Evidence that (1)–(3) do not hold here:
@@ -771,7 +771,7 @@ Evidence that (1)–(3) do not hold here:
   "secret_scanning_non_provider_patterns":{"status":"disabled"},
   "secret_scanning_push_protection":{"status":"enabled"},
   "secret_scanning_validity_checks":{"status":"disabled"}}` — no code-quality entry.
-- Repo owner type is `User`; visibility `public`. Code Quality is gated to Team / GHEC (§3.3).
+- Repo Overtoad type is `User`; visibility `public`. Code Quality is gated to Team / GHEC (§3.3).
 - None of the 9 repos has the auto-created `"Code Quality Copilot review for default branch"` ruleset
   that GA enablement produces (§3.3).
 - `code_quality` returns `details: null` in 785/785 evaluations — the signature of a rule with nothing
@@ -830,7 +830,7 @@ finding alone; test it (arm an archive PR with the row temporarily absent) or le
 | could not verify | 1 | CQ-8 (+ four items in §11) |
 
 **Register claim: FALSE.** `code_quality` is inert, not deadlocked: 779 passes, 0 failures, 785 suites,
-9 repos, 30 days. A non-owner bot's armed auto-merge fired in 3 minutes with the rule satisfied. The
+9 repos, 30 days. A non-Overtoad bot's armed auto-merge fired in 3 minutes with the rule satisfied. The
 "every non-bypass merge waits forever" symptom was real and was caused by the **`update` ("Restrict
 updates") rule**, which fails with `"Cannot update this protected ref."` and was removed fleet-wide on
 2026-08-10 — after which hands-free auto-merge began working with `code_quality` untouched.
@@ -886,4 +886,4 @@ gh api /repos/github/docs/contents/data/reusables/gated-features/code-quality-av
 | <https://github.blog/changelog/2026-08-07-github-code-quality-no-longer-adds-copilot-as-a-reviewer/> | Code Quality GA date (2026-07-20); auto-created Copilot-review ruleset; its reversal |
 | `github/docs` `content/code-security/concepts/code-quality/code-quality.md` | What Code Quality is; per-seat licence |
 | `github/docs` `data/reusables/gated-features/code-quality-availability.md` | Team / GHEC gating |
-| `github/docs` `content/code-security/how-tos/maintain-quality-code/enable-code-quality.md` | Explicit enablement + enterprise-owner prerequisite |
+| `github/docs` `content/code-security/how-tos/maintain-quality-code/enable-code-quality.md` | Explicit enablement + enterprise-Overtoad prerequisite |

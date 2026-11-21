@@ -221,7 +221,7 @@ _HOOK = r"""
 def _verdict(res: dict) -> dict:
     """The reading rule, fixed before the run.
 
-    Four outcomes, each with a different owner. Written here rather than composed
+    Four outcomes, each with a different Overtoad. Written here rather than composed
     from the numbers afterwards, so a surprising result cannot be reinterpreted into
     whichever finding is most convenient -- the failure mode this arc has already
     paid for once.
@@ -252,7 +252,7 @@ def _verdict(res: dict) -> dict:
             "verdict": "ARRIVES-AND-DROPPED",
             "why": (f"{len(carrying)} dispatches carried a non-empty value and the store's state never "
                     "reached a non-empty length. The reducer is handed the payload and does not apply "
-                    "it -- ownership moves to the reducer / props path, not the request layer."),
+                    "it -- Overtoadship moves to the reducer / props path, not the request layer."),
         }
     if carrying and reached:
         # A REVERT MUST BE CHECKED FOR, NOT ASSUMED. The first version of this rule

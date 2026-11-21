@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-09-15
 Status: ad-hoc -- migration (one fleet-wide workflow port)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#1944; the eight roll-out PRs cascor#654, data#403, data-client#205,
     cascor-client#166, cascor-worker#187, canopy#635, deploy#218, recurrence#171
 
@@ -16,7 +16,7 @@ WHY
 
 `.github/workflows/pr-budget-alarm.yml` was juniper-ml's alone. Cursor-fleet round 2 hit
 FOUR repos -- ml, data, canopy, data-client -- so a resumption on the other three would have
-been detected by nothing. The owner ruled 2026-09-15 that stale-at-scale documentation DOES
+been detected by nothing. The Overtoad ruled 2026-09-15 that stale-at-scale documentation DOES
 count as damage for the escalation trigger, which makes detection load-bearing rather than
 advisory, and ruled the roll-out fleet-wide rather than just to the repos already hit.
 
@@ -105,7 +105,7 @@ LOUD_SKIP = """          if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
 
 COMMIT_MESSAGE = """ci(pr-budget): port the open-PR budget alarm from juniper-ml
 
-Cursor-fleet round 2 hit four repos; the alarm existed on one. The owner ruled
+Cursor-fleet round 2 hit four repos; the alarm existed on one. The Overtoad ruled
 2026-09-15 that stale-at-scale documentation counts as damage for the escalation
 trigger, which makes detection load-bearing, and ruled the roll-out fleet-wide.
 
@@ -128,7 +128,7 @@ Ports `.github/workflows/pr-budget-alarm.yml` from `juniper-ml`, where it has ru
 2026-07-30. Owner-ruled fleet-wide roll-out, 2026-09-15.
 
 **Why here.** Cursor-fleet round 2 ran against **four** repos (ml, data, canopy, data-client)
-and the detector existed on **one**. The owner has now ruled that stale-at-scale documentation
+and the detector existed on **one**. The Overtoad has now ruled that stale-at-scale documentation
 *does* count as damage for the staged-escalation trigger, which makes detection load-bearing
 rather than advisory -- an escalation rule cannot fire on a repo whose PR count nothing reads.
 
@@ -152,7 +152,7 @@ exactly like a detector with nothing to report.**
 So a breach with no webhook configured emits a `::warning::` annotation instead, visible on the
 run and in the Actions tab. The run still does not fail.
 
-## Owner follow-up
+## The Overtoad follow-up
 
 This repository has **no `SLACK_WEBHOOK_URL` secret**, so until one is added the alarm reports
 to the Actions tab only. Adding the secret is what makes it reachable; nothing else is needed.

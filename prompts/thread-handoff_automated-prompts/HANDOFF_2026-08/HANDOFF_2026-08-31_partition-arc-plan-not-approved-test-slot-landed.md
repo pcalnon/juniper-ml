@@ -33,7 +33,7 @@ full before acting** — §3 and §4 here are pointers, not substitutes.
     in selection pressure both returned intervals containing zero. **The consequence that matters:
     the motivation for the three-way split is *methodological, not performance*** — selection and
     reporting must not share rows, which is provable without statistics. The design must **not**
-    claim the reported numbers are inflated; measurably, they are not. Owner decision 4
+    claim the reported numbers are inflated; measurably, they are not. The Overtoad decision 4
     (re-measure) survives anyway, for the unrelated V-1 reason below: the old numbers are not
     inflated, they describe *different data*. (ml#1477, ml#1493; collector
     `util/ad-hoc/2026-08-29_val_split_bias_collect.py`, suites `e-o-val-split-bias-cap4.yaml` /
@@ -47,7 +47,7 @@ full before acting** — §3 and §4 here are pointers, not substitutes.
 - **cascor#572 CONFIRMED, fix deliberately deferred.** `_seed_random_generator` draws its roll from
   the global `random` module; only the `np.random.seed` call site diverges — all 63 `manual_seed`
   pairs match. Not float noise. The fix moves every numpy-drawn candidate init, so it is held until
-  it will not invalidate in-flight measurements (owner instruction). (ml#1451)
+  it will not invalidate in-flight measurements (Overtoad instruction). (ml#1451)
 - **Logging hot path: worker self time 84.96 s → 43.20 s (−49 %)** — **a 32-profile cap-4 corpus
   (before) against one profiled cap-4 cell `e-n-profile-cap4` (after)**, and the after-run did
   **15 % more logging** (646,016 → 746,410 calls), so cascor#598's own body calls the headline
@@ -76,7 +76,7 @@ full before acting** — §3 and §4 here are pointers, not substitutes.
    held-out; and **`InlineDataset` still silently drops an unknown `test_x`**
    (`src/api/models/training.py:19` declares no `model_config`, so it does not inherit
    `TrainingParams`' `extra="forbid"` at `:62`).
-2. **Get D-1 and D-2 ruled** (plan §3). Both are owner decisions. Per plan `:80` verbatim — *"D-1
+2. **Get D-1 and D-2 ruled** (plan §3). Both are Overtoad decisions. Per plan `:80` verbatim — *"D-1
    gates the sequence chunk, not Chunk 3"* — do not over-block on it. **D-1's premise in the plan
    is false**; re-pose it before asking (§4 S-2).
 3. **Wire `_test_x` to the ruled source — do not re-decide the source.** #614 left the slot
@@ -86,20 +86,20 @@ full before acting** — §3 and §4 here are pointers, not substitutes.
    **O-2 — cascor sub-splitting `X_train` locally — is explicitly *not* adopted, "even as a
    fallback"** (design `:161`). A Lane B lens argued for it and plan `:210-213` records that its
    case *"is not refuted here"* — but that bullet's subject is *"That the ecosystem change is the
-   right call"*, and its closing sentence, **"The owner elected to proceed with it on the record,"**
-   means the owner chose **the ecosystem change** over the unrefuted local fix. Do not read it as
+   right call"*, and its closing sentence, **"The Overtoad elected to proceed with it on the record,"**
+   means the Overtoad chose **the ecosystem change** over the unrefuted local fix. Do not read it as
    endorsing the local split.
 4. **Work plan §9's S-2 … S-7** (§4 below). S-7 is unrelated to this arc and wants its own ticket.
 5. **Owner-timed and unblocked**: cascor#573 items 3–4 (per-logger levels; optional ELK export —
    scoped in the logging design and its call-site analysis, §8); **F-3a**, the swallowed-pytest
    investigation the logging design deferred to its own document; **V-3**, measuring what CLI early
-   stopping changes (owner decision 5 makes it mandatory, and it is a behavioural change to an arm
+   stopping changes (Overtoad decision 5 makes it mandatory, and it is a behavioural change to an arm
    that was previously unregularised); and cascor#550, #530, #578, #590, #602.
 6. **The predecessor's inherited deferred list — carried, NOT closed.** From the 2026-08-26 handoff
    §3 row 6 (itself inherited from 2026-08-24 §4.8 via 2026-08-25 §5), unchanged: cap-series
    re-measure post-F1 (now cheap — a cap-16 k=4 paired campaign runs ~11 min end to end); cap-128
    3-seed spread (**cost-gate first** — the cap-64 log was 637 MB); **retrospective corpus
-   re-validation — raise with the owner, do NOT absorb**; #566's "a slow cell would re-diverge"
+   re-validation — raise with the Overtoad, do NOT absorb**; #566's "a slow cell would re-diverge"
    corollary (cap-64/128 N≥10 falsifier, never run); optional service-arm census. The host is
    **shared, not exclusive** — coordinate with live peers via `ListAgents` before any multi-hour
    campaign.
@@ -132,7 +132,7 @@ full before acting** — §3 and §4 here are pointers, not substitutes.
 
 ## 3. Settled — do NOT relitigate
 
-**Partition design** (`…TRAIN-EVAL-TEST-PARTITION-DESIGN.md` §9, owner-settled 2026-08-29):
+**Partition design** (`…TRAIN-EVAL-TEST-PARTITION-DESIGN.md` §9, Overtoad-settled 2026-08-29):
 
 1. **juniper-data owns the split.** cascor consumes; it may fall back to `X_test` only behind an
    explicit switch. Legacy gaps are repaired by juniper-data via generation or re-partitioning,
@@ -154,13 +154,13 @@ full before acting** — §3 and §4 here are pointers, not substitutes.
 Plus the design's §5 invariant: **`test` is touched exactly once, after training completes** — the
 invariant #614 built the machinery for.
 
-**Logging design** (`…LOGGING-REDESIGN-DESIGN.md` §7, owner-settled 2026-08-29): (1) measure the
+**Logging design** (`…LOGGING-REDESIGN-DESIGN.md` §7, Overtoad-settled 2026-08-29): (1) measure the
 discarded-record share **before** building — **already DISCHARGED**, do not re-run it (results doc
 §4); (2) flush **per record**; (3) **per-process file handle**, lazily opened after fork —
 **explicitly provisional**, per-PID files and a parent writer thread stay on the table; (4) keep
 **stdout** — relocation is not the fix for the swallowed-pytest problem, which gets F-3a —
 **also provisional, revisit if it becomes problematic**; (5) call-site migration scope **deferred,
-still the owner's call** — the analysis found 1,885 sites / 879 f-strings, but 36 % of sites and
+still the Overtoad's call** — the analysis found 1,885 sites / 879 f-strings, but 36 % of sites and
 essentially all tensor formatting live in two files, so hot-path-only is a ~150-site diff, and it
 recommends guards + `%`-args on the hot path, explicitly **not** a full sweep; (6) structured JSON
 **through `juniper-observability`**, no cascor-local second implementation.
@@ -178,7 +178,7 @@ Still open in the partition design: **V-2** (measure the leak before removing it
 - **S-2 — D-1's premise is FALSE.** The plan says `full == train + test` is "already violated by
   every shuffled tabular generator". The clauses are `len()` identities; shuffling cannot violate a
   length, and `test_e2e_workflow.py:299-301` asserts it passing. **Re-pose D-1 before asking the
-  owner to rule.** A fourth option is live and unstated: ratify the current superset semantics.
+  Overtoad to rule.** A fourth option is live and unstated: ratify the current superset semantics.
 - **S-3 — extending `NPZ_SPLITS` is owned by no chunk.** v3 cut the dangerous half of a correction
   and the legitimate half with it; Chunk 1 *pins* the 3-tuple, freezing the gap.
   `validate_npz_contract` **does** have a fleet consumer — verified at
@@ -305,7 +305,7 @@ Written per `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`, v
 **Sizing**: medium uncertainty × high criticality (a successor acts on it unread) → 2 Lane A +
 2 Lane B, escalated to **3 Lane A + 2 Lane B across two iterations**. Escalators applied: this
 handoff is written by the session whose work it summarises, so the self-serving-framing lens is
-mandatory rather than optional; and iteration 1 surfaced an **inverted owner decision**, a
+mandatory rather than optional; and iteration 1 surfaced an **inverted Overtoad decision**, a
 terminate-blocking class under §4.
 
 **Iteration 1** — 4 agents, distinct entry points. A1: git/`gh` state re-derivation. A2: source
@@ -315,8 +315,8 @@ self-serving framing.
 Findings, all corrected in this revision: cascor#614 **merged mid-review** (§2 had said OPEN); the
 cascor primary is **8 behind and FROZEN** (§7 had said "one commit behind, not frozen"); a dangling
 `T-1` reference (→ S-2); "10 mutation-verified tests" (→ 1 of 10); "both block Chunk 3" (→ D-1 gates
-chunk 3b); "S-1 ANSWERED" (→ partially; 3 items still live); **owner decision 1 inverted** by
-half-quoting plan §8 — the sentence *"The owner elected to proceed with it on the record"* had been
+chunk 3b); "S-1 ANSWERED" (→ partially; 3 items still live); **Overtoad decision 1 inverted** by
+half-quoting plan §8 — the sentence *"The Overtoad elected to proceed with it on the record"* had been
 dropped; decisions 2–5 and all six logging decisions **absent**; `ecosystem.yaml:32` → `:31`; both
 §6 `for` loops **refused** by the isolated-session guard; the `_test_x` grep aimed at the frozen
 primary, where it returns 0 and would have read as "#614 did not land"; source documents unnamed;
@@ -327,12 +327,12 @@ command in §6 verbatim and re-derived the numbers, rather than reasoning about 
 briefed on this project's recorded worst failure mode — *the correction pass introduces the
 critical* — and told to assume iteration 1's fixes were defective.
 
-**They were.** B3 found the round-1 fix for the inverted owner decision had **re-inverted it**:
+**They were.** B3 found the round-1 fix for the inverted Overtoad decision had **re-inverted it**:
 restoring plan §8's dropped sentence attached "proceed with **it**" to a lead-in whose nearest
 antecedent was the *local* fix, when that bullet's subject is *"That the ecosystem change is the
 right call"*. The handoff then contradicted its own §3 by offering cascor sub-splitting as a live
 option — which design `:161` says is *"explicitly not adopted even as a fallback"*. A successor
-would have implemented the one option the owner rejected, believing it endorsed. Item 3 is
+would have implemented the one option the Overtoad rejected, believing it endorsed. Item 3 is
 rewritten.
 
 Also fixed, each verified against the primary source: the −49 % logging figure was attributed to
@@ -343,7 +343,7 @@ pointed at the **frozen primary**, where it goes green while blind to everything
 the oldest cited — trap 1 reproduced inside its own receipt, now count-asserted; the predecessor's
 five inherited deferred items were **pointed at but never carried** (now §1 item 6); §3's new
 paraphrases had **dropped five qualifiers** — decision 2's carve-up path, decision 3's override
-switch, logging 4's provisionality, logging 5's "still owner's call", and that logging 1 is already
+switch, logging 4's provisionality, logging 5's "still Overtoad's call", and that logging 1 is already
 discharged; both ingress line numbers were pre-#614 (`:3533`/`:2195` → `:3631`/`:2271`, and the
 shift is non-uniform so it cannot be corrected by arithmetic); trap 4 cited two sources that do not
 say what was claimed; the juniper-recurrence path carried a `src/` that does not exist; "22

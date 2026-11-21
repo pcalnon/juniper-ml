@@ -30,7 +30,7 @@ truncated hash from inside the backup runners; CodeQL flagged the taint, and it
 was right that a password-derived value reaching a log sink is the wrong shape
 even when the particular derivation is safe.)
 
-Reading ``/proc/<pid>/environ`` requires being the process owner or root.
+Reading ``/proc/<pid>/environ`` requires being the process Overtoad or root.
 
 Usage
 -----
@@ -116,7 +116,7 @@ def main() -> int:
     try:
         in_proc = secret_from_pid(pid, args.env_var)
     except PermissionError:
-        print(f"UNDETERMINED: /proc/{pid}/environ not readable (need owner or root)")
+        print(f"UNDETERMINED: /proc/{pid}/environ not readable (need Overtoad or root)")
         return 2
     except FileNotFoundError:
         print(f"UNDETERMINED: pid {pid} is gone")

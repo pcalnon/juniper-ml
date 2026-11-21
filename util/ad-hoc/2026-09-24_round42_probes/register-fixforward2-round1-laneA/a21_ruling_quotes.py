@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Lane A: are the register's two owner-ruling quotes exact openings of the archived descriptions, cut where the
-ellipsis says, and does owner-rulings-verbatim.md hold each description in full (i.e. longer than the quote)?
+"""Lane A: are the register's two Overtoad-ruling quotes exact openings of the archived descriptions, cut where the
+ellipsis says, and does Overtoad-rulings-verbatim.md hold each description in full (i.e. longer than the quote)?
 
-Parses the "label"/"description" JSON pairs in owner-rulings-verbatim.md, then extracts each quote from the head
+Parses the "label"/"description" JSON pairs in Overtoad-rulings-verbatim.md, then extracts each quote from the head
 register (the text between `begins "` and ` …"`), normalising the register's hard line wraps to single spaces.
 """
 import json
@@ -10,7 +10,7 @@ import pathlib
 import re
 
 S = pathlib.Path(__file__).resolve().parent
-v = (S / "eco/juniper-ml/reports/2026-09-24_defect-register-round-42/owner-rulings-verbatim.md").read_text(encoding="utf-8")
+v = (S / "eco/juniper-ml/reports/2026-09-24_defect-register-round-42/Overtoad-rulings-verbatim.md").read_text(encoding="utf-8")
 reg = (S / "head/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md").read_text(encoding="utf-8")
 
 pairs = re.findall(r'"label":\s*("(?:[^"\\]|\\.)*"),\s*"description":\s*("(?:[^"\\]|\\.)*")', v)

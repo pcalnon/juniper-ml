@@ -1,4 +1,4 @@
-# HANDOFF 2026-09-24 — round-42 follow-up lane: four PRs await validation or fix-forward, and the owner's observability release gates the Sentry fix
+# HANDOFF 2026-09-24 — round-42 follow-up lane: four PRs await validation or fix-forward, and the Overtoad's observability release gates the Sentry fix
 
 **Session handing off**: `bc31e993-97b0-4a01-ae04-cb39593eb647`, which `ListAgents` shows as **`defect reg [042116]`**. It wrote this file. Never message it.
 
@@ -6,7 +6,7 @@
 - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-23_defect-register-round-42-four-prs-armed-by-an-unseen-actor-two-merged-unvalidated.md`: this lane's previous handoff.
 - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_defect-register-round-42-fixforwards-merged-438-fixing-in-place-second-fixforward-owed.md`: the register lane's 11:10Z handoff, via juniper-ml#2084. **It is stale and never governs.**
 
-**Which document governs.** The register lane (`defect reg [24f8d8]`) reports that the owner asked it to merge this file, #2084's handoff and its own into ONE validated handoff, published after this file's PR merges.
+**Which document governs.** The register lane (`defect reg [24f8d8]`) reports that the Overtoad asked it to merge this file, #2084's handoff and its own into ONE validated handoff, published after this file's PR merges.
 - Ask `[24f8d8]` for that document's path in Step 0, and again before each OPEN item.
 - Once the consolidated handoff is on `main`, it governs every instruction, and this file is only an evidence index.
 
@@ -23,24 +23,24 @@
    - Load `SendMessage` with ToolSearch if it is deferred.
    - Tell it you replace `[042116]`, and ask it for the consolidated handoff's path.
    - If `[24f8d8]` is gone, ask the user which handoff governs.
-2. **Get your own merge approval.** The owner granted merge approval for this arc to session bc31e993, and a handoff cannot carry it forward (`feedback_headless_merge_approval_policy.md`, the ml#1118 incident). Merge nothing until the owner grants it in YOUR session.
+2. **Get your own merge approval.** The Overtoad granted merge approval for this arc to session bc31e993, and a handoff cannot carry it forward (`feedback_headless_merge_approval_policy.md`, the ml#1118 incident). Merge nothing until the Overtoad grants it in YOUR session.
    - Even then, merge only with checks green on the current head and the validators cleared.
-3. **The PR sweeper is the owner's** ("Mine: fix forward", 2026-09-24).
+3. **The PR sweeper is the Overtoad's** ("Mine: fix forward", 2026-09-24).
    - It un-drafts, arms and update-branches open PRs as `pcalnon`. Its merges are intended and need nothing from you.
-   - Commits also appear on open PRs from the owner's account: #2077 got `095a2108`, and canopy#685 got two.
+   - Commits also appear on open PRs from the Overtoad's account: #2077 got `095a2108`, and canopy#685 got two.
    - Do not draft or disarm a PR to hold it. Since an open PR can merge at any moment, validate a change BEFORE it reaches a PR branch when a validated merge matters. That is always the case for F2 and F4. Otherwise, validate after merge and fix forward.
 
 ## Goal
 
-Continue the **round-42 follow-up lane**. The split, "Split: old does follow-ups", was relayed by the register lane (`defect reg [977fa8]`); the owner's own answer in this session, "Resume both here", is consistent with it.
+Continue the **round-42 follow-up lane**. The split, "Split: old does follow-ups", was relayed by the register lane (`defect reg [977fa8]`); the Overtoad's own answer in this session, "Resume both here", is consistent with it.
 
-- **This lane:** the cascor and canopy follow-ups, and the "Key leaks" PRs. The owner chose "Fix everywhere now (Recommended)", whose text ends "**Releases stay yours.**" This lane validates and fixes forward, and it surfaces the release to the owner rather than cutting it.
+- **This lane:** the cascor and canopy follow-ups, and the "Key leaks" PRs. The Overtoad chose "Fix everywhere now (Recommended)", whose text ends "**Releases stay yours.**" This lane validates and fixes forward, and it surfaces the release to the Overtoad rather than cutting it.
 - **The register lane:**
   - the register (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`), its closes PRs and its rows;
   - the API primer (#2075 and #2088, both merged);
   - the `MEMORY.md` compaction;
   - the fork-drift gate: `tests/test_service_fork_drift.py` and `docs/REFERENCE.md`'s drift-gate section, including the new `surrogatepass` marker, which comes after data#440 and cascor#689 merge;
-  - the later arc items C-A…D-G, which the consolidated handoff carries as owner decisions.
+  - the later arc items C-A…D-G, which the consolidated handoff carries as Overtoad decisions.
 
   Start none of these.
 
@@ -108,9 +108,9 @@ Post-merge `main` CI is green on all six.
    - **canopy:** none.
 
    Validate every fixup and every new PR with at least two lanes.
-5. **Surface to the owner; do not decide.** Ask each with verbatim options, and send the register lane the question, options and answer.
+5. **Surface to the Overtoad; do not decide.** Ask each with verbatim options, and send the register lane the question, options and answer.
    - **The release. "Releases stay yours."** Until juniper-observability and juniper-service-core ship, the frame-locals fix reaches no running service. `canopy685-implementation-report.md` measured the gap: any unhandled exception during a keyed request records the caller's key, through the ASGI scope headers held as a frame local.
-     - Ask once the juniper-ml F-PR validates; releasing earlier ships F2's leak and F10's false sentence. The options: (1) the owner prepares and cuts both releases; (2) this lane opens version-bump and release-notes PRs at versions the owner names, and the owner cuts the Releases.
+     - Ask once the juniper-ml F-PR validates; releasing earlier ships F2's leak and F10's false sentence. The options: (1) the Overtoad prepares and cuts both releases; (2) this lane opens version-bump and release-notes PRs at versions the Overtoad names, and the Overtoad cuts the Releases.
      - Ask separately who opens the cap, lock and floor PRs. If a bump crosses a cap, the cap PRs land BEFORE the Release; the lock and floor PRs come after the wheel is on PyPI (`feedback_semver_beats_consumer_cap_2026-09-05.md`).
      - Never approve a deploy gate (`feedback_deploy_approvals_paul_manages.md`).
      - Locks at `==0.4.0` and `==0.7.0`: data `requirements.lock:88/:90`; cascor `requirements.lock:63/:65` and `requirements-cpu.lock:129/:133` (the image's lock); canopy `requirements.lock:79/:81`; `juniper-recurrence/juniper-recurrence/requirements.lock:70/:74`.
@@ -124,7 +124,7 @@ Post-merge `main` CI is green on all six.
 
 ## Coordination with the register lane
 
-- **Send each item as it lands:** the PR number, the merge SHA, a validation summary, and every owner ruling's question, options and answer, verbatim.
+- **Send each item as it lands:** the PR number, the merge SHA, a validation summary, and every Overtoad ruling's question, options and answer, verbatim.
 - **What it holds on your outputs:**
   - CASCOR-008 and -013 wait for #690 to merge AND validate.
   - APD-CASCOR-014 closes when F4 lands.
@@ -166,7 +166,7 @@ Post-merge `main` CI is green on all six.
 
 ## Worktrees
 
-All are under `/home/pcalnon/Development/python/Juniper/worktrees/`. **Remove one only with the owner's go-ahead in your session** (`feedback_worktree_cleanup_only_on_explicit_merge_2026-05-15.md`), after re-checking `git status` and `gh pr view <N> --json state,mergedAt`.
+All are under `/home/pcalnon/Development/python/Juniper/worktrees/`. **Remove one only with the Overtoad's go-ahead in your session** (`feedback_worktree_cleanup_only_on_explicit_merge_2026-05-15.md`), after re-checking `git status` and `gh pr view <N> --json state,mergedAt`.
 
 | Worktree | State at writing |
 |---|---|
@@ -183,12 +183,12 @@ All are under `/home/pcalnon/Development/python/Juniper/worktrees/`. **Remove on
   - Never run `util/remove_stale_worktrees.bash`: it has no staleness predicate.
 - **Stale branches:** the remote `fix/shortfall-mixed-provenance-and-678-followups` (`e452a660`, from the closed #686), and the local cascor branches of that name and its `-v2`.
   - #686's commits stay reachable at `refs/pull/686/head`, but deleting the head branch blocks reopening #686.
-  - Same owner gate as the worktrees.
+  - Same Overtoad gate as the worktrees.
 
 ## Verification commands
 
 ```bash
-gh api graphql -f query='query { a: repository(owner:"pcalnon", name:"juniper-cascor") { p690: pullRequest(number:690) { state isDraft mergeStateStatus headRefOid autoMergeRequest { enabledAt } mergeCommit { oid } } p689: pullRequest(number:689) { state isDraft mergeStateStatus headRefOid autoMergeRequest { enabledAt } mergeCommit { oid } } } b: repository(owner:"pcalnon", name:"juniper-canopy") { p685: pullRequest(number:685) { state headRefOid mergeCommit { oid } } } c: repository(owner:"pcalnon", name:"juniper-data") { p440: pullRequest(number:440) { state isDraft mergeStateStatus headRefOid autoMergeRequest { enabledAt } mergeCommit { oid } } } }'
+gh api graphql -f query='query { a: repository(Overtoad:"pcalnon", name:"juniper-cascor") { p690: pullRequest(number:690) { state isDraft mergeStateStatus headRefOid autoMergeRequest { enabledAt } mergeCommit { oid } } p689: pullRequest(number:689) { state isDraft mergeStateStatus headRefOid autoMergeRequest { enabledAt } mergeCommit { oid } } } b: repository(Overtoad:"pcalnon", name:"juniper-canopy") { p685: pullRequest(number:685) { state headRefOid mergeCommit { oid } } } c: repository(Overtoad:"pcalnon", name:"juniper-data") { p440: pullRequest(number:440) { state isDraft mergeStateStatus headRefOid autoMergeRequest { enabledAt } mergeCommit { oid } } } }'
 gh pr list --repo pcalnon/juniper-ml --head docs/handoff-round42-followup-lane --state all --json number,state,mergeCommit   # this file's PR
 cd /home/pcalnon/Development/python/Juniper/juniper-ml && python3 -m unittest tests/test_service_fork_drift.py   # 11 OK, 3 skipped; with JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 (siblings pulled to origin/main): 11 OK
 ls /home/pcalnon/Development/python/Juniper/worktrees/ | grep -e shortfall-mixed -e secret-leaks -e bytes-compare -e blank-key-678   # six rows

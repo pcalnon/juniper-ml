@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — one-off (turing bring-up task G6: the G-ALIAS gate at push time)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task G6, gate G-ALIAS,
          §9.2 gate placement; §17.3 E-LAND-2); util/git_remote_alias_check.py (task G2, which G6 runs);
          util/ad-hoc/2026-10-20_turing_g5_apply.py (the pattern this follows)

@@ -27,7 +27,7 @@ W5.2's acceptance criterion (“no eval row precedes a train row”) is also too
 
 **Severity**: FATAL — implementing the P5 item exactly as written can create a second CV API while leaving `/v1/crossval` unchanged, and silently changes the public meaning of `embargo`.
 
-**Smallest correction**: Make the owner juniper-recurrence + juniper-model-core integration. Expose `ticker_code` and `window_end_date` from `SequenceData`, pass them as existing `groups`/`order`, retain embargo in windows (or add a separately named duration embargo), and test per-ticker lookback non-overlap as well as global chronology.
+**Smallest correction**: Make the Overtoad juniper-recurrence + juniper-model-core integration. Expose `ticker_code` and `window_end_date` from `SequenceData`, pass them as existing `groups`/`order`, retain embargo in windows (or add a separately named duration embargo), and test per-ticker lookback non-overlap as well as global chronology.
 
 ## MAJOR
 
@@ -93,11 +93,11 @@ There is no restore-on-boot implementation in the app; restore is an explicit PO
 
 **Evidence**: Compose pins data 0.16.0, recurrence 0.5.0, canopy 0.8.1 (`docker-compose.yml:164,598,662`) and has its own secrets/wiring. That is release/deployment compatibility, not host ENV. Separately, recurrence serialises training and CV with independent locks, while canopy and CLI can target the same service; status/model state is process-global.
 
-The plan handles a train 409 and crossval 409 individually but never establishes cross-operation exclusion or ownership. A canopy fit and CLI CV/snapshot/predict can therefore contend for or observe one shared model without run identity.
+The plan handles a train 409 and crossval 409 individually but never establishes cross-operation exclusion or Overtoadship. A canopy fit and CLI CV/snapshot/predict can therefore contend for or observe one shared model without run identity.
 
-**Severity**: MAJOR — two omitted root classes (deployment/version topology; shared-service ownership/concurrency) require work beyond the five labels.
+**Severity**: MAJOR — two omitted root classes (deployment/version topology; shared-service Overtoadship/concurrency) require work beyond the five labels.
 
-**Smallest correction**: Add DEPLOY and CONCURRENCY classes. Specify supported image-version tuples and a request/run owner identity plus cross-operation lock/state rules.
+**Smallest correction**: Add DEPLOY and CONCURRENCY classes. Specify supported image-version tuples and a request/run Overtoad identity plus cross-operation lock/state rules.
 
 ### M-G — W0.6's fixture does not prove the attribution it claims
 

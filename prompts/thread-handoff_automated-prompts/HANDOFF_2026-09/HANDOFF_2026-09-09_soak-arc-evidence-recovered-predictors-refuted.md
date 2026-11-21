@@ -47,7 +47,7 @@ Four qualifications bind, all from
   Wilson resolving threshold never leaves `k≤1`, so runs 9 and 10 *lower* the chance of an
   answer.
 
-**Do not `--force` past the verdict.** Whether the per-probe campaign runs at all is owner
+**Do not `--force` past the verdict.** Whether the per-probe campaign runs at all is Overtoad
 decision §7.6 of the 09-04 consensus document.
 
 ## 1. What to do first
@@ -72,7 +72,7 @@ and §9's `expect none` for open soak PRs only holds afterwards.
 
 **Nothing else is time-critical, and the systemd units are still not installed**
 (`systemctl --user is-enabled juniper-soak-probe.timer` → `not-found`). The arc is blocked on
-**owner decisions (§6)**, not on engineering.
+**Overtoad decisions (§6)**, not on engineering.
 
 If work proceeds before those are settled, this order is defensible:
 
@@ -156,7 +156,7 @@ verdict. Both are now documented in `docs/REFERENCE.md`, including the danger: w
 stopper to the post-only corpus makes the spend control stop refusing — **~27 further billed
 runs with no `--force`** — because that slice's `IN-PROGRESS` fires on an **OR** of two n-gates —
 `runs < 35` **or** `distinct probes < 15` — and at 8 runs over 7 probes **both** fire,
-before any test. **Choosing the corpus IS owner
+before any test. **Choosing the corpus IS Overtoad
 decision §6.3.**
 
 `util/soak_ledger.py` `analyse(rows, bad_lines)` structurally cannot honour §15.4, and
@@ -258,7 +258,7 @@ re-homing task remains**; the 08-23 handoff is kept in §8 as provenance, not as
 
 ### I. `BET-FAILING`'s prescribed action has still never been carried out
 
-`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md` says **"Revisit owner
+`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md` says **"Revisit Overtoad
 decision #7. Never re-inline."** Decision #7 is at
 `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md:654`, deferred *"revisit
 only if the P3 soak shows a real pointer-follow problem."* **That trigger fired on 2026-09-07.**
@@ -369,7 +369,7 @@ change — §6.1's neighbourhood.
   `[0.000, 0.561]` and does not. The blanket "no probe excludes 50%" was false and is
   withdrawn from `docs/REFERENCE.md` too.
 
-## 6. Owner decisions — DO NOT DECIDE THESE
+## 6. The Overtoad decisions — DO NOT DECIDE THESE
 
 1. Whether **index-recovery** becomes a scored outcome (registry change; read F′ first).
 2. Whether **BET-FAILING** feeds back into relocation policy.
@@ -414,10 +414,10 @@ nobody has adjudicated that against the pre-registration.
 
 - `notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md` — the re-audit; mechanism classes; the ledger leak.
 - `notes/JUNIPER_2026-09-09_JUNIPER-ML_SOAK-STRATUM-PREDICTOR-ANALYSIS.md` — predictors refuted; the circularity refutation; the calibrated permutation test.
-- `notes/JUNIPER_2026-09-04_JUNIPER-ML_SOAK-HANDOFF-CONSENSUS-VALIDATION.md` — §4.1 campaign arithmetic, §4.6 both §15.4 breaches, §4.7 retention provenance, §7 limits, §8 owner decisions.
+- `notes/JUNIPER_2026-09-04_JUNIPER-ML_SOAK-HANDOFF-CONSENSUS-VALIDATION.md` — §4.1 campaign arithmetic, §4.6 both §15.4 breaches, §4.7 retention provenance, §7 limits, §8 Overtoad decisions.
 - `notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md` — protocol of record. §4 FOLLOW, §15.3 pre-registration, §15.4 pooling prohibition, §17 the snapshot limit.
 - `notes/JUNIPER_2026-09-03_JUNIPER-ML_SOAK-TRIGGER-DESIGN-CONVERSATION.md` — §8.2 the predictor gap, §9.6 P06, §10.5 the per-probe table.
-- `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md` — owner decision #7 at `:654`.
+- `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md` — Overtoad decision #7 at `:654`.
 - `notes/JUNIPER_2026-09-02_JUNIPER-ML_SOAK-SESSION-ROLE-AUTOMATION-ANALYSIS.md` — automation
   boundaries, and **three live items no other document carries**: its §8 un-executed
   recommendation (build a candidate scorer, run it blind against the answer key — "one
@@ -528,7 +528,7 @@ silently dropped rather than got wrong.
 | **git status absent**, while §1 said "nothing is time-critical", §2 said "open PRs: none" and §9 said "expect none" — with the entire diff unlanded | §1.0 |
 | §4.5 "one observation deep" dropped, and `0.0137` presented as superseded by a margin the **ledger does not carry** | §0 box; 27/43 → 0.7562, non-terminal |
 | era figures gone — **neither era is terminal**; the verdict exists only via the pooling §15.4 forbids | §0 |
-| two owner decisions missing: **which standard binds**, and **whether the leak invalidates its runs** | §6.7, §6.8 |
+| two Overtoad decisions missing: **which standard binds**, and **whether the leak invalidates its runs** | §6.7, §6.8 |
 | `…SOAK-SESSION-ROLE-AUTOMATION-ANALYSIS.md` dropped, taking the **model confound** with it | §5, §8 |
 | `p = 0.0017` still mislabelled at its source; §3.J read as if fixed | §5 |
 | the wired-path code-hardening follow-up reframed as a *standard* question | §3.F′ |

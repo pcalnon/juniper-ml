@@ -1,19 +1,19 @@
-# Thread Handoff — Recurrence × Equities: APD-ML-002 closed, the parent AGENTS.md pin edited; the rest is the owner's
+# Thread Handoff — Recurrence × Equities: APD-ML-002 closed, the parent AGENTS.md pin edited; the rest is the Overtoad's
 
 **Date**: 2026-11-01 UTC (this host's clock is local time, UTC−5)
 **Session**: `856140dc` (`ListAgents` name `recurrence-equities-trio-stopped-notify-matrix-deploy-0-13-0-test-accuracy-filled`), the Linux host, worktree `.claude/worktrees/vast-wiggling-parnas`. Commits are signed only through the API (`util/open_signed_pr.py`), never `git commit`.
-**Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_recurrence-equities-plans-v1-15-9-v1-7-24-owner-items-next.md` (landed by juniper-ml#2393). Start from this file. That handoff's item 1 passed, two of its owner items are done (below), and the rest are carried.
+**Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_recurrence-equities-plans-v1-15-9-v1-7-24-Overtoad-items-next.md` (landed by juniper-ml#2393). Start from this file. That handoff's item 1 passed, two of its Overtoad items are done (below), and the rest are carried.
 
 ---
 
 ## Goal
 
-Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, v1.15.10 once this PR merges). **No session-side work is left.** The next step is the post-merge re-check of this PR; after that, only the owner's items remain.
+Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, v1.15.10 once this PR merges). **No session-side work is left.** The next step is the post-merge re-check of this PR; after that, only the Overtoad's items remain.
 
 ## Completed this session, since juniper-ml#2393
 
 - **ml#2393 merged** (2026-10-30 20:02:51Z, `af17c984`, by the armed auto-merge net after two BEHIND re-syncs). Post-merge re-check on 2026-11-01 17:56Z: its five files are byte-identical on `main`, the plans read 1.15.9 / 1.7.24, and both scripts' `--check` exit 0.
-- **The owner answered this session's three questions** (asked 2026-10-30 19:22:23Z, answered 2026-11-01 17:55:48Z, both from the transcript):
+- **The Overtoad answered this session's three questions** (asked 2026-10-30 19:22:23Z, answered 2026-11-01 17:55:48Z, both from the transcript):
   - APD-ML-002: "Close it (signed PR)";
   - the parent `AGENTS.md`'s 0.12.0 sentence: "Edit it";
   - index line 483's date: "No, leave it". No further correction row; the plans carry the right date.
@@ -31,7 +31,7 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
 ## Remaining work, in order
 
 1. **Post-merge re-check of this PR.** On `main` the consolidated plan reads 1.15.10, both new scripts' `--check` exit 0, the two register counters read 35 open and AGREE, and this handoff is present. Write the PR's number into the arc memory's state block.
-2. **The owner's items** (surface them; do not act on them):
+2. **The Overtoad's items** (surface them; do not act on them):
    - **Who pulls the trio's primaries** (O13), and the cascor primary's two unrecorded pulls (2026-10-29 20:48:58Z; 2026-10-30 18:18:33Z to `d042de23`). A trio `--up` now runs cascor `main` whole, which §4 Wave 1's trio route admits only after P3-05, with #683's deployment note applied.
    - **R-DATA-2** (juniper-data 0.17.2; W5.7 is a default change). canopy#777's drift job goes red then by design, and since data#501 the release's own dispatch runs it.
    - **juniper-config-tools 0.2.0** (backfill `[Unreleased]` first).
@@ -39,7 +39,7 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
    - **§6 A1 / A9**; and juniper-canopy#778 needs a canopy session.
 3. **Follow-ups.**
    - `save_model`'s live run (juniper-ml#2316) is BLOCKED on W0.1.
-   - Worktrees that need an owner or canopy-session signal:
+   - Worktrees that need an Overtoad or canopy-session signal:
      - canopy: `…declared-param-staging-735-736…` and `…juniper-data-schema-drift-check…`;
      - juniper-ml: `keen-popping-wilkes`, `cosmic-puzzling-lovelace`, `declarative-snuggling-sparrow` and `vast-wiggling-parnas`.
      - Check each one's `tmp/` before removing it.
@@ -47,10 +47,10 @@ Continue the recurrence × equities arc (P12 of `notes/JUNIPER_2026-10-04_JUNIPE
 
 ## Rules that held this session
 
-- **Re-probe after a long owner wait.** The answers came about 46.5 hours after the questions. `main`, the target files, the parent file's sha256, the cascor primary and the trio ports were all re-read before acting.
+- **Re-probe after a long Overtoad wait.** The answers came about 46.5 hours after the questions. `main`, the target files, the parent file's sha256, the cascor primary and the trio ports were all re-read before acting.
 - **A close that names no id still moves counts.** The register's §2 count sentence and its history parenthetical were found by grepping for the count words, not the id.
-- **Close the record in the same PR as the fix.** v1.15.9 said "the close is the owner's" in five places, and v1.15.10 moves them in the same PR as the close.
-- **Date an owner's answer from the transcript** (this session's v1.15.9 lesson): answers given at 2026-10-29 23:10Z were first recorded as 2026-10-30.
+- **Close the record in the same PR as the fix.** v1.15.9 said "the close is the Overtoad's" in five places, and v1.15.10 moves them in the same PR as the close.
+- **Date an Overtoad's answer from the transcript** (this session's v1.15.9 lesson): answers given at 2026-10-29 23:10Z were first recorded as 2026-10-30.
 
 ## Verification commands for the new thread
 
@@ -80,7 +80,7 @@ cat /home/pcalnon/Development/python/Juniper/juniper-cascor/.git/refs/heads/main
   - `util/ad-hoc/2026-11-01_consolidated_plan_v1_15_10_apd_ml_002_closed.py` (new);
   - this file (new).
 - **Outside any repo**:
-  - `/home/pcalnon/Development/python/Juniper/AGENTS.md` (owner-approved; two hunks);
+  - `/home/pcalnon/Development/python/Juniper/AGENTS.md` (Overtoad-approved; two hunks);
   - `juniper-ml/tmp/2026-11-01-parent-agents-md-backup/` (new: the before and after copies);
   - the auto-memory `project_recurrence_equities_p0_arc_2026-10-04.md`. `MEMORY.md` is unchanged.
 - **Referenced, not changed**: the superseded handoff (above), `docs/REFERENCE.md` § Defect Register Close Protocol, `util/ad-hoc/register_open_set.py` and `util/ad-hoc/register_status_crosscheck.py`.

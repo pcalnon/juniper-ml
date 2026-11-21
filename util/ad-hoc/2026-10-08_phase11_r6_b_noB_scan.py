@@ -3,7 +3,7 @@
 # Source: a tmpfs scratch directory, r6b.lTWETu/noB_scan.py
 # Written by Lane 11-R6B (adversarial, on round 5's correction pass), a review lane (a subagent), not by the orchestrator.
 # Project: juniper-ml / Sub-Project: ad-hoc tooling / Author: Paul Calnon
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 11;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-08_validator_reports_phase11_round6.md
 # Everything below this block is the lane's file, unmodified.

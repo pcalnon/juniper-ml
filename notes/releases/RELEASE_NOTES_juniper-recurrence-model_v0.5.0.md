@@ -28,7 +28,7 @@
 - **The linear readout standardises the memory block on the train fold whenever `ridge != 0.0`**
   (W5.8 (B) of juniper-ml
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
-  accepted by the owner 2026-10-18). `LinearReadout` now applies the per-column train-fold mean / std
+  accepted by the Overtoad 2026-10-18). `LinearReadout` now applies the per-column train-fold mean / std
   (`_standardize_fit`, the statistics the RFF rung already used) to `M` before a `ridge > 0.0` or
   `ridge="gcv"` solve, and again at `predict`; the `extra` side-channel and the bias column are
   never standardised. The statistics ride `save_state` (`mean` / `std` arrays, a `standardized`

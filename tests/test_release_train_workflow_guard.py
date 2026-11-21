@@ -587,11 +587,11 @@ class CeremonySummaryRehearsalTest(unittest.TestCase):
         self.assertIn("1 resume-monitor", md)
         self.assertIn("2 PENDING_PYPI_APPROVAL", md)
         self.assertIn("2 HALTED", md)
-        # PENDING section + the owner Gate-2 framing
-        self.assertIn("PENDING_PYPI_APPROVAL -- owner Gate 2", md)
+        # PENDING section + the Overtoad Gate-2 framing
+        self.assertIn("PENDING_PYPI_APPROVAL -- Overtoad Gate 2", md)
         self.assertIn("juniper-observability", md)
         # HALT section, incl. the DEGRADED (issue_failed=1) line -- deliverable-2 acceptance
-        self.assertIn("HALTED -- owner attention", md)
+        self.assertIn("HALTED -- Overtoad attention", md)
         self.assertIn("juniper-cascor-client", md)
         self.assertIn("could NOT be filed", md)
         # still-building section
@@ -671,7 +671,7 @@ class ProposeSummaryRehearsalTest(unittest.TestCase):
         md = self._render(PROPOSE_OUTPUT_FIXTURE)
         self.assertIn("Release train -- propose mode", md)
         self.assertIn("2 proposal PR(s) opened, 2 skipped.", md)
-        self.assertIn("### Opened (standard-gated -- owner reviews & merges)", md)
+        self.assertIn("### Opened (standard-gated -- Overtoad reviews & merges)", md)
         self.assertIn("juniper-observability", md)
         self.assertIn("juniper-ci-tools", md)
         self.assertIn("### Skipped", md)

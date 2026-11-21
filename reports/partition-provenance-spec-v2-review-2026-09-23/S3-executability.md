@@ -6,7 +6,7 @@ I reviewed `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md` a
 
 **Per item** (can I start it / is the order right / what breaks elsewhere / is the size right)
 - **W0**: already merged (the pin 90ad035e is #430's merge), but the table doesn't mark it Done. W1 and W2 are done.
-- **W3**: the owner can rule, but two alternative answers have no plan (F10). There is no §16 line for whether canopy enforces legality or only advises (F5).
+- **W3**: the Overtoad can rule, but two alternative answers have no plan (F10). There is no §16 line for whether canopy enforces legality or only advises (F5).
 - **W4**: fine as a merge, but recurrence must also publish a release (F1). S.
 - **W5**: can ship before W6. The golden vectors and id re-derivation stand alone. The fake depends on uuid ids in more places than the spec says (F6). M.
 - **W6**: status `verified` is reachable while `FIRST_EMITTING_VERSION` is empty, because the table is read only when the block is absent. But CI does not use the published gate (F2), and the interfaces are loose (F8). About 15 test files churn. L is plausible.
@@ -38,7 +38,7 @@ I reviewed `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md` a
 - *Fix*: a W6 CI job that installs `juniper-data-client==<published version>` from PyPI, with no git override.
 
 **F3 MAJOR (W11, W6): W11's premise is asserted, not produced.** The premise is "a genuine artifact at or above its generator's first emitting version always carries a block" (spec §11.2).
-- W11 has no condition on OQ-1. If the owner says "no bump", the versions shipped are 3.0.0/4.0.0/5.0.0, which every legacy artifact carries. W11 would then refuse every legacy artifact, and the spec's §9.4 makes that refusal non-overridable.
+- W11 has no condition on OQ-1. If the Overtoad says "no bump", the versions shipped are 3.0.0/4.0.0/5.0.0, which every legacy artifact carries. W11 would then refuse every legacy artifact, and the spec's §9.4 makes that refusal non-overridable.
 - The fleet test's scope is unstated: through the real route, or through a test helper? The HF and Kaggle stores are not registered generators, yet W11 fills their versions too.
 - W6 spans several PRs, and nothing requires a generator's VERSION bump to land with or after its block emission. juniper-deploy builds `../juniper-data` from source onto the named volume `juniper-data-datasets` (`docker-compose.yml:155-164,200`). An intermediate `main` can therefore mint block-less artifacts at the new version, and W11 refuses them permanently.
 - *Fix*:
@@ -47,8 +47,8 @@ I reviewed `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md` a
   - Test through a real POST→GET and through the store loaders with downloads mocked.
   - Have W6 output a generator → version → `verified` list as W11's input.
 
-**F4 MAJOR (§11.2, W11): the PATCH claim conflicts with the cited owner rule.** The spec says 0.6.1 is a PATCH and "the `<0.7.0` caps admit it". The owner rule (juniper-cascor-client#155) is: set the version from the change, never from a consumer cap. W11 changes an exported constant and turns a tolerated `absent` into a non-overridable exception. That is a behaviour change, so MINOR before 1.0, and a consumer pinned `~=0.6.0` would get a new refusal in a patch.
-- *Fix*: drop the caps clause. Either release 0.7.0 after widening the caps to `<0.8.0`, or ask the owner to rule on it in §16.
+**F4 MAJOR (§11.2, W11): the PATCH claim conflicts with the cited Overtoad rule.** The spec says 0.6.1 is a PATCH and "the `<0.7.0` caps admit it". The Overtoad rule (juniper-cascor-client#155) is: set the version from the change, never from a consumer cap. W11 changes an exported constant and turns a tolerated `absent` into a non-overridable exception. That is a behaviour change, so MINOR before 1.0, and a consumer pinned `~=0.6.0` would get a new refusal in a patch.
+- *Fix*: drop the caps clause. Either release 0.7.0 after widening the caps to `<0.8.0`, or ask the Overtoad to rule on it in §16.
 
 **F5 MAJOR (W7, W8, W9, W12): the status and override surfaces are unnamed.** Two of the spec's MUSTs have nowhere concrete to live: record the status beside the run (§9.4), and a per-consumer setting plus a caveat on the reported metrics (§8.3).
 - The caveat the spec tells W7 to copy is **never read**. `_validation_warning` is written at `manager.py:4261` and read nowhere in cascor's `src/` at f7a6d573. Copying it literally produces a caveat nobody sees.
@@ -82,7 +82,7 @@ I reviewed `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md` a
 - No work item moves any consumer or `[clients]` to 0.6.1, so W11's refusal never reaches a deployment.
 - *Fix*: add floor `>=0.6.1` and a lock refresh to W11.
 
-**F10 MINOR (W3): two answers the owner can give have no plan.** OQ-6's report-only answer has no mechanism and no release that removes it. Under OQ-2 "warn only", the spec doesn't say what happens to `allow_illegal` in the §9.2 signature.
+**F10 MINOR (W3): two answers the Overtoad can give have no plan.** OQ-6's report-only answer has no mechanism and no release that removes it. Under OQ-2 "warn only", the spec doesn't say what happens to `allow_illegal` in the §9.2 signature.
 
 **F11 MINOR: omissions.**
 - juniper-ml's `pyproject.toml:61-63` requires AGENTS.md, README.md, docs/QUICK_START.md and docs/REFERENCE.md to change with any pin, enforced by `tests/test_pyproject_extras.py`.

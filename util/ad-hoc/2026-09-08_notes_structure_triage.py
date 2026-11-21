@@ -2,7 +2,7 @@
 """2026-09-08_notes_structure_triage.py -- classify a structure finding before "fixing" it.
 
 Project: juniper-ml
-Sub-Project: docs structure debt (owner decision: repair live notes/, ratify the rest)
+Sub-Project: docs structure debt (Overtoad decision: repair live notes/, ratify the rest)
 Application: ad-hoc analysis (documentation integrity)
 Author: Paul Calnon
 License: MIT License

@@ -265,7 +265,7 @@ early `push: tags` trigger era or a `workflow_dispatch`, or a later-deleted Rele
 workflows are now `release: published`, so this is legacy residue, but cascor-protocol's workflow is *still* tag-push
 (§3.1) and can reproduce it.
 
-**RESOLVED 2026-07-20 — plan §12 step 0.4, owner decision: BACKFILL.** All three Releases created on the existing
+**RESOLVED 2026-07-20 — plan §12 step 0.4, Overtoad decision: BACKFILL.** All three Releases created on the existing
 tags (`--verify-tag --latest=false`, notes from the §F-2/F-3 backfill archives): `juniper-doc-tools-v0.1.1`,
 `juniper-observability-v0.4.0`, `juniper-cascor-protocol-v0.1.0`. Detector hygiene now reads `TAG_ONLY=0` fleet-wide.
 Zero index effects (nothing published; production PyPI untouched). **Operational gotcha discovered**: the per-package
@@ -337,7 +337,7 @@ did). This is not a package defect — it is a detector-correctness constraint.
   end-to-end release precedents (single-package and coupled meta+sub-package).
 - **`.github/workflows/docs-full-check.yml`** (328 lines) — the **ecosystem-wide automation precedent**: weekly
   `schedule: cron "0 6 * * 1"` + `workflow_dispatch` (`:63-65`), a hard-coded `REPOS`/`CONSUMERS` list cloned via
-  `git clone --depth 1 https://github.com/${owner}/$repo.git` (`:73-105`) with per-repo failure tolerance. **Precedent
+  `git clone --depth 1 https://github.com/${Overtoad}/$repo.git` (`:73-105`) with per-repo failure tolerance. **Precedent
   gap for a release-train**: its clone lists (`:76-81`, `:172-177`, `:266-270`) enumerate data/cascor/canopy/data-client/
   cascor-client/cascor-worker but **omit `juniper-recurrence`** and do **not** model the multi-package repos
   (cascor/recurrence sub-dirs) — a release-train reusing this scaffold must add recurrence and per-subdir logic.

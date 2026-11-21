@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-27
 Status: ad-hoc — investigation (corpus figures for the juniper-ml#2064 held-out eval-scalars PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/experiments/stats_summary.py (cascor_eval_blocks); util/experiments/run_suite.py (_headline_metrics,
          _row_metrics); util/ad-hoc/2026-10-27_issue_2064_eval_blocks_mutation_check.py
 

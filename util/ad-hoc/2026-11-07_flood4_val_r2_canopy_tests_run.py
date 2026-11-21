@@ -12,7 +12,7 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation (a flood-4 validator's probe)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md; juniper-canopy#797 tests carrier, validation round 2, item 3: the carried test files' runs (findings: tmp/flood4/canopy/val-round2/)
 
 From <carrier>/src: `conda run -n JuniperCanopy1 python -m pytest <files>` with

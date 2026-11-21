@@ -111,7 +111,7 @@ commit if present. They are on `51993b37`, unsigned and never pushed.
 6. **`MEMORY.md` compaction: URGENT.** It is 25,180 bytes against the 24.4 KB load limit, so its tail is
    invisible to every session. The target is 20 KB.
    - A digest move of the "Verification discipline" line was tried and reverted: it dropped 25 index
-     pointers, all still reachable, which breaks the owner's "never drop a pointer to hit a number".
+     pointers, all still reachable, which breaks the Overtoad's "never drop a pointer to hit a number".
    - Shorten hooks only after verifying that each topic file carries the detail.
    - Take a link-set snapshot first (`util/ad-hoc/2026-09-12_memory_index_linkset.py`).
    - RETIRE entries; never strip hooks.

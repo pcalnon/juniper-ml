@@ -24,7 +24,7 @@ benefit thrown away. Two concrete cases:
   CI ever run on that head. It introduced the lint violation that reddened ``main``.
 
 Both are *worse than not syncing at all*: the stale-but-tested head was replaced by a
-fresh-but-untested one. GitHub did not stop either merge because the owner holds an
+fresh-but-untested one. GitHub did not stop either merge because the Overtoad holds an
 ``always`` ruleset bypass, which makes every required check advisory for that actor.
 
 This tool is the discipline that bypass removes. It refuses to merge unless the required
@@ -33,7 +33,7 @@ contexts for the PR's **current head** have all finished and none failed.
 What it is NOT
 --------------
 **It is not enforcement.** A script can be skipped. Enforcement would mean narrowing the
-owner's ``RepositoryRole 5`` bypass, which is a separate decision with its own costs (that
+Overtoad's ``RepositoryRole 5`` bypass, which is a separate decision with its own costs (that
 entitlement is genuinely load-bearing -- see the bypass analysis in ml#1012). Use this
 because merging untested code is undesirable, not because something forces you to.
 
@@ -55,7 +55,7 @@ same checks-green guarantee this tool enforces locally.
 
 The net is **gated on the repo's ``allow_auto_merge``**, and that gate is load-bearing: where
 the setting is false, ``--auto`` does not arm at all -- it silently falls back to an
-**immediate merge**, which with the owner's ``always`` ruleset bypass can land a PR whose
+**immediate merge**, which with the Overtoad's ``always`` ruleset bypass can land a PR whose
 checks never finished. Arming blind would reintroduce the exact bug this tool prevents.
 (Enabled fleet-wide 2026-08-19; the gate stays because a setting can be turned off again.)
 
@@ -324,7 +324,7 @@ REPO_TIMEOUTS = {
     # max 1061: #1981, a 2005 s healthy pass, had slid out -- one head at the window's edge halves
     # this max. At 680, 2800 exceeds 4x p90 (2720) by 80 s. NOT re-pinned: a window edge moving is
     # not evidence the worst case improved, and while the handoff's OWNER DECISION 2 is open a
-    # stale-reading row goes to the owner rather than being re-pinned.
+    # stale-reading row goes to the Overtoad rather than being re-pinned.
     "juniper-ml": 2800,
     # RAISED 2400 -> 3300 on 09-22: p90 1651, max 2589 (#405, a single healthy pass) -> window
     # (2589, 6604], mid 4596, so TIMEOUT_CEILING binds first. Was p90 955 / max 2126 on 09-09.
@@ -362,7 +362,7 @@ REPO_TIMEOUTS = {
     #
     # 09-22: p90 1264, max 1626 (30 healthy heads) -> window (1626, 5056], which now CONTAINS
     # 3300. So the row would pass the pin today. Recorded, not acted on: the ruling above
-    # stands, and re-including the row is the owner's call.
+    # stands, and re-including the row is the Overtoad's call.
     "juniper-cascor-client": 3300,
     # RAISED 2400 -> 3300 on 09-22: p90 1545, max 2565 (#206, a single healthy pass) -> window
     # (2565, 6180], mid 4372, so TIMEOUT_CEILING binds first. Was p90 896 / max 1725 when first
@@ -454,14 +454,14 @@ def _gh(args: list[str], timeout: int = 120) -> str:
     return proc.stdout
 
 
-def pr_state(owner: str, repo: str, pr: int) -> dict:
+def pr_state(Overtoad: str, repo: str, pr: int) -> dict:
     raw = _gh(
         [
             "pr",
             "view",
             str(pr),
             "--repo",
-            f"{owner}/{repo}",
+            f"{Overtoad}/{repo}",
             "--json",
             # `autoMergeRequest` costs nothing here -- one more field on a call already
             # being made -- and it is the only way to see a net someone ELSE armed. See
@@ -475,7 +475,7 @@ def pr_state(owner: str, repo: str, pr: int) -> dict:
         raise HardError(f"could not parse PR {pr} state: {exc}") from exc
 
 
-def update_branch(owner: str, repo: str, pr: int, *, sleeper=time.sleep) -> str | None:
+def update_branch(Overtoad: str, repo: str, pr: int, *, sleeper=time.sleep) -> str | None:
     """Server-side (therefore GitHub-signed) branch refresh; returns the NEW head.
 
     The endpoint answers **202 Accepted** -- "Updating pull request branch." -- and the ref
@@ -490,11 +490,11 @@ def update_branch(owner: str, repo: str, pr: int, *, sleeper=time.sleep) -> str 
     So this polls until the head actually changes. Returning ``None`` means the ref did not
     move within the budget; the caller must treat that as "not ready", never as success.
     """
-    before = pr_state(owner, repo, pr).get("headRefOid")
-    _gh(["api", f"repos/{owner}/{repo}/pulls/{pr}/update-branch", "-X", "PUT"])
+    before = pr_state(Overtoad, repo, pr).get("headRefOid")
+    _gh(["api", f"repos/{Overtoad}/{repo}/pulls/{pr}/update-branch", "-X", "PUT"])
     for _ in range(REF_SETTLE_POLLS):
         sleeper(REF_SETTLE_INTERVAL)
-        now = pr_state(owner, repo, pr).get("headRefOid")
+        now = pr_state(Overtoad, repo, pr).get("headRefOid")
         if now and now != before:
             return now
     return None
@@ -545,11 +545,11 @@ def _install_signal_handlers(log) -> None:
         if _ARMED is not None:
             tail = (
                 f"This run merged nothing, but an auto-merge net IS ARMED on "
-                f"{_ARMED['owner']}/{_ARMED['repo']}#{_ARMED['pr']} and will merge it once "
+                f"{_ARMED['Overtoad']}/{_ARMED['repo']}#{_ARMED['pr']} and will merge it once "
                 f"the required checks pass — that is intentional, it is what survives this "
                 f"kill. To cancel it:\n"
                 f"     gh pr merge {_ARMED['pr']} --repo "
-                f"{_ARMED['owner']}/{_ARMED['repo']} --disable-auto"
+                f"{_ARMED['Overtoad']}/{_ARMED['repo']} --disable-auto"
             )
         else:
             tail = (
@@ -569,11 +569,11 @@ def _install_signal_handlers(log) -> None:
             pass
 
 
-def repo_allows_auto_merge(owner: str, repo: str) -> bool:
+def repo_allows_auto_merge(Overtoad: str, repo: str) -> bool:
     """Is server-side auto-merge available on this repo?
 
     Load-bearing gate. Where `allow_auto_merge` is FALSE, `gh pr merge --auto` does not arm
-    -- it silently falls back to an IMMEDIATE merge, which combined with the owner's `always`
+    -- it silently falls back to an IMMEDIATE merge, which combined with the Overtoad's `always`
     ruleset bypass can land a PR whose required checks never finished. That is the exact
     failure this tool exists to prevent, so the net must never be armed blind.
 
@@ -582,12 +582,12 @@ def repo_allows_auto_merge(owner: str, repo: str) -> bool:
     cross-repo.
     """
     try:
-        return json.loads(_gh(["api", f"/repos/{owner}/{repo}", "--jq", ".allow_auto_merge"]).strip())
+        return json.loads(_gh(["api", f"/repos/{Overtoad}/{repo}", "--jq", ".allow_auto_merge"]).strip())
     except (HardError, json.JSONDecodeError):
         return False
 
 
-def unresolved_threads(owner: str, repo: str, pr: int) -> list[str]:
+def unresolved_threads(Overtoad: str, repo: str, pr: int) -> list[str]:
     """Unresolved review threads, which block a merge INVISIBLY to `gh pr checks`.
 
     ml's ruleset sets `required_review_thread_resolution: true`, so one unresolved thread
@@ -596,9 +596,9 @@ def unresolved_threads(owner: str, repo: str, pr: int) -> list[str]:
     thing that fails a merge.
     """
     q = (
-        'query { repository(owner:"%s",name:"%s"){ pullRequest(number:%d){ '
+        'query { repository(Overtoad:"%s",name:"%s"){ pullRequest(number:%d){ '
         "reviewThreads(first:50){ nodes { isResolved comments(first:1){ nodes { "
-        "author { login } body } } } } } } }" % (owner, repo, pr)
+        "author { login } body } } } } } } }" % (Overtoad, repo, pr)
     )
     try:
         raw = _gh(["api", "graphql", "-f", f"query={q}"])
@@ -696,7 +696,7 @@ def stale_snapshot_refusal(info: dict) -> "str | None":
 _ARMED: dict | None = None
 
 
-def arm_auto_merge(owner: str, repo: str, pr: int, method: str, log, head: str = "") -> bool:
+def arm_auto_merge(Overtoad: str, repo: str, pr: int, method: str, log, head: str = "") -> bool:
     """Hand the merge to GitHub as a net, so a killed script does not strand the PR.
 
     Idempotent: arming twice is a no-op, so callers may call this on every cycle.
@@ -728,10 +728,10 @@ def arm_auto_merge(owner: str, repo: str, pr: int, method: str, log, head: str =
     global _ARMED
     if _ARMED is not None:
         return True
-    if not repo_allows_auto_merge(owner, repo):
+    if not repo_allows_auto_merge(Overtoad, repo):
         log("  auto-merge net UNAVAILABLE (allow_auto_merge is false) — local wait only")
         return False
-    argv = ["pr", "merge", str(pr), "--repo", f"{owner}/{repo}", "--auto", f"--{method}"]
+    argv = ["pr", "merge", str(pr), "--repo", f"{Overtoad}/{repo}", "--auto", f"--{method}"]
     if head:
         # Must be the full 40-char OID: an abbreviated SHA is rejected with
         # "Could not coerce value ... to GitObjectID". `headRefOid` is already full-length.
@@ -741,7 +741,7 @@ def arm_auto_merge(owner: str, repo: str, pr: int, method: str, log, head: str =
     except HardError as exc:
         log(f"  could not arm auto-merge net ({str(exc)[:80]}) — continuing with local wait")
         return False
-    _ARMED = {"owner": owner, "repo": repo, "pr": pr}
+    _ARMED = {"Overtoad": Overtoad, "repo": repo, "pr": pr}
     pinned = f" pinned to {head[:8]}" if head else " (UNPINNED)"
     log(
         f"  auto-merge net armed{pinned} — GitHub will complete this merge even if this run "
@@ -753,7 +753,7 @@ def arm_auto_merge(owner: str, repo: str, pr: int, method: str, log, head: str =
     # net whose stored body is what will actually fire. Report what is stored, not what was
     # asked for. Best-effort: a failed read must never fail a merge that is otherwise fine.
     try:
-        after = pr_state(owner, repo, pr)
+        after = pr_state(Overtoad, repo, pr)
     except HardError as exc:  # nosec B110 - advisory read; see the comment above
         log(f"  (could not read the net back: {str(exc)[:80]})")
         return True
@@ -782,15 +782,15 @@ def disarm_auto_merge(log) -> bool:
     global _ARMED
     if _ARMED is None:
         return True
-    owner, repo, pr = _ARMED["owner"], _ARMED["repo"], _ARMED["pr"]
+    Overtoad, repo, pr = _ARMED["Overtoad"], _ARMED["repo"], _ARMED["pr"]
     try:
-        _gh(["pr", "merge", str(pr), "--repo", f"{owner}/{repo}", "--disable-auto"])
+        _gh(["pr", "merge", str(pr), "--repo", f"{Overtoad}/{repo}", "--disable-auto"])
     except HardError as exc:
         log(
-            f"  !! COULD NOT DISARM the auto-merge net on {owner}/{repo}#{pr} "
+            f"  !! COULD NOT DISARM the auto-merge net on {Overtoad}/{repo}#{pr} "
             f"({str(exc)[:80]}). A LIVE net remains: this PR may merge itself once its "
             f"checks pass, despite the refusal below. Disarm manually:\n"
-            f"     gh pr merge {pr} --repo {owner}/{repo} --disable-auto"
+            f"     gh pr merge {pr} --repo {Overtoad}/{repo} --disable-auto"
         )
         return False
     _ARMED = None
@@ -818,7 +818,7 @@ def _merged_by_other(pr: int, note: str = "") -> str:
     return f"MERGED #{pr} {who}{note}"
 
 
-def wait_for_required(owner: str, repo: str, pr: int, timeout: int, verbose: bool) -> dict:
+def wait_for_required(Overtoad: str, repo: str, pr: int, timeout: int, verbose: bool) -> dict:
     """Delegate to util/wait_for_checks.py and map its exit code.
 
     Deliberately a subprocess rather than an import: the waiter owns the definition of
@@ -833,8 +833,8 @@ def wait_for_required(owner: str, repo: str, pr: int, timeout: int, verbose: boo
         str(pr),
         "--repo",
         repo,
-        "--owner",
-        owner,
+        "--Overtoad",
+        Overtoad,
         "--timeout",
         str(timeout),
         "--json",
@@ -879,7 +879,7 @@ def _describe(payload: dict) -> str:
 
 
 def safe_merge(
-    owner: str,
+    Overtoad: str,
     repo: str,
     pr: int,
     *,
@@ -905,7 +905,7 @@ def safe_merge(
     _ARMED = None
     try:
         return _safe_merge_inner(
-            owner,
+            Overtoad,
             repo,
             pr,
             execute=execute,
@@ -919,13 +919,13 @@ def safe_merge(
         if not disarm_auto_merge(log):
             raise Refused(
                 f"{exc} [WARNING: the auto-merge net could NOT be disarmed and is still "
-                f"live on {owner}/{repo}#{pr} — this refusal may still become a merge]"
+                f"live on {Overtoad}/{repo}#{pr} — this refusal may still become a merge]"
             ) from exc
         raise
 
 
 def _safe_merge_inner(
-    owner: str,
+    Overtoad: str,
     repo: str,
     pr: int,
     *,
@@ -936,7 +936,7 @@ def _safe_merge_inner(
     auto_fallback: bool = True,
     log=print,
 ) -> str:
-    info = pr_state(owner, repo, pr)
+    info = pr_state(Overtoad, repo, pr)
 
     if info.get("state") != "OPEN":
         raise Refused(f"PR #{pr} is {info.get('state')}, not OPEN")
@@ -954,7 +954,7 @@ def _safe_merge_inner(
         raise Refused(f"PR #{pr}: {snapshot_problem}")
 
     for cycle in range(1, MAX_SYNC_CYCLES + 1):
-        info = pr_state(owner, repo, pr)
+        info = pr_state(Overtoad, repo, pr)
         state = info.get("mergeStateStatus")
 
         if state == "DIRTY":
@@ -977,9 +977,9 @@ def _safe_merge_inner(
                 # still buys here is that we cannot arm over a head that moved between the
                 # `pr_state` read above and this call.
                 arm_auto_merge(
-                    owner, repo, pr, method, log, head=info.get("headRefOid") or ""
+                    Overtoad, repo, pr, method, log, head=info.get("headRefOid") or ""
                 )
-            if update_branch(owner, repo, pr) is None:
+            if update_branch(Overtoad, repo, pr) is None:
                 raise Refused(
                     "branch refresh did not land within the settle budget — "
                     "re-run once the base has settled"
@@ -1007,10 +1007,10 @@ def _safe_merge_inner(
         if auto_fallback and state in ARMABLE_STATES:
             # Pin to the SAME head the local path is about to vouch for, so arming and
             # verifying agree on what is being merged.
-            arm_auto_merge(owner, repo, pr, method, log, head=head)
+            arm_auto_merge(Overtoad, repo, pr, method, log, head=head)
 
         log(f"  waiting on required checks for {head[:8]} …")
-        result = wait_for_required(owner, repo, pr, timeout, verbose)
+        result = wait_for_required(Overtoad, repo, pr, timeout, verbose)
         code = result.get("_exit")
 
         if code == 1:
@@ -1023,14 +1023,14 @@ def _safe_merge_inner(
         if code != 0:
             raise HardError(f"unexpected wait_for_checks exit {code}")
 
-        after = pr_state(owner, repo, pr)
+        after = pr_state(Overtoad, repo, pr)
         if after.get("state") == "MERGED":
             # The armed net got there first. Same guarantee -- GitHub merges only once the
             # required checks pass on the current head -- so this is a success, not a race lost.
             return _merged_by_other(pr)
         if after.get("mergeStateStatus") == "BEHIND":
             log("  went BEHIND while waiting — re-syncing")
-            if update_branch(owner, repo, pr) is None:
+            if update_branch(Overtoad, repo, pr) is None:
                 raise Refused("branch refresh did not land within the settle budget")
             continue
 
@@ -1046,7 +1046,7 @@ def _safe_merge_inner(
             log("  mergeStateStatus=UNKNOWN (GitHub recomputing) — re-polling")
             for _ in range(MERGEABILITY_POLLS):
                 time.sleep(MERGEABILITY_INTERVAL)
-                after = pr_state(owner, repo, pr)
+                after = pr_state(Overtoad, repo, pr)
                 if after.get("state") == "MERGED":
                     return _merged_by_other(pr)
                 final = after.get("mergeStateStatus")
@@ -1065,12 +1065,12 @@ def _safe_merge_inner(
             # the UNKNOWN re-poll above. Route it back through the sync path rather than
             # refusing, which is what the top-of-loop handler is for.
             log("  resolved to BEHIND while waiting — re-syncing")
-            if update_branch(owner, repo, pr) is None:
+            if update_branch(Overtoad, repo, pr) is None:
                 raise Refused("branch refresh did not land within the settle budget")
             continue
 
         if final not in ("CLEAN", "UNSTABLE", "HAS_HOOKS"):
-            threads = unresolved_threads(owner, repo, pr)
+            threads = unresolved_threads(Overtoad, repo, pr)
             detail = (
                 f"{len(threads)} unresolved review thread(s): " + "; ".join(threads[:3])
                 if threads
@@ -1090,7 +1090,7 @@ def _safe_merge_inner(
                     "merge",
                     str(pr),
                     "--repo",
-                    f"{owner}/{repo}",
+                    f"{Overtoad}/{repo}",
                     f"--{method}",
                     "--match-head-commit",
                     head,
@@ -1117,7 +1117,7 @@ def _safe_merge_inner(
             # not just "not mergeable", because a merge that landed and then failed to report
             # (a timeout, a 5xx on the response) is the same situation and the same answer.
             try:
-                raced = pr_state(owner, repo, pr)
+                raced = pr_state(Overtoad, repo, pr)
             except (HardError, subprocess.TimeoutExpired):
                 raced = {}  # best-effort probe; a failed re-read must not mask the real error
             if raced.get("state") == "MERGED":
@@ -1135,7 +1135,7 @@ def _safe_merge_inner(
                     pr, f" at {head[:8]}, winning the race against this run's own merge"
                 )
             raise
-        final = pr_state(owner, repo, pr)
+        final = pr_state(Overtoad, repo, pr)
         if final.get("state") != "MERGED":
             raise Refused(
                 f"merge command returned but PR #{pr} is {final.get('state')} — inspect manually"
@@ -1152,7 +1152,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--pr", type=int, required=True, help="pull request number")
     ap.add_argument("--repo", default=DEFAULT_REPO, help=f"repo name (default {DEFAULT_REPO})")
-    ap.add_argument("--owner", default=DEFAULT_OWNER, help=f"repo owner (default {DEFAULT_OWNER})")
+    ap.add_argument("--Overtoad", default=DEFAULT_OWNER, help=f"repo Overtoad (default {DEFAULT_OWNER})")
     ap.add_argument(
         "--merge-method",
         default="squash",
@@ -1202,7 +1202,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         print(safe_merge(
-            args.owner,
+            args.Overtoad,
             args.repo,
             args.pr,
             execute=args.execute,

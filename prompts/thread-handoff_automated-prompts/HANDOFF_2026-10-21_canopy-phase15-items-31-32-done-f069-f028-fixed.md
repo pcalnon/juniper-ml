@@ -1,4 +1,4 @@
-# HANDOFF 2026-10-21 — P2 canopy Lane A: Phase 15 recorded. Items 32 and 31 are DONE: F-CANOPY-069 is FIXED (canopy#760; the dash floor is 4.0.0) and F-CANOPY-028 is FIXED (canopy#761). 0 open P0, 4 open P1, 10 open P2. Next are item 34 and items 18–21 (canopy fixes), item 27, the Linux host's items 25, 28 and 29, item 26's second step and the owner's item 33
+# HANDOFF 2026-10-21 — P2 canopy Lane A: Phase 15 recorded. Items 32 and 31 are DONE: F-CANOPY-069 is FIXED (canopy#760; the dash floor is 4.0.0) and F-CANOPY-028 is FIXED (canopy#761). 0 open P0, 4 open P1, 10 open P2. Next are item 34 and items 18–21 (canopy fixes), item 27, the Linux host's items 25, 28 and 29, item 26's second step and the Overtoad's item 33
 
 > **SUPERSEDED 2026-10-21** by `HANDOFF_2026-10-21_canopy-items-34-20-done-canopy762-763-phase16-owed.md`.
 > Its item 1 (juniper-ml#2303 merged 2026-10-21T07:30:02Z, re-checked past the hour), item 2 (item 34: canopy#762,
@@ -17,9 +17,9 @@ item 33's recipe, item 27's scope) and fifteen MINORs, all applied; it changed a
 Round 3 on 2026-10-21, one lane on round 2's corrections and this handoff: SOUND-WITH-FIXES, fourteen MINORs, all
 applied; it changed no number, disposition or action, so the review ended there (ledger Phase 15, Consensus record).
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, authoritative for P2.
-Its items 5 and 7 and the owner batch O1–O17 carry over. This file supersedes
+Its items 5 and 7 and the Overtoad batch O1–O17 carry over. This file supersedes
 `HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`.
-**Merge approval**: the owner granted it for this session: its two canopy PRs and this PR ("save, merge, and PR
+**Merge approval**: the Overtoad granted it for this session: its two canopy PRs and this PR ("save, merge, and PR
 handoff", 2026-10-21). It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
@@ -31,8 +31,8 @@ commands first. Merge approval is not carried: ask before the first merge. Item 
 before the next canopy release, and items 18–21 are canopy fixes (F-CANOPY-064, -065, -067, -060, -063, -066); item
 27 is a demo leg on turing serving canopy `main` (not the E2 tree, which is still `571743db`), the Live Switch
 button's allow arm extended to click through the modal; items 25, 28 and 29 need the Linux host and the trio; item 33
-is the owner's (turing's E2 canopy env is below canopy's floor); item 26's second step waits on the owner's O17
-ruling; the canopy release that ships the fixes is owner-gated.
+is the Overtoad's (turing's E2 canopy env is below canopy's floor); item 26's second step waits on the Overtoad's O17
+ruling; the canopy release that ships the fixes is Overtoad-gated.
 
 **Completed:**
 
@@ -77,7 +77,7 @@ ruling; the canopy release that ships the fixes is owner-gated.
 **Remaining, in order:**
 
 1. **Land this session's PR** if it has not merged: `python3 util/wait_for_checks.py --pr N`, query
-   `reviewThreads(isResolved:false)`, ask the owner, then `python3 util/safe_merge.py --pr N --execute` and read its
+   `reviewThreads(isResolved:false)`, ask the Overtoad, then `python3 util/safe_merge.py --pr N --execute` and read its
    `MERGED` line. Afterwards, and again an hour later (a concurrent whole-file upload can revert a merged change, the
    #2262 trap), on a fresh `origin/main`: `python3 -B util/ad-hoc/e2e_finding_triage.py | tail -7` prints 80 / 63 /
    1 / 2 / 14 with no open P0 line, and `git show origin/main:notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md | grep -c '^## Phase 15'`
@@ -96,7 +96,7 @@ ruling; the canopy release that ships the fixes is owner-gated.
    (P1 on O17's first limb), 21 F-CANOPY-066 with the selection arc's A1-iii. Canopy PRs, each verified on a leg; the
    ledger's Phase 10 "Still owed" has each item's full text (`grep -n '^18\. \*\*F-CANOPY-064'` finds the first).
 4. **Item 27** (F-CANOPY-055/-025's Live Switch allow arm, extended): a demo leg on turing serving canopy `main`
-   (`aeeaf29b` or later). The E2 tree is still `571743db`: re-sync it from an up-to-date canopy primary (the owner
+   (`aeeaf29b` or later). The E2 tree is still `571743db`: re-sync it from an up-to-date canopy primary (the Overtoad
    pulls primaries; the worktree guard refuses `git -C`), or use `~/.local/state/juniper/turing-e2/trees/juniper-canopy-f028`
    after proving it equal to `main`:
    `python3 -I util/ad-hoc/2026-10-20_e2_tree_blob_sha_check.py --repo pcalnon/juniper-canopy --ref main --root ~/.local/state/juniper/turing-e2/trees/juniper-canopy-f028 src/frontend/dashboard_manager.py pyproject.toml conf/requirements_ci.txt conf/conda_environment.yaml CHANGELOG.md docs/USER_MANUAL.md src/tests/unit/frontend/test_f069_duplicate_callback_outputs.py src/tests/unit/frontend/test_live_dataset_switch_handlers.py src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner1.py src/tests/unit/frontend/test_dashboard_manager_gate_coverage_inner2.py src/tests/unit/frontend/test_poll_gating.py src/tests/unit/frontend/test_p2_wave_batch_b.py`
@@ -111,29 +111,29 @@ ruling; the canopy release that ships the fixes is owner-gated.
    `live-switch-progress-alert` (on `main` it must close after the swap), and drive the restart confirm likewise.
    That closes F-CANOPY-069's "fired, not clicked".
 5. **Items 25 and 28** on the Linux host, against the trio (ledger Phase 12). **Item 29**, the Linux host.
-6. **Item 33** (owner): bring turing's E2 canopy env to canopy's floor. Re-sync the E2 tree to canopy `main`
+6. **Item 33** (Overtoad): bring turing's E2 canopy env to canopy's floor. Re-sync the E2 tree to canopy `main`
    (`fbf01dff` or later; at `571743db` the floor `dash>=3.0.0` is met by 3.3.0), then
    `~/.local/state/juniper/turing-e2/venvs/JuniperCanopy1/bin/python -m pip install -e ~/.local/state/juniper/turing-e2/trees/juniper-canopy`
    (that venv, a system-site venv over the conda env, holds the editable canopy; pip takes the newest dash 4.x with
-   `comm` and `janus`). Once the owner has pulled the canopy primary to `main`,
+   `comm` and `janus`). Once the Overtoad has pulled the canopy primary to `main`,
    `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py canopy --phase all` does the re-sync, that install
    (with the `[test,juniper-cascor,observability]` extras) and the lanes the E2 record cites in one run; on this route
    the conda env itself keeps dash 3.3.0, shadowed by the venv. Or rebuild the conda env from a copy of the corrected `conf/conda_environment.yaml`
    re-specified for osx-64 as juniper-ml#2282 did (the file is a linux-64 `conda create --file` export). Then re-run
    the lanes the E2 record cites and record an erratum in the bring-up plan's E2 section; the dash 3.x scratch venvs
    (`JuniperCanopy1-dash304/-dash32/-dash34`) can go.
-7. **Item 26's second step** once the owner rules (O17).
-8. **The canopy release** that ships canopy#760 and #761, after item 34 (owner-gated, P4). Until it is cut, PyPI's
+7. **Item 26's second step** once the Overtoad rules (O17).
+8. **The canopy release** that ships canopy#760 and #761, after item 34 (Overtoad-gated, P4). Until it is cut, PyPI's
    canopy 0.9.0 (the newest release, 2026-10-17) keeps the colliding pairs, the Live Switch spinner that can stick
    under dash 4, the pin loss and the `dash>=3.0.0` floor. Check with `gh release list --repo pcalnon/juniper-canopy --limit 2`.
 9. **Cleanup on turing**, after the PR merges: the worktree `sequential-coalescing-boot` holds three local unsigned
    freeze commits (round 1 `6f933d07`, round 2 `f65541a5`, round 3 `71417d33`): never push its branch;
-   remove the worktree through `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md` (owner, or a
+   remove the worktree through `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md` (Overtoad, or a
    later session). Its untracked `reports/e2e-canopy-2026-09-02/item31-turing/shots/` (the last arm's three
    screenshots; each arm overwrote them) goes with it unless copied out. The fix trees
    `~/.local/state/juniper/turing-e2/trees/juniper-canopy-f069` and `-f028` can go once item 27 has its own tree.
    canopy deleted both fix branches on merge.
-10. Then the parent's items 5 and 7, and the owner batch O1–O17 (ledger item 22, O9's design question, is the
+10. Then the parent's items 5 and 7, and the Overtoad batch O1–O17 (ledger item 22, O9's design question, is the
     parent's C4).
 
 **Traps learned:**

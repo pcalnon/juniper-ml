@@ -191,7 +191,7 @@ from arithmetic jitter, which is the first question the residual 0.337 asks. **D
 | 5 | **§4.1 F2 import hygiene**               | may become unnecessary if §4.4's leak is closed                                                      | after §4.4                  |
 | 6 | **§4.3 fixed overhead**                  | needs an instrument built first                                                                      | none, but no tooling exists |
 | 7 | §4.5 G1a, §4.6, §4.7, §4.8               | independent                                                                                          | §4.5 needs §3.3             |
-| — | **§4.9 logging redesign**                | owner-raised, its own document                                                                       | owner decides timing        |
+| — | **§4.9 logging redesign**                | Overtoad-raised, its own document                                                                       | Overtoad decides timing        |
 
 **§4.4 gates §4.1 and §4.2, and that is not obvious from reading them in order.** §4.2's headline
 "~12.8 s per pool creation" assumes workers get the forkserver's table — §4.4 measured that they do
@@ -298,11 +298,11 @@ lane measures one tier, or it keeps two baselines.** This has not reached the §
   42. Its body flags a follow-on: `_CANDIDATE_UNIT_RANDOM_SEED` (`constants.py:1046`) must reach the
   candidate pool too.
 - **Retrospective corpus re-validation** — most E-A/E-I/P4 results are single-run and the P3 rollup
-  grades Reproducibility "PASS — bit-identical". Raise with the owner; **do not absorb it**.
+  grades Reproducibility "PASS — bit-identical". Raise with the Overtoad; **do not absorb it**.
 
-### 4.9 TABLED — logging redesign (owner-raised, its own analysis)
+### 4.9 TABLED — logging redesign (Overtoad-raised, its own analysis)
 
-The owner has asked for an analysis of: a clean stream to stdout/stderr, richer sinks (formatted and
+The Overtoad has asked for an analysis of: a clean stream to stdout/stderr, richer sinks (formatted and
 colourised file output), **per-logger** levels settable via config file *and* environment variable,
 and possibly streaming into an ELK/Kibana-style backend.
 

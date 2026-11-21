@@ -17,7 +17,7 @@ facts are cited from ml#1450's prep note (commit `021590a9`), not from messages.
 
 Continue the **shared-session-memory** arc in `juniper-ml`. Plan of record:
 [`notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`](../../../notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md)
-(§4 phases, §5 owner decisions, §6 the soak, §7 residual risk); tracker **ml#1326** (the ledger —
+(§4 phases, §5 Overtoad decisions, §6 the soak, §7 residual risk); tracker **ml#1326** (the ledger —
 read newest first with `gh issue view 1326 --repo pcalnon/juniper-ml --json comments --jq
 '.comments[-3:]'`; every comment is authored by `pcalnon`, so a session is identified by the
 worktree/branch it names); soak ledger
@@ -110,30 +110,30 @@ a whole-file publish would revert one of the two; if its banner is incomplete, r
 **B. Genuinely unclaimed — the two repos in the 30-day bucket.** cascor-worker (35,126 chars,
 ceiling 37,126) and deploy (34,569 / 36,569): uncut, ~2,000 chars of headroom each at ~66 chars/day,
 nobody holds them; the driver in ml#1450 works on them as-is once it merges. Whether they get a cut
-at all is owner decision C.3; if yes, one PR each, hazards triage first, the same G3 local run.
+at all is Overtoad decision C.3; if yes, one PR each, hazards triage first, the same G3 local run.
 Tracker #1326's title still says *cut not started* — retitle it after #1450 merges (`gh issue view
 1326 --json title` first; no PR carries that change).
 
-**C. Owner decisions pending — present them once, do not decide them:**
+**C. The Overtoad decisions pending — present them once, do not decide them:**
 1. **The soak's next step (the ladder is fixed in advance, plan §6 — do not re-open it).** The
    ledger prescribes rung 1: index rows for the four facts never retrieved from prose, then re-soak
    — and its own conclusion narrows that to index rows for the **policy** facts only, since three of
    the four (P19, P14, P23) are already discoverable at their point of use. In tension with that
    conclusion: the policy stratum already follows 24/24
    (`HANDOFF_2026-08-23_memory-budget-soak-and-side-findings.md`, corrected in ml#1376), so a
-   policy-only experiment cannot move its rate — flag the tension to the owner rather than
+   policy-only experiment cannot move its rate — flag the tension to the Overtoad rather than
    resolving it here. The five open rung-2 escalations are, per the ledger, **source-recovered
    correct answers scored conservatively**: the ladder says a CI gate or hook each (discharged only
    after one lands, `soak_ledger.py resolve --obs-id <id> --ref <PR>`); the ledger says whether to
-   re-score source-recovery as its own outcome is an owner decision, not a scorer's. INCONCLUSIVE may
+   re-score source-recovery as its own outcome is an Overtoad decision, not a scorer's. INCONCLUSIVE may
    not be reported as a pass or a failure.
-2. **`MEMORY.md` eviction — DEFERRED by the owner 2026-08-27** (#1326 comment, 2026-08-28 20:22 CDT),
+2. **`MEMORY.md` eviction — DEFERRED by the Overtoad 2026-08-27** (#1326 comment, 2026-08-28 20:22 CDT),
    whose recorded trigger is verbatim: *"do not re-propose until the index nears the 24.4 KB read
-   limit"*. The index was 20,635 bytes / 125 lines at 2026-08-28 20:00 CDT (the owner's figure;
+   limit"*. The index was 20,635 bytes / 125 lines at 2026-08-28 20:00 CDT (the Overtoad's figure;
    re-measure with the `wc -c -l` line below), growing ~0.8 KB/day, against a harness cap of 25,000
    bytes / 200 lines whose truncation is silent and drops the NEWEST rows (mechanism fact base §2 /
    §8b, cited at `notes/JUNIPER_2026-08-18_JUNIPER-ML_MEMORY-PROPOSAL-C-DEDUPLICATION-AND-PRUNING.md:1157`).
-   This session's *proposal*, not the owner's decision: read "nears" as ≥ 22,000 bytes (≈3 KB of
+   This session's *proposal*, not the Overtoad's decision: read "nears" as ≥ 22,000 bytes (≈3 KB of
    margin) and have the remedy ready — finished-work eviction via
    `util/ad-hoc/2026-08-19_memory_index_evict.py` (SHA-guarded, dry-run by default).
 3. **Cut or not, for the repos with no cut decision**: cascor-worker and deploy (item B) and
@@ -141,20 +141,20 @@ Tracker #1326's title still says *cut not started* — retitle it after #1450 me
    (32,443) was for juniper-ml only and is itself unmet at 37,079; the fleet has no target.
 4. **juniper-ml's own headroom is 921 chars; the last fleet-wide fan-out was +1,982**, and four other
    repos (cascor-worker, deploy, data, data-client) sit at ≤ 2,073. Before the next fan-out lands, the
-   owner picks one: (a) relocate ~1,100+ chars first (G3 run), or (b) raise `ceiling_chars` in
+   Overtoad picks one: (a) relocate ~1,100+ chars first (G3 run), or (b) raise `ceiling_chars` in
    `conf/memory_budget.json` in the SAME commit that carries `Allow-Ceiling-Raise: AGENTS.md - <reason>`
    — a commit body on the PR branch (CI reads `git log FETCH_HEAD..HEAD`; the trailer without the
    edit does nothing) and carried into the squash message, the only place it survives on `main`.
    Not `Allow-Budget-Overrun`: that is a loan with no ledger that blocks the next author.
 5. **Parent `Juniper/AGENTS.md`** (§5 #8, §7 #4: ungoverned, unversioned, additive to all nine) and
    **the worktree settings asymmetry** (§5 #9) — both "Yes, separately" in the plan, and neither has
-   a recorded owner decision: the 08-25/26 handoffs bundled them with the LEAVE IT below, but the
-   recorded 2026-08-20 decision names only worktree *convergence* (P0b). Confirm with the owner
+   a recorded Overtoad decision: the 08-25/26 handoffs bundled them with the LEAVE IT below, but the
+   recorded 2026-08-20 decision names only worktree *convergence* (P0b). Confirm with the Overtoad
    rather than assume; do not call either plan row stale.
 6. **Handoff length**: the procedure says ~500 words; the archive median is 1,190 (n = 144); this
    prompt is ~2,200 words (~2,850 with the wrapper). Options: amend the figure, add a gate, or compress.
 
-Closed — do not re-propose: worktree convergence, P0b (owner: LEAVE IT, 2026-08-20;
+Closed — do not re-propose: worktree convergence, P0b (Overtoad: LEAVE IT, 2026-08-20;
 `HANDOFF_2026-08-23_memory-budget-soak-and-side-findings.md:206`); Skills (§5 #7, deferred until a
 real pointer-follow problem); the `MEMORY.md` 120-byte cap on new entries (§5 #4).
 
@@ -196,7 +196,7 @@ unbuilt until the destination decision is final).
   Read invocation lines and files, not flags.
 - Merge path on this strict, fast-moving `main` (the auto-memory rows cover the mechanics; this is
   the ORDER): one signed commit → `gh pr create` → `util/wait_for_checks.py --pr N` → **present the
-  PR; only on the owner's explicit approval of it** → `gh pr merge --squash --auto --subject …
+  PR; only on the Overtoad's explicit approval of it** → `gh pr merge --squash --auto --subject …
   --body-file …` → confirm with `gh pr view N --json state,autoMergeRequest --jq '"\(.state)
   armed=\(.autoMergeRequest != null)"'` → `OPEN armed=true`. Arming `--auto` IS the merge decision —
   never arm before approval. Auto-merge does not update a BEHIND branch: `gh api
@@ -208,7 +208,7 @@ unbuilt until the destination decision is final).
   and exit 0; use `--body-file` / `-F`.
 - From a worktree-isolated session, `git -C <this repo's primary>` is refused; `git -C <sibling
   repo>` runs, one plain command per call (compound lines, loops and heredocs are refused —
-  multi-step logic goes in a `util/ad-hoc/` script). The primary pull is an owner action.
+  multi-step logic goes in a `util/ad-hoc/` script). The primary pull is an Overtoad action.
 
 ## Verification commands
 
@@ -235,7 +235,7 @@ wc -c -l /home/pcalnon/.claude/projects/-home-pcalnon-Development-python-Juniper
 
 **Amputation check** (SOP, ml#1285): the eight remaining-work items of the cut lineage's predecessor
 (ml#1400 handoff) are done (canopy#529, post-merge census, ledger + peer, archive PR, promotion,
-worktree cleanup) or carried here (step e → A; owner decisions → C); the five of this lineage's
+worktree cleanup) or carried here (step e → A; Overtoad decisions → C); the five of this lineage's
 predecessor likewise (banner, promotion → done; peer artifacts → A; MEMORY.md → C.2; decisions → C).
 
 **Round 1** — four independent refuting agents, one lens each, budget-capped (eight uncapped ones
@@ -249,7 +249,7 @@ retracted "~47"). The two criticals: item B originally told the reader to write 
 **Round 2** — three fresh agents on the corrected text (SOP: the fix pass introduces its own errors):
 the repo's `prompt-validator` custom agent (rubric R1–R5; anchor re-probe) returned **FAIL, 1 major /
 6 minor** — the major was introduced by round 1's fix: a "re-raise at 22,000 bytes" trigger this
-session invented, stated under owner decisions against the owner's recorded "nears the 24.4 KB read
+session invented, stated under Overtoad decisions against the Overtoad's recorded "nears the 24.4 KB read
 limit" — now quoted verbatim and the figure re-labelled a proposal; an adversarial fact-checker
 0 / 3 / 10 (the "Closed" line conflated worktree convergence with the settings asymmetry — split;
 G3 exit codes; window-dependence of cascor's max commit; UTC merge stamps); a fresh-session

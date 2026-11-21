@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc — repair helper
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: memory "open_signed_pr whole-file clobber" (the git merge-file repair); used on juniper-cascor's
          CHANGELOG.md for F1, whose entry and #685's F2 entry were inserted at the same line
 

@@ -4,7 +4,7 @@
 **Author**: Paul Calnon · **License**: MIT License
 
 These are the scripts the session and its four sub-agents wrote while working the arc defined by
-`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md`.
+`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md`.
 They were authored in the session scratchpad under `/tmp/`, which the script-placement rule
 forbids for anything that produces, modifies or analyses repository content. They were copied
 here **unmodified**, because they are the evidence behind the PRs below and editing them would

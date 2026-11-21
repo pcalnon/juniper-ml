@@ -10,7 +10,7 @@ License     : MIT License
 Triage the canopy E2E findings ledger by priority and open/fixed status.
 
 Phase 2's exit criterion (plan §6.3) is "every P0 and P1 closed or explicitly
-deferred with owner sign-off", so the arc needs a mechanical count of what is
+deferred with Overtoad sign-off", so the arc needs a mechanical count of what is
 still open at each priority rather than a hand-maintained list that drifts.
 
 Reads the evidence note's ledger entries -- each is a ``**F-<AREA>-<NNN> — …**``
@@ -62,10 +62,10 @@ def main() -> int:
         tail = body[-170:]
         fixed = bool(re.search(r"\bFIXED\b|\bHEALED\b", tail, re.I))
         # ACCEPTED is a THIRD disposition, not a flavour of fixed: the defect is real
-        # and unrepaired, but the owner has signed off on documented behaviour instead
-        # of a code change (plan §6.3's "closed or explicitly deferred with owner
+        # and unrepaired, but the Overtoad has signed off on documented behaviour instead
+        # of a code change (plan §6.3's "closed or explicitly deferred with Overtoad
         # sign-off"). Counting it as fixed would overstate what shipped; counting it as
-        # open would keep an exit criterion red that the owner has already settled.
+        # open would keep an exit criterion red that the Overtoad has already settled.
         accepted = bool(re.search(r"\bACCEPTED\b", tail, re.I)) and not fixed
         # WITHDRAWN is a FOURTH disposition, and it is not a flavour of any other:
         # the finding was WRONG. Nothing was fixed, nothing was accepted, and there is

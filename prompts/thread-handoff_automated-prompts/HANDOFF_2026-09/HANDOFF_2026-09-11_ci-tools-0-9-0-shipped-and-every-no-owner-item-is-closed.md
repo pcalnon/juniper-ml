@@ -1,8 +1,8 @@
-# HANDOFF 2026-09-11 — juniper-ci-tools 0.9.0 shipped end to end, and every no-owner item is closed
+# HANDOFF 2026-09-11 — juniper-ci-tools 0.9.0 shipped end to end, and every no-Overtoad item is closed
 
 **Session**: container-registry rollout — item 6 tail, then the juniper-ci-tools 0.9.0 release train
 **Predecessor**: `HANDOFF_2026-09-09_container-registry-item-6-closed-and-a-whole-file-clobber-caught-by-ci.md`
-**Successor**: `HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md`. The arc then runs through `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md` and `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md` to its current tip, `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`.
+**Successor**: `HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md`. The arc then runs through `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md` and `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md` to its current tip, `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`.
 **Status**: **SUPERSEDED / CONSUMED 2026-09-11**, re-evaluated against the live ecosystem 2026-09-22. **The title is wrong**: see Corrections 5.
 
 ---
@@ -10,13 +10,13 @@
 ## Status banner (added 2026-09-22 — read this before the goal below)
 
 **Do not paste the goal below as a new thread's prompt.** Its title and opening claim that nothing
-is left that does not need the owner. That was false when written (Corrections 5), and two of its
+is left that does not need the Overtoad. That was false when written (Corrections 5), and two of its
 verification commands, the pin greps, measure the wrong thing (Corrections 1). Continue the arc from
 `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`.
 The status banner of `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`
 was last updated by juniper-ml#2025, at 2026-09-22 23:40 UTC. Three of its facts have moved since:
 - the worker `0.6.1` wheel reached PyPI;
-- the owner ruled on equities (juniper-data#421);
+- the Overtoad ruled on equities (juniper-data#421);
 - juniper-deploy#227 merged.
 
 Note b and § Where the remaining work lives record each of these. That banner does not carry the
@@ -37,7 +37,7 @@ open items this one found either; those are now filed as issues (below). The des
 >   - juniper-cascor#673 (docs; auto-merge is armed, so an update-branch merges it);
 >   - juniper-deploy#229 (the worker `0.6.1` repin);
 >   - juniper-ml#2020 (this banner's PR).
->   Do not duplicate them. Every merge needs the owner's explicit approval in your session.
+>   Do not duplicate them. Every merge needs the Overtoad's explicit approval in your session.
 > - **For stale ci-tools text, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` is a first pass.**
 >   An exit 0 means "none of the shapes it parses", not "clean" (Corrections 1).
 
@@ -55,11 +55,11 @@ differently.
 | item | state, 2026-09-22/23 |
 | --- | --- |
 | **1**: first publish in recurrence and canopy | **CLOSED.** recurrence `0.5.0` (2026-09-10, recorded below); canopy's first image with `v0.8.0` (2026-09-12), whose package came up public |
-| **3**: the Pi pull, against a post-#179 image | **WAIVED** as a Wave 3 gate by the owner (2026-09-15), re-filed against first Pi deployment and OQ-3. Still owed; not runnable here (note a) |
+| **3**: the Pi pull, against a post-#179 image | **WAIVED** as a Wave 3 gate by the Overtoad (2026-09-15), re-filed against first Pi deployment and OQ-3. Still owed; not runnable here (note a) |
 | **4**: Wave 3 | **CLOSED**; its D-1 gate is closed **as re-scoped** (note b) |
-| **5**: Wave 4, Docker Hub | **IN PROGRESS, owner-gated** (note c) |
+| **5**: Wave 4, Docker Hub | **IN PROGRESS, Overtoad-gated** (note c) |
 | **6**: "Every follow-up in item 6 is closed" | **6f is OPEN**, blocked upstream; tracked as juniper-recurrence#182 (note d) |
-| **7**: OQ-1 … OQ-4 | OQ-1 **CLOSED** 2026-09-11. OQ-2 and OQ-4 await an owner design ruling; OQ-3's gate is the Pi pull (note e) |
+| **7**: OQ-1 … OQ-4 | OQ-1 **CLOSED** 2026-09-11. OQ-2 and OQ-4 await an Overtoad design ruling; OQ-3's gate is the Pi pull (note e) |
 
 | this document's claim | state, 2026-09-22/23 |
 | --- | --- |
@@ -69,7 +69,7 @@ differently.
 | *Weaker*: the floor bump is inert because pip resolves the newest match | **PARTLY TRUE** (Corrections 6) |
 | *Weaker*: the cascor-client#161 / data-client#197 conversions have never executed | **Their signed-commit path has never fired, and as the repos stand it cannot** (Corrections 2) |
 | canopy's X7 flake: "Do not chase it in the PR" | **Sound advice for a PR. The flake itself is OPEN and undiagnosed**, tracked as juniper-canopy#661 (note f) |
-| the worktree debris "to clean up when the owner signals" | **STILL PRESENT**, and wider than listed (note g) |
+| the worktree debris "to clean up when the Overtoad signals" | **STILL PRESENT**, and wider than listed (note g) |
 
 **a. The Pi pull.** A valid target now exists: `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, with
 torch `2.14.0+cpu`. It cannot run from here:
@@ -78,7 +78,7 @@ torch `2.14.0+cpu`. It cannot run from here:
 - `yamaguchi` is this x86_64 workstation, not a candidate.
 
 > **Correction, 2026-10-19 (erratum X6 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).**
-> `turing` was not down, and it was never a Pi-pull candidate. It is the owner's 15-inch 2018 Intel
+> `turing` was not down, and it was never a Pi-pull candidate. It is the Overtoad's 15-inch 2018 Intel
 > MacBook Pro (x86_64, macOS), a development laptop in active use away from yamaguchi
 > (`notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_BYPASS-CANDIDATE-DETERMINATION.md:174`), so it cannot
 > meet the pull's 64-bit Pi OS precondition. `192.168.50.222` comes from
@@ -93,7 +93,7 @@ and the pull is still owed before any Pi node runs a Juniper image.
 - **Releases.** canopy cut `v0.8.0` (2026-09-12), then `v0.8.1` (2026-09-18). The worker cut
   `v0.6.0` on 2026-09-15 and reached PyPI at 2026-09-18 00:18 UTC. That is 09-17 in CDT, the date
   `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md` and
-  `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md` give.
+  `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md` give.
 - **Images.** GHCR serves a release image for all five: cascor `0.11.0`; data `0.14.0` and `0.15.0`;
   canopy `0.8.0` and `0.8.1`; worker `0.6.0` and, since about 23:08 UTC on 2026-09-22, `0.6.1`;
   recurrence `0.5.0`.
@@ -119,7 +119,7 @@ and the pull is still owed before any Pi node runs a Juniper image.
 **c. Wave 4.**
 - **The ruling.** OQ-1 was ruled on 2026-09-11. The procedure is
   `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` (ml#2007).
-  On 2026-09-22 the owner ruled **Option B** of §3 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`
+  On 2026-09-22 the Overtoad ruled **Option B** of §3 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`
   (ml#2009): an environment secret in a `dockerhub` environment restricted to tags.
 - **The environments.** The containers session created all five at 2026-09-22
   19:45:59–19:46:21 UTC. This was steps 1–2 of §5.2B of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`,
@@ -127,7 +127,7 @@ and the pull is still owed before any Pi node runs a Juniper image.
   holds a secret yet. No repo holds a `DOCKERHUB_*` repository secret.
 - **What remains of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.**
   1. Step 3 of §5.2B of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`: the token and
-     username, which are the owner's.
+     username, which are the Overtoad's.
   2. The verification in §6 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
   3. The workflow change in §7 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
 - **What §10 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` leaves open.**
@@ -153,7 +153,7 @@ and the pull is still owed before any Pi node runs a Juniper image.
   documents carries 6f (checked on `main`, 2026-09-23):
   - `HANDOFF_2026-09-11_container-registry-oq1-ruled-and-the-two-pins-no-sweep-could-see.md`;
   - `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md`;
-  - `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md`;
+  - `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-Overtoad-gated.md`;
   - `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`;
   - `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`.
 
@@ -193,7 +193,7 @@ and the pull is still owed before any Pi node runs a Juniper image.
   10s:
   - one covers the sibling module, `test_x7_loop_responsiveness.py`, which canopy#649 fixed;
   - one covers `test_main_import_and_lifespan.py::test_keepalive_loop_survives_broadcast_error`,
-    which item 13 of §E of `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md` carries.
+    which item 13 of §E of `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md` carries.
 
 **g. Worktrees.** All of the following exist: 30 sibling worktrees and two session worktrees.
 Every PR the sibling worktrees served is merged; the two session worktrees served no PR.
@@ -210,7 +210,7 @@ Every PR the sibling worktrees served is merged; the two session worktrees serve
   `.claude/worktrees/tender-splashing-wigderson`. The first holds untracked files, per
   `HANDOFF_2026-09-08_container-registry-rollout-wave-2-opened-and-the-cuda-class-in-three-shapes.md`.
 
-Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ignored files silently.
+Cleanup waits for the Overtoad's explicit signal, and `worktree remove` deletes ignored files silently.
 
 ### Corrections to this document
 
@@ -277,12 +277,12 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
 4. **"47 pin lines across 26 files per pass" mixes two scopes.**
    - The ceiling pass changed 47 lines in 30 files, 43 of them in 26 workflow files.
    - The floor pass changed 50 lines in 31 files.
-5. **The title and goal were false when written.** "Nothing is left that does not need the owner",
-   "every no-owner item is closed" and "ran to completion across all nine repos" all failed on
+5. **The title and goal were false when written.** "Nothing is left that does not need the Overtoad",
+   "every no-Overtoad item is closed" and "ran to completion across all nine repos" all failed on
    2026-09-11:
    - two live juniper-cascor pins were still `>=0.6.0,<0.7.0` (Corrections 1);
    - 6f was open (note d);
-   - the X7 flake had no owner (note f).
+   - the X7 flake had no Overtoad (note f).
 6. **"The floor bump is inert … all nine repos began installing 0.9.0 the moment it published" is
    only partly true.**
    - **True on a fresh hosted runner with a correctly ranged pin.** cascor `main` run `34588125830`
@@ -305,7 +305,7 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
   - data#420's wheel without the test suite. The `0.15.0` wheel ships 97 of its 201 members as
     tests.
   - data#421's image that can generate equities. It merged 2026-09-23 00:56 UTC (`68c3cd7c`) on the
-    owner's 2026-09-22 ruling.
+    Overtoad's 2026-09-22 ruling.
 
   Until that release, the stack's juniper-recurrence cannot get `equities_seq` from the image.
 - The worktree-cleanup signal (note g).
@@ -313,7 +313,7 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
   `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` needs, to
   prove how an empty environment name behaves.
 
-**Startable, not owner-gated:**
+**Startable, not Overtoad-gated:**
 - **The serve check and the version check**, the half of item 1 of
   `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` that remains.
   `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` records a concurrent session
@@ -338,7 +338,7 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
 - **The juniper-deploy repin to worker `0.6.1`** is open as juniper-deploy#229. Do not open a
   second one.
 
-**Authored 2026-09-22/23 by the session that wrote this banner.** Each merge still needs the owner's
+**Authored 2026-09-22/23 by the session that wrote this banner.** Each merge still needs the Overtoad's
 explicit approval in the session doing it. This is the state at 2026-09-23 01:50 UTC.
 - **Pins.**
   - juniper-deploy#227 (data `0.15.0`): merged, `a725f69b`.
@@ -381,7 +381,7 @@ gh api "repos/pcalnon/juniper-data-client/git/trees/main?recursive=1" --jq '[.tr
 gh api "repos/pcalnon/juniper-cascor-client/git/trees/main?recursive=1" --jq '[.tree[].path|select(test("requirements.*lock"))]'   # []
 gh api repos/pcalnon/juniper-cascor-client/actions/workflows/lockfile-update.yml/runs --jq .total_count                            # 0
 
-# note c: each prints 0 until the owner registers the token
+# note c: each prints 0 until the Overtoad registers the token
 gh api repos/pcalnon/juniper-cascor/environments/dockerhub/secrets --jq .total_count
 gh api repos/pcalnon/juniper-data/environments/dockerhub/secrets --jq .total_count
 gh api repos/pcalnon/juniper-canopy/environments/dockerhub/secrets --jq .total_count
@@ -394,7 +394,7 @@ python3 -c "import json,urllib.request;print(json.load(urllib.request.urlopen('h
 # Corrections 1: cascor#646's merge commit and its head
 gh pr view 646 --repo pcalnon/juniper-cascor --json mergeCommit,headRefOid --jq '"\(.mergeCommit.oid[0:8]) \(.headRefOid[0:8])"'   # 43785fe0 b374f285
 
-# note g: 30 sibling worktrees, then the 2 juniper-ml session worktrees, until the owner signals cleanup
+# note g: 30 sibling worktrees, then the 2 juniper-ml session worktrees, until the Overtoad signals cleanup
 ls -d worktrees/*--widen-ci-tools-ceiling--* worktrees/*--close-recurrence-model-staleness-note--* \
   worktrees/*--sign-the-lockfile-regen-commit--* worktrees/*--torch-2-14-cpu-pin--* worktrees/*--lockfile-update-both-locks--* \
   worktrees/*--lock-the-app-image--* worktrees/*--cpu-only-torch-pin--20260908* worktrees/*--publish-container-image--20260908* \
@@ -453,7 +453,7 @@ those archived reports, not written from memory.
     disposition, and findings 2, 3 and 9 changed numbers. All four were measured,
     low-uncertainty edits. So, as R5 recommended, they were confirmed by re-running round 5's own
     instruments and not by a round 6. Eight of its ten mutants are now killed, and the
-    verification block below was re-run. The owner may judge that differently.
+    verification block below was re-run. The Overtoad may judge that differently.
 
 **Conduct.**
 - **Read-only, with two exceptions.** Neither changed a reviewed file.
@@ -499,7 +499,7 @@ those archived reports, not written from memory.
 | 1 | A2 (A): published artifacts (PyPI, GHCR, the images) | PASS WITH FINDINGS | the `__version__` check was tautological; arc_agi keeps its `dataset_id` across the `task_type` change; deploy#227's CHANGELOG did not name data#404 |
 | 1 | A3 (A): repository contents, its own census first | PASS WITH FINDINGS | the census missed ranges not written straight after the name: two docs and ten workflow comments; `QUICK_START.md:92` |
 | 1 | B1 (B): attack the conclusions | PARTIALLY REFUTED ("should not merge as written") | 6f dropped; X7 unowned; item 1 never dispositioned; the floor "confirmation" refuted by the push it cited; the stack cannot generate equities |
-| 1 | B2 (B): amputation and executability | SAFE WITH FIXES | "not owner-gated" said of unmerged PRs; "now fixed" said of open PRs; `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` stale; references without filenames |
+| 1 | B2 (B): amputation and executability | SAFE WITH FIXES | "not Overtoad-gated" said of unmerged PRs; "now fixed" said of open PRs; `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` stale; references without filenames |
 | 2 | R2-A (B): attack the round-1 fix pass | SAFE WITH FIXES | the X7 prescription contradicted its own evidence; canopy's "ci-tools 0.8.0 is already installed" was invisible to the census |
 | 2 | R2-B (A): census adequacy, its own instrument and 16 mutations | ADEQUATE WITH FIXES | `--expect` never checked against the latest release; the self-test never reached the verdicts; `tests/` exempt; ranges dropped past links, tables and paragraph breaks; the clean post-merge run hid `QUICK_START.md:92` |
 | 2 | R2-C (A): the whole document, artifact-first, about 176 claims | PASS WITH FINDINGS | 5 refuted (among them data#401 cited for data#402) and 4 stale but unmarked |
@@ -508,7 +508,7 @@ those archived reports, not written from memory.
 | 3 | R3-C (A): the record and every new number, from primary sources, about 118 claims | PASS WITH FINDINGS | the conduct claim hid my round-2 writes; the seedless-nonce explanation was wrong; 30 worktrees, not 28; the repin was already claimed |
 | 4 | R4-A (B): attack the round-3 fix pass, plus a ledger of every round-3 finding | SAFE WITH FIXES | the new zero-live-pins guard refused a repo whose installs are unpinned; the worker wheel and the equities ruling were already done; the `run()` scenarios missed six mutants; the stored squash body was stale |
 | 4 | R4-B (B, ship side): the whole PR set; argue the merge, find over-correction | SHIP WITH CHANGES | the three open items lived only in this banner; the first screen restated `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`; bookkeeping corrections gated nothing |
-| 5 | R5 (A and B): the round-4 fix pass only, plus a ledger of every round-4 finding | SAFE WITH FIXES | the one-minute block pointed at a banner whose owner-decision status is stale; two shortened corrections lost numbers; the census stated its refusal contract three ways; five of its ten mutants survived |
+| 5 | R5 (A and B): the round-4 fix pass only, plus a ledger of every round-4 finding | SAFE WITH FIXES | the one-minute block pointed at a banner whose Overtoad-decision status is stale; two shortened corrections lost numbers; the census stated its refusal contract three ways; five of its ten mutants survived |
 
 **Reconciliation (§5 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`).**
 - **Lone findings, rounds 3–5.** Every load-bearing finding that only one lane reported was
@@ -542,7 +542,7 @@ those archived reports, not written from memory.
   - A line in § What shipped begins `#163's` without a repo name. It is original text, and this
     banner does not rewrite the original.
   - R4-B asked to drop the X7 flake from Corrections 5. The original named the flake itself ("Do
-    not chase it in the PR"), and it was an item left that did not need the owner.
+    not chase it in the PR"), and it was an item left that did not need the Overtoad.
   - R3-B's attribution shapes, and round 5's two surviving mutants, are documented as limits of an
     ad-hoc tool. Both are named in the docstrings of
     `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and
@@ -556,8 +556,8 @@ those archived reports, not written from memory.
   - R4-B asked to move the conduct detail out of this record. It stays, because the disclosure is
     the point.
 - **Unresolved dissent.** B1 held that creating the throwaway repository for Wave 4's
-  conditional-shape test is startable. This banner files it as owner-gated, because it creates a
-  repository in the owner's account.
+  conditional-shape test is startable. This banner files it as Overtoad-gated, because it creates a
+  repository in the Overtoad's account.
 
 **Instrument.** The census is `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`, in its third
 version.
@@ -588,10 +588,10 @@ version.
 
 ---
 
-Continue the **container-registry rollout**. **Nothing is left that does not need the owner.** Every
+Continue the **container-registry rollout**. **Nothing is left that does not need the Overtoad.** Every
 follow-up in item 6 is closed, the `juniper-ci-tools` 0.9.0 release train ran to completion across all
 nine repos, and the recurrence image is published. What remains is items 1, 3, 4, 5 and 7 of the
-predecessor, all owner-gated. Merge approval for this arc was granted per-session on 2026-09-09/10/11
+predecessor, all Overtoad-gated. Merge approval for this arc was granted per-session on 2026-09-09/10/11
 — **obtain your own before merging anything**. Predecessor:
 `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_container-registry-item-6-closed-and-a-whole-file-clobber-caught-by-ci.md`
 — it holds the design of record, the definition of done, and the traps this document does not repeat.
@@ -630,7 +630,7 @@ version from the change and fix what the number breaks, in a strict order. All t
 `publish-image.yml` run **34461928708**, all three jobs green →
 `ghcr.io/pcalnon/juniper-recurrence:0.5.0` / `:0.5` / `:latest`, two arches. Pulled and censused:
 `machine=x86_64 python=3.13.15 torch=absent distributions=36 cuda_stack=0`, "CPU-only contract holds",
-and it carries **`juniper-recurrence-model 0.3.0`** — the release whose PyPI gate the owner approved.
+and it carries **`juniper-recurrence-model 0.3.0`** — the release whose PyPI gate the Overtoad approved.
 That closes the recurrence legs of items 1 and 4.
 
 **Also landed**: recurrence#165 `bea3dfb` (the v0.5.0 CHANGELOG asserted its lock pinned 0.2.0 when
@@ -696,12 +696,12 @@ requirement legible.
   > **2026-09-22.** The advice holds for a PR. The flake itself is open and undiagnosed. Since
   > 2026-09-23 it is tracked as juniper-canopy#661 (Status banner, note f).
 
-### Remaining work — all owner-gated
+### Remaining work — all Overtoad-gated
 
 The predecessor's items 1, 3, 4, 5 and 7 stand; go there for the commands.
 
 > **Re-evaluated 2026-09-22.** Wave 3 is CLOSED, the Pi pull is WAIVED as a Wave 3 gate, Wave 4 is in
-> progress and owner-gated, OQ-1 is closed, and 6f is open. See the Status banner at the top before
+> progress and Overtoad-gated, OQ-1 is closed, and 6f is open. See the Status banner at the top before
 > acting on anything below.
 
 - **Wave 3 (item 4) needs two more Releases.** Three of five images exist: cascor `0.11.0`, data
@@ -749,7 +749,7 @@ Local `main` is clean in every primary checkout. **No local branch was ever push
 commit this session was created through the GitHub API and is GitHub-signed. The session's juniper-ml
 worktree is `juniper-ml/.claude/worktrees/tender-splashing-wigderson`.
 
-**Worktree debris to clean up when the owner signals** — the eight sibling worktrees created for the
+**Worktree debris to clean up when the Overtoad signals** — the eight sibling worktrees created for the
 ceiling fan-out were **reused** for the floor fan-out (reset to `origin/main` on branch
 `chore/raise-ci-tools-floor`), so there are eight, not sixteen:
 

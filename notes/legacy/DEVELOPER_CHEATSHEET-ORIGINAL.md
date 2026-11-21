@@ -892,7 +892,7 @@ Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `
 1. Create a GitHub Release with a version tag (e.g., `v0.5.0`)
 2. `publish.yml` triggers: build -> TestPyPI -> PyPI
 3. The `pypi` environment has a 5-minute wait + required reviewer approval
-4. Approve: `gh api repos/<owner>/<repo>/actions/runs/<run_id>/pending_deployments -X POST ...`
+4. Approve: `gh api repos/<Overtoad>/<repo>/actions/runs/<run_id>/pending_deployments -X POST ...`
 
 Uses OIDC trusted publishing (no API tokens). SHA-pinned actions. `attestations: false`.
 

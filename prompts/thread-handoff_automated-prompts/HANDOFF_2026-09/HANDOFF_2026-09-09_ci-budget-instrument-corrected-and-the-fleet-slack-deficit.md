@@ -15,15 +15,15 @@ this document was re-anchored three times while being written.
 > (merged 2026-09-23 01:17 UTC). Consensus round 3 finished after that merge; its record and
 > fixes came in a follow-up PR.
 >
-> - **All ten §3 items are now closed, ruled, or informational** (item 3). The owner ruled on the
->   four owner items (1, 6, 8, 9) and on item 4's approach, and the 2026-09-17 arc executed them,
+> - **All ten §3 items are now closed, ruled, or informational** (item 3). The Overtoad ruled on the
+>   four Overtoad items (1, 6, 8, 9) and on item 4's approach, and the 2026-09-17 arc executed them,
 >   recorded in `notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md`.
 > - **Item 10 was not carried forward by that arc** — neither shipped nor recorded — and was
 >   still true on `main`. ml#2017 closes it.
 > - **Three CI budgets had gone stale again** (juniper-data, juniper-data-client,
 >   juniper-deploy); ml#2017 re-pins them under the arc's own rule. **One consensus lane
->   dissented**: those maxima were mostly runner queue. The owner ruled on 2026-09-22 to ship
->   the three raises; whether a budget should absorb runner queue in general is still an owner
+>   dissented**: those maxima were mostly runner queue. The Overtoad ruled on 2026-09-22 to ship
+>   the three raises; whether a budget should absorb runner queue in general is still an Overtoad
 >   decision. The arc's v2 span instrument also had a second defect: executions after the first
 >   pass inflate the span. Sizing now uses the `first-pass` instrument.
 > - **The advisory structure soak is not ready to promote**: by 2026-09-23 00:33 UTC, 10
@@ -32,7 +32,7 @@ this document was re-anchored three times while being written.
 >   them.
 > - **This document dropped one of its predecessor's items in 2026-09-09**: flood-2's 22 test
 >   PRs whose production half was absent. It is recorded below.
-> - **What remains: five owner decisions and two pieces of non-owner work**, all in the first §1
+> - **What remains: five Overtoad decisions and two pieces of non-Overtoad work**, all in the first §1
 >   block.
 
 ---
@@ -45,12 +45,12 @@ is done or ruled; do not act on it.
 
 ```text
 Continue the CI-budget arc in juniper-ml. Everything from 2026-09-09 is closed, ruled or
-informational. What is left: surface OWNER DECISIONS 1-5 to the owner, and do NON-OWNER WORK 1-2.
+informational. What is left: surface OWNER DECISIONS 1-5 to the Overtoad, and do NON-OWNER WORK 1-2.
 
 PREFLIGHT -- every figure below decays within days; re-measure before acting on any of them.
   git fetch origin
   gh pr view 2017 --repo pcalnon/juniper-ml --json state,mergedAt,mergeCommit
-    # Expect MERGED: the owner merged it 2026-09-23 01:17 UTC as 7b226ca0, while consensus
+    # Expect MERGED: the Overtoad merged it 2026-09-23 01:17 UTC as 7b226ca0, while consensus
     # round 3 was still running. This document and the probe script landed IN it; round 3 and
     # every later round came in the follow-up, ml#2035.
   git log --oneline -3 origin/main -- prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md
@@ -80,7 +80,7 @@ PREFLIGHT -- every figure below decays within days; re-measure before acting on 
 
 THIS DOCUMENT IS
 prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md
-Read its § Re-evaluation 2026-09-22 first. The owner's 2026-09-15 rulings and the arc that
+Read its § Re-evaluation 2026-09-22 first. The Overtoad's 2026-09-15 rulings and the arc that
 executed them: notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md.
 This is ONE arc's residue; other arcs hand off separately in the same directory.
 
@@ -93,7 +93,7 @@ OWNER DECISIONS -- a session cannot take these
      runs hold 8 (4 WARN, 4 ALARM, 2026-08-06..09-05), and each ran its Slack step. Only
      juniper-ml has the secret; on the other eight a breach is a ::warning:: in the Actions tab
      and nothing else.
-  2. Should CI budgets absorb runner queue? THE THREE RAISES ARE RULED: the owner approved
+  2. Should CI budgets absorb runner queue? THE THREE RAISES ARE RULED: the Overtoad approved
      shipping them on 2026-09-22, over a recorded dissent. The general question stays open and
      will come back, because four of nine budgets now sit at TIMEOUT_CEILING 3300, so the next
      stale one there CANNOT be raised. Both sides are written out above REPO_TIMEOUTS in
@@ -234,7 +234,7 @@ NON-OWNER WORK
      reads BELOW HEALTHY MAX or ABOVE 4x p90, do NOT re-pin while
      OWNER DECISION 2 is open. Report the repo, the max PR and that head's queue share
      (util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/laneB2/span_decompose.py <repo> <pr>) to
-     the owner as input to that decision.
+     the Overtoad as input to that decision.
      ALREADY TRIPPED, AND REPORTED: at 2026-09-23 00:33 UTC juniper-ml read p90 680 / max 1061
      (#2003) over #1991-#2026, so its 2800 s is ABOVE 4x p90 (2720) by 80 s. That is the window
      sliding: the pinned (910, 2005) came from the 30-PR sample #1981-#2014 (less #2004 and
@@ -259,7 +259,7 @@ MEASUREMENT TRAPS THIS RE-EVALUATION PAID FOR
     attempts/1/jobs.
   - The five NEWEST lockfile PRs said "4 of 4 parked, not suppressed". All 18: 5 got no run
     when opened. Enumerate by branch (--head), never a limited title search -- and a PR's
-    FIRST commit is not its history: #1139 got runs later, on the owner's merge-from-main push.
+    FIRST commit is not its history: #1139 got runs later, on the Overtoad's merge-from-main push.
   - A job log ECHOES the step's script text; match only expanded values (digits, SHAs).
   - A comma ENDS a workflow-command property: the soak's title `(advisory, exit N)` reached the
     API as `(advisory` until ml#2017. The runner also adds `notice` annotations to every job.
@@ -278,7 +278,7 @@ MEASUREMENT TRAPS THIS RE-EVALUATION PAID FOR
     in the JSON under `probe_started_at`.
   - A queued or running job has no conclusion and no log yet: it is in flight, not lost. The
     soak probe scored it as a lost log, and exited 2 whenever CI was busy, until round 3.
-  - A PR can be merged while its validation round is still running -- here, by the owner, after
+  - A PR can be merged while its validation round is still running -- here, by the Overtoad, after
     every required check passed. Record the round in a follow-up; do not leave "in progress" on
     main.
 
@@ -292,7 +292,7 @@ USE THE RIGHT TOOL -- pairs that differ by one word
                AGENTS.md past its headroom -- not for a negative planning margin.
 
 MERGING IN THIS LANE -- re-verified 2026-09-22
-  A merge needs the owner's explicit approval for that PR IN YOUR SESSION; a handoff cannot
+  A merge needs the Overtoad's explicit approval for that PR IN YOUR SESSION; a handoff cannot
   carry it. allow_update_branch is FALSE on all nine repos and the rulesets are strict, so a PR
   goes BEHIND whenever main moves. Every commit must be GitHub-signed; a local `git commit`
   hangs on the YubiKey. New branch: util/open_signed_pr.py, which refuses an existing branch.
@@ -316,7 +316,7 @@ GIT STATE AT HANDOFF
   plus 18d3d5e3, an UNSIGNED local-only commit used for screen testing that was never pushed and
   must not be. Its working tree holds the content of both PRs, uncommitted (the files each PR
   added are untracked there); both were pushed through the API, so nothing is unpushed. Its copy of
-  round2-laneA/r2a_spans.py predates the owner's CodeQL fix (6f17aea5), so never upload it.
+  round2-laneA/r2a_spans.py predates the Overtoad's CodeQL fix (6f17aea5), so never upload it.
   Under util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/ these are TRACKED:
   laneA2/span_all_attempts.py, laneA2/queue_share.py, laneB2/span_decompose.py,
   round2-laneA/r2a_spans.py, round2-laneA/r2a_common.py, round3-fix/check_first_pass_window.py,
@@ -352,11 +352,11 @@ REMAINING WORK, ordered by dependency
      Until it merges, flood-2 §3 item 5 is NOT closed.
   2. Two rationales this arc WITHDREW are still shipped in util/safe_merge.py's REPO_TIMEOUTS
      comments: the within-span/pre-start-queue justification, and "Unlike ml this is NOT a
-     contention artifact" on juniper-recurrence. §3 item 5. No owner needed.
+     contention artifact" on juniper-recurrence. §3 item 5. No Overtoad needed.
   3. .github/workflows/ci.yml and docs/REFERENCE.md still say "102 structural problems across
      21 files ... 1 under notes/code-review/". At 6ccf80fa it is 73/15 and notes/code-review/
-     is ZERO. §3 item 7. No owner needed.
-  4. Owner decisions: §3 items 1, 6, 8, 9.
+     is ZERO. §3 item 7. No Overtoad needed.
+  4. The Overtoad decisions: §3 items 1, 6, 8, 9.
 
 THE SLACK NUMBER: FIVE REPOS NEGATIVE, AND I GOT THIS WRONG TWICE BEFORE THIS LINE.
   The rule is SOURCED, so use it as written -- do not re-derive a "better" one:
@@ -490,7 +490,7 @@ are still shipped in `util/safe_merge.py` and are §3 item 5.**
 |---|---|---|
 | 1 | **OWNER — `juniper-cascor-client` 3300 s exceeds 4x its p90 (724 → 2896)**, so it is excluded from the pin rather than fixed. Its historic rationale (*"15,616 s is queue time"*) is REFUTED — v1 bot artifact; real max **1511 s**. A value in `(1511, 2896]`, mid ≈ 2200, would let it be pinned. `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_flood2-cohort-zero-and-the-1799-reland-damage.md` said not to touch that repo, so the value stands. | `util/safe_merge.py` REPO_TIMEOUTS |
 | 2 | **#1862 is open, green and armed — shepherd it.** `allow_update_branch` is false, so arming alone will not land it. Flood-2 §3 item 5 stays open until it merges: there were **two** pin sites and #1828/#1851 fixed one. | `util/ad-hoc/2026-09-05_auto_merge_shepherd.py` |
-| 3 | **FIVE repos have a negative planning margin** (ml −57904, canopy −1795, data −956, worker −324, cascor-client −208); deploy sits at exactly 0. ml's is a single 61,435-char restructure — report it with p90 (+693) beside it, not instead of it. data/worker/data-client are tight by owner decision. **The CI gate is green; this is planning, not an outage.** | §1 block; `util/ad-hoc/README.md:132` |
+| 3 | **FIVE repos have a negative planning margin** (ml −57904, canopy −1795, data −956, worker −324, cascor-client −208); deploy sits at exactly 0. ml's is a single 61,435-char restructure — report it with p90 (+693) beside it, not instead of it. data/worker/data-client are tight by Overtoad decision. **The CI gate is green; this is planning, not an outage.** | §1 block; `util/ad-hoc/README.md:132` |
 | 4 | **`util/ad-hoc/2026-09-05_md_structure_check.py` blind spots are DOCUMENTED, NOT FIXED.** C2 is set-membership; C4 a net count; a missing path, new file, or unresolvable `--base` each exit 0. It also still ratifies *"6 in a pre-existing `memory_index_check` block"* — the exact `base 6` that flood-2 handoff said **not** to ratify. | that file `:68-70` |
 | 5 | **Two rationales this arc withdrew are still shipped** in `util/safe_merge.py`'s REPO_TIMEOUTS comments: the within-span/pre-start justification, and *"Unlike ml this is NOT a contention artifact"* on recurrence. The arc opened a PR for a drifted test pin it wrote and shipped nothing for refuted prose it wrote in the same file. | `util/safe_merge.py` |
 | 6 | **OWNER — the structure debt has no disposition, and it GROWS.** 102/21 → 63/14 after ml#1834 → **73/15** at `6ccf80fa`, within a day. Repairing the top three files removes 38 and leaves 35 across 12, and changes **no gate outcome** while the ten dangling symlinks stand. Removing the symlinks is the smaller, higher-value move. | preflight; `find . -xtype l` |
@@ -632,7 +632,7 @@ Notes on the rows that need more than a cell:
 
 - **Item 1.** Re-measured, cascor-client reads p90 1264 / max 1626 over 30 healthy heads. Its
   3300 s now sits inside `(1626, 5056]`, so the row would pass the pin it was excluded from.
-  Re-including it is the owner's call; the ruling stands until then.
+  Re-including it is the Overtoad's call; the ruling stands until then.
 - **Item 6.** The screen examined 1116 of the 1127 paths; the other 11 are symlink aliases,
   counted once. Its zero is a real measurement: run on `bcc89c45:docs/REFERENCE.md`, the ml#1746
   damage, the same screen reports two swallowed H2s and exits 1.
@@ -643,9 +643,9 @@ Notes on the rows that need more than a cell:
   The 18 opened with `GITHUB_TOKEN` (#325–#1932) all ran zero jobs at opening, in two shapes:
   - 5 got no `pull_request` run when opened: #325, #328, #339, #389, and #1139 on 2026-08-17.
     #1139 got runs later: 2 successful `pull_request` runs on `5d343118`, the commit where the
-    owner pushed main into its branch.
+    Overtoad pushed main into its branch.
   - 13 had their runs created and parked at `action_required`. 12 of those were released by
-    the owner re-running them, and #1806 by a close/reopen. #1806 was closed at 13:59:37Z and
+    the Overtoad re-running them, and #1806 by a close/reopen. #1806 was closed at 13:59:37Z and
     reopened at 13:59:38Z, and its parked runs flipped to `failure` in that second, so the API
     cannot say which of the two events flipped them. The release itself is not in doubt: the
     runs created at 13:59:40Z ran 18, 1 and 1 jobs.
@@ -662,10 +662,10 @@ Notes on the rows that need more than a cell:
     annotation, it is the only other trace.
   - **The read can show a breach.** juniper-ml's 54 runs hold 8, 2026-08-06..09-05: 4 WARN and
     4 ALARM, and each ran its Slack step.
-  - **The residue is the owner's**: `SLACK_WEBHOOK_URL` is set on juniper-ml only.
+  - **The residue is the Overtoad's**: `SLACK_WEBHOOK_URL` is set on juniper-ml only.
 - **Item 10.**
   - `notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md` §0 and §7 do not mention the waiter.
-  - It was a non-owner "minor" note, and the arc's scope was the owner decisions. So "not
+  - It was a non-Overtoad "minor" note, and the arc's scope was the Overtoad decisions. So "not
     carried forward" is the accurate word, not "dropped".
   - A shipped item and an unshipped one read identically in a summary. That is why every item
     here was re-derived from its source.
@@ -702,7 +702,7 @@ Notes on the rows that need more than a cell:
      Under first-pass numbers all nine budgets now clear their max and sit inside 4× p90.
    - **Dissent, then a ruling.** One lane argued HOLD: `util/safe_merge.py` says "do NOT raise a
      budget to absorb a queue", and queue-free all three spans fit their OLD budgets. Another
-     argued SHIP, on the enforced rule and the 2026-09-09 precedent (ml, recurrence). The owner
+     argued SHIP, on the enforced rule and the 2026-09-09 precedent (ml, recurrence). The Overtoad
      ruled on 2026-09-22 to ship the three raises. Both cases are recorded above
      `REPO_TIMEOUTS`; the general question is OWNER DECISION 2.
    - **The ceiling is filling.** canopy, cascor-client, data and data-client now sit at 3300,
@@ -770,9 +770,9 @@ Notes on the rows that need more than a cell:
 
      | PR | lost heading | became |
      |---|---|---|
-     | #1976 | `### 0.5 \`JuniperCascor1\` environment repair — owner has not ruled, asked 3+ times` | `### 0.5 ~~…environment repair~~ — **MOOT, CLOSED 2026-09-21**` |
-     | #1976 | `### 5.1 \`JuniperCascor1\` is broken and the owner has not ruled` | `### 5.1 ~~…is broken~~ — **OBSOLETE as of 2026-09-21, the env is REPAIRED**` |
-     | #1973 | `### 0.6 Owner decisions still owed` | `… — NONE, as of 2026-09-21` |
+     | #1976 | `### 0.5 \`JuniperCascor1\` environment repair — Overtoad has not ruled, asked 3+ times` | `### 0.5 ~~…environment repair~~ — **MOOT, CLOSED 2026-09-21**` |
+     | #1976 | `### 5.1 \`JuniperCascor1\` is broken and the Overtoad has not ruled` | `### 5.1 ~~…is broken~~ — **OBSOLETE as of 2026-09-21, the env is REPAIRED**` |
+     | #1973 | `### 0.6 The Overtoad decisions still owed` | `… — NONE, as of 2026-09-21` |
      | #1992 | `### 8.4 NEW outstanding work — none of it tracked by any issue or PR` | `… — untracked when found; **§8.7 records where each one now lives**` |
      | #1983 | `### APD-CASCOR-005 — … in two of three copies` | `… in three of four copies` (a correction, not a status) |
      | #2009 | `## 3. DECISION REQUIRED — repository secret, or environment secret?` | `## 3. RULED 2026-09-22 — Option B: …` |
@@ -807,7 +807,7 @@ Notes on the rows that need more than a cell:
        property, so the exit code never reached the API.
 5. **The lockfile mechanism was right in effect and incomplete as a mechanism.** The workflow
    header (`.github/workflows/lockfile-update.yml`) and `notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md` §3 said a `GITHUB_TOKEN` PR's runs are suppressed. Item 8's census shows
-   both shapes: 5 not created at opening (#1139 got runs later, from the owner's
+   both shapes: 5 not created at opening (#1139 got runs later, from the Overtoad's
    merge-from-main push), 13 created and parked. ml#2017 corrects both texts, plus
    `docs/REFERENCE.md` and the release-train runbook
    (`notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md`). Two sites in
@@ -831,7 +831,7 @@ Notes on the rows that need more than a cell:
    - **juniper-ml's −57904 is gone.** The 61,435-character restructure left the window, and
      `AGENTS.md` went from 36,960 to 28,273 characters inside it. It is positive on p90 too, so
      no statistic was swapped.
-   - **Three are tight by owner decision.** data, cascor-worker and data-client are tight by the
+   - **Three are tight by Overtoad decision.** data, cascor-worker and data-client are tight by the
      2026-09-07 ruling; data-client sits at +195.
    - **None of this is an action item.** `docs/REFERENCE.md` "Memory-Budget Slack (Planning)"
      says not to start a relocation because headroom is below `max`. `Memory Budget` is a
@@ -890,7 +890,7 @@ Consensus round 1 found these in the draft, and each is corrected above:
   table. The alarm probe could not see a breach on juniper-ml.
 - **"Closed by ml#2017" was written while ml#2017 was open**, with this section not in it. It
   now lands inside ml#2017.
-- **The banner said three items remained, all the owner's.** Two of them were not.
+- **The banner said three items remained, all the Overtoad's.** Two of them were not.
 
 ### Corrections from consensus round 2
 
@@ -1055,7 +1055,7 @@ Each correction was re-derived before use:
 ### What remains outstanding
 
 - **Owner**: the five OWNER DECISIONS in the first §1 block.
-- **Non-owner**: the two NON-OWNER WORK items in the same block. NON-OWNER 2's decision rule has
+- **Non-Overtoad**: the two NON-OWNER WORK items in the same block. NON-OWNER 2's decision rule has
   already tripped once: juniper-ml's 2800 s reads 80 s ABOVE 4× p90 on the 2026-09-23 window,
   reported rather than re-pinned.
 - **Another arc's, flagged here only**: `notes/backup_tests_pre-and-post_reboot.md` is a shell
@@ -1109,7 +1109,7 @@ waiter tests. It then reported against itself, and each lone finding was re-deri
   DECISION 2.
 - **recurrence#175.** B2 read it as "no failure", while A1 and A2 read it as a failed and
   cancelled first pass. The Actions API settles it: `CI — pre-commit` run 35643700110,
-  attempt 1 cancelled, attempt 2 started by the owner at 21:59:28 UTC, merge at 22:00:33.
+  attempt 1 cancelled, attempt 2 started by the Overtoad at 21:59:28 UTC, merge at 22:00:33.
 
 **De-escalator.** The span figures were reproduced end to end by different instruments. Round
 1's A2 (`util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/laneA2/span_all_attempts.py`, over
@@ -1135,16 +1135,16 @@ its own window; the three raised maxima as single healthy passes; the 09-21 burs
 lockfile PRs and how each was released; #1970's executed runs; the alarm history; and the soak
 census at its census point, except the PR count.
 
-**Owner ruling during round 2.** The three raises went to the owner with both cases; the owner
+**The Overtoad ruling during round 2.** The three raises went to the Overtoad with both cases; the Overtoad
 ruled SHIP on 2026-09-22. The general question is OWNER DECISION 2.
 
 **Between rounds 2 and 3**, changes came from outside the lanes. CodeQL alert 716
 (`py/mixed-returns`) flagged the reprobe's `gh_json`, whose retry loop could fall through to an
-implicit `None`. The owner committed a fix on the PR (`9c7f5618`, a `raise` after the loop),
+implicit `None`. The Overtoad committed a fix on the PR (`9c7f5618`, a `raise` after the loop),
 merged `main` into the branch, and bumped `AGENTS.md`'s date (`e4cd051b`). The soak re-read
 found a tenth finding, ml#2024, adjudicated false.
 
-**During round 3**, the owner committed CodeQL's unused-import fix to the round-2 lane script
+**During round 3**, the Overtoad committed CodeQL's unused-import fix to the round-2 lane script
 (`6f17aea5`) and merged ml#2017 at 2026-09-23 01:17 UTC (`7b226ca0`), with every required check
 green and this subsection still reading "in progress". The PREFLIGHT's landing gate was not
 honoured; its round-3 record and fixes therefore came in a follow-up PR.
@@ -1163,7 +1163,7 @@ honoured; its round-3 record and fixes therefore came in a follow-up PR.
 
 **What round 3 changed**: every item under "Corrections from consensus round 3", each
 re-derived before use. No budget and no disposition changed: the soak is still not ready to
-promote, and every owner decision stands as framed. It changed one NUMBER (the stamp) and
+promote, and every Overtoad decision stands as framed. It changed one NUMBER (the stamp) and
 several ACTIONS, so §4 of the procedure calls for another round.
 
 **Round 4 — two agents, briefed on the round-3 corrections only, against `0ffe15dc` (ml#2035).**
@@ -1207,7 +1207,7 @@ in a follow-up PR if it has merged.
   budgets, and juniper-ml's window moved three times in one evening;
 - that the first-pass rule is the right statistic rather than a defensible one. Queue-free
   spans would size differently, and that is OWNER DECISION 2;
-- that the owner's SHIP ruling settles that question: it covers the three raises only;
+- that the Overtoad's SHIP ruling settles that question: it covers the three raises only;
 - that the soak's false-positive rate generalises beyond five days and 62 PRs;
 - that CI's soak screened only each PR's own markdown: its base can lag, and the ten findings
   stand because each is on a file its own PR changed, not because the base was right;

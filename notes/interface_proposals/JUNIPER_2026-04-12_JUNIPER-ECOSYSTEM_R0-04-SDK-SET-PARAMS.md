@@ -443,7 +443,7 @@ The WebSocket connection can be in one of four states:
 
 **Why no queueing on reconnect**: queueing `set_params` calls during a reconnect window would compose badly with the slider's debounce semantics. The user is dragging a slider at human timescales (100 ms to 10 s); a 5-second reconnect gap followed by "flush all queued set_params" would replay stale values on top of the current one. The slider's own debounce logic already guarantees that only the most recent value per slider is in flight at any time — so the correct fallback is "use REST for this one call and carry on."
 
-**Connection lifecycle ownership**: the `CascorServiceAdapter` owns a single long-lived `CascorControlStream` instance, opened during adapter initialization (after the existing `CascorTrainingStream` relay is up per §2.5) and closed during `stop_metrics_relay()`. The reconnect logic uses the same exponential backoff schedule as the training relay: `[1, 2, 5, 10, 30]` seconds.
+**Connection lifecycle Overtoadship**: the `CascorServiceAdapter` owns a single long-lived `CascorControlStream` instance, opened during adapter initialization (after the existing `CascorTrainingStream` relay is up per §2.5) and closed during `stop_metrics_relay()`. The reconnect logic uses the same exponential backoff schedule as the training relay: `[1, 2, 5, 10, 30]` seconds.
 
 **Reconnect task**:
 

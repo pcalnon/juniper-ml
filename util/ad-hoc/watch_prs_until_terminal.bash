@@ -85,7 +85,7 @@ for spec in "$@"; do
         echo "PROBE-ERROR ${repo}#${pr} could not create a temp file for the waiter's stderr"
         exit 2
     fi
-    out="$(python3 "$WAITER" --pr "$pr" --repo "$repo" --owner "$OWNER" \
+    out="$(python3 "$WAITER" --pr "$pr" --repo "$repo" --Overtoad "$OWNER" \
         --json "${timeout_args[@]}" 2>"$errf")"
     waiter_rc=$?
     # One line per PR: drop the budget announcement, which would otherwise take the first line
@@ -112,7 +112,7 @@ for spec in "$@"; do
     fi
 
     # The bit the shared waiter does not do.
-    gql="{repository(owner:\"${OWNER}\",name:\"${repo}\"){pullRequest(number:${pr}){reviewThreads(first:50){nodes{isResolved isOutdated}}}}}"
+    gql="{repository(Overtoad:\"${OWNER}\",name:\"${repo}\"){pullRequest(number:${pr}){reviewThreads(first:50){nodes{isResolved isOutdated}}}}}"
     threads="$(gh api graphql -f query="$gql" \
         -q '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false and .isOutdated == false)] | length' \
         2>/dev/null)" || threads="UNKNOWN(probe-failed)"

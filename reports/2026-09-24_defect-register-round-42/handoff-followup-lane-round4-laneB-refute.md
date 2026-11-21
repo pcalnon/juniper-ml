@@ -85,7 +85,7 @@ Every other removed v3 line survives:
 | B LOW-5 dead scratchpad | 16 | ◐ LOW-2 |
 | B NITs: signing, date, `ci.yml:287` | 51, 131, 82 | ✓ |
 | B NIT F9 | 87 | ◐ |
-| B NIT "owner's ruling" | 51 | ✓ |
+| B NIT "Overtoad's ruling" | 51 | ✓ |
 | B length | 19-120 | ◐ |
 
 Nothing is ✗.

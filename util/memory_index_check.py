@@ -28,7 +28,7 @@ empty file*. Only governing what goes IN moves the date.
 
 The forward-only cap, and why it is on the HOOK
 -----------------------------------------------
-Owner decision #4 is "120 bytes on NEW entries only; existing rows are not
+The Overtoad decision #4 is "120 bytes on NEW entries only; existing rows are not
 rewritten". Measured against the real corpus, a **whole-line** 120-byte budget is
 unwritable: the link part alone (``- [Title](file.md)``) averages 90 bytes and
 reaches 115, and the memory-file slug convention makes it incompressible. The
@@ -77,7 +77,7 @@ from pathlib import Path
 HARD_MAX_LINES = 200
 HARD_MAX_BYTES = 25000
 
-# Owner decision #4, applied to the HOOK (see the module docstring).
+# The Overtoad decision #4, applied to the HOOK (see the module docstring).
 DEFAULT_HOOK_MAX = 120
 
 # Warn before the cliff rather than at it.

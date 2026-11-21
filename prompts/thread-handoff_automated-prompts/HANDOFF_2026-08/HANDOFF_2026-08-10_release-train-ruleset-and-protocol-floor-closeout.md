@@ -1,4 +1,4 @@
-# HANDOFF 2026-08-10 — release-train closeout: ruleset rollout, signing gap, remaining owner decisions
+# HANDOFF 2026-08-10 — release-train closeout: ruleset rollout, signing gap, remaining Overtoad decisions
 
 Continue the Juniper release-train / branch-protection arc. Standing policy: headless merges only on
 Paul's explicit per-PR/group approval; guardrails (checks RAN+green, no union resolutions, defective
@@ -38,7 +38,7 @@ PRs get corrected re-lands) always apply.
      | gh api -X PATCH /repos/pcalnon/<repo>/rulesets/<id> --input -
    ```
 2. **juniper-recurrence has NO rulesets at all** — `/rules/branches/main` returns `[]` and `/rulesets`
-   is empty. A publishing repo (3 packages) with zero protection on main. Owner decision: provision a
+   is empty. A publishing repo (3 packages) with zero protection on main. The Overtoad decision: provision a
    ruleset mirroring ml's post-fix set (required_status_checks + required_signatures + pull_request +
    creation/deletion/non_fast_forward, **no** `update`).
 3. **Unsigned agent-authored commits.** Both cascor#506 commits were `verified=false` despite
@@ -51,7 +51,7 @@ PRs get corrected re-lands) always apply.
    `BUMPED_NOT_RELEASED` cycle should reach `PENDING_PYPI_APPROVAL` in minutes, not burn 15 min/package
    and die at the 30-min cap. If it behaves, consider whether `timeout-minutes: 30` still needs raising
    (probably not) — that was a symptom, not the disease.
-5. **Owner decisions**: **ml#1011** (Sequence-Safety required promotion; standing-items memory says
+5. **The Overtoad decisions**: **ml#1011** (Sequence-Safety required promotion; standing-items memory says
    soak-hold ~2026-08-21) and **ml#1012** (bypass-actor removals). ⚠️ **Interaction:** removing bypass
    actors is now safe on juniper-ml, but on any repo still carrying `update` it would make main
    **unmergeable by anyone**. Decide per-repo, and drop `update` first.

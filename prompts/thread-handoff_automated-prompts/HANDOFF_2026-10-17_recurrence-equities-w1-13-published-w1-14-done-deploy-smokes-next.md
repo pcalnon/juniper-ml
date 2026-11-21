@@ -2,7 +2,7 @@
 
 - **Date**: 2026-10-17
 - **Session**: "recurrence equities", run on host **turing** in the juniper-ml worktree `.claude/worktrees/composed-meandering-avalanche`
-- **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-10_recurrence-equities-w1-11-done-w1-13-owner-next.md`
+- **Predecessor**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-10_recurrence-equities-w1-11-done-w1-13-Overtoad-next.md`
 - **Plan**: `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, **v1.6.0**, which lands in this handoff's PR
 
 ---
@@ -13,16 +13,16 @@ Continue the arc from the plan v1.6.0. **All four W1.13 publications are on PyPI
 
 1. Run the two deploy smokes and merge **juniper-deploy#249**, which carries the last W1.13 pins.
 2. Open the **juniper-ml extras** PR. Both of its ceilings are escaped.
-3. The owner rulings.
+3. The Overtoad rulings.
 
 ## Completed this session (2026-10-17)
 
-- **W1.14 (F-S10), accepted by the owner for 0.6.0.** juniper-recurrence#203, squash `aeccd35f`.
+- **W1.14 (F-S10), accepted by the Overtoad for 0.6.0.** juniper-recurrence#203, squash `aeccd35f`.
   - `map_data_error` answers every 5xx with a fixed phrase, plus juniper-data's status when there is one. The full text stays in each route's WARNING.
   - `Settings` refuses a padded or control-character `juniper_data_api_key`, and sets `hide_input_in_errors` so no `ValidationError` prints a value.
   - Each test was checked against `origin/main`'s code: all fail there. The leak was reproduced through the real data client.
   - Found while fixing it: the leak also reached `GET /v1/training/status` (through `RecordedOperation`) and the juniper-ml driver's run manifest.
-- **The W1.13 publications.** The owner approved every `pypi` gate. Each wheel was probed with a control.
+- **The W1.13 publications.** The Overtoad approved every `pypi` gate. Each wheel was probed with a control.
 
   | Package | On PyPI | Release / tag commit | Notes archive | Probe |
   | --- | --- | --- | --- | --- |
@@ -44,12 +44,12 @@ Continue the arc from the plan v1.6.0. **All four W1.13 publications are on PyPI
   - It moves recurrence to `0.6.0` (compose ×1) and canopy to `0.9.0` (compose ×3, plus the Helm `canopy.image.tag`).
   - The "pinned image predates the snapshot routes" text in `docker-compose.yml`, `README.md`, `docs/REFERENCE.md` and `scripts/test_recurrence_snapshots.sh` now says 0.6.0 is the first image with them.
   - It has a CHANGELOG entry.
-  - **It is held until the smokes pass** (owner ruling).
+  - **It is held until the smokes pass** (Overtoad ruling).
 - **juniper-ml#2226** adds the two ad-hoc tools: the data-client probe and `util/ad-hoc/2026-10-17_condense_release_notes_section.py`.
 - **juniper-ml#2227 (issue)**: the release-train ceremony cannot archive notes over about 97 KB.
   - `ceremony.py:838` passes the base64 as one `gh` argument, which a Linux runner caps at 128 KiB.
   - A correction comment says the turing-measured GraphQL cap of about 128 KiB may be the VPN path, not GitHub.
-  - Canopy's notes were condensed because of this (owner ruling). #2224, the first canopy archive PR, was closed: it failed the archive guard (two scripts were in it) and gitleaks (a verbatim example `KEY="…"`).
+  - Canopy's notes were condensed because of this (Overtoad ruling). #2224, the first canopy archive PR, was closed: it failed the archive guard (two scripts were in it) and gitleaks (a verbatim example `KEY="…"`).
 - **Follow-ups**: the six the 2026-10-10 handoff called "not yet filed" were filed that day, and all are still open:
   - juniper-canopy#735, #736, #737 and #738;
   - juniper-ml#2210 and #2211.
@@ -59,7 +59,7 @@ Continue the arc from the plan v1.6.0. **All four W1.13 publications are on PyPI
   - status rows: W1.13 rewritten, W1.14 added;
   - the M1, F-S10 and F-DEP1 rows; Overview item 5; the dependency row;
   - a **Progress 2026-10-17** paragraph;
-  - **Ruled 2026-10-17** (the owner's rulings);
+  - **Ruled 2026-10-17** (the Overtoad's rulings);
   - "Applied pending ruling" no longer says "nothing here is released": R2, R3, R7 and R8's alternative all ship now;
   - a 1.6.0 change-log row.
 - **Cleanup**: the merged W1.14, recurrence-release and canopy-lock worktrees and local branches are removed. Their remote branches were auto-deleted on merge.
@@ -68,7 +68,7 @@ Continue the arc from the plan v1.6.0. **All four W1.13 publications are on PyPI
 
 1. **The deploy smokes, then merge juniper-deploy#249.**
    - **Turing's Docker daemon cannot reach any registry** (`Client.Timeout exceeded while awaiting headers`), probably because of the VPN. Its VM has about 2 GB of memory.
-   - **The session's worktree hook refuses `bash <script>`**, so the **owner** runs these, on turing once Docker's network works, or on any host with working Docker:
+   - **The session's worktree hook refuses `bash <script>`**, so the **Overtoad** runs these, on turing once Docker's network works, or on any host with working Docker:
 
      ```bash
      cd /Users/pcalnon/Development/python/Juniper/worktrees/juniper-deploy--chore--pin-recurrence-0.6.0-canopy-0.9.0--20261017-1945--541e65e
@@ -82,7 +82,7 @@ Continue the arc from the plan v1.6.0. **All four W1.13 publications are on PyPI
    - **Ceilings**:
      - `[recurrence]` `juniper-recurrence-model>=0.3.0,<0.4.0`: model 0.4.0 is escaped;
      - `juniper-recurrence>=0.5.0,<0.6.0`: 0.6.0 is escaped.
-   - **Floors, an owner decision**:
+   - **Floors, an Overtoad decision**:
      - Recommendation: raise `[servers]` to `juniper-canopy>=0.9.0` (High security) and `[recurrence]` to `juniper-recurrence>=0.6.0` (Medium security).
      - Keep the model and data-client floors.
    - **Lockstep artifacts**:
@@ -100,7 +100,7 @@ Continue the arc from the plan v1.6.0. **All four W1.13 publications are on PyPI
    - juniper-ml#2227;
    - the open six above;
    - the parent `Juniper/AGENTS.md` "RELEASED to PyPI" paragraph: absent on turing, unversioned, updated with the last pin per W1.13.
-5. **Owner items** (unchanged):
+5. **The Overtoad items** (unchanged):
    - dates;
    - R1–R8 confirmation (R2, R3, R7 and R8's alternative now *ship*; a re-ruling means a release), and R5;
    - W5.8 (B) vs W5.11; W5.9 / W5.10;

@@ -31,7 +31,7 @@ GitHub, and report it. Specifically:
    renumbered).
 2. **The handoffs.** The new handoff's Completed, Remaining, Traps, Verification commands, Git state and "Changed by
    this session" sections against the ledger and against the parent `HANDOFF_2026-10-03_canopy-consolidated.md`
-   (item 4's DONE block, the O17 note, items 5 and 7, the owner batch). The INDEX row. The SUPERSEDED banner's claims
+   (item 4's DONE block, the O17 note, items 5 and 7, the Overtoad batch). The INDEX row. The SUPERSEDED banner's claims
    (which items of the 2026-10-08 handoff are done, which carry). The ecosystem rule that a summary names every
    document it references or changes by filename: does the new handoff?
 3. **Against GitHub and the repo.** canopy#731's merge (`25c5c887`, 2026-10-09T02:27:27Z), its eight commits, the

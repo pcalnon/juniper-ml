@@ -11,9 +11,9 @@ turing (macOS, no Juniper service, no reach to the trio), at a phase boundary, a
 **Consensus**: four rounds on 2026-10-19 (three lanes, then two on each correction pass); round 4 changed no number,
 disposition or action, so the review ended there (ledger Phase 13, Consensus record).
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, authoritative for P2.
-Its item 4 is DONE; its items 5 and 7 and the owner batch O1–O17 carry over. This file supersedes
+Its item 4 is DONE; its items 5 and 7 and the Overtoad batch O1–O17 carry over. This file supersedes
 `HANDOFF_2026-10-19_canopy-phase12-recorded-pacer-shipped-in-0-9-0-items-25-26-next.md`.
-**Merge approval**: the owner granted it in this session for this session's PR. It is NOT carried: ask again.
+**Merge approval**: the Overtoad granted it in this session for this session's PR. It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
 
@@ -23,7 +23,7 @@ Continue P2 Lane A (the juniper-canopy E2E validation arc) from
 commands first. Merge approval is not carried: ask before the first merge. Items 25 and 28 need a canopy verify leg
 against the trio (the Linux host, not turing); item 27 needs a demo leg that trains, never the trio; item 30's Network
 Editor and Workers rows need a service leg with a writable or stoppable cascor (never the trio), and its Parameters
-rows a demo leg; item 26's second step waits on the owner's ruling (O17).
+rows a demo leg; item 26's second step waits on the Overtoad's ruling (O17).
 
 **Completed:**
 
@@ -44,7 +44,7 @@ rows a demo leg; item 26's second step waits on the owner's ruling (O17).
     source correct and suspected F-CANOPY-027's class, since FIXED); its re-drive closes or re-diagnoses it.
   - **The other fifteen stand**: ten not reached (F-CANOPY-001, -033, -034, -049, -051, -057, -060, -063, -066,
     F-ML-002); F-CASCOR-001/-002 P1 already; F-CANOPY-064 P1 on the manual already; F-CANOPY-065 not reached (its rating
-    stays with the owner's first limb, which now decides it alone among the findings Phase 11 named); F-CANOPY-067
+    stays with the Overtoad's first limb, which now decides it alone among the findings Phase 11 named); F-CANOPY-067
     "P2 pending a live drive", unchanged. One round-1 lane dissents on F-CANOPY-028 (P2) and on F-CANOPY-067 (P1 by
     source); both are recorded in the ledger's consensus record.
   - **Counts**: 79 findings, 56 fixed, 1 accepted, 2 withdrawn, **20 open**: 0 P0, **9 P1** (F-CANOPY-012, -013, -018,
@@ -70,7 +70,7 @@ rows a demo leg; item 26's second step waits on the owner's ruling (O17).
 **Remaining, in order:**
 
 1. **Land this session's PR** if it has not merged: `python3 util/wait_for_checks.py`, query
-   `reviewThreads(isResolved:false)` (a CodeQL thread blocks the merge while every check is green), ask the owner,
+   `reviewThreads(isResolved:false)` (a CodeQL thread blocks the merge while every check is green), ask the Overtoad,
    then `python3 util/safe_merge.py --execute` and read its `MERGED` line. Afterwards re-check `origin/main` for the
    five headers (`grep -c 'P1 since 2026-10-19' notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`
    should print 5): a concurrent whole-file upload of a shared file can revert merged lines.
@@ -92,7 +92,7 @@ rows a demo leg; item 26's second step waits on the owner's ruling (O17).
    Linux host). Schedule each trigger as its own task when the shim sees `AddWatched` (`setTimeout(…, 0)`), timestamp
    it in the page, validate on the synthetic check first. Under the pacer every TOOK predicate reads NO-EFFECT by
    construction, so the evictions are the score. **T-apply needs its own design** (Phase 12, Instruments).
-4. **Item 26's second step**, once the owner rules (O17): every open finding not yet rated against canopy's
+4. **Item 26's second step**, once the Overtoad rules (O17): every open finding not yet rated against canopy's
    `CHANGELOG.md` and the design plans for a promise, or, if the ruling counts it, a description of an internal
    mechanism, of the behaviour it breaks. Of the findings Phase 11 named, F-CANOPY-065's rating is the one the ruling
    moves (every site that recorded F-CANOPY-057's stream as shipped is corrected or points at the correction); leads
@@ -102,10 +102,10 @@ rows a demo leg; item 26's second step waits on the owner's ruling (O17).
 5. **Item 27: F-CANOPY-055's Live Dataset Switch allow arm**, on a demo leg serving 0.9.0 or later whose training may
    be started (never the trio), with the experimental-functions toggle on (ledger Phase 12, item 27). Record in
    F-CANOPY-025's and F-CANOPY-055's entries.
-6. **Item 28: the first live run on the shipped pacer**, when the trio's canopy is restarted on 0.9.0 (owner, O13) or
+6. **Item 28: the first live run on the shipped pacer**, when the trio's canopy is restarted on 0.9.0 (Overtoad, O13) or
    on any leg serving the merged tree (ledger Phase 12, item 28).
 7. **Item 29**: worktree housekeeping on the Linux host (ledger Phase 12, item 29).
-8. Then the parent's items 5 and 7, and the owner batch O1–O17 (O17's first limb decides F-CANOPY-065 alone among the
+8. Then the parent's items 5 and 7, and the Overtoad batch O1–O17 (O17's first limb decides F-CANOPY-065 alone among the
    findings Phase 11 named, every site that recorded F-CANOPY-057's stream as shipped corrected or pointed at the
    correction: 9/11 or 8/12).
 

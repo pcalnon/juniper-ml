@@ -131,7 +131,7 @@ RECURRENCE_DATA_TIMEOUT_ENV = "JUNIPER_RECURRENCE_JUNIPER_DATA_TIMEOUT_SECONDS"
 # `degraded` (W0.3, F-D1): the driver's outcome for a recurrence run whose train succeeded but
 # whose ENABLED predict / crossval / save_model phase failed. Terminal -- the run is over -- but
 # NOT a success: the summary counts it on its own, `--resume` re-runs it, and it keeps the suite's
-# exit code non-zero (R6, the plan's recommended ruling, applied pending the owner's).
+# exit code non-zero (R6, the plan's recommended ruling, applied pending the Overtoad's).
 TERMINAL_OUTCOMES = frozenset({"succeeded", "flagged", "degraded", "failed", "stalled", "timed_out"})
 # The outcomes a cell is DONE with: `--resume` skips them and the exit code accepts them. `flagged`
 # (W5.4) is a succeeded cell that missed a `mode: report` band -- information for a person, not a
@@ -150,7 +150,7 @@ RECURRENCE_HEADLINE_PATHS = (
     ("n_windows", ("dataset_descriptor", "n_windows")),
 )
 
-# APD-ML-002 (owner ruling 1, 2026-10-26, "A now, test later"): each cascor headline column and the path to
+# APD-ML-002 (Overtoad ruling 1, 2026-10-26, "A now, test later"): each cascor headline column and the path to
 # it inside `stats["cascor"]`, as `stats_summary.build_stats` writes that block -- `final` is the
 # `/v1/metrics` read the driver takes when training ends. The first reader asked for `final_accuracy` /
 # `test_accuracy` / `val_accuracy` at the TOP of the block, where no writer ever put them, so every cascor
@@ -410,7 +410,7 @@ def check_cascor_parallel_floor(doc: dict) -> None:
     new enough" must not resolve the same way: the failure this guards is silent, so a guard that
     defaults to permissive would restore the exact race it exists to prevent.
 
-    **Why this is NOT part of ``load_suite``** (owner decision D5, 2026-09-11;
+    **Why this is NOT part of ``load_suite``** (Overtoad decision D5, 2026-09-11;
     ``notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md``).
     ``tests/test_experiment_suite_yamls.py::test_every_suite_loads`` calls ``load_suite`` on every
     checked-in suite. CI clones only juniper-ml, so ``_cascor_tree_version()`` finds no sibling,
@@ -749,11 +749,11 @@ def _explicit_runtime_vars(overrides: dict) -> "set[str]":
 def runtime_block_env(doc: dict, app: str = "cascor") -> "dict[str, str]":
     """Map a cell's ``runtime:`` block onto the environment the launcher exports to the service.
 
-    **Owner decision D2**
+    **The Overtoad decision D2**
     (``notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md``):
     implement ``runtime:`` as *the launcher exporting the variables at cascor bring-up* -- the
     process-tree-wide route -- and not as ``torch.set_num_threads`` on the training thread. The
-    alternative was put to the owner and declined: cascor's two width mechanisms are independent,
+    alternative was put to the Overtoad and declined: cascor's two width mechanisms are independent,
     and only the environment one reaches the candidate workers, which inherit the ancestor's pool
     through ``forkserver``.
 
@@ -1294,7 +1294,7 @@ def _run_comparison(tag: str, suite_dir: Path) -> str:
 
     REPORTING ONLY, and deliberately so. Wiring a comparator verdict to run_suite's exit status
     would silently make the run tier a gate -- and §6 of the P1 design records that as a SEPARATE
-    owner decision, still open. A failure here is information for a person, not a build outcome.
+    Overtoad decision, still open. A failure here is information for a person, not a build outcome.
     """
     from experiments import compare_baseline as cb
 
@@ -1461,7 +1461,7 @@ def aggregate(suite_dir: Path, suite: dict, cells: "list[dict]", comparison: "st
     if comparison is not None:
         lines += ["", "## Baseline comparison", "", "```text", comparison, "```", ""]
         lines.append("The suite's own exit code does NOT reflect this verdict — whether the run tier gates is a")
-        lines.append("separate owner decision (§6 of the P1 design). Read the verdict, or run `compare_baseline.py`.")
+        lines.append("separate Overtoad decision (§6 of the P1 design). Read the verdict, or run `compare_baseline.py`.")
     (suite_dir / "REPORT.md").write_text("\n".join(lines) + "\n")
     # R6: `flagged` is complete -- the exit code counts it with `succeeded`.
     return 0 if len(succeeded) + len(flagged) == len(cells) else 1
@@ -1560,7 +1560,7 @@ def main(argv: "list[str] | None" = None) -> int:
         metavar="TAG",
         default=None,
         help="After aggregating, compare against this Q-8 baseline and record the verdict in REPORT.md. "
-        "REPORTING ONLY: the suite's exit code is unchanged by the verdict (whether the run tier gates is a separate owner decision).",
+        "REPORTING ONLY: the suite's exit code is unchanged by the verdict (whether the run tier gates is a separate Overtoad decision).",
     )
     parser.add_argument(
         "--shared-equities-cache",

@@ -7,7 +7,7 @@ Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Status:      ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-09-23_d1_scope_large_first_pass.yaml
 
 Print each run's final metrics and completion for a suite built from

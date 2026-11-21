@@ -6,7 +6,7 @@
 - `…DEFECT-REGISTER.md` = `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`
 - `…PRIMER.md` = `notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md`
 - juniper-ml `docs/REFERENCE.md`
-- Reports in `reports/2026-09-24_defect-register-round-42/`: `ml2080-round1-laneA-reprobe.md`, `ml2080-round1-laneB-refute.md`, `data438-round1-laneA-reprobe.md`, `primer-correction-round2-laneB-refute.md`, `owner-rulings-verbatim.md`
+- Reports in `reports/2026-09-24_defect-register-round-42/`: `ml2080-round1-laneA-reprobe.md`, `ml2080-round1-laneB-refute.md`, `data438-round1-laneA-reprobe.md`, `primer-correction-round2-laneB-refute.md`, `Overtoad-rulings-verbatim.md`
 - The procedure named in the brief, `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`, was **not** re-read. I followed the brief's rules.
 
 ## Findings
@@ -80,7 +80,7 @@ None.
 - **Fix:** "…costs revalidations, and spurious 412s on conditional writes, but never serves stale bytes."
 
 **L6. The new silent-path defect sits in a row parked on an unrelated question.**
-- `…DEFECT-REGISTER.md` L1629-1631 parks `APD-ML-008` "awaiting an owner ruling, do not action". It says `-008` "asks whether the drift gate should test behaviour rather than text".
+- `…DEFECT-REGISTER.md` L1629-1631 parks `APD-ML-008` "awaiting an Overtoad ruling, do not action". It says `-008` "asks whether the drift gate should test behaviour rather than text".
 - The silent-path remedy (L1305: a step-scoped variable that fails on a missing root) needs no such ruling. A session honouring the park will never action it.
 - **Fix:** amend L1629-1631 to say the silent-path remedy is actionable, or file it as its own row.
 
@@ -147,7 +147,7 @@ None.
 - **Release timing.** #2071 merged 08:51:22Z, 52 seconds before the cut. v0.16.0's `target_commitish` is a SHA; for 0.14.0 and 0.15.0 it is `main`.
 - **Other dates.** #2059 merged 2026-09-23 22:57Z. cclient#143 merged 2026-08-28.
 - **`APD-ECO-010` wiring.** The ranges are exact in all three copies, and the class lines are right.
-- **Owner-ruling quotes.** Each is the opening of its description in `owner-rulings-verbatim.md`.
+- **Owner-ruling quotes.** Each is the opening of its description in `Overtoad-rulings-verbatim.md`.
 - **Lane A's `claim 17` case B.** It uses the conditional (`precondition`) path.
 - **RFC 9110 §8.8.1.** I fetched it (sha256 `21c1cdce…7232a`). The L4222-4224 quote is verbatim, "(Emphasis added.)" is right, and item 3's rule matches the definition.
 - **Register tools and CI screens.**
@@ -178,4 +178,4 @@ All in `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/2fb
 
 The extracted trees were deleted. I also removed two `/tmp/tmp*` directories that my own script had left.
 
-**Changed:** no repository file. I ran only `git fetch` of the branch, read-only git commands and read-only `gh api` GETs. The session worktree shows a modified `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` and an untracked `reports/2026-09-24_defect-register-round-42/owner-ruling-key-leaks-verbatim.md`. Neither was made by this lane.
+**Changed:** no repository file. I ran only `git fetch` of the branch, read-only git commands and read-only `gh api` GETs. The session worktree shows a modified `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` and an untracked `reports/2026-09-24_defect-register-round-42/Overtoad-ruling-key-leaks-verbatim.md`. Neither was made by this lane.

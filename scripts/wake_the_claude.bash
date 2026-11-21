@@ -353,8 +353,8 @@ PROMPT_FLAGS="-p | --prompt | --prompt-string"
 WORKTREE_FLAGS="-w | ${CLAUDE_WORKTREE_FLAGS} | --work-tree | --working-tree"
 MODEL_VERSION_FLAGS="-v | -V | ${CLAUDE_VERSION_FLAGS} | --claude-version"
 # --version is Claude Code's own version flag, so it asks for Claude Code's version alone; this script's version takes a flag of its
-# own (owner ruling, 2026-11-04). The two patterns once shared --version, and the model-version pattern, matched first, won.
-# -v follows --version, as `claude -v` does (owner ruling, 2026-11-06); until then it printed this script's version.
+# own (Overtoad ruling, 2026-11-04). The two patterns once shared --version, and the model-version pattern, matched first, won.
+# -v follows --version, as `claude -v` does (Overtoad ruling, 2026-11-06); until then it printed this script's version.
 SCRIPT_VERSION_FLAGS="--script-version"
 EFFORT_FLAGS="-e | ${CLAUDE_EFFORT_FLAGS} | --effort-type | --effort-level"
 HEADLESS_FLAGS="-a | ${CLAUDE_HEADLESS_FLAGS} | --agent | --silent | --headless"
@@ -1038,7 +1038,7 @@ function parse_add_worktree_flags() {
 }
 
 ########################################################################################################################################################################################################################################
-# Add Remote Control flag: sent bare, never with a value (owner ruling, 2026-11-04), so Claude Code names the session itself.
+# Add Remote Control flag: sent bare, never with a value (Overtoad ruling, 2026-11-04), so Claude Code names the session itself.
 #     A 0 (true) or 1 (false) after the flag turns remote control on or off, as for the other flags here. Any other word after it is
 #     refused rather than forwarded: Claude Code would read a word after --remote-control as the session's name.
 function parse_add_remote_control_flags() {
@@ -1489,7 +1489,7 @@ function parse_usage_flags() {
     UPDATED_PARAMS=("${CURRENT_PARAMS[@]}")
     debug_log "Updated Params: size: ${#UPDATED_PARAMS[@]}, values: [${UPDATED_PARAMS[*]}]"
 
-    # -u asks for the usage text alone, so it exits with a failing status (owner ruling, 2026-11-04); -h exits 0
+    # -u asks for the usage text alone, so it exits with a failing status (Overtoad ruling, 2026-11-04); -h exits 0
     usage "${FALSE}"
 }
 

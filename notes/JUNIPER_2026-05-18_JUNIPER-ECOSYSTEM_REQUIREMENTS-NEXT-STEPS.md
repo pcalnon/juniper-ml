@@ -355,7 +355,7 @@ Update plan doc §12 to reflect these dispositions in a future small PR (or alon
 
 ## 11. Decision log
 
-| Date       | Decision                                      | Rationale                                                                                                                                  | Owner       |
+| Date       | Decision                                      | Rationale                                                                                                                                  | The Overtoad       |
 |------------|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|-------------|
 | 2026-05-16 | Document created with 7 next-step topics      | Captures forward plan after v4 corpus shipped (PR #261). Format mirrors plan doc structure: numbered sections, cross-refs, open decisions. | Paul Calnon |
 | 2026-05-16 | All 7 topics are opt-in / wait-for-signal     | Avoid speculative infra. The snapshot itself is the deliverable.                                                                           | Paul Calnon |

@@ -5,8 +5,8 @@ Project:     juniper-ml
 Sub-Project: backup infrastructure
 Author:      Paul Calnon
 Created:     2026-10-08
-Status:      ad-hoc -- evidence for the round-3 fold-in (R3B DEFECT-1 and the owner's 2026-10-08 ruling)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status:      ad-hoc -- evidence for the round-3 fold-in (R3B DEFECT-1 and the Overtoad's 2026-10-08 ruling)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (section 8, P0 steps 10-11)
              notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md (section 6.4)
              util/ad-hoc/2026-10-04_backup-phase-b-round3/R3B.md (DEFECT-1; its own port lived in /tmp and is lost)

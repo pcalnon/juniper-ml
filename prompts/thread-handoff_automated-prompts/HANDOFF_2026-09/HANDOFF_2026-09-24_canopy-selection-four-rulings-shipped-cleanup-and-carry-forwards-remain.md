@@ -2,11 +2,11 @@
 
 **Date**: 2026-09-24 · **Predecessor**:
 `HANDOFF_2026-09-24_canopy-selection-four-rulings-made-x11-f2-f1-x8-to-implement.md` (same directory; its work
-items are cited here as W1–W6) · **Merge approval**: granted by the owner for this arc in this session (2026-09-24).
+items are cited here as W1–W6) · **Merge approval**: granted by the Overtoad for this arc in this session (2026-09-24).
 
 ## Goal
 
-The four owner rulings of 2026-09-24 are implemented and merged. What remains:
+The four Overtoad rulings of 2026-09-24 are implemented and merged. What remains:
 1. Clean up this arc's worktrees, but only on an explicit merge signal for each PR (W5).
 2. Carry the open items forward (W6).
 
@@ -38,7 +38,7 @@ The four owner rulings of 2026-09-24 are implemented and merged. What remains:
 
 ### Key context (decisions and discoveries)
 
-- **X8: `regression` was chosen, not a dual form. The owner was not re-asked** (W4 said to ask only if "both" was
+- **X8: `regression` was chosen, not a dual form. The Overtoad was not re-asked** (W4 said to ask only if "both" was
   cheap). A census of every repo, including juniper-slacker, which the ecosystem map omits, found no consumer that
   breaks under either option. "Both" would need:
   - a vocabulary constant;
@@ -52,7 +52,7 @@ The four owner rulings of 2026-09-24 are implemented and merged. What remains:
 - **X8 did NOT ship in juniper-data 0.16.0.** *(Corrected 2026-09-24. This bullet said it would, and a peer session,
   "containers", re-probed and caught it.)*
   - The v0.16.0 Release was published at 08:52:14Z. `ceremony.py --target-sha` pinned it to `39d1cab2`, #435's
-    merge, under the owner ruling "Fold, cut at #435".
+    merge, under the Overtoad ruling "Fold, cut at #435".
   - #437 merged at 09:14Z, after the tag. `merge-base --is-ancestor 1afc3484 v0.16.0` is false, and the tag's
     `equities_seq` VERSION is still 5.0.0.
   - **X8 ships in the next juniper-data release after 0.16.0.**
@@ -63,7 +63,7 @@ The four owner rulings of 2026-09-24 are implemented and merged. What remains:
     `[Unreleased]` by PR, so that main's `[0.16.0]` matches the tag.
   - The ecosystem guide's data-contract paragraph (`Juniper/CLAUDE.md`, unversioned) was updated this session to say
     `equities_seq` is at 6.0.0 on main. That part is right. Its closing clause, "0.16.0, once its Release is cut from
-    `main`, carries the change", is false. The containers session is asking the owner before editing that file.
+    `main`, carries the change", is false. The containers session is asking the Overtoad before editing that file.
   - Superseded original: "X8 ships in juniper-data 0.16.0, because the 0.16.0 Release (not yet cut) tags main HEAD",
     and "When 0.16.0 is published, update it again to 'on PyPI since 0.16.0'".
 - **F2 was fixed in cascor alone.** Canopy's order (apply the edits, then restart) was already right. canopy's demo
@@ -73,7 +73,7 @@ The four owner rulings of 2026-09-24 are implemented and merged. What remains:
   - Inline `X` is deliberately unchanged: it still binds and then refuses, under the 2026-09-23 "follow the loaded
     data" ruling.
   - The marker is named `*_MARKER`, because bandit B105 flags `*_TOKEN`.
-- **F1's visible aftermath, for the owner.** After a refused Start, canopy's sidebar title still reads the staged
+- **F1's visible aftermath, for the Overtoad.** After a refused Start, canopy's sidebar title still reads the staged
   dataset ("Current Dataset — Equities"), because it follows the *selection*, which hydrates `pending` first. The
   routes are now honest (`current_dataset: checkerboard`, `pending_dataset: equities`), and the pending banner is
   up. It is the same state an Apply Dataset leaves.
@@ -106,9 +106,9 @@ The four owner rulings of 2026-09-24 are implemented and merged. What remains:
      - juniper-ml `.claude/worktrees/tender-wibbling-flask` (this handoff's PR).
 2. **Carry forward:**
    - The peer claims on Y2 waves 2/3 and X10 lapse **2026-09-29T00:00Z**.
-   - **Item 19 is the owner's call.** The juniper-data **0.16.0** Release was cut at 08:52:14Z (GitHub Release and
+   - **Item 19 is the Overtoad's call.** The juniper-data **0.16.0** Release was cut at 08:52:14Z (GitHub Release and
      GHCR image), pinned to `39d1cab2`. It contains #421, so the image can generate `equities`. **PyPI 0.16.0 is at
-     the owner's gate.** #437 (X8) is **not** in 0.16.0; it ships in the next release. *(Corrected 2026-09-24. This
+     the Overtoad's gate.** #437 (X8) is **not** in 0.16.0; it ships in the next release. *(Corrected 2026-09-24. This
      line said no `v0.16.0` tag or Release existed and that 0.16.0 contained #437. Both were already false when this
      handoff was written, because the Release was published at 08:52Z.)*
    - Y7's dropdown half: no `aria-disabled` on greyed options.
@@ -144,14 +144,14 @@ it, read `WAIVED: 5`.
 
 - **Referenced:**
   - the predecessor (named above);
-  - `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-owner-rulings-open.md` (same
+  - `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-Overtoad-rulings-open.md` (same
     directory);
   - `notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`;
   - `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md`;
   - `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`.
 - **Changed:** `notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md` (§12.4, two "Shipped"
   notes). Also `Juniper/CLAUDE.md`, the unversioned ecosystem guide, whose data-contract `generator_version` bullet
-  now names `equities_seq` at 6.0.0. Its release clause is false (see Key context); the owner decides the edit.
+  now names `equities_seq` at 6.0.0. Its release clause is false (see Key context); the Overtoad decides the edit.
 - **Created:**
   - this file;
   - `util/ad-hoc/2026-09-24_x11_mutation_check.py`;

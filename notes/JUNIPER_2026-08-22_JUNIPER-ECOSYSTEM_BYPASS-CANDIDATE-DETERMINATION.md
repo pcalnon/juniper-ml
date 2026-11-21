@@ -46,8 +46,8 @@ GitHub retains per-ruleset version history, which makes the scope in force at an
 moment directly readable:
 
 ```bash
-gh api repos/{owner}/{repo}/rulesets/{id}/history
-gh api repos/{owner}/{repo}/rulesets/{id}/history/{version_id}   # payload is under .state
+gh api repos/{Overtoad}/{repo}/rulesets/{id}/history
+gh api repos/{Overtoad}/{repo}/rulesets/{id}/history/{version_id}   # payload is under .state
 ```
 
 `juniper-cascor-client`, ruleset `13490605`, across the 08-10 boundary:
@@ -195,7 +195,7 @@ gh search prs --repo pcalnon/juniper-ml --author app/dependabot --limit 30 --jso
 ```
 
 > **Two query traps hit while producing this document**, both caught, both worth repeating:
-> `gh search prs --owner X --repo X/Y` **silently ignores `--repo`** and returns cross-repo
+> `gh search prs --Overtoad X --repo X/Y` **silently ignores `--repo`** and returns cross-repo
 > results; and `repos/{r}/pulls?state=closed` returns only the most recent page, so an empty
 > dependabot result from it is a **vacuous zero**, not a finding. Every zero in this document
 > was checked against a sibling query proven able to return a non-empty answer.

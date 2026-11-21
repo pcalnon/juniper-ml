@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **Document Type**: Design of Record (defensive remediation)
-**Status**: Decision-ready — Decisions **D1–D8** await owner ratification; nothing here is implemented
+**Status**: Decision-ready — Decisions **D1–D8** await Overtoad ratification; nothing here is implemented
 **License**: MIT License
 **Version**: 0.6.0
 **Last Updated**: 2026-07-03
@@ -19,7 +19,7 @@ This is the remediation design-of-record for the **two live-confirmed findings**
 - **SEC-F22** — the canopy browser training-control gate is bypassable from any in-network foothold (confirmed live, HO-6).
 - **SEC-F19** — Docker NAT defeats every IP-keyed control (confirmed live, HO-3).
 
-It is an **authorized defensive audit of the platform owner's own stack** (owner: Paul Calnon / `@pcalnon`, sole CODEOWNER),
+It is an **authorized defensive audit of the platform Overtoad's own stack** (Overtoad: Paul Calnon / `@pcalnon`, sole CODEOWNER),
 scoped to the containerized deployment (`juniper-deploy` compose). It enumerates options with grounded trade-offs and recommends a
 path; it contains no weaponized payloads. Both findings were live-verified by Opus against an **isolated throwaway stack** (compose
 project `secaudit`, loopback `127.0.0.2`) on 2026-07-02; the live `127.0.0.1` stack was untouched (audit §5.2). This document
@@ -33,8 +33,8 @@ the audit's isolated-stack run and are **not** re-derived here.
 
 **Non-goals.** (a) The other audit findings (SEC-F01 fail-open auth, SEC-F08 SSRF, SEC-F17 torch floor, etc.) — tracked separately.
 (b) Building the fronting reverse proxy itself — this document specifies *where it lands* and *what it must do*, and defers its
-construction to an owner-gated milestone. (c) Changing the `CANOPY_API_KEY` secret or its rotation. (d) TLS termination (SEC-F12,
-by-design-external). (e) Any deploy/env/secret change is **owner-gated** (Paul approves deployment and PyPI/deploy gates).
+construction to an Overtoad-gated milestone. (c) Changing the `CANOPY_API_KEY` secret or its rotation. (d) TLS termination (SEC-F12,
+by-design-external). (e) Any deploy/env/secret change is **Overtoad-gated** (Paul approves deployment and PyPI/deploy gates).
 
 **Deliverable.** This one `notes/` document. No source is changed.
 
@@ -286,7 +286,7 @@ authorization**, real only in combination with `internal:true` + fail-closed mid
 
 ## 6. Convergence — the fronting authenticating proxy solves both
 
-The deferred structural pieces of both findings are **the same component**. A single fronting authenticating reverse proxy (owner's
+The deferred structural pieces of both findings are **the same component**. A single fronting authenticating reverse proxy (Overtoad's
 choice of mechanism — e.g. an OAuth2/OIDC proxy, HTTP basic-auth, or mTLS at the edge) delivers:
 
 - **SEC-F22 B2:** the proxy authenticates the dashboard user before any request reaches canopy, so `GET /dashboard/` is no longer an
@@ -294,7 +294,7 @@ choice of mechanism — e.g. an OAuth2/OIDC proxy, HTTP basic-auth, or mTLS at t
 - **SEC-F19 A:** the proxy is the single trusted source of `X-Forwarded-For`, restoring real per-client identity for the caps and the
   metrics allowlist (canopy/cascor/observability honor XFF **only** from the proxy IP).
 
-This convergence is why B2 and SEC-F19-A are **not** built now: they are one milestone, owner-gated, justified **only** when genuine
+This convergence is why B2 and SEC-F19-A are **not** built now: they are one milestone, Overtoad-gated, justified **only** when genuine
 remote or multi-user access is a requirement. Until then, the loopback boundary (SEC-F22 A) + the DoS-dampening caps and deterministic
 allowlist (SEC-F19 B + C1) are the correct, proportionate posture.
 
@@ -323,15 +323,15 @@ in-network trust contract; per-IP-cap-inert-behind-NAT; the deployment contract.
 
 ---
 
-## 8. Decisions for owner ratification (D1–D8)
+## 8. Decisions for Overtoad ratification (D1–D8)
 
-Each decision is independently ratifiable. Marked **(deploy-gated)** where roll-out is an owner-approved deploy/env change.
+Each decision is independently ratifiable. Marked **(deploy-gated)** where roll-out is an Overtoad-approved deploy/env change.
 
 - **D1 — Adopt the stated posture.** Ratify that, for the containerized stack in its current single-user / trusted-LAN research
   mode, **network position is the trust boundary**: the control surface stays loopback-bound and any remote/multi-user access
   **requires** a fronting authenticating proxy. *(Recommended: yes.)*
 - **D2 — Startup bind-guard (SEC-F22 primary).** canopy and cascor **refuse to start** when bound to a non-loopback interface unless
-  an explicit `JUNIPER_<SVC>_FRONTING_AUTH_ATTESTED=true` (final name owner's) is set; fail-closed and loud. *(Recommended: yes.)*
+  an explicit `JUNIPER_<SVC>_FRONTING_AUTH_ATTESTED=true` (final name Overtoad's) is set; fail-closed and loud. *(Recommended: yes.)*
 - **D3 — Reject page-injected token (B1) as a SEC-F22 fix.** Record that a token injected into the anonymous `/dashboard/` page does
   **not** close the in-network bypass (it relocates the anonymous mint); real dashboard auth (B2) is deferred to D7. *(Recommended:
   yes.)*
@@ -345,12 +345,12 @@ Each decision is independently ratifiable. Marked **(deploy-gated)** where roll-
   written down now.)*
 - **D7 — Fronting authenticating proxy as the convergence milestone. (deploy-gated)** When remote/multi-user access becomes a
   requirement, adopt a single fronting authenticating reverse proxy as the shared solution to both findings (auth for SEC-F22-B2;
-  trusted XFF source for SEC-F19-A). Mechanism (OIDC / basic-auth / mTLS) and scope owner's choice. *(Recommended: adopt the
+  trusted XFF source for SEC-F19-A). Mechanism (OIDC / basic-auth / mTLS) and scope Overtoad's choice. *(Recommended: adopt the
   principle now; schedule the build when the requirement is real.)*
 - **D8 — Documentation.** Write the deployment contract (loopback default; the `BIND_HOST=0.0.0.0` escape hatch requires the proxy;
   per-IP caps are DoS-dampening) into `juniper-deploy` docs and the canopy/cascor security notes. *(Recommended: yes.)*
 
-**Open questions for the owner.** (OQ-1) Final env-var name and semantics for the attestation flag (D2) — attestation vs a stronger
+**Open questions for the Overtoad.** (OQ-1) Final env-var name and semantics for the attestation flag (D2) — attestation vs a stronger
 proxy-presence probe. (OQ-2) Whether cascor's control/worker WS need per-session caps or only the global cap (workers are keyed
 callers; the browser control WS is the sharper case). (OQ-3) Chosen static subnet ranges for D5 (must avoid collision with other
 host Docker networks). (OQ-4) Whether any programmatic consumer relies on `/api/train/*` today (grep the ecosystem; the key-OR path
@@ -440,5 +440,5 @@ un-gated; the design must make "trust XFF only from the proxy IP" a hard invaria
 `juniper-ml/notes/legacy/SECURITY_AUDIT_PLAN.md` (24-finding baseline).
 
 > Every `file:line` above was re-confirmed in the working trees on 2026-07-03. The two live IPs are attributed to the audit's
-> isolated-stack run (§5.2) and are not re-derived. This is a defensive hardening design for the owner's own stack; it contains no
-> weaponized exploit. Decisions D1–D8 await owner ratification.
+> isolated-stack run (§5.2) and are not re-derived. This is a defensive hardening design for the Overtoad's own stack; it contains no
+> weaponized exploit. Decisions D1–D8 await Overtoad ratification.

@@ -7,9 +7,9 @@
 **Written**: 2026-10-08 (2026-10-09Z) by the session in juniper-ml worktree `.claude/worktrees/agile-napping-popcorn`,
 at a phase boundary. **Not consensus-validated.**
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, which is
-authoritative for P2. Its item 4 is now DONE in code, and its items 5 and 7 and the owner batch O1–O17 carry
+authoritative for P2. Its item 4 is now DONE in code, and its items 5 and 7 and the Overtoad batch O1–O17 carry
 over. This file supersedes `HANDOFF_2026-10-08_canopy-phase11-landed-f058-live-f068-filed-redesign-next.md`.
-**Merge approval**: the owner granted it in this session for this session's PRs. It is NOT carried: ask again.
+**Merge approval**: the Overtoad granted it in this session for this session's PRs. It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
 
@@ -54,7 +54,7 @@ Merge approval is not carried: ask before the first merge.
 **Remaining, in order:**
 
 1. **Land canopy#731** if it has not merged: `python3 util/wait_for_checks.py --pr 731 --repo juniper-canopy`,
-   query `reviewThreads(isResolved:false)`, ask the owner, then `python3 util/safe_merge.py --execute` and read its
+   query `reviewThreads(isResolved:false)`, ask the Overtoad, then `python3 util/safe_merge.py --execute` and read its
    `MERGED` line.
 2. **Land this session's juniper-ml PR** (evidence, instruments, this file). Find it with
    `gh pr list --repo pcalnon/juniper-ml --head docs/canopy-pacer-731-evidence --state all`.
@@ -75,7 +75,7 @@ Merge approval is not carried: ask before the first merge.
 4. **Item 25**: census triggers fired from the page, as the parent describes, on the merged code. T-apply needs a
    different design under the pacer.
 5. **Item 26**: the manual sweep, F-CANOPY-012 and -013 first, and the CAN-015g/h note's dated correction.
-6. Then the parent's items 5 and 7, and the owner batch O1–O17.
+6. Then the parent's items 5 and 7, and the Overtoad batch O1–O17.
 
 **Traps learned:**
 

@@ -5,9 +5,9 @@ VERDICT: PASS WITH CORRECTIONS
 The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and I verified that hash. The live archive, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_defect-register-round-42-ml2088-merged-data-fixforward-refuted-and-fixing-closes-pr-owed.md`, has the same hash.
 
 - **Round 1:** 83 findings, 55 after merging overlaps. 53 are applied; 3 of those applications introduced an error or ambiguity. One clause was not applied, and one half was declined with a reason.
-- **New:** there is no HIGH. There are 3 MEDIUM, 11 LOW and 14 NIT. All three MEDIUMs are about state or ownership that neither round saw:
+- **New:** there is no HIGH. There are 3 MEDIUM, 11 LOW and 14 NIT. All three MEDIUMs are about state or Overtoadship that neither round saw:
   - #2089's CodeQL block;
-  - owner questions the peer lane owns, one of which has a sequencing rule;
+  - Overtoad questions the peer lane owns, one of which has a sequencing rule;
   - the lock file cascor's container image installs from.
 
 **Documents.** Abbreviations used below:
@@ -29,7 +29,7 @@ The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and 
 | APD-DATA-047 already ruled (LF M1, LO M1, LP M1) | APPLIED | R2 L219, L226 |
 | Uncommitted files and the don't-reset rule (LF M2, LO H2, LP H1) | APPLIED. Agent ids are omitted, but each report's header line carries its own. | R2 L20, L119, L130-138 |
 | canopy#685 unvalidated; APD-ECO-014 gate (LF M3, LO M2, LP M6 first half) | APPLIED. LF M3's clause that the same validation gates F-CANOPY-061/-062 is NOT APPLIED: R2 L193 states them fixed. | R2 L43, L152, L157, L173 |
-| APD-CASCOR-014 to be PARKED (LP M6 second half) | DECLINED WITH REASON: filed OPEN because F4's fix is in flight (peer, 00:19:33Z). The conditional "park it" has no matching owner question (N7). | R2 L178 |
+| APD-CASCOR-014 to be PARKED (LP M6 second half) | DECLINED WITH REASON: filed OPEN because F4's fix is in flight (peer, 00:19:33Z). The conditional "park it" has no matching Overtoad question (N7). | R2 L178 |
 | Frame-locals lock scope (LF M4, LO M9) | APPLIED. Both lanes' lock lists miss the lock cascor's image installs from (new M3). | R2 L167-172 |
 | Merge approval, and the peer's PRs (LF M5, LO M5, LP L7) | APPLIED | R2 L13-14 |
 | Lane probes on tmpfs (LF M6, LO H3 probe half, LP M7) | APPLIED as juniper-ml#2089: 129 of the 196 files. The 66 shell runners stay on tmpfs; the reason is only in #2089's README (N2). #2089 is blocked (new M1). | R2 L29-31 |
@@ -51,7 +51,7 @@ The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and 
 | Predecessor traps: whole-file, /tmp, §2 status line, re-arm, default squash body (LO M6, LO M7, LO L12, LP M3) | APPLIED | R2 L87-92, L106, L124 |
 | Sentry DSNs (LO M8) | APPLIED | R2 L93 |
 | Next data release (LO M10) | APPLIED | R2 L210 |
-| #685 owner calls, quoted verbatim (LO L3) | APPLIED. PEER assigns asking them to the peer (new M2). | R2 L198, L211 |
+| #685 Overtoad calls, quoted verbatim (LO L3) | APPLIED. PEER assigns asking them to the peer (new M2). | R2 L198, L211 |
 | APD-CASCOR-014's fixing PR (LO L4) | APPLIED | R2 L178 |
 | F-CANOPY-060 "done" was overstated (LO L5) | APPLIED | R2 L192-193, L284 |
 | Round-39 §0.4's two items (LO L7, LP L9) | APPLIED | R2 L233-235 |
@@ -63,7 +63,7 @@ The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and 
 | Appendix C omissions (LO N1) | APPLIED | R2 L255, L262-263, L272 |
 | `--check` skips four reports (LO N3) | APPLIED; the four headers read "turn-ending report k of 5" | R2 L201 |
 | Executor report location (LO N4) | APPLIED | R2 L49-50 |
-| MEMORY.md compaction owner (LO N5) | APPLIED | R2 L216 |
+| MEMORY.md compaction Overtoad (LO N5) | APPLIED | R2 L216 |
 | Paste the whole document; name its own file (LP H2) | APPLIED | R2 L4, L8, L17 |
 | Executor liveness and recovery (LP H3) | APPLIED. Its transcript was written at 00:44:27Z, so it is alive. | R2 L47-51 |
 | PR drafts on tmpfs (LP H4) | APPLIED. The copy exists: title line, blank line, body. | R2 L135, L240-245 |
@@ -86,8 +86,8 @@ The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and 
 - **00:22:53Z:** the README request, carried at R2 L30. The peer's paragraph is not mentioned (N2). This worktree's README is byte-identical to #2089's.
 
 **PEER, "Coordination with the register lane".**
-- Carried: the CASCOR-008/-013 gate, CASCOR-014, the ECO-013 residue, ECO-014's validation owner, the gate-file comment, byte-compare archiving, and the file overlaps.
-- Not carried: the owner-question ownership (M2), and the reconciliation items (L11).
+- Carried: the CASCOR-008/-013 gate, CASCOR-014, the ECO-013 residue, ECO-014's validation Overtoad, the gate-file comment, byte-compare archiving, and the file overlaps.
+- Not carried: the Overtoad-question Overtoadship (M2), and the reconciliation items (L11).
 
 ## New findings
 
@@ -96,15 +96,15 @@ The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and 
 **M1. #2089 is BLOCKED by CodeQL. R2 L31 says it "may" be flagged, and R2 L61's "merge once green" cannot happen.**
 - **Evidence:**
   - CodeQL failed at 00:25:31Z on `d8a495f7` and at 00:27:51Z on `a2fa3ad8`: "33 new alerts including 4 high", all `py/overly-permissive-file` in `data438-fixforward-round1-laneB/stripe_probe.py:139`, `:148`, `:177` and `:205`.
-  - #2081's precedent: the owner committed redactions to its two flagged probes (`73dc109c` at 22:24:59Z, `f9964d78` at 22:31:56Z), dismissed both highs as "mitigated" (22:43:46Z, 22:44:26Z), and it merged at 22:45:08Z.
+  - #2081's precedent: the Overtoad committed redactions to its two flagged probes (`73dc109c` at 22:24:59Z, `f9964d78` at 22:31:56Z), dismissed both highs as "mitigated" (22:43:46Z, 22:44:26Z), and it merged at 22:45:08Z.
   - #2081's other 59 alerts (27 warning, 32 note) are still OPEN on `main`. R2 L288 calls the block "resolved"; PRED's options (paths-ignore, dismiss, tarball) were never ruled.
-- **Change R2 L31 to:** "**CodeQL blocks it:** 4 high `py/overly-permissive-file` alerts in `data438-fixforward-round1-laneB/stripe_probe.py`. For #2081 the owner edited the two flagged probes, dismissed the highs, and merged; its 59 lesser alerts are still open on `main`. Surface #2089's to the owner; never dismiss them yourself. If the owner edits a probe, re-read #2089's head before any push. The README's 'copied as the lanes wrote them' is then false for that file, as it already is for #2081's two."
-- **R2 L61:** "Merge #2089 once the owner has cleared its CodeQL block and it is green, with your own grant."
+- **Change R2 L31 to:** "**CodeQL blocks it:** 4 high `py/overly-permissive-file` alerts in `data438-fixforward-round1-laneB/stripe_probe.py`. For #2081 the Overtoad edited the two flagged probes, dismissed the highs, and merged; its 59 lesser alerts are still open on `main`. Surface #2089's to the Overtoad; never dismiss them yourself. If the Overtoad edits a probe, re-read #2089's head before any push. The README's 'copied as the lanes wrote them' is then false for that file, as it already is for #2081's two."
+- **R2 L61:** "Merge #2089 once the Overtoad has cleared its CodeQL block and it is green, with your own grant."
 - **Appendix B, add:** "#2089's CodeQL block, and #2081's 59 open alerts; PRED's options (a `paths-ignore` config, dismissal as evidence, a tarball) are still unruled."
 
-**M2. Appendix B hands this lane owner questions that PEER assigns to the peer lane, and drops the peer's sequencing rule.**
+**M2. Appendix B hands this lane Overtoad questions that PEER assigns to the peer lane, and drops the peer's sequencing rule.**
 - **Where:** R2 L208-213 lists the releases, #685's calls (a)-(c), the Sentry purge and the stray branches as this lane's to surface. R2 L198 says to quote rulings "when the peer sends them", which contradicts that.
-- **PEER, OPEN item 5:** "Surface to the owner; do not decide … send the register lane the question, options and answer." For the release: "Ask once the juniper-ml F-PR validates; releasing earlier ships F2's leak and F10's false sentence."
+- **PEER, OPEN item 5:** "Surface to the Overtoad; do not decide … send the register lane the question, options and answer." For the release: "Ask once the juniper-ml F-PR validates; releasing earlier ships F2's leak and F10's false sentence."
 - **Replace the header of those bullets with:** "**Asked by the peer lane; record the answers here.** Its successor sends each question, its options and the answer verbatim. Do not ask them again. The release is asked only after the peer's juniper-ml F-PR (F2, F6, F9, F10, and service-core's F3 and F5) validates."
 
 **M3. The release list misses the lock cascor's image installs from.**
@@ -115,7 +115,7 @@ The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and 
 ### LOW
 
 - **L1. R2 L34 overclaims.** It dropped R1 L21, which round 1 reproduced. Change it to: "The branch answers every finding in `data438-round1-lane{A-reprobe,B-refute}.md`, two only partly: M2(b) and L2 of `data438-round1-laneB-refute.md` (DB `:17`, `:215`, `:217`; these became DB's L-1 and L-2)."
-- **L2. There are two different F8s.** R2 L34 and L275 mean `data438-round1-laneA-reprobe.md:94` (#437's breaking marker); R2 L72, L164 and L305 mean the peer's `break` after `matched = True`. R1's gloss was dropped. Change L34 to "F8 (#437's breaking marker)", L275 to "data438's F8 (the owner's)", and L164 to "the peer's F8 (the `break` mutant): see Remaining 5".
+- **L2. There are two different F8s.** R2 L34 and L275 mean `data438-round1-laneA-reprobe.md:94` (#437's breaking marker); R2 L72, L164 and L305 mean the peer's `break` after `matched = True`. R1's gloss was dropped. Change L34 to "F8 (#437's breaking marker)", L275 to "data438's F8 (the Overtoad's)", and L164 to "the peer's F8 (the `break` mutant): see Remaining 5".
 - **L3. "Two counts change" (R2 L303) is wrong.** The register states the guard count at L240 ("Twenty entries"), L252 ("all seven guards are ENFORCED"), L1106 and L1751, and its §2.3 guard table needs a new row. `docs/REFERENCE.md` states it at L2977. L252 itself records that this count lagged #1974. Change to: "Update every count: `docs/REFERENCE.md` ~L2977; the register's L240, L252, L1106 and L1751; and add a §2.3 table row."
 - **L4. Routing assumes `[042116]` is alive.** Add to R2 L19: "If `[042116]` is gone, find its successor with `ListAgents`: it will say it replaces `[042116]`, and it will ask you for the consolidated handoff's path before each of its OPEN items (PEER Step 0). The peer's PR is on branch `docs/handoff-round42-followup-lane`." Add the verification command: `gh pr list --repo pcalnon/juniper-ml --head docs/handoff-round42-followup-lane --state all`.
 - **L5. R2 L58 is false.** No consolidated draft exists in the worktree or the scratchpad. Replace it with: "No consolidated draft exists. This session agreed the split with the peer (23:35:52Z: the `surrogatepass` marker and C-A…D-G are this lane's) and asked for its final path and PR number (23:34:29Z)."
@@ -126,7 +126,7 @@ The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and 
   - The severity rationale: "every ecosystem client creates unnamed datasets", and the lock is reached via `call_soon` (DB M-1).
 - **L9. PEER traps that bear on this lane's work are not carried.** Add:
   - signed commits have one parent, so a conflict cannot be merged away: supersede from fresh `main`;
-  - a release cut before update-branch mis-files a CHANGELOG silently (a 3-way merge duplicated `## [0.16.0]`): run update-branch first. This applies to data's `[Unreleased]` if the owner cuts a data release while the fix-forward is open;
+  - a release cut before update-branch mis-files a CHANGELOG silently (a 3-way merge duplicated `## [0.16.0]`): run update-branch first. This applies to data's `[Unreleased]` if the Overtoad cuts a data release while the fix-forward is open;
   - never run `util/worktree_cleanup.bash`: it pushes and runs `gh pr create`.
 - **L10. A deletion scope was dropped (R2 L260).** BRIEF says: "Remove legacy `*.meta.json.lock` files at startup, only files matching that exact pattern directly inside the root." Restore it, and have round 2 check it.
 - **L11. Consolidation reconciliation (add to Remaining 0).**
@@ -148,7 +148,7 @@ The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and 
   - "record it as a known issue";
   - the verification bar: harness arms per fix, `juniper-symbol-loss-check --scope 'juniper_data/**' --base 0f0f7e0e`, and lane B's probes re-run against `d1c66a11`.
 - **N6.** R2 L193: "061 and 062 are fixed" while #685 is unvalidated (LF M3's second clause).
-- **N7.** R2 L178's "if the owner rules it outside Key leaks" has no owner question in Appendix B.
+- **N7.** R2 L178's "if the Overtoad rules it outside Key leaks" has no Overtoad question in Appendix B.
 - **N8.** R2 L210: the next data release also carries data#440.
 - **N9.** R2 L119's "34 in a fresh checkout" changes once the peer's PR lands its headed reports.
 - **N10.** R2 L138 sits under "ship ALL … Nothing else holds them", yet #2089 holds those files. Re-shipping them is a no-op, but the list contradicts itself.
@@ -164,7 +164,7 @@ The target is `handoff_session_r2_frozen.md`, sha256 `6822f3ff0402793e…`, and 
 - Harness 62/62, mutation 12/12, probe 27/27, and the 25/24 split. These need the tmpfs venv; I did not re-run them.
 - The typed-escape mechanism. The memory file exists; I did not re-test the behaviour.
 - That "canopy e2e [fd9ad3]" has exited. I inferred it from its absence in `ListAgents` at 00:18:48Z and from canopy combined's message at 20:45:53Z.
-- How the owner wants #2089's alerts handled.
+- How the Overtoad wants #2089's alerts handled.
 - Anything in TX after about 00:45Z.
 
 **Side effects.** I ran `git fetch` in juniper-cascor, juniper-data, juniper-canopy, juniper-deploy and this worktree. A fetch of data#440 into `refs/remotes/origin/laneO2-pr440` was then deleted with `update-ref -d` (0 remain). The scratch directory `hv2/laneO2/` is deleted.

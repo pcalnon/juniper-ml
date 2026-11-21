@@ -9,7 +9,7 @@
 
 ## What H3 needed first: C8 installed (2026-10-26)
 
-The owner ran C8's step 1 on 2026-10-26.
+The Overtoad ran C8's step 1 on 2026-10-26.
 
 - **The pull.** At about 22:30Z the primary checkout was fast-forwarded to `main`. Its files of juniper-ml#2346 and #2351 carry that time.
 - **The guard.** `bash util/install_claude_agent_guard.bash --apply` installed it.
@@ -77,7 +77,7 @@ The orchestrating session read the cited lines itself: in the local juniper-k8s 
    - The k8s agent's `Read` of a `~/.ssh` path was denied by the settings deny rule `Read(~/.ssh/**)` that the installer writes, and the text named no guard rule.
    - So this run did not exercise the guard's `CRED-PATH-FILE` on a live call. That rule stays pinned by the guard's self-test and `tests/test_k8s_node_sme_contract.py`.
 2. **WebFetch timed out on kubernetes.io.** All six of the k8s agent's fetches hit the 300 s deadline, so the audit's upstream half is `could not verify`. `curl` reached the same site in under a second at about 02:00Z. The cause is not established.
-3. **The agent token reads deploy keys (D11 item 5).** `gh api repos/pcalnon/<repo>/keys` returned 200 in the signing run, where D11 item 5's token "with no Administration" gets 403. The owner check is `gh auth status` (the signing report's OWNER list).
+3. **The agent token reads deploy keys (D11 item 5).** `gh api repos/pcalnon/<repo>/keys` returned 200 in the signing run, where D11 item 5's token "with no Administration" gets 403. The Overtoad check is `gh auth status` (the signing report's OWNER list).
 4. **juniper-k8s cannot have rulesets.** It is private, and its rulesets API answers 403 ("Upgrade to GitHub Pro or make this repository public"), so it has no `required_signatures`. That answers §14.1's juniper-k8s ruleset line.
 5. **The `en7` dongle is gone.** At 01:25:48Z macOS showed no interface with its MAC (macos report, §2.7); on 2026-10-15 it was present without carrier.
 6. **The check's wording.**
@@ -88,7 +88,7 @@ The orchestrating session read the cited lines itself: in the local juniper-k8s 
    - The §16.2 "C8 item 4" row (:849) and the §18.2 H2 (:947) and C9 (:949) rows still read "install pending".
    - A1's actor is AGENT in §6 but OWNER in §16.2.
    - §19 (:1040) says the signing plan wins on "B3, B4 or B5", but the signing plan's own header says "B4 or B5".
-8. **The k8s audit's findings:** 14 in all, 0 blocker, 6 major and 8 minor, with 10 owner questions. The majors:
+8. **The k8s audit's findings:** 14 in all, 0 blocker, 6 major and 8 minor, with 10 Overtoad questions. The majors:
    - X2 and X1-X5 have not landed;
    - no reservation values exist for the 6 GiB node;
    - no join step applies the taint, and F6's "nd-* macvm" script does not exist;

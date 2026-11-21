@@ -20,7 +20,7 @@
 The design is a good *analysis* and a bad *plan*. Its two front-loaded PRs fix defects that no
 user can currently reach; the first change a user can observe is PR 3, the largest PR in the arc,
 and PR 2 is declared a prerequisite of a change (`⊥`-at-mount) that **no PR in §7 actually makes**.
-The reachability defect the owner reported needs **one line** plus a small guard set, all of which
+The reachability defect the Overtoad reported needs **one line** plus a small guard set, all of which
 fit in one PR. The safety argument that justifies putting §4.4 first is real but is satisfied by
 *co-shipping*, not by *pre-shipping* — and §4.4 as specified does not actually discharge it,
 because it changes a label and gates nothing. Iteration 2 (§12) is a separate programme whose own
@@ -55,7 +55,7 @@ Two consequences, both load-bearing on sequencing:
    is a pure transit state the user creates by clicking ✕ and destroys by navigating. **There is no
    reload regression to prevent, so N10's prerequisite does not bind PR 3.**
 
-Separately, the owner's accepted OQ-N2 answer (*"it should be the mount state for normal canopy
+Separately, the Overtoad's accepted OQ-N2 answer (*"it should be the mount state for normal canopy
 operations"*) is therefore **unimplemented by the plan of record**. That is a scope amputation, not
 merely a sequencing bug: a disposition marked ACCEPTED has no delivery vehicle.
 
@@ -75,7 +75,7 @@ X1 misattribution requires *selecting the recurrence model*. In the shipped UI t
 
 So PR 1 fixes a defect no UI user can reach today, and PR 2 (per F-1) fixes a regression that will
 never exist. **The first change a user can observe is PR 3** — third in order, largest in the arc,
-and the only one carrying the defect the owner actually reported. A stall anywhere before it leaves
+and the only one carrying the defect the Overtoad actually reported. A stall anywhere before it leaves
 the reported defect untouched; A3 measured exactly that outcome over three days and 24 merged PRs.
 
 **Steelman for §7's order, taken seriously.** This is a benchmarking platform; its product is a
@@ -277,7 +277,7 @@ relaxed, and the only new committed state is `(m, ⊥)`, which is incomplete rat
 
 ## 4. Question 4 — false authority / scope creep audit of §11–§12
 
-The owner explicitly asked for the generator work, so the question is only whether **coupling** it
+The Overtoad explicitly asked for the generator work, so the question is only whether **coupling** it
 to the deadlock fix helps or delays. The evidence says it delays, and that decoupling costs nothing:
 
 1. **The stated dependency is mostly false.** §7's PR 5 rationale is *"Depends on PRs 1–2 for honest
@@ -371,7 +371,7 @@ unchanged. The problem is the *plan*, not the *analysis*.
 ## 9. Recommended sequencing — executable today by a session with merge approval
 
 Three PRs replace §7's five plus one. Each is independently revertible; each is smaller than §7's
-PR 3; **the first one closes the defect the owner reported.**
+PR 3; **the first one closes the defect the Overtoad reported.**
 
 ### PR A — "the pair is reachable, and every control that could lie is gated"
 
@@ -415,7 +415,7 @@ implementation, §5's remaining four resolvers, all of §12.
 
 - `src/main.py:4191-4192` — guard `backend.stage_dataset` and return a real message (§4.9 minimum)
   + **G4**.
-- Record the two real fixes as **separate, cross-repo** work items with owners, since neither is a
+- Record the two real fixes as **separate, cross-repo** work items with Overtoads, since neither is a
   canopy change: `RecurrenceBackend.stage_dataset` (juniper-recurrence) and `equities_seq` in
   `training.py:235`'s `Literal` (juniper-cascor). Do not leave them inside a canopy PR's scope.
 

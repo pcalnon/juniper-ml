@@ -83,7 +83,7 @@ What does not hold:
 
 - **`n_samples` documented, not fixed: holds.** Lines 5378 and 9880 document it, and the probe tests 1.5 → 201 and 1e19 → 500. The listed consequences are incomplete: see N7.
 - **Deep-cursor fix tested only by the external probe: the omission is real, but its reason does not hold** (LOW-2). The harness misses a revert of line 5600.
-- **L6 answered by amending the park bullet: holds as disclosed.** The bullet (L1629–1631) still says "awaiting an owner ruling, do not action". So lane B's point, that the park blocks the silent-path remedy, is deferred to a ruling rather than resolved.
+- **L6 answered by amending the park bullet: holds as disclosed.** The bullet (L1629–1631) still says "awaiting an Overtoad ruling, do not action". So lane B's point, that the park blocks the silent-path remedy, is deferred to a ruling rather than resolved.
 - **`docs/REFERENCE.md` unchanged since `e2f87aae`: holds.** `990ef3f9` does not touch it. Its sentence carries no count and no `record_access` claim that would need these corrections.
 
 ## Findings
@@ -139,4 +139,4 @@ All are in `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml
 - **Tooling checks:** `b05` (archive), `b17` (markdownlint, informational), `b18` (screens), `b28` (generic hooks).
 - **Outputs kept:** `census_head.txt`, `b13_out.txt`, `reg_diff_U0.txt`, `rfc9110.txt`.
 
-**Changed:** nothing by me. I used only `git fetch` of the branch, read-only git and `gh api` GETs. A uvicorn server started inside one script on an ephemeral loopback port and stopped before the script exited. The worktree's modified `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` and untracked `reports/2026-09-24_defect-register-round-42/owner-ruling-key-leaks-verbatim.md` were there at session start and are not mine.
+**Changed:** nothing by me. I used only `git fetch` of the branch, read-only git and `gh api` GETs. A uvicorn server started inside one script on an ephemeral loopback port and stopped before the script exited. The worktree's modified `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` and untracked `reports/2026-09-24_defect-register-round-42/Overtoad-ruling-key-leaks-verbatim.md` were there at session start and are not mine.

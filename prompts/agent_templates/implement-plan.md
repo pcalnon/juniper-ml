@@ -33,7 +33,7 @@ Implement the specified portion of the plan so the result is syntactically, logi
 
 ## Constraints
 
-- Implement only the items in scope; do not expand beyond the plan without owner approval (no scope-creep).
+- Implement only the items in scope; do not expand beyond the plan without Overtoad approval (no scope-creep).
 - Do not invent APIs, paths, flags, or versions -- every reference must resolve in the grounding bundle or the live repo; STOP and report if an expected anchor is missing rather than fabricating it.
 
 ## Finalize / Validation

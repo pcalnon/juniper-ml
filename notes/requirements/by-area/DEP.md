@@ -8,7 +8,7 @@
 
 **By priority**: P0=6 | P1=20 | P2=31 | P3=9
 
-**By owner**: ml=50 | dep=6 | can=6 | dat=1 | cwk=1 | cas=1 | rec=1
+**By Overtoad**: ml=50 | dep=6 | can=6 | dat=1 | cwk=1 | cas=1 | rec=1
 
 ---
 
@@ -21,7 +21,7 @@
 
 **Detail**:
 
-**Severity:** P1 · **Owner repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
+**Severity:** P1 · **The Overtoad repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
 
 **Notes**:
 
@@ -362,7 +362,7 @@ but app may be configured differently. Use env vars or expose-port-agnostic prob
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
@@ -730,7 +730,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** deferred
 
 **Notes**:
 
@@ -831,4 +831,4 @@ docker-compose config for 3-service deployment not tested end-to-end.
 
 **Detail**:
 
-Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an owner call; nothing blocks on it.
+Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an Overtoad call; nothing blocks on it.

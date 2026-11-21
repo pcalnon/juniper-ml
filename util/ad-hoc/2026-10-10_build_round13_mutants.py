@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-10
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-08_line_read_mutation_run.py (which runs the set);
          util/ad-hoc/2026-10-05_masked_finding_shape.py (the read the set mutates);
          util/ad-hoc/2026-10-08_build_round12_mutants.py (the round-12 set's builder, this one's model);

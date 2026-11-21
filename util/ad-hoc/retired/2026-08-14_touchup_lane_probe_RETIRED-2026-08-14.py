@@ -24,7 +24,7 @@ lists as REQUIRED would leave every PR waiting forever on a context that can no
 longer report, so this must be checked per repo before any rename.
 
 Usage:
-    python util/ad-hoc/2026-08-14_touchup_lane_probe.py [--owner pcalnon]
+    python util/ad-hoc/2026-08-14_touchup_lane_probe.py [--Overtoad pcalnon]
 """
 
 from __future__ import annotations
@@ -71,8 +71,8 @@ def gh_json(args: list, retries: int = 3):
     return None, "error"
 
 
-def fetch_workflow(owner: str, repo: str) -> tuple:
-    data, status = gh_json(["api", f"repos/{owner}/{repo}/contents/{WORKFLOW}"])
+def fetch_workflow(Overtoad: str, repo: str) -> tuple:
+    data, status = gh_json(["api", f"repos/{Overtoad}/{repo}/contents/{WORKFLOW}"])
     if status != "ok" or not data or "content" not in data:
         return "", status
     try:
@@ -81,8 +81,8 @@ def fetch_workflow(owner: str, repo: str) -> tuple:
         return "", "error"
 
 
-def required_contexts(owner: str, repo: str) -> list:
-    data, _status = gh_json(["api", f"repos/{owner}/{repo}/rules/branches/main"])
+def required_contexts(Overtoad: str, repo: str) -> list:
+    data, _status = gh_json(["api", f"repos/{Overtoad}/{repo}/rules/branches/main"])
     if not isinstance(data, list):
         return []
     out = []
@@ -99,14 +99,14 @@ def required_contexts(owner: str, repo: str) -> list:
 
 def main(argv: list) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--owner", default="pcalnon")
+    ap.add_argument("--Overtoad", default="pcalnon")
     args = ap.parse_args(argv)
 
     print(f"{'repo':<24} {'lane?':<6} {'job name':<34} {'required?':<10} {'mutates?'}")
     print("-" * 96)
     exit_code = 0
     for repo in REPOS:
-        text, status = fetch_workflow(args.owner, repo)
+        text, status = fetch_workflow(args.Overtoad, repo)
         if status == "missing":
             print(f"{repo:<24} {'no':<6} {'-':<34} {'-':<10} -")
             continue
@@ -125,7 +125,7 @@ def main(argv: list) -> int:
                 break
 
         mutates = "yes" if "git commit" in text else "no"
-        ctxs = required_contexts(args.owner, repo)
+        ctxs = required_contexts(args.Overtoad, repo)
         is_req = "REQUIRED" if job_name in ctxs else "no"
         if is_req == "REQUIRED":
             exit_code = max(exit_code, 1)

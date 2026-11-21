@@ -3,7 +3,7 @@
 Writes a new ``prompts/agent_templates/<id>.md`` pre-populated with the canonical section skeleton
 (in order) and well-formed ``{{placeholder}}`` slots, so a new template cannot drift from the
 skeleton/placeholder contract enforced by ``tests/test_template_library_drift.py``. It then
-**prints** the ``manifest.yaml`` stanza for the owner to paste -- it deliberately does **not**
+**prints** the ``manifest.yaml`` stanza for the Overtoad to paste -- it deliberately does **not**
 auto-edit ``manifest.yaml`` (the manifest is the human-curated selection contract, and
 ``prompts/**`` is unlinted, so a silent auto-edit could break selection). Refuses to overwrite
 an existing template.

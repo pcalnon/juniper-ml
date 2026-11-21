@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-18
 Status: ad-hoc — investigation (W1.13: the dependency floors juniper-recurrence 0.6.0 shipped without)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md
          (W1.13), juniper-recurrence#206 (the floors: model >=0.4.0, data-client >=0.6.0),
          util/ad-hoc/2026-10-17_verify_data_client_0_6_0_published_wheel.py (whose 0.5.0 control

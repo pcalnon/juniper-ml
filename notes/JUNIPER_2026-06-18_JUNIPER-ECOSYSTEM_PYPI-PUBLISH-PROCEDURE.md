@@ -310,7 +310,7 @@ rm -rf /tmp/test-testpypi
 
 > **Important**: The `--extra-index-url https://pypi.org/simple/` flag is essential. TestPyPI does not host all packages — without this fallback, dependencies will fail to resolve.
 
-> **2026-08-08 amendment — the CI meta-verify no longer uses the merged-index form above (owner-approved two-phase mechanism)**: pip has **no index priority**, so `--index-url` + `--extra-index-url` collapse into ONE namespace where the *highest version across both indexes wins* — a dependency-confusion vector in which a TestPyPI squatter outranks the real package (live failure: TestPyPI `fastapi 1.0`, a broken sdist, beat production `fastapi 0.141.1` and killed the juniper-ml v0.7.0 verify, run 31281873275). `.github/workflows/publish.yml` now verifies in two phases — **(1) provenance**: `pip download --no-deps --index-url https://test.pypi.org/simple/ --dest <tmp> "juniper-ml==${VERSION}"` (TestPyPI only, exact version), then **(2) resolution**: `pip install --index-url https://pypi.org/simple/ "<wheel>[extra]"` (production PyPI only, no `--no-deps`, so extras resolution is still genuinely exercised). The one-index-at-a-time rule is the point; the manual recipe above remains merged-namespace and is therefore subject to the same squatting risk. Gate: `tests/test_publish_testpypi_verify.py`.
+> **2026-08-08 amendment — the CI meta-verify no longer uses the merged-index form above (Overtoad-approved two-phase mechanism)**: pip has **no index priority**, so `--index-url` + `--extra-index-url` collapse into ONE namespace where the *highest version across both indexes wins* — a dependency-confusion vector in which a TestPyPI squatter outranks the real package (live failure: TestPyPI `fastapi 1.0`, a broken sdist, beat production `fastapi 0.141.1` and killed the juniper-ml v0.7.0 verify, run 31281873275). `.github/workflows/publish.yml` now verifies in two phases — **(1) provenance**: `pip download --no-deps --index-url https://test.pypi.org/simple/ --dest <tmp> "juniper-ml==${VERSION}"` (TestPyPI only, exact version), then **(2) resolution**: `pip install --index-url https://pypi.org/simple/ "<wheel>[extra]"` (production PyPI only, no `--no-deps`, so extras resolution is still genuinely exercised). The one-index-at-a-time rule is the point; the manual recipe above remains merged-namespace and is therefore subject to the same squatting risk. Gate: `tests/test_publish_testpypi_verify.py`.
 
 ---
 
@@ -561,9 +561,9 @@ pip show juniper-ml
 ### 11.7 The release-train ceremony (the automated path), and what it cannot check
 
 §11.1–§11.6 describe the manual path. Most releases now go through `util/release_train/` instead,
-which keeps both gates with the owner and automates only the middle:
+which keeps both gates with the Overtoad and automates only the middle:
 
-- **Gate 1**: the version bump and the CHANGELOG's `## [<version>]` section ride an owner-approved PR.
+- **Gate 1**: the version bump and the CHANGELOG's `## [<version>]` section ride an Overtoad-approved PR.
 - **The middle**: `ceremony.py` authors the notes, opens the central archive PR, cuts the Release, and
   parks at the `pypi` environment.
 - **Gate 2**: the PyPI deploy waits there for its reviewer.
@@ -598,7 +598,7 @@ Notes on those commands:
   same commit: for a sibling, extract
   `gh api repos/pcalnon/<repo>/tarball/<sha>`. It needs exactly one `--package`, and it refuses an
   abbreviated sha, which `gh` would reject only after the archive PR was armed. Added 2026-09-24,
-  after three juniper-data PRs merged between the owner's approval of the 0.16.0 notes (pinned at
+  after three juniper-data PRs merged between the Overtoad's approval of the 0.16.0 notes (pinned at
   `7125e161`) and the cut. One of them left a duplicate `## [0.16.0]` heading, which would have
   published only its own bullets.
 - **`.github/workflows/release-train.yml` also runs on a daily cron (13:00 UTC), but it cannot cut
@@ -648,7 +648,7 @@ dated in local time near midnight UTC disagrees with the body rendered from it.
 has no `v*` tag. The ceremony cuts that package with `--latest` and every other with `--latest=false`,
 which is §11.4's rule. Until 2026-09-23 it passed `--latest=false` on every cut, the meta-package's
 included. Six repos' badges had fallen behind their newest release, juniper-ml's own among them
-(v0.6.0 against v0.10.0). They were moved by hand that day, on the owner's approval. Moving a badge
+(v0.6.0 against v0.10.0). They were moved by hand that day, on the Overtoad's approval. Moving a badge
 (`gh release edit <tag> --latest`) fires nothing: every release-triggered workflow in the nine repos
 subscribes to `published` only (`util/ad-hoc/2026-09-23_release_trigger_types_census.py`, 24 workflows).
 
@@ -662,9 +662,9 @@ subscribes to `published` only (`util/ad-hoc/2026-09-23_release_trigger_types_ce
 `non-`, `not` or `no` directly before the word negates it. Lowercase mid-sentence prose is
 deliberately not a marker, because it is usually a denial ("this is not a breaking change").
 
-**Gate 2 belongs to the owner.** `PENDING_PYPI_APPROVAL` is the ceremony's success state.
+**Gate 2 belongs to the Overtoad.** `PENDING_PYPI_APPROVAL` is the ceremony's success state.
 `current_user_can_approve` reads `true` for an agent's token, and an agent approving anyway defeats the
-gate's entire purpose. Hand the owner the run URL and stop.
+gate's entire purpose. Hand the Overtoad the run URL and stop.
 
 **Verify from the registry, not from a tally.** Use the version-specific endpoint
 (`/pypi/<pkg>/<version>/json` returns 200), because the aggregate endpoint lags behind the CDN. For a

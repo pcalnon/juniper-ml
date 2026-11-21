@@ -140,7 +140,7 @@ re-establish with whoever now owns each arc: via `ListAgents` **where the harnes
 sessions now hold each arc. Cross-session messages can be **held for the recipient user's
 approval** — never build a step that requires delivery; pair every message with an independent
 tripwire. **Terminal fallback: if no mechanism reaches a holder, the release/announcement
-obligation discharges by stating it plainly to Paul — by telling the owner, never by silence.**
+obligation discharges by stating it plainly to Paul — by telling the Overtoad, never by silence.**
 
 1. **"cli vs service"** (was `[ea2159]`): completed and verified g4's teardown, dropped its
    optional cap-4 round for T6, and **holds all CPU/GPU-heavy suites until T6 announces
@@ -175,14 +175,14 @@ obligation discharges by stating it plainly to Paul — by telling the owner, ne
   duplicati re-run was **still >40% CPU at 18:01**, i.e. the hot-process gate, not only the load
   bar, was blocking. With the nightly backup lane occupying ~22:20 → ~05:10, expect the watch to
   fire in the **post-backup early morning (~05:10–07:45)**, not overnight. Two ways to run
-  sooner, **both owner calls**: quiet the desktop, or bless an unattended overnight cron of the
+  sooner, **both Overtoad calls**: quiet the desktop, or bless an unattended overnight cron of the
   launcher (its gates encode the pre-flight, but the cascor-gap READING step — §1.2 — would then
   need to be done in the evening and the pin pre-decided; do not skip it silently).
 - **juniper-ml**: `origin/main` `0c974f04` and moving fast. This session's worktree
   (`twinkly-nibbling-piglet`, branch `worktree-twinkly-nibbling-piglet`) was cut at `7f3cb19`;
   the handoff PR carries this document + the two new scripts. Landed-since context: ml#1369
   (backup CERTIFIED — first complete verified restore point), ml#1361 (canopy E2E P0-sweep
-  handoff), **ml#1356 (owner decision 2026-08-25: ALL `util/ad-hoc` scripts RETAINED, headers
+  handoff), **ml#1356 (Overtoad decision 2026-08-25: ALL `util/ad-hoc` scripts RETAINED, headers
   rewritten, retirement now exceptional). ml#1356 closes the predecessor's LAST open §0.2
   residual — the `2026-08-16_h2h_wide_nrot3.yaml` durability question — by policy. With it, all
   six §0.2 residuals are closed: #2/#4/#5/#6 via ml#1316, #3 via cascor#580, #1 via ml#1356.**
@@ -246,13 +246,13 @@ Everything in predecessor §6 (recurrence wall-ordering rows, requirements cross
 inconsistency, T2's permanent residual, T7's JR-REC coverage tail, R-1's second clause, plan
 §12.2 items, PF-4/PF-8, F-7). Additionally: the backup arc (certified; ml#1369 owns it), the P5
 fleet rollout, the defect-register round-24 ledger, and open cascor issues #572/#573/#578/#579/
-#582 (other owners; #582 matters here only as §4's publish guardrail).
+#582 (other Overtoads; #582 matters here only as §4's publish guardrail).
 
 ## 7. Approval
 
-**No standing-approval claim.** The re-baseline is owner-approved (2026-08-23, "full post-#514
+**No standing-approval claim.** The re-baseline is Overtoad-approved (2026-08-23, "full post-#514
 re-baseline"), as is the deferral until the host is quiet. The 2026-08-25 peer-hold agreements
-are session commitments, not owner policy. Ask before: spending GPU hours beyond the three named
+are session commitments, not Overtoad policy. Ask before: spending GPU hours beyond the three named
 suites; lowering the quiet bar or running unattended overnight; pulling the shared cascor
 checkout if any live peer session objects at launch time; acting on any predecessor §0.1
 residual.
@@ -318,11 +318,11 @@ multi-agent adversarial SOP), read-only, with independent repo/host probing:
   (checkout-freeze ask) and §2.7 (recovery rule). Minors folded: preamble canonical-list
   extended (L-2 noise, merge-trap rules); publish step now says replace-the-table + resolve the
   E-A/E-I currency caveat; §4 gained the duplicati-re-run status and the post-backup-morning
-  window; §3 gained the terminal discharge-by-telling-the-owner fallback.
+  window; §3 gained the terminal discharge-by-telling-the-Overtoad fallback.
 - **Executability lens — FAIL, 2 majors + 7 minor.** The majors: the detached campaign pins the
   launching checkout for 8–12 h (remedied: §2.3 launch-host rule, §5 trap 8, launcher now echoes
   `ml_dir=`); and §3's re-establishment step depended on a tool absent from some harness
-  contexts (remedied: "where the harness provides it" + owner fallback). Minors folded: exit-2
+  contexts (remedied: "where the harness provides it" + Overtoad fallback). Minors folded: exit-2
   liftoff caveat (§2.4), #588/two-commit gap and void-if-different note (§4), aescrypt added to
   both scripts' hot-process regex, stderr silenced on probe commands in the watch loop, §8
   rewritten one-stanza-per-call with inline paths, port-lock-root check added (§2.2, §8).

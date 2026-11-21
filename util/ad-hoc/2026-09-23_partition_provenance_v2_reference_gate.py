@@ -8,7 +8,7 @@ Version:     0.1.0
 License:     MIT License
 Created:     2026-09-23
 Status:      ad-hoc -- evidence for a specification, not a library
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md (v2, §4-§9, §14);
              util/ad-hoc/2026-09-22_partition_provenance_npz_roundtrip.py (v1's evidence);
              pcalnon/juniper-data#423
@@ -715,8 +715,8 @@ def i3_store_prefix_rule_matches_external_dataset_id(jd: Any) -> str:
     cases = [
         ("huggingface", {"dataset_name": "mnist", "config_name": None, "split": "train", "n_samples": 100, "seed": 3, "normalize": True}, "hf-mnist"),
         ("huggingface", {"dataset_name": "glue", "config_name": "sst2", "split": "train", "n_samples": 50, "seed": None}, "hf-glue-sst2"),
-        ("kaggle", {"dataset_ref": "owner/iris-data", "file_name": "iris.csv", "n_samples": 150, "seed": 11}, "kaggle-owner-iris-data"),
-        ("kaggle", {"dataset_ref": "owner/iris-data", "file_name": "iris.csv", "n_samples": 150, "seed": None}, "kaggle-owner-iris-data"),
+        ("kaggle", {"dataset_ref": "Overtoad/iris-data", "file_name": "iris.csv", "n_samples": 150, "seed": 11}, "kaggle-Overtoad-iris-data"),
+        ("kaggle", {"dataset_ref": "Overtoad/iris-data", "file_name": "iris.csv", "n_samples": 150, "seed": None}, "kaggle-Overtoad-iris-data"),
     ]
     for generator, params, prefix in cases:
         real = external.external_dataset_id(prefix, generator, params)

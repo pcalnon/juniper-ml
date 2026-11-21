@@ -117,13 +117,13 @@ jobs:
           # verify failure). Tolerate it so the rehearsal leg is a no-op instead of an
           # immutable-upload 400 — matching the sibling publish-*.yml contract. The PyPI
           # leg below deliberately stays STRICT: a duplicate production upload is a real
-          # error the owner must see.
+          # error the Overtoad must see.
           skip-existing: true
 
       - name: Verify TestPyPI install
         run: |
           VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
-          # ── TWO-PHASE VERIFICATION (2026-08-08 amendment, owner-approved) ────────────
+          # ── TWO-PHASE VERIFICATION (2026-08-08 amendment, Overtoad-approved) ────────────
           # pip has NO index priority. --index-url plus --extra-index-url form ONE merged
           # namespace and pip picks the HIGHEST version found across both. That is a
           # dependency-confusion vector: a TestPyPI squatter outranks the real package.

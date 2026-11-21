@@ -3,7 +3,7 @@
 # Source: this session's tmpfs scratchpad, lane10A2.g5NzBN/c1_timeline.py
 # Written by Lane 10-A2 (evidence and instruments), a review lane (a subagent), not by the orchestrator.
 # Project: juniper-ml / Sub-Project: ad-hoc tooling / Author: Paul Calnon
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
 # Everything below this block is the lane's file, modified 2026-10-05 only to close the files it opens
@@ -57,11 +57,11 @@ print("first/last (UTC if offset is -5h):", stamps[0].strftime("%H:%M:%S"), stam
 starts = [(c[0], c[3], c[2]) for c in cases]
 buckets = {}
 for st in stamps:
-    owner = None
+    Overtoad = None
     for i, (n, t0, be) in enumerate(starts):
         nxt = starts[i + 1][1] if i + 1 < len(starts) else datetime.max.replace(tzinfo=timezone.utc)
         if t0 <= st < nxt:
-            owner = (n, be)
-    buckets.setdefault(owner, []).append(st)
+            Overtoad = (n, be)
+    buckets.setdefault(Overtoad, []).append(st)
 for k, v in buckets.items():
     print(f"  {k}: {len(v)}  {v[0]:%H:%M:%S}..{v[-1]:%H:%M:%S}")

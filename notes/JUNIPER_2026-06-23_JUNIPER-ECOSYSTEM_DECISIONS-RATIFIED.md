@@ -1,4 +1,4 @@
-# Juniper — Owner Decisions Ratified 2026-06-23
+# Juniper — The Overtoad Decisions Ratified 2026-06-23
 
 **Project**: Juniper ML Research Platform
 **Repository**: pcalnon/juniper-ml (planning hub)
@@ -13,7 +13,7 @@
 
 ## 0. What this is
 
-On 2026-06-23 the owner (Paul) ratified the 10 open decision points that the decision-point reconciliation
+On 2026-06-23 the Overtoad (Paul) ratified the 10 open decision points that the decision-point reconciliation
 had carried as genuinely-live. This note records each **outcome + rationale + resulting action + home doc**,
 so the choices are authoritative and not re-litigated by concurrent sessions reading the older
 recommendation-tense docs. **The single override to flag: D5 (DP-3 P3) was ratified GO against the design's
@@ -22,11 +22,11 @@ would not build it; this note is the instruction that it proceeds.
 
 ## 1. Decision register
 
-| ID | Decision | Ratified outcome | Rationale (owner) | Resulting action | Home doc |
+| ID | Decision | Ratified outcome | Rationale (Overtoad) | Resulting action | Home doc |
 |----|----------|------------------|-------------------|------------------|----------|
 | **D-4** | WS-6 **B4** first | **YES — B4 before the A-phase** | B4 finishes the B-phase and is the A-phase precondition | Retire the test-only `CascorModelCoreAdapter`; point conformance at production `CascorModel` | `JUNIPER_CASCOR_WS6_BPHASE_..._2026-06-19.md` §5 (B4) |
 | **D1** | DR-1: B→A vs park | **COMMIT B→A** (do the A-phase after B; do **not** park-after-B) | T2 gets a real production consumer (RK-4 counterweight); kill-criterion never fired | Proceed to the WS-6 A-phase once B-phase (B4) lands | `JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md` §7 DR-1 |
-| **D2** | Soak bar (OQ-17) | **SOAK COMPLETE** (owner waives the wait; service-core 0.2.0 trusted) | — | A-phase is **not** blocked on soak | `JUNIPER_MODEL_MIDDLEWARE_REFACTOR_..._2026-05-31.md` OQ-17; `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md` A2 |
+| **D2** | Soak bar (OQ-17) | **SOAK COMPLETE** (Overtoad waives the wait; service-core 0.2.0 trusted) | — | A-phase is **not** blocked on soak | `JUNIPER_MODEL_MIDDLEWARE_REFACTOR_..._2026-05-31.md` OQ-17; `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md` A2 |
 | **D3** | Manager appetite | **CONVERGE** `lifecycle/manager` onto the `ServiceLifecycleManager` seam (real convergence, not keep-divergent) | Avoids a permanently-divergent manager; gives a clean A-phase | A-phase: subclass/converge the manager (executor/thread/snapshot/torch boundary) onto the seam | `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md` §6 |
 | **D5** | DP-3 **P3** (torch MLP readout) | **GO — build Rung 2b** *(overrides the design's "lean stop")* | The current dataset catalog doesn't demand it, but building it insures against silently losing the capability/insight on future complex & hybrid datasets; at minimum it falsifiably shows torch adds nothing | Build `MLPReadoutSpec` (Rung 2b) + a `[torch]` extra + a bench row; keep RFF as the numpy default | `JUNIPER_2026-06-20_JUNIPER-RECURRENCE_DP3-READOUT-SPECTRUM-DESIGN.md` §8a/§9 P3 |
 | **D6** | Pre-commit "B5" tail | **FULL SWEEP** | Close the fleet remediation tail completely | F10 (env-name durability) + F7 (`pre-commit-hooks`→v6) + F13 (wheel-install smoke) + recurrence MED/LOW | `JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md` |
@@ -37,8 +37,8 @@ would not build it; this note is the instruction that it proceeds.
 
 ## 2. Two interpretation flags (correct me if wrong)
 
-- **D1** — owner wrote *"concur with the A→B path."* Recorded as the **commit-to-B→A** outcome (proceed with the A-phase after the B-phase; do not park), since D-4 (B4-first) and D3 (converge the manager = A-phase work) make "park" inconsistent. If "A→B" meant something else, flag it.
-- **D8** — owner wrote *"bringing the cascor code into scope for the v1/crossval implementation."* Recorded as the **canopy** crossval consumer surface: `/v1/crossval` is the **recurrence app** endpoint (already shipped on model-core 0.2.0+), and DR-3/OQ-2 concerns **canopy** consuming it — cascor is not part of DR-3. If cascor was genuinely intended, flag it.
+- **D1** — Overtoad wrote *"concur with the A→B path."* Recorded as the **commit-to-B→A** outcome (proceed with the A-phase after the B-phase; do not park), since D-4 (B4-first) and D3 (converge the manager = A-phase work) make "park" inconsistent. If "A→B" meant something else, flag it.
+- **D8** — Overtoad wrote *"bringing the cascor code into scope for the v1/crossval implementation."* Recorded as the **canopy** crossval consumer surface: `/v1/crossval` is the **recurrence app** endpoint (already shipped on model-core 0.2.0+), and DR-3/OQ-2 concerns **canopy** consuming it — cascor is not part of DR-3. If cascor was genuinely intended, flag it.
 
 ## 3. Sequencing (dependency order)
 

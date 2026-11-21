@@ -24,19 +24,19 @@ None.
 - **Quoted:**
   - L169: "**Other sessions:** "canopy combined [577a1c]" and "containers [2703c8]"."
   - L243: "It is untracked there, and its bytes are on branch `docs/canopy-e2e-handoff-2026-09-24`, with no PR."
-  - L248: "Recorded in `…/bubbly-meandering-pie/…/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md:165-170`."
+  - L248: "Recorded in `…/bubbly-meandering-pie/…/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md:165-170`."
   - L249: "All of these are in other sessions' worktrees: read only."
 - **Evidence:**
   - `gh pr view 2096 --repo pcalnon/juniper-ml` returns: created 2026-09-25T01:19:18Z, "docs(handoff): canopy combined -- three canopy handoffs merged into one draft, round 1 done, fix pass owed". It is OPEN, and auto-merge was armed by `pcalnon` (squash).
   - #2096 carries byte-identical copies of both records:
-    - `reports/2026-09-24_canopy-combined-handoff-consensus/r1/predecessors/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md` is blob `cc267d2b`. That equals `git hash-object` of graceful-sprouting-panda's file, and the blob on `docs/canopy-e2e-handoff-2026-09-24`.
+    - `reports/2026-09-24_canopy-combined-handoff-consensus/r1/predecessors/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md` is blob `cc267d2b`. That equals `git hash-object` of graceful-sprouting-panda's file, and the blob on `docs/canopy-e2e-handoff-2026-09-24`.
     - `reports/2026-09-24_canopy-combined-handoff-consensus/r1/DRAFT_r1.md` is blob `ed4de235`, which equals bubbly-meandering-pie's draft. "Nothing was loaded" is at its line 165.
   - #2096's `HANDOFF_2026-09-24_canopy-combined-round-1-done-fix-pass-owed.md:39-40` says of the fourth item: "It is verified and in the draft's A2(a). I acknowledged it by SendMessage and assigned no id."
   - The `ListAgents` result at 01:37:28.116Z in transcript `2fba4397-…jsonl` lists only `containers [2703c8]` (busy) and four offline Remote Control sessions. Neither `canopy combined [577a1c]` nor `defect reg [042116]` appears. The 00:18:48Z listing, which the document relied on, had both.
   - The document never mentions #2096.
 - **Proposed text:**
   - L169: "**Other sessions:** "containers [2703c8]". "canopy combined [577a1c]" handed off at 01:19Z in juniper-ml#2096 (`HANDOFF_2026-09-24_canopy-combined-round-1-done-fix-pass-owed.md`; open, auto-merge armed) and was gone from `ListAgents` by 01:37Z. Its successor owns the fourth canopy item's id. The canopy E2E session has exited."
-  - L243: "…It is untracked there. Its bytes are on branch `docs/canopy-e2e-handoff-2026-09-24` (no PR) and, byte-identical, in juniper-ml#2096 at `reports/2026-09-24_canopy-combined-handoff-consensus/r1/predecessors/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md`."
+  - L243: "…It is untracked there. Its bytes are on branch `docs/canopy-e2e-handoff-2026-09-24` (no PR) and, byte-identical, in juniper-ml#2096 at `reports/2026-09-24_canopy-combined-handoff-consensus/r1/predecessors/HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md`."
   - L248: "…`:165-170`, byte-identical to #2096's `reports/2026-09-24_canopy-combined-handoff-consensus/r1/DRAFT_r1.md:165-170`. Cite that path once #2096 merges."
   - L249: "Until #2096 merges, these are in other sessions' worktrees: read only."
 
@@ -129,14 +129,14 @@ None.
 | Claim (line) | What I ran or read | Result |
 |---|---|---|
 | L3, L7: 2fba4397 = "defect reg [24f8d8]", worktree fizzy-hugging-dream | ListAgents 00:18:48Z and 01:37:28Z; `git branch --show-current` | CONFIRMED |
-| L5: owner's order about 23:25Z | user records 23:25:30.566Z and 23:25:49.935Z | CONFIRMED |
+| L5: Overtoad's order about 23:25Z | user records 23:25:30.566Z and 23:25:49.935Z | CONFIRMED |
 | L6, L182: document 1's path and head | `cat … \| head -3` | CONFIRMED |
 | L9-L11: #2097 head `2e4917c2`; bc31e993 = [042116]; five rounds | `gh pr view 2097`; blob sha; report rounds 1-5 in #2097 | CONFIRMED |
 | L12: document 2's predecessor | on main via #2072 | CONFIRMED |
 | L13: split relayed by [977fa8]; "Resume both here" | 8f86dec2's call answered 07:59:05Z, its SendMessage 07:59:16Z; bc31e993's answer 08:01:26Z | CONFIRMED |
 | L14: document 3 on main via #2084 | #2084 file list; sha equal to main's | CONFIRMED |
 | L16: documents 1 and 2 "now" evidence indexes | document 2, lines 9-11 | REFUTED (L2) |
-| L27, L232: ruling text, 10:22:00.792Z / 18:30:09.820Z, "Releases stay yours." | `owner-ruling-key-leaks-verbatim.md:7,19-20,38`; extractor `--topic key-leaks` rerun is identical except for one trailing newline | CONFIRMED |
+| L27, L232: ruling text, 10:22:00.792Z / 18:30:09.820Z, "Releases stay yours." | `Overtoad-ruling-key-leaks-verbatim.md:7,19-20,38`; extractor `--topic key-leaks` rerun is identical except for one trailing newline | CONFIRMED |
 | L37: `095a2108` on #2077; two commits on canopy#685 | `pulls/2077/commits`; `pulls/685/commits` (`78c08ec3`, `e70b54dc`) | CONFIRMED |
 | L58-L60: nine merged PRs, their merge SHAs and times | `gh pr view` each | CONFIRMED |
 | L58: post-merge `main` CI green on all | actions runs by `head_sha` for all nine merge commits: every push run succeeded | CONFIRMED |
@@ -150,7 +150,7 @@ None.
 | L75: two briefs, their times and contents (four spec files, and so on) | user records 19:37:50.383Z and 23:48:49.313Z | CONFIRMED (N1) |
 | L76: 600 s without a write while alive | gap 20:21:04Z to 20:31:04Z | CONFIRMED |
 | L86: `gh pr create` form; `open_signed_pr.py` refuses an existing branch | `open_signed_pr.py:46-47`, `:275-276` | CONFIRMED |
-| L88, L367, L369: file ownership; both edit `CHANGELOG.md` | diff stats: `0f0f7e0e..d1c66a11` (13 files), `..0bee089e` (3 files) | CONFIRMED |
+| L88, L367, L369: file Overtoadship; both edit `CHANGELOG.md` | diff stats: `0f0f7e0e..d1c66a11` (13 files), `..0bee089e` (3 files) | CONFIRMED |
 | L89, L390-L391: #690's branch and commits; 2 MEDIUM / 3 LOW / 2 NIT | `pulls/690/commits`; `cascor688-validation.md` headings | CONFIRMED |
 | L97-L99: range; primer lines; register items | `2439d049^` is `990ef3f9`. `-U0` hunks: primer lines exactly as listed (6085 is inside the arms' block and unchanged); register L512, 766, 1297, 1430, 1635, 1699 are the five named items | CONFIRMED |
 | L106, L264: primer 4742-4743 stale since data#281 | primer text; data#281 "own the 422 contract" | CONFIRMED |

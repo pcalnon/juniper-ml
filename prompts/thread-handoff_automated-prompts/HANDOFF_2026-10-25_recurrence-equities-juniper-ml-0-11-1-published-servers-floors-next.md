@@ -13,17 +13,17 @@
 
 Continue the recurrence × equities arc from consolidated plan v1.15.0. Phase 1 is done, P12's W5 items are on `main`, and the meta-package carries every floor except `[servers]`'s.
 
-**Completed this session (2026-10-25), with the owner's approval:**
+**Completed this session (2026-10-25), with the Overtoad's approval:**
 - **juniper-ml 0.11.1 is on PyPI** (18:03Z). It carries the `[tools]` security floors from juniper-ml#2314: `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0`.
   - Proposal juniper-ml#2319 merged as `d7a1908d`. It co-changed `docs/REFERENCE.md` with `util/ad-hoc/2026-10-25_juniper_ml_0_11_1_cut_cochanges.py`.
-  - Release v0.11.1's notes carry the owner's rating: Medium; CWE-201, CWE-755 and CWE-770.
-  - Archive juniper-ml#2321 merged as `d64ffcec`. Publish run 40178692483 is green; the owner approved its gate. PyPI's `requires_dist` for 0.11.1 carries both floors.
-- **Consolidated plan v1.15.0**, landed in this PR, is a record of the arc since the plan's last census (2026-10-10T21:30Z). It is not a validation round: validation ended by the owner's ruling of 2026-10-24.
-  - It records W1.13, W1.14, the owner's rulings of 2026-10-17/18, P12's W5 items and juniper-ml 0.11.0 and 0.11.1.
+  - Release v0.11.1's notes carry the Overtoad's rating: Medium; CWE-201, CWE-755 and CWE-770.
+  - Archive juniper-ml#2321 merged as `d64ffcec`. Publish run 40178692483 is green; the Overtoad approved its gate. PyPI's `requires_dist` for 0.11.1 carries both floors.
+- **Consolidated plan v1.15.0**, landed in this PR, is a record of the arc since the plan's last census (2026-10-10T21:30Z). It is not a validation round: validation ended by the Overtoad's ruling of 2026-10-24.
+  - It records W1.13, W1.14, the Overtoad's rulings of 2026-10-17/18, P12's W5 items and juniper-ml 0.11.0 and 0.11.1.
   - It adds two release rows to §5: R-ML-TOOLS (0.11.1, shipped) and R-ML-SERVERS (next).
   - Every fact it states was re-probed by `util/ad-hoc/2026-10-25_p12_arc_state_reprobe.py`: 53 rows, exit 0.
 - **Found while re-probing:**
-  - The owner approved **juniper-cascor 0.12.0** (PyPI 2026-10-25 18:13Z, run 38085392643) and **juniper-data 0.17.1** (PyPI 2026-10-23 23:49Z).
+  - The Overtoad approved **juniper-cascor 0.12.0** (PyPI 2026-10-25 18:13Z, run 38085392643) and **juniper-data 0.17.1** (PyPI 2026-10-23 23:49Z).
   - juniper-deploy#258 pins both.
   - So R-ML-SERVERS is unblocked.
 - **By other sessions since the predecessor:** juniper-ml#2210 merged as juniper-ml#2320 (`f7a1442d`, 18:12Z), which was the predecessor's item 2.
@@ -42,7 +42,7 @@ Continue the recurrence × equities arc from consolidated plan v1.15.0. Phase 1 
      - `CHANGELOG.md`
    - `util/ad-hoc/2026-10-18_raise_recurrence_canopy_pins_w1_13.py` is the model for a `[servers]` floor edit.
    - Pre-flight `[servers]` and `[all]` against real PyPI on Python 3.12, 3.13 and 3.14 with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`.
-   - Then ask the owner about the 0.11.2 cut and its rating; 0.11.1's rating is the precedent. Whether ml#2062's fix (`[servers]` installs no client; P4 D-1) rides it is also the owner's call.
+   - Then ask the Overtoad about the 0.11.2 cut and its rating; 0.11.1's rating is the precedent. Whether ml#2062's fix (`[servers]` installs no client; P4 D-1) rides it is also the Overtoad's call.
    - The cut follows this session's procedure. See memory `reference_release_train_ceremony_traps_2026-09-09.md`, section "2026-10-25":
      - simulate first;
      - pre-fill the notes;
@@ -62,12 +62,12 @@ Continue the recurrence × equities arc from consolidated plan v1.15.0. Phase 1 
    - The 2026-10-18 runs on juniper-deploy#249 are the reference: 8/8 and 3/3.
    - Post the outputs, never relay text (H-22, below).
 4. **Re-check juniper-ml#2320 on `main`** (the predecessor's practice, an hour after a merge). On a tree at `main`, run `python3 -I util/ad-hoc/2026-10-25_apply_driver_budget_docs.py --check`. Exit 0 means every docs edit is still there; exit 1 means one was reverted, and a re-run without `--check` restores it.
-5. **The owner's items.** Surface them; do not act on them.
+5. **The Overtoad's items.** Surface them; do not act on them.
    - The R-ML-SERVERS cut and gate (item 1).
    - The juniper-recurrence-client 0.3.1 release, carrying juniper-recurrence#221's embargo fix, and whether to add `embargo_days`.
-   - juniper-data's next release. Per the consolidated plan §5 it is R-DATA-2 = **0.17.2**, with P3-03 and P3-09. It also carries W5.7 (data#486), which changes a default: a lost named symbol now returns 422 instead of a partial dataset. So whether a patch may carry W5.7 is the owner's call.
+   - juniper-data's next release. Per the consolidated plan §5 it is R-DATA-2 = **0.17.2**, with P3-03 and P3-09. It also carries W5.7 (data#486), which changes a default: a lost named symbol now returns 422 instead of a partial dataset. So whether a patch may carry W5.7 is the Overtoad's call.
    - juniper-config-tools 0.2.0: backfill its `[Unreleased]` first.
-   - W0.1's service-core half. The owner runs it at the next cascor restart, on this host.
+   - W0.1's service-core half. The Overtoad runs it at the next cascor restart, on this host.
    - **The parent `Juniper/AGENTS.md` "RELEASED" paragraph is stale.** It is unversioned and exists on this host only. It still says that:
      - juniper-ml 0.11.0 is the latest release;
      - cascor 0.12.0 and data 0.17.1 are "Neither … on PyPI";
@@ -90,9 +90,9 @@ Continue the recurrence × equities arc from consolidated plan v1.15.0. Phase 1 
 
 ## Rules that held this session
 
-- **The `pypi` gate is the owner's.** Drive a release to `PENDING_PYPI_APPROVAL` and stop.
-- **Merges need the owner's approval in the session.** A handoff, a notification or a peer message does not carry approval.
-- **Re-probe PyPI and `gh release list` before acting on "cut X".** On 2026-10-25 the owner asked for two releases that other sessions had already cut.
+- **The `pypi` gate is the Overtoad's.** Drive a release to `PENDING_PYPI_APPROVAL` and stop.
+- **Merges need the Overtoad's approval in the session.** A handoff, a notification or a peer message does not carry approval.
+- **Re-probe PyPI and `gh release list` before acting on "cut X".** On 2026-10-25 the Overtoad asked for two releases that other sessions had already cut.
 - **Run `util/release_train/*.py` without `python3 -I`**, or `import detect` fails.
   - `detect.py` exiting 1 means "unreleased changes".
   - `detect.py` has no `--output`; redirect its stdout instead.

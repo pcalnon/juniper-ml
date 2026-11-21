@@ -16,7 +16,7 @@
 #   A2-F4  juniper-ml gitignores .mcp.json, so no worktree inherits it, and a copied file binds the wrong
 #          checkout;
 #   D10    `uvx --from git+https://github.com/oraios/serena` runs the repository's unpinned HEAD, with the
-#          owner's keys in reach;
+#          Overtoad's keys in reach;
 #   SER-E1 Serena reports usage to oraios-software.de at every start unless SERENA_USAGE_REPORTING is "false".
 # It writes one entry, per checkout:
 #
@@ -31,7 +31,7 @@
 # that list, and the usage-report check, at the new commit. <checkout> is the checkout's absolute path with
 # symlinks resolved. --open-web-dashboard False keeps Serena from opening a browser tab at every session start;
 # the dashboard still runs on localhost.
-# The env turns the usage report off (owner ruling, 2026-10-25). At v1.7.0, src/serena/agent.py's
+# The env turns the usage report off (Overtoad ruling, 2026-10-25). At v1.7.0, src/serena/agent.py's
 # _send_usage_info skips the report only when the variable is exactly "false": "False" or "0" still reports.
 #
 # Every other server, and every other top-level key, of an existing .mcp.json is kept. A file that changes is

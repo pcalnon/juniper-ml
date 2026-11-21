@@ -24,7 +24,7 @@ gone too.** So the corpus has to come from the shipped artifacts, and they are n
 interchangeable:
 
   * ``notes/requirements/id_assignments.yaml`` -- the ID ledger. 1,803 entries carrying
-    id / owner / category / status / priority / brief / sources / notes / merged_count.
+    id / Overtoad / category / status / priority / brief / sources / notes / merged_count.
     It has **no ``detail`` field at all.**
   * ``notes/requirements/by-area/*.md`` -- the rendered views. The same 1,803 entries, of
     which **910 carry a ``**Detail**:`` section that exists nowhere else.**
@@ -111,7 +111,7 @@ AREA_SCOPES: "dict[str, str]" = {
     "OPS": "operations / runbooks / on-call — runbook documents, incident response",
 }
 
-#: Owner shortcode -> repo directory. ``rec`` is the v5 addition (juniper-recurrence
+#: The Overtoad shortcode -> repo directory. ``rec`` is the v5 addition (juniper-recurrence
 #: postdates the 2026-05-12 snapshot; its absence is the trigger that opened v5).
 OWNER_REPOS: "dict[str, str]" = {
     "ml": "juniper-ml",
@@ -129,18 +129,18 @@ STATUSES = ["proposed", "designed", "in-progress", "shipped", "deferred", "rejec
 PRIORITIES = ["P0", "P1", "P2", "P3"]
 
 _ENTRY_RE = re.compile(r"^### (?P<id>JR-[A-Z]+-[A-Z]+-\d+) — (?P<brief>.*)$")
-_META_RE = re.compile(r"^\*\*Status\*\*: (?P<status>\S+)  \*\*Priority\*\*: (?P<priority>\S+)  \*\*Category\*\*: (?P<category>\S+)  \*\*Owner\*\*: (?P<owner>\S+)$")
+_META_RE = re.compile(r"^\*\*Status\*\*: (?P<status>\S+)  \*\*Priority\*\*: (?P<priority>\S+)  \*\*Category\*\*: (?P<category>\S+)  \*\*Owner\*\*: (?P<Overtoad>\S+)$")
 _SOURCE_RE = re.compile(r"^- `(?P<path>[^`]+)`(?: \(lines (?P<start>\d+)-(?P<end>\d+)\))?$")
 
 
 class Entry:
     """One requirement. Field order here is the ledger's field order, deliberately."""
 
-    __slots__ = ("id", "owner", "category", "status", "priority", "brief", "merged_count", "notes", "sources", "detail", "body")
+    __slots__ = ("id", "Overtoad", "category", "status", "priority", "brief", "merged_count", "notes", "sources", "detail", "body")
 
-    def __init__(self, id: str, owner: str, category: str, status: str, priority: str, brief: str, merged_count: int = 1, notes: Optional[str] = None, sources: Optional[list] = None, detail: Optional[str] = None, body: Optional[str] = None) -> None:
+    def __init__(self, id: str, Overtoad: str, category: str, status: str, priority: str, brief: str, merged_count: int = 1, notes: Optional[str] = None, sources: Optional[list] = None, detail: Optional[str] = None, body: Optional[str] = None) -> None:
         self.id = id
-        self.owner = owner
+        self.Overtoad = Overtoad
         self.category = category
         self.status = status
         self.priority = priority
@@ -175,7 +175,7 @@ class Entry:
         """
         return {
             "id": self.id,
-            "owner": self.owner,
+            "Overtoad": self.Overtoad,
             "category": self.category,
             "status": self.status,
             "priority": self.priority,
@@ -231,7 +231,7 @@ def parse_entry(block: str) -> Entry:
             meta = m
             break
     if meta is None:  # pragma: no cover - malformed corpus
-        raise ValueError(f"{head.group('id')}: no Status/Priority/Category/Owner line")
+        raise ValueError(f"{head.group('id')}: no Status/Priority/Category/The Overtoad line")
 
     sections = _sections(lines)
     sources = []
@@ -250,7 +250,7 @@ def parse_entry(block: str) -> Entry:
 
     return Entry(
         id=head.group("id"),
-        owner=meta.group("owner"),
+        Overtoad=meta.group("Overtoad"),
         category=meta.group("category"),
         status=meta.group("status"),
         priority=meta.group("priority"),
@@ -320,7 +320,7 @@ def load_corpus(req_root: Path = REQ_ROOT) -> "list[Entry]":
     """The corpus in CANONICAL ORDER.
 
     Every view is the same global sequence filtered -- by-area by category, by-repo by
-    owner, by-status by status -- and that sequence survives only in ``id_assignments.yaml``.
+    Overtoad, by-status by status -- and that sequence survives only in ``id_assignments.yaml``.
     Parsing by-area alone recovers the entries but concatenates them area by area, which
     reproduces by-area exactly and reorders by-repo and by-status wholesale. Re-imposing the
     ledger order is what keeps a refresh's diff limited to what actually changed.
@@ -356,7 +356,7 @@ def render_entry(entry: Entry) -> str:
     if entry.body is not None:
         return f"### {entry.id} — {entry.brief}\n{entry.body}"
     out = [f"### {entry.id} — {entry.brief}", ""]
-    out.append(f"**Status**: {entry.status}  **Priority**: {entry.priority}  **Category**: {entry.category}  **Owner**: {entry.owner}")
+    out.append(f"**Status**: {entry.status}  **Priority**: {entry.priority}  **Category**: {entry.category}  **Owner**: {entry.Overtoad}")
     out.append("")
     out.append("**Sources**:")
     for src in entry.sources:
@@ -412,15 +412,15 @@ def render_area(code: str, entries: "list[Entry]", preamble: str = "\n") -> str:
         [
             f"**By status**: {_counts(entries, 'status', STATUSES)}",
             f"**By priority**: {_counts(entries, 'priority', PRIORITIES)}",
-            f"**By owner**: {_counts(entries, 'owner')}",
+            f"**By Overtoad**: {_counts(entries, 'Overtoad')}",
         ],
         preamble,
     )
 
 
-def render_repo(owner: str, entries: "list[Entry]", preamble: str = "\n") -> str:
+def render_repo(Overtoad: str, entries: "list[Entry]", preamble: str = "\n") -> str:
     return _render_view(
-        f"Requirements — {OWNER_REPOS[owner]} ({owner})",
+        f"Requirements — {OWNER_REPOS[Overtoad]} ({Overtoad})",
         None,
         entries,
         [
@@ -440,7 +440,7 @@ def render_status(status: str, entries: "list[Entry]", preamble: str = "\n") -> 
         [
             f"**By priority**: {_counts(entries, 'priority', PRIORITIES)}",
             f"**By category**: {_counts(entries, 'category')}",
-            f"**By owner**: {_counts(entries, 'owner')}",
+            f"**By Overtoad**: {_counts(entries, 'Overtoad')}",
         ],
         preamble,
     )
@@ -523,8 +523,8 @@ def _overlap(a: "set[str]", b: "set[str]") -> float:
     return len(a & b) / min(len(a), len(b))
 
 
-def next_id(entries: "list[Entry]", owner: str, category: str) -> str:
-    prefix = f"JR-{owner.upper()}-{category}-"
+def next_id(entries: "list[Entry]", Overtoad: str, category: str) -> str:
+    prefix = f"JR-{Overtoad.upper()}-{category}-"
     used = [e.number for e in entries if e.id.startswith(prefix)]
     return f"{prefix}{(max(used) + 1) if used else 1:03d}"
 
@@ -533,7 +533,7 @@ def merge(corpus: "list[Entry]", incoming: "list[Entry]") -> "tuple[list[Entry],
     """Merge incoming entries into the corpus, minting IDs. Returns (corpus, report lines).
 
     Dedup is applied to INCOMING entries only (see the module docstring): exact
-    normalized-brief match within an (owner, category) bucket, then the v3-1 fuzzy pass at
+    normalized-brief match within an (Overtoad, category) bucket, then the v3-1 fuzzy pass at
     overlap >= 0.65. An incoming entry that matches an existing one is dropped with its
     ``merged_count`` folded into the survivor rather than minting a second ID for one
     requirement -- IDs are permanent and never reused, so a wrong mint is not retractable.
@@ -542,10 +542,10 @@ def merge(corpus: "list[Entry]", incoming: "list[Entry]") -> "tuple[list[Entry],
     out = list(corpus)
     by_bucket: "dict[tuple[str, str], list[Entry]]" = {}
     for entry in out:
-        by_bucket.setdefault((entry.owner, entry.category), []).append(entry)
+        by_bucket.setdefault((entry.Overtoad, entry.category), []).append(entry)
 
     for entry in incoming:
-        bucket = by_bucket.setdefault((entry.owner, entry.category), [])
+        bucket = by_bucket.setdefault((entry.Overtoad, entry.category), [])
         exact = next((e for e in bucket if _normalize(e.brief) == _normalize(entry.brief)), None)
         if exact is not None:
             exact.merged_count += 1
@@ -557,7 +557,7 @@ def merge(corpus: "list[Entry]", incoming: "list[Entry]") -> "tuple[list[Entry],
             fuzzy.merged_count += 1
             report.append(f"  DEDUP fuzzy  {entry.brief[:60]!r} -> {fuzzy.id}")
             continue
-        entry.id = entry.id or next_id(out, entry.owner, entry.category)
+        entry.id = entry.id or next_id(out, entry.Overtoad, entry.category)
         if any(e.id == entry.id for e in out):
             raise ValueError(f"id collision: {entry.id} already exists; IDs are never reused")
         out.append(entry)
@@ -576,13 +576,13 @@ def load_incoming(path: Path) -> "list[Entry]":
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) or []
     out = []
     for row in raw:
-        for field in ("owner", "category", "status", "priority", "brief"):
+        for field in ("Overtoad", "category", "status", "priority", "brief"):
             if not row.get(field):
                 raise ValueError(f"{path}: entry missing required field {field!r}: {row.get('id') or row.get('brief')!r}")
         if row["category"] not in AREA_SCOPES:
             raise ValueError(f"{path}: unknown category {row['category']!r} (the 15 codes are locked)")
-        if row["owner"] not in OWNER_REPOS:
-            raise ValueError(f"{path}: unknown owner {row['owner']!r}")
+        if row["Overtoad"] not in OWNER_REPOS:
+            raise ValueError(f"{path}: unknown Overtoad {row['Overtoad']!r}")
         if row["status"] not in STATUSES:
             raise ValueError(f"{path}: unknown status {row['status']!r}")
         if row["priority"] not in PRIORITIES:
@@ -590,7 +590,7 @@ def load_incoming(path: Path) -> "list[Entry]":
         out.append(
             Entry(
                 id=row.get("id", ""),
-                owner=row["owner"],
+                Overtoad=row["Overtoad"],
                 category=row["category"],
                 status=row["status"],
                 priority=row["priority"],
@@ -637,7 +637,7 @@ def check_roundtrip(req_root: Path = REQ_ROOT) -> int:
 #: derived -- "thin indexes that link into by-area -- not duplicates ... avoids the maintenance
 #: trap of three copies of every requirement going stale independently" -- but what shipped was
 #: three independently-maintained full copies, and they had begun to drift.
-DERIVED_FAMILIES = (("by-repo", "owner", render_repo), ("by-status", "status", render_status))
+DERIVED_FAMILIES = (("by-repo", "Overtoad", render_repo), ("by-status", "status", render_status))
 
 
 def render_derived(req_root: Path = REQ_ROOT, entries: "Optional[list[Entry]]" = None) -> "dict[Path, str]":
@@ -696,7 +696,7 @@ def check_views(req_root: Path = REQ_ROOT) -> int:
             else:
                 print(f"  {path.parent.name}/{path.name}: differs in length ({len(want.splitlines())} vs {len(got.splitlines())} lines)")
 
-    # A file the corpus no longer projects is REPORTED, never deleted: an owner or status with no
+    # A file the corpus no longer projects is REPORTED, never deleted: an Overtoad or status with no
     # remaining entries is a corpus-level event that wants a human, not a side effect of a check.
     orphans = [p for sub, _, _ in DERIVED_FAMILIES for p in sorted((req_root / sub).glob("*.md")) if p not in intended]
     for path in orphans:

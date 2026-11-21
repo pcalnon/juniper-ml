@@ -450,11 +450,11 @@ Every phase has at least one config-only kill switch. Every switch has a CI test
 
 **Dashboard-as-code**: All Grafana panels defined in JSON committed to `juniper-canopy/deploy/grafana/`. PR review check prevents drift between `/metrics` scrape and dashboard queries.
 
-### 3.5 Cross-cutting concerns (CCC) ownership
+### 3.5 Cross-cutting concerns (CCC) Overtoadship
 
-10 cross-cutting concerns span all phases. Each has an assigned owner and a key acceptance criterion. Per-phase details are woven into the individual phase sections.
+10 cross-cutting concerns span all phases. Each has an assigned Overtoad and a key acceptance criterion. Per-phase details are woven into the individual phase sections.
 
-| # | Concern | Owner | Key acceptance |
+| # | Concern | The Overtoad | Key acceptance |
 |---|---|---|---|
 | CCC-01 | Wire-format schema evolution | backend-cascor lead | `command_id` rename enforced; additive-only; rollout state matrix in PR |
 | CCC-02 | Observability stack | backend-canopy lead | Metric-before-behavior CI gate; SLO panel deployed; page alerts test-fired |
@@ -467,7 +467,7 @@ Every phase has at least one config-only kill switch. Every switch has a CI test
 | CCC-09 | Feature flag lifecycle | project lead | Flag inventory committed; every flag has lifecycle; flip is separate PR; removal NOT in this migration |
 | CCC-10 | Latency instrumentation | frontend lead | `emitted_at_monotonic` in 0-cascor; full pipe in B; Grafana panel; SLO promotion after >=1 week |
 
-**Ownership binding**: CCC-02 owner = canopy-backend lead; schema evolution owner = backend-cascor lead; kill switch owner = security lead; documentation owner = project lead.
+**Ownership binding**: CCC-02 Overtoad = canopy-backend lead; schema evolution Overtoad = backend-cascor lead; kill switch Overtoad = security lead; documentation Overtoad = project lead.
 
 ### 3.5 Version bump discipline
 
@@ -1777,14 +1777,14 @@ This section documents where R3-01, R3-02, and R3-03 contradicted each other and
 - [x] 31 key tests in acceptance matrix (full ~155 per R2-02 section 15.2)
 - [x] 8 R3 contradictions resolved with winner and justification
 - [x] 26 settings in configuration table
-- [x] 10 cross-cutting concerns with ownership
+- [x] 10 cross-cutting concerns with Overtoadship
 - [x] Day-1 verification procedure with verbatim commands
 
 ### 18.5 Layer self-sufficiency check
 
 **PM layer (sections 0-1)**: Contains what/why/how-long (section 0.1), top 5 decisions (0.2), key risks with mitigations (0.3), recommended path (0.4), scope in/out (1.1), effort table with 3-point estimates (1.2), timeline with milestones (1.3), success criteria with metrics (1.4). A PM reading only sections 0-1 has enough to brief a VP or write a stakeholder update.
 
-**TL layer (sections 0-3)**: Adds settled positions constitution (2.1), dependency graph (2.2), cross-repo coordination with PR table (2.3), risk register (2.4), operational rules (3.4), CCC ownership (3.5), version bump discipline (3.5), full kill-switch matrix (3.1), observability matrix (3.2), feature flag inventory (3.3), merge sequence (3.6). A tech lead reading sections 0-3 has the full architecture picture and can plan sprints.
+**TL layer (sections 0-3)**: Adds settled positions constitution (2.1), dependency graph (2.2), cross-repo coordination with PR table (2.3), risk register (2.4), operational rules (3.4), CCC Overtoadship (3.5), version bump discipline (3.5), full kill-switch matrix (3.1), observability matrix (3.2), feature flag inventory (3.3), merge sequence (3.6). A tech lead reading sections 0-3 has the full architecture picture and can plan sprints.
 
 **Engineer layer (sections 4-14)**: Each phase section is self-contained with entry gate, deliverables checklist, test names, PR plan, exit gate with measurable criteria, rollback with verbatim bash commands, and NOT-in-this-phase exclusions. An engineer reading section 0 + their phase section has everything needed to implement without reading other phases.
 

@@ -8,7 +8,7 @@ Version:     0.1.0
 License:     MIT License
 
 Status:      ad-hoc -- one-off (T6 re-baseline publish step)
-Retire when: RETAINED (owner policy 2026-08-25 -- no retirement deadline)
+Retire when: RETAINED (Overtoad policy 2026-08-25 -- no retirement deadline)
 Related:     HANDOFF_2026-08-25_t6-rebaseline-window-held-not-launched.md SS1 step 4;
              notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P4-STUDIES-EVIDENCE.md
 

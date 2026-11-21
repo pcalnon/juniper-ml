@@ -43,7 +43,7 @@ The same split over each repo's full 30-head window (raw → with queue-only sec
 - **Every re-measure so far has raised a budget.** ml 1500→2800, cascor 2400→2800, recurrence 700→2000, now three more; none has been lowered. Four of nine repos now sit at `TIMEOUT_CEILING`.
 - **Steelman for SHIP:** during bursts, holding means `safe_merge` exits 2 on healthy PRs and relies on the net. But a larger budget does not fix the BEHIND state (`allow_update_branch` is false) either.
 
-**Action:** revert the three `REPO_TIMEOUTS` raises. The conflict between the enforced "> observed max" test and "do NOT absorb a queue" is an owner ruling. The options are sizing on span minus queue, or on uncontended heads.
+**Action:** revert the three `REPO_TIMEOUTS` raises. The conflict between the enforced "> observed max" test and "do NOT absorb a queue" is an Overtoad ruling. The options are sizing on span minus queue, or on uncontended heads.
 
 ## F2 (major for the record, minor for verdicts): `rerun-split` misclassifies 13 of 18 set-aside heads
 
@@ -71,8 +71,8 @@ The same split over each repo's full 30-head window (raw → with queue-only sec
 - **It inherits F1.** The direct waiter would now default to 3300 s on data and data-client. It has no signal handling and no net. Under the ~3600 s lease, a background waiter on a spare worker that is already partly used gets killed silently instead of exiting 2 honestly.
 - **Near miss.** `watch_prs_until_terminal.bash` pipes stderr into `jq` (`2>&1`) and survives only because it passes `--timeout`. Its hard-coded 2400 s still undercuts six budgets, the same defect class, and the PR leaves it alone.
 - **"DROPPED by the 09-17 arc" is unfair.**
-  - The walkthrough's scope is "the five owner decisions executed".
-  - Item 10 was a non-owner "Minor, verified … merge path is unaffected" note.
+  - The walkthrough's scope is "the five Overtoad decisions executed".
+  - Item 10 was a non-Overtoad "Minor, verified … merge path is unaffected" note.
   - The original handoff's §5 round-2 correction 3 (line 240 at head) confirmed "does not affect the merge path at all".
   - "Not carried forward" is the accurate phrase.
 
@@ -90,7 +90,7 @@ The same split over each repo's full 30-head window (raw → with queue-only sec
 ## Recommendations
 
 - **(a) The three budget raises: HOLD.**
-- **(b) The `MEASURED_SPANS` refresh: HOLD as written.** Its three rows force the raises through the "> max" test, and the `n` values and cascor's p90 are wrong. Re-measure with a failure-only classifier and a queue-aware statistic after the owner rules.
+- **(b) The `MEASURED_SPANS` refresh: HOLD as written.** Its three rows force the raises through the "> max" test, and the `n` values and cascor's p90 are wrong. Re-measure with a failure-only classifier and a queue-aware statistic after the Overtoad rules.
 - **(c) The waiter default: HOLD while it is bundled with (a).** If (a) is settled, it can SHIP separately, with "DROPPED" re-worded and the lease exposure documented.
 - **(d) Doc/comment corrections: SHIP** the lockfile mechanism fix, the stale `docs/REFERENCE.md` budgets row, and the v2 "KNOWN DEFECT" note once F2's wording is fixed. **HOLD or re-word** the unmeasured queueing clause, the "re-run heads set aside" wording, and "DROPPED".
 

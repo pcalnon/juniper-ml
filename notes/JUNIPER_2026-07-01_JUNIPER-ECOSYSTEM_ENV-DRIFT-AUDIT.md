@@ -128,7 +128,7 @@ core that "Provides the top-level `candidate_unit` import" the worker executes. 
 - **Remediation**: install the package into the env —
   `/opt/miniforge3/envs/JuniperCascor1/bin/python -m pip install "juniper-cascor-model>=0.1.0"` (or reinstall
   from the worker's `requirements.lock`). If `juniper-cascor-model` 0.1.0 is not yet on PyPI or the worker is
-  intentionally not run from this env, the owner should confirm that expectation instead of installing.
+  intentionally not run from this env, the Overtoad should confirm that expectation instead of installing.
 - **Escalation note**: escalate to **high** if (a) the worker is actively executed from `JuniperCascor1`
   **and** (b) `candidate_unit` cannot be resolved from another on-`sys.path` source. Neither is verifiable
   read-only (see §8).

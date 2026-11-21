@@ -3,7 +3,7 @@
 #
 # Source: pcalnon/juniper-data conf/conda_environment.yaml at main 7465d5a4f479f9e5ae626dbbde1f231c29745c31
 # (blob 6a60a671), a hand-kept YAML env spec that pins only python=3.14, with channels conda-forge, pytorch,
-# nvidia, plotly, RMG, numba, jasonb857, ehmoussi and konstantin-orangeqs. The owner's checkout
+# nvidia, plotly, RMG, numba, jasonb857, ehmoussi and konstantin-orangeqs. The Overtoad's checkout
 # (~/Development/python/Juniper/juniper-data) was at that same commit, its tracked files identical.
 #
 # Derivation rules (2026-10-19):

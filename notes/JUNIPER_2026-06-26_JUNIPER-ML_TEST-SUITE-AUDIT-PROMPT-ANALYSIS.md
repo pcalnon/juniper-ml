@@ -121,7 +121,7 @@ Canonical commands per unit (representative):
 ### Systemic gaps (the heart of why the suites are green but canopy is dead)
 
 1. **No per-file coverage gate exists anywhere.** Every gate is an **aggregate** `--cov-fail-under` / `coverage report --fail-under`.
-    - The owner's "per-file ≥90% / sub-module-avg ≥95%" target is therefore **greenfield in all 19 units** — there is no existing mechanism to extend.
+    - The Overtoad's "per-file ≥90% / sub-module-avg ≥95%" target is therefore **greenfield in all 19 units** — there is no existing mechanism to extend.
 2. **Thresholds often live only in the CI YAML, not `pyproject.toml`** (observability, model-core, ci-tools, config-tools, doc-tools, and the cascor/client/worker/data family via `coverage report --fail-under=$ENV`).
     - A bare local `pytest` is therefore **ungated** — drift can land green locally.
 3. **Aggregate computed from a partial subset.** The two biggest repos compute their gate from a **unit-only** subset against the **whole** `src/` tree (cascor: `-m "unit and not slow"`; canopy: `unit/ + regression/` only).
@@ -135,7 +135,7 @@ Canonical commands per unit (representative):
 
 ## 5. The downstream task in one line
 
-Produce a grounded, owner-actionable **plan** that, when executed, makes the 20 Juniper coverage units reach per-file ≥90% / sub-module-avg ≥95%, gives every user-facing webapp click-through tests modeled on canopy's harness, adds a **regression test for every issue** in the contemporaneous canopy debug doc via a **re-runnable ingestion procedure** that keeps absorbing newly-appended issues, and installs durable guards against the "green tests / dead app" class itself.
+Produce a grounded, Overtoad-actionable **plan** that, when executed, makes the 20 Juniper coverage units reach per-file ≥90% / sub-module-avg ≥95%, gives every user-facing webapp click-through tests modeled on canopy's harness, adds a **regression test for every issue** in the contemporaneous canopy debug doc via a **re-runnable ingestion procedure** that keeps absorbing newly-appended issues, and installs durable guards against the "green tests / dead app" class itself.
 
 ---
 

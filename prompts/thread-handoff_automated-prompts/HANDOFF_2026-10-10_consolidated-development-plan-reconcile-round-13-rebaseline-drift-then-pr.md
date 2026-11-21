@@ -1,11 +1,11 @@
 # Thread handoff: consolidated development plan, reconcile round 13 and the drift into v1.13.0, then PR
 
-**Written**: 2026-10-10 ~10:50Z by session `3e8595eb` (Claude session `session_016ZArnaAiHH5SUAEBj71fEJ`), at the round-13 boundary, on the owner's request.
+**Written**: 2026-10-10 ~10:50Z by session `3e8595eb` (Claude session `session_016ZArnaAiHH5SUAEBj71fEJ`), at the round-13 boundary, on the Overtoad's request.
 **Supersedes**: `HANDOFF_2026-10-08_consolidated-development-plan-reconcile-round-12-then-round-13-and-pr.md`, which this session consumed (it gets a CONSUMED banner in the plan's PR). That file, like every plan file, is still UNTRACKED. This handoff alone lands on `main`, through its own docs PR, opened from `origin/main` by the session that wrote it.
 
-> **CONSUMED 2026-10-10 by session `560c1ec5`.** It verified the starting state and asked the four owner questions first. The owner ruled: land the record now and re-baseline as v1.13.0 after; fix-forward releases are owed for R-OBS-SC and R-DATA; H-23 narrows and S0.3's docs PR stays; a round whose only MAJORs are the read's pins may end validation.
+> **CONSUMED 2026-10-10 by session `560c1ec5`.** It verified the starting state and asked the four Overtoad questions first. The Overtoad ruled: land the record now and re-baseline as v1.13.0 after; fix-forward releases are owed for R-OBS-SC and R-DATA; H-23 narrows and S0.3's docs PR stays; a round whose only MAJORs are the read's pins may end validation.
 > The record landed as ml#2214 (v1.12.1, 81 files, merged 2026-10-10T20:19:43Z). Round 13 was then reconciled and the drift to 21:30Z taken in as v1.13.0 (`reports/2026-10-04_consolidated-development-plan/round13-reconciliation.md`), and round 14 ran on it (`round14-reconciliation.md` in the same directory).
-> On 2026-10-24 the owner ruled to correct and land with no round 15, so v1.13.0 and round 14's corrections (v1.14.0) landed together through the PR that carries this banner. The corrections this session found in the text below are in `round13-reconciliation.md`, "Corrections to the handoff this session consumed". This file is kept as the archived mid-arc handoff.
+> On 2026-10-24 the Overtoad ruled to correct and land with no round 15, so v1.13.0 and round 14's corrections (v1.14.0) landed together through the PR that carries this banner. The corrections this session found in the text below are in `round13-reconciliation.md`, "Corrections to the handoff this session consumed". This file is kept as the archived mid-arc handoff.
 
 Continue the consolidated-development-plan arc in worktree
 `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/concurrent-gathering-biscuit`
@@ -43,12 +43,12 @@ Short forms: `EX/` = `reports/2026-10-04_consolidated-development-plan/`; `HO/` 
 
   That is 46 findings, 1 BLOCKER and 16 MAJORs, so the ending rule does not end validation. None is re-derived yet.
 
-## Open questions for the owner (ask before step 3)
+## Open questions for the Overtoad (ask before step 3)
 
 1. **Re-baseline or land as a record?** Since round 13's freeze, much of the plan's own Wave 0/1 has happened outside it (drift below). Recommendation: land the plan as v1.13.0 with the drift taken in, and run one narrow round 14. Alternatively, land it now as the validated v1.12.0 record, with round 13 archived unreconciled and a v2 re-plan opened.
-2. **Release order.** observability 0.4.1 and service-core 0.7.1 (R-OBS-SC) shipped before P3-07 was validated, which §9's R-OBS-SC row says "ships F2's leak and F10's false sentence"; data 0.17.0 (R-DATA) shipped against §5's gates of P3-03 and P3-09. Whether a fix-forward release is owed is the owner's ruling, not the plan's.
-3. **H-23 after ml#2199.** Phase B merged with retention SUSPENDED through recovery, to be restored as `2W:1D,6M:1W,2Y:1M,5Y:2M` only after AC-4's first drill (owner ruling); it has not been restored yet. H-23, S0.3's two-line `docs/REFERENCE.md` PR, the fold-in items and A2's DEFECT-1 ask are probably obsolete or changed. Re-derive from ml#2199 and `HO/HANDOFF_*` of ml#2201 before editing them.
-4. **Ending rule.** Rounds 10–13 each found MAJORs in the read's pins (mutants). If round 14 again finds only read-pin MAJORs, the owner may accept the plan with them recorded as listed limits.
+2. **Release order.** observability 0.4.1 and service-core 0.7.1 (R-OBS-SC) shipped before P3-07 was validated, which §9's R-OBS-SC row says "ships F2's leak and F10's false sentence"; data 0.17.0 (R-DATA) shipped against §5's gates of P3-03 and P3-09. Whether a fix-forward release is owed is the Overtoad's ruling, not the plan's.
+3. **H-23 after ml#2199.** Phase B merged with retention SUSPENDED through recovery, to be restored as `2W:1D,6M:1W,2Y:1M,5Y:2M` only after AC-4's first drill (Overtoad ruling); it has not been restored yet. H-23, S0.3's two-line `docs/REFERENCE.md` PR, the fold-in items and A2's DEFECT-1 ask are probably obsolete or changed. Re-derive from ml#2199 and `HO/HANDOFF_*` of ml#2201 before editing them.
+4. **Ending rule.** Rounds 10–13 each found MAJORs in the read's pins (mutants). If round 14 again finds only read-pin MAJORs, the Overtoad may accept the plan with them recorded as listed limits.
 
 ## Remaining work (in order)
 
@@ -59,7 +59,7 @@ Short forms: `EX/` = `reports/2026-10-04_consolidated-development-plan/`; `HO/` 
    - **deploy#243 merged** (the data 0.17.0 pin, W1.11);
    - **ml#2187** (four flood-3 defects fixed, the cleanup tool's empty lost-commit list among them: XC-CLEAN and S0.6 change), plus cascor and data `FailedAuthThrottle` fixes and seven "Sequence Safety is required" docs PRs;
    - **ml#2194** merged and **ml#2206** open, the flood-3 record's follow-ups (the latter's title: "secrets in all seven repos");
-   - **ml#2203 open**, "gitleaks loaded zero rules; add the backup-credential…": XC-LEAKS step 3, done by another session out of the plan's order. The plan puts step 3 after step 1's history scans and step 2's owner rotation of every hit, because a history rescan in CI publishes each hit's file, line and URL; ml#2203 also pins gitleaks 8.24.3 where step 3 asks for 8.30.1. Read it, record the conflict for the owner, and do not duplicate it;
+   - **ml#2203 open**, "gitleaks loaded zero rules; add the backup-credential…": XC-LEAKS step 3, done by another session out of the plan's order. The plan puts step 3 after step 1's history scans and step 2's Overtoad rotation of every hit, because a history rescan in CI publishes each hit's file, line and URL; ml#2203 also pins gitleaks 8.24.3 where step 3 asks for 8.30.1. Read it, record the conflict for the Overtoad, and do not duplicate it;
    - **ml#2195**, the W1.5 driver half; **ml#2196**, canopy#731's pacer evidence;
    - **ml#2197/2198**, the equities plan v1.5.x;
    - **canopy#731** (F-055/058/068) and canopy's recurrence fit fixes;
@@ -87,12 +87,12 @@ Short forms: `EX/` = `reports/2026-10-04_consolidated-development-plan/`; `HO/` 
      - Merge them into `EX/round13-mutants.json` and dedupe by built text: R13A-05 found that round 12's 57 entries build only 53 distinct reads, so correct the plan's "23" and "57".
      - Make the harness report the entries it drops (R13B1-12), fix the read, add one contract case per survivor, and require every mutant caught.
    - Then the MINORs and NITs as each lane proposes them, in the plan as v1.13.0. Write `round13-reconciliation.md`. Re-run the regression, the mutation run, FP40, probe mode, ID coverage, markdownlint, the structure check and the ≤512-character line check, and **copy the push snapshots only after the last edit** (R13A-07 is the fourth time a copy predated an edit).
-4. **Round 14, token-lean.** Keep it narrow: round 13's corrections and the drift only. One Lane A (re-derive) plus one Lane B (attack the read's new pins and H-22/H-23), unless the drift rewrite is large. Reuse `S/round13/brief-common.md` with updated paths, hashes and severity, and give each lane a hard sample size (about 80 claims) instead of "at least". With no BLOCKER and no MAJOR, apply its MINORs and NITs and stop; otherwise ask the owner (question 4).
+4. **Round 14, token-lean.** Keep it narrow: round 13's corrections and the drift only. One Lane A (re-derive) plus one Lane B (attack the read's new pins and H-22/H-23), unless the drift rewrite is large. Reuse `S/round13/brief-common.md` with updated paths, hashes and severity, and give each lane a hard sample size (about 80 claims) instead of "at least". With no BLOCKER and no MAJOR, apply its MINORs and NITs and stop; otherwise ask the Overtoad (question 4).
 5. **The plan PR**:
    - Fill the drafts. Give CONSUMED banners to the round-7 handoff (draft text), the round-10 and round-12 handoffs, and refresh the round-2 one.
    - Gate every file, the commit message, the PR body and the path list, with the accepted key, and run `--names` and `--all`.
    - Run `/opt/miniforge3/bin/pre-commit run --files <all>` and `tests/test_thread_handoff_archive.py`.
-   - Then `util/open_signed_pr.py`, `util/wait_for_checks.py` and `util/safe_merge.py`, the last only with the owner's fresh approval.
+   - Then `util/open_signed_pr.py`, `util/wait_for_checks.py` and `util/safe_merge.py`, the last only with the Overtoad's fresh approval.
    - Do not re-add this handoff once its own docs PR has merged: check `git show origin/main:HO/<this file>` first. `tests/test_thread_handoff_archive.py` passes at `81d3fbb3` with every untracked file present; re-run it on the PR's tree.
 
 ## Key context

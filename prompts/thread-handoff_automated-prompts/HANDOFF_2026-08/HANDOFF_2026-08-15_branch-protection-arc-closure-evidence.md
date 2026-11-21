@@ -9,7 +9,7 @@
 Read the register for what to *do*; read this for what *closed* and what the predecessor got wrong.
 
 The predecessor listed 4 remaining items and 3 open questions. **Two items and one question are now
-closed** — verified live 2026-08-15. The other two items (ml#1011, ml#1012) are owner decisions, held
+closed** — verified live 2026-08-15. The other two items (ml#1011, ml#1012) are Overtoad decisions, held
 by the register. No autonomous engineering work remains in this arc.
 
 *On length:* the handoff procedure's ~500-word rule is deliberately exceeded, following the precedent
@@ -33,7 +33,7 @@ above that, not the monitor's cap.
 The correct pre-fix baseline is the **ceremony** runs that burned the job cap and surfaced as a bogus
 `cancelled` — `31343724233` (31m13s), `31304571130` (31m09s), `31301879756` (31m08s) — which is exactly
 what the predecessor's item 4 described. **Do not compare the ~84 s against the v0.8.0 publish cycle's
-5h56m59s**: that is a publish run dominated by the owner-gated `pypi` Gate 2 wait, the same class of
+5h56m59s**: that is a publish run dominated by the Overtoad-gated `pypi` Gate 2 wait, the same class of
 quantity as v0.9.0's own 31m36s, which is correct and expected. Comparing monitor time to gate-wait time
 implies a ~250× improvement ml#1053 never claimed. An earlier draft of this document made that error.
 
@@ -87,7 +87,7 @@ because that handoff stays in the archive and will be read again.
 
 ## What remains — held by the register, not here
 
-ml#1011 (promote `Sequence Safety`) and ml#1012 (bypass-actor removals) are both owner decisions and
+ml#1011 (promote `Sequence Safety`) and ml#1012 (bypass-actor removals) are both Overtoad decisions and
 both ruleset edits. **Go to the register**, which carries the live nine-actor roster, the `1276151` =
 "Amp for GitHub" identification, the newly-discovered unattributed `946600`, the `code_quality`
 deadlock, and a suggested order. Two things worth restating because they are easy to get wrong:

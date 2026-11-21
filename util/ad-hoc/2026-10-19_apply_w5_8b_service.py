@@ -53,7 +53,7 @@ edit(
     """    # --- LMU hyperparameter defaults (consumed by the PR-2 training path) -------------
     default_d: int = 16
     default_theta: float | None = None
-    # ``"gcv"`` since 0.7.0 (W5.8 (B) of the juniper-ml recurrence x equities plan; owner ruling
+    # ``"gcv"`` since 0.7.0 (W5.8 (B) of the juniper-ml recurrence x equities plan; Overtoad ruling
     # 2026-10-18). A linear-readout request that omits ``ridge`` -- a bare ``/v1/train`` or
     # ``/v1/crossval``, canopy's registry seed, the ``train`` CLI without ``--ridge`` -- used to get
     # ``0.0``, the raw min-norm solve, which extrapolates on a drifting input: -2.1e4 aggregate r2 on
@@ -392,7 +392,7 @@ edit(
 - **The service's `default_ridge` is `"gcv"`; the floor is `juniper-recurrence-model>=0.5.0`**
   (W5.8 (B) of juniper-ml
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`;
-  accepted by the owner 2026-10-18, gated on W5.10 above). A linear-readout request that omits
+  accepted by the Overtoad 2026-10-18, gated on W5.10 above). A linear-readout request that omits
   `ridge` -- a bare `POST /v1/train` or `POST /v1/crossval`, canopy's registry seed (no `readout`,
   no `ridge`), the `train` CLI without `--ridge` -- used to get `0.0`, the raw min-norm solve, which
   extrapolates on a non-stationary input (the W5.1 cause of record). It now gets closed-form GCV on

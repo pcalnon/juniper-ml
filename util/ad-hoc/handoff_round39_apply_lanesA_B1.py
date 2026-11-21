@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-15
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: reports/2026-09-15_round-39-consensus/;
          juniper-data#404 (merged 2026-09-16T02:08:43Z, squash 1bbb6976)
 
@@ -87,7 +87,7 @@ sub(
     "`1e13` the bound was nearly inert: 18 observations across 9 series sit in `(1e11, 1e13]`, and that\n"
     "inertness is why a typo went out the door (§4).\n"
     "\n"
-    "**Two figures in the first draft of this section were wrong, and the owner would have been\n"
+    "**Two figures in the first draft of this section were wrong, and the Overtoad would have been\n"
     "ratifying against them.** It said the bound sits above \"the largest genuine count in the bundled\n"
     "universe (AAPL, 1.70e10)\" with 5.9× of headroom — AAPL is the largest in the **default 14-symbol\n"
     "prefix**, not the universe — and it said \"18 observations across 24 series\", conflating two\n"
@@ -240,7 +240,7 @@ sub(
     "  juniper-data#404 merged. Twice in two rounds the load-bearing finding came from *running* the\n"
     "  code against real data, not from reading it.\n"
     "- **Lane A (receipts) found two wrong numbers in the ceiling's siting**, both of which had\n"
-    "  reached the shipped code comment, the CHANGELOG and the register row the owner is being asked\n"
+    "  reached the shipped code comment, the CHANGELOG and the register row the Overtoad is being asked\n"
     "  to ratify (§0.6).\n"
     "- **Lane B2 (amputation / executability / naming) found ten traps dropped from the predecessor**,\n"
     "  including the byte-mirror obligation that X-A will hit (§0.3), and that this document never\n"

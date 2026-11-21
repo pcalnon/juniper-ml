@@ -135,7 +135,7 @@ Still unconverted:
 - **51 mechanical sites remain in the two hot files** — **40** refused by the hazard-5 screen
   (§4.1), **11** for other reasons (6 implicit string concatenation, 3 carrying `!r`, 2 carrying an
   `if`/`and` expression). Convertible is **0**: every safely-convertible hot-file site is done.
-- **236 mechanical sites outside** the two hot files (287 − 51). The owner authorised **hot files
+- **236 mechanical sites outside** the two hot files (287 − 51). The Overtoad authorised **hot files
   only** on 2026-09-22, so widening needs a fresh ruling.
 - Re-derive with `util/ad-hoc/2026-09-22_p64_hot_file_convert.py --report` (hot files) and
   `util/ad-hoc/2026-09-09_p64_fstring_classify.py` (whole population); both read `origin/main` and
@@ -186,7 +186,7 @@ md5sum /tmp/a.py /tmp/b.py | awk '{print $1}' | sort -u | wc -l
 
 **`JuniperCascor1` works** — torch 2.11.0+cu130 imports with **and** without `env -u LD_LIBRARY_PATH
 -u LIBTORCH`. The predecessor's §5.1 (broken env, private `/tmp` venv) is **obsolete**; its §0.5
-owner question is **moot**.
+Overtoad question is **moot**.
 
 ---
 
@@ -207,7 +207,7 @@ owner question is **moot**.
 
 ---
 
-## 3. Owner rulings taken this session
+## 3. The Overtoad rulings taken this session
 
 Recorded in §13.1 of `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`.
 
@@ -324,7 +324,7 @@ Listed because each is a claim a successor might otherwise inherit.
   `util/ad-hoc/2026-09-21_p14_suppressed_site_census.bash`.
 - **The predecessor's "recorded canonically in §13.1"** was false for 2 of its 4 items; both are now
   transcribed as decisions 8 and 9 with their thin provenance stated.
-- **I told the owner the hoisted-guard option had "zero mirror cost". That was wrong** —
+- **I told the Overtoad the hoisted-guard option had "zero mirror cost". That was wrong** —
   `candidate_unit.py` **is** byte-gated, so #670 mirrors it. What is true is that it needs no *new*
   package surface, since `Logger.DEBUG`/`VERBOSE` were added by P1.3.
 

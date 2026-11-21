@@ -39,7 +39,7 @@ The read as round 13 fixed it (`read_r12_to_r13.diff`), the regression's round-1
 
 ## Findings
 
-All seven MAJORs are **pins**: surviving mutants of the read, each given as an exact `[old, new]` replacement in the JSON block below (the harness's own file form), each matching the frozen read once. No MAJOR is of another kind and there is no BLOCKER, so by the owner's ruling of 2026-10-10 this lane does not stand in the way of ending validation; the pins would be recorded as listed limits.
+All seven MAJORs are **pins**: surviving mutants of the read, each given as an exact `[old, new]` replacement in the JSON block below (the harness's own file form), each matching the frozen read once. No MAJOR is of another kind and there is no BLOCKER, so by the Overtoad's ruling of 2026-10-10 this lane does not stand in the way of ending validation; the pins would be recorded as listed limits.
 
 | ID | Severity | Plan location (v1.13 "Lnnn") | Claim | Re-derived (command or file:line → result) | Proposed correction |
 | --- | --- | --- | --- | --- | --- |
@@ -114,7 +114,7 @@ The four classes behind them: numeric fields held to their form but not their va
 - **H-23(a), L1304–1306, against `origin/main`.** The design L2784–2785: the restart drops the copy queued at the first start. L2767: six to eight filesets are deleted. L2752: stop the unit at once if the first start reads Running. The watchdog's L231 and `docs/REFERENCE.md` L720 and L779 still prescribe a resume, at those same lines, so S0.3's three targets are right. No test pins the remedy text, so L647's "if any" holds.
 - **H-23(b), L1307–1308.** The five timestamps and "deletes five" match the design L2791 (within R14B-12's date bound). The copy-aside is at L2792, and the rule that `keep-*` is never restored is at L2789.
 - **S0.3 L649.** The accepted placeholder line is L6200 at `81d3fbb3`, and L6228 at `d14b86e5` and on `origin/main`.
-- **L878 and L940.** `juniper-ml[clients]` floors `juniper-data-client>=0.5.0` with no ceiling. L940 tells the owner that approving 0.6.0's pending gate publishes the unfixed text.
+- **L878 and L940.** `juniper-ml[clients]` floors `juniper-data-client>=0.5.0` with no ceiling. L940 tells the Overtoad that approving 0.6.0's pending gate publishes the unfixed text.
 
 ## Unverifiable
 

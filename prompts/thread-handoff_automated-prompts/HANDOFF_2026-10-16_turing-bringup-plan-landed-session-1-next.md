@@ -10,7 +10,7 @@
 - **Added an AGENTS.md hazard.** An unsigned commit makes a branch unmergeable, so turing lands work through `util/open_signed_pr.py`.
 - **Saved four session memories** covering the turing profile, the auth root cause, landing via the API, and the no-credential-probes rule.
 
-## Next: Owner block 0, then Session 1 (plan §7)
+## Next: The Overtoad block 0, then Session 1 (plan §7)
 
 0. **OWNER C8**, before any agent session. Put the git env (`GIT_CONFIG_COUNT=2`, which turns off commit and tag signing) and the deny list or PreToolUse hook in turing's `~/.claude/settings.json` (plan D11).
 1. **AGENT Session 1:**
@@ -26,7 +26,7 @@
 ## Rules
 
 - **Don't commit and push for merge from turing.** Land every change with `python util/open_signed_pr.py … --dry-run` first, then without `--dry-run`.
-- **Don't run credential probes from an agent.** That means `ssh -T`, `ssh-add`, `gh auth status`, `gpg --card-status` and `gpg -K`. The owner runs them, and they are listed in plan §14.1.
+- **Don't run credential probes from an agent.** That means `ssh -T`, `ssh-add`, `gh auth status`, `gpg --card-status` and `gpg -K`. The Overtoad runs them, and they are listed in plan §14.1.
 - **pre-commit on turing:** use `SKIP=gitleaks` until task D6 lands.
 
 ## Verify the starting state

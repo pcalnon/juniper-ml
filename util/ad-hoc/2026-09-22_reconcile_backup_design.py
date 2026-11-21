@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author:      Paul Calnon
 Created:     2026-09-22
 Status:      ad-hoc -- reconciliation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md
              notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md
              prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-21_backup-redesign-round-1-validated-reconciliation-pending.md
@@ -52,7 +52,7 @@ COMPLETE and **fully reconciled**: every Lane A1, A2, A3, B1, B2 and B3 correcti
 recorded as dissent in §11. Verbatim reports:
 `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md` (round 1) and
 `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md` (round 2).
-§8 may now be executed — **P0 step 0 first** (the owner gates in §8's preamble), and nothing under
+§8 may now be executed — **P0 step 0 first** (the Overtoad gates in §8's preamble), and nothing under
 `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named in P1 step 4.""",
 )
 
@@ -144,7 +144,7 @@ edit(
     "s41-tar-row-append",
     """| pcalnon profile | `/home/pcalnon/.config/Duplicati/` (0700) | — | orphaned since 08-25; `Duplicati-server.sqlite` = 4 KB stub + 112 MB WAL of an aborted local-DB Recreate; `Duplicati-server.backup` = last real profile DB (jobs `Ubuntu`, `Ubuntu-fresh`, `Schedule` empty); 57 GB of job-DB copies under `backups/` | forensics |""",
     """| pcalnon profile | `/home/pcalnon/.config/Duplicati/` (0700) | — | orphaned since 08-25; `Duplicati-server.sqlite` = 4 KB stub + 112 MB WAL of an aborted local-DB Recreate; `Duplicati-server.backup` = last real profile DB (jobs `Ubuntu`, `Ubuntu-fresh`, `Schedule` empty) and **itself `enc-v1:`** (11 blobs, one key — note d); 56 GiB of job-DB copies under `backups/`; `installation.txt` rewritten 09-20 18:10:32 | forensics |
-| Second Dropbox client | `/mnt/Backups/Ubuntu/.dropbox-dist` (270.4.3312), owned `duplicati:duplicati` | — | a second, unused Dropbox distribution installed by or for the service user: directory born 09-15 15:26:22, content mtime 09-14 20:49:31, ownership last changed 09-18 20:30:49. The running daemons are pcalnon's. Retire in §7.11 | `stat`, `ls` |
+| Second Dropbox client | `/mnt/Backups/Ubuntu/.dropbox-dist` (270.4.3312), owned `duplicati:duplicati` | — | a second, unused Dropbox distribution installed by or for the service user: directory born 09-15 15:26:22, content mtime 09-14 20:49:31, Overtoadship last changed 09-18 20:30:49. The running daemons are pcalnon's. Retire in §7.11 | `stat`, `ls` |
 | `duplicati` home | `/home/duplicati` (0755), created 2026-09-18 19:31:40 | — | `bin/` is 0777 and holds the live wrapper symlink; `.config/Duplicati` 0777 — until P0.5, any local user can rename-replace either | `stat` |""",
 )
 
@@ -162,7 +162,7 @@ edit(
 Every row above is a **Lane A subject**: each was re-measured on the live host by Lane A1 on
 2026-09-21 (03:47–03:55 and 13:40–13:55 CDT) with the command named in its Evidence column, and §11
 carries the instrument-adequacy statement for the class. Two readings that look like ACL or
-ownership facts are neither: `ls` prints `+` on every `Backups/` entry because of Dropbox's
+Overtoadship facts are neither: `ls` prints `+` on every `Backups/` entry because of Dropbox's
 `user.com.dropbox.attrs` xattr, **not** an ACL (`getfacl` shows base entries only), and the
 `/usr/lib/duplicati` chown covers directories only (row 3).
 
@@ -268,7 +268,7 @@ cancelled `Repair`/`Verify` at 02:19:19–02:19:46. From that moment the pcalnon
   and its WAL at 02:19:48.142, `Operation='Recreate'`. So a **Recreate wrote a new local database into the server-database path**, and was cancelled; the main file was left at one page with every write in the WAL.
 - `backups/backup Duplicati-server 20260825021947.sqlite` (02:19:47.693) is the **local-DB upgrader's** pre-upgrade copy — `DatabaseUpgrader.cs` 266–280, `BackupFilenamePrefix + " " + name + " " + yyyyMMddHHmmss + ".sqlite"` — which fires only when `Version < MAX`, i.e. only when the server file was opened *as a job database*. (`duplicati-database-tool`'s own backups are named `<name>-<ts>.bak`, so it is not that tool.)
 - **The actor is unidentified.** The earlier reading — "consistent with the 2026-08-22 handoff's finding that the `Ubuntu` job's `DBPath` had been silently changed to the server DB path" — does not hold: the `.backup` this document itself reads shows `Ubuntu` already pointing at `SJTCQIIZSJ.sqlite` with no `dbpath` among its 7 job options, so the server's own job could not have supplied the server path. Something ran a Repair with an explicit `--dbpath` naming the server
-  file; `~/.bash_history` holds 0 such lines and the user-lane logs name only `DQRVQNDIFX.sqlite`. Whether the pcalnon server was even running at 02:19:47 is doubtful — a WAL inode born at 02:19:48.142 means none existed, i.e. the old database had been cleanly closed. Root's shell history around 2026-08-25 02:19 is the one place left to look (§8 owner actions).
+  file; `~/.bash_history` holds 0 such lines and the user-lane logs name only `DQRVQNDIFX.sqlite`. Whether the pcalnon server was even running at 02:19:47 is doubtful — a WAL inode born at 02:19:48.142 means none existed, i.e. the old database had been cleanly closed. Root's shell history around 2026-08-25 02:19 is the one place left to look (§8 Overtoad actions).
 - The cancelled `Repair`/`Verify` that frame it are at **02:17:50, 02:18:37 and 02:19:24** (`Failed while executing Repair`; nine such failures in the `.backup` ErrorLog that morning, 02:05:17 → 02:19:24) and `Verify` at 02:13:07 and 02:19:46. Nothing happened at "02:19:19", which an earlier revision of this section asserted.
 
 From that moment the pcalnon profile had no server database at all; the production job was recreated on the root server the same morning (YAM §3).""",
@@ -314,7 +314,7 @@ loaded, and the `Mismatch` is equally evidence that the literal **is not** the 2
 unit (`/usr/lib/systemd/system/.duplicati.service.swp` — root 0644, world-readable, 0 `ENCRYPTION` lines when
 checked; there is no `duplicati.service~` and no `duplicati.service.d/`), for the window 09-18 20:42–21:03.
 Those are the only untested places; a candidate found there is tested with the probe in seconds. Both are
-root-only reads and are listed as owner actions in §8.
+root-only reads and are listed as Overtoad actions in §8.
 
 **How a database comes to be `enc-v1:` with nobody typing a key**: on Linux the default secret provider is
 `LibSecretLinuxProvider` (`SecretProviderLoader.cs` 195–205) and the server auto-generates a random key when a
@@ -463,7 +463,7 @@ Notes on the rows above:
 - **(S-1a)** The burned key is **not** the key that encrypted the 09-18 database: the offline hash test excludes it and eleven shell-mangling variants (§5.4), so it unlocks nothing and Procedure A no longer depends on it. A history rewrite is not worth its cost once the key is dead — GitHub keeps `refs/pull/1967/head` regardless, and `forks_count` is 0.
 - **(S-2a)** The `.env` comment labels this value "Ubuntu-fresh". **That label is stale**: `util/ad-hoc/2026-09-21_env_value_equality.py` shows it byte-identical to the live Yamaguchi passphrase. Read the value, never the comment. The replacement key is random, distinct from every passphrase, delivered as a systemd credential, and escrowed with the passphrases.
 - **(S-3a)** D-2 was ruled "accept + scrub" against a *local journal* exposure. The reader set is now: every process running as `pcalnon` (via `adm`), `/var/log/syslog*` for another ~10 days, this arc's cloud-linked Claude Code transcripts, a world-readable cleartext file inside the backup source (S-7), and — through S-4 — a third party's cloud. Four different ways in which "local readers only" is false.
-- **(S-4a)** `dropbox exclude add` is **not** an alternative to moving it: selective-sync exclusion removes the *local* copy and leaves the cloud one in place. So: `cp -a` the folder to a sibling outside the Dropbox root, sha256-verify both sides, delete the in-tree copy on owner sign-off, then **"Delete forever"** on dropbox.com and audit the account (2FA, linked devices, third-party apps, plan retention). The sda1 escrow was accepted as a *machine-local* copy, not a
+- **(S-4a)** `dropbox exclude add` is **not** an alternative to moving it: selective-sync exclusion removes the *local* copy and leaves the cloud one in place. So: `cp -a` the folder to a sibling outside the Dropbox root, sha256-verify both sides, delete the in-tree copy on Overtoad sign-off, then **"Delete forever"** on dropbox.com and audit the account (2FA, linked devices, third-party apps, plan retention). The sda1 escrow was accepted as a *machine-local* copy, not a
   cloud copy — its own README says so. Exclude `_yamaguchi_records/` too if it lists paths.
 - **(S-5a)** The UI credential is not a convenience: any authenticated API principal can point the job's `--run-script-before` at any path, and that script runs as `duplicati` with `CAP_DAC_READ_SEARCH`. It is **a host-wide read of everything the service can read** (§7.3.6). Also remove `util/ad-hoc/duplicati_api.py`'s bare-secret fallback, which posts the whole file as the password when no candidate key matches — and since its key list omits
   `DUPLICATI_WEB_CREDENTIAL`, that is the path it takes today. The twelve other values in that file are out of scope here but are in the same world-readable file.
@@ -490,11 +490,11 @@ first draft inventoried none of these:
 
 | Sink | State when inspected | Action |
 | --- | --- | --- |
-| Two live `su - duplicati` shells (pids 3065639, 3117158) | started 09-19 18:24:50 / 18:52:00; `/home/duplicati/.bash_history` 0600, last written 09-19 18:51 — every command of the 09-20 migration is **in memory** and will be appended on exit | **Time-critical, owner**: `history -c; unset HISTFILE` in each shell *before* it exits |
+| Two live `su - duplicati` shells (pids 3065639, 3117158) | started 09-19 18:24:50 / 18:52:00; `/home/duplicati/.bash_history` 0600, last written 09-19 18:51 — every command of the 09-20 migration is **in memory** and will be appended on exit | **Time-critical, Overtoad**: `history -c; unset HISTFILE` in each shell *before* it exits |
 | `/home/duplicati/.viminfo` | 14.7 KB, mtime 09-20 17:59 — vim was used as `duplicati` after `.env` was written; viminfo keeps registers and command history | wipe |
-| Root's `~/.bash_history`, `~/.viminfo` | unreadable without root; the design *relies* on them as the last place the 09-18 key may be recorded | owner: count-grep first (`sudo grep -c ENCRYPTION /root/.bash_history`), then wipe once §5.4's search is done |
+| Root's `~/.bash_history`, `~/.viminfo` | unreadable without root; the design *relies* on them as the last place the 09-18 key may be recorded | Overtoad: count-grep first (`sudo grep -c ENCRYPTION /root/.bash_history`), then wipe once §5.4's search is done |
 | `/usr/lib/systemd/system/.duplicati.service.swp` | root-owned but **0644, world-readable**; 0 `ENCRYPTION` lines when counted; the same editor carried the key into that unit on 09-18 | shred when the editor closes |
-| CUPS spool | the escrow sheet was printed (USB HP OfficeJet, 32 completed jobs); job-file retention unknown | owner: `grep -i PreserveJobFiles /etc/cups/cupsd.conf`; `sudo ls -la /var/spool/cups` |
+| CUPS spool | the escrow sheet was printed (USB HP OfficeJet, 32 completed jobs); job-file retention unknown | Overtoad: `grep -i PreserveJobFiles /etc/cups/cupsd.conf`; `sudo ls -la /var/spool/cups` |
 | Claude Code transcripts under `~/.claude/projects/…` | **cloud-linked**, and they capture every `journalctl` output this arc produced; the count grows with every tool call, so any figure is an upper bound | count-grep and purge; this is what makes D-2's "local exposure" framing false |
 | World-readable server-DB copies | `Duplicati-server.backup` 0777, `backups/*pre-dbpath-fix.sqlite` 0644 — `enc-v1:` under the pcalnon-profile libsecret key, so encrypted but wrongly exposed | `chmod 0600` now |""",
 )
@@ -508,7 +508,7 @@ edit(
     """3. **Least privilege with one deliberate exception.** The server runs as `duplicati`, confined by systemd, and is granted `CAP_DAC_READ_SEARCH` so it can read every file under `/home/pcalnon` — the root-era coverage — without being root (D-4).""",
     """3. **Least privilege with one deliberate exception, and the exception is bigger than it looks.** The server runs as `duplicati`, confined by systemd, and is granted `CAP_DAC_READ_SEARCH` so it can read every file under `/home/pcalnon` — the root-era coverage — without being root (D-4). State the trade plainly: that capability bypasses **every** read and search check on the host, not only `/home/pcalnon` — `/etc/shadow`, `/etc/ssh/ssh_host_*_key`, `/etc/credstore/*` (every
    other service's secrets), `/root`, `/var/lib/docker`, the journal and `/var/log/syslog*` (which hold this arc's leaked passphrases), and every other user's home. `ProtectSystem=strict` and `ProtectHome=read-only` stop *writes* — they are mount flags, correctly not defeated by the capability — but hide nothing from a read. The alternative, recursive ACLs on `/home/pcalnon`, bounds the blast radius to that tree but is fragile in exactly the way AC-3 exists to catch: a
-   `chmod 600`, a `mkdir -m 700`, or gpg's own permission checks reset the ACL mask and the file silently leaves the backup. So: the capability bounds the damage to *the whole host*, ACLs bound it to *one tree but unreliably*. D-4 is that choice, and it is the owner's. Whichever is chosen, §7.3.2's confinement set is what keeps the capability from also being an exfiltration channel, and the residual is recorded: **"duplicati uid inside the unit == root-read"**.""",
+   `chmod 600`, a `mkdir -m 700`, or gpg's own permission checks reset the ACL mask and the file silently leaves the backup. So: the capability bounds the damage to *the whole host*, ACLs bound it to *one tree but unreliably*. D-4 is that choice, and it is the Overtoad's. Whichever is chosen, §7.3.2's confinement set is what keeps the capability from also being an exfiltration channel, and the residual is recorded: **"duplicati uid inside the unit == root-read"**.""",
 )
 
 edit(
@@ -781,7 +781,7 @@ The T2 lane needs its own installer and does not have one: `util/install_duplica
 edit(
     "s735-mode",
     """# file: home/duplicati/.config/Duplicati/.env
-# Duplicati server: local overrides. Mode 0600, owner duplicati:duplicati.""",
+# Duplicati server: local overrides. Mode 0600, Overtoad duplicati:duplicati.""",
     """# file: home/duplicati/.config/Duplicati/.env
 # Duplicati server: local overrides.
 # MODE IS AN OPEN OWNER DECISION (recorded as dissent in the design's section 11):
@@ -792,7 +792,7 @@ edit(
 #                                write, and a file the plain duplicati uid can write is a
 #                                code-injection path into a process holding
 #                                CAP_DAC_READ_SEARCH (see the crossings table in 7.3.1).
-# Until the owner rules, install it 0640 root:duplicati.""",
+# Until the Overtoad rules, install it 0640 root:duplicati.""",
 )
 
 edit(
@@ -813,7 +813,7 @@ How Duplicati 2.4.0.0 handles the key (verified from `duplicati-server help` and
 edit(
     "s736-webui",
     """Loopback only (`--webservice-interface=loopback`); a UI password set once with `duplicati-server-util --hosturl http://127.0.0.1:8300/ change-password <new>` (or `--webservice-password-init=<new>` on a single start, which "sets the password only if not already set, and then exits") and stored in `~/.config/duplicati-backup/web-credential` (0600, pcalnon) for the watchdog; `--webservice-allowed-hostnames=localhost` if the record's `allowed-hostnames` setting does not already
-cover it. Note that `duplicati-server-util` defaults to port 8200 — every invocation against this server needs `--hosturl`. Remote control and the cloud report URL stay as the owner left them (deferred item).""",
+cover it. Note that `duplicati-server-util` defaults to port 8200 — every invocation against this server needs `--hosturl`. Remote control and the cloud report URL stay as the Overtoad left them (deferred item).""",
     """**The UI credential is a host-wide read credential, and the design must say so before it says anything
 else about it.** Any authenticated API principal can set the job's `--run-script-before` to any path, or
 create a job whose Source is `/` — and that script runs as `duplicati`, *inside* the unit, *with*
@@ -852,7 +852,7 @@ does not list it. It also defaults to `--hosturl http://127.0.0.1:8200/` and to
 this server must name both. The in-process client remains the fix. A recovered database carries the root-era
 UI password until it is changed.
 
-Remote control and the cloud report URL stay as the owner left them (deferred item) — but the report URL's
+Remote control and the cloud report URL stay as the Overtoad left them (deferred item) — but the report URL's
 bearer JWT is a secret carried by every database copy (S-8).""",
 )
 
@@ -863,9 +863,9 @@ bearer JWT is a secret carried by every database copy (S-8).""",
 edit(
     "s74-model-note",
     """| `_yamaguchi_keys/` | `pcalnon:duplicati` | `0700` and **moved out of the Dropbox root** (S-4) | escrow must not sync to the cloud |""",
-    """| `_yamaguchi_keys/` | `pcalnon:duplicati` | `0700`, the `env` file **0600**, and the folder **copied out of the Dropbox root** then deleted from it on owner sign-off (S-4) | escrow must not sync to the cloud, and must not be group-readable by the service user |
+    """| `_yamaguchi_keys/` | `pcalnon:duplicati` | `0700`, the `env` file **0600**, and the folder **copied out of the Dropbox root** then deleted from it on Overtoad sign-off (S-4) | escrow must not sync to the cloud, and must not be group-readable by the service user |
 
-**The group-write model above is itself an open owner decision — D-14.** As written it grants
+**The group-write model above is itself an open Overtoad decision — D-14.** As written it grants
 **write and delete** on all 877 volumes to every process running as `pcalnon` (editors, browsers,
 package hooks, agent sessions) and — by AC-7's own prerequisite — to the Dropbox daemon. A
 cloud-side deletion (a compromised account, a linked phone, another machine) or a local `rm -rf`
@@ -875,7 +875,7 @@ chowned to `duplicati`: `pcalnon` and Dropbox read through the group, remote→l
 loudly instead of silently deleting the master, and hand maintenance goes through `sudo -u
 duplicati` — which this design has already accepted for the data folder. Note honestly what this
 buys: `pcalnon` is root-equivalent on this host (`sudo`, `docker`), so it is protection against
-**accident and commodity malware**, not against a deliberate local adversary. D-14 is the owner's
+**accident and commodity malware**, not against a deliberate local adversary. D-14 is the Overtoad's
 call; the script below implements the R-7/R-8 group-write model as specified, and must be re-run
 after a D-14 ruling that changes it.
 
@@ -922,7 +922,7 @@ edit(
 6. **Write access to `Yamaguchi/` is a backup denial-of-service, not only a correctness risk.** Anyone who can write there — the Dropbox account, any linked device, any `pcalnon` process under the current group model — drops one file and the guard exits 5: no backup runs until a human removes it, and nothing notices for up to 26 h (the watchdog's staleness rule). D-14's read-only model removes the `pcalnon`/Dropbox half of that. Note also that the guard's stray-file check
    *duplicates* a check Duplicati already performs — a foreign file aborts the operation either way, and a file named `duplicati-*.dblock.zip.aes` passes the guard and is caught by Duplicati instead. The guard's real value is the **mount** and **`TargetURL`** checks, which Duplicati does not make.
 7. **Cloud→local is a threat direction this design otherwise ignores.** Dropbox version history and Rewind are the *only* recovery from a mass delete of T1 and T1c together, which makes them a design item, not a footnote — and their corollary is that deleted ciphertext stays server-side restorable for the retention window (30 days on Basic/Plus/Family, 180 on Professional), so a "new set under a new passphrase" (D-2) must also **delete-forever** the old one. Retention and
-   2FA state are owner observations (D-13's neighbours); this design records that Rewind was **not** evaluated and that Lane B3 dissents from leaving it that way (§11).""",
+   2FA state are Overtoad observations (D-13's neighbours); this design records that Rewind was **not** evaluated and that Lane B3 dissents from leaving it that way (§11).""",
 )
 
 edit(
@@ -1116,8 +1116,8 @@ Retention on the drives (every run mints a new UUID set; nothing prunes; ~135 Gi
 
 edit(
     "s711-retire",
-    """`/usr/lib/duplicati/data/` (archive a copy, then remove, once AC-1…AC-4 pass); `/home/duplicati/.config/Duplicati/{temp,temp1,backups}` (57 GB of copied pcalnon job databases — the originals in the pcalnon profile stay under the record's KEEP list); `Duplicati-OLE/` (unreadable to the investigators — owner to inspect); the disabled user CLI lane (the record's own removal item); the `.env` comment block; the wrapper's header comment.""",
-    """`/usr/lib/duplicati/data/` (archive a copy, then remove, once AC-1…AC-4 pass); `/home/duplicati/.config/Duplicati/{temp,temp1,backups}` (56 GiB of copied pcalnon job databases — the originals in the pcalnon profile stay under the record's KEEP list); `Duplicati-OLE/` (unreadable to the investigators — owner to inspect); the disabled user CLI lane (the record's own removal item); the `.env` comment block; the wrapper's header comment; `/home/duplicati/bin/` entirely
+    """`/usr/lib/duplicati/data/` (archive a copy, then remove, once AC-1…AC-4 pass); `/home/duplicati/.config/Duplicati/{temp,temp1,backups}` (57 GB of copied pcalnon job databases — the originals in the pcalnon profile stay under the record's KEEP list); `Duplicati-OLE/` (unreadable to the investigators — Overtoad to inspect); the disabled user CLI lane (the record's own removal item); the `.env` comment block; the wrapper's header comment.""",
+    """`/usr/lib/duplicati/data/` (archive a copy, then remove, once AC-1…AC-4 pass); `/home/duplicati/.config/Duplicati/{temp,temp1,backups}` (56 GiB of copied pcalnon job databases — the originals in the pcalnon profile stay under the record's KEEP list); `Duplicati-OLE/` (unreadable to the investigators — Overtoad to inspect); the disabled user CLI lane (the record's own removal item); the `.env` comment block; the wrapper's header comment; `/home/duplicati/bin/` entirely
 (it holds only the symlink D-6 replaces with an installed copy — a "fallback" symlink into a developer checkout should not exist); and **`/mnt/Backups/Ubuntu/.dropbox-dist`**, a second, unused Dropbox client (270.4.3312) owned `duplicati:duplicati` that nothing runs — the live daemons are pcalnon's.""",
 )
 
@@ -1156,12 +1156,12 @@ edit(
 Phases are ordered; nothing in a later phase is a precondition of an earlier one. Every destructive step is preceded by a copy. **Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved by any step below**, and the pcalnon profile directory is not modified.""",
     """Phases are ordered; nothing in a later phase is a precondition of an earlier one — **but that is true of
 phases, not of decisions**: P0 applies the recommendations of D-1 (credstore + `--require-db-encryption-key`),
-D-4 (`AmbientCapabilities`), D-6 (installed copy) and D-9 (loopback) before the owner has ruled on any of
+D-4 (`AmbientCapabilities`), D-6 (installed copy) and D-9 (loopback) before the Overtoad has ruled on any of
 them. Either rule those four first, or accept that P0 applies them **provisionally** and a contrary ruling
 means re-installing the unit. Step 0 makes that explicit.
 
 Every destructive step is preceded by a copy. **Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved by
-any step below, with exactly one exception, and it needs owner sign-off**: the passphrase escrow copy at
+any step below, with exactly one exception, and it needs Overtoad sign-off**: the passphrase escrow copy at
 `…/Dropbox/Backups/_yamaguchi_keys/`, which P1 step 4 first **copies** to a sibling outside the Dropbox root
 and only then deletes from the synced tree (S-4). The earlier revision of this preamble stated the rule
 without the exception while P1 step 4 performed it — a contradiction inside one document. The pcalnon profile
@@ -1177,7 +1177,7 @@ edit(
 3. **Procedure A — identify the 09-18 key on a copy.** For each candidate (§5.4 order), as root:""",
     """### P0 — freeze and recover the job (target: same day)
 
-**0. Owner gates — none of these is a session's to decide.** (a) Rule D-1, D-4, D-6, D-9, or record that P0
+**0. The Overtoad gates — none of these is a session's to decide.** (a) Rule D-1, D-4, D-6, D-9, or record that P0
 applies their recommendations provisionally. (b) Have the escrowed `PASSPHRASE` to hand, from the printed
 sheet or the password manager — **not** from the Dropbox-synced copy, which is the thing S-4 is about. (c)
 Confirm Procedure A0's premise with one read-only command, in a subshell so nothing reaches the shell history
@@ -1194,7 +1194,7 @@ and the passphrase never touches argv:
 # Author:     Paul Calnon
 # Created:    2026-09-22
 # Status:     ad-hoc -- recovery
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §8 P0
 set -euo pipefail
 ENV_FILE="${YAMAGUCHI_ENV_FILE:-${HOME}/.config/duplicati-backup/env}"
@@ -1241,7 +1241,7 @@ edit(
 # Author:     Paul Calnon
 # Created:    2026-09-21
 # Status:     ad-hoc — migration
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §8 P0
 set -euo pipefail
 SRC="${SRC:-/usr/lib/duplicati/data/Duplicati-server.sqlite}"
@@ -1306,7 +1306,7 @@ exit 1
 # Author:     Paul Calnon
 # Created:    2026-09-21
 # Status:     ad-hoc — migration
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §8 P0
 set -euo pipefail
 SRCDIR="${SRCDIR:-/usr/lib/duplicati/data}"
@@ -1396,7 +1396,7 @@ exit 1
 # Author:     Paul Calnon
 # Created:    2026-09-22
 # Status:     ad-hoc -- recovery
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §8 P0
 set -euo pipefail
 ENV_FILE="${YAMAGUCHI_ENV_FILE:-${HOME}/.config/duplicati-backup/env}"
@@ -1424,7 +1424,7 @@ echo "restored under ${OUT}; verify it with the forensics script before installi
    `enc-v1:` prefix). Only `LastBackupDate` is one day stale. Then install it as the data folder per step 8.
 5. **Procedure A — re-use the whole data folder (only if step 3 found a key).** `sudo cp -a /usr/lib/duplicati/data /home/duplicati/.config/Duplicati`; `sudo chown -R duplicati:duplicati /home/duplicati/.config/Duplicati`; `chmod 0700` on the folder and `0600` on its files (§7.3.2); write the accepted key to `/etc/credstore/duplicati-settings-key` (0600 root) **and leave it there until P0.5's re-key replaces it** — the earlier "for the first start only" would
    re-create the 09-18 `SettingsEncryptionKeyMissingException` loop on the very next restart. Then step 8.
-6. **Procedure A2 — wipe the encrypted fields, keep everything else.** On the **copy** from step 1, as the copy's owner, in a 0700 directory:
+6. **Procedure A2 — wipe the encrypted fields, keep everything else.** On the **copy** from step 1, as the copy's Overtoad, in a 0700 directory:
    `duplicati-database-tool wipe-encryption --server-datafolder <copydir> --dry-run <copydir>/Duplicati-server.sqlite` first (expect `version 11 … Server database … 9 encrypted field(s) would be wiped`), then the same without `--dry-run`. Two traps: `--server-datafolder <dir>` **is** an option of the *subcommand* (`duplicati-database-tool help wipe-encryption`) even though the top-level `help` does not list it, and it defaults to
    `$HOME/.config/Duplicati` — i.e. the orphaned pcalnon profile when run as `pcalnon`, so **always name the copy's folder**; and `--dry-run` is **not read-only** — it flips the copy's header to WAL mode and changes its sha256, so hash the copy before, or re-copy after. What is cleared: `Backup.TargetURL`, `Source.Path`, `ConnectionString.BaseUrl`, `BackupTargetUrl.TargetURL` and password-typed `Option.Value` (the job `passphrase`, `jwt-config`, `pbkdf-config`,
    `remote-control-config`, ssl cert fields, `client-license-key`). The tool leaves a `-<ts>.bak` beside the database (delete it — it still holds the encrypted values) and refuses a non-server database. `Source` rows in the snapshot are cleartext, so sources survive; `server-passphrase`/`-salt` are **hashes** and not in the wipe list, so the **UI password survives** and "set the UI password afresh" is optional, not required.
@@ -1453,7 +1453,7 @@ minutes and has no dependency on which procedure step 3 chose.
 2. **Install the snapshot timer's script as a root-owned copy** under `/usr/local/lib/duplicati/` and add `ProtectSystem=strict` to `yamaguchi-server-db-snapshot.service`. It runs as **root** today with `ExecStart` naming the primary checkout, so `sys.path[0]` is pcalnon-writable and every branch switch changes what root executes at 13:45 UTC (§7.7).
 3. **Re-key now, not "same week" (P1 step 1's content, moved here).** The live settings key *is* the backup passphrase (S-2), and the burned key from S-1 is public. Stop the snapshot timer, do the two-start re-key back to back, then `PRAGMA wal_checkpoint(TRUNCATE); VACUUM;` with the server stopped, then restart the timer (§7.3.5).
 4. **Scrub both log stores** — `/var/log/syslog*` *and* the journal, in that order (§6, D-8) — and verify with `sudo ls -la /var/log/syslog-2026092*`. A journal-only scrub leaves an identical copy behind.
-5. **Handle S-7 and S-4.** Remove the world-readable `.env` inside `…/worktrees/curious-plotting-hummingbird/` after the fingerprint reconciliation (the file only — that worktree is do-not-sweep), `chmod 0600` the escrow `env`, and start the S-4 copy-out. The Dropbox "delete forever" and account audit are owner actions.
+5. **Handle S-7 and S-4.** Remove the world-readable `.env` inside `…/worktrees/curious-plotting-hummingbird/` after the fingerprint reconciliation (the file only — that worktree is do-not-sweep), `chmod 0600` the escrow `env`, and start the S-4 copy-out. The Dropbox "delete forever" and account audit are Overtoad actions.
 6. **Close the detection gap**: enable `secret_scanning_non_provider_patterns`, add a gitleaks **content** rule for `(SETTINGS_ENCRYPTION_KEY|PASSPHRASE(_OLD)?|DUPLICATI_WEB_CREDENTIAL|webservice-password|passphrase)=` with a non-placeholder value, and add a gitleaks pre-commit hook. The repository's current rule cannot match a value containing `* @ $ %`, which is why both PRs passed; CI runs gitleaks only *after* publication.""",
 )
 
@@ -1467,9 +1467,9 @@ edit(
 5. Rule on D-2 (passphrase exposure) and D-8 (journal scrub); execute the ruling.""",
     """1. *(Executed in P0.5 step 3 — kept here as the procedure of record.)* Generate a new settings key (`umask 077; openssl rand -base64 48 | tr -d '\\n' > /etc/credstore/duplicati-settings-key`), then re-key the database in two starts: first with the **old** key still in the credential file and `--disable-db-encryption` appended to `DAEMON_OPTS` (every field is decrypted on that start), then with the new key in the credential file and the flag removed (every field is
    re-encrypted; add `--require-db-encryption-key` at this point). Stop the snapshot timer across both starts and `VACUUM` afterwards (§7.3.5). Escrow the new key with the passphrases (printed, password manager, machine-local copy outside the Dropbox root).
-2. Delete the five commented lines from `.env`; set it to the §7.3.5 contract. **Mode: `0640 root:duplicati` as recommended, or `0600 duplicati:duplicati` — this is the open dissent recorded in §11**; install the stricter form until the owner rules.
+2. Delete the five commented lines from `.env`; set it to the §7.3.5 contract. **Mode: `0640 root:duplicati` as recommended, or `0600 duplicati:duplicati` — this is the open dissent recorded in §11**; install the stricter form until the Overtoad rules.
 3. Remove the commented "Old Unit file" block from `scripts/duplicati-wrapper.bash` (the wrapper is replaced by §7.3.3 in the same PR).
-4. **Copy** `_yamaguchi_keys/` out of the Dropbox root — `cp -a` to `/mnt/Backups/Ubuntu/_yamaguchi_keys/`, a sibling of `Dropbox/` — verify sha256 on both sides, and delete the in-tree copy **only on owner sign-off** (this is the single exception to the "nothing under `/mnt/Backups/Ubuntu/` is moved" rule; the preamble names it). Then, on dropbox.com, **Delete forever** and audit the account. `dropbox exclude add` is not a substitute: it removes the local copy
+4. **Copy** `_yamaguchi_keys/` out of the Dropbox root — `cp -a` to `/mnt/Backups/Ubuntu/_yamaguchi_keys/`, a sibling of `Dropbox/` — verify sha256 on both sides, and delete the in-tree copy **only on Overtoad sign-off** (this is the single exception to the "nothing under `/mnt/Backups/Ubuntu/` is moved" rule; the preamble names it). Then, on dropbox.com, **Delete forever** and audit the account. `dropbox exclude add` is not a substitute: it removes the local copy
    and leaves the cloud one. Exclude `_yamaguchi_records/` too if it lists paths. (S-4)
 5. **Re-decide D-2**, do not merely execute it: it was ruled "accept + scrub" against a local-journal exposure, and the same lines are in `/var/log/syslog*`, in cloud-linked Claude Code transcripts, and — as a cleartext passphrase file — in S-7 and in a third party's cloud (S-4). Then rule on D-8 and execute.""",
 )
@@ -1525,14 +1525,14 @@ edit(
 Notes on the criteria above:
 
 - **(AC-3a)** The count tolerance alone is not enough. From the snapshot's 45 filters, the large 0700 trees `Dropbox-OLD/` (327k entries) and `snap/` (256k) are *excluded*; the **unfiltered** 0700 trees (`.config/Slack` 54k, `.config/Code` 39.5k, `.mozilla` 23k, `.local/state` 22.6k, `.config/Cursor` 12k, `.amp`, `.claude/projects`, `.ssh` 31, `.gnupg` 98) sum to roughly 15 % of 1,024,167. So a ±2 % count check sees a *gross* loss but cannot see `~/.ssh` or
-  `~/.gnupg` — the very trees §7.10 says the capability exists for; hence the explicit `find`. The baseline numbers are real but appear nowhere in the record, so cite their provenance: the snapshot's `Metadata` rows `SourceFilesCount=1024167` and `SourceSizeString=290.610 GiB`. Pre-flight the capability itself before the run: `systemd-run -p User=duplicati -p AmbientCapabilities=CAP_DAC_READ_SEARCH --wait cat ~/.ssh/known_hosts` (owner action — it needs root).
+  `~/.gnupg` — the very trees §7.10 says the capability exists for; hence the explicit `find`. The baseline numbers are real but appear nowhere in the record, so cite their provenance: the snapshot's `Metadata` rows `SourceFilesCount=1024167` and `SourceSizeString=290.610 GiB`. Pre-flight the capability itself before the run: `systemd-run -p User=duplicati -p AmbientCapabilities=CAP_DAC_READ_SEARCH --wait cat ~/.ssh/known_hosts` (Overtoad action — it needs root).
 - **(AC-4a)** PLAN §7 criterion 3 asks for a second restore point after at least one incremental, and a single drill collapses it. The re-attached index serving the *old* filesets is exactly what one drill cannot see — which is the whole risk of Procedures A, A2 and B. If `--aes-version` is pinned to 3 rather than 2 (§7.5), one drill must be pre- and one post-format-change.
 - **(AC-12a)** The §7.3.2 unit adds `IPAddressDeny`, `RestrictAddressFamilies`, `SystemCallFilter`, `ProtectProc`, `ProcSubset`, `PrivateDevices`, `ProtectClock`, `ProtectHostname`, `ProtectKernelLogs` and `RestrictNamespaces` on top of that baseline, **none of which has been executed against 2.4.0.0 on this host** (open item O-3). Trial them with `systemd-run` against the probe copy before the live unit.
 - **(AC-13a)** Pinned as an acceptance check because a run-script path is a plain job option with no allow-list: anyone holding the UI credential can point it anywhere and have it execute as `duplicati` **with** `CAP_DAC_READ_SEARCH` (§7.3.6). A silent change to this option is a privilege escalation that no other check would catch.""",
 )
 
 # =====================================================================================
-# §10 — owner decisions
+# §10 — Overtoad decisions
 # =====================================================================================
 
 edit(
@@ -1540,7 +1540,7 @@ edit(
     """| D-1 | Settings-key policy: keep DB encryption with a distinct, escrowed key, or `--disable-db-encryption` | keep encryption; the record's objection (a third key) is accepted as the price |
 | D-2 | `PASSPHRASE` exposure in the journal and `.env` comments: accept (local readers only) + scrub, or start a new set under a new passphrase | accept + scrub now; rotate at the next set rebuild |""",
     """| D-1 | **Rule before P0.** Settings-key policy: keep DB encryption with a distinct, escrowed key, or `--disable-db-encryption` | keep encryption; the record's objection (a third key) is accepted as the price |
-| D-2 | **Re-decide** (§6 note S-3a). `PASSPHRASE` exposure: accept + scrub, or start a new set under a new passphrase. The original ruling assumed a journal-only, local exposure; four things falsify that | lean to a **new set under a new passphrase**, or record an explicit owner acceptance that names Dropbox as a reader. A new set must also **delete-forever** the old one server-side (§7.5 rule 7) |""",
+| D-2 | **Re-decide** (§6 note S-3a). `PASSPHRASE` exposure: accept + scrub, or start a new set under a new passphrase. The original ruling assumed a journal-only, local exposure; four things falsify that | lean to a **new set under a new passphrase**, or record an explicit Overtoad acceptance that names Dropbox as a reader. A new set must also **delete-forever** the old one server-side (§7.5 rule 7) |""",
 )
 
 edit(
@@ -1573,9 +1573,9 @@ Notes on the decisions above:
 - **(D-12a)** The earlier row said "unchanged from the record" and then named five items, letting the rest dissolve — the failure shape `HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md` §6.1 recorded. Every open item of that handoff's §1 and of `JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md` §8.27.6 gets one of three dispositions — **carried**, **out of scope**, or **closed by §** — and none may be left unstated.
   Carried today: `sda` SMART never read (it guards the only local copy); the `sdc4` read-only loop probe; the sdc2 grow; cloud reporting (deferred); the user-lane removal PR (P4 step 4); the dead `yamaguchi_records_sync.bash`; the drift-guard tests in 7 repos; `yamaguchi_run_script_after.bash` as alerting candidate A, never revoked; `duplicati_first_backup.bash`'s hardcoded gate; the §8.21.5 residuals; the unconfirmed `sops-backup-key.sh` escrow run (inherited
   O-2). Closed by this design: the watchdog `ProgramState` check (§7.6).
-- **(D-13a)** The owner prompt said "Dropbox syncs only the contents of `Backups/`"; §4.4 corrected that to nine excluded folders with everything else at the root syncing, and no decision item then asked what the root *should* be. This one does.
+- **(D-13a)** The Overtoad prompt said "Dropbox syncs only the contents of `Backups/`"; §4.4 corrected that to nine excluded folders with everything else at the root syncing, and no decision item then asked what the root *should* be. This one does.
 - **(D-14a)** R-8 asks only for **read**; the group-write form lets a cloud-side deletion (compromised account, linked phone, another machine) or an accidental local `rm -rf` propagate into the local master and on to T1c. State the limit honestly: `pcalnon` is root-equivalent via `sudo`/`docker` anyway, so the read-only form buys protection against **accident and commodity malware**, not against a deliberate local adversary. It conflicts with R-7's
-  "read/write/execute as appropriate", which is exactly why it is the owner's call and not this design's.""",
+  "read/write/execute as appropriate", which is exactly why it is the Overtoad's call and not this design's.""",
 )
 
 # =====================================================================================
@@ -1615,7 +1615,7 @@ edit(
     """8. The pcalnon crash log names `Duplicati.GUI.TrayIcon.Net10`; no assembly of that name ships in 2.4.0.0, so the binary that wrote it (the 2.3.0.4 package, by timing) is not verifiable from the installed tree. The message it carries matches the 2.3.0.4 journal lines exactly.""",
     """8. The pcalnon crash log names `Duplicati.GUI.TrayIcon.Net10`; no assembly of that name ships in 2.4.0.0, so the binary that wrote it (the 2.3.0.4 package, by timing) is not verifiable from the installed tree. The message it carries matches the 2.3.0.4 journal lines exactly.
 9. **The pcalnon `Duplicati-server.backup` is itself `enc-v1:`** — 11 encrypted values under a single key hash, which the offline probe verified 11/11 and matched to no candidate. It is a libsecret-minted key (§5.4), which is how a database comes to be encrypted with nobody typing one. Every "the database stores the passphrase in cleartext" statement in the record (YAM §8.19.3, and item 3 above) is therefore true of the **root** database only, and only before 09-18 21:03.
-10. YAM §8.20.2's record that the owner **rejected** `SETTINGS_ENCRYPTION_KEY` on 2026-08-30 was reversed without a record by the 09-18 unit edits and the 09-20 `.env`. D-1 asks the question again. (Already in §3.5; repeated here because Appendix C is the list a future reader diffs against the record.)
+10. YAM §8.20.2's record that the Overtoad **rejected** `SETTINGS_ENCRYPTION_KEY` on 2026-08-30 was reversed without a record by the 09-18 unit edits and the 09-20 `.env`. D-1 asks the question again. (Already in §3.5; repeated here because Appendix C is the list a future reader diffs against the record.)
 
 **None of items 1–10 has been applied to its target document.** That is tracked work, not a closed correction: item 1's targets are YAM §8.20.4 and `HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md` §1.8; item 4's are `util/ad-hoc/yamaguchi_server_db_snapshot.py:20,36` and `util/systemd/yamaguchi-server-db-snapshot.service:5`; item 5's is the destination README. Item 2's own text was rewritten by consensus round 1 (Lane A2) and item 9 is new in the reconciliation.""",
 )

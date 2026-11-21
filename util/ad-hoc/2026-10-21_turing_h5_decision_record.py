@@ -1,12 +1,12 @@
 """
-Record H5's decision (option B) and the follow-ups the owner adopted in the turing bring-up plan, idempotently (plan v1.4.5).
+Record H5's decision (option B) and the follow-ups the Overtoad adopted in the turing bring-up plan, idempotently (plan v1.4.5).
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-21
 Status: ad-hoc — one-off (the H5 decision record PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18, §18.1, §18.2, §18.3);
          notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md (juniper-ml#2310; §6, §7);
          util/ad-hoc/2026-10-21_turing_h5_hardening_check.py (option B's check);
@@ -22,7 +22,7 @@ The edits:
   plan  1. the Version line, 1.4.4 -> 1.4.5. Only from 1.4.4: another version is reported and left alone;
         2. §18's opening paragraph: the restore PR, the decision's session and handoff, and the arc's main handoff
            (the risk analysis' O-2);
-        3. §18.1 gains the owner's ruling on H5's trees and the four follow-ups;
+        3. §18.1 gains the Overtoad's ruling on H5's trees and the four follow-ups;
         4. §18.2's H5 row (decided: option B);
         5. §18.2's C9 row, widened by RR-10;
         6. §18.2 gains rows C0 (O-8), C2 (RR-11) and the new task H6 (O-5);
@@ -41,9 +41,9 @@ import sys
 
 PLAN = "notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md"
 HANDOFF_DIR = "prompts/thread-handoff_automated-prompts/"
-H5_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h5-audit-landed-owner-decides.md"
+H5_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h5-audit-landed-Overtoad-decides.md"
 ARC_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md"
-THIS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h5-option-b-applied-owner-b4-b5.md"
+THIS_HANDOFF = HANDOFF_DIR + "HANDOFF_2026-10-21_turing-h5-option-b-applied-Overtoad-b4-b5.md"
 AUDIT = "notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md"
 ANALYSIS = "notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md"
 INVENTORY = "util/ad-hoc/2026-10-21_turing_h5_mcp_server_inventory.py"
@@ -57,14 +57,14 @@ RESTORE_PR, RESTORE_SHA = "juniper-ml#2310", "0c9a0baf"
 VERSION_OLD = "- **Version**: 1.4.4 — v1.4.3 plus H5's landing"
 VERSION_NEW = (
     "- **Version**: 1.4.5 — v1.4.4 plus H5's decision, option B (the trees kept, dormant and hardened), with the removal "
-    "and restore that preceded it and the four follow-ups the owner adopted (§18's opening; §18.1; §18.2's H5, C9, C0, C2 "
+    "and restore that preceded it and the four follow-ups the Overtoad adopted (§18's opening; §18.1; §18.2's H5, C9, C0, C2 "
     "and H6 rows; errata E-H5-RESTORE and E-H5-B in §18.3; 2026-10-21). v1.4.4 was v1.4.3 plus H5's landing"
 )
 
 INTRO_OLD = f"H5 landed alongside them, in the \"mac dev\" session (v1.4.4), whose handoff is `{H5_HANDOFF}`."
 INTRO_NEW = (
     f"{INTRO_OLD} The same session removed and restored H5's trees and landed a risk analysis of the restored state "
-    f"({RESTORE_PR}, `{RESTORE_SHA}`). The owner chose option B in the next session (v1.4.5), whose handoff is "
+    f"({RESTORE_PR}, `{RESTORE_SHA}`). The Overtoad chose option B in the next session (v1.4.5), whose handoff is "
     f"`{THIS_HANDOFF}`. The arc's main handoff is the \"code signing\" session's `{ARC_HANDOFF}` (juniper-ml#2305), "
     "where C9 is next."
 )
@@ -72,29 +72,29 @@ INTRO_NEW = (
 RULING_OLD = "A read-only Serena was the alternative.\n\n### 18.2 Task status after Session 3"
 RULING_NEW = (
     "A read-only Serena was the alternative.\n"
-    "- **H5's trees (2026-10-21).** The owner first chose removal, then reconsidered once it had run, and the trees were "
-    "restored (E-H5-RESTORE). On the restored state's risk analysis the owner chose **option B**: keep both trees, dormant "
-    "and hardened (E-H5-B). The owner also adopted all four of the analysis' follow-ups as tasks: RR-10 widens C9, RR-11 "
+    "- **H5's trees (2026-10-21).** The Overtoad first chose removal, then reconsidered once it had run, and the trees were "
+    "restored (E-H5-RESTORE). On the restored state's risk analysis the Overtoad chose **option B**: keep both trees, dormant "
+    "and hardened (E-H5-B). The Overtoad also adopted all four of the analysis' follow-ups as tasks: RR-10 widens C9, RR-11 "
     "rewords C2, O-8 adds an exclusion to C0, and O-5 becomes the new task H6 (§18.2).\n"
     "\n### 18.2 Task status after Session 3"
 )
 
-H5_PREFIX = "| H5 | landed; **the owner's decision is pending** |"
+H5_PREFIX = "| H5 | landed; **the Overtoad's decision is pending** |"
 H5_ROW = (
-    "| H5 | **done: kept under option B** (owner, 2026-10-21); **B.4 and B.5 OWNER** | juniper-ml#2300 (`2f831b60`), in "
+    "| H5 | **done: kept under option B** (Overtoad, 2026-10-21); **B.4 and B.5 OWNER** | juniper-ml#2300 (`2f831b60`), in "
     f"the \"mac dev\" session (E-SPLIT): the `auditor` agent's static audit, `{AUDIT}`, with its read-only evidence script "
     f"`{INVENTORY}`. 25 findings (3 blocker, 9 major and 13 minor); it recommended removing both (E-H5). The trees were then "
     f"removed and restored, and {RESTORE_PR} (`{RESTORE_SHA}`) landed the validated risk analysis of the restored state, "
     f"`{ANALYSIS}`: 14 risks, 9 Medium and 5 Low, none High, all dormant (E-H5-RESTORE). Its recommendation stayed REMOVE, "
-    "with option B as the alternative. **The owner chose B.** The agent applied B.1 to B.3; "
+    "with option B as the alternative. **The Overtoad chose B.** The agent applied B.1 to B.3; "
     f"`{HARDENING_CHECK}` checks them and the rest of the restored state, and exits 0 (`{EVIDENCE}`). B.4 (a Little Snitch "
-    "rule for `node`) and B.5 (`git remote remove origin` in each tree) are the owner's (E-H5-B). The acceptance's "
+    "rule for `node`) and B.5 (`git remote remove origin` in each tree) are the Overtoad's (E-H5-B). The acceptance's "
     "\"enable or remove\" became \"keep, dormant and hardened\" |"
 )
 
-C9_OLD = "The owner re-installs the guard (C8's path). H3 depends on it (E-SERENA-EDIT) |"
+C9_OLD = "The Overtoad re-installs the guard (C8's path). H3 depends on it (E-SERENA-EDIT) |"
 C9_NEW = (
-    "The owner re-installs the guard (C8's path). H3 depends on it (E-SERENA-EDIT). **Widened in v1.4.5 (owner, RR-10 of "
+    "The Overtoad re-installs the guard (C8's path). H3 depends on it (E-SERENA-EDIT). **Widened in v1.4.5 (Overtoad, RR-10 of "
     "the H5 risk analysis):** C9 also denies MCP registration, which no rule covers today: (a) the `mcp add`, `mcp add-json` "
     "and `mcp add-from-claude-desktop` subcommands, whatever the command word, since the guard compares basenames and a rule "
     "on `claude` misses the versions path; (b) writes to `~/.claude.json` and to any `.mcp.json`, while H4's "
@@ -106,33 +106,33 @@ C9_NEW = (
 
 ROWS_ANCHOR = H5_ROW + "\n\n### 18.3 Errata"
 NEW_ROWS = (
-    "| C0 | **changed** (v1.4.5, owner, O-8 of the H5 risk analysis) | The encrypted Time Machine backup must not copy H5's "
+    "| C0 | **changed** (v1.4.5, Overtoad, O-8 of the H5 risk analysis) | The encrypted Time Machine backup must not copy H5's "
     "kept trees, or a restore from it would bring them back in whatever state they then had. Before the first backup, "
     "exclude them: `tmutil addexclusion ~/.claude/mcp-servers`. Acceptance adds `tmutil isexcluded ~/.claude/mcp-servers` "
     "reporting `[Excluded]`. On 2026-10-21 it reported `[Included]`, and no Time Machine destination was configured |\n"
-    "| C2 | **changed** (v1.4.5, owner, RR-11 of the H5 risk analysis) | Application firewall on, stealth mode on, and "
+    "| C2 | **changed** (v1.4.5, Overtoad, RR-11 of the H5 risk analysis) | Application firewall on, stealth mode on, and "
     "**block all incoming connections** (`socketfilterfw --setblockall on`) while nothing inbound is needed, in place of "
     "\"allow signed software\". As worded, C2 kept the default that automatically allows downloaded signed software "
     "(`socketfilterfw --getallowsigned`: ENABLED on 2026-10-21), so Docker Desktop's signed backend would keep publishing "
     "compose ports to the LAN. Where something inbound is needed, per-app inbound denies for `com.docker.backend`, `node` "
     "and the env Pythons instead; Little Snitch supports inbound rules too. Acceptance adds `socketfilterfw --getblockall` "
     "reporting enabled, or the per-app denies recorded. G-SEC's firewall condition still passes at `State = 1`, and its "
-    "hint (`util/host_state_check.py:709`) still quotes the old wording; an agent updates both once the owner has chosen "
+    "hint (`util/host_state_check.py:709`) still quotes the old wording; an agent updates both once the Overtoad has chosen "
     "between the two forms |\n"
-    "| H6 | **new** (v1.4.5, owner, O-5 of the H5 risk analysis; AGENT, P2) | Review the four MCP servers in VS Code's user "
+    "| H6 | **new** (v1.4.5, Overtoad, O-5 of the H5 risk analysis; AGENT, P2) | Review the four MCP servers in VS Code's user "
     "`mcp.json`, which neither H0 nor H5 reviewed: `huggingface` and `upstash/context7` (http), `microsoft/markitdown` and "
     "`oraios/serena` (stdio). For each: provenance and pin (D10's pinning rule applies to Serena there too), the arguments, "
     "the tools it exposes (file-writing and command-running ones against C8 and C9; the rest need `permissions.deny`-style "
     "controls, H5-X1), and its egress. Secrets stay unread, as in H5: no env, header or URL-query value is printed. "
-    "Acceptance: an `auditor` audit in `notes/` with a keep, pin or remove recommendation per server; the owner decides. "
+    "Acceptance: an `auditor` audit in `notes/` with a keep, pin or remove recommendation per server; the Overtoad decides. "
     "VS Code auto-approves every terminal command here (`\"/.*/\": true`, signing plan K13), which raises the stakes |"
 )
 
 ERRATA_ANCHOR = "\n\n## 19. Commit signing for the terminal and the IDEs"
 ERRATA = (
     "\n- **E-H5-RESTORE (H5's trees, removed and restored, 2026-10-21).** v1.4.4's \"decision pending\" predates both.\n"
-    "  - **Removed.** After v1.4.4 landed (07:10:57Z) the owner chose \"remove both; you run it\". The agent ran `rm -rf` on "
-    "both trees and `rmdir` on `~/.claude/mcp-servers`, and the owner's \"let's pause and reconsider\" arrived after all "
+    "  - **Removed.** After v1.4.4 landed (07:10:57Z) the Overtoad chose \"remove both; you run it\". The agent ran `rm -rf` on "
+    "both trees and `rmdir` on `~/.claude/mcp-servers`, and the Overtoad's \"let's pause and reconsider\" arrived after all "
     "three had completed. `rm -rf` bypasses the Trash, so no repository operation could undo it.\n"
     "  - **Restored.** At 08:33Z both trees were re-cloned with `git clone --revision=<audited commit>`. At 09:04Z "
     "agi-mcp-server's March install was rebuilt offline from npm's cache, resolved `--before` the March install and with "
@@ -144,9 +144,9 @@ ERRATA = (
     f"ACCEPT-WITH-CHANGES), `{RESTORE_CHECK}` and `reports/2026-10-21_turing-h5-restore/`. The analysis corrects the "
     "audit's AGOT-P1: Claude Desktop **is** installed and bound to `.dxt`, though it has never been launched (its O-1 and "
     "RR-2).\n"
-    "  - **For next time:** an owner-approved removal of host state moves it to a dated quarantine directory, "
+    "  - **For next time:** an Overtoad-approved removal of host state moves it to a dated quarantine directory, "
     "`~/.local/state/juniper/quarantine/<date>-<name>/`, and is purged only on a second go-ahead.\n"
-    "- **E-H5-B (option B, applied 2026-10-21).** The owner chose the risk analysis' option B (its §7).\n"
+    "- **E-H5-B (option B, applied 2026-10-21).** The Overtoad chose the risk analysis' option B (its §7).\n"
     "  - **Applied by the agent** from 20:53Z to 20:54Z, each step reversible in place. sha256 and git blob ids show that "
     "the renames changed no byte, and each reversal is the opposite `mv`, or deleting `.npmrc`:\n"
     "    - B.1 renamed adaptive-graph-of-thoughts' `.claude/settings.local.json` to `settings.local.json.h5-disabled`. That "
@@ -180,22 +180,22 @@ ERRATA = (
 
 H5_HANDOFF_OLD = "\n\n- **From:** the 2026-10-21 session on turing named \"mac dev\"."
 H5_HANDOFF_NEW = (
-    "\n\n- **Superseded (2026-10-21, plan v1.4.5).** The owner chose option B: keep both trees, dormant and hardened. "
-    f"B.1 to B.3 are applied. H5's current state, the owner's B.4 and B.5, and the check are in `{THIS_HANDOFF}`. "
+    "\n\n- **Superseded (2026-10-21, plan v1.4.5).** The Overtoad chose option B: keep both trees, dormant and hardened. "
+    f"B.1 to B.3 are applied. H5's current state, the Overtoad's B.4 and B.5, and the check are in `{THIS_HANDOFF}`. "
     "What follows is this file's state before the decision."
     + H5_HANDOFF_OLD
 )
 
 ARC_POINTER_OLD = f"`{H5_HANDOFF}` stays the authority on H5's state and the removal commands."
 ARC_POINTER_NEW = (
-    f"{ARC_POINTER_OLD} **Since plan v1.4.5** the owner has chosen H5's option B (keep, hardened), and the authority on H5 "
+    f"{ARC_POINTER_OLD} **Since plan v1.4.5** the Overtoad has chosen H5's option B (keep, hardened), and the authority on H5 "
     f"is `{THIS_HANDOFF}`."
 )
 
-ARC_C9_OLD = "   - C9 can be built and landed before C8 is installed. Only its installation is the owner's.\n"
+ARC_C9_OLD = "   - C9 can be built and landed before C8 is installed. Only its installation is the Overtoad's.\n"
 ARC_C9_NEW = (
     ARC_C9_OLD
-    + "   - **Widened by plan v1.4.5 (owner, RR-10):** C9 also denies MCP registration: the `mcp add*` subcommands whatever "
+    + "   - **Widened by plan v1.4.5 (Overtoad, RR-10):** C9 also denies MCP registration: the `mcp add*` subcommands whatever "
     "the command word, writes to `~/.claude.json` and any `.mcp.json` (H4's `util/mcp_setup.bash` must keep working), and "
     "settings writes that set `enabledMcpjsonServers` or `enableAllProjectMcpServers`. The plan's §18.2 C9 row has the "
     "detail.\n"
@@ -238,7 +238,7 @@ def edit_plan(text: str, report: list) -> str:
     text = edit(text, INTRO_OLD, INTRO_NEW, THIS_HANDOFF, "plan: §18 opening paragraph", report)
     text = edit(text, RULING_OLD, RULING_NEW, "- **H5's trees (2026-10-21).**", "plan: §18.1 ruling on H5's trees", report)
     text = replace_row(text, H5_PREFIX, H5_ROW, "plan: §18.2 H5 row", report)
-    text = edit(text, C9_OLD, C9_NEW, "**Widened in v1.4.5 (owner, RR-10", "plan: §18.2 C9 row widened", report)
+    text = edit(text, C9_OLD, C9_NEW, "**Widened in v1.4.5 (Overtoad, RR-10", "plan: §18.2 C9 row widened", report)
     text = edit(text, ROWS_ANCHOR, H5_ROW + "\n" + NEW_ROWS + "\n\n### 18.3 Errata", "| H6 | **new** (v1.4.5",
                 "plan: §18.2 rows C0, C2 and H6", report)
     return edit(text, ERRATA_ANCHOR, ERRATA + ERRATA_ANCHOR, "- **E-H5-RESTORE (", "plan: §18.3 errata E-H5-RESTORE, E-H5-B", report)
@@ -256,7 +256,7 @@ def main() -> int:
     edited[H5_HANDOFF] = edit(edited[H5_HANDOFF], H5_HANDOFF_OLD, H5_HANDOFF_NEW, "- **Superseded (2026-10-21, plan v1.4.5).**",
                               "H5 handoff: pointer to its successor", report)
     edited[ARC_HANDOFF] = edit(edited[ARC_HANDOFF], ARC_POINTER_OLD, ARC_POINTER_NEW, "**Since plan v1.4.5**", "arc handoff: H5 pointer", report)
-    edited[ARC_HANDOFF] = edit(edited[ARC_HANDOFF], ARC_C9_OLD, ARC_C9_NEW, "**Widened by plan v1.4.5 (owner, RR-10):**", "arc handoff: C9 widened", report)
+    edited[ARC_HANDOFF] = edit(edited[ARC_HANDOFF], ARC_C9_OLD, ARC_C9_NEW, "**Widened by plan v1.4.5 (Overtoad, RR-10):**", "arc handoff: C9 widened", report)
     print("\n".join(report))
     if any(line.startswith("MISSING") for line in report):
         print("nothing written")

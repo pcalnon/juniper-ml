@@ -17,7 +17,7 @@ Successor to
 >
 > **SUPERSEDED 2026-09-22 — the title of this document is now wrong.** P1.4's second half was
 > **not** an Option D decision: §0.0.5(a) shows `log_if_enabled` is not §11's Option D at all. The
-> owner ruled the hoisted-guard + `%`-args idiom on 2026-09-22 and **Phase 1 is complete**. See the
+> Overtoad ruled the hoisted-guard + `%`-args idiom on 2026-09-22 and **Phase 1 is complete**. See the
 > banner at §0.1.
 
 **A bare "§N" means a section OF this document.** Every reference to another file names it. This
@@ -32,10 +32,10 @@ Recon: ~~`notes/JUNIPER_2026-09-01_JUNIPER-CASCOR_LOGGING-RECON.md`~~ — **no s
 2026-09-21 to `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-CURRENT-STATE-RECONCILIATION.md`**
 (§0.0.2 correction 2).
 
-**The one thing to hold in mind.** The predecessor handed over an arc blocked on six owner
+**The one thing to hold in mind.** The predecessor handed over an arc blocked on six Overtoad
 decisions with no phase started. All six are now ruled and recorded in §13.1 of
 `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`, and Phase 1 is four-fifths
-shipped. What remains of Phase 1 is **one half-step, and it is not mechanical**: the owner ruled
+shipped. What remains of Phase 1 is **one half-step, and it is not mechanical**: the Overtoad ruled
 P1.4 as "**C — Adopt: fix the levels and wire it to a real call site**". The fix half is done and
 checkpointed. The wire half, done the obvious way, **adopts migration-analysis Option D** — and
 §11 of `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` says Option D and a
@@ -77,7 +77,7 @@ Re-probed against both repos, not re-read from this document:
    imports cleanly under `lib/python3.14/site-packages`, **with or without** `env -u LD_LIBRARY_PATH
    -u LIBTORCH`. The two P1.4 suites run **47 passed, exit 0** under
    `/opt/miniforge3/envs/JuniperCascor1/bin/python`. The repair landed 2026-09-15 and is recorded in
-   `Juniper/AGENTS.md` § Conda Environments. **§0.5 is therefore MOOT — do not ask the owner a
+   `Juniper/AGENTS.md` § Conda Environments. **§0.5 is therefore MOOT — do not ask the Overtoad a
    fourth time; there is nothing left to rule.** The `/tmp/claude-1000/cascorenv` venv still works
    and is still what the benchmark below was run under, but it is no longer *required*, which
    removes this arc's dependency on a tmpfs path that a reboot would reap.
@@ -276,7 +276,7 @@ foreclosure the PRO brief missed, and it is real**: `log_if_enabled` takes **no 
 **cannot carry `%`-args**. §13.1 decision 6 of
 `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` holds **P6.4 open**, and P6.4's
 target population is exactly the `{name}` f-string sites at `:731`/`:742`. **Wiring Option D there
-pre-empts an open owner decision — just not the one §11 names.**
+pre-empts an open Overtoad decision — just not the one §11 names.**
 
 **The altitude arithmetic**, which neither brief disputes: the wiring decision governs **3 call
 sites**; the `isEnabledFor` memo governs **17 guard sites plus every guard P6.2/P6.3 will add**; the
@@ -297,11 +297,11 @@ rule.**
 
 State: the **fix** half is complete, tested and checkpointed on branch
 `wip/logging-p14-adopt-logging-utils` in `juniper-cascor` (§6). No PR is open. The **wire** half
-is not started, and §2 argues it needs an owner ruling first.
+is not started, and §2 argues it needs an Overtoad ruling first.
 
 > ## ✅ CLOSED 2026-09-22 — P1.4 is discharged and Phase 1 is complete
 >
-> **The owner ruled**: convert the three sites to the **hoisted-guard + `%`-args** idiom, **not**
+> **The Overtoad ruled**: convert the three sites to the **hoisted-guard + `%`-args** idiom, **not**
 > wire `log_if_enabled`. Shipped as
 > [cascor#670](https://github.com/pcalnon/juniper-cascor/pull/670), on top of
 > [cascor#667](https://github.com/pcalnon/juniper-cascor/pull/667) (the guard memo fix).
@@ -316,7 +316,7 @@ is not started, and §2 argues it needs an owner ruling first.
 >   `util/ad-hoc/2026-09-22_p14_percent_args_output_equivalence.py`. `residual_error.shape` is a
 >   `torch.Size`, a **tuple subclass**, so §5's splat hazard was live at `:742`.
 >
-> **What remains of this arc is §0.3 (P6.4, owner-gated) and §0.4 (P0.1/P0.2, the corpus that gates
+> **What remains of this arc is §0.3 (P6.4, Overtoad-gated) and §0.4 (P0.1/P0.2, the corpus that gates
 > P2 and P3).** Everything below is the working record that produced the ruling.
 
 > **REVISED 2026-09-21 — read §0.0.4–§0.0.6 first.** Step 2 is **DONE**, and its result plus a
@@ -352,7 +352,7 @@ is not started, and §2 argues it needs an owner ruling first.
    reconciliation in §0.0.4. The prior recorded there ("(c) loses to (b) on speed, wins on
    correctness") was **right in direction and wrong in magnitude**: the gap is ~25×, not marginal,
    and the cause is the guard, not the closure.
-3. **Re-measure after step 1, then put the reframed question to the owner.** Not "Option D yes/no"
+3. **Re-measure after step 1, then put the reframed question to the Overtoad.** Not "Option D yes/no"
    — §0.0.5(a) shows that framing is wrong — but: *given that `log_if_enabled` cannot carry `%`-args
    and therefore pre-empts the still-open P6.4, and given the byte-gate cost at the only located
    target, is P1.4 discharged by wiring a non-lazy helper somewhere coarse, or should the module be
@@ -368,8 +368,8 @@ is not started, and §2 argues it needs an owner ruling first.
 <details>
 <summary>Original steps as written 2026-09-17 (superseded; kept for the record)</summary>
 
-1. Read §2 and decide whether to put the Option D question to the owner. Recommended: yes, as a
-   short interactive question with the measurement in hand — the same shape the owner accepted for
+1. Read §2 and decide whether to put the Option D question to the Overtoad. Recommended: yes, as a
+   short interactive question with the measurement in hand — the same shape the Overtoad accepted for
    decisions 5 and 6.
 2. Measure before wiring. Write `util/ad-hoc/2026-09-17_p14_guard_idiom_bench.py` comparing, at
    both a disabled and an enabled configured level, against the **real** cascor `Logger`:
@@ -408,7 +408,7 @@ shipped in cascor#598.
   the framing changed.** §13.1 of
   `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` now carries three new
   entries: **decision 8** (the P1.4 option-C ruling, transcribed with its thin provenance stated and
-  flagged for owner confirmation), **decision 9** (the blanket merge approval, marked expired for new
+  flagged for Overtoad confirmation), **decision 9** (the blanket merge approval, marked expired for new
   sessions), and **decision 10** (the disposition question, left **OPEN** with the measurement
   attached). Per §0.0.5(a) there is **no P7 foreclosure to record** — the closure never escapes. The
   live foreclosure is **P6.4's**, per §0.0.6.
@@ -418,10 +418,10 @@ shipped in cascor#598.
 `util/ad-hoc/2026-09-21_p14_independent_remeasure.py` (independent Lane A re-creation) and
 `util/ad-hoc/2026-09-21_p14_suppressed_site_census.bash` (re-derives 872/874).
 
-### 0.3 P6.4 — still open, owner has seen the evidence and not ruled
+### 0.3 P6.4 — still open, Overtoad has seen the evidence and not ruled
 
 Decision 6 in §13.1 of `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`
-authorised P6.1–P6.3 and held P6.4. The owner asked for and received sample affected lines
+authorised P6.1–P6.3 and held P6.4. The Overtoad asked for and received sample affected lines
 (2026-09-09, from `util/ad-hoc/2026-09-09_p64_fstring_classify.py` in `juniper-ml`) and has not
 ruled on the 507 mechanical `{name}` conversions. **Do not start P6.4.** Re-ask when convenient.
 
@@ -493,7 +493,7 @@ with "already exists" — use it rather than making a second one:
 > written** (`SampledLogger` takes an *eager* string and never checks the level — §0.0.6), and the
 > foreclosure that is actually live is **P6.4's, not P7's**.
 
-The owner ruled P1.4 as **C — Adopt: fix the levels and wire it to a real call site**. The obvious
+The Overtoad ruled P1.4 as **C — Adopt: fix the levels and wire it to a real call site**. The obvious
 wiring is:
 
 ```python
@@ -508,7 +508,7 @@ names two further constraints: a lambda that raises must not take down a trainin
 its own swallow-path; and it allocates a closure per call **even when suppressed**, at ~872 live
 suppressed Path-A sites.
 
-Three ways out, and the choice is the owner's:
+Three ways out, and the choice is the Overtoad's:
 
 - **Wire it as written, and record P7's queued writer as foreclosed.** Honest, cheap, and it makes
   `src/profiling/logging_utils.py` live code. Costs a closure per suppressed call at the site.
@@ -518,7 +518,7 @@ Three ways out, and the choice is the owner's:
 - **Convert the three sites to the hoisted-guard idiom instead** and rule P1.4 as "fix, do not
   wire". This contradicts the letter of ruling C and should only be proposed with the benchmark.
 
-My recommendation: take option 2 to the owner alongside the benchmark from §0.1 step 2, because it
+My recommendation: take option 2 to the Overtoad alongside the benchmark from §0.1 step 2, because it
 is the only one that discharges the ruling without spending a decision that belongs to P7.
 
 The countervailing argument, which is real: the hand-rolled guard states the level **twice** —
@@ -566,7 +566,7 @@ handoff adds
 
 ---
 
-## 4. Owner rulings taken this session
+## 4. The Overtoad rulings taken this session
 
 ~~All are recorded canonically in §13.1 of~~
 `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`. Do not re-litigate them.
@@ -574,7 +574,7 @@ handoff adds
 > **CORRECTED 2026-09-21.** Items 2 and 3 below were in §13.1 (as decisions 5 and 6). **Items 1 and
 > 4 were not, anywhere** — and [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573)
 > carries zero comments, so they had no primary source at all. Both are now transcribed as §13.1
-> **decisions 8 and 9**, with their thin provenance stated and flagged for owner confirmation. See
+> **decisions 8 and 9**, with their thin provenance stated and flagged for Overtoad confirmation. See
 > §0.0.2 correction 3. Item 1's merge approval is recorded as **expired for new sessions**.
 
 1. **Merge approval granted for all PRs this session and this work arc.** I still showed each PR

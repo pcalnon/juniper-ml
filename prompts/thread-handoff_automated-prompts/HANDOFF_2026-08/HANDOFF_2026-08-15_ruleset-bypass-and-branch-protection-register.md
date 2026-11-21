@@ -1,7 +1,7 @@
 # HANDOFF 2026-08-15 — the ruleset, bypass-actor and branch-protection register
 
 **Scope: branch protection only.** This document owns one family — the juniper-ml ruleset, its bypass
-actors, and the two `[owner-decision]` issues attached to them. It deliberately does **not** cover the
+actors, and the two `[Overtoad-decision]` issues attached to them. It deliberately does **not** cover the
 CLI-experimentation plan; a sibling handoff archived the same day owns that, and this one defers to it
 rather than restating it.
 
@@ -11,12 +11,12 @@ rather than restating it.
 |-------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
 | `HANDOFF_2026-08-15_wide-budget-head-to-head-campaign.md` (ml#1122)           | the wide-budget head-to-head campaign (64–128 units)                                                                                        |
 | `HANDOFF_2026-08-15_api-primer-defect-register-outstanding-work.md` (ml#1121) | the defect register — 91 open defects                                                                                                       |
-| `HANDOFF_2026-08-15_q6-resolved-and-owner-decision-register.md` (ml#1124)     | what is left of the CLI-experimentation *plan*, including every Q-* owner decision                                                          |
+| `HANDOFF_2026-08-15_q6-resolved-and-Overtoad-decision-register.md` (ml#1124)     | what is left of the CLI-experimentation *plan*, including every Q-* Overtoad decision                                                          |
 | **this one**                                                                  | the **ruleset / bypass-actor / branch-protection** family                                                                                   |
 | `HANDOFF_2026-08-15_branch-protection-arc-closure-evidence.md`                | closure evidence for the 2026-08-14 branch-protection handoff, and two corrections to it; defers to **this** register for ml#1011 / ml#1012 |
 
 **Nothing in this register is in flight**, and no engineering work is pending on it — every item is an
-owner decision or a lookup only the owner can perform. `main` moves continuously (it advanced four times
+Overtoad decision or a lookup only the Overtoad can perform. `main` moves continuously (it advanced four times
 while this was written), so **re-probe before acting**: two facts in an earlier draft of this very
 document went stale between drafting and validation.
 
@@ -27,7 +27,7 @@ outlive the session and carry each item's evidence with it, not a task baton.
 
 ## 1. What this session contributed
 
-No code, and no ruleset edit — ruleset edits are owner-gated. What changed is the accuracy of the register:
+No code, and no ruleset edit — ruleset edits are Overtoad-gated. What changed is the accuracy of the register:
 
 - **Integration `1276151` is identified** as "Amp for GitHub" (§2.1), closing an IDENTIFY-FIRST item open
   since 2026-08-05.
@@ -41,12 +41,12 @@ No code, and no ruleset edit — ruleset edits are owner-gated. What changed is 
 ## 2. The ruleset family
 
 All items concern juniper-ml ruleset `juniper-ml-rules` (id **13805432**). State below was read live from
-the API on 2026-08-15. **Re-read before editing** — a ruleset edit is outward-facing and owner-gated.
+the API on 2026-08-15. **Re-read before editing** — a ruleset edit is outward-facing and Overtoad-gated.
 
 ### 2.1 The unattributed bypass App is identified
 
 **Integration `1276151` = "Amp for GitHub"** (Sourcegraph's AI agentic coding tool), identified by the
-owner on 2026-08-15 from Settings → Rules.
+Overtoad on 2026-08-15 from Settings → Rules.
 
 It is now **independently reproducible**: `gh api /apps/amp-for-github --jq .id` returns `1276151`. That
 supersedes
@@ -68,14 +68,14 @@ eight:
 | Actor                  | Mode           | Identity                                                | Verdict                                         |
 |------------------------|----------------|---------------------------------------------------------|-------------------------------------------------|
 | DeployKey (all)        | `always`       | writable deploy keys                                    | identify-first                                  |
-| RepositoryRole 5       | `always`       | repository admin (the owner)                            | keep — but see §2.3                             |
+| RepositoryRole 5       | `always`       | repository admin (the Overtoad)                            | keep — but see §2.3                             |
 | Integration 29110      | `always`       | dependabot                                              | keep                                            |
 | Integration 946600     | `always`       | copilot-code-review                                     | **REMOVE** — see below                          |
 | Integration 1143301    | `always`       | copilot-swe-agent                                       | keep                                            |
 | Integration 1210556    | `always`       | **cursor**                                              | **REMOVE** (ml#1012)                            |
 | Integration 1236702    | `always`       | **claude**                                              | **REMOVE** (ml#1012)                            |
 | Integration 1276151    | `always`       | **Amp for GitHub**                                      | **REMOVE** (§2.1)                               |
-| Integration 4362741    | `pull_request` | owner's release-train App (`vars.RELEASE_TRAIN_APP_ID`) | **KEEP** — required for the exempt archive lane |
+| Integration 4362741    | `pull_request` | Overtoad's release-train App (`vars.RELEASE_TRAIN_APP_ID`) | **KEEP** — required for the exempt archive lane |
 
 **`946600` is the live exposure.**
 [`…STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md:139`](../../../notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md)
@@ -103,7 +103,7 @@ to run on ~2026-08-21 and per-repo contexts in §A5.3. Its Q8 row reads "**Yes**
 §A5.2 checklist". **Run the checklist before promoting; do not promote early on this register's say-so.**
 
 **The load-bearing caveat, verified live:** `RepositoryRole 5` (admin) holds `always` bypass, so promoting
-Sequence Safety **would not constrain the owner's own merges**. That is exactly how the recurring
+Sequence Safety **would not constrain the Overtoad's own merges**. That is exactly how the recurring
 main-verify-red class kept recurring. Promotion is still worth doing — it makes the check load-bearing for
 fleet PRs and every non-bypass path — but **it is not the fix for that failure mode**. ml#1012 is.
 
@@ -131,7 +131,7 @@ per-app bypass workarounds. Research recommends (a) or (b).
 3. Apply ml#1012's removals, now including Amp (§2.1) — repeated on **every** repo carrying the roster.
 4. Apply ml#1011's promotion **on ~2026-08-21, after the §A5.2 checklist** (§2.3).
 
-Each is one API call and each is reversible. **All are owner-gated — do not apply unilaterally.**
+Each is one API call and each is reversible. **All are Overtoad-gated — do not apply unilaterally.**
 
 ---
 

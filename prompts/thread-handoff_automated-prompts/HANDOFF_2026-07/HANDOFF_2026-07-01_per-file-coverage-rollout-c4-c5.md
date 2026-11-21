@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-01
 **Author:** Paul Calnon (Claude Code, custom-agent suite)
-**Continue:** execute the remaining per-file-coverage rollout — **C-4 (service-core)** then **C-5 (deferred/heavy-env units)** — per the scoping doc, one PR per unit, owner-gated merges/publishes.
+**Continue:** execute the remaining per-file-coverage rollout — **C-4 (service-core)** then **C-5 (deferred/heavy-env units)** — per the scoping doc, one PR per unit, Overtoad-gated merges/publishes.
 
 ---
 
@@ -52,13 +52,13 @@ Measured 2026-06-30: overall ~84% statement (81.14 branch-inclusive; it runs `br
 
 ## Key context / decisions / gotchas (learned the hard way — carry these)
 
-- **Gate metric (RATIFIED by owner):** sub-module bar = **statement-weighted `pooled_percent`** (NOT mean-of-files); per-file = **statement** % (NOT branch-inclusive). The tool computes both; `--enforce` gates on pooled + statement.
+- **Gate metric (RATIFIED by Overtoad):** sub-module bar = **statement-weighted `pooled_percent`** (NOT mean-of-files); per-file = **statement** % (NOT branch-inclusive). The tool computes both; `--enforce` gates on pooled + statement.
 - **branch-vs-statement:** for `branch=true` repos (data-client, doc-tools, service-core), the scoping table's per-file "<90" counts are **branch-inclusive**; the gate is **statement**, so real failures are FEWER (e.g. data-client's `client.py` "89.56" was branch; it was already 93.10 statement). **Always re-measure on the statement basis first.**
 - **`__main__.py` / thin entry shims:** prefer an in-process `runpy.run_module(..., run_name="__main__")` smoke test (doc-tools ml#603 → 100%); else `--omit "*/__main__.py"` per scoping §2 (ci-tools ml#601 did this).
 - **ci-tools version pins:** a `juniper-ci-tools` minor bump MUST widen juniper-ml's own three workflow pins (`.github/workflows/ci.yml`, `docs-full-check.yml`, `lockfile-update.yml`) in the SAME PR, or the ungated `tests/test_ci_tools_drift.py` + `tests/test_env_drift_check_drift.py` fail. Current pins are `<0.7.0`; consumers pin `juniper-ci-tools>=0.6.0,<0.7.0`.
 - **AGENTS.md ≤512 chars/line** (markdownlint MD013): an over-long AGENTS.md line broke main once (ml#598). Keep every AGENTS.md line ≤512. (`prompts/`, `notes/`, `docs/`, CHANGELOG are markdownlint-excluded; AGENTS.md is NOT.)
 - **Verify-before-green:** wait for **Pre-commit** (not just the fast checks) to fully resolve before calling a PR green, and confirm the exact main HEAD's `ci.yml` run. (Calling ml#595 green early caused the ml#598 detour.)
-- **Process:** one PR per unit; isolated worktrees under `/home/pcalnon/Development/python/Juniper/worktrees/`; `gh pr list` dup-guard; **no merge without a PR**; **Paul (owner) merges every PR and approves every PyPI publish** (the `pypi` environment gate — never self-approve). The **`task-executor`** agent pattern worked well: isolated worktree → real tests (no weakening) → wire gate → verify `--enforce` exit 0 → open PR → report. Run per-unit task-executors in the background; verify each PR's CI independently before reporting it green.
+- **Process:** one PR per unit; isolated worktrees under `/home/pcalnon/Development/python/Juniper/worktrees/`; `gh pr list` dup-guard; **no merge without a PR**; **Paul (Overtoad) merges every PR and approves every PyPI publish** (the `pypi` environment gate — never self-approve). The **`task-executor`** agent pattern worked well: isolated worktree → real tests (no weakening) → wire gate → verify `--enforce` exit 0 → open PR → report. Run per-unit task-executors in the background; verify each PR's CI independently before reporting it green.
 - **Open follow-ups (tracked, not blocking):** juniper-ml#588 (`util/env_floor_drift_check.py` ↔ ci-tools consolidation); observability leaky test `test_fixture_is_no_op_when_prometheus_client_missing` (never restores `builtins.__import__` — hermetic-fix candidate).
 
 ---

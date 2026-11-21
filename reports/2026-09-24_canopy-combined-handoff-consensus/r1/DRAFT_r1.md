@@ -1,4 +1,4 @@
-# Thread handoff — canopy combined: the E2E arc's queue, Y2 wave 2's fix pass and merge, and the selection arc's owner calls
+# Thread handoff — canopy combined: the E2E arc's queue, Y2 wave 2's fix pass and merge, and the selection arc's Overtoad calls
 
 **Written**: 2026-09-24, by session "canopy combined" (juniper-ml worktree
 `.claude/worktrees/bubbly-meandering-pie`, branch `worktree-bubbly-meandering-pie` at `6c23fdde`, which was
@@ -7,23 +7,23 @@ window. It **supersedes three handoffs, one per lane**. Two of them are not on `
 
 | lane | predecessor | where it lives at writing |
 |---|---|---|
-| A | `HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-owner-answered-followup-684.md` | branch `docs/canopy-e2e-handoff-2026-09-24` (`dd4413e5`, no PR), and the worktree `.claude/worktrees/graceful-sprouting-panda`. Written about 11:00Z, amended 19:21–19:41Z. |
+| A | `HANDOFF_2026-09-24_canopy-e2e-phase9-landed-ten-rounds-Overtoad-answered-followup-684.md` | branch `docs/canopy-e2e-handoff-2026-09-24` (`dd4413e5`, no PR), and the worktree `.claude/worktrees/graceful-sprouting-panda`. Written about 11:00Z, amended 19:21–19:41Z. |
 | B | `HANDOFF_2026-09-24_y2-wave2-round-15-fix-pass.md` | untracked, ONLY in `.claude/worktrees/idempotent-jumping-sparkle`. Written 06:11Z. |
-| C | `HANDOFF_2026-09-24_canopy-selection-cleanup-done-item-19-closed-y7-grounded-owner-calls-remain.md` | `main`, juniper-ml#2087 (`c32e5f2a`, 19:42:45Z) |
+| C | `HANDOFF_2026-09-24_canopy-selection-cleanup-done-item-19-closed-y7-grounded-Overtoad-calls-remain.md` | `main`, juniper-ml#2087 (`c32e5f2a`, 19:42:45Z) |
 
 All three live in `prompts/thread-handoff_automated-prompts/` wherever they exist. Items below are numbered
 A1…, B1…, C1… and X1… (cross-lane) so they cannot collide with the numbering inside the source documents: "ledger
 item N" means the E2E ledger's Phase 9 "Still owed" list, and "R15A m1" means round 15's report A, finding m1.
 
 **Merge approval: none is carried.** B's predecessor recorded "ONLY this session's four PRs (2b, 2a, 2c,
-addendum), plus the closing PR. No deploys, images, PyPI or GitHub Releases". C's recorded "granted by the owner
+addendum), plus the closing PR. No deploys, images, PyPI or GitHub Releases". C's recorded "granted by the Overtoad
 for this arc in this session (2026-09-24)". A's recorded none. A per-session grant does not survive a handoff;
-B's own closing draft (`S/main/handoff_v4.md`) says so. Ask the owner before the first merge.
+B's own closing draft (`S/main/handoff_v4.md`) says so. Ask the Overtoad before the first merge.
 
 ## Goal statement (paste this as the new thread's first prompt)
 
 Continue three canopy-related arcs from one combined handoff: juniper-ml
-`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-owner-calls.md`.
+`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-24_canopy-combined-e2e-y2-wave2-selection-Overtoad-calls.md`.
 Read it in full. Each lane section carries its own context, so the lanes can be split across sessions.
 
 - **Lane A: canopy E2E validation.** The ledger of record is juniper-ml
@@ -34,17 +34,17 @@ Read it in full. Each lane section carries its own context, so the lanes can be 
   and the addendum to the 09-08 handoff. They have been through fifteen consensus rounds. Next: round 15's fix
   pass, round 16, then open and merge per `S/main/PLAN.md`. **It must run from the worktree
   `.claude/worktrees/idempotent-jumping-sparkle`.**
-- **Lane C: canopy selection arc.** Nothing is left to implement. What remains: owner decisions, worktree
-  removals only the owner can run, a primary fast-forward that a live stack blocks, and the date
+- **Lane C: canopy selection arc.** Nothing is left to implement. What remains: Overtoad decisions, worktree
+  removals only the Overtoad can run, a primary fast-forward that a live stack blocks, and the date
   2026-09-29T00:00Z.
 
 Before anything else:
 
 1. Run the verification block below.
-2. Put the owner questions to the owner in one message:
+2. Put the Overtoad questions to the Overtoad in one message:
    - **Merge approval for this session:** which PRs? Candidates: B's four plus its closing PR, and A's Phase 10
      and F-059 PRs.
-   - **B only, the sweeper against Y2's merge order (X1):** exclude the four Y2 PRs from the owner's sweeper, or
+   - **B only, the sweeper against Y2's merge order (X1):** exclude the four Y2 PRs from the Overtoad's sweeper, or
      approve making 2b's preflight warn until 2a ships, or accept fix-forward.
    - **A6, urgent:** push a provenance ref for the ledger's local-only commits, or accept their loss. Three are
      already unreachable.
@@ -54,7 +54,7 @@ Before anything else:
 
 Rules that bind every lane:
 
-- **Validate BEFORE opening a PR.** The owner's sweeper readies and arms open PRs, drafts included, and its
+- **Validate BEFORE opening a PR.** The Overtoad's sweeper readies and arms open PRs, drafts included, and its
   merges are intended ("Mine: fix forward", 2026-09-24 07:32:48Z).
 - Follow `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` for every review
   round.
@@ -75,7 +75,7 @@ Rules that bind every lane:
   - canopy and cascor work goes in their own worktrees under
     `/home/pcalnon/Development/python/Juniper/worktrees/`. The guard does not stop a session reaching other
     repos.
-  - Lane C's items are owner-facing and fit either session.
+  - Lane C's items are Overtoad-facing and fit either session.
 - **Never do Lane A's juniper-ml edits in `idempotent-jumping-sparkle`.** That tree is based on `5ea8e273`, which is
   older than `main`, and it carries B's uncommitted state. `util/open_signed_pr.py` uploads whole files, so an
   edit made there would revert `main`.
@@ -96,7 +96,7 @@ Rules that bind every lane:
 - **Triage** (`python3 -B util/ad-hoc/e2e_finding_triage.py`): 70 findings, 48 fixed, 1 accepted, 2 withdrawn and
   19 open. The open ones are 1 P0 (F-CANOPY-059), 6 P1 (F-CANOPY-055, -056, -057, -058, F-CASCOR-001, -002) and
   12 P2.
-- **The owner answered the sweeper question.** Session `bc31e993` asked at 03:34:45Z; the owner answered at
+- **The Overtoad answered the sweeper question.** Session `bc31e993` asked at 03:34:45Z; the Overtoad answered at
   07:32:48Z: "Mine: fix forward".
 - **Secret-shape tooling was hardened** during the review. The launch scan, the answer extractor and both
   archivers share one set of shapes. `util/ad-hoc/2026-09-24_secret_shape_check.py` tests all four.
@@ -159,7 +159,7 @@ that arc to cite. Use them, or mark one WITHDRAWN if re-derivation refutes it.
   - At writing the PR does not exist and the branch is not on origin. Its worktree is
     `worktrees/juniper-canopy--fix--secret-leaks-683-validation--20260924-1333--8917fdac`.
   - Get the number from `bc31e993`, and record it once the PR exists.
-- **A fourth item, no id reserved** (NIT, pre-existing, no owner). The defect-register arc handed it over at about
+- **A fourth item, no id reserved** (NIT, pre-existing, no Overtoad). The defect-register arc handed it over at about
   20:40Z; `defect reg [042116]` found it while building juniper-cascor#690.
   - **The upstream change.** #690 (OPEN, head `78e99414`, not yet validated) removes #687's refusal sentence
     "Nothing was loaded…" from `_refuse_dataset_wider_than_network`. The sentence was false when the start's
@@ -191,9 +191,9 @@ A-N2 failures)", lines 188–226 on `main`.
   recurrence branch. It is log noise; decide whether the recurrence backend is in scope.
 - **O9**: after a refused Start, the sidebar's "Current Dataset" shows the staged dataset, while the routes are
   honest. The selection arc calls it a pre-existing U-6 design question. If it survives as a design question, it
-  goes to the owner (C4).
+  goes to the Overtoad (C4).
 
-**A3. Ledger item 17 — the owner's call.** A replay replaces cascor's live network:
+**A3. Ledger item 17 — the Overtoad's call.** A replay replaces cascor's live network:
 
 - `start_replay` calls `_load_snapshot_to_network` (`manager.py:5977`), which sets `self.model` (`:5734`).
 - Neither `reset()` nor `stop_replay()` restores the earlier network.
@@ -243,7 +243,7 @@ does the proxy route's docstring (`main.py:2985`). The fix is canopy's wording, 
 - **KEEP** the canopy worktree `…fix--f055-status-bar-running-guard--20260923-1425--ce78e0de`. It holds the refuted
   first fix (`884d22fb`, `cf6fb1dc`, `7a4a2e33`) as provenance.
 
-**A6. Owner questions (ledger item 15).**
+**A6. The Overtoad questions (ledger item 15).**
 
 - **The account's later actions**, none made by a Claude Code session on this host:
   - the update-branches on ml#2066 and data#434 (23:16–23:17Z);
@@ -258,7 +258,7 @@ does the proxy route's docstring (`main.py:2985`). The fix is canopy's wording, 
   - **canopy `78c057e2` (item 15), `26bf27b3` and `96e7b105` (item 13's follow-up commits) are already
     UNREACHABLE.** They are still in the object store, but no branch holds them, so a `git gc` prune can delete
     them.
-  - Every other cited commit is held by ONE local branch only (table below). Until the owner answers, delete none
+  - Every other cited commit is held by ONE local branch only (table below). Until the Overtoad answers, delete none
     of these branches.
 
 | repo | local branch (worktree) | cited commits it alone holds |
@@ -276,14 +276,14 @@ does the proxy route's docstring (`main.py:2985`). The fix is canopy's wording, 
 - **0**: A4 + A5.
 - **1**: hunt the F-053 regression. With the drain parked, L sat at 3.9–5.4 s on the cuts leg under load.
 - **2**: the timestamp-only store rewrite. It needs a design that keeps the phase-duration clock.
-- **3**: owner: F-CANOPY-004's contract.
+- **3**: Overtoad: F-CANOPY-004's contract.
 - **4**: `FULL_HISTORY_POLL_TICK_MODULUS` → 1.
 - **5**: canopy#613's guard. Superseded by item 0.
 - **6**: F-CANOPY-049 and cascor#674's follow-ups.
 - **7**: CAN-015's replay-player loop, joined by F-056 and F-057, behind F-059.
 - **8**: M-CANDIDATES-10/-11, now re-drivable.
-- **9**: M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16 fade half, and F-038's browser-level test gap.
-- **10**: owner question: the metrics replay drives no chart.
+- **9**: M-DATASET-17..26 (the Overtoad's question), the M-TOPOLOGY-16 fade half, and F-038's browser-level test gap.
+- **10**: Overtoad question: the metrics replay drives no chart.
 - **11**: the starvation mechanism, re-derived under FIFO. Unstarted. The `_GATED_POLL_INTERVALS` comment in
   `dashboard_manager.py` still says "the lowest-priority callbacks".
 - **12**: F1 and Phase 8's round-1 minors.
@@ -302,7 +302,7 @@ does the proxy route's docstring (`main.py:2985`). The fix is canopy's wording, 
 **A8. MEMORY.md is within about 38 characters of its load limit.**
 
 - **Measured at 20:28Z:** 24,962 characters by `wc -m` (25,158 bytes). The load limit is about 25,000
-  CHARACTERS, not bytes; the owner's operating target is 20 KB (memory `feedback_memory_index_target_is_20kb.md`).
+  CHARACTERS, not bytes; the Overtoad's operating target is 20 KB (memory `feedback_memory_index_target_is_20kb.md`).
 - **How to compact:**
   - Retire entries; never strip hooks.
   - Snapshot the link set first (`util/ad-hoc/2026-09-12_memory_index_linkset.py snapshot`, then `compare`).
@@ -319,7 +319,7 @@ is `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`). Neve
   - `…perf--idle-dispatch-cuts-v2--20260923-1418--3a6dea95`: #676 merged. Its branch is in A6's table.
   - `…perf--idle-dispatch-cuts--20260923-0830--723ee812`: superseded. Its branch is in A6's table.
   - `…fix--f054-replay-block-clientside--20260923-0036--2f973ca2`: #670 merged. Its branch is in A6's table.
-- **juniper-ml: the owner runs these (C1).**
+- **juniper-ml: the Overtoad runs these (C1).**
   - `graceful-sprouting-panda`: branch `docs/canopy-e2e-phase9`, squash-merged as #2083; it holds `f6861234`.
   - `squishy-dancing-moth`: the 09-23 WIP; it holds `b54e3b3f`.
 
@@ -333,7 +333,7 @@ is `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`). Neve
 - **Lanes must never print a secret.** Build fake secrets by concatenation and print booleans only.
 - **Archive with `util/ad-hoc/2026-09-23_archive_consensus_reports_by_round.py`.** Allow a quoted literal per agent
   only after reviewing it.
-- **Earlier lanes printed the owner's email address.** Lanes C5, R4-A, A1 and B2 did so in their own local tool
+- **Earlier lanes printed the Overtoad's email address.** Lanes C5, R4-A, A1 and B2 did so in their own local tool
   output. Nothing was sent.
 
 ---
@@ -342,7 +342,7 @@ is `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`). Neve
 
 **Claims.** Session `idempotent-jumping-sparkle`, which the selection arc calls "peer session `canopy`", claimed Y2
 waves 2 and 3 and X10. These are items 4 and 20 of
-`HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md` § B, and whoever runs this
+`HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md` § B, and whoever runs this
 lane inherits the claims. **§ B's terms:**
 
 - The claims hold until 2026-09-29T00:00Z.
@@ -422,12 +422,12 @@ re-probed):
    - R15C M1's own last step ("add a PLAN step that lists the canopy-selection handoffs on main before opening")
      catches this.
    - **Point the addendum at the newest one at open time.**
-6. **X11 is no longer an open ruling.** R15C M1 describes it as `…queue-drained.md`'s owner ruling 2. It was ruled,
+6. **X11 is no longer an open ruling.** R15C M1 describes it as `…queue-drained.md`'s Overtoad ruling 2. It was ruled,
    and shipped as canopy#680 at 09:08Z.
 7. **juniper-data 0.16.0 is released and contains #421.** GitHub published it at 08:52:14Z and PyPI at 18:35Z.
    The probe's `6 packaging (release)` row reads the shared juniper-data checkout's tags. Its docstring says the
    pinned run prints 45/46 once a fetched release tag contains #421 (R14C n4).
-8. **The owner answered the sweeper question after R15D.** That changes B3 (X1).
+8. **The Overtoad answered the sweeper question after R15D.** That changes B3 (X1).
 
 **B1. The round-15 fix pass.** Apply the fix list below, and also:
 
@@ -470,7 +470,7 @@ re-probed):
 - **Worktree cleanup,** only on an explicit merge signal.
 
 **B5. The final summary** names every changed file. It repeats the reminder to rotate the leaked
-`JUNIPER_ML_PYPI` / `JUNIPER_ML_TEST_PYPI` tokens: a lane leaked them earlier, and the owner was told.
+`JUNIPER_ML_PYPI` / `JUNIPER_ML_TEST_PYPI` tokens: a lane leaked them earlier, and the Overtoad was told.
 
 **B6. The claimed follow-ons: wave 3 and X10, both canopy, both unstarted.** From `S/main/handoff_v4.md`:
 
@@ -488,7 +488,7 @@ re-probed):
 - **The gating mechanism is contested.**
   - §8 item 3 and §11.4 step 3 say to widen the gates to a capability test.
   - 09-22 item 4 says to add a third branch and never widen a predicate.
-  - Record the choice in `…PERSISTENCE-DESIGN.md`. If the capability test is wanted, the ruling is the owner's.
+  - Record the choice in `…PERSISTENCE-DESIGN.md`. If the capability test is wanted, the ruling is the Overtoad's.
 - **X10.** `RecurrenceBackend.initialize()` returns `True` without probing the service, and `selection_is_live`
   (`src/model_registry.py`) reads configuration only. Locate both by symbol.
 - **Owner-gated, not this lane's:**
@@ -533,7 +533,7 @@ re-probed):
 - Add harness rows for X10, X18–X21 and the gated starts.
 
 **The addendum, from `S/r15_reports/R15C.md`:**
-- **M1:** re-point the live work list to `…queue-drained.md`, in v13 lines 7, 9, 39–40 and 155, the merge-approval sentence, and X11, which is `…queue-drained.md`'s owner ruling 2. Also:
+- **M1:** re-point the live work list to `…queue-drained.md`, in v13 lines 7, 9, 39–40 and 155, the merge-approval sentence, and X11, which is `…queue-drained.md`'s Overtoad ruling 2. Also:
   - row 1: §12.4's A-N2 loop ran; 7 of 8 seeds pass, and `equities`' Start is refused;
   - "Since the pins" bullets for canopy#674 (19:47:32Z), canopy#675 (20:06Z) and juniper-ml#2058 (21:53:07Z);
   - raise the splice tool's `SINCE_NOW_FLOOR` to the latest merge named;
@@ -602,9 +602,9 @@ re-probed):
   `notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`:
   - dash 4.2.0 renders `<label role="option" aria-selected>` around `<input disabled>`, with no `aria-disabled`;
   - an option is `{label, value, disabled, title, search}`, so no canopy prop reaches that element;
-  - the note ends with four options for the owner.
+  - the note ends with four options for the Overtoad.
 
-**C1. The owner removes juniper-ml's worktrees.** An isolated session cannot, so these are the owner's to run.
+**C1. The Overtoad removes juniper-ml's worktrees.** An isolated session cannot, so these are the Overtoad's to run.
 
 - **Already verified by C's predecessor:**
   - `jazzy-soaring-minsky` and `bright-crunching-alpaca` hold only superseded drafts;
@@ -626,12 +626,12 @@ git -C /home/pcalnon/Development/python/Juniper/juniper-ml worktree prune
 git -C /home/pcalnon/Development/python/Juniper/juniper-ml branch -D worktree-jazzy-soaring-minsky worktree-bright-crunching-alpaca worktree-tender-wibbling-flask
 ```
 
-**C2. Y7.** The owner picks one of the four options in the §4.3 note, or accepts the gap.
+**C2. Y7.** The Overtoad picks one of the four options in the §4.3 note, or accepts the gap.
 
 **C3. X8's release.** The next juniper-data release after 0.16.0 carries #437 and #438. At writing, the latest
-release is still v0.16.0. Cutting the next one is the owner's call.
+release is still v0.16.0. Cutting the next one is the Overtoad's call.
 
-**C4. O9 / U-6.** It is triaged in A2(b). If it comes back as a design question, it is the owner's.
+**C4. O9 / U-6.** It is triaged in A2(b). If it comes back as a design question, it is the Overtoad's.
 
 **C5. 2026-09-29T00:00Z.** The claims on Y2 waves 2 and 3 and X10 lapse, on § B's terms. See Lane B.
 
@@ -660,16 +660,16 @@ release is still v0.16.0. Cutting the next one is the owner's call.
 
 - **What B's predecessor said:** "Open 2b, 2a and the addendum as drafts (R15D MAJOR 1)".
 - **What R15D's fix actually says** (`S/r15_reports/R15D.md`):
-  - "Before opening, ask the owner whether the sweeper is his, and record that these four PRs are excluded";
+  - "Before opening, ask the Overtoad whether the sweeper is his, and record that these four PRs are excluded";
   - `gh pr view` all four before each merge;
   - blob-compare at once if one merged out of order;
   - "Alternatively, let 2b's preflight warn rather than refuse until 2a is released."
 - **Drafts do not hold.** On 2026-09-23 drafted PRs were readied and armed 4–7 s apart (memory
-  `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`). The owner has since answered: "Mine: fix
+  `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`). The Overtoad has since answered: "Mine: fix
   forward".
 - **The stake, per R15D:** if 2b lands before 2a is merged and pulled, every bring-up of deploy `main` refuses. The
   recurrence service is in profiles full / demo / dev / test, with `create_host_path: false`.
-- **So the owner chooses one:**
+- **So the Overtoad chooses one:**
   - exclude the four PRs from the sweeper;
   - approve the preflight-warns change, which is a code change and so takes the delta route;
   - accept a fix-forward.
@@ -706,7 +706,7 @@ Their uncommitted state is the only copy.
 
   Put the logic in a script under `util/ad-hoc/`, and use literal paths.
 - **Signed commits.** Only GraphQL `createCommitOnBranch` signs (`util/push_signed_commit.py`,
-  `util/open_signed_pr.py`). The owner's sweeper arms with the repo's default squash body, so a waiver trailer
+  `util/open_signed_pr.py`). The Overtoad's sweeper arms with the repo's default squash body, so a waiver trailer
   must be in a COMMIT body.
 - **A whole-file upload against a moving `CHANGELOG.md`.** Repair with `git merge-file <yours> <base> <main>`. When
   both sides inserted at the same point, `util/ad-hoc/2026-09-24_resolve_changelog_conflict_theirs_then_ours.py`
@@ -749,7 +749,7 @@ python3 util/ad-hoc/2026-09-23_check_open_pinned_pr.py reports/2026-09-23_y2-wav
 - **This session:** worktree `bubbly-meandering-pie`, branch `worktree-bubbly-meandering-pie` at `6c23fdde`.
   - New and untracked: this file, `util/ad-hoc/2026-09-24_ledger_cited_commit_reachability.py`, and the consensus
     record under `reports/2026-09-24_canopy-combined-handoff-consensus/`.
-  - No PR has been opened. The owner decides whether to open one, and whether it also archives the two off-`main`
+  - No PR has been opened. The Overtoad decides whether to open one, and whether it also archives the two off-`main`
     predecessors.
 - **Lane A:**
   - `graceful-sprouting-panda`: branch `docs/canopy-e2e-phase9`, local head `808b74df`. Its remote was
@@ -770,8 +770,8 @@ python3 util/ad-hoc/2026-09-23_check_open_pinned_pr.py reports/2026-09-23_y2-wav
   - the three predecessors (the table at the top);
   - `HANDOFF_2026-09-23_canopy-e2e-phase9-cuts-reviewed-f055-fix1-refuted-f058-filed.md`;
   - `HANDOFF_2026-09-24_canopy-selection-four-rulings-shipped-cleanup-and-carry-forwards-remain.md`;
-  - `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-owner-rulings-open.md`;
-  - `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md`;
+  - `HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-Overtoad-rulings-open.md`;
+  - `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-Overtoad-scoped.md`;
   - `HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md` (all in
     `prompts/thread-handoff_automated-prompts/`);
   - `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`;

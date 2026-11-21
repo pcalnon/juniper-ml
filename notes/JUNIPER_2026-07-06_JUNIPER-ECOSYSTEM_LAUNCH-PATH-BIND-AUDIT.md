@@ -101,7 +101,7 @@ Environment=JUNIPER_CANOPY_SERVER__HOST=0.0.0.0
 Environment=JUNIPER_CANOPY_LOOPBACK_PUBLISH_ATTESTED=true
 ```
 
-**Behavior implication (owner decision).** Today this unit binds `0.0.0.0` by
+**Behavior implication (Overtoad decision).** Today this unit binds `0.0.0.0` by
 default. The fix makes it bind `127.0.0.1` by default (matching the container
 and `plant_all` paths), requiring explicit attestation to expose. Any operator
 relying on the current on-host systemd unit to be reachable off-loopback would
@@ -150,7 +150,7 @@ service (commented out in the same file; the real backend is `juniper-cascor:820
 The maintained orchestration is `juniper-deploy`. So `conf/` is a latent bypass
 inside stale infra, not a live production path.
 
-**Fix (owner decision — deprecate vs modernize).** Because `conf/` is superseded
+**Fix (Overtoad decision — deprecate vs modernize).** Because `conf/` is superseded
 and internally inconsistent with the guard model (all-interfaces publish, no
 attestation), a bare `CMD` align would leave the container binding loopback
 *inside* the container and unreachable via its own publish. Two coherent options:
@@ -222,7 +222,7 @@ all interfaces on-host by default" posture the guard exists to discourage,
 applied to an unguarded service. Recorded so the posture is explicit; the guard
 itself is not defeated here because there is no guard on this path.
 
-**Fix (owner call).** Default `JUNIPER_DATA_HOST` to `127.0.0.1` for the on-host
+**Fix (Overtoad call).** Default `JUNIPER_DATA_HOST` to `127.0.0.1` for the on-host
 orchestrator, or extend a bind guard to juniper-data (larger scope; out of band
 for this audit).
 
@@ -260,22 +260,22 @@ attestation trail.
 Suggested sequencing:
 
 1. **SEC-F23** (canopy systemd) — highest severity; carries the on-host
-   reachability behavior change flagged in §4. Fix first, with owner sign-off on
+   reachability behavior change flagged in §4. Fix first, with Overtoad sign-off on
    the loopback-by-default posture.
 2. **SEC-F24** (canopy demo) — route through setting + attestation; keeps demo
    reachable, restores the attestation trail.
 3. **SEC-F26** — mechanical hygiene: remove the stray cascor demo. Low risk.
-   **SEC-F25** and **SEC-F27** were resolved by owner decision (deprecate `conf/`;
+   **SEC-F25** and **SEC-F27** were resolved by Overtoad decision (deprecate `conf/`;
    port the canopy parity shim) and both shipped — see the status in §7.
-4. **SEC-F28** — posture decision for juniper-data on-host default; owner call,
+4. **SEC-F28** — posture decision for juniper-data on-host default; Overtoad call,
    may fold into a future data-service bind-guard scope.
 
-Each fix lands as its own owner-reviewed PR (never auto-merged), consistent with
+Each fix lands as its own Overtoad-reviewed PR (never auto-merged), consistent with
 the deployment-trust workflow.
 
 ## 7. Remediation status (2026-07-06)
 
-All six findings are shipped and **merged** as owner-gated PRs (none auto-merged).
+All six findings are shipped and **merged** as Overtoad-gated PRs (none auto-merged).
 The audit report itself is juniper-ml PR #630 (merged).
 
 | ID      | Disposition                                                                                                                                                              | PR                           |
@@ -289,6 +289,6 @@ The audit report itself is juniper-ml PR #630 (merged).
 
 The two canopy launchers (SEC-F23/F24) close the *known* bypasses; the ported shim
 (SEC-F27) makes the guard authoritative on any future `uvicorn main:app --host X`
-launch, closing the class rather than the instances. SEC-F25's owner decision was
+launch, closing the class rather than the instances. SEC-F25's Overtoad decision was
 to **deprecate** the legacy `conf/` files. The behavior change flagged for SEC-F23
 (on-host systemd now binds loopback by default) was approved before merge.

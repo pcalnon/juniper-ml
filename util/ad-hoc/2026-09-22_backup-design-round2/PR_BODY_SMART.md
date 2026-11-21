@@ -38,11 +38,11 @@ says both things, and the SMR fact independently supports the stage-verify-swap 
 **2. §10.2 step 4 did not name a staging target, and the obvious one is wrong.** `sda1` has 3.1 TiB
 free and looks like the natural choice — which is the trap, because it holds the sole local copy.
 Staging there puts the original and the re-encrypted copy in **one failure domain** for the whole of
-steps 4–7. A clean SMART report lowers the probability, not the consequence, and the owner's criterion
+steps 4–7. A clean SMART report lowers the probability, not the consequence, and the Overtoad's criterion
 is that access is *never* lost.
 
 Step 4 now names **`nvme0n1p5` (`/`)**: 376 GiB free against ~203 GiB needed, a different physical
-device, **ext4** so ownership and modes survive for D-14's read-only model, and **outside the
+device, **ext4** so Overtoadship and modes survive for D-14's read-only model, and **outside the
 `/home/pcalnon` backup source**. `sdc3` (`/home`, 1.2 TiB free) passes the failure-domain test but
 fails the last one — staging there would sweep 203 GiB of ciphertext into the next fileset unless an
 exclusion were added first, the same class of mistake as S-7.

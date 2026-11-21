@@ -9,7 +9,7 @@
 # Status:      ad-hoc -- investigation (perf lane P2 item 4.2, step 2 of §1.3 of the 2026-09-08
 #              re-scope note: run only because the step-1 occupancy probe landed inside the ~4-8
 #              worker-equivalent band)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:     notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md
 #
 # WHY THIS LIVES UNDER util/ad-hoc AND NOT util/experiments/suites/perf
@@ -17,7 +17,7 @@
 # `tests/test_experiment_suite_yamls.py` loads every checked-in suite in CI, where no cascor
 # sibling exists to read the parallel version floor from, and `load_suite` fails CLOSED there --
 # so a parallel cascor suite under suites/perf/ turns the R-6 drift gate red on every CI run
-# (§1.5 of the re-scope note; P2 item 4.2). Where the committed instrument lives is the owner's
+# (§1.5 of the re-scope note; P2 item 4.2). Where the committed instrument lives is the Overtoad's
 # call; this file is the headroom sweep's precedent (util/ad-hoc/2026-09-02_headroom_sweep_suite.yaml).
 #
 # WHY TWO CELLS AND NOT SIX

@@ -46,7 +46,7 @@ The source design's R-6 does say equities rows are informational (`JUNIPER_2026-
 
 **Claim attacked.** W5.4 says to encode a suite YAML `acceptance:` block “the driver already supports for cascor” (`:341`).
 
-**Evidence.** `run_experiment.py` has acceptance outcomes and `EXIT_ACCEPTANCE`, but neither `run_suite.py` nor any shipped suite YAML parses an `acceptance:` configuration block. `run_suite.py:742` explicitly says comparator verdicts are reporting-only because gating remains a separate owner decision. The cited design defines acceptance criteria in prose (§10.4) and says cells inherit criteria (§10.5); it does not define this YAML block.
+**Evidence.** `run_experiment.py` has acceptance outcomes and `EXIT_ACCEPTANCE`, but neither `run_suite.py` nor any shipped suite YAML parses an `acceptance:` configuration block. `run_suite.py:742` explicitly says comparator verdicts are reporting-only because gating remains a separate Overtoad decision. The cited design defines acceptance criteria in prose (§10.4) and says cells inherit criteria (§10.5); it does not define this YAML block.
 
 **Severity: FATAL.** W5.4 cannot be implemented as written, its S estimate excludes schema/parser/evaluator/reporting work, and its acceptance test cannot reach the claimed mechanism.
 
@@ -74,15 +74,15 @@ The source design's R-6 does say equities rows are informational (`JUNIPER_2026-
 
 **Smallest correction.** Develop W0.2 against a synthetic stale env before/independently of W0.1 and retain that fixture as evidence. Remove W0.6's dependency on future validator changes or move W0.6 after W1.5.
 
-### B2-M3 — W0.1/W0.2 ownership and acceptance are not durable
+### B2-M3 — W0.1/W0.2 Overtoadship and acceptance are not durable
 
 **Claim attacked.** “host env” can own W0.1 and an editable install is the repair.
 
-**Evidence.** “host env” is not a repository or accountable owner. W0.1 proposes editable checkouts but does not pin their SHAs, identify the active worktrees, or define recovery after the next Python minor upgrade. `pip check` proves metadata consistency, not that imports resolve from the intended env rather than user site. The parent `AGENTS.md` explicitly warns that plain imports can leak from user site and recommends `python -s` checks.
+**Evidence.** “host env” is not a repository or accountable Overtoad. W0.1 proposes editable checkouts but does not pin their SHAs, identify the active worktrees, or define recovery after the next Python minor upgrade. `pip check` proves metadata consistency, not that imports resolve from the intended env rather than user site. The parent `AGENTS.md` explicitly warns that plain imports can leak from user site and recommends `python -s` checks.
 
 **Severity: MAJOR.** The repair can pass while remaining non-reproducible or user-site dependent.
 
-**Smallest correction.** Assign an operator/repo owner; record exact interpreter, package SHAs, editable paths, `python -s` import/version/location probes, and rollback. Make launcher preflight use the selected interpreter with user site disabled.
+**Smallest correction.** Assign an operator/repo Overtoad; record exact interpreter, package SHAs, editable paths, `python -s` import/version/location probes, and rollback. Make launcher preflight use the selected interpreter with user site disabled.
 
 ### B2-M4 — W1.1's acceptance does not prove the claimed runnable CLI path
 
@@ -98,7 +98,7 @@ The source design's R-6 does say equities rows are informational (`JUNIPER_2026-
 
 **Claim attacked.** R1 is required before an S–M implementable W1.2.
 
-**Evidence.** W1.2 says either invent a `preset: "lmu"` generator parameter or merely document a bundle (`:285`). Source search found no general juniper-data preset mechanism, so the first choice is a new contract with precedence, schema, validation, and hashing semantics. The acceptance (“preset expands ... and is hashed”) cannot pass if R1 chooses documentation. R1 is partly an engineering recommendation the plan should make, not an owner-only question.
+**Evidence.** W1.2 says either invent a `preset: "lmu"` generator parameter or merely document a bundle (`:285`). Source search found no general juniper-data preset mechanism, so the first choice is a new contract with precedence, schema, validation, and hashing semantics. The acceptance (“preset expands ... and is hashed”) cannot pass if R1 chooses documentation. R1 is partly an engineering recommendation the plan should make, not an Overtoad-only question.
 
 **Severity: MAJOR.** The implementer cannot know the deliverable or done condition, and S–M is unsupported.
 
@@ -120,7 +120,7 @@ The plan does not name the data channel, preview component/callback, secret reda
 
 **Claim attacked.** W1.4 is an S fix targeting model 0.4.0.
 
-**Evidence.** It changes implicit fallback behavior to rejection by default (`:287`), while the risk table concedes non-equities artifacts may break (`:524`). “Default `reg` for the service and CLI” also leaves unclear whether model API default is `reg` or callers pass it. No owner ruling covers compatibility, migration, or whether recurrence 0.6.0/model 0.4.0 is the breaking release.
+**Evidence.** It changes implicit fallback behavior to rejection by default (`:287`), while the risk table concedes non-equities artifacts may break (`:524`). “Default `reg` for the service and CLI” also leaves unclear whether model API default is `reg` or callers pass it. No Overtoad ruling covers compatibility, migration, or whether recurrence 0.6.0/model 0.4.0 is the breaking release.
 
 **Severity: MAJOR.** Existing callers can fail without a specified boundary or migration.
 
@@ -136,7 +136,7 @@ Its “running (upstream)” state conflicts with the backend's `idle|training|t
 
 **Severity: MAJOR.** The API contract and state transitions are under-specified, and the finding remains open.
 
-**Smallest correction.** Mark F-S6 partially mitigated; specify busy-state storage under the lock, response schema/state transitions, polling budget, terminal mapping, and concurrency tests. Add an owner decision on whether unresolved upstream work should make the client/suite non-zero.
+**Smallest correction.** Mark F-S6 partially mitigated; specify busy-state storage under the lock, response schema/state transitions, polling budget, terminal mapping, and concurrency tests. Add an Overtoad decision on whether unresolved upstream work should make the client/suite non-zero.
 
 ### B2-M9 — Rulings R1–R5 both over-delegate engineering and omit load-bearing product decisions
 
@@ -148,13 +148,13 @@ Missing rulings include whether `degraded` exits non-zero for informational equi
 
 **Severity: MAJOR.** One unnecessary ruling blocks P1 while three necessary decisions are hidden inside implementation prose.
 
-**Smallest correction.** Resolve R2 to enforce float32; turn R1 into a recommendation with owner override; retain R3–R5 with prerequisites; add explicit rulings for degraded exit semantics, canopy precedence/forwarding, and target-default/semver.
+**Smallest correction.** Resolve R2 to enforce float32; turn R1 into a recommendation with Overtoad override; retain R3–R5 with prerequisites; add explicit rulings for degraded exit semantics, canopy precedence/forwarding, and target-default/semver.
 
 ### B2-M10 — Estimates and milestone dates omit integration, release, and review cost
 
-**Claim attacked.** M0–M4 are plausible for one owner across the ecosystem.
+**Claim attacked.** M0–M4 are plausible for one Overtoad across the ecosystem.
 
-**Evidence.** Counts from the plan: P0 = 4S+3M; P1 = 6S+3M+2S–M; P2 = 6S+4M; P3 = 3S+4M; P4 = 5S+1M; P5 = 5S+1M+2L. At the plan's own maxima, P0 alone is up to eight engineer-days before three repo PRs and host operations, yet M0 allows seven calendar days. M1 adds 11 items across five codebases and three rulings in 14 days. M2 combines 17 P2/P3 items across repos in 14 days. M3 is simultaneous. No staffing assumption, PR/release lead time, or owner availability appears.
+**Evidence.** Counts from the plan: P0 = 4S+3M; P1 = 6S+3M+2S–M; P2 = 6S+4M; P3 = 3S+4M; P4 = 5S+1M; P5 = 5S+1M+2L. At the plan's own maxima, P0 alone is up to eight engineer-days before three repo PRs and host operations, yet M0 allows seven calendar days. M1 adds 11 items across five codebases and three rulings in 14 days. M2 combines 17 P2/P3 items across repos in 14 days. M3 is simultaneous. No staffing assumption, PR/release lead time, or Overtoad availability appears.
 
 **Severity: MAJOR.** Dates are not a schedule; they are optimistic labels disconnected from the stated units.
 
@@ -164,7 +164,7 @@ Missing rulings include whether `degraded` exits non-zero for informational equi
 
 **Claim attacked.** §Dependencies captures sequencing (`:493-502`).
 
-**Evidence.** W0.3 does not depend on W0.2; both can be tested with fixtures. W1.4 does not inherently depend on W1.5. W3.1 (install local packages) should precede or run independently of W3.2, not depend on it. Real edges omitted include W5.5 → published canopy runnability/M1, W1.1 + conditioning choice → CLI E2E, schema transport → W1.3, W5.3 → any `test_r2` band, and owner/semver decision → W1.4.
+**Evidence.** W0.3 does not depend on W0.2; both can be tested with fixtures. W1.4 does not inherently depend on W1.5. W3.1 (install local packages) should precede or run independently of W3.2, not depend on it. Real edges omitted include W5.5 → published canopy runnability/M1, W1.1 + conditioning choice → CLI E2E, schema transport → W1.3, W5.3 → any `test_r2` band, and Overtoad/semver decision → W1.4.
 
 **Severity: MAJOR.** Following the graph serializes independent work and misses blockers that invalidate milestones.
 
@@ -188,7 +188,7 @@ G2's canopy and CLI real fits have no P1 end-to-end acceptance. G5 requires chro
 
 **Evidence.** It lacks actionable **Scope & Timeframe** content: dates exist, but staffing/capacity does not. **Implementation Plan** is not the phase-plan link/index the template intends. **Test Coverage Requirements** omits Phase 4 and gives counts inconsistent with rows: P1 says 14, but its named multiplicities exceed or ambiguously combine that count.
 
-**Coverage Goals** gives no current percentages/targets comparable to the template. **Out of Scope** is not tied to findings such as F-D10. Status rows collapse multiple work items with different versions and omit an owner column, making execution status non-traceable.
+**Coverage Goals** gives no current percentages/targets comparable to the template. **Out of Scope** is not tied to findings such as F-D10. Status rows collapse multiple work items with different versions and omit an Overtoad column, making execution status non-traceable.
 
 **Severity: MAJOR.** Required structure exists by heading but does not perform the template's planning/status function.
 

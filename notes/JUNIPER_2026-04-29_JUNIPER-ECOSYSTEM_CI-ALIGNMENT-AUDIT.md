@@ -82,7 +82,7 @@ surfaced for the first time:
 | V25     | cascor ci.yml docs                                | Same                                                                                                               |
 
 All are explicitly **deferred** in the findings doc with reasoning;
-they belong to per-repo product owners, not the alignment effort.
+they belong to per-repo product Overtoads, not the alignment effort.
 
 ## 5. Closed root-cause groups
 
@@ -144,7 +144,7 @@ consecutive green.)
    savings come from never having a single bad scan block CI.
 6. **Out-of-scope discipline matters**. The validation pass found
    13 pre-existing issues that have nothing to do with alignment.
-   Documenting them with explicit "deferred — owner is X"
+   Documenting them with explicit "deferred — Overtoad is X"
    statements lets the alignment work close cleanly without
    blocking on product-side bugs.
 
@@ -207,7 +207,7 @@ c431fd1 across 7 repos) and a full re-trigger of `ci.yml` +
 ## 10. Closeout — what to hand off
 
 1. **Out-of-scope deferred findings** (V11–V13, V17–V20, V22–V25,
-   V27, V28) — owners are the per-repo product teams. The findings
+   V27, V28) — Overtoads are the per-repo product teams. The findings
    doc is the canonical reference.
 2. **Pending soft-fail → hard-gate promotion** for the
    `integration-tests` jobs in data-client / cascor-client /

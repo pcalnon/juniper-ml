@@ -21,7 +21,7 @@ This proposal is the operational wrapper around the WebSocket migration spelled 
 It DOES design:
 
 - **Phase ordering rationale** and the hard gates between phases.
-- **Risk mitigations** for every RISK-NN in §10 with owner-class and kill-switch mapping.
+- **Risk mitigations** for every RISK-NN in §10 with Overtoad-class and kill-switch mapping.
 - **Feature-flag strategy** for Phase C and any other phase that needs a ramp.
 - **Observability / SLO commitments** for each phase (what must be in place before the phase is allowed to ship).
 - **Deployment strategy**: dev → staging → production with canary cohorts.
@@ -178,7 +178,7 @@ Phase D depends on Phase B (browser bridge exists) AND Phase B-pre (security gat
 
 ## 4. Risk register mitigation map (RISK-01..16)
 
-Every risk from §10 is mapped to: severity, phase ownership, owner-class (team), monitoring signal, kill-switch, and rollback time. Owner-classes are: **backend-cascor**, **backend-canopy**, **frontend**, **sdk**, **ops** (release engineering / SRE), **security**.
+Every risk from §10 is mapped to: severity, phase Overtoadship, Overtoad-class (team), monitoring signal, kill-switch, and rollback time. Owner-classes are: **backend-cascor**, **backend-canopy**, **frontend**, **sdk**, **ops** (release engineering / SRE), **security**.
 
 ### RISK-01 — Dual nested+flat metric format removed too aggressively
 
@@ -188,7 +188,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 - **Mitigation**: §4.4 phased plan; lock-in regression test `test_normalize_metric_produces_dual_format` in Phase H BEFORE audit; ban any removal PR until audit document is published.
 - **Monitoring signal**: canopy `/api/metrics` access-log + optional response-schema fingerprinting (hash the response shape for 24 hours, alert on drift).
 - **Kill switch**: git revert on the normalize_metric change; canopy is stateless so a rollback is equivalent to a redeploy. **TTF (time-to-flip)**: ~5 minutes (blue/green or rolling redeploy).
-- **Open owner decision**: who on backend-canopy runs the consumer audit (§9.9 deliverable).
+- **Open Overtoad decision**: who on backend-canopy runs the consumer audit (§9.9 deliverable).
 
 ### RISK-02 — Phase B clientside_callback wiring hard to debug remotely
 

@@ -81,7 +81,7 @@ measured, or superseded. Along the way:
 | 5 | the 27–37 s full-history regression | **MEASURED**: the full refetch lands every **32.4 s** (p50, n=3) against about 5 s before #613, with the guarded lane cycling every 6.5 s. Recommendation, not taken: `FULL_HISTORY_POLL_TICK_MODULUS` → 1 |
 | 6 | the ~4–5 s re-enable overhead | **EXPLAINED BY MEASUREMENT.** It is the page's response-delivery latency: p50 5.09 s at idle against a ~30 ms network leg. A CPU profile shows the main thread 0.1% idle, 85% of it in dash-renderer's dispatch bookkeeping |
 | 7 | re-baseline after #614/#618 | **DONE by construction.** Every leg used on 09-10 and 09-11 is gone; everything was re-measured on `main` |
-| 8 | Phase 5 items 3/5/6/7/9 | 3 → the Candidate Metrics rows re-driven one tab per browser (F-053). 5 → the M-DATASET-17..26 owner question stands. 6 → retired: F-035 is closed on source + clean room, and the dispatch probe's verdict strings are quoted nowhere. 7 → **F-CANOPY-038 FIXED** in behaviour (1 carried + 10 `no_update` per 90 s; test gap stands). 9 → the M-TOPOLOGY-16 fade half is still owed |
+| 8 | Phase 5 items 3/5/6/7/9 | 3 → the Candidate Metrics rows re-driven one tab per browser (F-053). 5 → the M-DATASET-17..26 Overtoad question stands. 6 → retired: F-035 is closed on source + clean room, and the dispatch probe's verdict strings are quoted nowhere. 7 → **F-CANOPY-038 FIXED** in behaviour (1 carried + 10 `no_update` per 90 s; test gap stands). 9 → the M-TOPOLOGY-16 fade half is still owed |
 
 ### §0 PREFLIGHT is stale — what is true now
 
@@ -126,7 +126,7 @@ measured, or superseded. Along the way:
 10. **#674 review follow-ups**: the same swallow-and-forget pattern lives in juniper-service-core's
     WebSocket manager (`juniper_service_core/websocket/manager.py`) and in canopy's browser-facing
     `src/communication/websocket_manager.py`.
-11. Unchanged: the M-DATASET-17..26 owner question, the M-TOPOLOGY-16 fade half, and F-038's
+11. Unchanged: the M-DATASET-17..26 Overtoad question, the M-TOPOLOGY-16 fade half, and F-038's
     browser-level test gap.
 
 ### Verify the starting state (replaces §5)

@@ -3,7 +3,7 @@
 **Date:** 2026-05-22
 **Author:** Paul Calnon (drafted by Claude)
 **Status:** Shipped — `juniper-config-tools` v0.1.0 on PyPI (2026-05-22)
-**Estimated effort:** 1–2 working days, single owner
+**Estimated effort:** 1–2 working days, single Overtoad
 
 ---
 

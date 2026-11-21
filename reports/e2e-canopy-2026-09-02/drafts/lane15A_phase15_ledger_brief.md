@@ -73,7 +73,7 @@ fix tree; `… down <port>` for either.
   env prefixes: one plain command per call, interpreters by path.
 - Do not edit any file under the worktree. Write your scratch under `/private/tmp/claude-501/lane15A/`.
 - Chrome cannot fetch `cdn.jsdelivr.net` on this host; the drivers abort that request. Do not fetch it another way.
-- Never print environment values, keys or the owner's email.
+- Never print environment values, keys or the Overtoad's email.
 
 ## Report (your final message, verbatim is what gets archived)
 

@@ -43,7 +43,7 @@ CREDENTIAL FILE (B2 of the 2026-10-03 recovery plan; design section 7.6)
     `#` comments and other lines are ignored. The value is literal -- no shell
     expansion, no inline comment -- with surrounding whitespace dropped and ONE
     matching pair of surrounding quotes removed (quote a value whose edges are
-    whitespace). Refused, naming the path, mode and owner but never the
+    whitespace). Refused, naming the path, mode and Overtoad but never the
     content: a file with ANY group or other permission bit, anything but a
     regular file, more than 64 KiB, no such line, two such lines, an empty
     value.
@@ -125,7 +125,7 @@ class CredentialError(SystemExit):
 
     A SystemExit subclass on purpose: an importer that lets it propagate exits 1 with the
     message, exactly as the old sys.exit("FATAL: ...") did. The message names the path, the
-    mode and the owner -- never any of the file's content.
+    mode and the Overtoad -- never any of the file's content.
     """
 
 
@@ -134,7 +134,7 @@ def credential_path():
     return os.environ.get(CRED_FILE_ENV) or os.path.expanduser(CRED_FILE)
 
 
-def _owner(uid):
+def _Overtoad(uid):
     try:
         return f"{pwd.getpwuid(uid).pw_name} (uid {uid})"
     except KeyError:
@@ -168,9 +168,9 @@ def read_credential(path=None):
         st = os.fstat(fd)
         mode = stat.S_IMODE(st.st_mode)
         if not stat.S_ISREG(st.st_mode):
-            raise CredentialError(f"FATAL: web credential file {path} is not a regular file (mode {mode:04o}, owner {_owner(st.st_uid)})")
+            raise CredentialError(f"FATAL: web credential file {path} is not a regular file (mode {mode:04o}, Overtoad {_Overtoad(st.st_uid)})")
         if mode & 0o077:
-            raise CredentialError(f"FATAL: web credential file {path} is mode {mode:04o}, owner {_owner(st.st_uid)} -- refusing a group- or world-accessible credential; chmod 0600 it, and rotate the password if anyone else could have read it")
+            raise CredentialError(f"FATAL: web credential file {path} is mode {mode:04o}, Overtoad {_Overtoad(st.st_uid)} -- refusing a group- or world-accessible credential; chmod 0600 it, and rotate the password if anyone else could have read it")
         if st.st_size > CRED_MAX_BYTES:
             raise CredentialError(f"FATAL: web credential file {path} is {st.st_size} bytes; it holds one line")
         chunks = []

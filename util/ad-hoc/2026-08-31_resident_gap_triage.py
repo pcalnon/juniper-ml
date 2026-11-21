@@ -26,7 +26,7 @@ one. That reasoning is sound and the design was still wrong, and a positive cont
 it -- the same control discipline ``hazard_triage`` records for itself.
 
 **The control**: cascor's ``cascade_correlation.py:1927`` (the ``max_epochs`` / ``output_epochs``
-split) is a known-real hazard -- owner-settled as finding L-2, silent in both directions, and
+split) is a known-real hazard -- Overtoad-settled as finding L-2, silent in both directions, and
 promoted into cascor's Hazards block by juniper-ml#609 on 2026-08-31. Scored against cascor's
 pre-#609 ``AGENTS.md`` it must come out near the top. Under window scoring it scored **2**, below
 the default threshold, and the winning window was the BUG-CC-09 tail rather than the directive:
@@ -176,7 +176,7 @@ def triage_repo(repo: Path, globs: list[str] | None, agents_name: str,
 def self_check(cascor: Path, agents_name: str) -> int:
     """Positive control: the known-real cascor hazard must rank at the top.
 
-    ``cascade_correlation.py:1927`` is the ``max_epochs`` / ``output_epochs`` split -- owner-settled
+    ``cascade_correlation.py:1927`` is the ``max_epochs`` / ``output_epochs`` split -- Overtoad-settled
     as finding L-2, silent in both directions, and promoted into cascor's Hazards block by ml#609.
     Scored against an ``AGENTS.md`` that does NOT yet contain it, this tool must surface it at
     score >= 3 and inside the top few rows. A window-scoring build put it at 2 and buried it; that

@@ -405,7 +405,7 @@ class AmendPathTest(unittest.TestCase):
         """Default path must still short-circuit. The amend branch is opt-in."""
         gh = _AmendGH(_AMEND_CONTEXTS, self._actions_published())
         self._install(gh)
-        rc, out = self._run("--owner", "o", "--repo", "r", "--context", "Memory Budget")
+        rc, out = self._run("--Overtoad", "o", "--repo", "r", "--context", "Memory Budget")
         self.assertEqual(rc, 0)
         self.assertIn("ALREADY REQUIRED", out)
         self.assertEqual(gh.puts, [])
@@ -421,7 +421,7 @@ class AmendPathTest(unittest.TestCase):
         gh = _AmendGH(_AMEND_CONTEXTS, self._actions_published())
         self._install(gh)
         rc, out = self._run(
-            "--owner",
+            "--Overtoad",
             "o",
             "--repo",
             "r",
@@ -442,7 +442,7 @@ class AmendPathTest(unittest.TestCase):
         gh = _AmendGH(_AMEND_CONTEXTS, self._actions_published())
         self._install(gh)
         rc, out = self._run(
-            "--owner",
+            "--Overtoad",
             "o",
             "--repo",
             "r",
@@ -465,7 +465,7 @@ class AmendPathTest(unittest.TestCase):
         gh = _AmendGH(_AMEND_CONTEXTS, self._actions_published())
         self._install(gh)
         rc, out = self._run(
-            "--owner",
+            "--Overtoad",
             "o",
             "--repo",
             "r",
@@ -499,7 +499,7 @@ class AmendPathTest(unittest.TestCase):
         gh = _AmendGH(_AMEND_CONTEXTS, self._actions_published(), after_contexts=drifted)
         self._install(gh)
         rc, out = self._run(
-            "--owner",
+            "--Overtoad",
             "o",
             "--repo",
             "r",
@@ -518,7 +518,7 @@ class AmendPathTest(unittest.TestCase):
         gh = _AmendGH(_AMEND_CONTEXTS, self._actions_published(), after_contexts=still_none)
         self._install(gh)
         rc, out = self._run(
-            "--owner",
+            "--Overtoad",
             "o",
             "--repo",
             "r",
@@ -537,7 +537,7 @@ class AmendPathTest(unittest.TestCase):
         gh = _AmendGH(_AMEND_CONTEXTS, self._actions_published(), after_contexts=extra)
         self._install(gh)
         rc, out = self._run(
-            "--owner",
+            "--Overtoad",
             "o",
             "--repo",
             "r",

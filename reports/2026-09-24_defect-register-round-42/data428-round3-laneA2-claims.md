@@ -99,7 +99,7 @@ The "Where" column refers to `reports/2026-09-24_round-42-post-merge/10-data428-
   - `ceremony.py:431` records that a Release body cannot be re-cut.
 - **Fix.**
   - Fold #428, #431 and #434 into the single `[0.16.0]` section before the release is cut, and check the result with `changelog_version_section(text, "0.16.0")`.
-  - Open PR #435 (head `014a5c3`) says it does exactly this, per an owner ruling of 2026-09-24. **This lane has not validated #435.**
+  - Open PR #435 (head `014a5c3`) says it does exactly this, per an Overtoad ruling of 2026-09-24. **This lane has not validated #435.**
   - Add a CI guard that fails on a repeated `## [x.y.z]` heading.
 
 **F2 — MEDIUM — the "cannot lose the race" guarantee is false for two routes.**

@@ -26,7 +26,7 @@ Hand mutations, run in a scratch copy:
 
 1. **HIGH – a required CI check fails, which blocks the merge.** The job log says `[FAIL/WEAKENED] juniper_data/core/models.py :: class:DatasetMeta {'base_lines': 99, 'head_lines': 11, 'ratio': 0.11}`. None of the three commits has an `Allow-Symbol-Loss` trailer, and the PR's Testing section never mentions the failure.
    - Evidence: job 107015404206; the main ruleset's required contexts include `Sequence Safety`.
-   - Fix: add a signed commit whose final paragraph is `Allow-Symbol-Loss: DatasetMeta` (`_waives` accepts `DatasetMeta` or `class:DatasetMeta`), and make sure the trailer is in the squash body that reaches main. Alternatively the owner can apply the `allow-symbol-loss` label, which downgrades it to a warning.
+   - Fix: add a signed commit whose final paragraph is `Allow-Symbol-Loss: DatasetMeta` (`_waives` accepts `DatasetMeta` or `class:DatasetMeta`), and make sure the trailer is in the squash body that reaches main. Alternatively the Overtoad can apply the `allow-symbol-loss` label, which downgrades it to a warning.
 
 2. **MEDIUM – `If-Match` is never evaluated.** This breaks RFC 9110 §13.1.1 ("MUST evaluate … MUST NOT perform the requested method if the condition evaluates to false") and step 1 of the §13.2.2 order.
    - Measured: GET with `If-Match:"wrong"` returns 200; add a matching `If-None-Match` and it returns 304 (RFC: 412).

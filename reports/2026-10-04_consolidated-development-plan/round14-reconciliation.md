@@ -15,8 +15,8 @@
   - 26 findings in all, counted from the reports' findings tables: 8 MAJOR, 12 MINOR and 6 NIT.
 - **Window**:
   - The lanes ran on 2026-10-10, after v1.13.0's freeze at 21:35:06Z. Lane A read the frozen hashes at 21:36:12Z, 21:53:24Z and 22:07:31Z, and Lane B at 21:36:20Z, 21:55:34Z and 22:06:49Z, all seven unchanged at every reading.
-  - The session, `560c1ec5`, then asked the owner whether round 14 ends validation, and waited. The owner answered on 2026-10-24, and this reconciliation ran from about 04:39Z that day.
-- **The owner's ruling of 2026-10-24**: correct and land, with no round 15. Apply R14A-01's correction and every MINOR and NIT as v1.14.0, record Lane B's 12 surviving mutants as listed limits, then gate, PR and merge. Round 14 does not meet the ending rule as written, because R14A-01 is a MAJOR that is not a pin, so validation ends on this ruling.
+  - The session, `560c1ec5`, then asked the Overtoad whether round 14 ends validation, and waited. The Overtoad answered on 2026-10-24, and this reconciliation ran from about 04:39Z that day.
+- **The Overtoad's ruling of 2026-10-24**: correct and land, with no round 15. Apply R14A-01's correction and every MINOR and NIT as v1.14.0, record Lane B's 12 surviving mutants as listed limits, then gate, PR and merge. Round 14 does not meet the ending rule as written, because R14A-01 is a MAJOR that is not a pin, so validation ends on this ruling.
 - **Where**: the worktree `concurrent-gathering-biscuit`, as for round 13. Nothing was copied out of it; the PR is pushed from gated scratch copies.
 - **Method**: read-only, except the plan, the read's docstring, the harness, the regression's three synthetic keys, the new screen tool, the consumed handoff's banner, the two lane reports' archive headers and this file.
   - GitHub reads were REST GETs (among them the cascor run and the two compares above), except the PR's signed commits. Git read with `show`, `log`, `ls-tree`, `rev-list` and a `fetch` of `origin/main`.
@@ -66,12 +66,12 @@ The harness fix and the read's docstring were made by the reconciler after both 
 | R14A-03 Two keys on L6228 | MINOR | Accepted (re-derived) | S0.3's upload bullet and §8's `docs/REFERENCE.md` paragraph: at `d14b86e5` and on `main` the gate prints two keys on L6228, columns 120 and 121; read the line once and accept both, or the gate fails closed; the gate re-keys it before each upload |
 | R14A-04 `…RECOVERY-PLAN.md` citations | MINOR | Accepted (re-derived) | Wave 1's P1-12 citation reads "L240, L296 on `main`, L229 and L272 before ml#2199"; XC-PRESERVE's row k reads "L224" for "L213". The validation record's citations of earlier rounds' reads stay as those rounds made them |
 | R14A-05 Canopy's second relay site | MINOR | Accepted | The Overview's canopy relay gains a sibling bullet for `regenerate_dataset_from_generator` (L1958–1962, L1970); H-22's canopy citation adds the same lines; S0.11's canopy test drives both client paths and both log sinks |
-| R14A-06 Withdrawing 0.17.1 | MINOR | Accepted | §5's data-versions note and §6's time-bound data item: withdrawing 0.17.1 means deleting its Release, tag and GHCR image as well, and 0.17.2 avoids both. R-DATA-2's row and Wave 1's step 6 now say "0.17.1 only if the owner withdraws the cut 0.17.1, its Release, tag and image with it" |
+| R14A-06 Withdrawing 0.17.1 | MINOR | Accepted | §5's data-versions note and §6's time-bound data item: withdrawing 0.17.1 means deleting its Release, tag and GHCR image as well, and 0.17.2 avoids both. R-DATA-2's row and Wave 1's step 6 now say "0.17.1 only if the Overtoad withdraws the cut 0.17.1, its Release, tag and image with it" |
 | R14A-07 The release pause's start | NIT | Accepted | The Overview: "after juniper-data 0.16.0 (2026-09-24) until 2026-10-08" |
 | R14A-08 Non-provider patterns | NIT | Accepted | Wave 0's scanning-settings bullet: "non-provider patterns are off in all nine" |
 | R14A-09 `AGENTS.md`'s suite count | NIT | Accepted | §10's ml#2199 bullet: "204 suites, unchanged by ml#2203, after which CI and `docs/REFERENCE.md` run 205" |
 | R14A-10 Round 13's window | NIT | Accepted | Round 13's heading: "run 22:58Z–23:30Z" |
-| R14B-01 Numeric fields are held to their form, not their value (M1–M4) | MAJOR (pin) | Accepted as a listed limit (owner rulings of 2026-10-10 and 2026-10-24; re-derived) | The read's docstring, "Limits of the checks, not of the read"; §3's XC-PRESERVE method (round 14's bullets), and its round-13 sentence narrowed to "each line's form, not each field's value"; the mutants kept in `round14-mutants-laneB.json` |
+| R14B-01 Numeric fields are held to their form, not their value (M1–M4) | MAJOR (pin) | Accepted as a listed limit (Overtoad rulings of 2026-10-10 and 2026-10-24; re-derived) | The read's docstring, "Limits of the checks, not of the read"; §3's XC-PRESERVE method (round 14's bullets), and its round-13 sentence narrowed to "each line's form, not each field's value"; the mutants kept in `round14-mutants-laneB.json` |
 | R14B-02 Refusal reasons held by their first words; whole-value planted test (M5, M6) | MAJOR (pin) | Accepted as a listed limit (as R14B-01) | As R14B-01 |
 | R14B-03 One malformed KEY shape (M7) | MAJOR (pin) | Accepted as a listed limit (as R14B-01) | As R14B-01 |
 | R14B-04 Lower-case prefixed TOKEN, SECRET and API_KEY names unplanted (M8) | MAJOR (pin) | Accepted as a listed limit (as R14B-01) | As R14B-01 |
@@ -104,7 +104,7 @@ None. The lanes did not contradict each other: Lane B's "Not refuted" places the
 
 ## What this reconciliation cannot support
 
-- That v1.14.0's text is right where no round has read it. By the owner's ruling, no round checks v1.14.0; its corrections were re-derived where the table above says so and otherwise applied as the lanes proposed. Nor is v1.13.0's: round 14 sampled its changes (80 items and 52 cases; "Corrections to round 13's record"), so a row outside that sample is unverified unless its own citation says otherwise.
+- That v1.14.0's text is right where no round has read it. By the Overtoad's ruling, no round checks v1.14.0; its corrections were re-derived where the table above says so and otherwise applied as the lanes proposed. Nor is v1.13.0's: round 14 sampled its changes (80 items and 52 cases; "Corrections to round 13's record"), so a row outside that sample is unverified unless its own citation says otherwise.
 - State after 2026-10-10T21:30Z. Every gate, cut and open PR the plan names as waiting or open may have moved in the 13 days since.
 - That the read is right in the 12 places its checks do not pin. Lane B showed the frozen read behaving as its clauses say in each (its demos, not re-run here); a later edit there would pass the checks, which is why the docstring requires the mutation run over `round14-mutants-laneB.json` for any edit to the read.
 - FP40 on the final tools (tools row 7).

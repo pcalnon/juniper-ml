@@ -116,7 +116,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DISPATCH = ROOT / "util" / "soak_next_probe.py"
 LEDGER_TOOL = ROOT / "util" / "soak_ledger.py"
 # The contamination screen. `conf/soak_probes.json`'s _README has said since the pilot
-# that scoring MUST run it; nothing referenced it until 2026-09-15, when the owner ruled
+# that scoring MUST run it; nothing referenced it until 2026-09-15, when the Overtoad ruled
 # item F as REPORT-ONLY. See `contamination_screen` for why report-only and not a gate.
 SCREEN_TOOL = ROOT / "util" / "ad-hoc" / "2026-08-21_soak_probe_evidence.py"
 RUNS = ROOT / "reports" / "soak" / "runs"
@@ -275,11 +275,11 @@ def force_scope_refusal(probe_id: str | None, reason: str | None, *, force: bool
     if not force or dry_run:
         return None
     if not probe_id:
-        return ("--force requires --probe-id. Owner decision D1 authorises a NAMED probe "
+        return ("--force requires --probe-id. The Overtoad decision D1 authorises a NAMED probe "
                 "on request, not a campaign; without an id this would resume the default "
                 "least-covered dispatch that D1 declined")
     if not (reason or "").strip():
-        return ("--force requires --reason. Owner decision D3 admits the override only "
+        return ("--force requires --reason. The Overtoad decision D3 admits the override only "
                 "with the reason recorded, so the run dir says why the session was spent")
     return None
 
@@ -489,7 +489,7 @@ _PATH_CHARS = re.compile(r"[\w./~-]")
 # sibling repo's same-named file, so suppress the hit. Four measured reasons it is wrong:
 #  * Sec 3 defines the `ledger` class as "the match is INSIDE the soak ledger's own JSON".
 #    In `grep -n "docs/REFERENCE.md" <ledger>` the match is inside a SHELL COMMAND, so the
-#    occurrence is Sec 3's `filename` class -- the row that is owner decision 7.
+#    occurrence is Sec 3's `filename` class -- the row that is Overtoad decision 7.
 #  * The selector was one hard-coded path, not a principle: the identical shape aimed at
 #    README.md or docs/QUICK_START.md still scored `follow`.
 #  * It destroyed the CANONICAL positive. `{"file_path": "docs/REFERENCE.md"}` scores a
@@ -522,7 +522,7 @@ def _own_repo_occurrence(tool_inputs: list, doc: str) -> bool:
     touch the over-inclusiveness pinned by
     `tests/test_soak_run_probe.py::test_pointer_path_in_a_command_arg_currently_counts_as_a_hit`,
     where the path names this repo's file and is merely not opened. Whether THAT
-    counts is the retrieval-standard question, which is an owner decision
+    counts is the retrieval-standard question, which is an Overtoad decision
     (Sec 7.2 of the 09-04 consensus review) and is not decided here.
 
     PER INPUT, not over the joined blob. A sibling repo reaches a tool input two
@@ -568,7 +568,7 @@ def _own_repo_occurrence(tool_inputs: list, doc: str) -> bool:
 def contamination_screen(log: Path) -> dict:
     """Run the contamination screen over a transcript. REPORT-ONLY, never a gate.
 
-    Owner ruling 2026-09-15 on item F. `conf/soak_probes.json`'s _README says scoring
+    The Overtoad ruling 2026-09-15 on item F. `conf/soak_probes.json`'s _README says scoring
     MUST run this screen; nothing did, since the pilot.
 
     WHY REPORT-ONLY RATHER THAN A GATE. The screen's own retrieval verdict
@@ -627,7 +627,7 @@ def contamination_screen(log: Path) -> dict:
         naive_dest_hits=r.get("dest_hits"),
         naive_dest_via_output=r.get("dest_via_output"),
         note=(
-            "REPORT-ONLY (owner ruling 2026-09-15, item F). Nothing here gates the run "
+            "REPORT-ONLY (Overtoad ruling 2026-09-15, item F). Nothing here gates the run "
             "or changes its exit code. `contaminated` keys on ANSWER_KEY and PROTOCOL_DOC; "
             "ledger exposure is three-valued and separate because a filename sighting is "
             "not a content read -- 7 of the 8 recorded ledger contacts were filename-only."
@@ -686,7 +686,7 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--force", action="store_true",
                     help="run even when the soak verdict is terminal or unreadable; "
-                         "requires --probe-id and --reason (owner decisions D1/D3)")
+                         "requires --probe-id and --reason (Overtoad decisions D1/D3)")
     ap.add_argument("--reason", default=None,
                     help="why this --force run is being spent; recorded in the run dir's meta.json")
     ap.add_argument("--notify-cmd", default=None,
@@ -881,7 +881,7 @@ def main() -> int:
         "retrieval": channel,
         "stderr_tail": (err or "")[-400:],
     }
-    # Item F, owner ruling 2026-09-15: the screen runs on every scored run and REPORTS.
+    # Item F, Overtoad ruling 2026-09-15: the screen runs on every scored run and REPORTS.
     # It gates nothing, and it is deliberately absent from scoring_packet.md below --
     # see contamination_screen's docstring.
     status["contamination_screen"] = contamination_screen(log)

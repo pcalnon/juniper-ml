@@ -20,7 +20,7 @@ What fails:
 - `…PRIMER.md` = `notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md`
 - `docs/REFERENCE.md` is juniper-ml's.
 - The specification is `ml2080-round1-laneA-reprobe.md` and `ml2080-round1-laneB-refute.md`.
-- Also cited: `owner-rulings-verbatim.md`, `primer-correction-round2-laneB-refute.md` and `data438-round1-laneA-reprobe.md`.
+- Also cited: `Overtoad-rulings-verbatim.md`, `primer-correction-round2-laneB-refute.md` and `data438-round1-laneA-reprobe.md`.
 - All reports are in `reports/2026-09-24_defect-register-round-42/`.
 
 ## Claims table
@@ -173,4 +173,4 @@ All are in `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml
   - `a19_filing_commits.py`, `a20_pr_dates.py`, `a21_ruling_quotes.py`, `a22_pr_merge_shas.py`, `a23_stale_restatements.py`
 - **Outputs kept:** `rfc9110.txt` (fetched from rfc-editor.org) and the census, read-out and archive-check text files.
 
-**Changed:** nothing, by me. All git use in this session's worktree was read-only (fetch, show, log, diff, archive); every other read was a GitHub, PyPI or RFC GET. During the run, two changes appeared in this shared worktree that I did not make and did not read: a modified `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (14:42:08) and an untracked `reports/2026-09-24_defect-register-round-42/owner-ruling-key-leaks-verbatim.md` (14:42:13). They are not part of `e2f87aae`.
+**Changed:** nothing, by me. All git use in this session's worktree was read-only (fetch, show, log, diff, archive); every other read was a GitHub, PyPI or RFC GET. During the run, two changes appeared in this shared worktree that I did not make and did not read: a modified `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` (14:42:08) and an untracked `reports/2026-09-24_defect-register-round-42/Overtoad-ruling-key-leaks-verbatim.md` (14:42:13). They are not part of `e2f87aae`.

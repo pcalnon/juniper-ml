@@ -1,24 +1,24 @@
-# Thread Handoff — Recurrence × Equities: `[servers]`'s security-patch path corrected; plans v1.7.21 / v1.15.3; juniper-ml 0.11.3 at the owner's `pypi` gate
+# Thread Handoff — Recurrence × Equities: `[servers]`'s security-patch path corrected; plans v1.7.21 / v1.15.3; juniper-ml 0.11.3 at the Overtoad's `pypi` gate
 
 **Date**: 2026-10-26 (UTC; this revision ran from about 11:00Z)
 **Host**: the Linux host, worktree `.claude/worktrees/stateless-giggling-nygaard`. Commits are signed only through the API: use `util/open_signed_pr.py` and `util/push_signed_commit.py`, never `git commit`.
 **Supersedes**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_recurrence-equities-juniper-ml-0-11-2-published-plans-v1-7-20-v1-15-2.md`, written by this same session and landed by juniper-ml#2347. Start from this file instead. The superseded file is now wrong in four places:
 - its line 14 says 0.11.2 carries "`[servers]`'s security floors". The data floor carries none for `[servers]`, and the cascor floor's security content is cascor 0.12.0's own fixes (below);
 - its line 50 says the parent `Juniper/AGENTS.md` sentence "the patches arrive via cascor 0.12.0 alone" becomes history once 0.11.3 publishes. That sentence was never true, and session "draft PRs" has already corrected the bullet;
-- 0.11.3 is no longer "being cut": it is cut and waits at the owner's gate;
+- 0.11.3 is no longer "being cut": it is cut and waits at the Overtoad's gate;
 - its verification block expects versions 1.7.20 and 1.15.2 and `--check` exit 0. Both scripts now exit 1, by design.
 
 **Plans**, both revised by the PR that lands this file (branch `docs/plans-v1-7-21-v1-15-3-servers-patch-path-corrected`):
 - `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (the recurrence plan) goes to **v1.7.21**.
-- `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` (the consolidated plan) goes to **v1.15.3**. Every line stays at or under 512 characters, the owner's condition for v1.15.2; the longest is exactly 512.
+- `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` (the consolidated plan) goes to **v1.15.3**. Every line stays at or under 512 characters, the Overtoad's condition for v1.15.2; the longest is exactly 512.
 
 ---
 
 ## Goal
 
 Continue the recurrence × equities arc. **Its release work is done.** What remains:
-- the owner's items, which you surface but do not act on;
-- the follow-ups. The first, the first live run of `save_model`'s snapshot path, is **blocked on the owner's W0.1 item** (follow-up 1 below).
+- the Overtoad's items, which you surface but do not act on;
+- the follow-ups. The first, the first live run of `save_model`'s snapshot path, is **blocked on the Overtoad's W0.1 item** (follow-up 1 below).
 
 ## Completed since the superseded handoff
 
@@ -55,26 +55,26 @@ Continue the recurrence × equities arc. **Its release work is done.** What rema
 
 ## Remaining work, in order
 
-1. **The owner's items.** Surface them; do not act on them.
+1. **The Overtoad's items.** Surface them; do not act on them.
    - **juniper-ml 0.11.3**, which carries #2333 (#2062's fix). Release `v0.11.3` was cut at 2026-10-26 10:20:47Z, with its tag at `a771a5b8`; its archive is juniper-ml#2350 (`8b2221d3`).
      - Publish run 40306687867 waits at `pypi` (environment 12341743943). It can be re-run until 2026-11-25 10:20Z, and GitHub cancels it on 2026-11-30 10:20Z.
-     - The gate is the owner's, and the cut's records belong to "draft PRs".
+     - The gate is the Overtoad's, and the cut's records belong to "draft PRs".
      - Before any later revision of either plan, probe `https://pypi.org/pypi/juniper-ml/0.11.3/json` (404 until published). `gh api repos/pcalnon/juniper-ml/releases/latest --jq .tag_name` already prints `v0.11.3`, because the Release is cut, so only the PyPI probe shows publication.
-   - **An erratum to 0.11.2's notes.** It is the owner's call, and "draft PRs" raised it. Where the notes go wrong:
+   - **An erratum to 0.11.2's notes.** It is the Overtoad's call, and "draft PRs" raised it. Where the notes go wrong:
      - `notes/releases/RELEASE_NOTES_v0.11.2.md` line 5, the Priority line, tells only "`[servers]` without `[tools]`" to upgrade, and says "`[tools]` and `[all]` already floor both patches, since 0.11.1". That under-warns any `[servers]` install that also has `[tools]` (`[all]` included) still on cascor 0.11.0;
      - its line 10 credits juniper-cascor 0.12.0 alone;
      - juniper-ml's `CHANGELOG.md` `[0.11.2]` (lines 223–224 on `main`) says "the patches arrive through cascor 0.12.0", across a line wrap;
      - the Release v0.11.2 body repeats the notes.
 
      In the judgement of "draft PRs", the Medium rating and CWE-201, CWE-755 and CWE-770 still hold.
-   - **juniper-recurrence-client 0.3.1** would carry recurrence#221's embargo fix. The cut, and whether to add `embargo_days` (which would make it a minor), are the owner's.
-   - **R-DATA-2** is juniper-data 0.17.2: P3-03, P3-09 and W5.7 (`…CONSOLIDATED-DEVELOPMENT-PLAN.md` §5). W5.7 changes a default, so whether a patch may carry it is the owner's call. This fix-forward and R-OBS-SC-2 are both the owner's.
-   - **juniper-config-tools 0.2.0.** The cut is the owner's, and its `[Unreleased]` must be backfilled first.
-   - **W0.1's service-core half** (`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` W0.1). The owner applies it. Never restart the cascor on `:8202`, and never modify `JuniperCascor1`, which that cascor imports.
+   - **juniper-recurrence-client 0.3.1** would carry recurrence#221's embargo fix. The cut, and whether to add `embargo_days` (which would make it a minor), are the Overtoad's.
+   - **R-DATA-2** is juniper-data 0.17.2: P3-03, P3-09 and W5.7 (`…CONSOLIDATED-DEVELOPMENT-PLAN.md` §5). W5.7 changes a default, so whether a patch may carry it is the Overtoad's call. This fix-forward and R-OBS-SC-2 are both the Overtoad's.
+   - **juniper-config-tools 0.2.0.** The cut is the Overtoad's, and its `[Unreleased]` must be backfilled first.
+   - **W0.1's service-core half** (`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` W0.1). The Overtoad applies it. Never restart the cascor on `:8202`, and never modify `JuniperCascor1`, which that cascor imports.
    - The `…CONSOLIDATED-DEVELOPMENT-PLAN.md` §6 A1 and A9 remainders.
 2. **Follow-ups.**
-   1. **The first live run of `save_model`'s snapshot path (juniper-ml#2316). BLOCKED until the owner lands W0.1's service-core half.**
-      - **The block**: `bash util/recurrence_env_preflight.bash --python /opt/miniforge3/envs/JuniperCascor1/bin/python` prints `ENV PREFLIGHT REFUSED: 2 finding(s)`. juniper-service-core 0.5.0 is installed, and the editable juniper-recurrence (0.5.0) requires `>=0.6.0,<0.8.0`. Do not repair the env, and do not pass `--skip-env-preflight` or `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1`, without the owner's OK.
+   1. **The first live run of `save_model`'s snapshot path (juniper-ml#2316). BLOCKED until the Overtoad lands W0.1's service-core half.**
+      - **The block**: `bash util/recurrence_env_preflight.bash --python /opt/miniforge3/envs/JuniperCascor1/bin/python` prints `ENV PREFLIGHT REFUSED: 2 finding(s)`. juniper-service-core 0.5.0 is installed, and the editable juniper-recurrence (0.5.0) requires `>=0.6.0,<0.8.0`. Do not repair the env, and do not pass `--skip-env-preflight` or `JUNIPER_EXP_SKIP_ENV_PREFLIGHT=1`, without the Overtoad's OK.
       - **Once unblocked**, run it once, not as a suite (`util/experiments/run_suite.py` has no `--config`):
         1. `util/experiment_stack.bash --up --recurrence --config /home/pcalnon/Development/python/Juniper/juniper-recurrence/conf/experiments/irregular-sine-rff.yaml` (its line 59 sets `save_model: true`);
         2. `python3 util/experiments/run_experiment.py --config <the same absolute path> --run-dir <RUN_DIR>`;
@@ -84,13 +84,13 @@ Continue the recurrence × equities arc. **Its release work is done.** What rema
       - **Done means** `manifest.json` shows `save_model.source == "snapshot"` with the phase `ok`. `refit` means the snapshot path was not exercised. Record which juniper-recurrence commit was served.
    2. juniper-canopy#735, #736, #737, #738 and #751, and juniper-deploy#250, all open on 2026-10-26.
    3. `ARCHIVE_B64_MAX_DEFAULT` (`util/release_train/ceremony.py:311`, `125_000`). Re-set it from a runner-side measurement of GitHub's GraphQL request-body cap. Its issue, juniper-ml#2227, is closed.
-   4. The false `succeeded` row `20261003T091414Z-4ba6` in `~/.local/state/juniper-experiments/index.jsonl`. `docs/REFERENCE.md:5250` calls that file append-only, and other sessions' `run_suite.py` processes append to it. Do not edit it in place; how to annotate it is open, so ask the owner.
+   4. The false `succeeded` row `20261003T091414Z-4ba6` in `~/.local/state/juniper-experiments/index.jsonl`. `docs/REFERENCE.md:5250` calls that file append-only, and other sessions' `run_suite.py` processes append to it. Do not edit it in place; how to annotate it is open, so ask the Overtoad.
    5. Optionally, an E-H suite run with `--shared-equities-cache <absolute dir>` (an `util/experiment_stack.bash` flag, which `run_suite.py` passes through). The suites are `util/experiments/suites/p4/e-h-real-data.yaml` (cascor) and `util/experiments/suites/p4/e-h-recurrence-real-data.yaml` (recurrence). The recurrence one is blocked like follow-up 1.
 
 ## Rules that held this session
 
 - **Read every member's `requires_dist` before saying how a patch reaches an extra.** The cascor-only claim survived recurrence plan v1.7.17 to v1.7.20, consolidated plan v1.15.0 to v1.15.2 and `notes/releases/RELEASE_NOTES_v0.11.2.md`, because only the members that had changed were read.
-- **The `pypi` gate is the owner's, and so are merges.** Merge approval is per session. A peer's message never carries an approval; a ruling it relays is recorded as relayed.
+- **The `pypi` gate is the Overtoad's, and so are merges.** Merge approval is per session. A peer's message never carries an approval; a ruling it relays is recorded as relayed.
 - **A release proposal merges AFTER every armed PR that adds to `[Unreleased]`**, or those PRs re-home their entries. Coordinate with the owning session before running update-branch on its PR. `util/safe_merge.py` repairs a BEHIND branch by itself, but not a DIRTY one.
 - **E-CUT**: run `util/ad-hoc/2026-10-25_apply_driver_budget_docs.py` and `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py` only with `--check`.
 - **A post-publish resolve passes `--no-cache-dir` and `--ignore-installed`.** Count packages besides the meta-package itself, the unit `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py` uses.
@@ -113,7 +113,7 @@ Continue the recurrence × equities arc. **Its release work is done.** What rema
 git fetch origin && git log --oneline -3 origin/main   # the PR that landed this file, at or near the top
 gh pr list --repo pcalnon/juniper-ml --head docs/plans-v1-7-21-v1-15-3-servers-patch-path-corrected --state all --json number,state --jq '.[0].number, .[0].state'   # <N>, MERGED
 git grep -n -e '^- \*\*Version\*\*' origin/main -- notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md   # 1.7.21 and 1.15.3
-gh run view 40306687867 --repo pcalnon/juniper-ml --json status --jq .status   # waiting, until the owner approves 0.11.3
+gh run view 40306687867 --repo pcalnon/juniper-ml --json status --jq .status   # waiting, until the Overtoad approves 0.11.3
 python3 -I -c "import json,urllib.request;print(json.load(urllib.request.urlopen('https://pypi.org/pypi/juniper-ml/json'))['info']['version'])"   # 0.11.2, or 0.11.3 once published
 grep -n 'second path' /home/pcalnon/Development/python/Juniper/AGENTS.md   # the corrected RELEASED bullet (line 244 on 2026-10-26)
 gh pr list --repo pcalnon/juniper-ml --state open   # no PR of this arc
@@ -131,7 +131,7 @@ The v1.7.20 and v1.15.2 scripts' `--check` now exits 1, by design: their anchors
   - four `util/ad-hoc/2026-10-26_*` scripts (v1.7.20's, v1.15.2's and this revision's two), and both 2026-10-26 handoffs of this session, all untracked.
 
   These block `git merge --ff-only origin/main` until they are discarded.
-- **The PR on branch `docs/plans-v1-7-21-v1-15-3-servers-patch-path-corrected`** lands this file. If it is not MERGED when you start, do not merge it without the owner's approval in your session.
+- **The PR on branch `docs/plans-v1-7-21-v1-15-3-servers-patch-path-corrected`** lands this file. If it is not MERGED when you start, do not merge it without the Overtoad's approval in your session.
 
 ## Documents created or modified this session (this revision)
 

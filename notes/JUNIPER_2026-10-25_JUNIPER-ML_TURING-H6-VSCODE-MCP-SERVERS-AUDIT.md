@@ -4,9 +4,9 @@
 - **Author**: Paul Calnon (audit via the Claude Code `auditor` agent on turing)
 - **Date**: 2026-10-25
 - **Version**: 1.0.0
-- **Status**: FINAL. The keep, pin or remove decision for each server is the owner's (§8). The audit changed nothing: no VS Code file, no cache, no server, and no repository file other than this note.
+- **Status**: FINAL. The keep, pin or remove decision for each server is the Overtoad's (§8). The audit changed nothing: no VS Code file, no cache, no server, and no repository file other than this note.
 - **Scope**: `huggingface` and `upstash/context7` (http), `microsoft/markitdown` and `oraios/serena` (stdio), plus the VS Code settings and host traces that govern them. Lenses: provenance and pin, arguments, tools, egress, controls and local evidence. Static only: no server, `uvx` or VS Code was started.
-- **Plan task**: H6 of [`JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`](JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md) v1.4.5, §18.2 :949. Acceptance: "an `auditor` audit in `notes/` with a keep, pin or remove recommendation per server; the owner decides".
+- **Plan task**: H6 of [`JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`](JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md) v1.4.5, §18.2 :949. Acceptance: "an `auditor` audit in `notes/` with a keep, pin or remove recommendation per server; the Overtoad decides".
   - Origin: O-5 of [`JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md`](JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md) :226.
   - Layout: [`JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md`](JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md) (the H5 audit).
 - **Evidence script**: [`util/ad-hoc/2026-10-25_turing_h6_vscode_mcp_inventory.py`](../util/ad-hoc/2026-10-25_turing_h6_vscode_mcp_inventory.py), written for this audit by the launching session and run as `python3 -I util/ad-hoc/2026-10-25_turing_h6_vscode_mcp_inventory.py` at 2026-10-25T08:35Z. It prints a default-deny projection: env and header values are classified, never printed. The auditor never opened `mcp.json` or `settings.json`.
@@ -16,14 +16,14 @@
 
 ## 1. Summary
 
-- **Recommendations** (the owner decides, §8):
+- **Recommendations** (the Overtoad decides, §8):
   - `oraios/serena`: **REMOVE**, in favour of Claude Code's pinned, project-bound Serena (H4). Alternative: **PIN** to H4's commit with corrected arguments.
   - `microsoft/markitdown`: **REMOVE**. Alternative: **PIN** 0.0.1a8 together with its markitdown.
   - `upstash/context7`: **KEEP**, unchanged; use it only after K13.
   - `huggingface`: **KEEP only re-credentialed**: rotate the token now, then run token-less or with a read-only token behind a password input. Otherwise **REMOVE**.
 - **Findings: 19.** 2 blocker, 8 major, 9 minor (§7.1). Each carries a `file:line`, a command and its output, or a fetched URL.
 - **The blockers**
-  - **SER-P1.** Serena is unpinned, and `main` is now 2.1.1.dev0, whose new-user default is the REPL interface: one tool, `serena_repl`, that runs Python with `exec`. Under REPL the context's tool exclusions do not apply, so the entry's shell exclusion is void, and turing has no `~/.serena/serena_config.yml` to override the default. Only E-H4-WHEEL's cryptography build failure stops it today, and H4's own owner step (building that wheel once) would lift the barrier for this entry too.
+  - **SER-P1.** Serena is unpinned, and `main` is now 2.1.1.dev0, whose new-user default is the REPL interface: one tool, `serena_repl`, that runs Python with `exec`. Under REPL the context's tool exclusions do not apply, so the entry's shell exclusion is void, and turing has no `~/.serena/serena_config.yml` to override the default. Only E-H4-WHEEL's cryptography build failure stops it today, and H4's own Overtoad step (building that wheel once) would lift the barrier for this entry too.
   - **HF-P1.** The Hugging Face `Authorization` header is a 44-character literal: a plaintext token at rest. Settings Sync synchronizes this file (H6-X3), so the token also sits in the sync service and on every synced host.
 - **No logged start, ever.** No VS Code log on turing records a start of any of the four. Every per-server log is empty, and VS Code's newest log session is 2026-03-26. During it uv began installing `markitdown-mcp` 0.0.1a4 and a Serena dependency, and never finished (§4.2).
 - **The second Serena checkout in uv's cache** is v0.1.4 at `0c915bd18d51e2225508b6dccc8ae3bd9c20be1e`, resolved from the unpinned URL on 2026-03-21T19:28:04Z, when no VS Code session was running. It is not what VS Code's entry resolved to (SER-H1).
@@ -41,7 +41,7 @@
 
 ### 2.2 Severity and verdicts
 
-- **blocker**: as configured, the entry exposes a credential or would give an agent arbitrary code execution as the owner. It must change before VS Code chat next runs on turing.
+- **blocker**: as configured, the entry exposes a credential or would give an agent arbitrary code execution as the Overtoad. It must change before VS Code chat next runs on turing.
 - **major**: a material risk or defect; keeping the server needs the change stated.
 - **minor**: hygiene, accuracy, records, or a low-likelihood issue.
 - Verdicts: **PASS** is a verified pass, **FAIL** a verified fail, and **CNV** could not verify, with the reason given.
@@ -174,7 +174,7 @@ The newest session's per-server logs (host-local time, UTC-5; size in bytes):
   - **Gallery.** `chat.mcp.gallery.enabled` is `true`, where 1.108.2's default is `false` (preview). Three of these entries came through the gallery, and its records are stale or malformed (SER-A1, MKD-P1, C7-P1).
   - **Discovery.** `chat.mcp.discovery.enabled` is unset, and 1.108.2 defaults every source to `false`: PASS.
 - **Evidence**: the workbench grep gives `[Gie]:{type:"string",...,default:"newAndOutdated",enum:["never","onlyNew","newAndOutdated"],...,tags:["experimental"]` and `[aO]:{type:"boolean",default:!1,tags:["preview"]`, where the bundle binds `Gie` to `chat.mcp.autostart` and `aO` to `chat.mcp.gallery.enabled`.
-- **Fix**: `"chat.mcp.autostart": "never"` until the owner has decided, and `"chat.mcp.gallery.enabled": false` unless the gallery is wanted.
+- **Fix**: `"chat.mcp.autostart": "never"` until the Overtoad has decided, and `"chat.mcp.gallery.enabled": false` unless the gallery is wanted.
 
 ### H6-X5: 20 of the 21 inputs belong to no configured server
 
@@ -200,7 +200,7 @@ The newest session's per-server logs (host-local time, UTC-5; size in bytes):
   - **REPL by default.** HEAD's template sets `agent_interface: REPL`: "operations are accessed programmatically via the serena_repl tool, which executes Python code ... the tool inclusion/exclusion settings do not apply" (:14-17, :22). The dataclass default is TOOLS (:958), but "The default for new users is defined in the template file" (:962), and a missing config is generated from the template (:1026-1065). turing has none: `~/.serena/` holds only `memories/global`.
   - **Arbitrary code.** The REPL runs submitted code with `exec(compile(...), namespace)` in a plain dict (repl.py:354-356), so builtins and imports work, and `ShellApi.execute_shell_command` ships alongside (shell_api.py:59-87). Serena's security page: "the submitted code can, in principle, do anything the Serena process can do ... Excluding shell execution, for example, does not prevent the code from achieving the same effect by other means."
   - **So the shell control is void.** The entry's only shell control is `--context ide-assistant`, which maps to `claude-code`, whose `excluded_tools` holds `execute_shell_command`. It has no force at HEAD, and VS Code passes no `--agent-interface`.
-  - **What stops it today, and why that will not last.** HEAD pins `cryptography==50.0.0` (pyproject :52), which has no Intel macOS wheel and does not build with turing's Rust 1.71 (E-H4-WHEEL, plan :986-988). uv's cache holds the 50.0.0 sdist from H4's attempt, and no wheel. E-H4-WHEEL's own owner option builds the wheel once, and "A built wheel lives in uv's cache". The next unpinned resolve would then reuse it and start Serena 2.x (an inference; live behaviour is CNV).
+  - **What stops it today, and why that will not last.** HEAD pins `cryptography==50.0.0` (pyproject :52), which has no Intel macOS wheel and does not build with turing's Rust 1.71 (E-H4-WHEEL, plan :986-988). uv's cache holds the 50.0.0 sdist from H4's attempt, and no wheel. E-H4-WHEEL's own Overtoad option builds the wheel once, and "A built wheel lives in uv's cache". The next unpinned resolve would then reuse it and start Serena 2.x (an inference; live behaviour is CNV).
 - **Evidence**: `gh api repos/oraios/serena/commits/main`; `gh api "repos/oraios/serena/releases?per_page=8"`; the jq-filtered contents GETs (§9). `find ~/.cache/uv/sdists-v9/pypi/cryptography/50.0.0 ~/.cache/uv/archive-v0 -maxdepth 3 ( -name "*.whl" -o -name "cryptography-50*" )` prints nothing.
 - **Fix**: remove the entry (§8.1), or pin it to H4's commit. 1.7.0 has no REPL: `grep -rln -i "agent_interface\|serena_repl" .../949a27ef/src/serena` prints nothing.
 
@@ -242,7 +242,7 @@ The newest session's per-server logs (host-local time, UTC-5; size in bytes):
   - **Usage report.** At each start 1.7.0 and HEAD send the OS, the dashboard flag, the version, the backend and the context name to `https://oraios-software.de/serena_usage.php`, unless `SERENA_USAGE_REPORTING=false` (or `CI` or `GITHUB_ACTIONS`) is set. 0c915bd1 has no such call.
   - **Dashboard.** With no `--open-web-dashboard False`, the template's `web_dashboard: True` and `web_dashboard_open_on_launch: True` open a dashboard at every start, served on `127.0.0.1`.
   - **Other egress.** The install fetches from `github.com` and PyPI. Serena downloads some language servers on demand (security page, "Supply Chain Security"); juniper-ml's [`.serena/project.yml`](../.serena/project.yml):5-6 lists only `python`, whose server is a pip dependency.
-  - **H4 too.** H4's entry has `"env": {}`, so Claude Code's Serena sends the report as well; that is outside H6, for H4's owner.
+  - **H4 too.** H4's entry has `"env": {}`, so Claude Code's Serena sends the report as well; that is outside H6, for H4's Overtoad.
 - **Evidence**: the cited lines.
 - **Fix**: `"env": {"SERENA_USAGE_REPORTING": "false"}` and `--open-web-dashboard False` on any kept entry, H4's included.
 
@@ -277,7 +277,7 @@ The newest session's per-server logs (host-local time, UTC-5; size in bytes):
 - **Location**: `markitdown_mcp/__main__.py`:19-22 and :113-114; `markitdown/_markitdown.py`:154-176, :419-431 and :451-460; `markitdown/converters/_exiftool.py`:22-42.
 - **Problem**
   - **One tool.** `convert_to_markdown(uri)` is `MarkItDown().convert_uri(uri).markdown`. It writes no file and opens no listener (stdio, :113-114).
-  - **Any file.** A `file:` URI goes to `convert_local(path)` with no path restriction (:419-431). So the tool returns to the model any file the owner can read: `~/.ssh`, `~/.gnupg`, `~/.config/gh/`, or VS Code's own `mcp.json` with HF-P1's token. D11 denies Claude Code that class for `~/.ssh` and `~/.gnupg` (plan :348).
+  - **Any file.** A `file:` URI goes to `convert_local(path)` with no path restriction (:419-431). So the tool returns to the model any file the Overtoad can read: `~/.ssh`, `~/.gnupg`, `~/.config/gh/`, or VS Code's own `mcp.json` with HF-P1's token. D11 denies Claude Code that class for `~/.ssh` and `~/.gnupg` (plan :348).
   - **Any URL.** `http:` and `https:` get a plain `requests` GET, loopback and LAN included (:451-460). VS Code's own fetch tool uses "a two-step approval flow" (security page); this tool has only the per-call MCP approval.
   - **A subprocess.** It runs `exiftool` when one sits in `/usr/local/bin` or another standard directory (:154-176; `_exiftool.py`:22-42). turing has none (`which -a exiftool` exits 1), so that path is inert.
   - **Upstream**: "The server does not support authentication, and runs with the privileges if the user running it."
@@ -325,7 +325,7 @@ The newest session's per-server logs (host-local time, UTC-5; size in bytes):
 - **Problem**
   - **A literal.** The header value is a literal, not a `${input:...}` reference. 44 characters fits the word `Bearer`, a space and a 37-character `hf_` user token, the shape of Hugging Face's own VS Code snippet (`"Authorization": "Bearer <YOUR_HF_TOKEN>"`). That reading is an inference; the value was not read (CNV).
   - **VS Code's guidance**: "Do not commit tokens, passwords, or populated authentication headers", and "A personal configuration file is not a secret store" (configuration reference).
-  - **Who can read it.** The file is mode 0644 inside the 0700 directory `~/Library/Application Support/Code`, so other local users cannot read it. Every process running as the owner can, including markitdown's `file:` tool (MKD-T1) and any auto-approved terminal command (H6-X2), and Settings Sync copies it off the host (H6-X3).
+  - **Who can read it.** The file is mode 0644 inside the 0700 directory `~/Library/Application Support/Code`, so other local users cannot read it. Every process running as the Overtoad can, including markitdown's `file:` tool (MKD-T1) and any auto-approved terminal command (H6-X2), and Settings Sync copies it off the host (H6-X3).
   - **Provenance.** There is no gallery entry, and the key order (`url`, `headers`, `type`) fits a pasted snippet.
 - **Evidence**: the inventory; `stat -f "%Sp"` on the file and its parent directories; WebFetch of `https://github.com/huggingface/hf-mcp-server` and of VS Code's MCP configuration reference.
 - **Fix**: rotate the token at huggingface.co (OWNER), whatever else is chosen, since it has sat in plaintext and in sync. Then go token-less, or use a read-only token through a password input (§8.4).
@@ -370,14 +370,14 @@ The newest session's per-server logs (host-local time, UTC-5; size in bytes):
 - **Upstream policies**: Context7's query retention (its privacy page timed out) and the full terms of Hugging Face's logging. Serena's docs site (`oraios.github.io`) also timed out, so its text was read from the repository at HEAD.
 - **Version gaps.** The current VS Code docs describe a newer release than 1.108.2. The stdio sandbox is absent from 1.108.2, and 1.108.2 does not read a workspace-root `.mcp.json`: the bundle has no `.mcp.json` string and no `workspaceRootConfig` setting. After an update, check whether VS Code starts reading H4's per-checkout `.mcp.json` files.
 
-## 8. Decision: the owner's
+## 8. Decision: the Overtoad's
 
-These recommendations are the auditor's; **the decision is the owner's**. The audit changed no configuration, and every step below is the owner's. Two rules apply to all of them:
+These recommendations are the auditor's; **the decision is the Overtoad's**. The audit changed no configuration, and every step below is the Overtoad's. Two rules apply to all of them:
 
 - **Order.** The removals and the settings changes need nothing first. Every KEEP or PIN waits on K13 (H6-X2).
 - **Scope.** First decide whether the changes are for every synced host (H6-X3).
 
-| Server | Recommendation | Exact change (owner) | Needs K13 |
+| Server | Recommendation | Exact change (Overtoad) | Needs K13 |
 | --- | --- | --- | --- |
 | `oraios/serena` | **REMOVE**; Claude Code's Serena (H4) stays the vetted one | delete `servers["oraios/serena"]` | no. The PIN alternative (§8.1) does, and needs E-H4-WHEEL first |
 | `microsoft/markitdown` | **REMOVE** | delete `servers["microsoft/markitdown"]` | no. The PIN alternative does |
@@ -390,7 +390,7 @@ These recommendations are the auditor's; **the decision is the owner's**. The au
 
 **REMOVE.** H4 already gives Claude Code a pinned, project-bound Serena: v1.7.0 at `949a27ef1e5fda1a6e7b561e777bcece345c6ffd` ([`conf/hosts/turing/mcp.json`](../conf/hosts/turing/mcp.json):4-8). Its shell tool is excluded twice, by the context and by `.serena/project.yml`:25-26, and its edit tools are the ones C9 covers. A VS Code copy would duplicate it outside every guard, and a user-level entry cannot bind the workspace (SER-A1).
 
-**PIN, if the owner wants Serena in Copilot**: H4's commit and the `vscode` context, with no stray positional, no dashboard tab and no usage report. It builds only once E-H4-WHEEL is resolved, and `activate_project` stays exposed, since a user-level entry starts with no project:
+**PIN, if the Overtoad wants Serena in Copilot**: H4's commit and the `vscode` context, with no stray positional, no dashboard tab and no usage report. It builds only once E-H4-WHEEL is resolved, and `activate_project` stays exposed, since a user-level entry starts with no project:
 
 ```json
 "oraios/serena": {
@@ -406,7 +406,7 @@ Never move this entry to 2.x without `--agent-interface tools` (SER-P1).
 
 ### 8.2 markitdown
 
-**REMOVE.** It has no role in the plan, and its one tool reads any file the owner can read and fetches any URL, outside every guard (MKD-T1). The `markitdown` CLI, run from an audited and pinned environment, covers occasional conversions without exposing the agent. **PIN alternative**: `markitdown-mcp==0.0.1a8` with an exact `markitdown[all]` version and a fresh advisory query (MKD-P1); per-call approval for its tool; K13 first.
+**REMOVE.** It has no role in the plan, and its one tool reads any file the Overtoad can read and fetches any URL, outside every guard (MKD-T1). The `markitdown` CLI, run from an audited and pinned environment, covers occasional conversions without exposing the agent. **PIN alternative**: `markitdown-mcp==0.0.1a8` with an exact `markitdown[all]` version and a fresh advisory query (MKD-P1); per-call approval for its tool; K13 first.
 
 ### 8.3 Context7
 
@@ -427,7 +427,7 @@ Or a new fine-grained read-only token behind a password input, with `{"id": "hf_
                 "headers": {"Authorization": "Bearer ${input:hf_token}"}}
 ```
 
-Either way, turn off Dynamic Spaces and the write and Jobs tools at `https://huggingface.co/settings/mcp`. **REMOVE** the server if the owner does not use it.
+Either way, turn off Dynamic Spaces and the write and Jobs tools at `https://huggingface.co/settings/mcp`. **REMOVE** the server if the Overtoad does not use it.
 
 ### 8.5 VS Code controls, whatever is kept
 

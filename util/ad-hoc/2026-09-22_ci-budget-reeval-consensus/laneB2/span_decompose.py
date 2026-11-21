@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (consensus round, lane B2)
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc -- investigation, read-only (GitHub REST reads only; writes nothing anywhere)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 For one head of a PR, lists every GitHub Actions job attached to it (all workflow runs on the
 head SHA, all attempts) and splits the required-context span [S, E] second by second into:

@@ -37,10 +37,10 @@ The problems are at the decision points:
 | First action 2 | AMBIGUOUS | "Until then" has no referent, there is no FINISHED state, and the test differs from L76's (M1). Right now the executor has finished and its parent is still running, and the rule still says ALIVE. |
 | First action 3 | AMBIGUOUS | Nothing says what to tell `[24f8d8]`. "Tell it this file governs" comes with no path, and document 2 tells its successor that document 2 governs until this file is on `main` (M2, M3). `[977fa8]` is unexplained (N1). |
 | First action 4 | EXECUTABLE | — |
-| First action 5 | BLOCKED | #2097 is blocked by CodeQL, which is not mentioned (M4). If the consolidation PR is absent while `[24f8d8]` is listed, L45 forbids L56's fallback and L46 forbids asking the owner to close it (M2). |
+| First action 5 | BLOCKED | #2097 is blocked by CodeQL, which is not mentioned (M4). If the consolidation PR is absent while `[24f8d8]` is listed, L45 forbids L56's fallback and L46 forbids asking the Overtoad to close it (M2). |
 | Work 1 | AMBIGUOUS | The steps are concrete: the `gh pr create` form is valid, `open_signed_pr.py` refusing an existing branch is confirmed, and the draft format is given. But when it may start while `[24f8d8]` lives is undefined (M1), and there is no path if round 2 refutes (L4). |
 | Work 2 | EXECUTABLE | Appendix D item 1 is complete. Its harnesses, probes and serve script are only on #2097's branch, which the document never names, and #2097 is blocked (L8). |
-| Work 3 | EXECUTABLE | The owner's calls (a)-(c) may change the fix-forward (L7). |
+| Work 3 | EXECUTABLE | The Overtoad's calls (a)-(c) may change the fix-forward (L7). |
 | Work 4 | EXECUTABLE | Each F item maps to one vehicle, and Work 4 agrees with the table. |
 | Work 5 | EXECUTABLE | `990ef3f9` → `2439d049` is reachable on `origin/docs/register-round-42-second-fixforward` (its head `1f116c38` is `2439d049` plus a main merge). "The tools" is unnamed (N3), and the fix-forward's vehicle is unstated (M6). |
 | Work 6 | AMBIGUOUS | Which later register text rides in the closes PR is unstated (M6). |
@@ -79,12 +79,12 @@ The problems are at the decision points:
   - The branch ref moved to `94ce8b1f` at 01:46:46Z. It is signed, its parent is `d1c66a11`, and it changes 12 files.
   - The executor's last assistant record became text at 01:49:10Z, and `last_report()` now returns 9,158 characters.
   - Its parent is still running, so L43 still says ALIVE.
-  - Work 1 and the shipping step (L45) therefore wait for the old session to exit, while L46 forbids asking the owner to close it. That wait has no bound.
+  - Work 1 and the shipping step (L45) therefore wait for the old session to exit, while L46 forbids asking the Overtoad to close it. That wait has no bound.
 - **Replace L43-L46 with:**
 
   "2. **Liveness.** Decide the executor's state (In flight 1) before Work 1:
      - **FINISHED:** the branch ref (verification) is off `d1c66a11`, AND `last_report()` returns text (its last assistant record is text, not a `tool_use`). If "defect reg [24f8d8]" is listed, tell it that you are taking Work 1 and that it must not resume the executor. Then start Work 1.
-     - **ALIVE:** not finished, and `ListAgents` lists "defect reg [24f8d8]" in any state. Count an offline row as listed, because a parent that comes back can resume its executor. Then do not touch the juniper-data worktree, launch no second executor, ship none of that session's files, and never ask the owner to close it.
+     - **ALIVE:** not finished, and `ListAgents` lists "defect reg [24f8d8]" in any state. Count an offline row as listed, because a parent that comes back can resume its executor. Then do not touch the juniper-data worktree, launch no second executor, ship none of that session's files, and never ask the Overtoad to close it.
      - **DEAD:** not finished, "defect reg [24f8d8]" is absent from `ListAgents`, AND the transcript is 30+ minutes old. Follow In flight 1's recovery.
      - Otherwise, wait. Work 2-5 do not depend on Work 1, so do them meanwhile."
 - **Replace L76 with:** "**Dead:** as First action 2 defines it."
@@ -96,10 +96,10 @@ The problems are at the decision points:
   - L49: "Message "defect reg [24f8d8]" only if it is still listed."
   - L48: "Tell it this file governs, and agree the split".
 - **What goes wrong:**
-  - If the consolidation PR is absent while `[24f8d8]` is listed, L56 and L45 contradict each other, and L46 forbids asking the owner to close that session. First action 5 cannot finish, and there is nothing to say to `[24f8d8]`.
+  - If the consolidation PR is absent while `[24f8d8]` is listed, L56 and L45 contradict each other, and L46 forbids asking the Overtoad to close that session. First action 5 cannot finish, and there is nothing to say to `[24f8d8]`.
   - Document 2 (`…observability-release.md`, "Which document governs", its L9-L11) tells its successor that document 2 governs "this lane's work" until the consolidated handoff is on `main`. So a session following document 2 will refuse "Tell it this file governs" until the consolidation PR merges.
 - **Replace L49 with:** "- If "defect reg [24f8d8]" is listed, message it with its `[ref]`. Give your name and `[ref]`, and say you now own both lanes. Ask (1) whether it will open the consolidation PR, and when; and (2) that it resume, launch and ship nothing more."
-- **Replace L48's second sentence with:** "Tell it this file governs, and give it this file's path (header) and the consolidation PR's number. A session following document 2 treats document 2 as governing until this file is on `main` (document 2, "Which document governs"). So land the consolidation PR first, or ask the owner to rule."
+- **Replace L48's second sentence with:** "Tell it this file governs, and give it this file's path (header) and the consolidation PR's number. A session following document 2 treats document 2 as governing until this file is on `main` (document 2, "Which document governs"). So land the consolidation PR first, or ask the Overtoad to rule."
 - **Replace L56's second sentence with:** "If it does not exist: while "defect reg [24f8d8]" is listed, wait for its answer. Once it is no longer listed, ship Lane R's files yourself (Git status) from your own worktree with `util/open_signed_pr.py --branch docs/handoff-round42-consolidated --add <rebuilt copy>:<repo path> …`, so that the first verification command finds the PR."
 
 **M3. This file never names its own path. Document 1 already carried that fix, and the consolidation dropped it.**
@@ -122,9 +122,9 @@ The problems are at the decision points:
   - `mergeStateStatus` is BLOCKED. CodeQL is the only failing check: 20 pass and 7 are skipped.
   - Check run 107905207679 on `2e4917c2` completed at 01:23:44Z, about 11 minutes before this file was written: "45 new alerts including 3 high severity security vulnerabilities".
   - The three highs are alerts 876-878, `py/clear-text-logging-sensitive-data`, at `…/bytes-compare-ml2086-data440-cascor689-vbytes/sentry_deep_probe.py:196` and `:201`, and at `surrogate_config_probe.py:29`.
-  - The flagged lines print a marker the probe builds itself (`SECRET`, its line 18) and keys the probe sets itself (its lines 11-20). As with #2089, the decision is the owner's.
+  - The flagged lines print a marker the probe builds itself (`SECRET`, its line 18) and keys the probe sets itself (its lines 11-20). As with #2089, the decision is the Overtoad's.
   - A successor holding a merge grant finds #2097 unmergeable, with no instruction.
-- **Replace L52 with:** "- #2097 (Lane F's evidence). Its CodeQL FAILED at 01:23:44Z: 45 new alerts, 3 high (`py/clear-text-logging-sensitive-data`, alerts 876-878, in `…/bytes-compare-ml2086-data440-cascor689-vbytes/sentry_deep_probe.py` and `surrogate_config_probe.py`). Like #2089's, it is the owner's call (Appendix B)."
+- **Replace L52 with:** "- #2097 (Lane F's evidence). Its CodeQL FAILED at 01:23:44Z: 45 new alerts, 3 high (`py/clear-text-logging-sensitive-data`, alerts 876-878, in `…/bytes-compare-ml2086-data440-cascor689-vbytes/sentry_deep_probe.py` and `surrogate_config_probe.py`). Like #2089's, it is the Overtoad's call (Appendix B)."
 - **Replace L175 with:** `gh pr view 2097 --repo pcalnon/juniper-ml --json state,headRefOid,mergeStateStatus   # OPEN, BLOCKED (CodeQL) at writing`
 - **Add after L183:** `gh pr checks 2097 --repo pcalnon/juniper-ml | grep -i codeql   # fail at writing`
 - **Replace L287 with** "**The CodeQL blocks on #2097, #2089 and #2081.**", and add a bullet: "#2097: 45 new alerts, 3 high, in Lane F's `vbytes` probes."
@@ -188,8 +188,8 @@ The problems are at the decision points:
 
 **L5. Once the consolidation PR merges, L205 reads as permission to remove fizzy.**
 - Quote, L205: "Until the consolidation PR has merged, never `reset`, `checkout`, `clean`, `stash` or remove that worktree."
-- Fizzy is `[24f8d8]`'s working directory for as long as that session lives. Appendix F (L208, L458) requires the owner's go-ahead for any removal, but does not list fizzy.
-- Replace with: "Never `reset`, `checkout`, `clean`, `stash` or remove it while "defect reg [24f8d8]" is listed, or before the consolidation PR has merged. After both, removal still needs the owner's go-ahead (Appendix F)."
+- Fizzy is `[24f8d8]`'s working directory for as long as that session lives. Appendix F (L208, L458) requires the Overtoad's go-ahead for any removal, but does not list fizzy.
+- Replace with: "Never `reset`, `checkout`, `clean`, `stash` or remove it while "defect reg [24f8d8]" is listed, or before the consolidation PR has merged. After both, removal still needs the Overtoad's go-ahead (Appendix F)."
 
 **L6. This file's own validation lanes are also in flight, but In flight lists only the executor.**
 - Quote, L200: "the `handoff-2fba4397-*` and `handoff-consolidated-*` validation reports".
@@ -200,7 +200,7 @@ The problems are at the decision points:
 - Quote, L268: "Ask each with verbatim options."
 - Options are given only for the releases (L271-L273) and #2089's CodeQL (L290).
 - L284 states the Sentry fact but drops document 1's question (its L269): "Whether to purge this round's test events from the live Sentry project".
-- `APD-DATA-055`'s `If-Match` half "awaits the owner's ruling" (L230), but Appendix B does not list it.
+- `APD-DATA-055`'s `If-Match` half "awaits the Overtoad's ruling" (L230), but Appendix B does not list it.
 - Work 10 comes last, yet the CodeQL decisions gate First action 5, and (a)-(c) change Work 3's fix-forward.
 - Replace L268 with: "Ask each as a question with its options (yes or no where none are listed), and record them verbatim. Ask everything except the releases at First action 4, together with the merge grant."
 - Add two bullets: "Purge this round's test events from the live Sentry project? (yes or no)" and "`APD-DATA-055`'s `If-Match` half (Appendix A)."
@@ -218,7 +218,7 @@ The problems are at the decision points:
 - **N3.** In L100, "the tools" should read "the seven `util/ad-hoc/` files that `git diff --stat 990ef3f9 2439d049` lists".
 - **N4.** The merge tool is never named. Add: "merge with `util/safe_merge.py`, and read its `MERGED` line; exit 0 does not mean merged".
 - **N5.** Both pushers accept `--commit-body-file` (`util/push_signed_commit.py:217`, `util/open_signed_pr.py:206-210`). Prefer it to L122's `"$(cat f)"`.
-- **N6.** First action 3 needs a fallback. From this lane's subagent context, ToolSearch finds no `ListAgents` at all. Add: "If `ListAgents` is unavailable, ask the owner whether "defect reg [24f8d8]" is open." SendMessage's documentation says never to poll `ListAgents` in a loop, and offers `notify_when_idle` as the one-shot alternative.
+- **N6.** First action 3 needs a fallback. From this lane's subagent context, ToolSearch finds no `ListAgents` at all. Add: "If `ListAgents` is unavailable, ask the Overtoad whether "defect reg [24f8d8]" is open." SendMessage's documentation says never to poll `ListAgents` in a loop, and offers `notify_when_idle` as the one-shot alternative.
 - **N7.** L177 and L184 have no expected output. Add "# #690 OPEN `78e99414`, #689 OPEN `97341680`, #685 MERGED `dc5ea02e`, #440 OPEN `0bee089e` at writing" and "# data#440; cascor#690, #689 at writing".
 - **N8. Length.** The Goal (L20-L111) is 1,315 words against the ~1,200 target, and the whole document is 7,476. Appendix I (486 words) serves validators, not the successor, and could move to the consolidation PR's body. The recovery recipe at L77-L80 sits among status lists, and belongs in First action 2's DEAD branch (M1).
 - **N9.** L138's venv is in the author's scratchpad. Add: "build your own in your scratchpad: `/opt/miniforge3/envs/JuniperCanopy1/bin/python -m venv <dir>`, then `pip install fastapi==0.141.1 starlette==1.6.0 pydantic==2.13.4 httpx==0.28.1 pytest==8.4.2`."

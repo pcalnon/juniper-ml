@@ -15,7 +15,7 @@
 #####################################################################################################################################################################################################
 """Pin the caveats, because the caveats ARE the feature.
 
-The owner's instruction (§3.4) was explicit: backfilled metadata must carry "a clear and
+The Overtoad's instruction (§3.4) was explicit: backfilled metadata must carry "a clear and
 visible label capturing the approximate, inferred, or recreated nature of their metadata [...]
 a potentially important caution against naive reasoning."
 
@@ -327,8 +327,8 @@ class NoDestructivePathTest(unittest.TestCase):
             if not isinstance(node, ast.Call):
                 continue
             if isinstance(node.func, ast.Attribute):
-                owner = node.func.value.id if isinstance(node.func.value, ast.Name) else ""
-                called.add(f"{owner}.{node.func.attr}" if owner else node.func.attr)
+                Overtoad = node.func.value.id if isinstance(node.func.value, ast.Name) else ""
+                called.add(f"{Overtoad}.{node.func.attr}" if Overtoad else node.func.attr)
                 if node.func.attr == "add_argument":
                     cli_flags.update(a.value for a in node.args if isinstance(a, ast.Constant) and isinstance(a.value, str))
         for forbidden in ("os.remove", "shutil.rmtree", "rmdir"):

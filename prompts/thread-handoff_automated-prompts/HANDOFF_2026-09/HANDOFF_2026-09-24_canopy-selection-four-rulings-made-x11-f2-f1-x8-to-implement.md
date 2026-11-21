@@ -1,22 +1,22 @@
-# Handoff: canopy selection arc — the four owner rulings are made; implement X11, F2, F1, then X8
+# Handoff: canopy selection arc — the four Overtoad rulings are made; implement X11, F2, F1, then X8
 
 **Date**: 2026-09-24 · **Predecessor**:
-`HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-owner-rulings-open.md` (same directory;
-merged in juniper-ml#2058) · **Merge approval**: granted by the owner for this arc on 2026-09-23.
+`HANDOFF_2026-09-23_canopy-selection-queue-drained-mirror-shipped-a-n2-run-Overtoad-rulings-open.md` (same directory;
+merged in juniper-ml#2058) · **Merge approval**: granted by the Overtoad for this arc on 2026-09-23.
 
 ## Goal
 
-Implement the four rulings the owner made on 2026-09-24, one PR stream each, in the order below. The order runs from
+Implement the four rulings the Overtoad made on 2026-09-24, one PR stream each, in the order below. The order runs from
 smallest and single-repo to the multi-repo change that needs a census first.
 
-### The rulings (owner, 2026-09-24, answering the predecessor's four questions)
+### The rulings (Overtoad, 2026-09-24, answering the predecessor's four questions)
 
 | item | ruling |
 |---|---|
 | **X11** | **Fix the wording.** When liveness is unknown, the summary says "Selected: CasCor · backend status unknown", never "Active". |
 | **F2** | **Apply the edits after the fresh rebuild**, so that parameters edited in the restart modal survive Start fresh. |
 | **F1** | **Fix the Start path.** Detect the width mismatch before Start and refuse with a message pointing at Start fresh. Stop serving the previous run's results under the new label. Cover `mnist`. The `equities` seed stays enabled. |
-| **X8** | **Change juniper-data's label.** juniper-data relabels `equities_seq`; the owner's option read "regression, or both". |
+| **X8** | **Change juniper-data's label.** juniper-data relabels `equities_seq`; the Overtoad's option read "regression, or both". |
 
 F1 and F2 are recorded in §12.4 of `notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`, in the
 A-N2 note, by this handoff's own PR. X8 and X11 are not in that design; their record is this handoff chain.
@@ -27,8 +27,8 @@ A-N2 note, by this handoff's own PR. X8 and X11 are not in that design; their re
   so is juniper-ml #2058 (`95a6469c`, 2026-09-23T21:53Z, after four re-syncs by
   `util/ad-hoc/2026-09-22_shepherd_automerge.bash`). Every squash tree equals its PR head
   (`util/ad-hoc/2026-09-23_verify_squash_equals_pr_head.py`).
-- The owner was told about the A-N2 agent's privacy slips. It printed `HF_TOKEN` and two PyPI tokens into its
-  transcript, and sent the owner's email to sec.gov in a User-Agent header. Token rotation is the owner's call.
+- The Overtoad was told about the A-N2 agent's privacy slips. It printed `HF_TOKEN` and two PyPI tokens into its
+  transcript, and sent the Overtoad's email to sec.gov in a User-Agent header. Token rotation is the Overtoad's call.
 
 ### Work, in order
 
@@ -66,10 +66,10 @@ A-N2 note, by this handoff's own PR. X8 and X11 are not in that design; their re
      `schemas.py` and `bench/baselines.py`, so a relabel can change its behaviour.
    - Census every repo, juniper-recurrence included. The decision-11 lesson: a repo missing from the ecosystem map is
      missing from every sweep.
-   - Then choose `regression` or a dual form, and ask the owner if the census makes "both" cheap.
+   - Then choose `regression` or a dual form, and ask the Overtoad if the census makes "both" cheap.
    - Canopy then flips `TestX8TaskTypeDivergenceIsDeliberate` (`src/tests/regression/test_dataset_generator_contract.py`)
      to assert agreement.
-   - A juniper-data release is owner-gated.
+   - A juniper-data release is Overtoad-gated.
 5. **Cleanup**, only on an explicit per-PR merge signal. The list is in the predecessor, § Remaining work item 3. Add
    #677's worktree and `…--verify--m1-m6-mutations--…` to it.
 6. **Carry forward:**
@@ -84,7 +84,7 @@ A-N2 note, by this handoff's own PR. X8 and X11 are not in that design; their re
   wrapper that refuses them (`util/ad-hoc/2026-09-23_a_n2_stack.bash`).
 - **Refactors can break source-window tests** anywhere in canopy, so run the full lane: repo root,
   `src/tests/{unit,regression,contract,performance}/`, `--timeout=60`, `LIBTORCH= LD_LIBRARY_PATH=`.
-- **Agent briefs** must forbid printing env/secrets and sending the owner's email anywhere.
+- **Agent briefs** must forbid printing env/secrets and sending the Overtoad's email anywhere.
 - **Signed API commits upload bytes.** An `*.png` is committed as its LFS pointer
   (`util/ad-hoc/2026-09-23_lfs_pointers_for_api_commit.py`).
 - **`gh run watch` returns at once on a re-run attempt.** Use `util/wait_for_checks.py`.

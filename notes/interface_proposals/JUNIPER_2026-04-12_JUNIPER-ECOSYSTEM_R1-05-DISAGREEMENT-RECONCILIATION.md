@@ -114,7 +114,7 @@ These are conflicts where two or more R0s take different positions on the same o
 | X11 | Replay buffer as separate class or WebSocketManager attribute | R0-03: attribute | nobody disagrees | None — non-issue |
 | X12 | SDK reconnect queueing of `set_params` | R0-04: NO queue (fail-fast; canopy adapter decides) | R0-05 `test_set_params_reconnection_queue` — test name implies queue, R0-05 acknowledges "1 of 2 design variants" | Medium — SDK contract |
 | X13 | Adapter synthetic auth frame for canopy→cascor hop | R0-02: `X-Juniper-Role: adapter` header skip OR HMAC CSRF-shaped | R0-04: silent (doesn't discuss it; assumes API key auth is sufficient) | Medium — cross-process auth |
-| X14 | Whose job to wire `/api/ws_latency` endpoint | R0-01: out of scope (defer to backend agent); gate browser POST behind flag | R0-06 §6.4: "Phase B implements the pipe"; §6.4 step 1 says canopy backend | Low — ownership assignment |
+| X14 | Whose job to wire `/api/ws_latency` endpoint | R0-01: out of scope (defer to backend agent); gate browser POST behind flag | R0-06 §6.4: "Phase B implements the pipe"; §6.4 step 1 says canopy backend | Low — Overtoadship assignment |
 | X15 | Unclassified-key routing default | R0-04: default to REST with warning log | R0-02: `extra="forbid"` on Pydantic schema would reject unknown keys hard | Medium — UX of extensibility |
 | X16 | Phase B feature flag for browser bridge | R0-01: `Settings.enable_browser_ws=False` default during Phase B-pre gap | R0-06: `Settings.disable_ws_bridge` kill switch with default False (meaning bridge ENABLED) | High — opposite defaults |
 | X17 | Rate limit buckets per command type | R0-02: two buckets (set_params separate from start/stop) | R0-06: one bucket, 10 cmd/s | Low — implementation detail |
@@ -305,7 +305,7 @@ For each disagreement, I give positions, evidence, trade-offs, my recommendation
 
 ---
 
-### 4.8 D08 + X14 — GAP-WS-24 browser-vs-server ownership split
+### 4.8 D08 + X14 — GAP-WS-24 browser-vs-server Overtoadship split
 
 **Positions**:
 
@@ -315,7 +315,7 @@ For each disagreement, I give positions, evidence, trade-offs, my recommendation
 
 **Recommendation**: **split GAP-WS-24 into GAP-WS-24a (browser emitter, frontend lane) and GAP-WS-24b (canopy `/api/ws_latency` endpoint + Prometheus histogram, canopy-backend lane).** Both land in Phase B. Both are on the same PR wave. Neither blocks the other.
 
-**Justification**: (operational simplicity) clear ownership allocation reduces confusion; R0-01 and R0-06 already agree on the technical pipe, just on who owns what. (source-doc fidelity) additive, not contradictory.
+**Justification**: (operational simplicity) clear Overtoadship allocation reduces confusion; R0-01 and R0-06 already agree on the technical pipe, just on who owns what. (source-doc fidelity) additive, not contradictory.
 
 **Implementation impact**:
 

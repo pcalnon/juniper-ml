@@ -294,7 +294,7 @@ LookupError caught silently; `[observability]` extra in pyproject.toml.
 
 **MetricsAuthMiddleware confinement (Q5 decision)**: juniper-data only —
 verified. Test guard at `juniper-data/tests/unit/test_observability.py:67`
-asserts module ownership.
+asserts module Overtoadship.
 
 | ID | Severity | Repo | Title | Recommended action |
 |----|----------|------|-------|--------------------|

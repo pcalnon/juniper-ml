@@ -3,7 +3,7 @@
 > **SUPERSEDED 2026-10-03** by `HANDOFF_2026-10-03_ci-budget-arc-consolidated.md` (consolidated handoff for the CI-budget arc). History only; do not act on this file's items.
 
 - **From session**: `36979dd7-9695-4932-8e7f-158acf63af9c`, worktree `.claude/worktrees/ancient-yawning-biscuit`
-- **Validation**: none. The owner asked for a token-minimal handoff without a validation round.
+- **Validation**: none. The Overtoad asked for a token-minimal handoff without a validation round.
 - **Document of record**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`
   (below: "the 09-09 handoff"). Read it on ml#2035's branch: main still holds ml#2017's version.
 
@@ -14,7 +14,7 @@ Continue the CI-budget arc in juniper-ml: finish consensus validation of ml#2035
 
 Completed so far:
 - ml#2017 merged 2026-09-23 01:17 UTC (7b226ca0): the re-evaluation, three budget raises (the
-  owner ruled SHIP), and the reprobe script.
+  Overtoad ruled SHIP), and the reprobe script.
 - ml#2035 (branch fix/ci-budget-arc-2026-09-23-round-3-follow-up, base ab434c9b) records
   consensus rounds 3-5 and applies their findings. Head bf60a716: a66a1b86 holds round 5's
   fixes, bf60a716 the archive re-take. Every commit is GitHub-signed. CI is GREEN on bf60a716
@@ -65,7 +65,7 @@ Remaining work:
    - add an "Added for round N" list.
    Update the PR description from its live copy: gh api repos/pcalnon/juniper-ml/pulls/2035
    --jq .body, then gh api -X PATCH ... -F body=@<file>. gh pr edit is broken on gh 2.46.
-4. MERGE ml#2035. This needs the owner's merge approval IN YOUR SESSION; the 2026-09-23 grant
+4. MERGE ml#2035. This needs the Overtoad's merge approval IN YOUR SESSION; the 2026-09-23 grant
    does not carry over.
    - Run: python3 util/safe_merge.py --repo juniper-ml --pr 2035 --execute
    - Read its MERGED line, not the exit status.
@@ -90,7 +90,7 @@ Key context:
   UNSIGNED local-only commit: never push it.
   - Its working tree holds both PRs' content, uncommitted. Files the PRs added are untracked
     there.
-  - Its round2-laneA/r2a_spans.py predates the owner's CodeQL fix (6f17aea5): never upload it.
+  - Its round2-laneA/r2a_spans.py predates the Overtoad's CodeQL fix (6f17aea5): never upload it.
   - Untracked and never pushed: util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round5-fix/compare_to_ref.py
     <ref> <paths...>. It compares local files, including untracked ones, to any ref.
 - SANDBOX: a worktree-isolated shell refuses heredocs containing "git", $(...), <(...),

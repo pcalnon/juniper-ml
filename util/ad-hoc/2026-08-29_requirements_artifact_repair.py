@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-29
 Status: ad-hoc -- one-shot corpus repair (requirements cross-view arc)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-26_JUNIPER-ECOSYSTEM_REQUIREMENTS-CROSS-VIEW-MEASUREMENT.md §3
          (where the four are enumerated); ml#1462 (which made by-repo/by-status derived, so this
          only has to touch by-area and the ledger, and the projection carries it)

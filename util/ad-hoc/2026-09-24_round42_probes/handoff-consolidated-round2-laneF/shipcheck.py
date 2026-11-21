@@ -19,7 +19,7 @@ reports/2026-09-24_defect-register-round-42/handoff-2fba4397-round3-laneP-fresh-
 reports/2026-09-24_defect-register-round-42/handoff-consolidated-round1-laneF-reprobe.md
 reports/2026-09-24_defect-register-round-42/handoff-consolidated-round1-laneO-amputation.md
 reports/2026-09-24_defect-register-round-42/handoff-consolidated-round1-laneP-fresh-session.md
-reports/2026-09-24_defect-register-round-42/owner-ruling-key-leaks-verbatim.md
+reports/2026-09-24_defect-register-round-42/Overtoad-ruling-key-leaks-verbatim.md
 util/ad-hoc/2026-09-24_archive_round42_reports.py
 util/ad-hoc/2026-09-24_data438_round2_stall_probe_throughout.py
 util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py

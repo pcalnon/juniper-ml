@@ -49,7 +49,7 @@ All 8 repos green on main as of this handoff.
 - Branch protection still actively enforcing across all 8 repos; `gh pr merge --admin` is required and worked throughout the session.
 - juniper-canopy local main is 2 commits ahead of origin (`be838e9 fixing environment issues...` + merge) — Paul's WIP. **NEVER revert/undo** per AGENTS.md.
 - juniper-ml untracked files (Paul's): `notes/JUNIPER_2026-06-01_JUNIPER-ECOSYSTEM_CI-CLEANUP.md`, `prompts/prompt112_2026-05-21.md`, 5 handoff prompts in `prompts/thread-handoff_automated-prompts/`. Now this handoff adds a 6th.
-- Solo-author rule: all 8 repos have `require_code_owner_review: false` or no `pull_request` rule. Don't re-introduce.
+- Solo-author rule: all 8 repos have `require_code_Overtoad_review: false` or no `pull_request` rule. Don't re-introduce.
 - pip-audit `--ignore-vuln` list re-evaluation cadence: quarterly, or when advisory DB syncs a new torch release.
 - `juniper-canopy` UI Sub-suite (Playwright) `test_stop_reset_start_does_not_auto_pause` flaked on PR #300 earlier; not a required check, can be ignored if it pops up again.
 - `juniper-canopy` `test_probe_runs_concurrently_not_serially_under_fanout` (Python 3.12 macos) flaked on `repository_dispatch` event during yamllint fanout — wall-clock 3289ms vs 3200ms threshold (3% over). Pre-existing timing-sensitive test flake. Not blocking.

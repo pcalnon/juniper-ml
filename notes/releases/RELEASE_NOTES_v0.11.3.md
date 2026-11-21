@@ -25,7 +25,7 @@
 
 ### Fixed
 
-- **`[servers]` installs what each server needs to run as a service** (juniper-ml#2062; option (a+), owner ruling 2026-10-25).
+- **`[servers]` installs what each server needs to run as a service** (juniper-ml#2062; option (a+), Overtoad ruling 2026-10-25).
   `[servers]` installed `juniper-canopy`, `juniper-cascor` and `juniper-data` bare, but canopy declares both clients and
   cascor its data client only as extras. So the three services started and failed at their first cross-service call:
   canopy's service mode on `ModuleNotFoundError: No module named 'juniper_cascor_client'`, and cascor's dataset fetch on
@@ -65,7 +65,7 @@
   cap 64, the R-6 gate's wide-cap threshold, but took its only budget from juniper-cascor's `spiral-baseline.yaml`,
   whose 3600 s equals the driver's `DEFAULT_MAX_WALL_SECONDS`. `WallBudgetContractTest` therefore failed it
   wherever the sibling base resolved, and CI, which never resolves it, filed the suite `undecidable`.
-  - The suite sets `execution.max_wall_seconds: 5400` (owner ruling 2026-10-26, the issue's option 1). `run_suite`
+  - The suite sets `execution.max_wall_seconds: 5400` (Overtoad ruling 2026-10-26, the issue's option 1). `run_suite`
     forwards it as `--max-wall-seconds`, so the eight cells keep their ids and `config_sha256`. The worst-case
     driver budget goes from 4050 s to 5850 s, still under `per_run_timeout_seconds: 7200`, and
     `util/ad-hoc/2026-10-25_driver_budget_survey.py` reports every suite OK.

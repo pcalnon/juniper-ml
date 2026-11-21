@@ -98,7 +98,7 @@ I did not open `scratchpad/r42/pr2080-laneA/`.
 ## NIT
 
 - `util/ad-hoc/2026-09-24_primer_correct_artifact_validator.py`'s proof checks only `\n`. A bare `\r` or U+2028 in a rewrite passes with "none moved", while `splitlines()` counts 9,983 lines instead of 9,982. The shipped file is clean.
-- The owner-ruling quotes at `…DEFECT-REGISTER.md` 1495-1500 are cut after two sentences with no ellipsis.
+- The Overtoad-ruling quotes at `…DEFECT-REGISTER.md` 1495-1500 are cut after two sentences with no ellipsis.
 - `APD-DATA-057`'s "a batch write erased a conditional PATCH's acknowledged 200" is n=1 and doesn't say so.
 - `…DEFECT-REGISTER.md` line 300, "`APD-CASCOR-005` is a seventh of the kind", is stale: `APD-ECO-008`, `-009` and `-010` are further copies of service-core code missing a guard.
 - `…PRIMER.md` 3346, "a content-addressed identifier", is unmarked; E.1 item 2 says the scheme is not content-addressed.

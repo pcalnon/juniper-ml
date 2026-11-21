@@ -2,7 +2,7 @@
 
 This directory is the consolidated, deduplicated snapshot of all explicit and (aggressive-threshold) implicit requirements identified across the active Juniper repositories' `notes/` directories.
 
-**Current revision: v5 (2026-08-21)** — 1,814 entries. v1–v4 covered the 8 repos active as of 2026-05-12; **v5 added the `rec` owner block** (`juniper-recurrence`, 11 entries) because that repo joined the ecosystem after the snapshot froze, which is the §8 *"a new major repo joins the ecosystem"* refresh trigger. Citation drift measured 0.00% (1,915/1,915 OK) before v5 and 0.00% (1,934/1,934) after, so per §8 the scope was a minimal refresh plus the new owner block — no re-extraction of the existing corpus.
+**Current revision: v5 (2026-08-21)** — 1,814 entries. v1–v4 covered the 8 repos active as of 2026-05-12; **v5 added the `rec` Overtoad block** (`juniper-recurrence`, 11 entries) because that repo joined the ecosystem after the snapshot froze, which is the §8 *"a new major repo joins the ecosystem"* refresh trigger. Citation drift measured 0.00% (1,915/1,915 OK) before v5 and 0.00% (1,934/1,934) after, so per §8 the scope was a minimal refresh plus the new Overtoad block — no re-extraction of the existing corpus.
 
 **Source plan**: `../JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md`
 **Top-level navigation**: `../JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`

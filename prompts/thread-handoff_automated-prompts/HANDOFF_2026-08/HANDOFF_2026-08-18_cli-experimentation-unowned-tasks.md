@@ -69,7 +69,7 @@ surveys; ml#1160 is listed only so you can date the arc and not mistake it for t
 ### 0.3 The perf lane is GATED, not "owned elsewhere"
 
 `notes/JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md` owns the
-plan's §12 as its inventory item **F**, Tier 4, **gated** behind F-P1→F-P4 with owner PF-threshold
+plan's §12 as its inventory item **F**, Tier 4, **gated** behind F-P1→F-P4 with Overtoad PF-threshold
 ratification. Its "not scheduled here" list names the wide-budget campaign (its **G**, now finished)
 and the defect register (its **H**).
 
@@ -224,13 +224,13 @@ that created those suites (§0.1), not to this one.
 - Restated as decided-but-unimplemented in the trailer ml#1142 added: plan **`:1345`**.
 - `grep -rn "experiment.resolved" util/` → **no match**.
 
-The decision is on record, so this is a gap rather than an owner call — **but it cannot be built as
+The decision is on record, so this is a gap rather than an Overtoad call — **but it cannot be built as
 worded.** The driver is an HTTP client; it never constructs the app's `Settings`. cascor exposes no
 settings endpoint (`GET /v1/training/params` covers `TrainingParams` only) and the recurrence path has
 no equivalent at all. So T2 is really **design-then-build**, blocked on one of:
 
 1. a new read-only settings surface in cascor (and recurrence), or
-2. an owner re-scoping to "re-serialise the driver's resolved config" — which is explicitly *not*
+2. an Overtoad re-scoping to "re-serialise the driver's resolved config" — which is explicitly *not*
    what plan `:1229` says, and would re-admit the hand-reconstruction error class it was meant to kill.
 
 Raise that choice before writing code. Do not silently pick (2).
@@ -363,7 +363,7 @@ ml#1142 recorded that in the evidence doc (`KNOWINGLY STALE`,
 `notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P4-STUDIES-EVIDENCE.md:108`), so the
 honesty half is **done**. What remains is the re-run, which costs GPU hours and is **Paul's call**.
 
-**Do not re-litigate R-4.** The owner decided to give E-C's spiral rows an E-A-class budget rather
+**Do not re-litigate R-4.** The Overtoad decided to give E-C's spiral rows an E-A-class budget rather
 than reduce E-C to a moon-only study; the suite already encodes it.
 
 **Separate, and separately unowned — do not fold it into the E-C decision**: cascor#514 changed
@@ -371,7 +371,7 @@ candidate patience, and the R-5 evidence doc
 (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-R5-SERVICE-VS-CLI-EVIDENCE.md`) §5.1
 established that spiral figures are not comparable across it, so the
 published **E-A** and **E-I** grids carry the same currency caveat. That re-baselining is engineering
-with no owner, not a GPU-budget question. It is **not** adopted here; see §9.
+with no Overtoad, not a GPU-budget question. It is **not** adopted here; see §9.
 
 ---
 
@@ -386,7 +386,7 @@ There are **zero** `JR-REC-` IDs in `notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_
 and zero in `notes/requirements/id_assignments.yaml` — do not read that as the proposal being missing.
 
 **Do not go looking for `notes/requirements/by-area/REC.md`.** Those 15 files are **area** codes
-(`API` … `WS`); `REC` is an **owner** code, so one would never exist.
+(`API` … `WS`); `REC` is an **Overtoad** code, so one would never exist.
 
 Plan **`:1293`** (*not* `:1171`) lists the minimum coverage: the experiment-config layer (§5.5), the
 plotting gap (G-5), the bench `--results-dir` and `ar_p` registration (W-5/W-7), the missing Grafana
@@ -519,5 +519,5 @@ Relevant suites: `python3 -m unittest tests.test_experiment_suite_yamls tests.te
 ## 12. Approval
 
 **This document makes no standing-approval claim.** Merge approval is per-session and does not carry
-across handoffs. T5 and T6 are explicitly owner decisions; T2's scoping and T1's gate severity are
+across handoffs. T5 and T6 are explicitly Overtoad decisions; T2's scoping and T1's gate severity are
 also decisions. Ask before coding any of them.

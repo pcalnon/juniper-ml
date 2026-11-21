@@ -30,7 +30,7 @@ MAMBA_SSL_VERIFY=true /usr/local/miniforge3/bin/mamba env create --override-chan
 
 `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py <cascor|data|canopy>` ran each repo's CI lanes:
 
-1. It copied the owner's checkout into `~/.local/state/juniper/turing-e2/trees/`, without `.git`.
+1. It copied the Overtoad's checkout into `~/.local/state/juniper/turing-e2/trees/`, without `.git`.
 2. It made a `python -m venv --system-site-packages` overlay on the env, and ran the repo's CI pip steps in it, so
    the env stayed exactly what its spec builds.
 3. It ran ci.yml's unit and integration lanes with `--maxfail` dropped, so the counts are complete.
@@ -62,4 +62,4 @@ The child environment comes from a minimal allow-list (the script's docstring li
 
 `<Env>.export.yml` is `conda env export --no-builds -n <Env>`. **Its `channels:` block is misleading.** It
 repeats the eight channels `~/.condarc` lists, but every package came from conda-forge: the create command
-passed `--override-channels -c conda-forge`. Owner step 4 trims `~/.condarc`.
+passed `--override-channels -c conda-forge`. The Overtoad step 4 trims `~/.condarc`.

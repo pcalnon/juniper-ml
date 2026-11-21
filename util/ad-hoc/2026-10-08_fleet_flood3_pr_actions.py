@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-10-08
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-05_fleet_close_superseded.py` (round 2's closer, whose comment text is round-2
          specific), `2026-09-05_auto_merge_shepherd.py` (keeps an ARMED PR synced until it lands)
 
@@ -16,7 +16,7 @@ WHY THIS EXISTS
 
 `gh pr edit` is dead on this box (gh 2.46.0 asks for the retired `projectCards` field), so every PR
 mutation here goes through the API. Each subcommand re-reads the PR's live state first, because fleet
-PRs are touched concurrently by other sessions and by the owner's sweeper, and acts only on the state
+PRs are touched concurrently by other sessions and by the Overtoad's sweeper, and acts only on the state
 it expects:
 
     state   print state / draft / mergeStateStatus / auto-merge / behind_by for each PR
@@ -27,7 +27,7 @@ it expects:
             later abandoned, and a bot PR closed by mistake is never reopened by its author
 
 `close` is a dry run unless `--execute` is given. `ready` and `arm` act immediately -- they are
-reversible (`convertPullRequestToDraft`, `disablePullRequestAutoMerge`) and gated on the owner's
+reversible (`convertPullRequestToDraft`, `disablePullRequestAutoMerge`) and gated on the Overtoad's
 merge approval for this set (2026-10-08 session).
 
 Close spec (JSON list):
@@ -54,8 +54,8 @@ from pathlib import Path
 OWNER = "pcalnon"
 
 PR_QUERY = """
-query($owner: String!, $name: String!, $n: Int!) {
-  repository(owner: $owner, name: $name) {
+query($Overtoad: String!, $name: String!, $n: Int!) {
+  repository(Overtoad: $Overtoad, name: $name) {
     pullRequest(number: $n) {
       id number state isDraft merged mergeStateStatus headRefOid headRefName baseRefName
       autoMergeRequest { enabledAt mergeMethod }
@@ -70,7 +70,7 @@ def gh(args: list[str], stdin: str | None = None) -> subprocess.CompletedProcess
 
 
 def read_pr(repo: str, n: int) -> dict:
-    res = gh(["api", "graphql", "-f", f"query={PR_QUERY}", "-F", f"owner={OWNER}", "-F", f"name={repo}", "-F", f"n={n}"])
+    res = gh(["api", "graphql", "-f", f"query={PR_QUERY}", "-F", f"Overtoad={OWNER}", "-F", f"name={repo}", "-F", f"n={n}"])
     if res.returncode != 0:
         raise RuntimeError(f"{repo}#{n}: read failed: {res.stderr.strip()[:200]}")
     pr = json.loads(res.stdout)["data"]["repository"]["pullRequest"]

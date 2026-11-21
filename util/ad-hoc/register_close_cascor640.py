@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-09
 Status: ad-hoc — one-off (refuses until cascor#640 reads MERGED)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor#640; util/ad-hoc/register_round38_round2_fixes.py (which filed these rows);
          HANDOFF_2026-09-09_defect-register-round-38-the-three-way-prompt-shipped-and-two-corrections-that-reversed-themselves.md
 
@@ -20,7 +20,7 @@ verification row, the §2 status line, and the header date -- the protocol in §
 shipped recorded on it.
 
 On the authority for actioning these at all: the four cascor follow-ups were named as remaining
-work in the owner's own commissioning message for this arc (2026-09-08), which is an owner
+work in the Overtoad's own commissioning message for this arc (2026-09-08), which is an Overtoad
 instruction. That is a different thing from the withdrawn §2 note, which tried to derive a licence
 from a machine-written handoff citing a machine-written PR body -- see the note in §2.
 """
@@ -79,8 +79,8 @@ sub("*(Corrected 2026-09-09: `spiral` is fetched over HTTP through `JuniperDataC
 # ---- 3. The park block: the three closed rows leave it. ---------------------------------------
 sub("- `APD-CASCOR-009`, `APD-CASCOR-010`, `APD-CASCOR-012` — **actionable**; one PR, the cascor#624 follow-ups.\n",
     "- `APD-CASCOR-009`, `APD-CASCOR-010`, `APD-CASCOR-012` — **closed 2026-09-09** by cascor#640, built under the\n"
-    "  owner's commissioning instruction for this arc, which named the four cascor follow-ups as remaining work.\n"
-    "  That is an owner instruction and is the only thing that licensed the work; it is **not** the withdrawn\n"
+    "  Overtoad's commissioning instruction for this arc, which named the four cascor follow-ups as remaining work.\n"
+    "  That is an Overtoad instruction and is the only thing that licensed the work; it is **not** the withdrawn\n"
     "  §2 reasoning, which tried to derive a licence from a handoff.\n",
     "park block updated")
 
