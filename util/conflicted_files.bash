@@ -26,7 +26,8 @@ while read -r file < "${FILE_LIST_FILE}"; do
         exit 1
     fi
 
-    git checkout --ours "${file}"
+    # git checkout --ours "${file}"
+    git checkout --theirs "${file}"
     git add "${file}"
 
     git commit -m "Resolve conflict in ${file}"
