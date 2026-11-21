@@ -94,13 +94,13 @@ Session 3 ran on turing on 2026-10-19/20 (EDT; 2026-10-20 UTC). It continued fro
 - **E-SSL (D6's and E2's recipes).** mamba 2.x ignores `CONDA_SSL_VERIFY`. With `~/.condarc`'s `ssl_verify: false`, `CONDA_SSL_VERIFY=true mamba config list ssl_verify --sources` still reports `<false>`; `MAMBA_SSL_VERIFY=true` reports `<system>`.
   - So every `CONDA_SSL_VERIFY=true mamba ...` in this plan's records ran without TLS verification. That covers JuniperHostTools (2026-10-17) and the 2026-10-19 dry runs.
   - The recreate lines in `conf/hosts/turing/hosttools-environment.yml` and the three `conf/hosts/turing/conda-envs/*.yml` now say `MAMBA_SSL_VERIFY=true`. `CONDA_SSL_VERIFY` still governs `conda` itself.
-  - OWNER: Overtoad step 4 (`ssl_verify: true` in `~/.condarc`) removes the trap for both tools. Whether to re-create JuniperHostTools with verification on is the Overtoad's call; its packages were checked against repodata that itself arrived without TLS verification.
+  - OVERTOAD: Overtoad step 4 (`ssl_verify: true` in `~/.condarc`) removes the trap for both tools. Whether to re-create JuniperHostTools with verification on is the Overtoad's call; its packages were checked against repodata that itself arrived without TLS verification.
 - **E-NET-3 (E-NET-2 revisited, 2026-10-20).** Little Snitch's verdicts changed between the sessions.
   - `mamba` now reaches conda.anaconda.org: a `mamba search` refreshed the osx-64 and noarch repodata, and both envs downloaded.
   - Base `python3.13` now fails fast with `SSL: UNEXPECTED_EOF_WHILE_READING` in the handshake. That fits a deny verdict rather than a pending alert, and it no longer blocks E2, which uses mamba for the network.
   - Each new env's `python3.14` (JuniperCascor1, JuniperData) hangs past its 15 s socket timeout toward pypi.org: a held connection, an alert nobody answered.
   - `curl` and JuniperPython's `python3.14` reach every URL as before.
-  - OWNER: allow `pypi.org` and `files.pythonhosted.org` for `/usr/local/miniforge3/envs/JuniperCascor1/bin/python3.14`, `.../JuniperData/bin/python3.14` and, once created, `.../JuniperCanopy1/bin/python3.14`. Approving the alerts while a run waits also works.
+  - OVERTOAD: allow `pypi.org` and `files.pythonhosted.org` for `/usr/local/miniforge3/envs/JuniperCascor1/bin/python3.14`, `.../JuniperData/bin/python3.14` and, once created, `.../JuniperCanopy1/bin/python3.14`. Approving the alerts while a run waits also works.
 - **E-G6 (G6, pre-commit's stage semantics).** A hook with no `stages` runs at every stage. Without `default_stages`, the pre-push stage G6 needs would have re-run the whole commit suite on every push from an opted-in host. It would also have turned the CI smoke step into a whole-tree lint run, undoing the Pre-commit job's changed-files split.
   - A manifest's own `stages` overrides `default_stages`, so `check-added-large-files` (pre-commit-hooks v6.0.0) and `isort` carry `stages: [pre-commit]` themselves.
   - The smoke step names the hook (`pre-commit run --hook-stage pre-push git-remote-alias --all-files`), so a hook that later joins the stage cannot widen it.

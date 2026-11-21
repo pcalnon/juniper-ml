@@ -81,7 +81,7 @@ RULING_NEW = (
 
 H5_PREFIX = "| H5 | landed; **the Overtoad's decision is pending** |"
 H5_ROW = (
-    "| H5 | **done: kept under option B** (Overtoad, 2026-10-21); **B.4 and B.5 OWNER** | juniper-ml#2300 (`2f831b60`), in "
+    "| H5 | **done: kept under option B** (Overtoad, 2026-10-21); **B.4 and B.5 OVERTOAD** | juniper-ml#2300 (`2f831b60`), in "
     f"the \"mac dev\" session (E-SPLIT): the `auditor` agent's static audit, `{AUDIT}`, with its read-only evidence script "
     f"`{INVENTORY}`. 25 findings (3 blocker, 9 major and 13 minor); it recommended removing both (E-H5). The trees were then "
     f"removed and restored, and {RESTORE_PR} (`{RESTORE_SHA}`) landed the validated risk analysis of the restored state, "

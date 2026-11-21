@@ -31,7 +31,7 @@ OWNER = "pcalnon"
 
 
 def gh_pr(repo, n, fields):
-    p = subprocess.run(["gh", "pr", "view", str(n), "--repo", "%s/%s" % (OWNER, repo), "--json", fields], capture_output=True, text=True)
+    p = subprocess.run(["gh", "pr", "view", str(n), "--repo", "%s/%s" % (OVERTOAD, repo), "--json", fields], capture_output=True, text=True)
     if p.returncode != 0:
         return dict()
     return json.loads(p.stdout)

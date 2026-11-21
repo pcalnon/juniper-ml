@@ -8,7 +8,11 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (Cursor flood-4 session 4: landing the fix carriers)
+<<<<<<< HEAD
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+=======
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 Related: util/ad-hoc/2026-11-08_flood4r2_fix_apply_edits.py (applies the spec this writes)
 
 Usage:

@@ -25,7 +25,7 @@
 #       1. PIPELINE  -- does `tar -cjf - | gpg -e` round-trip a tree byte-for-byte, and do
 #                       the script's two verifications actually fire?   <-- THIS SCRIPT
 #       2. KEY       -- can the Overtoad's YubiKey-backed private key decrypt a REAL archive?
-#                       Owner-gated: the recipients are YubiKey-backed, so this needs the
+#                       Overtoad-gated: the recipients are YubiKey-backed, so this needs the
 #                       hardware and cannot be run unattended. NOT covered here.
 #
 #     Retiring (1) leaves a precisely-scoped Overtoad action instead of an open-ended "no drill

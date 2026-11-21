@@ -94,7 +94,7 @@ H4_NEW = (
 
 C2_PREFIX = "| C2 | **changed** (v1.4.5, Overtoad, RR-11 of the H5 risk analysis) |"
 C2_ROW = (
-    "| C2 | **form: block all** (Overtoad, 2026-10-25); **gate landed** (AGENT); **apply OWNER** | Application firewall on, stealth "
+    "| C2 | **form: block all** (Overtoad, 2026-10-25); **gate landed** (AGENT); **apply OVERTOAD** | Application firewall on, stealth "
     "mode on, and **block all incoming connections** while nothing inbound is needed, in place of \"allow signed software\" "
     "(v1.4.5, RR-11 of the H5 risk analysis). The Overtoad chose this form over per-app inbound denies on 2026-10-25. Measured "
     "first with `netstat -anp tcp`: nothing on turing listened beyond loopback except Dropbox's LAN sync (`*.17500`) and "
@@ -107,7 +107,7 @@ C2_ROW = (
     "(`State = 0`), block all disabled, stealth off, and downloaded signed software auto-allowed |"
 )
 
-H6_PREFIX = "| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions OWNER** |"
+H6_PREFIX = "| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions OVERTOAD** |"
 H6_PREFIX_NEW = "| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions deferred** (Overtoad, 2026-10-25) |"
 H6_APPEND = (
     " The Overtoad deferred the decisions on 2026-10-25 (§18.1). When they resume, the changes cover every synced host and the "

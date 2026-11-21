@@ -10,7 +10,7 @@ Status: ad-hoc — one-off (flood-3: Overtoad ruling 2026-11-04, "add CODECOV_TO
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§4 Codecov row, §6); util/ad-hoc/2026-10-29_codecov_token_secret_census.py
 
-The OWNER runs this, in a real terminal (it needs a TTY for the hidden prompt):
+The OVERTOAD runs this, in a real terminal (it needs a TTY for the hidden prompt):
 
     python3 -I util/ad-hoc/2026-11-04_set_codecov_token_dependabot_secrets.py            # one token for every repo
     python3 -I util/ad-hoc/2026-11-04_set_codecov_token_dependabot_secrets.py --per-repo # a prompt per repo (Enter reuses the previous one)

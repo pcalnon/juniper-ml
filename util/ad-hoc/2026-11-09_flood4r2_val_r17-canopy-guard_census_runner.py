@@ -6,8 +6,13 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
+<<<<<<< HEAD
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: flood-4 round-2 validation of the Overtoad's ruling-17 fix "canopy: tests hit :8050" (tmp/flood4/BRIEF_VALIDATE_R2.txt)
+=======
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: flood-4 round-2 validation of the Overtoad's ruling-17 fix "canopy: tests hit :8050" (tmp/flood4/BRIEF_VALIDATE_R2.txt)
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 
 Usage (cwd = a juniper-canopy worktree; run under the JuniperCanopy1 interpreter):
     python <this file> <out.jsonl> <pytest args...>

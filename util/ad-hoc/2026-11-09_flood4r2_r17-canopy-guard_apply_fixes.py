@@ -1,7 +1,11 @@
 """
 Apply the ruling-17 test fixes to a juniper-canopy worktree: mock the transport every census-caught test reached.
 
+<<<<<<< HEAD
 Builder helper for the Overtoad's ruling 17 ("canopy: tests hit :8050"). The base census
+=======
+Builder helper for the Overtoad's ruling 17 ("canopy: tests hit :8050"). The base census
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 (util/ad-hoc/2026-11-09_flood4r2_r17-canopy-guard_census.py) found 16 unit-lane tests connecting to
 127.0.0.1:8050 and 2 to 127.0.0.1:8200. Each edit below is an exact-text replacement with its expected
 occurrence count; the script refuses to write a file whose count differs (nothing is applied twice or
@@ -22,8 +26,13 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — migration
+<<<<<<< HEAD
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Overtoad ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
+=======
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Overtoad ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 """
 
 from __future__ import annotations

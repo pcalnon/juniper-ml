@@ -342,7 +342,7 @@ New item:
 33. **turing's E2 canopy env is below canopy's floor.** `JuniperCanopy1` (conda, dash 3.3.0, built from a
     re-specified `conf/conda_environment.yaml` for osx-64, juniper-ml#2282) no longer satisfies `dash>=4.0.0`; the
     scratch venvs over it that pin a dash (`JuniperCanopy1-dash304/-dash32/-dash34`) are throwaways and can go.
-    Owner: `pip install -e .` in the env upgrades dash (the lock's 4.4.1 resolves there; `comm` and `janus` come
+    Overtoad: `pip install -e .` in the env upgrades dash (the lock's 4.4.1 resolves there; `comm` and `janus` come
     with it), or rebuild from the corrected conda file; then re-run the canopy lanes the E2 record cites and
     record an erratum in the bring-up plan's E2 section. Until then a leg from that env's own interpreter is a leg
     on dash 3.3.0 of a tree whose floor excludes it.

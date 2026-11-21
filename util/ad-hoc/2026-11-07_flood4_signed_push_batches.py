@@ -57,7 +57,7 @@ def gh_json(args):
 
 
 def branch_head(repo, branch):
-    d = gh_json(["repos/%s/%s/git/ref/heads/%s" % (OWNER, repo, branch)])
+    d = gh_json(["repos/%s/%s/git/ref/heads/%s" % (OVERTOAD, repo, branch)])
     if not d or "object" not in d:
         return None
     return d["object"]["sha"]
@@ -88,7 +88,7 @@ def main():
     main_sha = branch_head(a.repo, "main")
     print("main is %s; carrier base is %s" % (main_sha, a.base_sha))
     if main_sha != a.base_sha:
-        cmp = gh_json(["repos/%s/%s/compare/%s...%s" % (OWNER, a.repo, a.base_sha, main_sha)])
+        cmp = gh_json(["repos/%s/%s/compare/%s...%s" % (OVERTOAD, a.repo, a.base_sha, main_sha)])
         if cmp is None:
             print("REFUSED: compare API failed")
             return 1
@@ -152,7 +152,7 @@ def main():
 
     # read back: every snapshot blob must equal the branch's blob at that path.
     head = branch_head(a.repo, a.branch)
-    tree = gh_json(["repos/%s/%s/git/trees/%s?recursive=1" % (OWNER, a.repo, head)])
+    tree = gh_json(["repos/%s/%s/git/trees/%s?recursive=1" % (OVERTOAD, a.repo, head)])
     blobs = dict((t["path"], t["sha"]) for t in tree.get("tree", []) if t.get("type") == "blob")
     bad = []
     for path in paths:

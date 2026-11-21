@@ -58,8 +58,8 @@ INTRO_NEW = (
     "main handoff."
 )
 
-C2_CELL_OLD = "| C2 | **form: block all** (Overtoad, 2026-10-25); **gate landed** (AGENT); **apply OWNER** |"
-C2_CELL_NEW = "| C2 | **done: applied** (OWNER, 2026-10-26); form: block all (Overtoad, 2026-10-25); **gate landed, then narrowed** (AGENT) |"
+C2_CELL_OLD = "| C2 | **form: block all** (Overtoad, 2026-10-25); **gate landed** (AGENT); **apply OVERTOAD** |"
+C2_CELL_NEW = "| C2 | **done: applied** (OVERTOAD, 2026-10-26); form: block all (Overtoad, 2026-10-25); **gate landed, then narrowed** (AGENT) |"
 
 C2_TAIL_OLD = (
     "**OWNER**, in a terminal: `sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on`, then the same with "
@@ -136,7 +136,7 @@ def edit_plan(text: str, subs: dict, report: list) -> str:
     else:
         report.append("MISSING  plan: Version line: the plan is at neither 1.4.7 nor 1.4.8")
     text = edit(text, INTRO_OLD, INTRO_NEW, THIS_HANDOFF, "plan: §18 opening paragraph", report)
-    text = edit(text, C2_CELL_OLD, C2_CELL_NEW, "| C2 | **done: applied** (OWNER, 2026-10-26)", "plan: §18.2 C2 row, status cell", report)
+    text = edit(text, C2_CELL_OLD, C2_CELL_NEW, "| C2 | **done: applied** (OVERTOAD, 2026-10-26)", "plan: §18.2 C2 row, status cell", report)
     text = edit(text, C2_TAIL_OLD, fill(C2_TAIL_NEW, subs), "**Applied** by the Overtoad on 2026-10-26", "plan: §18.2 C2 row, the record", report)
     text = edit(text, SENT_OLD, SENT_NEW, "when on (observed 2026-10-26)", "plan: E-C2-GATE, the sentences", report)
     return edit(text, OBS_OLD, fill(OBS_NEW, subs), "  - **Observed (2026-10-26).**", "plan: E-C2-GATE, the observation", report)

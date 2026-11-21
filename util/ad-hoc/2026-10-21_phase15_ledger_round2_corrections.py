@@ -149,8 +149,8 @@ LEDGER_SUBS = [
     ),
     (
         "MAJOR 4: item 33's recipe",
-        "Owner: `pip install -e .` in the env upgrades dash (the lock's 4.4.1 resolves there; `comm` and `janus` come\n    with it), or rebuild from the corrected conda file;",
-        "Owner: re-sync the E2 tree to canopy `main` (`fbf01dff` or later; at `571743db` its floor\n    is met by 3.3.0), then `pip install -e <tree>` with the E2 venv's interpreter\n    (`~/.local/state/juniper/turing-e2/venvs/JuniperCanopy1`, a system-site venv over the conda env, holds the\n    editable canopy, pointing at the E2 tree); pip takes the newest dash 4.x (4.4.1 today) with `comm` and `janus`.\n    Or rebuild the conda env from a copy of the corrected `conf/conda_environment.yaml` re-specified for osx-64 as\n    juniper-ml#2282 did (the file is a linux-64 `conda create --file` export with `=pypi_0` lines);",
+        "Overtoad: `pip install -e .` in the env upgrades dash (the lock's 4.4.1 resolves there; `comm` and `janus` come\n    with it), or rebuild from the corrected conda file;",
+        "Overtoad: re-sync the E2 tree to canopy `main` (`fbf01dff` or later; at `571743db` its floor\n    is met by 3.3.0), then `pip install -e <tree>` with the E2 venv's interpreter\n    (`~/.local/state/juniper/turing-e2/venvs/JuniperCanopy1`, a system-site venv over the conda env, holds the\n    editable canopy, pointing at the E2 tree); pip takes the newest dash 4.x (4.4.1 today) with `comm` and `janus`.\n    Or rebuild the conda env from a copy of the corrected `conf/conda_environment.yaml` re-specified for osx-64 as\n    juniper-ml#2282 did (the file is a linux-64 `conda create --file` export with `=pypi_0` lines);",
     ),
     (
         "MAJOR 2: new items",

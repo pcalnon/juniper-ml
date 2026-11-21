@@ -340,7 +340,7 @@ PLAN: dict[str, dict] = {
 }
 
 
-# Repos where the OWNER chose a ceiling raise INSTEAD of a cut (decision 2026-08-28). The value is
+# Repos where the OVERTOAD chose a ceiling raise INSTEAD of a cut (decision 2026-08-28). The value is
 # a POLICY ceiling -- the size at which a cut becomes worthwhile in that repo -- not a slack-derived
 # one. juniper-recurrence's AGENTS.md is 11.5K across 6 sections and it has no docs/REFERENCE.md;
 # splitting a file that small buys little, while its 2,120 headroom is ~15 days at ~137 chars/day.

@@ -15,7 +15,7 @@ Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLA
 Each mutant re-introduces one defect into a COPY of an agent file or of util/claude_agent_guard.py. The
 agent defects include a Must-never item dropped or demoted from bold, a guard rule cited for the wrong
 item or one the guard does not have, a mutating tool or Bash added, the procedure prescribing a call that
-is not a plain GET, the report allowed to overwrite, the OWNER command list dropped, and the k8s agent's
+is not a plain GET, the report allowed to overwrite, the OVERTOAD command list dropped, and the k8s agent's
 no-Bash rationale or D1 sizing drifted. The guard defects are the other half of "enforced by D11's deny
 list": a forbidden call the guard stops denying, a renamed rule, and an over-broad rule that would deny
 the agents' own procedure (ssh -G, a plain gh api GET). All three suites then run against that copy, in a
@@ -98,7 +98,7 @@ MUTANTS = [
     ("S1", SIGNING, "gpg -K is dropped from the items", [("- **`gpg --card-status`**, **`gpg -K`**, or any", "- **`gpg --card-status`**, or any")]),
     ("S2", SIGNING, "the gh api write item cites the wrong rule", [("method-override header. A plain `gh api <path>` is the GET this agent uses. (guard: `GH-API-WRITE`)", "method-override header. A plain `gh api <path>` is the GET this agent uses. (guard: `GH-PR-WRITE`)")]),
     ("S3", SIGNING, "a prescribed gh api call carries a flag", [("- **Rulesets.** `gh api repos/pcalnon/juniper-ml/rulesets`, then", "- **Rulesets.** `gh api -X GET repos/pcalnon/juniper-ml/rulesets`, then")]),
-    ("S4", SIGNING, "the OWNER command list leaves the report", [("  - the OWNER command list, as one fenced `bash` block, each command preceded by a comment naming its\n    task and its pass condition.\n", "")]),
+    ("S4", SIGNING, "the OVERTOAD command list leaves the report", [("  - the OVERTOAD command list, as one fenced `bash` block, each command preceded by a comment naming its\n    task and its pass condition.\n", "")]),
     ("S5", SIGNING, "the model drifts from the suite default", [("\nmodel: opus\n", "\nmodel: sonnet\n")]),
     ("S6", SIGNING, "the any-gh-write item is demoted from bold", [("- **Any `gh` write.** The guard denies", "- Any `gh` write. The guard denies")]),
     ("S7", SIGNING, "the procedure reads deploy keys through gh repo deploy-key", [("- **Deploy keys.** `gh api repos/pcalnon/juniper-k8s/keys`.", "- **Deploy keys.** `gh repo deploy-key list -R pcalnon/juniper-k8s`.")]),

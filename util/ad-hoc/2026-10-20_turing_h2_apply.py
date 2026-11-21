@@ -67,14 +67,14 @@ TREE_AGENTS_OLD = "│   │   └── fleet-supervisor.md  # Flood §4 item 7
 TREE_AGENTS_NEW = (
     "│   │   ├── fleet-supervisor.md  # Flood §4 item 7: read-only open-PR-set triage (predicted-merge via util/fleet_triage; cluster/order/dup; never pushes)\n"
     "│   │   ├── macos-host-sme.md    # Turing H2: measures a macOS host against conf/hosts/<host>/expected.yaml (host_state_check --json); one reports/ file\n"
-    "│   │   ├── signing-auth-sme.md  # Turing H2: git transport + signing diagnosis without credentials (read-only gh api GETs); OWNER command list\n"
+    "│   │   ├── signing-auth-sme.md  # Turing H2: git transport + signing diagnosis without credentials (read-only gh api GETs); OVERTOAD command list\n"
     "│   │   └── k8s-node-sme.md      # Turing H2: Mac worker-VM review against the juniper-k8s primer + D1 (WebFetch, no Bash); one notes/ audit\n"
 )
 TREE_TESTS_ANCHOR = "│   ├── test_fleet_supervisor_contract.py # Lint: fleet-supervisor subagent frontmatter + body wiring (predict_merge.py, 4 verdicts, read-only/never-push, two-key DUP-CLOSE)\n"
 TREE_TESTS_LINES = (
     "│   ├── agent_contract_support.py         # Shared checks for the H2 SME-agent contract suites (Must-never section x util/claude_agent_guard.py)\n"
     "│   ├── test_macos_host_sme_contract.py   # Lint + guard: macos-host-sme tools, Must-never items denied under the cited rules, host_state_check wiring\n"
-    "│   ├── test_signing_auth_sme_contract.py # Lint + guard: signing-auth-sme tools, Must-never items, plain gh api GETs only, OWNER command list\n"
+    "│   ├── test_signing_auth_sme_contract.py # Lint + guard: signing-auth-sme tools, Must-never items, plain gh api GETs only, OVERTOAD command list\n"
     "│   ├── test_k8s_node_sme_contract.py     # Lint + guard: k8s-node-sme tools (WebFetch, no Bash), one notes/ audit, primer + D1 wiring\n"
 )
 
@@ -99,7 +99,7 @@ def edits():
     signing_suite = (
         "- `tests/test_signing_auth_sme_contract.py` -- Static contract for the `signing-auth-sme` subagent (`.claude/agents/signing-auth-sme.md`; turing bring-up H2, plan §11). "
         "Tools exactly `{Read,Grep,Glob,Bash,Write}`. Must-never: `gpg --card-status`, `gpg -K`, `ssh-add`, `ssh -T`, PIN-bearing commands, `gh api` with `-X` / `-f` / `--method`, any `gh` write, credential paths, the signing configuration, the keychain. "
-        "Wiring: the non-credential checkers (`util/git_remote_alias_check.py`, `util/configure_commit_signing.py --check`, `util/headless_signing_preflight.bash`), every prescribed `gh api` call a plain GET (`--jq` only) that the guard passes, `ssh -G`, the deploy-key 403 under D11's token, and the OWNER command list closing one `reports/` file. "
+        "Wiring: the non-credential checkers (`util/git_remote_alias_check.py`, `util/configure_commit_signing.py --check`, `util/headless_signing_preflight.bash`), every prescribed `gh api` call a plain GET (`--jq` only) that the guard passes, `ssh -G`, the deploy-key 403 under D11's token, and the OVERTOAD command list closing one `reports/` file. "
         + common
         + "\n"
     )
@@ -119,7 +119,7 @@ def edits():
         "    with `util/host_state_check.py --json`, and explains each failing gate condition with its plan task, actor\n"
         "    and remediation. It writes one `reports/` file and changes nothing on the host.\n"
         "  - `.claude/agents/signing-auth-sme.md` (new) diagnoses git transport and commit signing from the repo's\n"
-        "    non-credential checkers and read-only `gh api` GETs. Its one `reports/` file ends with the OWNER command\n"
+        "    non-credential checkers and read-only `gh api` GETs. Its one `reports/` file ends with the OVERTOAD command\n"
         "    list: every check an agent may not run.\n"
         "  - `.claude/agents/k8s-node-sme.md` (new) reviews the Mac worker VM (sizing, kubelet reservations, taints,\n"
         "    join steps) against the juniper-k8s primer and decision D1, and reconciles errata X1-X5, in one `notes/`\n"

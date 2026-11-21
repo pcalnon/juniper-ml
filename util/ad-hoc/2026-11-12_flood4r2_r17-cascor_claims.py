@@ -43,7 +43,7 @@ from pathlib import Path
 SKIP_MARKERS = ("[skip ci]", "[ci skip]", "[no ci]", "[skip actions]", "[actions skip]", "skip-checks:")
 FOOTERS = ("Generated with", "Co-Authored-By", "Claude-Session", "claude.ai/code")
 PROMISES = r"follow-up|follow up|followup|its own change|a change of its own is|separate change|will be fixed|to be fixed|later fix|fixed later|a later pr|future pr|next pr\b|is planned|are planned"
-OWNER_DESIGN = r"Overtoad (chose|approved|picked|selected|accepted|endorsed|preferred)|approved by the Overtoad|chosen by the Overtoad|the Overtoad's (design|choice)|ruling 17 (chose|names the|picked|selected|approved)"
+OVERTOAD_DESIGN = r"Overtoad (chose|approved|picked|selected|accepted|endorsed|preferred)|approved by the Overtoad|chosen by the Overtoad|the Overtoad's (design|choice)|ruling 17 (chose|names the|picked|selected|approved)"
 N1_VERDICT = re.compile(r"^(\d+)/(\d+) mutations caught, (\d+) not caught\.$", re.MULTILINE)
 
 
@@ -155,7 +155,7 @@ def main() -> int:
         for marker in SKIP_MARKERS + FOOTERS:
             if marker.lower() in text.lower():
                 problems.append(f"{path.name}: holds {marker!r}")
-        for label, pattern in (("a promised later fix", PROMISES), ("the design given to the Overtoad", OWNER_DESIGN)):
+        for label, pattern in (("a promised later fix", PROMISES), ("the design given to the Overtoad", OVERTOAD_DESIGN)):
             found = sorted({match.group(0).lower() for match in re.finditer(pattern, text, re.IGNORECASE)})
             if found:
                 problems.append(f"{path.name}: words of {label}: {found}")

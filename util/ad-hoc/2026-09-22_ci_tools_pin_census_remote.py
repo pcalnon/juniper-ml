@@ -45,7 +45,7 @@ reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/.
 
 DROPPED with no output at all (not even AMBIGUOUS):
 
-* Owner-drop shapes.
+* Overtoad-drop shapes.
   - A range whose nearest name is a repo or another package, even in ci-tools context:
     "the sequence-safety workflows in juniper-cascor pin ``>=0.8.0,<0.9.0``".
   - A table whose header names a repo (``| package | pin in juniper-ml |``); the row's own

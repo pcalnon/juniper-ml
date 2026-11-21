@@ -66,7 +66,7 @@ INTRO_NEW = (
 
 C9_PREFIX = "| C9 | **new** (Overtoad ruling 2026-10-21; AGENT) |"
 C9_ROW = (
-    "| C9 | **landed** (AGENT); **install OWNER** (C8's step) | juniper-ml#@PR@ (`@SHA@`): `util/claude_agent_guard.py` 1.2.0 adds "
+    "| C9 | **landed** (AGENT); **install OVERTOAD** (C8's step) | juniper-ml#@PR@ (`@SHA@`): `util/claude_agent_guard.py` 1.2.0 adds "
     "MCP-EDIT-PATH, MCP-REGISTER-BASH and MCP-REGISTER-FILE. Its settings matcher now names the eight built-in tools plus Serena "
     "v1.7.0's 19 edit tools and its shell (`--settings-matcher`, which `util/install_claude_agent_guard.bash` now reads). "
     "MCP-EDIT-PATH resolves each Serena path against the payload `cwd`, `CLAUDE_PROJECT_DIR` and the checkout holding each, "
@@ -83,7 +83,7 @@ C9_ROW = (
 
 H6_PREFIX = "| H6 | **new** (v1.4.5, Overtoad, O-5 of the H5 risk analysis; AGENT, P2) |"
 H6_ROW = (
-    f"| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions OWNER** | `{AUDIT}`, landed with this record, with its "
+    f"| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions OVERTOAD** | `{AUDIT}`, landed with this record, with its "
     f"evidence script `{INVENTORY}`. The script prints VS Code's MCP configuration as a default-deny projection, with no env, "
     "header, URL-query or input value. 19 findings: 2 blocker, 8 major and 9 minor. The recommendations (the audit's §8): "
     "`oraios/serena` **remove**, or pin it to H4's commit with the `vscode` context; `microsoft/markitdown` **remove**, or pin "

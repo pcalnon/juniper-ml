@@ -49,7 +49,7 @@ DEFAULT_REQ_ROOT = REPO_ROOT / "notes" / "requirements"
 
 #: `### JR-<REPO>-<AREA>-<NNN> — <title>` (em dash, per the shipped corpus).
 HEADING_RE = re.compile(r"^###\s+(JR-[A-Z]+-[A-Z]+-\d+)\s+—\s+(.*)$")
-#: `**Status**: shipped  **Priority**: P0  **Category**: OBS  **Owner**: ml`
+#: `**Status**: shipped  **Priority**: P0  **Category**: OBS  **Overtoad**: ml`
 FIELD_RE = re.compile(r"\*\*(Status|Priority|Category|Owner)\*\*:\s*([^\s*]+)")
 
 FAMILIES = ("by-area", "by-repo", "by-status")

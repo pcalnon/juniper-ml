@@ -63,7 +63,7 @@ def changelog_row(sha: str) -> str:
 def handoff_edits(sha: str) -> list[tuple[str, str]]:
     return [
         (
-            "1. **Owner: whether the Compose recurrence pin follows to 0.6.1** (juniper-deploy; open on the plan's M1 row). The inputs are all in hand:",
+            "1. **Overtoad: whether the Compose recurrence pin follows to 0.6.1** (juniper-deploy; open on the plan's M1 row). The inputs are all in hand:",
             f"1. **Done 2026-10-19 UTC — the Overtoad ruled yes and juniper-deploy#251 merged as `{sha}`** (`docker-compose.yml` pins `juniper-recurrence:0.6.1`; the prose in `README.md`, `docs/REFERENCE.md` and `scripts/test_recurrence_snapshots.sh` follows; plan v1.7.3). **Owed from it**: the W1.12 snapshot smoke and W1.11 canopy smoke on a host whose Docker reaches GHCR, at the next bring-up. The inputs that were in hand when this was written:",
         ),
         (

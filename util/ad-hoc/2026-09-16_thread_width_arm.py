@@ -10,7 +10,7 @@ License:     MIT License
 ONE ARM of the thread-width sweep. Runs a single cascor `fit()` at a single width, by a single
 mechanism, and emits JSON. The driver (`2026-09-16_thread_width_sweep.py`) runs the matrix.
 
-WHAT THE TWO OWNER DECISIONS ASK
+WHAT THE TWO OVERTOAD DECISIONS ASK
 --------------------------------
 **D1**: the whole arc has assumed width 2 is right for the output passes, because that is what
 cascor's constructor formula `max(2, worker_thread_count * 2)` happens to produce. 16 is measured

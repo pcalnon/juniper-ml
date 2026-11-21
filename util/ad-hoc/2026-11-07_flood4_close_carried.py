@@ -37,7 +37,7 @@ def gh(args):
 
 
 def pr_json(repo, n, fields):
-    rc, out, _err = gh(["pr", "view", str(n), "--repo", "%s/%s" % (OWNER, repo), "--json", fields])
+    rc, out, _err = gh(["pr", "view", str(n), "--repo", "%s/%s" % (OVERTOAD, repo), "--json", fields])
     if rc != 0:
         return None
     return json.loads(out)
@@ -110,7 +110,7 @@ def main():
         body = "\n".join(lines)
         print("=== #%d (%s) ===\n%s\n" % (n, outcome, body))
         if a.execute:
-            rc, out, err = gh(["pr", "close", str(n), "--repo", "%s/%s" % (OWNER, a.repo), "--comment", body])
+            rc, out, err = gh(["pr", "close", str(n), "--repo", "%s/%s" % (OVERTOAD, a.repo), "--comment", body])
             print("#%d: close exit %d %s" % (n, rc, (err or out).strip()[:200]))
             if rc != 0:
                 rc_all = 2

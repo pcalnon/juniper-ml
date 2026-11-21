@@ -42,7 +42,7 @@
 # Usage:
 #   util/ad-hoc/watch_prs_until_terminal.bash juniper-ml:1480 juniper-canopy:537
 #
-# Env: OWNER (default pcalnon). PER_PR_TIMEOUT (default UNSET: the waiter then
+# Env: OVERTOAD (default pcalnon). PER_PR_TIMEOUT (default UNSET: the waiter then
 #      waits each repo's measured CI budget from util/safe_merge.py REPO_TIMEOUTS,
 #      as the merge path does). It used to default to a flat 2400 s, below six of
 #      the nine budgets (up to 3300 s), so a healthy PR on those repos could report

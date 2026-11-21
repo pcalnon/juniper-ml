@@ -784,7 +784,7 @@ edit(
 # Duplicati server: local overrides. Mode 0600, Overtoad duplicati:duplicati.""",
     """# file: home/duplicati/.config/Duplicati/.env
 # Duplicati server: local overrides.
-# MODE IS AN OPEN OWNER DECISION (recorded as dissent in the design's section 11):
+# MODE IS AN OPEN OVERTOAD DECISION (recorded as dissent in the design's section 11):
 #   0600 duplicati:duplicati  -- Lane A3 / Lane B2 D15; the service user can rewrite its own
 #                                tunables, which is the status quo.
 #   0640 root:duplicati       -- Lane B3 F-5, and what this design RECOMMENDS: the wrapper

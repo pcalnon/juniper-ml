@@ -77,7 +77,7 @@ ERRATA = (
     "  - **Two modes.** The report exits 0 whatever the gates say. `--check`, which is I-G1, exits 1 on a failed gate "
     "and 2 on a condition it could not evaluate; 2 wins. `--section` names gates for the check (`G-MEM`, `g-mem` or "
     "`mem`) and fact sections for the probe.\n"
-    "  - **Owner-run results are records.** Two gates have an Overtoad-run half that the check cannot measure: G-SIGN's "
+    "  - **Overtoad-run results are records.** Two gates have an Overtoad-run half that the check cannot measure: G-SIGN's "
     "I-B5, widened to the signing plan's I-SIGN matrix (K10, recorded by K11), and G-NET's iperf3 result (F2). Each is a "
     "record in `expected.yaml` whose file under `reports/` must exist. Until it does, its condition fails and names the "
     "task. So do the parent AGENTS.md hash (E4) and the reserved address (A6).\n"

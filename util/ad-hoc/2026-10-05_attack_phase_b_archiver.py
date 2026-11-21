@@ -260,7 +260,7 @@ def main() -> int:
     check("10 an edited record header is refused", result.returncode == 2 and "header differs" in result.stderr, said(result))
     result = run(tree, "--check", "--accept-header")
     check("10 --accept-header lets the header file win", result.returncode == 1 and "header differs" not in result.stderr, said(result))
-    record.write_text(text + "\n## Owner's note\n\nAdded by hand.\n", encoding="utf-8")
+    record.write_text(text + "\n## Overtoad's note\n\nAdded by hand.\n", encoding="utf-8")
     result = run(tree, "--check")
     check("10 text after the last section is refused", result.returncode == 2 and "no intact section" in result.stderr, said(result))
     record.write_bytes(pristine)

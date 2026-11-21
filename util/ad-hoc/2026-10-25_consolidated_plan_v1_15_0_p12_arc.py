@@ -231,7 +231,7 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     append(
         "xc-act5",
-        "is an OWNER-ACTION. A live cascor on `:8202` imports from that environment (§8).",
+        "is an OVERTOAD-ACTION. A live cascor on `:8202` imports from that environment (§8).",
         " Ruled 2026-10-18: the Overtoad runs it at the next cascor restart on the original host, and M0 closes on its date (2026-10-24) with it as an Overtoad follow-up.",
     )
     add(

@@ -76,7 +76,7 @@ RULING_NEW = RULING_OLD + (
 )
 
 H6_CELL_OLD = "| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions deferred** (Overtoad, 2026-10-25) |"
-H6_CELL_NEW = "| H6 | **done: applied** (AGENT, 2026-10-26); audited (the `auditor` agent); **token rotation and the first sync OWNER** |"
+H6_CELL_NEW = "| H6 | **done: applied** (AGENT, 2026-10-26); audited (the `auditor` agent); **token rotation and the first sync OVERTOAD** |"
 
 H6_TAIL_OLD = (
     "None of the four servers has ever started from VS Code on turing (E-H6) The Overtoad deferred the decisions on 2026-10-25 "

@@ -1,7 +1,11 @@
 """
 Run juniper-canopy's CI unit lane as four concurrent census processes, one per probe worktree, and merge them.
 
+<<<<<<< HEAD
 Builder helper for the Overtoad's ruling 17 ("canopy: tests hit :8050"). The host was at load ~38 on 16 cores, so
+=======
+Builder helper for the Overtoad's ruling 17 ("canopy: tests hit :8050"). The host was at load ~38 on 16 cores, so
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 one in-process lane run took ~50 minutes; four groups in four detached probe worktrees (the brief's cap of four
 workers) take about a quarter of that. Each group runs in its OWN checkout because the suite rewrites tracked
 files (``preserve_metrics_layouts`` backs up and restores ``conf/layouts/metrics_layouts.json`` under a fixed
@@ -39,8 +43,13 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
+<<<<<<< HEAD
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Overtoad ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
+=======
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Overtoad ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 """
 
 from __future__ import annotations

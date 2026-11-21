@@ -6,8 +6,13 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (validator session, Cursor flood-4 round 2)
 Created: 2026-11-09
 Status: ad-hoc — investigation
+<<<<<<< HEAD
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Overtoad ruling 17 ("data: 44 unrun tests"); independent validation of the r17-data-unit-marks carrier
+=======
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Overtoad ruling 17 ("data: 44 unrun tests"); independent validation of the r17-data-unit-marks carrier
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 
 Usage:
   python3 2026-11-09_flood4r2_val_r17-data_mutants.py --tree T --python P --mutant M1|M2|M3 --log F -- <pytest args>

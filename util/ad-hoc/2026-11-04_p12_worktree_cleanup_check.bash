@@ -8,7 +8,7 @@
 #
 # Why
 # ---
-# Owner ruling 2026-11-03 (recurrence x equities arc, session ff40b833): archive each
+# Overtoad ruling 2026-11-03 (recurrence x equities arc, session ff40b833): archive each
 # worktree's tmp/ to juniper-ml/tmp/worktree-cleanup-2026-11-03-p12/, check each tree
 # against main, then remove five worktrees. The archive was made on 2026-11-04 (sizes
 # matched). A worktree-isolated session may not run git against another worktree, so

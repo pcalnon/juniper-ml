@@ -71,7 +71,7 @@ sub(
     "  universes pass the default `fail` policy, so it ships with the same `generator_version` bump.\n"
     "- `APD-CASCOR-008` — **parked: Overtoad decision** (derive the set from juniper-data's `/v1/generators`, or\n"
     "  keep the list and narrow it to the reachable member).\n",
-    "> **OWNER RULINGS, 2026-09-09.** Taken interactively, on evidence re-derived in the same session.\n"
+    "> **OVERTOAD RULINGS, 2026-09-09.** Taken interactively, on evidence re-derived in the same session.\n"
     "> These **end the empty set** for the rows below — a ruling from the Overtoad is exactly what §2 requires,\n"
     "> and unlike the note withdrawn earlier the same day it is not derived from a handoff or a PR body.\n"
     "> Every one of them changes artifact content, so they ship together behind one `generator_version`\n"

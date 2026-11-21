@@ -3,11 +3,19 @@
 Show the 44 newly selected test_security.py tests are non-vacuous: one-line mutants of the code they pin.
 
 Project: juniper-ml
+<<<<<<< HEAD
 Sub-Project: ad-hoc tooling (Cursor-fleet flood-4, Overtoad ruling 17: "data: 44 unrun tests")
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (mutation check for the juniper-data unit-mark fix)
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+=======
+Sub-Project: ad-hoc tooling (Cursor-fleet flood-4, Overtoad ruling 17: "data: 44 unrun tests")
+Author: Paul Calnon
+Created: 2026-11-09
+Status: ad-hoc — one-off (mutation check for the juniper-data unit-mark fix)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (ruling 17 is recorded in the record-update PR)
 
 PER MUTANT (one at a time; never run this while another pytest imports the same worktree)

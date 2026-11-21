@@ -12,7 +12,11 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
+<<<<<<< HEAD
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+=======
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 Related: flood-4 round 2, N1 (juniper-cascor paused-fit wedge) claims-lens validation;
          juniper-ml notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md §8
 """
@@ -26,14 +30,24 @@ PR_BODY = "tmp/flood4-fix/n1-r2/pr_body.txt"
 REPRO = "util/ad-hoc/2026-11-08_stop_then_start_race_repro.py"
 
 F1_FIXES = [
+<<<<<<< HEAD
     (CHANGELOG, 'The Overtoad ruled on 2026-11-09 ("Fix all four now") that it gets its own fix, in a separate PR: a per-run stop signal, or a start that refuses or fences a live fit.', 'The Overtoad ruled on 2026-11-09 ("cascor: stop-then-start") that it gets its own fix, in its own PR. Candidate fixes, which no ruling chose: a per-run stop signal, or a start that refuses or fences a live fit.'),
     (PR_BODY, 'The Overtoad ruled on 2026-11-09 ("Fix all four now") that it gets its own fix, in a separate PR. A reproducer is included.', 'The Overtoad ruled on 2026-11-09 ("cascor: stop-then-start", a ruling given after the record\'s rulings 1-14) that it gets its own fix, in its own PR. A reproducer is included.'),
     (PR_BODY, 'The Overtoad ruled on 2026-11-09 ("Fix all four now") that this race gets its own fix, in a separate PR: a per-run stop signal, or a start that refuses or fences a live fit.', 'The Overtoad ruled on 2026-11-09 ("cascor: stop-then-start") that this race gets its own fix, in its own PR. Candidate fixes, which no ruling chose: a per-run stop signal, or a start that refuses or fences a live fit.'),
+=======
+    (CHANGELOG, 'The Overtoad ruled on 2026-11-09 ("Fix all four now") that it gets its own fix, in a separate PR: a per-run stop signal, or a start that refuses or fences a live fit.', 'The Overtoad ruled on 2026-11-09 ("cascor: stop-then-start") that it gets its own fix, in its own PR. Candidate fixes, which no ruling chose: a per-run stop signal, or a start that refuses or fences a live fit.'),
+    (PR_BODY, 'The Overtoad ruled on 2026-11-09 ("Fix all four now") that it gets its own fix, in a separate PR. A reproducer is included.', 'The Overtoad ruled on 2026-11-09 ("cascor: stop-then-start", a ruling given after the record\'s rulings 1-14) that it gets its own fix, in its own PR. A reproducer is included.'),
+    (PR_BODY, 'The Overtoad ruled on 2026-11-09 ("Fix all four now") that this race gets its own fix, in a separate PR: a per-run stop signal, or a start that refuses or fences a live fit.', 'The Overtoad ruled on 2026-11-09 ("cascor: stop-then-start") that this race gets its own fix, in its own PR. Candidate fixes, which no ruling chose: a per-run stop signal, or a start that refuses or fences a live fit.'),
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
     (REPRO, '"Fix all four now", that it gets its own fix, in a separate PR)', '"cascor: stop-then-start", that it gets its own fix, in its own PR)'),
 ]
 
 F2_FIXES = [
+<<<<<<< HEAD
     (CHANGELOG, "Unlike juniper-service-core, where the new run starts at once and the old fit's return completes it, cascor's queue keeps the new run from starting until the old fit returns, so the old fit is still the Overtoad when it settles.", "Unlike juniper-service-core, where the new run starts at once on its own thread and already owns the lifecycle when the old fit returns, cascor's queue keeps the new run from starting until the old fit returns, so the old fit is still the Overtoad when it settles."),
+=======
+    (CHANGELOG, "Unlike juniper-service-core, where the new run starts at once and the old fit's return completes it, cascor's queue keeps the new run from starting until the old fit returns, so the old fit is still the Overtoad when it settles.", "Unlike juniper-service-core, where the new run starts at once on its own thread and already owns the lifecycle when the old fit returns, cascor's queue keeps the new run from starting until the old fit returns, so the old fit is still the Overtoad when it settles."),
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
     (PR_BODY, "juniper-service-core's fix for the same wedge, built before this one and not merged as of this PR, needed such a check", "juniper-service-core's fix for the same wedge, built before this one and merged as juniper-ml#2531 (`7b3b91b7`), needed such a check"),
     (PR_BODY, "juniper-service-core's fix for the same wedge (unmerged; its `main`, juniper-ml `4bae7520`, has no such guard) checks", "juniper-service-core's fix for the same wedge (juniper-ml#2531, `7b3b91b7`) checks"),
     (PR_BODY, "There the new run starts at once on its own thread and the old fit's return completes it.", "There the new run starts at once on its own thread, so it already owns the lifecycle when the old fit returns: since juniper-ml#2531 that return settles nothing (juniper-service-core 0.7.2, published before #2531, still completes the new run)."),
@@ -52,7 +66,11 @@ F4_FIXES = [
 
 CHECKED = [
     "Release history, per tag (util/ad-hoc/2026-11-09_flood4r2_val_n1-r2-claims_release_history.py -> release_history.log): each of the 10 tags' own state_machine.py EXECUTED (mark_completed refuses PAUSED in all 10; START from that PAUSED -> STARTED; RESUME -> STARTED); each manager.py read (one mark_completed site per tag, result ignored; 'Training already in progress' refusal in all 10; 'Cannot start training while paused' only from v0.10.0; _check_for_interrupt absent only in v0.3.17, which has no _pause_event.wait anywhere under src). 4710cc1 = cascor#584, first tag v0.10.0; f4453fa = cascor#244, first tag v0.5.0. PyPI juniper-cascor = exactly the 10 tags, latest 0.13.0. v0.9.0's create-on-start PAUSED refusal (_create_network_locked) does not fire for a plain or start_fresh start with a network present. Every 'How far back' / '0.10.0 to 0.13.0' / '0.3.17 to 0.9.0' text (CHANGELOG, PR body, commit body, JUNIPER_CASCOR_API_REFERENCE.md, API_SCHEMAS.md, cheatsheet) is TRUE. No text names a next release number.",
+<<<<<<< HEAD
     "The Overtoad rulings: the record on juniper-ml origin/main (#2530) §4 and §8 read via gh api; ruling 11 = 2026-11-08, \"Fix all four now\" (HANDOFF_2026-11-08 table row 11), listing cascor's paused-fit wedge. Every ruling-11 citation for the wedge (CHANGELOG 'Where it was found', PR body :8, commit body, test module docstring, manager.py _run_training docstring, mutation-check header, repro 'Related') is accurate. Ruling 17 (2026-11-09) labels from BRIEF_S4_ADDENDUM.txt and HANDOFF_2026-11-09 :121 -> F1.",
+=======
+    "Overtoad rulings: the record on juniper-ml origin/main (#2530) §4 and §8 read via gh api; ruling 11 = 2026-11-08, \"Fix all four now\" (HANDOFF_2026-11-08 table row 11), listing cascor's paused-fit wedge. Every ruling-11 citation for the wedge (CHANGELOG 'Where it was found', PR body :8, commit body, test module docstring, manager.py _run_training docstring, mutation-check header, repro 'Related') is accurate. Ruling 17 (2026-11-09) labels from BRIEF_S4_ADDENDUM.txt and HANDOFF_2026-11-09 :121 -> F1.",
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
     "Line citations on main f3dfee8c: manager.py :1992, :2042, :2085, :2526, :2532, :3052-3061, :3058, :3059, :3107, :3117, :3758 (inside swap_dataset_live's `with self._lock` from :3680), :3805, :3832; state_machine.py :262-271/:264/:270; app.py:469; routes/training.py :145-154 / :157-166 and their 409 texts; the HTTPException envelope (error.message, app.py:941-990); juniper-canopy src/main.py:3784-3789 at 63a2f3d7; CCN cadence `epoch % 25 == 0 or epoch == epochs - 1` (cascade_correlation.py:2186); monitored_fit / _install_monitoring_hooks gone from main (comments only); lifecycle and routes unchanged v0.13.0 -> f3dfee8c -> 7640d42.",
     "juniper-service-core statements against juniper-ml origin/main 7b3b91b7 (#2531): its settle, pause_training and resume_training all hold self._lock (TRUE, as the texts say); its settle is guarded by `self._thread is threading.current_thread()` (makes 'unmerged' and 'the old fit's return completes it' false -> F2); PyPI service-core latest 0.7.2 uploaded 09:52Z, before #2531.",
     "New tests, my worktree juniper-cascor--val--flood4r2-n1-r2-claims--20261109-0825--f3dfee8c, JuniperCascor1 3.14.7, JUNIPER_CASCOR_LOG_DIR unset, provenance = the worktree's own src: the 23 new tests on main's lifecycle files: 13 failed, 10 passed (the 4 controls and the 6 refusals) -- matches the texts (newtests_on_main_mine.log). Carrier code: the new module + the whole FSM suite, 88 passed (newtests_and_fsm_suite_on_carrier.log). 15 + 8 = 23 matches; the 6 refusal params reach their named states (mark_resume_ready/investigating/replaying accept STOPPED).",
@@ -90,13 +108,21 @@ def main() -> int:
             "severity": "BLOCKER",
             "where": "CHANGELOG.md ([Unreleased] / Fixed, the paused-fit entry, 'Evidence and next step.' bullet); tmp/flood4-fix/n1-r2/pr_body.txt:6 and :129; util/ad-hoc/2026-11-08_stop_then_start_race_repro.py:8-9",
             "claim": "The cascor stop-then-start race was ruled on 2026-11-09 with the words \"Fix all four now\", and (CHANGELOG, PR body :129) that ruling named the fix: \"a per-run stop signal, or a start that refuses or fences a live fit\". Both are false. \"Fix all four now\" is ruling 11's label, given on 2026-11-08, and ruling 11 lists juniper-SERVICE-CORE's stop-then-start race, not cascor's (record §8 item 11, second bullet). cascor's race was ruled on 2026-11-09 as ruling 17, a multiSelect whose chosen label is \"cascor: stop-then-start\"; it is not in the record (#2530 covers rulings 1-14). No ruling names a mechanism. The CHANGELOG instance lands on main.",
+<<<<<<< HEAD
             "evidence": "gh api repos/pcalnon/juniper-ml/contents/notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (origin/main) §8 item 11: '\"Fix all four now\", each in its own validated, signed PR: ... juniper-service-core's stop-then-start race ...'; prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-08_flood4-record-validated-fixes-built-round2-triaged.md:112-126 ('The Overtoad's rulings of 2026-11-08' ... '| 11 | N-1..N-4 | \"Fix all four now\" |'); HANDOFF_2026-11-09_flood4-record-merged-fixes-corrected-landing-next.md:121 ('| 17 | New defects (multiSelect) | all four: \"data: 44 unrun tests\", \"cascor: stop-then-start\", ...'); tmp/flood4/session4/BRIEF_S4_ADDENDUM.txt ruling 17 (same labels). The M-3 landing already removed the same mechanism attribution from service-core's texts (tmp/flood4/session4/land/m3/edits.json:7-14).",
+=======
+            "evidence": "gh api repos/pcalnon/juniper-ml/contents/notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (origin/main) §8 item 11: '\"Fix all four now\", each in its own validated, signed PR: ... juniper-service-core's stop-then-start race ...'; prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-08_flood4-record-validated-fixes-built-round2-triaged.md:112-126 ('The Overtoad's rulings of 2026-11-08' ... '| 11 | N-1..N-4 | \"Fix all four now\" |'); HANDOFF_2026-11-09_flood4-record-merged-fixes-corrected-landing-next.md:121 ('| 17 | New defects (multiSelect) | all four: \"data: 44 unrun tests\", \"cascor: stop-then-start\", ...'); tmp/flood4/session4/BRIEF_S4_ADDENDUM.txt ruling 17 (same labels). The M-3 landing already removed the same mechanism attribution from service-core's texts (tmp/flood4/session4/land/m3/edits.json:7-14).",
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
             "fix": check(root, F1_FIXES),
         },
         {
             "id": "F2",
             "severity": "MAJOR",
+<<<<<<< HEAD
             "where": "CHANGELOG.md (stop-then-start 'Why the Overtoadship check does not help.' bullet); tmp/flood4-fix/n1-r2/pr_body.txt:5, :28, :127; util/ad-hoc/2026-11-08_stop_then_start_race_repro.py:27-28",
+=======
+            "where": "CHANGELOG.md (stop-then-start 'Why the ownership check does not help.' bullet); tmp/flood4-fix/n1-r2/pr_body.txt:5, :28, :127; util/ad-hoc/2026-11-08_stop_then_start_race_repro.py:27-28",
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
             "claim": "juniper-service-core's paused-fit fix is 'not merged as of this PR' / 'unmerged; its main ... has no such guard', and in service-core's stop-then-start race 'the old fit's return completes it'. juniper-ml#2531 merged that fix at 2026-11-09T11:22:24Z (7b3b91b7), with the guard `self._thread is threading.current_thread()` on every settle, so on service-core main a superseded thread's return settles nothing and no longer completes the new run (the M-3 PR body itself says it 'closes the consequence'). The statement stays true only of the published juniper-service-core 0.7.2 (PyPI 2026-11-09T09:52Z, before the merge). The CHANGELOG instance lands on main in the present tense.",
             "evidence": "gh api 'repos/pcalnon/juniper-ml/commits?per_page=8': '7b3b91b7 2026-11-09T11:22:24Z fix(service-core): a fit that returns while paused settles COMPLETED ... (#2531)'; juniper-service-core/juniper_service_core/lifecycle/manager.py@7b3b91b7:309-341 (`with self._lock:` / `if not self._stop_event.is_set() and self._thread is threading.current_thread():` before RESUME + mark_completed); start_training:191 assigns the new thread under the same lock; PyPI juniper-service-core latest 0.7.2 uploaded 2026-11-09T09:52:45Z.",
             "fix": check(root, F2_FIXES),

@@ -76,7 +76,7 @@ unvalidated — is accepted as **framing**, and §1 is now hedged to match.
 
 Lane B also **correctly reported the one attack that did not land**: §3's reasoning about the
 memory's *"do not fix the `or settings.*`"* SURVIVED, and Lane B found the confirming passage the
-author had missed — that same memory carries a later **"OWNER RULING: option 3 becomes a CALLER
+author had missed — that same memory carries a later **"OVERTOAD RULING: option 3 becomes a CALLER
 right"** entry which supersedes the earlier caution and enumerates the very sites §3 lists. It
 also found the memory's line numbers (`:432`/`:462`) are **stale**, and §3's re-derived
 `:499`/`:529` correct.

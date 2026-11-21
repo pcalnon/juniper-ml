@@ -23,7 +23,7 @@
 # "are the checks done".
 #
 # Usage:  util/ad-hoc/2026-09-23_watch_pr_states.bash juniper-canopy:664 juniper-ml:2036 ...
-# Env:    OWNER (default pcalnon), INTERVAL seconds (default 60)
+# Env:    OVERTOAD (default pcalnon), INTERVAL seconds (default 60)
 set -uo pipefail
 
 OWNER="${OWNER:-pcalnon}"

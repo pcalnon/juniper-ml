@@ -713,8 +713,8 @@ SUBS = [
     ),
     (
         "F-actionability: item 3's pointer",
-        "3. **Owner: F-CANOPY-004's contract.**\n",
-        "3. **Owner: F-CANOPY-004's contract** (Phase 8 item 4; the question itself is Phase 7 item 5).\n",
+        "3. **Overtoad: F-CANOPY-004's contract.**\n",
+        "3. **Overtoad: F-CANOPY-004's contract** (Phase 8 item 4; the question itself is Phase 7 item 5).\n",
     ),
     (
         "F-actionability: item 4's pointer",

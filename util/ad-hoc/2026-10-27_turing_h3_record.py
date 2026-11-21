@@ -56,15 +56,15 @@ INTRO_NEW = f"The latter's handoff is `{PREV_HANDOFF}`. The former ran H3 (v1.4.
 H2_OLD = "G-AGENT's static half holds; its H3 denials wait on C8 and C9. **Install pending:** the primary checkout still has 6 " "agents, so `bash util/install_agents.bash` (9 links) follows the Overtoad's C8 step 1 fast-forward |"
 H2_NEW = "G-AGENT's static half holds, and its H3 denials hold since 2026-10-27 (the H3 row). **Installed** by the Overtoad on " "2026-10-26: after C8's step 1 fast-forwarded the primary checkout (about 22:30Z), `bash util/install_agents.bash` linked " "the three agents at 22:32Z, so `~/.claude/agents/` holds 9 links |"
 
-C9_CELL_OLD = "| C9 | **landed** (AGENT); **install OWNER** (C8's step) |"
-C9_CELL_NEW = "| C9 | **landed** (AGENT); **installed** (OWNER, 2026-10-26, with C8) |"
+C9_CELL_OLD = "| C9 | **landed** (AGENT); **install OVERTOAD** (C8's step) |"
+C9_CELL_NEW = "| C9 | **landed** (AGENT); **installed** (OVERTOAD, 2026-10-26, with C8) |"
 
 C9_TAIL_OLD = "**It takes effect** when the Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` " "(C8); H3's C9 dependency is met then |"
 C9_TAIL_NEW = "**It took effect** on 2026-10-26, when the Overtoad ran `bash util/install_claude_agent_guard.bash --apply` from an " "up-to-date `main` (C8). At 2026-10-27T00:22Z a Bash command naming `.mcp.json` was denied under MCP-REGISTER-BASH, a " "1.2.0 rule, so the installed guard carries C9's rules and H3's C9 dependency is met |"
 
 TABLE_END_OLD = "\n\n### 18.3 Errata\n"
 C8_ROW = (
-    "| C8 | **done: installed** (OWNER, 2026-10-26) | The Overtoad ran C8's step 1 from a terminal at about 22:30Z: `git pull "
+    "| C8 | **done: installed** (OVERTOAD, 2026-10-26) | The Overtoad ran C8's step 1 from a terminal at about 22:30Z: `git pull "
     "--ff-only origin main` in the primary checkout, `bash util/install_claude_agent_guard.bash --apply` (guard 1.2.0, so "
     "K12's signing rules and C9's MCP rules came with it) and `bash util/install_agents.bash` (22:32Z; the H2 row). "
     "**Acceptance** (§6's C8 row), checked by the H3 session at 2026-10-27T00:22Z: `git config commit.gpgsign` prints "
@@ -95,7 +95,7 @@ E_H3 = (
     "guard's self-test and `tests/test_k8s_node_sme_contract.py` still pin it. Both layers are D11 item 4's deny list.\n"
     "  - **D11 item 5 does not hold.** The agent token read `repos/pcalnon/<repo>/keys` (HTTP 200), where item 5's "
     "fine-grained PAT, with no Administration permission, gets 403. OWNER: `gh auth status` in a real terminal, then give "
-    "agent sessions item 5's token; the signing report's OWNER list carries the check.\n"
+    "agent sessions item 5's token; the signing report's OVERTOAD list carries the check.\n"
     '  - **juniper-k8s cannot have rulesets.** It is private, and its rulesets API answers HTTP 403 ("Upgrade to GitHub Pro '
     "or make this repository public\"), so no `required_signatures` rule applies there. That answers §14.1's juniper-k8s "
     "ruleset line.\n"
@@ -107,7 +107,7 @@ E_H3 = (
     "  - **The check's wording**, with no verdict changed: G-TOOLS `kubectl`'s remediation does not name D3, which §6 and D7 "
     'put before D4; and G-MEM\'s "free + inactive" figure also counts speculative pages. Both are candidate follow-ups for '
     "`util/host_state_check.py`.\n"
-    "  - **This plan's own text.** A1's actor is AGENT in §6 and OWNER in §16.2, and the later section wins. §19 says the "
+    "  - **This plan's own text.** A1's actor is AGENT in §6 and OVERTOAD in §16.2, and the later section wins. §19 says the "
     'signing plan wins on "B3, B4 or B5", while the signing plan\'s own header says "B4 or B5".\n'
     "  - **What prompt validation caught**, each a blocker or major finding in rounds 1 and 2: an agent with no clock (no "
     "Bash) must be given the UTC date; a prompt must not say what `origin/main` points at, because a fetch moves it; and D11 "
@@ -153,7 +153,7 @@ def edit_plan(text: str, subs: dict, report: list) -> str:
         report.append("MISSING  plan: Version line: the plan is at neither 1.4.9 nor 1.4.10")
     text = edit(text, INTRO_OLD, INTRO_NEW, THIS_HANDOFF, "plan: §18 opening paragraph", report)
     text = edit(text, H2_OLD, H2_NEW, "its H3 denials hold since 2026-10-27", "plan: §18.2 H2 row", report)
-    text = edit(text, C9_CELL_OLD, C9_CELL_NEW, "| C9 | **landed** (AGENT); **installed** (OWNER, 2026-10-26, with C8) |", "plan: §18.2 C9 row, status cell", report)
+    text = edit(text, C9_CELL_OLD, C9_CELL_NEW, "| C9 | **landed** (AGENT); **installed** (OVERTOAD, 2026-10-26, with C8) |", "plan: §18.2 C9 row, status cell", report)
     text = edit(text, C9_TAIL_OLD, C9_TAIL_NEW, "**It took effect** on 2026-10-26", "plan: §18.2 C9 row, the install", report)
     text = edit(text, TABLE_END_OLD, fill(TABLE_END_NEW, subs), "| H3 | **done: passed** (AGENT, 2026-10-27) |", "plan: §18.2 C8 and H3 rows", report)
     return edit(text, ERRATA_END_OLD, ERRATA_END_NEW, "- **E-H3 (H3's run, against its row and D11).**", "plan: §18.3 erratum E-H3", report)

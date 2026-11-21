@@ -15,7 +15,7 @@ Related:     notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-IN
 
 What this records, all of it prose:
 
-1. THREE OWNER RULINGS OF 2026-09-24.
+1. THREE OVERTOAD RULINGS OF 2026-09-24.
    D-8 amended: the one log scrub runs before P0, as P0.5a item 4, not "after P1". The 2026-09-22 ruling
    was made from section 10's Recommendation column, which ml#1999 never updated after round 1 (Lane B3,
    F-18) moved the scrub into a P0.5 bucket and round 2's split made it P0.5a item 4. ml#1999 merged at
@@ -227,7 +227,7 @@ edit(
 - **(sink-b)** Both `su - duplicati` shells had exited by 15:19 CDT on 2026-09-24, and
   `/home/duplicati/.bash_history` (0600 `duplicati`) was last written at 14:56:34 that day, 8,261 bytes. So
   whether `history -c; unset HISTFILE` ran first is unknown, and the 09-20 migration's commands may now be on
-  disk. The root `vim` (pid 2318515) had exited too, with no swap file left behind (its row above). Owner:
+  disk. The root `vim` (pid 2318515) had exited too, with no swap file left behind (its row above). Overtoad:
   count, never print — keep the `-c` —
   `sudo grep -c -i -E 'encryption|passphrase|password' /home/duplicati/.bash_history`. **Do not wipe it on the
   count.** Those shells were open during 09-19's key failures against the root folder, so the file may hold key

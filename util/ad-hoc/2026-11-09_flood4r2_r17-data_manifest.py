@@ -3,11 +3,19 @@
 Assemble manifest.json for the juniper-data unit-mark fix from the tree and the run results.
 
 Project: juniper-ml
+<<<<<<< HEAD
 Sub-Project: ad-hoc tooling (Cursor-fleet flood-4, Overtoad ruling 17: "data: 44 unrun tests")
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (the deliverable manifest for the orchestrator's validation and landing)
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+=======
+Sub-Project: ad-hoc tooling (Cursor-fleet flood-4, Overtoad ruling 17: "data: 44 unrun tests")
+Author: Paul Calnon
+Created: 2026-11-09
+Status: ad-hoc — one-off (the deliverable manifest for the orchestrator's validation and landing)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (ruling 17 is recorded in the record-update PR)
 
 Reads, from --out: collect/compare_before_after.json, result_*.json, mutants.json, mutants_main_lane.json (if
@@ -107,13 +115,21 @@ def main() -> int:
     manifest = {
         "repo": "juniper-data",
         "carrier": "r17-data-unit-marks",
+<<<<<<< HEAD
         "ruling": "the Overtoad's ruling 17 (2026-11-09, recorded in the record-update PR), option label \"data: 44 unrun tests\"",
+=======
+        "ruling": "the Overtoad's ruling 17 (2026-11-09, recorded in the record-update PR), option label \"data: 44 unrun tests\"",
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
         "base_sha": args.base_sha,
         "worktree": str(wt),
         "branch": "fix/test-security-unit-marks",
         "files": files,
         "carried": [],
+<<<<<<< HEAD
         "carried_note": "No draft is carried: this is an Overtoad-ruled defect fix on main (found by the round-2 data-tests validation lens, F3).",
+=======
+        "carried_note": "No draft is carried: this is an Overtoad-ruled defect fix on main (found by the round-2 data-tests validation lens, F3).",
+>>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
         "checks": checks,
         "mutations": mutations,
         "open_questions": _load(out / "open_questions.json") if (out / "open_questions.json").exists() else [],

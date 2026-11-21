@@ -16,7 +16,7 @@ the transcript limit covers every round of the arc, archived and merged.
 
 Also: text the 2026-09-22 rulings left stale is repaired; "all 877 dindex volumes" is corrected
 (434 dindex, 434 dblock, 9 dlist); six owed section-12 rows are added; the round-2 record's
-"15 defects, all applied" becomes 13 of 15; note 10.2b moves ahead of 10.2c; and the owner's
+"15 defects, all applied" becomes 13 of 15; note 10.2b moves ahead of 10.2c; and the Overtoad's
 SMART-script refactor that closing ml#2045 dropped is adopted, with one clock read instead of two.
 
 Rounds 4 to 8 ran on 2026-09-24; round 8's corrections were folded into the edit script and the

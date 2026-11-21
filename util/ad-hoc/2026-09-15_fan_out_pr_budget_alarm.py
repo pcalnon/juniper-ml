@@ -125,7 +125,7 @@ Claude-Session: https://claude.ai/code/session_01N1jj3JGh1eVe7213j9j77p"""
 PR_BODY = """## Summary
 
 Ports `.github/workflows/pr-budget-alarm.yml` from `juniper-ml`, where it has run since
-2026-07-30. Owner-ruled fleet-wide roll-out, 2026-09-15.
+2026-07-30. Overtoad-ruled fleet-wide roll-out, 2026-09-15.
 
 **Why here.** Cursor-fleet round 2 ran against **four** repos (ml, data, canopy, data-client)
 and the detector existed on **one**. The Overtoad has now ruled that stale-at-scale documentation

@@ -462,8 +462,8 @@ New item:
 
 DESIGN_SUBS = [
     (
-        "**Owner**: Paul Calnon • **Status**: Implemented (h-6 in review) • **Created**: 2026-05-02 • **Last updated**: 2026-05-04",
-        "**Owner**: Paul Calnon • **Status**: Implemented (h-6 in review) — **corrected 2026-10-19: g-3 never reached cascor `main`; see the status note** • **Created**: 2026-05-02 • **Last updated**: 2026-10-19",
+        "**Overtoad**: Paul Calnon • **Status**: Implemented (h-6 in review) • **Created**: 2026-05-02 • **Last updated**: 2026-05-04",
+        "**Overtoad**: Paul Calnon • **Status**: Implemented (h-6 in review) — **corrected 2026-10-19: g-3 never reached cascor `main`; see the status note** • **Created**: 2026-05-02 • **Last updated**: 2026-10-19",
     ),
     (
         "> the as-designed sequencing for posterity but are now annotated\n"
