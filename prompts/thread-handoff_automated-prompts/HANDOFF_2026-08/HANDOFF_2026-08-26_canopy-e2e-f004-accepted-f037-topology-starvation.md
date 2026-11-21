@@ -20,7 +20,7 @@ Stack is **DOWN**, E2E ports 8101/8202/8051 free, deploy containers on 8050/8201
 healthy (**never touch them**). cascor primary is now **`c6cd2f0`**, not the old `67d7ea3` pin — a peer
 advanced it; the delta is only the forkserver preload (cascor#592) + a CI gate.
 
-## Owner decisions taken (all four, this session)
+## The Overtoad decisions taken (all four, this session)
 
 1. **F-CANOPY-004 → ACCEPTED**, contract now **and** migration scheduled. Contract: clientside immediate ·
    interaction render **≤16 s** · fresh-session population **≤40 s** · during-run steady-state best-effort.

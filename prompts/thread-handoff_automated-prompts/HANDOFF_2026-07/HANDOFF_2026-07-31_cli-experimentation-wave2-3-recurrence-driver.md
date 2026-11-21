@@ -19,7 +19,7 @@ Continue executing the CLI test/validation/experimentation program for juniper-c
 - **Read the memory file first**: `project_cascor_recurrence_cli_experimentation_plan.md` — the Wave-2.2 paragraph records the implementation truths (cascor envelope shape, ports.json contract, staged-Literal aliases, urllib/F-1 redirect decision, Q-2 defaults, manifest-for-every-outcome rule) the 2.3 work builds on.
 - Driver test idiom: scripted stub `http.server` plays both services; `RedactedEnv` for subprocess arms; `sys.path.insert(REPO_ROOT/"util")` + `from experiments import run_experiment`.
 - Headless commits need `git -c commit.gpgsign=false commit`; rebase conflict resolutions need `git commit --no-gpg-sign`.
-- Owner decision still pending (not urgent): recurrence `namespace="juniper_recurrence"` alignment vs shipped generic-family + service-label scoping.
+- The Overtoad decision still pending (not urgent): recurrence `namespace="juniper_recurrence"` alignment vs shipped generic-family + service-label scoping.
 - Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` fixture commits without `-c commit.gpgsign=false` (fails locally on YubiKey hosts).
 
 ## Verification for the new thread

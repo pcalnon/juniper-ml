@@ -319,7 +319,7 @@ label read into each consumer workflow beyond the two default labels is deferred
 - **R4 — mis-set scope = false green.** A wrong `--scope` silently screens nothing (or over-scopes to
   noise). Mitigation: the Wave-2 per-repo acceptance step plants a deletion and asserts a FAIL.
 - **R5 — canopy/data CI cost.** Mitigated by screens-only `main-verify` (seconds; AST + git) and a
-  per-PR advisory job that adds seconds to already-heavy CI. Owner confirm acceptable (D5).
+  per-PR advisory job that adds seconds to already-heavy CI. The Overtoad confirm acceptable (D5).
 - **R6 — release timing + latent pin drift.** Consumers already pin `<0.7.0` (excludes 0.7.1); 0.8.0
   needs a ceiling widen anyway. Decide whether to cut 0.8.0 during or after the live storm and
   whether to heal the dep-docs pin in the same PRs (D4/D7).
@@ -343,7 +343,7 @@ vs the live storm, and do we heal the pre-existing `<0.7.0` dep-docs pin ceiling
 | D4 | Heal latent `<0.7.0` dep-docs pin drift in Wave-2 PRs | Yes (widen to `<0.9.0`) |
 | D5 | Consumer `main-verify` battery | Defer — screens-only |
 | D6 | Docs `--min-run` per repo | Keep 5; raise on deploy if docs FP noise appears |
-| D7 | Release timing vs storm | Owner call (recommend after the storm quiesces) |
+| D7 | Release timing vs storm | The Overtoad call (recommend after the storm quiesces) |
 | D8 | Promote any advisory workflow to required | Later, per-repo, after soak (out of scope now) |
 
 ## 9. Per-wave acceptance criteria

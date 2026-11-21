@@ -88,7 +88,7 @@ recommendation only:
   or a docs section was deleted. Do **not** merge; the branch must be fixed first. This **flags**
   the #738 / #751 / #782 / #801 damage class — a read-only gate can flag a bad human conflict-fix,
   it cannot validate one.
-- **CONFLICT** — the merge does not apply; conflicted files are listed. Owner merge-order decision
+- **CONFLICT** — the merge does not apply; conflicted files are listed. The Overtoad merge-order decision
   or a rebase is required.
 - **DUP-CLOSE** (your recommendation, never the script's) — a sibling / merged PR supersedes this
   one under the two-key rule. **Recommend** close; never act.

@@ -138,7 +138,7 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
   loop's local `candidate`: the **real configured key**. The SDK's own `EventScrubber` did not
   catch it, because it redacts locals by name. `api_key`, the presented key, is on its default
   denylist; `candidate` is not. No name list can be complete, so no locals are captured at all, and
-  there is deliberately no parameter to turn them back on. Owner ruling "Fix everywhere now"
+  there is deliberately no parameter to turn them back on. The Overtoad ruling "Fix everywhere now"
   (2026-09-24).
 - **The `before_send` hook also deletes frame `vars`**, as defence in depth. It covers every
   `exception.values[*].stacktrace`, every `threads.values[*].stacktrace` and the top-level

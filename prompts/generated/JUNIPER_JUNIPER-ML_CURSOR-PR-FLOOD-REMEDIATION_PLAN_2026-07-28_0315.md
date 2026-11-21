@@ -6,7 +6,7 @@ match_signals (runner-up: audit). Grounded 2026-07-28 against juniper-ml main @ 
 util/prompt_discovery bundle captured, all probes ok). Validated pre-emission by the house triple:
 prompt-validator (RUBRIC R1-R5: PASS, iteration 1, 2 minors fixed), adversarial fact-refuter
 (45 confirmed / 5 refuted -> corrections applied below), feasibility reviewer (PASS-conditional ->
-all 7 SHOULD-FIXes + NITs applied). Owner approval gates every destructive or outward-facing step;
+all 7 SHOULD-FIXes + NITs applied). The Overtoad approval gates every destructive or outward-facing step;
 this prompt performs no merges and no repo-settings/dashboard changes — its only writes are
 Overtoad-merged heal PRs and the Overtoad-merged results-doc PR.
 -->

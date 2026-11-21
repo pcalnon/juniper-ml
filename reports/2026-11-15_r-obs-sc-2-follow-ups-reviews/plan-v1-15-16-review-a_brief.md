@@ -20,7 +20,7 @@ Primary sources:
 - `gh` read calls only, e.g. `gh pr view N --repo pcalnon/<repo> --json ...`, `gh api repos/pcalnon/<repo>/...`, `gh run view`.
 - PyPI and TestPyPI JSON (`https://pypi.org/pypi/<pkg>/<ver>/json`).
 - Files at the cited refs: `git show <ref>:<path>` in this worktree for juniper-ml; `gh api repos/pcalnon/<repo>/contents/<path>?ref=<ref>` for the others.
-- Owner rulings, from session transcripts: `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py <session-prefix> --full`. Known quirk: it can print "answered None" when a later untimestamped copy overwrites the time; the first timestamped entry gives the real time.
+- The Overtoad rulings, from session transcripts: `python3 util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py <session-prefix> --full`. Known quirk: it can print "answered None" when a later untimestamped copy overwrites the time; the first timestamped entry gives the real time.
 - The handoffs in `prompts/thread-handoff_automated-prompts/`: the `HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-four-ruled-four-open.md`, `HANDOFF_2026-11-12_r-obs-sc-2-follow-ups-five-prs-validated-opening-next.md`, `HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next.md` and `HANDOFF_2026-11-15_r-obs-sc-2-cascor-0-14-0-canopy-0-10-0-at-pypi-gates-guard-pr-plan-v1-15-16-next.md`. These are summaries, NOT sources: a plan fact that rests only on a handoff is at least MINOR ("unverified").
 - The archived reviews: `reports/2026-11-15_r-obs-sc-2-follow-ups-reviews/` (untracked).
 

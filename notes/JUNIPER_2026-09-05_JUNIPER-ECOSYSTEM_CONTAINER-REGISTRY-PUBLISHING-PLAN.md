@@ -821,7 +821,7 @@ image lacked, not a version, and only a request or an availability probe finds t
 
 ## 6. Open questions
 
-- **OQ-1 — RULED 2026-09-11: yes, proceed to Wave 4.** Owner decision. The grounding, so a
+- **OQ-1 — RULED 2026-09-11: yes, proceed to Wave 4.** The Overtoad decision. The grounding, so a
   later reader can re-check it rather than inherit it:
 
   | posture | value (docs.docker.com, read 2026-09-11) |
@@ -847,7 +847,7 @@ image lacked, not a version, and only a request or an availability probe finds t
   *"in the order of thousands of requests per minute"*. That is far above what a few home nodes
   generate.
 
-  **Owner action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
+  **The Overtoad action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
   `DOCKERHUB_USERNAME`) secret in each of the five image repos —
   juniper-cascor, juniper-cascor-worker, juniper-canopy, juniper-data, juniper-recurrence.
   Until those exist the second login+push cannot be added, and adding it early would fail

@@ -34,7 +34,7 @@
 - **C0:** `tmutil isexcluded ~/.claude/mcp-servers` still reports `[Included]`.
 - **H5, option B** is intact. `python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py --offline` exited 0 at 08:44:34Z; B.5 is still pending (both `origin`s set).
 
-## Owner steps
+## The Overtoad steps
 
 1. **C8 install, including K12 and C9** (unchanged). From a real terminal, in the primary checkout:
 

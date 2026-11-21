@@ -48,4 +48,4 @@ juniper-deploy#160 (merged 2026-07-22) provisions the `juniper_recurrence_api_ke
 
 ## 6. Validation record
 
-Facts probed read-only in the authoring session on 2026-07-22 (sops version/behavior, `.sops.yaml` creation rule, age-key presence, tracked-file status, prepare-secrets decrypt invocation and populate counts). Owner approved the plan as written on 2026-07-22 and directed archival of this document ahead of implementation.
+Facts probed read-only in the authoring session on 2026-07-22 (sops version/behavior, `.sops.yaml` creation rule, age-key presence, tracked-file status, prepare-secrets decrypt invocation and populate counts). The Overtoad approved the plan as written on 2026-07-22 and directed archival of this document ahead of implementation.

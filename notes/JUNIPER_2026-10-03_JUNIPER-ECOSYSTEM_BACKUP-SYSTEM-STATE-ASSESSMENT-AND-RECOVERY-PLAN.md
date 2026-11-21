@@ -576,7 +576,7 @@ A checklist against D §8's step numbers. Only the deltas from D are spelled out
 | O-13 | S-8: keep `additional-report-url` (the deferred cloud report) and allow-list its warning under `IPAddressDeny=`, or clear it | clear it until a reporter exists; record the bearer JWT as retired | D |
 | O-14 | `--aes-version` pin for the first post-recovery run: 2 (the format of the 877 existing volumes) or 3 (2.4.0.0's default) | 2 until §10.2 rewrites every volume anyway; move to 3 in the rotation and record it | D |
 
-**Owner rulings, 2026-10-25 to 2026-10-28**, recorded 2026-10-27 and 10-28. The 2026-10-08 retention ruling is §6.0 item 5. The last column says where a ruling departs from the Recommendation column above.
+**The Overtoad rulings, 2026-10-25 to 2026-10-28**, recorded 2026-10-27 and 10-28. The 2026-10-08 retention ruling is §6.0 item 5. The last column says where a ruling departs from the Recommendation column above.
 
 | # | Ruling | Ruled | Against the recommendation? |
 | --- | --- | --- | --- |
@@ -604,7 +604,7 @@ A checklist against D §8's step numbers. Only the deltas from D are spelled out
 - **(d)** O-2 left the history files without a wipe trigger: D §6's history rows wipe them "once P0 step 3 has tested what they hold", and O-2 removed that test. The recommendation was §6.4 step 14, after AC-4's first drill, keeping them as a fallback source for the root-era key until a restore has passed. The ruling keeps them longer, until the rotation retires any passphrase they hold.
 - **Not yet ruled**: D-12 (O-5 recommends that D's recommendation stand).
 
-**Owner rulings of the Phase D sitting, 2026-10-30 to 2026-11-14 (local dates)**, recorded 2026-11-16 from the sitting's running record (§6.3.1, Phase D part). A quoted ruling is the Overtoad's answer as given. The last column says where a ruling departs from the option the session recommended; "—" where the record shows no recommendation.
+**The Overtoad rulings of the Phase D sitting, 2026-10-30 to 2026-11-14 (local dates)**, recorded 2026-11-16 from the sitting's running record (§6.3.1, Phase D part). A quoted ruling is the Overtoad's answer as given. The last column says where a ruling departs from the option the session recommended; "—" where the record shows no recommendation.
 
 | # | Ruling | Ruled (local date) | Against the recommendation? |
 | --- | --- | --- | --- |

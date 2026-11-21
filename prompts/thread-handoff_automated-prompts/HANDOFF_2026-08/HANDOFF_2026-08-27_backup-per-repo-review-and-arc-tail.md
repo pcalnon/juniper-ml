@@ -46,7 +46,7 @@ two sessions off one handoff have duplicated PRs before.
   lines, vs the 390-line #1422 version it replaced). It is now `origin/main`. The uncommitted copy
   in the primary checkout is the PRE-merge 527-line draft and is now STALE — discard it rather than
   working from it (`git checkout -- util/juniper-backup.bash` in the primary checkout).
-- Owner is handling the class-2 restore drill (YubiKey decrypt). **§4 changes what that costs.**
+- The Overtoad is handling the class-2 restore drill (YubiKey decrypt). **§4 changes what that costs.**
 - 25 open CodeQL alerts repo-wide, none in any file touched by the 08-26 arc.
 
 ---
@@ -372,5 +372,5 @@ several times an hour.
   removes ~96 GB (juniper-data/data) and makes per-repo archives comfortably fit.
 - **A pre-existing UNENCRYPTED 111 GB `juniper-8.0.0_python_2026-02-27.tgz`** sits on `EBC5-F0A3` —
   a plaintext copy of the whole project on removable media, and most of that drive's used space.
-  Owner decision: it is both the exposure this script's asymmetric encryption exists to prevent and
+  The Overtoad decision: it is both the exposure this script's asymmetric encryption exists to prevent and
   the capacity problem.

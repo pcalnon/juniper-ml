@@ -11,7 +11,7 @@ Nothing was edited. The document's hash is unchanged (`ffd111ef…`), and `hvE/`
 **1. HIGH: the release is reassigned, against the Overtoad's ruling.**
 - **Text:** L33 "That covers validation, fix-forwards, the release PRs and the lock and floor PRs." L108 "This lane opens version-bump and release-notes PRs". L111 "This is the only Overtoad step."
 - **Problem:** the option the Overtoad chose as "Fix everywhere now (Recommended)" reads "Up to four PRs. … **Releases stay yours.**" That comes from the transcript and is archived at `reports/2026-09-24_defect-register-round-42/pending-items-snapshot-2026-09-24T1110Z.md:9`.
-- v1 had this right ("Owner steps: not agent work"). Lane C's H3 moved it without seeing this text.
+- v1 had this right ("The Overtoad steps: not agent work"). Lane C's H3 moved it without seeing this text.
 - As written, a successor chooses the version numbers itself, and the sweeper may merge those bumps. L111's "only Overtoad step" also contradicts L118 and the (a)–(c) calls.
 - **Replacement:** "The Overtoad reserved releases ('Releases stay yours'). Once the juniper-ml F-PR validates, ask the Overtoad with verbatim options:
   - the Overtoad prepares and cuts both releases; or

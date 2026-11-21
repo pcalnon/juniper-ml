@@ -165,7 +165,7 @@ measured_at: 2026-10-04T20:54Z–21:13Z (all probes below ran in this window; re
 | P12-54 (W5.6) | `--shared-equities-cache` opt-in, with its own runbook section | L465 | [VERIFIED: Q10 → per-run cache only] | STARTABLE | — | ml | S | HYGIENE | CLI plan H-9 |
 | P12-55 (W5.7) | Record dropped symbols in `data_quality`; refuse or flag a lost requested symbol; guard `close > 0` | L466 | [NOT RE-PROBED] | STARTABLE | — | data | S | DATA-INTEGRITY | P3 round-39 §0.4 (`data_quality` has no recurrence consumer) |
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options and the source's recommendation | Blocks | Source |
 | --- | --- | --- | --- | --- |

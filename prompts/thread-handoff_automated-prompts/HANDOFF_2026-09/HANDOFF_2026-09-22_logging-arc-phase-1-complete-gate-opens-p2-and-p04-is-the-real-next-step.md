@@ -207,7 +207,7 @@ Overtoad question is **moot**.
 
 ---
 
-## 3. Owner rulings taken this session
+## 3. The Overtoad rulings taken this session
 
 Recorded in §13.1 of `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`.
 

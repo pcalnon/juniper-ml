@@ -69,7 +69,7 @@ Aliases used below. **10-04** = `prompts/thread-handoff_automated-prompts/HANDOF
 | P2-40 | O11: keep or retire the ad-hoc signed-commit driver copies. O12: make recurrence's `Settings` case-sensitive. | CONS O11/O12 | [NOT RE-PROBED] | OWNER-DECISION | — | ml, recurrence | S | HYGIENE |
 | P2-41 | O16 remainder: archive predecessors A and B under `HANDOFF_2026-09/`, or accept the `r1/predecessors/` copies; retire branch `dd4413e5` | CONS O16; 10-04 i2 | [CHANGED SINCE HANDOFF: CONS was validated (INDEX) and merged (ml#2109); copies of A and B are on main via ml#2096] | OWNER-DECISION | P2-01 | ml | S | HYGIENE |
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options (source's recommendation) | Blocks | Source |
 |---|---|---|---|---|

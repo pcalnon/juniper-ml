@@ -101,7 +101,7 @@ This is a security-bearing minor release of `juniper-cascor` v0.14.0. Its image 
     - a mutant without the resize raises at the 10-unit snapshot and exits 1.
 
     Run against a failing stub, the new exit-status lines exit 1, and the old two lines exit 0.
-  - **Where it was found.** Reading that nightly for juniper-cascor#738. Owner ruling of 2026-11-01.
+  - **Where it was found.** Reading that nightly for juniper-cascor#738. The Overtoad ruling of 2026-11-01.
 - **A fit that returns while its run is paused now settles `COMPLETED`. The lifecycle no longer wedges in `PAUSED` with no training thread behind it.**
   - **The defect.** Pause is honoured only at an interrupt checkpoint, which `_handle_event` runs on `epoch_end` and `phase_change` alone. A pause that landed after the fit's last checkpoint could not hold the fit, so the fit returned while the FSM was `PAUSED`. The window after the last checkpoint includes:
     - the rest of the final output pass after its last-epoch callback;
@@ -146,7 +146,7 @@ This is a security-bearing minor release of `juniper-cascor` v0.14.0. Its image 
   - **Why they fail.** GitHub's jobs API reports a step's `conclusion` after `continue-on-error`, so a masked failure reads `success`. juniper-canopy job 123689681187 logged `Path does not exist`, and its upload step reads `success`.
   - **The new wording.** The comment cites the survey's `Bandit` half, which can see a masked failure on a PR: 101 of 101 PR heads whose upload ran carry the check. It says the step count proves less. The docstring says the same, including that its RESULT line's "no upload step failed" is blind to a masked failure. No code changed.
   - **History.** The nightly-lanes entry below (juniper-cascor#735) qualifies its "165 of 165" accordingly.
-  - **Where it was found.** juniper-ml's flood-3 record, `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, §4 and §6. Owner ruling of 2026-11-01.
+  - **Where it was found.** juniper-ml's flood-3 record, `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md`, §4 and §6. The Overtoad ruling of 2026-11-01.
 - **A `/ws/training` client that resumes no longer misses broadcasts behind a `resume_ok`.** These are cascor's own
   copies of two defects that juniper-ml's shared `juniper-service-core` also had: juniper-ml#2534 fixed them on
   juniper-ml's `main` on 2026-11-09. juniper-service-core 0.7.2, the latest on PyPI on 2026-11-12, was published
@@ -301,7 +301,7 @@ This is a security-bearing minor release of `juniper-cascor` v0.14.0. Its image 
   - **The test.** `src/tests/unit/test_conftest_exit_status.py` runs a real pytest in a subprocess, over a one-test tree whose conftest loads only this conftest's two exit hooks. A failing session with a surviving non-daemon thread must exit 1, and a passing one 0. A failing one without a survivor must exit 1, as a control. Against the old conftest the first case fails (`1 failed`, exit status 0) and the other two pass.
   - **What it removes.** It removes the mask that juniper-cascor#735's `util/check_junit_executed.py` worked around, by failing a lane whose report shows a failure even when the exit status reads 0. That script's docstring now records the mask as history (0.1.1). Failing an empty lane stays its main job. Two `src/tests/conftest.py` comments that called the forced exit `os._exit(0)` now say `os._exit`.
   - **Why it found nothing broken.** `main`'s latest `ci.yml` run before this change (40768508350, `e8e8bf4d`) recorded 0 failures and 0 errors in all five JUnit reports, so no required lane depended on the mask.
-  - **Owner ruling** of 2026-10-29: "Fix now, own PR".
+  - **The Overtoad ruling** of 2026-10-29: "Fix now, own PR".
 
 ### Security
 

@@ -195,7 +195,7 @@ potentially torn writes.
 > at import or forkserver time **is** inherited by every child with a shared offset. Laziness stays
 > load-bearing — relative to forkserver start, not to fork. See the reconciliation's N-2.
 
-**Owner decision 3: per-process handle**, opened lazily on first write after fork — the simplest
+**The Overtoad decision 3: per-process handle**, opened lazily on first write after fork — the simplest
 option, and the only one that keeps a single log file and so keeps every existing log-reading tool
 working unchanged. Taken as **provisional**: if it proves untenable, the fallbacks are one file per
 PID (safest, but changes the artifact layout that the experiment harness, the census tooling and the
@@ -239,7 +239,7 @@ sidecar, HTTP appender, or a `juniper-observability` helper) out of the first ch
 on the per-record path in a forked worker is exactly where an unbounded queue or a blocking socket
 would cost more than the 18 % this design is trying to recover.
 
-**Owner decision 6: the JSON sink goes through `juniper-observability`**, which already owns
+**The Overtoad decision 6: the JSON sink goes through `juniper-observability`**, which already owns
 structured-JSON logging for the service tier — one implementation, not a cascor-local second one.
 
 > **CORRECTION 2026-09-02 — a second implementation already exists, deliberately.**
@@ -337,7 +337,7 @@ and it should precede the implementation rather than justify it retroactively.
   > N-9. **A persistent-handle redesign acquires this defect for Path A**, so rotation must be given a
   > single Overtoad *before* the handle is made persistent.
 
-## 7. Owner decisions — SETTLED 2026-08-29
+## 7. The Overtoad decisions — SETTLED 2026-08-29
 
 All six questions answered by the Overtoad. Recorded here as the design's binding constraints.
 

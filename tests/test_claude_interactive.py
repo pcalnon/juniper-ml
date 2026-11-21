@@ -11,7 +11,7 @@ regression this suite locks.
 Convention note (script-local, inverted vs the default launcher):
   TRUE="0", FALSE="1"  — so ``CLAUDE_SKIP_PERMISSIONS=0`` means *enabled*.
 
-Owner rulings, 2026-11-03 (juniper-ml#2396) and 2026-11-04:
+The Overtoad rulings, 2026-11-03 (juniper-ml#2396) and 2026-11-04:
   * the session id is OPT-IN: the shipped ``DEFAULT_ID`` is FALSE, and ``-i``
     or ``CLAUDE_ID`` turns it on;
   * worktree and remote control are ON by default (2026-11-04, replacing the
@@ -23,7 +23,7 @@ Owner rulings, 2026-11-03 (juniper-ml#2396) and 2026-11-04:
   * model and effort are FLAGS ONLY (``-m`` / ``-e``); a bare positional
     argument is rejected with the usage message.
 
-Owner rulings, 2026-11-06:
+The Overtoad rulings, 2026-11-06:
   * ``-v``, ``-V``, ``--version`` and ``--claude-version`` report Claude
     Code's version, as ``claude -v`` does, through wake_the_claude.bash;
     claudey's own version is ``--script-version``;

@@ -488,7 +488,7 @@ Vacuous-pass class; fix is to move the guard to the end of the file.
   under study.
 - **Items 4–6** (backfill, retention, the inert-metadata writer fix).
 
-**Owner decisions — ANSWERED 2026-08-22:**
+**The Overtoad decisions — ANSWERED 2026-08-22:**
 
 1. **Two-axis reading of §2.4 — RATIFIED.** `CATEGORY_PRECEDENCE` stands as the encoding.
 2. **The §4 loader-side recovery SHIPS** — juniper-cascor#560, narrowed to require tensor

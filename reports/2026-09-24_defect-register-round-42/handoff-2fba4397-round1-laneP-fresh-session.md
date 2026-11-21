@@ -95,7 +95,7 @@ The snapshot's facts hold up: every merge, SHA, timestamp, count, line anchor an
 - **Quote:** "plus `APD-DATA-047`, the 1e11 ceiling, which is an Overtoad decision" (`handoff_session_r1_frozen.md` L148). Also "sequencing C-A…D-G, and APD-DATA-047's ceiling" (L69).
 - **Evidence:**
   - `JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` L1284 reads "**FIXED (RATIFIED by the Overtoad, 2026-09-21 — the ceiling STAYS, at `1e11`…**", with §5.1 at L1661. The id is not in `register_open_set.py`'s open list.
-  - The round-39 handoff that Appendix B cites says "**`APD-DATA-047` is RULED**" (L52) and "Owner decisions still owed — NONE, as of 2026-09-21" (L278).
+  - The round-39 handoff that Appendix B cites says "**`APD-DATA-047` is RULED**" (L52) and "The Overtoad decisions still owed — NONE, as of 2026-09-21" (L278).
   - The claim also contradicts Appendix B's own "All are ruled" (L140).
 - **Replacement:**
   - L148: "D-G: `APD-DATA-048/-049/-051`. (`APD-DATA-047` was RATIFIED at 1e11 by the Overtoad on 2026-09-21 and is closed; do not re-ask.)"

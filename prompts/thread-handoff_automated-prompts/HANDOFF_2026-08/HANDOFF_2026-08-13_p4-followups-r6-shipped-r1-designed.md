@@ -6,7 +6,7 @@ which remains accurate for everything it records. The Overtoad approved **all si
 (R-1..R-6) plus two decisions captured below. R-6 is shipped as a PR; R-1 is fully designed but
 **no cascor code is written yet**.
 
-## Owner decisions this session (binding)
+## The Overtoad decisions this session (binding)
 
 - **R-4**: give E-C's spiral rows an **E-A-class budget** — do *not* reduce E-C to a moon-only study.
 - **R-1**: attempt the cascor work **from the current session** rather than a separate one. Confirmed

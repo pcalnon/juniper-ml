@@ -117,7 +117,7 @@ issue ml#1326's title; and issue **ml#1239** *"main-verify: post-merge verificat
 OPEN though ml#1291 fixed it and main-verify is green — its body says the Overtoad closes it after
 adjudication.
 
-### Owner decisions
+### The Overtoad decisions
 
 - **The soak's next step.** The verdict routes to rung 1, but the obvious version is a **null
   experiment**: the policy stratum is already **24/24 = 100%** (ledger's stratum table — the

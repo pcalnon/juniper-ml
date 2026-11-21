@@ -16,9 +16,9 @@ Continue executing the CLI test/validation/experimentation program for juniper-c
 ## Key context
 
 - **Read the memory file first**: `project_cascor_recurrence_cli_experimentation_plan.md` — Waves 2.2-2.6 paragraphs carry every implementation truth (payload contracts, plots/stats loading seams, skip-vs-fail semantics, budget handling, CLI constraints).
-- Headless commits: `git -c commit.gpgsign=false commit`. Owner merges via admin bypass. Verify claimed merges before building on them (`gh pr view N --json state`).
+- Headless commits: `git -c commit.gpgsign=false commit`. The Overtoad merges via admin bypass. Verify claimed merges before building on them (`gh pr view N --json state`).
 - For P1: operator ports 8100/8200/8201/8210/8050 are never touched; the on-host operator cascor may hold live training state — never restart it casually.
-- Owner decision still pending (not urgent): recurrence namespace alignment. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
+- The Overtoad decision still pending (not urgent): recurrence namespace alignment. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
 
 ## Verification for the new thread
 

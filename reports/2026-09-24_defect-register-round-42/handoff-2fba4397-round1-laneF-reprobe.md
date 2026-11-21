@@ -71,7 +71,7 @@ Evidence:
 - Result: the peer lane's gating work (#690 and canopy#685 validation, F2/F3) is carried only by a document SNAP never names, and that document defers back to the register lane.
 
 Replacement:
-- Insert before line 37: "**Owner instruction pending (23:25:49Z): after this handoff is validated, consolidate three handoffs into one, validated by consensus, losing no task or context: (1) this file; (2) PRED (on `main` via #2084); (3) PEER, uncommitted in worktree `.claude/worktrees/happy-skipping-hollerith` (session `bc31e993`, "defect reg [042116]"), awaiting its own validation and PR. Consolidate its committed version. If this session ended first, this is your first task.**"
+- Insert before line 37: "**The Overtoad instruction pending (23:25:49Z): after this handoff is validated, consolidate three handoffs into one, validated by consensus, losing no task or context: (1) this file; (2) PRED (on `main` via #2084); (3) PEER, uncommitted in worktree `.claude/worktrees/happy-skipping-hollerith` (session `bc31e993`, "defect reg [042116]"), awaiting its own validation and PR. Consolidate its committed version. If this session ended first, this is your first task.**"
 - Line 56: "Send the PR number to the peer. Two sessions are named "defect reg": the peer is `[042116]` (`bc31e993`) and this session is `[24f8d8]` (`2fba4397`). First message the peer, or its successor found with ListAgents, with your own session name so its updates re-route to you."
 - Line 206: "…its lane (validate #690 and canopy#685, the F2–F10 fix-forwards, the observability and service-core releases) is carried by PEER (path above, no PR yet)."
 
@@ -79,7 +79,7 @@ Replacement:
 
 **M1. APD-DATA-047 is already ruled and closed.**
 - Quoted: SNAP 69 "and APD-DATA-047's ceiling"; SNAP 148 "plus `APD-DATA-047`, the 1e11 ceiling, which is an Overtoad decision."
-- Evidence: REG `:1284` "FIXED (RATIFIED by the Overtoad, 2026-09-21 — the ceiling STAYS, at `1e11`…)", and `:1421`, `:1661`. It is absent from `register_open_set.py`'s open list. H0915 `:278` "Owner decisions still owed — NONE, as of 2026-09-21" and `:701`. H0923 `:82` lists D-G as "(048/049/051)".
+- Evidence: REG `:1284` "FIXED (RATIFIED by the Overtoad, 2026-09-21 — the ceiling STAYS, at `1e11`…)", and `:1421`, `:1661`. It is absent from `register_open_set.py`'s open list. H0915 `:278` "The Overtoad decisions still owed — NONE, as of 2026-09-21" and `:701`. H0923 `:82` lists D-G as "(048/049/051)".
 - Replacement:
   - Line 69: "- sequencing C-A…D-G;"
   - Line 148: "- D-G: `APD-DATA-048/-049/-051`. (`APD-DATA-047` was RATIFIED at `1e11` on 2026-09-21 and is closed.)"

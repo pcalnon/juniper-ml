@@ -66,11 +66,11 @@ Two follow-ons need an Overtoad decision and have not been requested:
 2. **Record touch, after item 1.** Update `…FLOOD-3-DISPOSITION.md` in four places:
    - the header `**Updated**` line, which says 0.9.1 was "cut";
    - the §4 juniper-ci-tools row, to add "on PyPI (200)";
-   - §8: resolve the bullet "Owner decision: approve the `pypi` gate of the juniper-ci-tools 0.9.1 release", refresh the ml#2190 bullet (item 6), and fix the "five-touch" wording (item 4);
+   - §8: resolve the bullet "The Overtoad decision: approve the `pypi` gate of the juniper-ci-tools 0.9.1 release", refresh the ml#2190 bullet (item 6), and fix the "five-touch" wording (item 4);
    - §9: add this handoff's PR, ml#2208, and the touch PR itself.
 
    Open it as a docs-only PR through `util/open_signed_pr.py`, which makes the GitHub-signed commit.
-3. **Owner decision: deliver the released fixes.** No running service has them yet.
+3. **The Overtoad decision: deliver the released fixes.** No running service has them yet.
    - **Every service lockfile pins the old versions**, `juniper-observability==0.4.0` and `juniper-service-core==0.7.0`:
      - juniper-data `requirements.lock:88,90`, on `main` and at tag `v0.17.0`. The image installs that lock (`Dockerfile:33`), so GHCR `juniper-data:0.17.0` ships observability 0.4.0, which still captures Sentry frame locals. `notes/releases/RELEASE_NOTES_juniper-data_v0.17.0.md:256-259` says the fix waits on that floor being raised.
      - juniper-cascor `requirements.lock:63,65`, plus `requirements-cpu.lock` and `conf/requirements_ci.txt`.

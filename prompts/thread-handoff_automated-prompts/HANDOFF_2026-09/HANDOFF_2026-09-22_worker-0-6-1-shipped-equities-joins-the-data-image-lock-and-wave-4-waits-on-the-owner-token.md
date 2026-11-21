@@ -82,7 +82,7 @@ gh api repos/pcalnon/juniper-data/environments/dockerhub/variables --jq '[.varia
 In `juniper-ml`, `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 python3 -m unittest tests/test_publish_env_policy_drift.py`
 should report 17 OK.
 
-### Owner rulings, 2026-09-22 — do not re-litigate
+### The Overtoad rulings, 2026-09-22 — do not re-litigate
 
 1. **The Docker Hub credential lives in a `dockerhub` environment** (Option B,
    `…REGISTRATION-PROCEDURE.md` §3; juniper-ml#2009). All five environments exist
@@ -95,7 +95,7 @@ should report 17 OK.
    (`68c3cd7c`), with the Overtoad's approval in the writing session. It adds `--extra equities` to
    the image lock. No published image has it until the next data release (item 1).
 
-### Owner tasks — the Overtoad runs these, you run none
+### The Overtoad tasks — the Overtoad runs these, you run none
 
 The commands and their hazards live only in `…REGISTRATION-PROCEDURE.md`, whose header lists
 these steps in the same order. Point the Overtoad there; do not restate them.
@@ -348,7 +348,7 @@ The worker's badge is correct.
 - a `/app`-only scan passes vacuously;
 - never blanket-add `**/logs/`, because canopy's is a symlink.
 
-**Owner ruling, 2026-09-21:** do not retire live memories to meet the 20 KB MEMORY.md target.
+**The Overtoad ruling, 2026-09-21:** do not retire live memories to meet the 20 KB MEMORY.md target.
 
 ## Checkpoint — what this session changed
 

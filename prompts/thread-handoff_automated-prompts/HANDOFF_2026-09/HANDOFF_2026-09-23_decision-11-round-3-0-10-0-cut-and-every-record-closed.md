@@ -106,9 +106,9 @@
 | R-2 plan §9 S-7 pin | Added a dated note correcting the pin and the comment. Closure is already in #2043's §10 update block, so it isn't restated. | ml#2052 (open) |
 | R-3 parent AGENTS.md:189-190 | Applied. Also qualified "Nothing emits `X_full`": the HF/Kaggle stores did until data#422, and 0.15.0 still does. | direct edit |
 | R-4 memory | Applied: the stale "still open" paragraph is marked, and a 2026-09-23 section added. | memory file |
-| R-5 `[servers]` data floor | Owner ruled raise + release. 0.10.0 is cut and Gate 2 is pending. | ml#2033, run 35879664979 |
+| R-5 `[servers]` data floor | The Overtoad ruled raise + release. 0.10.0 is cut and Gate 2 is pending. | ml#2033, run 35879664979 |
 | R-6 ceremony lessons | New §11.7 covering five shapes and their controls, the cron mode and UTC dating. | ml#2051 (open) |
-| R-7 recurrence#178 | Owner ruled cross-repo dispatch. Both halves merged; the e2e run 403'd on token scope. | #181, data#426, #178 comment |
+| R-7 recurrence#178 | The Overtoad ruled cross-repo dispatch. Both halves merged; the e2e run 403'd on token scope. | #181, data#426, #178 comment |
 | §2 item 3 marker normalisation | Fixed, plus two defects the handoff didn't name: heading qualifiers dropped from Release bodies, and `0.3.2` matching `0.3.21`. | ml#2051 (open) |
 | C-1 data#411 | Closed by data#422 (another session). Unreleased. | `hf_store.py:103`, `:186` on main |
 | C-2 cascor#668 | Closed by cascor#672 (another session). Unreleased. | `juniper_cascor/__init__.py:12` |

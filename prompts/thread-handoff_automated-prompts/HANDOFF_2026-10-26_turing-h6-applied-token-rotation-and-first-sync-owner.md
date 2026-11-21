@@ -61,7 +61,7 @@
 - **The guard.** C8 is installed: per "cached-enchanting-cosmos-84", the Overtoad ran it on 2026-10-26 at about 22:30Z, and that session records it. It denies `gh pr create` and `gh api -X`, so land through `util/open_signed_pr.py`. The repo's guard is 1.2.0.
 - **H5, option B** is intact: `python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py --offline` exited 0.
 
-## Owner steps
+## The Overtoad steps
 
 1. **Rotate the Hugging Face token** at <https://huggingface.co/settings/tokens>. The VS Code entry no longer uses it, so delete it. If something else uses it, choose "Invalidate and refresh" instead, and update that place.
 2. **Let Settings Sync upload the change.** Open VS Code on turing once, signed in to Settings Sync with "MCP Servers" and "Settings" ticked.

@@ -40,13 +40,13 @@
 
 ## Findings this session (all in plan §18.3)
 
-- **E-SSL.** mamba 2.x ignores `CONDA_SSL_VERIFY`, so the D6 and E2 recipes ran with TLS verification off; use `MAMBA_SSL_VERIFY=true`. Owner step 4 (`ssl_verify: true`) fixes the root, and re-creating JuniperHostTools with verification is the Overtoad's call.
+- **E-SSL.** mamba 2.x ignores `CONDA_SSL_VERIFY`, so the D6 and E2 recipes ran with TLS verification off; use `MAMBA_SSL_VERIFY=true`. The Overtoad step 4 (`ssl_verify: true`) fixes the root, and re-creating JuniperHostTools with verification is the Overtoad's call.
 - **E-NET-3.** Little Snitch verdicts moved: mamba is allowed, base `python3.13` is denied (a fast TLS EOF), and new env pythons are held.
 - **E-G6.** A hook without `stages` runs at every stage, and a manifest's `stages` overrides `default_stages`. G6 handles both.
 - **E-CQ2.** CodeQL `py/overly-permissive-file` (a `chmod 0o644`) blocked #2272 until fixed. The pre-screen does not predict it, so grep for `chmod(` before landing.
 - **E-LAND-3.** Concurrent PRs that both insert at the top of CHANGELOG's `### Added`, or both change AGENTS.md's suite count, conflict on update-branch. Anchor a turing entry below an existing turing entry (G6 sits below G5, G4 below G2), and build a suite-adding PR after the other one merges. Coordinated with the recurrence session over #2273; the agreed order was #2273, then #2274, then G4.
 
-## Owner steps (unchanged from Session 2 unless noted)
+## The Overtoad steps (unchanged from Session 2 unless noted)
 
 1. **Little Snitch (updated):** allow `pypi.org` and `files.pythonhosted.org` for `/usr/local/miniforge3/envs/JuniperCascor1/bin/python3.14` and `/usr/local/miniforge3/envs/JuniperData/bin/python3.14`, then for JuniperCanopy1's once it exists. mamba is already allowed. Say when this is done, and the agent resumes E2.
 2. **Install the C8 guard:** fast-forward the primary checkout (`git pull --ff-only origin main`), then `bash util/install_claude_agent_guard.bash --apply`.
@@ -55,7 +55,7 @@
 5. **JuniperPython's stray `PYTHONPATH`:** run `conda env config vars unset PYTHONPATH -n JuniperPython`.
 6. **The network:** the open-security radio, roaming or `en7` (F2), and A6.
 7. **F3 node mode:** quit the desktop apps and Docker Desktop, with no VM running, then say so.
-8. **The rest of Owner block 1:** C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
+8. **The rest of The Overtoad block 1:** C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
 
 ## Agent next
 

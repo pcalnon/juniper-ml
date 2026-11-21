@@ -203,7 +203,7 @@ Residuals the closures explicitly left behind (H0907:33-43): §8.21.5 residuals 
 37. **A file-vs-process secret divergence is invisible to file-only checks** — for 74 minutes the fresh set's key existed only inside one PID; run `duplicati_secret_check.py` around long secret-holding jobs (H0823:19-50).
 38. **Name the passphrase key explicitly; two 32-char values are indistinguishable by length**; rotating never re-encrypts existing volumes, so retain `PASSPHRASE_OLD` indefinitely (H0823:174-197).
 39. **Any GET/modify/PUT of a job must replace the 15-char passphrase mask with the real value**, guarded by a fingerprint check; never "simplify" it (YAM:366-373, 508-517).
-40. **The server settings DB stores the passphrase in cleartext without `SETTINGS_ENCRYPTION_KEY`** — "treat this DB as key material"; never dump/diff it into a transcript; keep copies in 0700 dirs (YAM:1919-1943; H0907:246-249). Owner rejected the encryption key because it "adds a third key needing escrow" (YAM:1940-1942).
+40. **The server settings DB stores the passphrase in cleartext without `SETTINGS_ENCRYPTION_KEY`** — "treat this DB as key material"; never dump/diff it into a transcript; keep copies in 0700 dirs (YAM:1919-1943; H0907:246-249). The Overtoad rejected the encryption key because it "adds a third key needing escrow" (YAM:1940-1942).
 41. **Escrow before sweeping stray secrets** — the git-ignored worktree `.env` is deleted silently by `git worktree remove` (YAM:1683-1684, 1700-1706).
 42. **Root-run backups include 0000-mode files a user run skipped** (e.g. the release-train private key); decide inclusion deliberately (YAM:319-325; H0824:263-266).
 
@@ -270,7 +270,7 @@ Residuals the closures explicitly left behind (H0907:33-43): §8.21.5 residuals 
 - **tar lane excludes** `.claude` (hence worktrees), `data`, `logs`, `reports`, `resources`, `venv`, `dist`, `build` per repo (SCRIPT:111); loose parent-level files are not archived (LIFE:577-578).
 - **The stale job description** ("Development and Documents folders") — PLAN:210-211; NO ARTIFACT of correction.
 
-**Owner decisions recorded as pending (latest state in the record, 2026-09-08 / 09-12)**
+**The Overtoad decisions recorded as pending (latest state in the record, 2026-09-08 / 09-12)**
 1. `sudo smartctl -H -A /dev/sda` — "the single highest-value unchecked fact in the arc: … it guards the only remaining copy" (YAM:2773-2777, 2799).
 2. Read-only loop probe of the deleted sdc4 extent, then decide on recovering 2.3 KB and/or the 196 GB copy (YAM:2729-2754, 2800).
 3. The sdc2 NTFS-on-GPT grow beside live `/home` (YAM:2481-2495, 2801; H0907:98-108).
@@ -294,7 +294,7 @@ Residuals the closures explicitly left behind (H0907:33-43): §8.21.5 residuals 
 |---|---|---|
 | ≤ 2026-07-09 | pcalnon instance `/usr/bin/duplicati` on **:8300**, data `~/.config/Duplicati/` (job `Ubuntu`), launched by gnome-shell, `Linger=no`; root `duplicati-server` on **:8200**, data `/root/.config/Duplicati/`, job `yamaguchi` never completed. Last successful backup 2026-07-09 | H0821:73-76; DMG:347-355; RUN:74 |
 | 2026-07-12/13 | Pre-upgrade auto-snapshots of both DBs (schema-migration pairs, 2023-06 / 2025-08 / 2026-07); `BackendQuotaNear` 4 KiB; strict-mode wedge 07-13 | RUN:63-68, 74-78, 278-293 |
-| 2026-08-21 | Owner frees 1.1 TB, runs Repair + Resume ("server had been **PAUSED**"), scheduled run fails, starts Recreate 19:27:16; Overtoad's manual copy `Duplicati-server_2026-08-21.sqlite` (not automatic); `Backup.DBPath` silently changed to the **server** DB between 18:19 and 19:27 | H0821:17-29; DMG:370; H0822:18-36, 204-206 |
+| 2026-08-21 | The Overtoad frees 1.1 TB, runs Repair + Resume ("server had been **PAUSED**"), scheduled run fails, starts Recreate 19:27:16; Overtoad's manual copy `Duplicati-server_2026-08-21.sqlite` (not automatic); `Backup.DBPath` silently changed to the **server** DB between 18:19 and 19:27 | H0821:17-29; DMG:370; H0822:18-36, 204-206 |
 | 2026-08-22/23 | DBPath corrected in UI (pid unchanged); `Schedule` table 0 rows; the two same-length `enc-v1` re-encryptions prove the stored passphrase intact | DMG:314-328 |
 | 2026-08-23 | Fresh job `Ubuntu-fresh` (id 3, `DQRVQNDIFX`) run by `duplicati-cli` as pcalnon; creds in a worktree `.env`; tmpfs staging; run 1 hang / run 2 rc=100 | H0823:74-85; H0824:42-47, 132-134 |
 | 2026-08-24 | Scheduled lane (`systemd --user`, `Linger=yes`); creds moved to `~/.config/duplicati-backup/env`; `dbconfig.json` maps old archive → `KCSYQNVYOP.sqlite` (orphan) | H0824:113-134; FSC:151-155 |

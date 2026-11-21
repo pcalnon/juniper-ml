@@ -30,7 +30,7 @@ Short names used below: HANDOFF is the frozen `…/round1/HANDOFF_frozen_round1.
 ### 3. MAJOR — the spec for NON-OWNER item 1 cannot meet its own acceptance test
 - **Where:** "C4 must accept a heading whose old text survives inside a renamed one … drop the 8 false ones."
 - **What the merge diffs show:**
-  - #1973 does survive: "0.6 Owner decisions still owed" became "… — NONE, as of 2026-09-21".
+  - #1973 does survive: "0.6 The Overtoad decisions still owed" became "… — NONE, as of 2026-09-21".
   - #1976 (`739a233c`) does not: "…environment repair — Overtoad has not ruled, asked 3+ times" became "~~…environment repair~~ — MOOT…".
   - #1992 (`3b656b57`) does not: the heading's claim was rewritten.
   - #1983 (`78e36d8e`) does not: "two of three copies" became "three of four", a factual correction rather than a status marker.

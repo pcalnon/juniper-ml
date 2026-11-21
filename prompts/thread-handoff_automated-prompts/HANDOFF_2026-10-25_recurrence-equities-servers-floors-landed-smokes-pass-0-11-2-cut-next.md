@@ -17,7 +17,7 @@
 
 **Cut juniper-ml 0.11.2 and stop at `PENDING_PYPI_APPROVAL`.** Then record it in `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`.
 
-**Owner rulings, 2026-10-25, given in this session through AskUserQuestion (label → substance):**
+**The Overtoad rulings, 2026-10-25, given in this session through AskUserQuestion (label → substance):**
 - **Who: "This arc's successor runs it."**
   - Turing session [42fe25] had claimed the cut. It dropped the claim when the ruling was relayed: juniper-ml#2336, merged as `1257f181`, renamed its handoff and names this file as the cut's Overtoad.
 - **Version: "0.11.2 via override (Recommended)"**, over the release train's 0.12.0. **This ruling rests on an incomplete premise.**

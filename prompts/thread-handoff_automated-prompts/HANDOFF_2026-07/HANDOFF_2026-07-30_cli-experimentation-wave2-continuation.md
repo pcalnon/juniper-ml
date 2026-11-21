@@ -20,7 +20,7 @@ Continue executing the CLI test/validation/experimentation program for juniper-c
 ## Key context
 
 - All P0/F-findings + Wave lessons are in memory file `project_cascor_recurrence_cli_experimentation_plan.md` (read it first) and the evidence doc. Highlights: explicit-IP extra_hosts (172.31.0.1); monitoring network discovered by `_monitoring$` suffix; pidfiles = ss listener pids; rebase captures gpg-sign at START (use `git commit --no-gpg-sign` for resolutions); headless commits need `-c commit.gpgsign=false`.
-- Owner decision pending (not urgent): align recurrence to `namespace="juniper_recurrence"` (series rename => lockstep dashboard+rule updates) vs keep generic-family + service-label scoping (shipped).
+- The Overtoad decision pending (not urgent): align recurrence to `namespace="juniper_recurrence"` (series rename => lockstep dashboard+rule updates) vs keep generic-family + service-label scoping (shipped).
 - Deploy micro-PR candidate: `tests/test_provenance_sha.py` fixture commits without `-c commit.gpgsign=false` (fails locally on YubiKey hosts).
 - Session worktrees: juniper-ml session worktree on branch `docs/plan-erratum-recurrence-http-prefix`; deploy worktrees for #166/#167 live under `worktrees/` (clean up after merges per the V2 procedure); Wave-2.1 agent worktree `juniper-ml/.claude/worktrees/agent-a0832c6a845609e81`.
 - Verification for the new thread: `gh pr list --repo pcalnon/juniper-ml --state open` + same for juniper-deploy; `git -C <repo> log --oneline -3 origin/main` per repo; memory file for the full ledger.

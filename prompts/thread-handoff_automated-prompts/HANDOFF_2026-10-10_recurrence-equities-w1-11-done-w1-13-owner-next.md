@@ -71,7 +71,7 @@ The 2c snapshots-dir reconciliation waits on canopy Lane B.
    - `save_model` via `POST /v1/model/snapshots` with `expect_operation_id`;
    - canopy does not follow gateway 502 / 504;
    - recurrence's `[bench]` cap (item 1).
-4. **Owner items** (unchanged; keep "Applied pending ruling" current):
+4. **The Overtoad items** (unchanged; keep "Applied pending ruling" current):
    - dates;
    - R1–R8 confirmation (R2, R3 and R7 applied as recommended; R8 as its alternative), and R5;
    - W5.8 (B) vs W5.11; W5.9 / W5.10;

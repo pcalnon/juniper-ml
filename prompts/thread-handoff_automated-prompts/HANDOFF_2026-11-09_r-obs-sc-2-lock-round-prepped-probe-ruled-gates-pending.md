@@ -10,7 +10,7 @@ Finish R-OBS-SC-2 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DE
 
 **Approvals are per-session** (`feedback_headless_merge_approval_policy.md`). This session held "approval to perform all necessary operations on PRs for this work arc, as appropriate" (the user's turn, 2026-11-09 ~00:15Z). **Re-ask in your session.** Paul approves every `pypi` gate; never approve one.
 
-## Owner ruling this session (record it in v1.15.15)
+## The Overtoad ruling this session (record it in v1.15.15)
 
 **2026-11-09T00:24:20Z** (AskUserQuestion; transcript `tool_result` timestamp): **"Per-lock probe (Recommended)"**. The question established three facts. Security step 4 asks every lock PR to carry "S0.11's relay run". S0.11's relay tests were never written for data, cascor or canopy, and only recurrence has W1.14's tests (recurrence#203). A1's F-S10 rulings for data-client and cascor are still open (plan L188, L738).
 
@@ -45,7 +45,7 @@ The option's text: in a venv built from each new lock, run the P3-07 Sentry wire
 2. **Per consumer** (data, cascor, canopy, recurrence): re-fetch the tree, refresh, `check`, `--label after` probe (expect wire probe **CLEAN**, same suites green, `pin_drift` empty), CHANGELOG entry, and `open_signed_pr.py` (lock + CHANGELOG). The body should carry: before/after probe results, the telemetry record, the freshness replay, and the NOT-S0.11 sentence, with `References` to `RELEASE_NOTES_juniper-observability_v0.4.2.md` / `…service-core_v0.7.2.md`. Before opening, re-resolve `main` and refuse if it moved. Merge with `util/safe_merge.py` (read its `MERGED` line) once the required checks pass, under your session's re-granted approval.
 3. **Plan v1.15.15**: an ad-hoc writer modelled on `util/ad-hoc/2026-11-07_consolidated_plan_v1_15_14_juniper_ml_0_11_4_published.py`. It records P3-07 (#2523), the carry (#2524), the proposals (#2525, #2526), both cuts and their gate state, rounds 2/3's findings, the 00:24:20Z ruling, the lock PRs, Security step 4's probe in place of S0.11's run, and the follow-ups below. Commit both handoffs and the four ad-hoc tools in it.
 4. **Memory**: update `project_recurrence_equities_p0_arc_2026-10-04.md`'s top block.
-5. **Owner items to surface (report, do not act)**: the juniper-ml `[tools]` floor `>=0.4.2` needs meta 0.11.5. The forks' truncating `RateLimiter`/`FailedAuthThrottle` (data `security.py:250/:254/:427`, cascor `:229/:233/:386`, canopy `src/security.py:270/:274`) leave APD-SVCCORE-004's `Retry-After: 0` live, with no register row. Also: the 0.4.3 design; the `/tmp/juniper-e2e/canopy-805{2,3}.log` writer; S0.11's relay tests still unwritten (A1); and cascor and canopy running FastAPI's default telemetry. That last one is inert while the locks hold no OTel SDK, but data#454's opt-out is missing in both.
+5. **The Overtoad items to surface (report, do not act)**: the juniper-ml `[tools]` floor `>=0.4.2` needs meta 0.11.5. The forks' truncating `RateLimiter`/`FailedAuthThrottle` (data `security.py:250/:254/:427`, cascor `:229/:233/:386`, canopy `src/security.py:270/:274`) leave APD-SVCCORE-004's `Retry-After: 0` live, with no register row. Also: the 0.4.3 design; the `/tmp/juniper-e2e/canopy-805{2,3}.log` writer; S0.11's relay tests still unwritten (A1); and cascor and canopy running FastAPI's default telemetry. That last one is inert while the locks hold no OTel SDK, but data#454's opt-out is missing in both.
 
 ## Traps (new this session, plus the carried ones)
 

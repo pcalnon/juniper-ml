@@ -566,7 +566,7 @@ handoff adds
 
 ---
 
-## 4. Owner rulings taken this session
+## 4. The Overtoad rulings taken this session
 
 ~~All are recorded canonically in §13.1 of~~
 `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`. Do not re-litigate them.

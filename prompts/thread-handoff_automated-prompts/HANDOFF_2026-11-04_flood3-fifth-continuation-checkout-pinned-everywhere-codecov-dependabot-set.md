@@ -49,7 +49,7 @@ Nothing is owed unless the Overtoad asks. What remains is one observation (Remai
 ## Remaining work
 
 1. **Observe the first Dependabot PR in juniper-data or juniper-canopy** (none was open on 2026-11-04). Its Codecov step should log `Token length: 36` and no `Token required` line. `Upload queued for processing complete` proves nothing: it prints on a refused upload too. Record the result in `…FLOOD-3-DISPOSITION.md` §8.
-2. **Owner calls.** A session acts on none of these without the Overtoad's word, and on 2.4 not even then.
+2. **The Overtoad calls.** A session acts on none of these without the Overtoad's word, and on 2.4 not even then.
    1. **`.claude/worktrees/iridescent-sniffing-snail`** (HEAD `c77b7be5`, on `main`, unlocked, `tmp/` 12 KB, `session-0f840224/`): offered 2026-11-01, not chosen. Never attach or resume `2fc3f4e1`.
       - Route B (the gates, then `git worktree remove` and `git branch -d worktree-iridescent-sniffing-snail`) keeps the session record.
       - Route A (`claude rm 2fc3f4e1`) deletes both; check the branch afterwards.
@@ -101,7 +101,7 @@ ls /home/pcalnon/Development/python/Juniper/worktrees/ | grep -cE 'juniper-(casc
 
 ## Residue: the remaining work of `HANDOFF_…cleanup-done.md` (11-01), item by item
 
-1. **Owner calls:**
+1. **The Overtoad calls:**
    - 1.1, Codecov in the Dependabot stores: **done**, all nine (Overtoad, 2026-11-04); its effect awaits item 1 here.
    - 1.2, `iridescent-sniffing-snail`: not re-asked (item 2.1 here).
    - 1.3, SHA-pin the other seven: **done** (seven PRs above).

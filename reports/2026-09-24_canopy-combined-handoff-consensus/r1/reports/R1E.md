@@ -73,7 +73,7 @@ Artifact reviewed: `r1/DRAFT_r1.md`, sha256 `8c2fa29042da0c6f0168ad551a7d2009217
       "location": "Goal statement, 'Put the Overtoad questions to the Overtoad in one message' (lines 44-52); A7 items 3, 9 and 10 (lines 279, 285-286)",
       "problem": "The single Overtoad message covers merge approval, X1, A6, C2, C3, A3 and the rest of A6. It omits three standing Overtoad questions from the ledger's Still-owed list, which A7 does carry: item 3 (F-CANOPY-004's contract), item 9 (M-DATASET-17..26, the Overtoad's question) and item 10 (the metrics replay drives no chart). Followed literally, the goal leaves them unasked.",
       "fix": "Add ledger items 3, 9 and 10 to the one-message list, or say explicitly that they are deferred.",
-      "evidence": "notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md:9612 '3. **Owner: F-CANOPY-004's contract**', :9624 '9. Unchanged ... M-DATASET-17..26 (the Overtoad's question)', :9626 '10. **Owner question**: the metrics replay drives no chart'; DRAFT_r1.md lines 44-52 name none of items 3, 9 or 10"
+      "evidence": "notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md:9612 '3. **Owner: F-CANOPY-004's contract**', :9624 '9. Unchanged ... M-DATASET-17..26 (the Overtoad's question)', :9626 '10. **The Overtoad question**: the metrics replay drives no chart'; DRAFT_r1.md lines 44-52 name none of items 3, 9 or 10"
     },
     {
       "id": "R1.1",

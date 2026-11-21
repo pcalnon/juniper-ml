@@ -148,7 +148,7 @@ landed in its own `RUN_DIR/logs/`. The hazard H-7 described did not occur.
 
 | arm                                          | before                                  | now                                                   |
 |----------------------------------------------|-----------------------------------------|-------------------------------------------------------|
-| **F-P1-2**                                   | Owner decision, parked since 2026-08-07 | **CLOSED — premise false; no action taken or needed** |
+| **F-P1-2**                                   | The Overtoad decision, parked since 2026-08-07 | **CLOSED — premise false; no action taken or needed** |
 | **P1.6** interactive render                  | the only non-PASS arm of P1 smoke       | **PASS** (§2.4)                                       |
 | **P3 criterion 6** Grafana sub-arm           | "pending the F-P1-2 decision"           | **PASS** (§2.3, §2.4)                                 |
 | **P3 criterion 8** "both visible in Grafana" | "shares the F-P1-2 shadow"              | **PASS** — both services visible, run-scoped (§2.4)   |

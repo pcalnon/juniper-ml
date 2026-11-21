@@ -274,7 +274,7 @@ detecting, so **this host cannot gate step speed**.
 
 ---
 
-## 7. Owner decisions, 2026-09-02
+## 7. The Overtoad decisions, 2026-09-02
 
 | # | decision | consequence |
 |---|---|---|

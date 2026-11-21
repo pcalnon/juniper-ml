@@ -180,7 +180,7 @@ closing keywords, safe_merge exit 0, a release cut under an open PR, and freezin
 - **The memory index is near its load limit.** Add a pointer only with an equal trim (`feedback_memory_index_target_is_20kb.md`).
 - **"Merged" is not "released"**: #663 and #672 are on main only. `[VERIFIED 2026-10-03: PyPI canopy 0.8.1, cascor 0.11.0, both pre-merge]`
 
-### Owner rulings in force (carried)
+### The Overtoad rulings in force (carried)
 
 - **2026-09-22: conform the stores.** Implemented by #422.
 - **2026-09-22: canopy runs `validate_npz_contract` as advisory only** (canopy#559 / #663).

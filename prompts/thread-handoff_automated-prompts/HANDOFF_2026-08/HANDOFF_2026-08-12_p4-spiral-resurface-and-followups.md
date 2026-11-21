@@ -24,7 +24,7 @@ All code work: **use a worktree, open a PR, never self-merge**, and `gh pr list`
 5. **R-6 — adopt `execution.stall_seconds` in `util/experiments/suites/p4/*.yaml`** and delete `util/ad-hoc/2026-08-10_driver_stall_shim.py`.
 6. **cascor#509 / #505** — Overtoad's call. For #509 the standalone-valuable half: a run that installed zero candidates because of allocation failures **must not report `succeeded`**.
 
-**Owner items carried unchanged** from the predecessor handoff: Q-6 (log-dir override retires H-7, unlocks cascor-parallel `run_suite`); F-P1-2 (`:3000` Grafana squatter); §12 PF threshold ratification + F-P1-3b profiling lane; W-12/Q-7 (`csv_import` corpus); Q-8/Q-10 (perf-baselines home; recurrence conda env); JR-REC ingest at the next requirements-snapshot refresh.
+**The Overtoad items carried unchanged** from the predecessor handoff: Q-6 (log-dir override retires H-7, unlocks cascor-parallel `run_suite`); F-P1-2 (`:3000` Grafana squatter); §12 PF threshold ratification + F-P1-3b profiling lane; W-12/Q-7 (`csv_import` corpus); Q-8/Q-10 (perf-baselines home; recurrence conda env); JR-REC ingest at the next requirements-snapshot refresh.
 
 ## Key context
 

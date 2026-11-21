@@ -373,7 +373,7 @@ Each entry gives the message verbatim from the JSON, the evidence, the cause, an
 | G-PATH | `util/home_path_literal_check.py: task G5's pre-commit hook and its CI step` | pre-commit's `home-path-literal` hook and the whole-scope step in ci.yml's Pre-commit job (G5 landed: plan §18.2 :942). |
 | G-AGENT | `tests/test_agents_frontmatter.py and each agent's contract test (task H2), and H3's denials` | CI runs H2's suites (plan §18.2 :947). H3's orchestrating session tallies the 3 of 3 denials (plan §6 :478), and this run contributes one (§6). |
 
-## 4. Owner steps, in dependency order
+## 4. The Overtoad steps, in dependency order
 
 Ordered by priority: P0 first (arcs A, B and C), then P1. Within a chain, each step follows the steps it needs. The chains are independent of one another until step 9, which needs steps 3 and 8. Steps 2, 3 and 5-9 are credential-bearing and run in the Overtoad's own terminal (plan §14.1; signing plan §13).
 

@@ -245,7 +245,7 @@ recurrence. **Cutting those releases is an Overtoad action and appears nowhere o
 **5. Wave 4 — Docker Hub** as a second push target. Needs `DOCKERHUB_TOKEN` per repo.
 Answer OQ-1 first.
 
-**6. Owner decisions — surface, do not guess** (plan §6): **OQ-1** Docker Hub posture for
+**6. The Overtoad decisions — surface, do not guess** (plan §6): **OQ-1** Docker Hub posture for
 multi-GB images; **OQ-2** a `:X.Y.Z-cuda` variant (note item 1 makes today's image
 accidentally CUDA — that is a bug, not OQ-2 being answered); **OQ-3** Pi capacity, now
 disk/bandwidth as well as RAM; **OQ-4** a versioned stack manifest.

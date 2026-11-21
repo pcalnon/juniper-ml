@@ -46,7 +46,7 @@ The handoff has two HIGH problems. Its F5 fix would do nothing, and canopy#685 h
 
 **MEDIUM-3: later arc items C-A…D-G are dropped.**
 - **Source:** the previous handoff (`HANDOFF_2026-09-23_defect-register-round-42-four-prs-armed-by-an-unseen-actor-two-merged-unvalidated.md`), line 82: "C-A (relaunch fresh…), C-B, C-C, D-C, D-D, D-E, D-F, D-G (048/049/051). D-F collides with data#428 on `storage/base.py`."
-- The split message (07:59:16Z) assigned them to neither lane. The register handoff lists them only under "Owner decisions to surface" (line 51).
+- The split message (07:59:16Z) assigned them to neither lane. The register handoff lists them only under "The Overtoad decisions to surface" (line 51).
 - The new handoff never mentions them; line 17 omits them.
 - **Text to add:** "Unowned: C-A…D-G. Ask the Overtoad which lane owns them. C-A must be relaunched fresh. D-F collides with `storage/base.py`."
 
@@ -103,7 +103,7 @@ The handoff has two HIGH problems. Its F5 fix would do nothing, and canopy#685 h
 
 - **Validations owed:** #690 on both commits (20:42:33Z, "my successor's first task") and #685. The judgement calls (a)–(c) match `canopy685-implementation-report.md:64-67`.
 - **Fix-forward items:** F1→#685, F2, F3 plus F8, F4 as APD-CASCOR-014, F6, F7, F9 and F10 all match the bytes-compare validation.
-- **Owner steps:** the lock lines (data `:88`, cascor `:63`, canopy `:79`, canopy's `<0.5.0` cap) and the possibly polluted live Sentry project.
+- **The Overtoad steps:** the lock lines (data `:88`, cascor `:63`, canopy `:79`, canopy's `<0.5.0` cap) and the possibly polluted live Sentry project.
 - **CASCOR-008/-013:** held until #690 merges and validates (19:25:30Z, 20:25:20Z).
 - **Coordination:** the archive header, the overlap and subset rules, the register's `fix/conditional-requests-round4-followups` files, and the two canopy ledger items.
 - **Previous handoff's items:** routed to the register lane by the split (data#428 round 3, ml#2032/#2059, the register PR, the primer, `MEMORY.md`). The follow-ups became #688 and #683.

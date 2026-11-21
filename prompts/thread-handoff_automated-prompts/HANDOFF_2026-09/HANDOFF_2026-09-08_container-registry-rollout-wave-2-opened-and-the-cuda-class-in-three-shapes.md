@@ -279,7 +279,7 @@ answer OQ-1 first. Not started; the worker workflow header still says "phase 2, 
   `juniper-recurrence-model/tests/test_readouts_mlp.py` and runs under the job's
   `working-directory`. **Do not "fix" it by prefixing the path in the workflow** — that breaks the lane.
 
-**7. Owner decisions — surface, do not guess** (plan §6): OQ-1 Docker Hub posture; OQ-2 a `-cuda`
+**7. The Overtoad decisions — surface, do not guess** (plan §6): OQ-1 Docker Hub posture; OQ-2 a `-cuda`
 variant (the CUDA images were bugs, not OQ-2 being answered); OQ-3 Pi disk/bandwidth as well as RAM;
 OQ-4 a versioned stack manifest.
 

@@ -62,4 +62,4 @@ The child environment comes from a minimal allow-list (the script's docstring li
 
 `<Env>.export.yml` is `conda env export --no-builds -n <Env>`. **Its `channels:` block is misleading.** It
 repeats the eight channels `~/.condarc` lists, but every package came from conda-forge: the create command
-passed `--override-channels -c conda-forge`. Owner step 4 trims `~/.condarc`.
+passed `--override-channels -c conda-forge`. The Overtoad step 4 trims `~/.condarc`.

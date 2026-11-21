@@ -23,7 +23,7 @@
 |---------|------|--------|
 | v1 | 2026-06-23 | Initial design after corpus survey + primitive research |
 | **v2** | **2026-06-24** | Validated & Hardened, 5-agents: concrete validator contract, bound loop; expand rubric (R1–R5); ground bundle gains symbol/dep/prov facts; `.gitignore` reality + `~/.claude` mirror + `--repo-root`; roadmap re-sliced & made CI-objective; factual corrections |
-| **v2 — ratified** | **2026-06-24** | Owner ratified; round-1 build (PR 1) authorized |
+| **v2 — ratified** | **2026-06-24** | The Overtoad ratified; round-1 build (PR 1) authorized |
 
 ---
 

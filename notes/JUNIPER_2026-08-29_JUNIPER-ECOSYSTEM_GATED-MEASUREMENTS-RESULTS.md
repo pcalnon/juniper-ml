@@ -227,7 +227,7 @@ drops. The design's substance — juniper-data owns a third partition, `train` d
 unaffected, because it never depended on the magnitude.
 
 **Logging design**: §5's payoff table is replaced by §3 above; the priority order inverts; Overtoad
-decision 1 (measure first) is discharged. Owner decisions 2–6 are unaffected — they concern sinks
+decision 1 (measure first) is discharged. The Overtoad decisions 2–6 are unaffected — they concern sinks
 and levels, not what gets interpolated.
 
 ## 5. References

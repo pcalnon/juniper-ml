@@ -226,7 +226,7 @@ Notes that are consequences, not choices:
 
 ---
 
-## 10. Owner rulings needed
+## 10. The Overtoad rulings needed
 
 | § | Question | Recommendation |
 |---|---|---|

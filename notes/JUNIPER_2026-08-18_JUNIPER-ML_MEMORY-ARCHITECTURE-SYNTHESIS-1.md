@@ -541,7 +541,7 @@ Mechanical gates prove the bytes moved. They cannot prove an agent still finds t
 
 ---
 
-## 7. Owner decisions
+## 7. The Overtoad decisions
 
 | # | Decision | Options | Recommendation |
 |---|----------|---------|----------------|

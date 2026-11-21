@@ -8,7 +8,7 @@ still hold; this file does not repeat them.
 
 Every state fact was read from `gh`, PyPI or the disk between 2026-11-14 22:53Z and 2026-11-15 02:06Z. `[moves]` marks state that the Overtoad's approval or an armed merge changes.
 
-## Owner rulings this session (label verbatim; answer times from the transcript, `util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py 1b4fec84`)
+## The Overtoad rulings this session (label verbatim; answer times from the transcript, `util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py 1b4fec84`)
 
 The Overtoad opened the session with "continue work arc from handoff: …HANDOFF_2026-11-13_r-obs-sc-2-follow-ups-0-11-5-at-pypi-gate-guard-cuts-plan-next.md" and "merge approval granted" (per-session; it does not carry). That instruction answered the 11-14 update's first open question (arc scope). Its "clarify" turned out to be the Overtoad's request for that update (22:12:40Z), after which they said "the four open questions should be handled by the session working from the updated handoff" (22:37:55Z).
 

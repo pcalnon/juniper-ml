@@ -34,7 +34,7 @@ Continue the **CLI experimentation program residual work** (successor to `HANDOF
 5. **Spiral-surface re-runs (Overtoad-scheduled)**: E-A grid + E-B/E-C spiral rows remain F-P4-1 measurements until re-run against the fixed stack; real spiral cells train minutes each (E-A full budget ≈ 18 min for 200 pts in-process; the 800-pt staged dataset is longer).
     - P1.1 reference metrics describe the fallback dataset (mechanics remain valid).
 6. **cascor#505 implementation** if Overtoad wants it (multiprocessing task-format blast radius; CASCOR-P0-005 key-name class — needs construct-level tests).
-7. **Owner items carried unchanged**: Q-6 (log-dir override retires H-7, unlocks cascor-parallel `run_suite`); F-P1-2 (`:3000` Grafana squatter; options in P3 roll-up §3); §12 PF threshold ratification + F-P1-3b profiling lane; W-12/Q-7 (`csv_import` corpus); Q-8/Q-10 (perf-baselines home; recurrence conda env); JR-REC ingest at the next requirements-snapshot refresh.
+7. **The Overtoad items carried unchanged**: Q-6 (log-dir override retires H-7, unlocks cascor-parallel `run_suite`); F-P1-2 (`:3000` Grafana squatter; options in P3 roll-up §3); §12 PF threshold ratification + F-P1-3b profiling lane; W-12/Q-7 (`csv_import` corpus); Q-8/Q-10 (perf-baselines home; recurrence conda env); JR-REC ingest at the next requirements-snapshot refresh.
 
 ## Key context
 

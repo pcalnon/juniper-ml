@@ -274,7 +274,7 @@ The negative control is the acceptance test for this whole design: **a branch di
 
 ---
 
-## 9. Owner decisions — **all four ANSWERED 2026-08-17**
+## 9. The Overtoad decisions — **all four ANSWERED 2026-08-17**
 
 - **D1 — Trusted Publisher environment binding. → CONFIRMED BOUND.** Every publisher config names
   its environment (`pypi` for PyPI, `testpypi` for TestPyPI), e.g. juniper-cascor /

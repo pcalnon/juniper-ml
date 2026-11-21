@@ -283,7 +283,7 @@ of the tail re-probe
   that **163 of 172 broken titles were produced BY a repair pass**. Any further repair must be gated
   on `util/ad-hoc/2026-08-29_requirements_title_artifact_scan.py --check`, which **still exits 1
   with 91 artifacts remaining** (84 truncated, 41 unbalanced-bold, 8 field-label, 1 blockquote).
-  Owner must choose the extraction rule.
+  The Overtoad must choose the extraction rule.
 - **`JR-ML-OBS-003`** survives as its own item — a different class from the 172.
 - **R-1's second clause** — cascor must not report `succeeded` when zero candidates were installable
   due to allocation failures. Owner: cascor.

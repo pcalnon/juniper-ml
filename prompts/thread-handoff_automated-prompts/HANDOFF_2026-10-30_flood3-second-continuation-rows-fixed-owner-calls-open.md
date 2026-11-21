@@ -58,7 +58,7 @@ Nothing is owed unless the Overtoad asks. What remains:
 
 ## Remaining work
 
-1. **Owner calls.** A session never acts on these without the Overtoad's word.
+1. **The Overtoad calls.** A session never acts on these without the Overtoad's word.
    0. **Close the duplicate continuation, or tell it to stand down, before answering it.**
       - **Who:** session `0f840224`, forked as `2fc3f4e1` (pid 4148734, worktree `.claude/worktrees/iridescent-sniffing-snail`, ListAgents `[901969]`). The Overtoad started it on 2026-10-28 around 10:14Z with the same request: "continue from handoff: …HANDOFF_2026-10-28_flood3-continuation-cascor-0-13-0-at-pypi-gate.md. merge approval granted."
       - **What it is waiting on:** since 2026-10-28 20:58Z, a question dialog asking about cascor's SARIF upload, Codecov and the cleanup. This pass has since ruled on and done all three.
@@ -165,7 +165,7 @@ cut -d' ' -f22 /proc/4148734/stat    # alive only if this prints the lock line's
 
 1. **The `pypi` gate:** approved by the Overtoad; 0.13.0 has been on PyPI since 2026-10-28 11:43Z.
 2. **juniper-ml#2376, then the update-branch and merge of #2378, #2379 and that handoff's PR (#2380):** all merged on 2026-10-28.
-3. **Owner decisions:**
+3. **The Overtoad decisions:**
    - Codecov: resolved (token added), except item 1.1.
    - cascor `ci.yml:659`: ruled, and fixed in #735.
 4. **ml#2064 = juniper-ml#2381:** merged at 03:23Z.

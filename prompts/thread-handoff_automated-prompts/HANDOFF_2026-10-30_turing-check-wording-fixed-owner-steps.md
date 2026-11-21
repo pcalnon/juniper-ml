@@ -41,7 +41,7 @@
 - **C0** still reports `[Included]`.
 - **The link** (2026-10-30): Wi-Fi on 2.4 GHz channel 5, SNR 30 dB, with 0% loss to the gateway; `en0` is now 192.168.50.222 (DHCP). juniper-ml#2392's five files, about 400 KB, landed through the API on the first attempt.
 
-## Owner steps
+## The Overtoad steps
 
 1. **D11 item 5.** In a real terminal, run `gh auth status`. Then give agent sessions item 5's fine-grained PAT: the 10 Juniper repos, Contents and Pull requests read/write, Metadata read, no Administration.
 2. **H6's, carried forward:**

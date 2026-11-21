@@ -1,4 +1,4 @@
-# Juniper — Owner Decisions Ratified 2026-06-23
+# Juniper — The Overtoad Decisions Ratified 2026-06-23
 
 **Project**: Juniper ML Research Platform
 **Repository**: pcalnon/juniper-ml (planning hub)

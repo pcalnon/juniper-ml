@@ -39,7 +39,7 @@ arc worktree/branch is already cleaned (four older NON-arc canopy worktrees ling
 
 ## THE T6 HOLD (cross-session, still active)
 
-Owner is now the successor session **`t6 rebaseline`** (handoff ml#1371), not the original T6 session (which
+The Overtoad is now the successor session **`t6 rebaseline`** (handoff ml#1371), not the original T6 session (which
 went idle after transferring the hold). Its last word: zero cells run, campaign unlaunched, window expected
 **~05:10–07:45 local on 2026-08-26**, release announced **by name to "canopy e2e phase 2"** — a fresh session
 must tell it its own name first. Rules unchanged: no isolated trio (8051/8101/8202), no chrome-headless, do not
@@ -82,7 +82,7 @@ urgency demands a decision, escalate to Paul; do not decide unilaterally.
    C2.10-03 (W7 confirm/swap), M-SNAPSHOTS-20/-21 via a real dataset swap through the restored Live Switch,
    M-DATASET-14 (theme flip), the F-CANOPY-004 latency-class rows after item 4. **M-DATASET-17..26 still await
    the Overtoad's DEMO-lane / 3-D-posture scoping decision** — surface it, do not drive around it.
-4. **Owner decisions to put to Paul** (drafted in the evidence note's session section): **F-CANOPY-004** —
+4. **The Overtoad decisions to put to Paul** (drafted in the evidence note's session section): **F-CANOPY-004** —
    accept-and-document a freshness contract now (post-Stage-2 numbers: 3–16 s interaction renders, 20–40 s
    fresh-session population; recommended) versus open the JR-CAN-PERF-004 WS-migration workstream; and the
    **open-P2 set** (-001, -012, -013, -015, -018, -026, -028, -032, -033, -034, -036, F-CASCOR-002) for

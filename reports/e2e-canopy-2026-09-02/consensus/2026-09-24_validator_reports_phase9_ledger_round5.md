@@ -84,7 +84,7 @@ Paths: "ledger" means `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EV
 
 **1. MAJOR (staleness after the freeze): the Overtoad has answered the Overtoad question.**
 - **Quoted:**
-  - ledger :8786-8787, "The actor is unidentified … **Owner question**: were that pass and the later actions his?"
+  - ledger :8786-8787, "The actor is unidentified … **The Overtoad question**: were that pass and the later actions his?"
   - item 15, :9496-9503
   - :9377-9379, "who readied and armed canopy#676 … beyond 'no Claude Code process on this host'"
 - **Evidence:**

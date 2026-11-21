@@ -113,7 +113,7 @@ request. Until the answers come, open no release PR and make no parent edit.
 - Item 2's list of texts to update is incomplete (finding 6 above).
 - "Still open with the Overtoad" gives A1's open limbs as the F-S10 fixes only, as the four-ruled handoff first did.
   Plan v1.15.15 lists two more as A1's remainder: P6 OD-2 and canopy#685 call (a). They appear in its Overview bullet
-  "P12 ran ahead of the Overtoad's rulings…" and in item 8 of Wave 0's "Owner sitting" list. No R-OBS-SC-2 handoff
+  "P12 ran ahead of the Overtoad's rulings…" and in item 8 of Wave 0's "The Overtoad sitting" list. No R-OBS-SC-2 handoff
   records a ruling on either, so both stay open, and plan v1.15.16 must not drop them.
 - Its "Verification commands" and "Git status" describe 2026-11-13 10:39Z. `pending_deployments` now prints nothing,
   and `origin/main` has moved. Use these instead, one per call (fetch each sibling first):
@@ -152,7 +152,7 @@ design session; and record all of it in plan v1.15.16.
 PR, the two consumer release PRs and their archive PRs, the plan v1.15.16 PR). Approvals are per-session. This
 session's ("merge approval granted", 2026-11-13) does not carry.
 
-## Owner rulings of 2026-11-13 (session `218ff61e`; label and option text verbatim; answer times from the transcript)
+## The Overtoad rulings of 2026-11-13 (session `218ff61e`; label and option text verbatim; answer times from the transcript)
 
 1. **0.11.5** (01:57:00Z): "Yes, as patch 0.11.5 (Recommended)" -- "This session writes the co-change tool, opens and
    merges the proposal PR (removing the two interim clauses the floor PR added to docs/REFERENCE.md), cuts the GitHub

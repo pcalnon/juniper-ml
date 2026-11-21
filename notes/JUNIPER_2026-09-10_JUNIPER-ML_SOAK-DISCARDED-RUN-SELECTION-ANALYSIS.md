@@ -115,7 +115,7 @@ That bounds what Overtoad decision 8 can do. Computed with the repo's own
 | mechanism-checked, now | 24/43 | 55.8% | [0.4111, **0.6957**] | yes |
 | mechanism-checked, minus that one `follow` | 23/42 | 54.8% | [0.3995, **0.6878**] | yes |
 
-**Owner decision 8 does not flip the verdict under either standard**, which is worth knowing
+**The Overtoad decision 8 does not flip the verdict under either standard**, which is worth knowing
 before spending effort on it. Note this is a *different* question from §4.5 of
 [`notes/JUNIPER_2026-09-04_JUNIPER-ML_SOAK-HANDOFF-CONSENSUS-VALIDATION.md`](JUNIPER_2026-09-04_JUNIPER-ML_SOAK-HANDOFF-CONSENSUS-VALIDATION.md),
 which remains live and unaffected: re-scoring a row the **other** way gives 27/43 →

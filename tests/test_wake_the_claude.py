@@ -1684,7 +1684,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
     def test_version_flags_report_claude_codes_version_only(self) -> None:
         """``-v``, ``--version``, ``-V`` and ``--claude-version`` report Claude Code's version, never this script's.
 
-        Owner rulings: ``--version`` on 2026-11-04, and ``-v``, as ``claude -v`` does, on 2026-11-06 -- until then ``-v`` printed this
+        The Overtoad rulings: ``--version`` on 2026-11-04, and ``-v``, as ``claude -v`` does, on 2026-11-06 -- until then ``-v`` printed this
         script's version. ``--version`` once sat in this script's version pattern as well, and ``-V`` / ``--claude-version`` were
         checked against ``--version`` alone, so both exited 1.
         """

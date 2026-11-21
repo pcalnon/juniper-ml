@@ -353,7 +353,7 @@ The Overtoad rated this release **High**: two of the exposures handed a real key
   generator declares. A preview above Start shows the request (W1.2; plan findings F-C2, F-C3).** The
   plan is juniper-ml's
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`
-  (v1.4.1). **Owner ruling R7 is still open.** This applies its recommended default pending the
+  (v1.4.1). **The Overtoad ruling R7 is still open.** This applies its recommended default pending the
   ruling, as the wave-1 PRs did for R2, R3 and R8. The alternatives touch one function,
   `backend/recurrence_request.shape_staged_ref`.
   - **F-C2.** The schema-driven form renders every field, and Apply posts every rendered value. An

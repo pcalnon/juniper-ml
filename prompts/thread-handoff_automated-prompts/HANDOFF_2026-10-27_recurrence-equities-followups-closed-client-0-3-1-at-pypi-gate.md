@@ -30,7 +30,7 @@ Continue the recurrence × equities arc:
 - **Runner-side GraphQL body cap measured** (handoff follow-up 3).
   - From a GitHub-hosted runner (run 40410086979), every body from 100,000 B to 16,777,216 B was accepted. From this host, every body up to 8,388,608 B.
   - The runner run came from throwaway draft juniper-ml#2361, opened against a throwaway base so only the base-branch guard ran. It was closed, and both branches were deleted.
-- **Owner rulings, this session, 2026-10-26/27 (AskUserQuestion):**
+- **The Overtoad rulings, this session, 2026-10-26/27 (AskUserQuestion):**
   1. **Raise `ARCHIVE_B64_MAX_DEFAULT` to 1,000,000.** Done: juniper-ml#2364 (23:02:33Z, `ecc05079`), with the probe `util/ad-hoc/2026-10-26_graphql_body_cap_probe.py`, evidence in `reports/2026-10-26_graphql-body-cap-probe/`, tests, `docs/REFERENCE.md` and the operator runbook 1.2.4.
   2. **Annotate the false `succeeded` row by appending a correction row** (follow-up 4). Done: `~/.local/state/juniper-experiments/index.jsonl` line 482 corrects line 477 (run `20261003T091414Z-4ba6`). **It says `degraded`, not the `failed` my question named.** `degraded` is the outcome today's `run_suite.py` assigns (train and predict succeeded; crossval failed with a 422 on `X_full`). Tell the Overtoad if they want `failed`.
   3. **The 0.11.2 erratum "everywhere".** It was ALREADY DONE by session "draft PRs", under the Overtoad's own ruling there: juniper-ml#2362 (both archives), #2363 (CHANGELOG, `40815bb4`), and both Release bodies (v0.11.2 edited 22:25:54Z). This session found that at upload time, discarded its duplicate and told "draft PRs".

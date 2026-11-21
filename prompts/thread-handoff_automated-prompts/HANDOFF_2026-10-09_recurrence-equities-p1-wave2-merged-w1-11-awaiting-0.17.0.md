@@ -53,7 +53,7 @@ Continue the recurrence × equities arc from the plan `notes/JUNIPER_2026-10-03_
    - The suite's `per_run_timeout_seconds` isn't checked to cover dataset + wall budgets.
    - `save_model` via `POST /v1/model/snapshots` with `expect_operation_id`.
    - Gateway 502/504 aren't followed by canopy.
-5. **Owner items** (unchanged; keep "Applied pending ruling" current):
+5. **The Overtoad items** (unchanged; keep "Applied pending ruling" current):
    - Dates; confirm R1–R8 (R2, R3, R7 applied as recommended; R8 as its alternative); R5.
    - W5.8 (B) vs W5.11; W5.9 / W5.10.
    - F-P8 Major + the W5.7 guard; re-rate F-P4's severity.

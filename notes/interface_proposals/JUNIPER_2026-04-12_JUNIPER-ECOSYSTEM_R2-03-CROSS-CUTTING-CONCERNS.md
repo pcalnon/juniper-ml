@@ -217,7 +217,7 @@ This concern covers: what metrics exist, where they live (cascor, canopy, browse
 
 ### 4.4 Phase touchpoints
 
-| Phase | Observability contribution | Owner | Exit criterion |
+| Phase | Observability contribution | The Overtoad | Exit criterion |
 |---|---|---|---|
 | **Phase 0-cascor** | `cascor_ws_seq_current`, `cascor_ws_replay_buffer_occupancy/_bytes/_capacity_configured`, `cascor_ws_resume_requests_total`, `cascor_ws_resume_replayed_events`, `cascor_ws_pending_connections`, `cascor_ws_broadcast_send_seconds`, `cascor_ws_broadcast_timeout_total`, `cascor_ws_broadcast_from_thread_errors_total`, `cascor_ws_state_throttle_coalesced_total` | backend-cascor | Metrics-presence test green; 72 h staging soak shows stable distributions; `WSSeqCurrentStalled` alert test-fired once |
 | **Phase A (SDK)** | `juniper_cascor_client_ws_set_params_total{status}` | sdk | PyPI publish; metric registered on client import |
@@ -518,7 +518,7 @@ A contract test verifies that two independent components agree on a wire-level o
 
 ### 7.4 Phase touchpoints
 
-| Phase | Contract test obligation | Owner |
+| Phase | Contract test obligation | The Overtoad |
 |---|---|---|
 | **Phase A (SDK)** | Ship `test_sdk_command_frame_matches_cascor_parser`; update fake harness to mirror new command shapes | sdk |
 | **Phase 0-cascor** | Ship `test_replay_buffer_capacity_advertised`, `test_seq_present_on_ws_training_broadcast_only`, `test_cascor_command_response_shape_matches_sdk_parser` | backend-cascor |

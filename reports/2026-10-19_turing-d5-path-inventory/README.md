@@ -12,7 +12,7 @@ D5 said to drop MacPorts' `/opt/local/bin` from the shell profile, because MacPo
 
 The 128 include `python3.7`, `perl5.28`, `maxima`, `sbcl`, `rlwrap`, `recode`, the texinfo tools and the giflib tools. They also include `gpg2`, `gnupg` and `gnupg2`: the Overtoad's hand-made links into Homebrew's `gnupg` Cellar, which Homebrew does not link into `/usr/local/bin`.
 
-**Owner ruling (2026-10-19): demote, don't remove.** `~/.bash_profile:87` (the MacPorts installer's 2019 line) changed as follows:
+**The Overtoad ruling (2026-10-19): demote, don't remove.** `~/.bash_profile:87` (the MacPorts installer's 2019 line) changed as follows:
 
 - before: `export PATH="${HOME}/.local/bin:/opt/local/bin:/opt/local/sbin:${PATH}"`
 - after: `export PATH="${HOME}/.local/bin:${PATH}:/opt/local/bin:/opt/local/sbin"`

@@ -106,7 +106,7 @@ P11 closure: [VERIFIED 2026-10-04: ml#2101 merged 2026-09-25T02:17:24Z `b82d12d7
 
 No PyPI upload or GitHub Release in any repo after 2026-09-24 [VERIFIED 2026-10-04]. Release-train cron cannot cut: run 37210667083 (today) ran detection only, ceremony/proposal skipped; `RELEASE_TRAIN_MODE` unset (only `RELEASE_TRAIN_APP_ID`) [VERIFIED 2026-10-04].
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options / source recommendation | Blocks | Source |
 |---|---|---|---|---|

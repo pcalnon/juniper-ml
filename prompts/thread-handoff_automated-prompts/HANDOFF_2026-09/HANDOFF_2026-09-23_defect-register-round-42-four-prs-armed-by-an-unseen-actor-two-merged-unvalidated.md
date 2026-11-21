@@ -18,7 +18,7 @@ Continue the defect-register arc: land the three fix-forward follow-ups, then ON
 | ml#2059 | `f5222f9d` | fork-drift gate: canopy + service-core sites, `SharedPackageGuardTest` | NOT independently validated (self-verified: cross-repo 11/11, negative control, 3 mutations) |
 | cascor#678 | `0e016a7c` | X-A + X-B | validated post-merge: 1 gap (ruled, below) + 5 LOW + 2 NIT, being fixed forward |
 
-**Owner ruling 2026-09-24** (extends `APD-CASCOR-013`): **"Keep while fetched splits stay."** The fetch's `dataset_shortfall`, and `current_dataset`, stay while ANY partition of that fetch is still loaded. They clear only once train, val and test have all been replaced. The gap it closes: a train-only inline start after a partial fetch kept the fetched val/test (retain-on-omit, cascor#582) while both fields said null.
+**The Overtoad ruling 2026-09-24** (extends `APD-CASCOR-013`): **"Keep while fetched splits stay."** The fetch's `dataset_shortfall`, and `current_dataset`, stay while ANY partition of that fetch is still loaded. They clear only once train, val and test have all been replaced. The gap it closes: a train-only inline start after a partial fetch kept the fetched val/test (retain-on-omit, cascor#582) while both fields said null.
 
 ### STOPPED at wrap-up (2026-09-24): two follow-ups have partial, UNVALIDATED work, and nothing was pushed
 

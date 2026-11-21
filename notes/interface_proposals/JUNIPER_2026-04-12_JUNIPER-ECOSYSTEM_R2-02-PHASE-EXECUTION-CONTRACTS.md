@@ -105,7 +105,7 @@ From the resolutions, this plan uses the following canonical identifiers:
 
 Owner-class key: **C** = backend-cascor, **Y** = backend-canopy (Python), **F** = frontend (canopy JS), **S** = SDK (cascor-client), **Sec** = security review, **O** = ops.
 
-| # | Phase | Owner | Effort (opt/exp/pess, eng-days) | Entry deps | Exit (top criterion) | Rollback TTF |
+| # | Phase | The Overtoad | Effort (opt/exp/pess, eng-days) | Entry deps | Exit (top criterion) | Rollback TTF |
 |---|---|---|---|---|---|---|
 | 1 | A (cascor-server prereqs, aka Phase 0-cascor) | C | 1.5 / 2.0 / 3.0 | main branch + GAP-WS-19 verified | `seq` monotonic on every `/ws/training` broadcast, resume + snapshot_seq working end-to-end | 15 min (revert) |
 | 2 | A-SDK (parallel with A) | S | 0.5 / 1.0 / 1.5 | main branch; no cross-repo dep | `CascorControlStream.set_params(params, timeout=1.0)` passes caller-cancellation test | PyPI yank or no-op (flag is off) |
@@ -198,7 +198,7 @@ Documentation:
 
 Single PR, squash-merged. Reason: the 10 commits are tightly coupled (resume handler depends on replay buffer depends on seq field), and splitting would force multiple cross-repo coordination windows.
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P1 | `phase-0-cascor-seq-replay-resume` | `feat(ws): seq numbers, replay buffer, resume protocol, state coalescer` | C | juniper-cascor main |
 
@@ -302,7 +302,7 @@ Release:
 
 ### 4.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P2 | `phase-a-sdk-set-params` | `feat(sdk): CascorControlStream.set_params with command_id correlation` | S | juniper-cascor-client main |
 
@@ -390,7 +390,7 @@ Observability:
 
 Two PRs, parallelizable but B-pre-a-cascor must merge first because canopy's PR references cascor's origin helper pattern (the canopy copy is a copy, not an import).
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P3 | `phase-b-pre-a-cascor-security` | `feat(security): origin allowlist + max_size + per-IP cap on /ws/training (M-SEC-03/04; Origin half)` | C + Sec | juniper-cascor main |
 | P4 | `phase-b-pre-a-canopy-security` | `feat(security): origin allowlist + max_size on /ws/training + audit logger skeleton (M-SEC-03/07 skeleton)` | Y + Sec | juniper-canopy main |
@@ -541,7 +541,7 @@ Runbook:
 
 Three-PR sequence. Cascor-side audit-counter Prometheus PR is small and lands last; canopy drain wiring PR is the large one.
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P5 | `phase-b-cascor-audit-prom-counters` | `feat(cascor): audit-event Prometheus counters (deferred from B-pre-a)` | C | juniper-cascor main |
 | P6 | `phase-b-canopy-drain-wiring` | `feat(canopy): ws_dash_bridge drain callbacks, Plotly extendTraces, connection indicator (flag off)` | Y + F | juniper-canopy main |
@@ -669,7 +669,7 @@ Observability:
 
 ### 7.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P8 | `phase-b-pre-b-cascor-control-security` | `feat(security): /ws/control origin, rate limit, idle timeout, HMAC adapter auth (M-SEC-01/01b/05/10/11)` | C + Sec | juniper-cascor main |
 | P9 | `phase-b-pre-b-canopy-csrf-audit` | `feat(security): cookie session + CSRF first-frame + audit log prometheus + M-SEC-07 extended` | Y + Sec | juniper-canopy main |
@@ -756,7 +756,7 @@ Documentation:
 
 ### 8.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P10 | `phase-c-canopy-set-params-adapter` | `feat(canopy): set_params hot/cold split, ws transport behind flag` | Y | juniper-canopy main |
 
@@ -836,7 +836,7 @@ Observability:
 
 ### 9.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P11 | `phase-d-cascor-control-commands` | `feat(cascor): /ws/control command dispatch + per-command timeouts` | C | juniper-cascor main |
 | P12 | `phase-d-canopy-button-ws-routing` | `feat(canopy): training-control buttons route via /ws/control with REST fallback` | F + Y | juniper-canopy main |
@@ -898,7 +898,7 @@ Tests:
 
 ### 10.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P13 | `phase-e-cascor-backpressure-pump-tasks` | `feat(cascor): per-client pump tasks + bounded queues + policy matrix` | C | juniper-cascor main |
 
@@ -949,7 +949,7 @@ Tests:
 
 ### 11.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P14 | `phase-f-heartbeat-jitter` | `feat(ws): application-level heartbeat, uncapped reconnect, jitter formula` | C + F | juniper-cascor + juniper-canopy main |
 
@@ -1010,7 +1010,7 @@ Contract-lane tests (R1-05 §4.34):
 
 ### 12.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P15 | `phase-g-cascor-set-params-integration` | `test(cascor): /ws/control set_params integration suite + contract lane` | C | juniper-cascor main |
 
@@ -1055,7 +1055,7 @@ Tests:
 
 ### 13.4 Pull request plan
 
-| # | Branch | Title | Owner | Target |
+| # | Branch | Title | The Overtoad | Target |
 |---|---|---|---|---|
 | P16 | `phase-h-normalize-metric-audit` | `docs(audit): normalize_metric consumer audit + CODEOWNERS rule + regression gate` | Y | juniper-canopy main |
 

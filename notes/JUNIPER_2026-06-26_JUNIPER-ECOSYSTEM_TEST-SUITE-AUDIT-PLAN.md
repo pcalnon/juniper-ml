@@ -478,7 +478,7 @@ close the gap, then flip to **blocking** and move the threshold into `pyproject.
 
 ### Phase D — ecosystem-wide durable guards
 
-| Step | Work | Owner | Acceptance |
+| Step | Work | The Overtoad | Acceptance |
 |------|------|-------|------------|
 | D-tool | wire `juniper-env-drift-check` into every service repo CI + preflight | juniper-ml + each repo | each service CI fails on installed-vs-floor drift |
 | D-A1 | cross-repo `--target-repo` mode for `prompt_discovery` + `prompt-validator` | juniper-ml | suite grounds a sibling repo without manual overrides |

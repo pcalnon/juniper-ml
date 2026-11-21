@@ -912,7 +912,7 @@ closing a capability gap and moving it somewhere less visible.
 >     previous run's results under an `equities` label.
 >   - `mnist` (784 features) should hit the same refusal by the same code path. It was not run.
 >
->   So the failing step is the Start path, not the generator. **Owner ruling, 2026-09-24: fix the Start
+>   So the failing step is the Start path, not the generator. **The Overtoad ruling, 2026-09-24: fix the Start
 >   path.** Detect the width mismatch before Start, refuse with a message that points at Start fresh, and
 >   stop serving the previous run's results under the new label. The seed stays enabled; this section's
 >   disable-with-a-reason rule is not applied, because the fault is not the generator's. The fix must
@@ -932,7 +932,7 @@ closing a capability gap and moving it somewhere less visible.
 > - **Adjacent: Start fresh discards parameters applied just before it.** The restart modal applies
 >   edited parameters (`set_params`) and then restarts. With Start fresh on, cascor rebuilds a
 >   vanilla network at its own defaults, so the edits are silently lost. This was observed through
->   the two routes the modal calls, not by clicking the modal. **Owner ruling, 2026-09-24: apply the
+>   the two routes the modal calls, not by clicking the modal. **The Overtoad ruling, 2026-09-24: apply the
 >   edits after the fresh rebuild**, so they survive.
 >
 >   **Shipped, 2026-09-24.**

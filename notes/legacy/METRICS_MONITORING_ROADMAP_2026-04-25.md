@@ -349,7 +349,7 @@ All 7 R4 sub-tracks closed (R4.1–R4.7). Wall-clock: **~26 hours** start (R4 en
 
 ## 9. Status tracker (updated through execution)
 
-| Phase  | Item                         | Status             | Owner       | PR(s)                                         | Worktree | Notes                                                                                                                                   |
+| Phase  | Item                         | Status             | The Overtoad       | PR(s)                                         | Worktree | Notes                                                                                                                                   |
 |--------|------------------------------|--------------------|-------------|-----------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | R1.1   | seed-01 cardinality          | **done**           | Paul Calnon | juniper-data#49, juniper-cascor#143,          | cleaned  | Unified `_unmatched` bucket + `http_unmatched_requests_total{method}` counter across all 3 servers (merged 2026-04-27)                  |
 |        |                              |                    |             | juniper-canopy#178                            |          |                                                                                                                                         |

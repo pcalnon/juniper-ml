@@ -32,7 +32,7 @@ DATA-017 complete. security.py confirmed.
 
 **Detail**:
 
-**Severity:** P1 (soft-blocker) · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P1 (soft-blocker) · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
@@ -783,7 +783,7 @@ v0.5.0 released as security hardening. Requires explicit CORS_ORIGINS env var fo
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
 
 **Notes**:
 
@@ -1563,7 +1563,7 @@ Security issue in deployment pipeline.
 
 **Detail**:
 
-**Severity:** P1 (operational — dashboards mislead operators) · **Owner repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
+**Severity:** P1 (operational — dashboards mislead operators) · **The Overtoad repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
 
 **Notes**:
 
@@ -2064,7 +2064,7 @@ Every line number, code snippet, and factual claim about the codebase was verifi
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 

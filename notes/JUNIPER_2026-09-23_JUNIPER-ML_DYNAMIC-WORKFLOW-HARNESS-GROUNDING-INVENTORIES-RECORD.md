@@ -797,7 +797,7 @@ I've covered all six areas. Everything below was read at worktree HEAD `25b78f55
 
 | Template | Purpose | Status field |
 |---|---|---|
-| `TEMPLATE_DEVELOPMENT_ROADMAP.md` | "roadmaps and implementation plans" (:3). This is the de-facto plan template. | :15 `[DRAFT\|IN_REVIEW\|APPROVED\|ACTIVE\|ARCHIVED]`; header also has Last Updated / Version / Owner (:13-16). Sections include a Milestones table with Status (:67-69), a status legend Done / In Progress / Planned / Deferred / Cancelled (:119-121), Dependencies with a mermaid graph (:156), and a Change Log (:246). Its naming line (:7) predates the convention. |
+| `TEMPLATE_DEVELOPMENT_ROADMAP.md` | "roadmaps and implementation plans" (:3). This is the de-facto plan template. | :15 `[DRAFT\|IN_REVIEW\|APPROVED\|ACTIVE\|ARCHIVED]`; header also has Last Updated / Version / The Overtoad (:13-16). Sections include a Milestones table with Status (:67-69), a status legend Done / In Progress / Planned / Deferred / Cancelled (:119-121), Dependencies with a mermaid graph (:156), and a Change Log (:246). Its naming line (:7) predates the convention. |
 | `TEMPLATE_ISSUE_TRACKING.md` | Bug/issue reports; old naming at :7 | :16 `[OPEN\|IN_PROGRESS\|IN_REVIEW\|RESOLVED\|CLOSED]` |
 | `TEMPLATE_PULL_REQUEST_DESCRIPTION.md` | Long-form PR body, opt-in per `AGENTS.md:317-319`. :3 says "JuniperCanopy", a copy-paste leftover. The default PR template is `$R/.github/pull_request_template.md`. | :14 `[DRAFT\|IN_REVIEW\|READY_FOR_MERGE]` |
 | `TEMPLATE_RELEASE_NOTES.md` | Release notes, `RELEASE_NOTES_v<ver>.md` in `notes/releases/` (:7) | :32 `[ALPHA\|BETA\|STABLE]` |
@@ -876,7 +876,7 @@ Rarer: SETTLED, RESOLVED, REJECTED, DECIDED (3 each); ADOPTED, DISCHARGED, ACCEP
 
 ---
 
-## 2. Owner decisions, rulings, blocked items, defect register
+## 2. The Overtoad decisions, rulings, blocked items, defect register
 
 **Phrase counts:**
 
@@ -902,7 +902,7 @@ Decision IDs are local to each document: D1, D-1, #1, "Decision A", "Decision 11
    - :689 "P6.1 + P6.2 + P6.3 authorised; P6.4 open."
 2. **Shared-session-memory plan** §5 (`...SHARED-SESSION-MEMORY-PLAN.md:644-656`), table `| # | Decision | Recommendation |`. Row 7 at :654 reads "CLOSED 2026-09-17". The note at :658-674 links a separate brief (`...SOAK-OWNER-DECISION-7-BRIEF.md`, status "DECISION BRIEF — ... decides nothing") and the ruling document.
 3. **Model persistence** (`$R/notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`):
-   - §10 "Owner rulings needed" (:229-235): `| § | Question | Recommendation |`.
+   - §10 "The Overtoad rulings needed" (:229-235): `| § | Question | Recommendation |`.
    - §11 "Rulings (2026-09-16)" (:243-253): `| § | Question | Ruling | vs. recommendation |`.
    - :245-247 says rulings are "recorded here rather than by rewriting §4–§6".
    - Header :6 reads "RULED 2026-09-16".
@@ -913,7 +913,7 @@ Decision IDs are local to each document: D1, D-1, #1, "Decision A", "Decision 11
 
 Other forms:
 - The first Cursor-flood analysis records the Overtoad's answers inline: "- Answer: i concur with recommendation." (`...CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md:699, :707, :716`) and "- Answer: this question will require additional research, planning, and discussion" (:730).
-- The partition design uses section headings for decisions (`...TRAIN-EVAL-TEST-PARTITION-DESIGN.md`): "Owner decisions — SETTLED 2026-08-29" (:363), "Still open — carried forward" (:373), "Decision 11 — ... Ruled 2026-09-02" (:856), "Decision 9 REVERSED" (:956), "Decision 10 COLLAPSED" (:972).
+- The partition design uses section headings for decisions (`...TRAIN-EVAL-TEST-PARTITION-DESIGN.md`): "The Overtoad decisions — SETTLED 2026-08-29" (:363), "Still open — carried forward" (:373), "Decision 11 — ... Ruled 2026-09-02" (:856), "Decision 9 REVERSED" (:956), "Decision 10 COLLAPSED" (:972).
 - Rulings record the chosen and the rejected options. The defect register explains why at :323-326: "a ruling that records only its outcome is indistinguishable later from a drift".
 
 **How blocked items are written.** They appear as prose in status cells or sections, not as a field:
@@ -928,7 +928,7 @@ Other forms:
 - **§5.1 rows** use `| ID | Finding | Fixed by | Verification |` (:1426).
 - **Closing a row** means five edits (:54-62). The machine-readable token is `**FIXED` (:70-72); `$R/util/ad-hoc/register_open_set.py:21-22` counts on it, and two tests are wired into CI (`ci.yml:1005-1006, :1047-1048`).
 - **"Parked" rows** come in three forms: parked in the row itself, parked as part of a named group, or parked by text in another row's cell (:94-98). The operating rule (:104) is that all three count as parked.
-- **Owner rulings** are recorded in §2.4 (:321-345). The summary is at :161-185: 96 entries, 81 fixed.
+- **The Overtoad rulings** are recorded in §2.4 (:321-345). The summary is at :161-185: 96 entries, 81 fixed.
 - :43-52 matters for your design: the close protocol once existed only in the handoff chain and got lost when one handoff dropped it. "A rule that lives only in the document that hands off the work stops existing the first time one successor omits it."
 
 ---
@@ -1038,7 +1038,7 @@ There are zero hits in `notes/` for `Workflow tool`, `workflow(`, `ultracode`, `
 | `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` | "Adopted 2026-08-30" (:5) | Multi-agent verification: Lane A (re-measure from different starting points) and Lane B (argue against the conclusion) (:34-73); a sizing matrix of uncertainty × criticality (:77-98); iteration rules (:102-119); the reconciler's job (:123-136); a minimum record (:157-168). **In active use** (backup design §11, soak role analysis §6a, handoff consensus records). |
 | `JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md` | "RATIFIED — round-1 build authorized" (:9) | **Shipped:** `$R/.claude/agents/{planner,auditor,task-executor,prompt-validator,fleet-supervisor,mock-seam-auditor}.md`, skills `template-agent` / `service-smoke` / `ui-test-author`, and `prompts/agent_templates/` with its manifest and RUBRIC. Follow-ons: `...06-25_...AGENT-SUITE-CONVENIENCE-UTILITIES-DESIGN.md` (header says Draft; actually shipped) and `...06-27_...CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md` ("AWAITING OWNER APPROVAL"). |
 | `JUNIPER_2026-03-12_JUNIPER-ML_PROMPT-ANALYSIS-AND-AUTOMATION-PLAN.md` | "Draft" | A taxonomy of prompt types. Later realized as `prompts/prompt_templates/` and `agent_templates/`. |
-| Cursor fleet: `...07-28_...CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`; `...07-30_...CURSOR-DASHBOARD-CONFIG-REQUESTS.md`; `...09-05_...CURSOR-FLOOD-2-DISPOSITION-ANALYSIS.md`; `...09-06_...DOCS-FLEET-CONSOLIDATION-ROUND-2-RESIDUE.md` | Round 1 "Complete — ... three validated guardrail proposals awaiting Overtoad decisions" (:6); dashboard pack "Owner action pack — dashboard-only" (:6); round 2 "Active" (:5); docs residue "Evidence record" (§6 closed 2026-09-11) | The fleet is 5 Cursor automations whose configuration is dashboard-only (flood-2 :33-40). Merging one PR at a time degrades (:184-211); open items are at :249-281. **Shipped:** `.claude/agents/fleet-supervisor.md` with `util/fleet_triage/predict_merge.py`; Sequence Safety (now a required check); the advisory Fleet PR Lint job (`ci.yml:1388-1402`). |
+| Cursor fleet: `...07-28_...CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`; `...07-30_...CURSOR-DASHBOARD-CONFIG-REQUESTS.md`; `...09-05_...CURSOR-FLOOD-2-DISPOSITION-ANALYSIS.md`; `...09-06_...DOCS-FLEET-CONSOLIDATION-ROUND-2-RESIDUE.md` | Round 1 "Complete — ... three validated guardrail proposals awaiting Overtoad decisions" (:6); dashboard pack "The Overtoad action pack — dashboard-only" (:6); round 2 "Active" (:5); docs residue "Evidence record" (§6 closed 2026-09-11) | The fleet is 5 Cursor automations whose configuration is dashboard-only (flood-2 :33-40). Merging one PR at a time degrades (:184-211); open items are at :249-281. **Shipped:** `.claude/agents/fleet-supervisor.md` with `util/fleet_triage/predict_merge.py`; Sequence Safety (now a required check); the advisory Fleet PR Lint job (`ci.yml:1388-1402`). |
 | `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARENT-AGENTS-GOVERNANCE-AND-WORKTREE-SETTINGS-ASYMMETRY.md` | "Analysis — Overtoad decisions required, nothing implemented" (:5) | Plan §5 rows 8–9: the unversioned parent `Juniper/AGENTS.md`, and worktree sessions running without the main checkout's local settings. |
 | `JUNIPER_2026-09-12_JUNIPER-ML_WORKTREE-CLEANUP-PROTOCOL-V3-DESIGN.md` | "DESIGN, revision 2"; "Supersedes (on ratification)" (:6-11) | Multi-worktree cleanup policy; revision 1 was rejected by 4 reviewers. Not ratified. |
 
@@ -1093,7 +1093,7 @@ Items marked **[gated]** fail CI; the rest are convention only.
 6. **Lineage in the header where it applies:** Supersedes, Supersedes in part, Companion, Plan of record, Closes, Predecessor, Tracks, Measured at \<sha\>. Source: SOAK-TEN :6-7; BACKUP :14-20; LOGGING-ROADMAP :10-11.
 7. **Grounding:** every `file:line` must be real and tied to a commit SHA; anchor on quoted text rather than line numbers. Source: `planner.md:22-31, :55-61`; `plan.md:34, :43`; register :78-80.
 8. **Body structure:** background, scope and non-goals, options and trade-offs, chosen approach, a roadmap of single-work-unit (one-PR) steps, open questions, risks, verification strategy. Source: `planner.md:34-42`; `plan.md:25-28`.
-9. **Owner decisions** go in an explicit table (ID, question, recommendation or why it can't be defaulted). Record answers later in a "Rulings" subsection with chosen and rejected options, without rewriting the earlier sections. Source: `planner.md:26-28`; model-persistence :229-253; logging roadmap :602-616; register :323-326.
+9. **The Overtoad decisions** go in an explicit table (ID, question, recommendation or why it can't be defaulted). Record answers later in a "Rulings" subsection with chosen and rejected options, without rewriting the earlier sections. Source: `planner.md:26-28`; model-persistence :229-253; logging roadmap :602-616; register :323-326.
 10. **Never demote or misreport open/closed status** when moving detail elsewhere. Source: SHARED-SESSION-MEMORY-PLAN :536-539.
 11. **Documents of record** need independent-agent consensus sized by the §3 matrix, plus the §7 minimum record: instrument and its adequacy, sample size, agents per lane and their starting points, iterations and what the last one changed, unresolved dissent, what the evidence cannot support. Source: consensus procedure :5-7, :77-98, :157-168; `planner.md:60-61`.
 12. **All links must resolve [gated].** Any handoff named in a top-level note must exist in the archive **[gated]**. Source: `ci.yml:1564-1579`; `tests/test_thread_handoff_archive.py:48-59`.

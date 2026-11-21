@@ -93,7 +93,7 @@ The Overtoad's last request in this arc, verbatim: "let's publish ml#2062 change
    - **§8**: the "Not done, deliberately" `tests/test_service_fork_drift.py` guard, which first needs an `APD-` row in §4.9 of `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`;
    - also APD-ML-002, tracked in that same register.
 4. **Cleanup, the Overtoad's.** § Cleanup inventory lists every worktree and branch, and which ones to leave alone. Run it from each repo's primary checkout, and inspect each worktree before forcing its removal: most are dirty.
-5. **Owner decision: errata to published release notes** (§ Corrections has the evidence). A Release body cannot be re-cut, but `gh release edit` can change it, and this arc used that command to fill placeholders. Nothing was edited here.
+5. **The Overtoad decision: errata to published release notes** (§ Corrections has the evidence). A Release body cannot be re-cut, but `gh release edit` can change it, and this arc used that command to fill placeholders. Nothing was edited here.
    - **juniper-ml 0.11.2 is security-relevant and under-warns.** Its Priority line reads: "upgrade every environment installed through `juniper-ml[servers]` without `[tools]`; `[tools]` and `[all]` already floor both patches, since 0.11.1". Its intro says "only juniper-cascor 0.12.0 floors them unconditionally".
      - In fact canopy 0.9.0 has carried both shared patches into `[servers]` and `[all]` since 0.11.0.
      - 0.11.2's real security content is cascor 0.12.0's **own** fixes: #689, #710, and `APIKeyAuth` checking every key.

@@ -38,7 +38,7 @@
 - **recurrence#178.** Its closure is real (live). The release-path notify check is kept: P4-06 and P5-32, in Wave 1.
 - **Caps before releases.** The cap-before-release rule is in §5, and R-DCLIENT names the `<0.6.0` cap PRs. Live: recurrence `pyproject.toml:54` and canopy `pyproject.toml:192` both still read `<0.6.0`.
 - **R-DATA's number.** R-DATA as X8 → 0.17.0 is consistent with P12 W1.11 and the train's rule. R-OBS-SC is single-session. The release order data → P12 chain → R-ML matches P12's critical path.
-- **Owner rulings.** All are present: spec v3's inputs (R2-1..10 and the four new inputs), the round-3 freeze, P12's R1–R8 and dates, DC-0.6, and P5 OD-1..9.
+- **The Overtoad rulings.** All are present: spec v3's inputs (R2-1..10 and the four new inputs), the round-3 freeze, P12's R1–R8 and dates, DC-0.6, and P5 OD-1..9.
 - **Live state.** PyPI is unchanged (data 0.16.0, data-client 0.5.0, recurrence 0.5.0, canopy 0.8.1, ml 0.10.0, observability 0.4.0). OPEN: data#423, #424 and #409; cascor#582, #677 and #691; ml#2062, #2064 and #2065; data-client#213.
 
 ## Could not check

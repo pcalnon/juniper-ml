@@ -1,4 +1,4 @@
-# Owner decision #7 — the trigger fired on 2026-09-07 and nothing has happened since
+# The Overtoad decision #7 — the trigger fired on 2026-09-07 and nothing has happened since
 
 **Project**: juniper-ml
 **Date**: 2026-09-11

@@ -114,7 +114,7 @@ at all is Overtoad decision C.3; if yes, one PR each, hazards triage first, the 
 Tracker #1326's title still says *cut not started* — retitle it after #1450 merges (`gh issue view
 1326 --json title` first; no PR carries that change).
 
-**C. Owner decisions pending — present them once, do not decide them:**
+**C. The Overtoad decisions pending — present them once, do not decide them:**
 1. **The soak's next step (the ladder is fixed in advance, plan §6 — do not re-open it).** The
    ledger prescribes rung 1: index rows for the four facts never retrieved from prose, then re-soak
    — and its own conclusion narrows that to index rows for the **policy** facts only, since three of

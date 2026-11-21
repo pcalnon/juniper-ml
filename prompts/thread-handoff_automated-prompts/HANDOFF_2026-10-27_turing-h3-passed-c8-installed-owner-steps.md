@@ -64,7 +64,7 @@
 - **H5's option B is intact.** The hardening check exited 0 at 00:17Z; B.5 is still pending.
 - **C0** still reports `[Included]` (02:09Z).
 
-## Owner steps
+## The Overtoad steps
 
 1. **D11 item 5.** In a real terminal, run `gh auth status`. Then give agent sessions item 5's fine-grained PAT: the 10 Juniper repos, Contents and Pull requests read/write, Metadata read, no Administration.
 2. **H6's, carried forward from the H6 handoff:**

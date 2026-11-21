@@ -36,7 +36,7 @@ A `null` record in `expected.yaml` is filled in by the PR that closes its task:
 
 Each `record` path points at a file under `reports/`, which the check confirms exists.
 
-## Owner steps (unchanged from the previous handoff, plus the records)
+## The Overtoad steps (unchanged from the previous handoff, plus the records)
 
 1. **C8:** fast-forward the primary checkout (`git pull --ff-only origin main`), then run `bash util/install_claude_agent_guard.bash --apply`. That installs guard 1.1.0 with K12's rules.
 2. **A1:** rewrite the juniper-k8s and juniper-recurrence remotes, then confirm that `python3 util/git_remote_alias_check.py` exits 0. Then opt in with `pre-commit install --hook-type pre-push`.
@@ -45,7 +45,7 @@ Each `record` path points at a file under `reports/`, which the check confirms e
 5. **The network:** the open-security radio, roaming or `en7` (F2), and A6.
 6. **F3 node mode:** quit the desktop apps and Docker Desktop, with no VM running, then say so.
 7. **Commit signing (§19):** no YubiKey goes into turing until C8 and K12 are installed and K13 is done.
-8. **The rest of Owner block 1:** C0, A2, A3, B2–B6, C1–C3, C5, C7, E4, A6, F1 and F2.
+8. **The rest of The Overtoad block 1:** C0, A2, A3, B2–B6, C1–C3, C5, C7, E4, A6, F1 and F2.
 9. **After each block:** run `python3 util/host_state_check.py`.
 
 ## Agent next (after the Overtoad's split)

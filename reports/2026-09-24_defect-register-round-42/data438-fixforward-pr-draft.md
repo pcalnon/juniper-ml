@@ -39,7 +39,7 @@ What changes, as of the second commit:
 | **F5** NIT: the OWS entry names only NBSP and NEL | **Fixed (docs).** `CHANGELOG.md`, `docs/REFERENCE.md`, `docs/api/JUNIPER_DATA_API.md` and the `http_cache.py` comments say "anything but spaces and tabs", and name h11's 0x1C-0x1F. The code was already right (#438). | doc-only |
 | **F6** NIT: a symlinked metadata file logs the id at ERROR on every download | **Fixed**, and narrowed in round 2. No access is recorded when the store REFUSED the metadata, on the 200 and on the orphan-path 304. Any other failure is recorded again (lane B's N-1 in `data438-fixforward-round1-laneB-refute.md`). | `TestPreconditionsRespectExistence::test_serving_a_dataset_whose_metadata_leads_out_of_the_store_logs_nothing_that_carries_its_id`. On `0f0f7e0e`, asyncio logs "Exception in callback download_artifact.<locals>.<lambda>()". |
 | **F7** NIT: a symlinked `.npz` still gets the caller's 400 | **Fixed, via the L4 mapping.** It is still refused, now as a `500`. #438's "noticed" list left it out. `CHANGELOG.md`, `docs/REFERENCE.md` and `docs/api/JUNIPER_DATA_API.md` now name it, and the API doc lists the 500 status. | `TestPreconditionsRespectExistence::test_a_stored_file_that_leads_out_of_the_store_is_a_generic_500[artifact-npz]`. On `0f0f7e0e`: `400 {"detail":"Invalid request parameters"}`. |
-| **F8** NIT: the next release's notes would not be flagged breaking | **FLAG ONLY; not acted on.** See "Owner ruling needed" below. | n/a |
+| **F8** NIT: the next release's notes would not be flagged breaking | **FLAG ONLY; not acted on.** See "The Overtoad ruling needed" below. | n/a |
 
 ### Findings in `data438-round1-laneB-refute.md`
 
@@ -136,7 +136,7 @@ Each result is from the new head against `d1c66a11`. Lane B's scripts come from 
 
 Here, one health probe per 80 MB create takes 0.74-0.80 s. The same probe on `d1c66a11` took 0.774 s in the `PATCH` run, where no access is recorded, so it is not this change. It matches the create route's own work on the event loop. `compute_checksum` runs there (`datasets.py:446` here, `:392` on `main`) and takes 0.71-0.75 s for this dataset. It is listed under "Noticed, not changed".
 
-## Owner ruling needed (lane A's F8 in `data438-round1-laneA-reprobe.md`, not acted on)
+## The Overtoad ruling needed (lane A's F8 in `data438-round1-laneA-reprobe.md`, not acted on)
 
 #437's `equities_seq` generator bump to 6.0.0 sits in `[Unreleased] ### Changed` with no breaking marker. The bump changes every `equities_seq` `dataset_id`, so the next release's notes would render "Breaking changes: NO". 0.15.0 flagged the analogous 4.0.0 bump "BREAKING (contract)". Whether #437's entry takes the marker is the Overtoad's call.
 

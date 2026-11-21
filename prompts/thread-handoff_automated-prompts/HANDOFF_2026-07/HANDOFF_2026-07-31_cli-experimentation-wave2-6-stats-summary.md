@@ -17,9 +17,9 @@ Continue executing the CLI test/validation/experimentation program for juniper-c
 
 - **Read the memory file first**: `project_cascor_recurrence_cli_experimentation_plan.md` — Waves 2.2-2.5 paragraphs carry the implementation truths (payload contracts, sequence-NPZ keys, `y_reg_` preference, plots-module loading, skip-vs-fail semantics, `RequestTimeout` budget, no-`--params` CLI constraint).
 - Driver test idiom: scripted stub `http.server`; `state.artifact_kind` tabular/sequence NPZ artifacts; `RedactedEnv` subprocess arms; PNG-magic assertions.
-- Headless commits: `git -c commit.gpgsign=false commit`. Owner merges via admin bypass (unsigned commits sit OPEN/BLOCKED under `required_signatures`).
+- Headless commits: `git -c commit.gpgsign=false commit`. The Overtoad merges via admin bypass (unsigned commits sit OPEN/BLOCKED under `required_signatures`).
 - CI test job installs pyyaml/packaging/numpy/matplotlib — no new deps expected for 2.6.
-- Owner decision still pending (not urgent): recurrence namespace alignment. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
+- The Overtoad decision still pending (not urgent): recurrence namespace alignment. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
 
 ## Verification for the new thread
 

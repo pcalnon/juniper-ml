@@ -621,7 +621,7 @@ Keep `make obs` / `make obs-demo` exactly as-is (`juniper-deploy/Makefile:144-16
      - ./prometheus/targets:/etc/prometheus/targets:ro   # host-writable dir, container-read-only
    ```
 
-   `OPEN QUESTION Q-3`: `./prometheus/targets` sits inside the already-`:ro`-mounted `./prometheus`, so the nested mount is redundant unless the dir moves outside (e.g. `./prometheus-targets`). Prometheus only needs to **read** the target files; the *host* writes them. Recommendation: keep target files at `./prometheus/targets/`, rely on the existing `:ro` mount — no second volume — and gitignore the dir contents apart from a `.gitkeep`. Owner to confirm.
+   `OPEN QUESTION Q-3`: `./prometheus/targets` sits inside the already-`:ro`-mounted `./prometheus`, so the nested mount is redundant unless the dir moves outside (e.g. `./prometheus-targets`). Prometheus only needs to **read** the target files; the *host* writes them. Recommendation: keep target files at `./prometheus/targets/`, rely on the existing `:ro` mount — no second volume — and gitignore the dir contents apart from a `.gitkeep`. The Overtoad to confirm.
 
 3. **Add the scrape job.** A single `file_sd_configs` job, appended after the five static jobs (`prometheus/prometheus.yml:61-126`):
 
@@ -1257,9 +1257,9 @@ Dependency-ordered. Size: S ≈ one focused sitting, M ≈ a day, L ≈ multi-da
 | **Q-6**  | Is a `JUNIPER_CASCOR_LOG_DIR` override worth a work item, or is run-dir stdout capture enough?                  | Defer for single-instance-per-checkout use — but note it is now a **precondition for Wave 5.3** (lifting the one-instance rule);                                       |
 |          |                                                                                                                 | until resolved, 5.3 is scoped to distinct checkouts (H-7).                                                                                                             |
 | **Q-7**  | Should `csv_import` be in the cascor dataset matrix, and if so with what corpus?                                | Defer until a corpus is defined (W-12 tracks defining it and adding the matrix row); it is the one generator whose params are entirely dataset-specific.               |
-| **Q-8**  | Where do run-level performance baselines live — juniper-ml `notes/`, a dedicated dir, or per-app repos?         | juniper-ml, beside the tooling that produces them; per-app repos keep only their micro-baselines. Owner call.                                                          |
+| **Q-8**  | Where do run-level performance baselines live — juniper-ml `notes/`, a dedicated dir, or per-app repos?         | juniper-ml, beside the tooling that produces them; per-app repos keep only their micro-baselines. The Overtoad call.                                                          |
 | **Q-9**  | Should `environment="host-experiment"` targets be excluded from the existing alert rules?                       | Yes — exclude, then add experiment-scoped alerts if wanted. A deliberate stress benchmark must not page.                                                               |
-| **Q-10** | Does recurrence deserve a dedicated `JuniperRecurrence` conda env, rather than riding `JuniperCascor1`?         | Probably yes for hygiene (recurrence's stack is much lighter than cascor's), but not a blocker — `JuniperCascor1` works today. Owner call.                             |
+| **Q-10** | Does recurrence deserve a dedicated `JuniperRecurrence` conda env, rather than riding `JuniperCascor1`?         | Probably yes for hygiene (recurrence's stack is much lighter than cascor's), but not a blocker — `JuniperCascor1` works today. The Overtoad call.                             |
 | **Q-11** | Should the direct-CLI paths (`cascor main.py`, `recurrence train`) be first-class in the YAML layer,            | First-class as the goal — stated honestly for v1: `--config` reaches only `Settings` (the `service:` block), so **full YAML coverage is service-tier**;                |
 |          | or service-mode only?                                                                                           | the direct CLIs gain the `training:`/`dataset:`/`train:` blocks via W-11 (Wave 3.6). The direct CLI remains the cheapest reproducible unit for a sweep cell.           |
 | **Q-12** | Is a `JR-REC-*` ID block wanted now, or should recurrence requirements wait for the next full snapshot refresh? | Propose the block now (Wave 7.6) so this plan's recurrence work is traceable rather than orphaned.                                                                     |
@@ -1301,7 +1301,7 @@ Dependency-ordered. Size: S ≈ one focused sitting, M ≈ a day, L ≈ multi-da
 > released cascor carries #523 yet** (PyPI latest `0.9.0`, cut 2026-08-14 *before* the merge; `main`'s
 > pyproject is still `0.9.0`). The floor cannot be written until the next cascor release; **do not
 > guess `>=0.9.1`.**
-> **Owner decisions (2026-08-16) — Q-6, Q-7, Q-8, Q-10 are ANSWERED.** Recorded verbatim in intent;
+> **The Overtoad decisions (2026-08-16) — Q-6, Q-7, Q-8, Q-10 are ANSWERED.** Recorded verbatim in intent;
 > each row above is superseded accordingly. Q-1..Q-5, Q-9, Q-11, Q-12 were ratified 2026-07-30 and
 > are unchanged.
 >

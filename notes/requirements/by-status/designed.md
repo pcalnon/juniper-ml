@@ -1170,7 +1170,7 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Notes**:
 

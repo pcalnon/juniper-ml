@@ -313,7 +313,7 @@
   - New: `util/ad-hoc/2026-10-10_gitleaks_probe.py`, `…_gitleaks_finding_inspect.py`,
     `…_gitleaks_rule_mutation_check.py` and `…_secret_assignment_corpus_survey.py`. These are the
     measurements behind the change; none of them prints a value.
-  - Owner action, not done here: enable `secret_scanning_non_provider_patterns` on the repository.
+  - The Overtoad action, not done here: enable `secret_scanning_non_provider_patterns` on the repository.
 - **`util/ad-hoc/2026-10-08_run_ci_regression_suites.py`, and the flood-3 record's follow-up
   statuses.**
   - The script runs exactly CI's hand-maintained regression list locally, one process per suite as
@@ -430,7 +430,7 @@
     in an env with torch.
 - **PF-2 axis 3, built and RUN** (`util/experiments/suites/perf/pf2-axis3-cascor-spiral-count.yaml`
   and `util/ad-hoc/2026-09-23_pf2_axis3_reduce.py`, both new; PF-2 re-spec §4.2).
-  - Owner decision D4 ruled this axis in, and it was dropped from two successive handoff work
+  - The Overtoad decision D4 ruled this axis in, and it was dropped from two successive handoff work
     lists.
   - Test roc_auc is 0.961 / 0.834 / 0.672 / 0.746 for 2 / 3 / 4 / 5 spirals. The three passes are
     bit-identical, which shows the observable is load-insensitive. It is one seed, so 5 scoring
@@ -670,7 +670,7 @@
     blocking. A throwaway `workflow_dispatch` branch with the reference drifted fired on 4 of 4
     legs, and all 4 still passed, so the zero is not vacuous. CI's CPU-only torch 2.14.0 observed
     the same 68 as the torch 2.11.0+cu130 reference.
-  - **Owner rulings (§6).** PF-3 waits for a quiet window. It opened at 02:39 and closed within
+  - **The Overtoad rulings (§6).** PF-3 waits for a quiet window. It opened at 02:39 and closed within
     minutes, so PF-3 was not launched. The micro cut went ahead LOADED:
     `Linux-CPython-3.14-64bit/0001`, cascor `0e016a7`, 1-minute load 5.5–6.6. PF-2 axis 1's
     count will be published from cascor.

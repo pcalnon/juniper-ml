@@ -24,7 +24,7 @@ Continue the arc from plan v1.7.13. **This session** was one thread, with merge 
 
 ## Remaining work, in order
 
-1. **Owner decision: the juniper-ml 0.11.0 cut (timing is the Overtoad's call).** Once it is a go, follow the 0.8.0 recipe (memory `release-train-follow-on-pr`):
+1. **The Overtoad decision: the juniper-ml 0.11.0 cut (timing is the Overtoad's call).** Once it is a go, follow the 0.8.0 recipe (memory `release-train-follow-on-pr`):
    - Get a tree at `origin/main`. `python3 util/release_train/detect.py --package juniper-ml --json > <manifest>` should read UNRELEASED_CHANGES, 0.11.0.
    - **Dry-run first**: `python3 util/release_train/propose.py --manifest <manifest> --package juniper-ml --dry-run --json`. Check that `pr_body` is ≤ 65,536 and that the `notes_draft` base64 is ≤ 125,000 B. On 2026-10-21 it was **118,064 B, 6,936 B of headroom**, and every new `[Unreleased]` entry eats into it. Over the cap, condense with `util/ad-hoc/2026-10-17_condense_release_notes_section.py` (the canopy 0.9.0 precedent).
    - `propose.py --execute`, then merge the proposal with `util/safe_merge.py` and re-detect at its merge sha (it reads BUMPED_NOT_RELEASED).

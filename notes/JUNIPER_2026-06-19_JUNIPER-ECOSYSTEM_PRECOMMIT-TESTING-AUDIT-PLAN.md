@@ -387,7 +387,7 @@ trims were to avoid rubric bloat, recorded above.)
 
 ---
 
-## Appendix A — Owner decisions (this session)
+## Appendix A — The Overtoad decisions (this session)
 
 1. **Repo scope:** 9 (8 documented + `juniper-recurrence`); exclude `juniper-slacker`.
 2. **Verify depth:** hybrid (static all + dynamic where env healthy; realistic minority-dynamic — §1.4).

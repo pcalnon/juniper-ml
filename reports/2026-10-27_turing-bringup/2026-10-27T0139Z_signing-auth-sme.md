@@ -290,7 +290,7 @@ The G-SIGN failure is a missing Overtoad-run record, not a configuration defect.
 
 ## 4. What could not be verified, and why
 
-| Item | Why an agent cannot verify it | Owner step (§6) |
+| Item | Why an agent cannot verify it | The Overtoad step (§6) |
 |---|---|---|
 | Which GitHub deploy key each local key file holds, for all 10 repos | Reading `~/.ssh/*.pub` falls under the CRED-PATH rules, and the agent file makes a fingerprint comparison an Overtoad step | A2 |
 | Whether ssh, `git ls-remote` and `git push --dry-run` authenticate, per repo | `ssh -T`, and any ssh connection to a GitHub host, falls under SSH-PROBE; a fetch or push opens one | A3 (G-AUTH) |
@@ -329,7 +329,7 @@ These items are left out because they are already done or answered:
 - The juniper-k8s ruleset line in §14.1 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`: answered in §2.4 item 5.
 
 ```bash
-# Owner command list -- signing-auth-sme, turing, 2026-10-27 (plan task H3's run).
+# The Overtoad command list -- signing-auth-sme, turing, 2026-10-27 (plan task H3's run).
 # Task ids A1-A3, B2-B6, C8 and D11 are from notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md;
 # K6-K13, S11, S12 and T1-T10 are from notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md.
 

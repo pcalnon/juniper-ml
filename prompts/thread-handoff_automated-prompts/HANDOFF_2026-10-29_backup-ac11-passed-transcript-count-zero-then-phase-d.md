@@ -50,7 +50,7 @@ Merge approval covered this session's PRs only. Ask again.
   - The 08-25 and 09-21 transcripts that `…RECOVERY-PLAN.md` §6.3.1 finding 3 and I-31 name are gone from `~pcalnon/.claude`, as Claude Code's 30-day cleanup predicts (the documented default; `cleanupPeriodDays` is unset). The oldest session transcript was last written 10-02.
 - **`…RECOVERY-PLAN.md` §6.3.1 finding 9 is closed.** The counter's grouping shows `SETTINGS_ENCRYPTION_KEY_OLD` holds the backup passphrase, which `…INTEGRATED-DESIGN.md` §5.4's 09-21 probe already excluded. Step 7's probe set is unchanged: the 64-character key is the one `.env` value no probe has tested.
 - **Step 3's gate, as a baseline**: `python3 util/ad-hoc/2026-09-22_stage_design_artifacts.py --check` printed `0 staged, 14 already current, 0 skipped` at `9b1f4db7` on 10-29.
-- **Owner choices, 10-29**: Phase D in a fresh thread; the 3a-key test skipped.
+- **The Overtoad choices, 10-29**: Phase D in a fresh thread; the 3a-key test skipped.
 
 ## Remaining, in order
 

@@ -48,7 +48,7 @@ canopy cannot install the artefact:
    `requirements*.txt` files mention the package only in a comment, so nothing else needs
    editing. Widen the ceiling to admit `0.8.0` (e.g. `<0.9.0`). **Do not raise the floor to
    `>=0.8.0` yet** — see step 4; canopy cannot install a version that is not published.
-3. **Owner cuts the GitHub Release.** *Not an agent action.* The repo's own
+3. **The Overtoad cuts the GitHub Release.** *Not an agent action.* The repo's own
    `notes/releases/RELEASE_NOTES_v0.7.0.md` says "the Overtoad cuts the GitHub Release", and
    the ecosystem convention routes it through `publish.yml`
    (`juniper-ml/notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11).

@@ -108,7 +108,7 @@ Entry point: worktree `atomic-sauteeing-truffle` (HEAD `3ee84ebb`) + live host a
 - The 2026-08-25 journal window (journal retention starts 09-05; syslog day files start 09-12) — the Repair/Verify times come only from the `.backup` ErrorLog.
 - `duplicati-cli list … --time=2026-09-18T14:00:00Z` (A0's premise) — needs the passphrase; not run. `duplicati-server --version` starts a server — not run, by rule.
 - All source citations (`path.c`, `EncryptedFieldHelper.cs`, `RepairHandler.cs`, `DatabaseUpgrader.cs`, `WipeEncryption.cs`, `Program.cs` exit 102) — not re-fetched.
-- Owner quotes, "no live system state was changed", the `feat/…` → `main` history of the wrapper target between 02:15 and 03:14.
+- The Overtoad quotes, "no live system state was changed", the `feat/…` → `main` history of the wrapper target between 02:15 and 03:14.
 - The pinned markdownlint run (hook carries `--fix`; no local binary).
 
 ## 4. Instrument adequacy
@@ -289,7 +289,7 @@ Also tested and held: DOWN-since (dlist mtime 09:12:00 CDT = 14:12Z), 877 files,
 2. §3/§4 commands are refused or fragile in a worktree session (`cd`, `git fetch`, `git -C`, `--limit 5`, the word "alias").
 3. §1.2 round-2 pool is below procedure §3 and has no explicit done/archive criterion.
 4. §1.4 item 2 cannot be executed as written (probe input format).
-5. Owner items 1/3/5 lack their "where" (`~/.bashrc`; `/usr/lib/systemd/system/`; D-13 absent).
+5. The Overtoad items 1/3/5 lack their "where" (`~/.bashrc`; `/usr/lib/systemd/system/`; D-13 absent).
 
 ## 6. What I could not determine
 

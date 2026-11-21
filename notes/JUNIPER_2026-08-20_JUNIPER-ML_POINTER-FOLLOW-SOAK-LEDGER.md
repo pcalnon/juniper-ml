@@ -722,7 +722,7 @@ and see whether the follow rate on those moves.
 
 ## 15. Rung 1 EXECUTED — 2026-08-31, widened to all four facts
 
-**Owner decision, taken twice.** The recommendation in §14 narrows rung 1 to the *policy*
+**The Overtoad decision, taken twice.** The recommendation in §14 narrows rung 1 to the *policy*
 facts. The Overtoad chose to **widen it to all four never-retrieved facts** instead, and
 reaffirmed that after this session presented evidence arguing the experiment will not move
 the number. Both the decision and the objection are recorded here so the result is readable

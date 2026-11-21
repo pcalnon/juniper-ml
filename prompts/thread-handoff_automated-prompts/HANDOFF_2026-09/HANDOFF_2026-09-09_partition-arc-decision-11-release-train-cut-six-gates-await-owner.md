@@ -94,7 +94,7 @@ this arc is open in a sibling repo at handoff.** Closed unmerged: juniper-data#3
 juniper-recurrence#155 (anyio fix; another session's #154 landed the identical filter six minutes
 earlier).
 
-**Next actions, in order.** (1) Owner approves the six gates in §2. (2) §3 — the app's floor bump and
+**Next actions, in order.** (1) The Overtoad approves the six gates in §2. (2) §3 — the app's floor bump and
 0.5.0, then juniper-ml's floors and 0.8.0. (3) §4 — documentation. (4) §5 — carried forward.
 
 ---
@@ -327,13 +327,13 @@ and a dropped item read identically in a summary, so each was re-derived from so
 
 | §5 item | disposition | evidence |
 | --- | --- | --- |
-| S-1 hf/kaggle stores | Owner ruled 2026-09-22: **conform** → juniper-data#422, **merged 2026-09-23 as `ce436819`**, closing #411. Not yet released | The ruling is recorded in #422's description (its first paragraph). #411's own body still calls the decision open |
+| S-1 hf/kaggle stores | The Overtoad ruled 2026-09-22: **conform** → juniper-data#422, **merged 2026-09-23 as `ce436819`**, closing #411. Not yet released | The ruling is recorded in #422's description (its first paragraph). #411's own body still calls the decision open |
 | S-2 | Released in model-core 0.3.2 | PyPI |
 | S-3 … S-8 (straggler scheme) | Fixed; unchanged | §5 above |
 | plan R-2, consumers accept silently | **Done** | cascor `src/api/lifecycle/manager.py:3701` (at `f6ee8de`) `def _resolve_validation_split`: refuses by default; `X_test` promotion only behind `JUNIPER_CASCOR_ALLOW_MISSING_VALIDATION_SPLIT`, warning that metrics are SELECTED-ON |
 | plan R-9, harness rejects validation | **Done** (ml#1761) | `util/experiments/run_experiment.py` `RECURRENCE_SPLITS`; `tests/test_run_experiment.py` `test_recurrence_bad_dataset_split_rejected` |
 | plan §9 S-5, juniper-ml homes | **Done**: no stale site | `util/snapshot_attribute.py` rebuilds the whole view by `np.vstack`; `prompts/agent_templates/data/ecosystem.yaml` `npz_contract` lists six keys |
-| plan §9 S-7 → canopy#559 | Owner ruled 2026-09-22: **advisory check** → juniper-canopy#663 (a re-cut of #659, which was closed), **merged 2026-09-23 as `cc3588a8`**, closing #559. Not yet released | — |
+| plan §9 S-7 → canopy#559 | The Overtoad ruled 2026-09-22: **advisory check** → juniper-canopy#663 (a re-cut of #659, which was closed), **merged 2026-09-23 as `cc3588a8`**, closing #559. Not yet released | — |
 | Chunk 5, §6.2 compensation | **Had been silently dropped** → juniper-data#424, with an Overtoad question | canopy `src/validation_gate.py:50` disables "Fill synthetically" pending it |
 | Chunk 7 (a) plots / attribution | **Done** (see S-5) | — |
 | Chunk 7 (b) design §7 snapshot provenance | **Done.** This is NOT Decision 12: cascor tags every run's metrics | `manager.py:2035` `metrics["split"] = self._reported_split_name()` |
@@ -406,7 +406,7 @@ and a dropped item read identically in a summary, so each was re-derived from so
 - juniper-ml#2043 carries the Decision 12 spec, its verification script, this §10, the 2026-09-12
   handoff's correction, and the `docs/REFERENCE.md` and partition-plan updates.
 
-**Owner decisions:**
+**The Overtoad decisions:**
 
 - Release cuts, which are the Overtoad's:
   - cascor, to ship #672;

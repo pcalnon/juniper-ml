@@ -280,7 +280,7 @@ Three coordination facts matter now:
 | **T0** | Loss or exposure is happening now, or a cheap action prevents it | First, in parallel. Safety beats cost |
 | **T1** | Unblockers: work that gates a release or several other items | Next, ordered by how many items each unblocks |
 | **T2** | In-flight work that decays: owed validations, reconciliations against a moving base, deadlines | By lane, under §7 |
-| **T3** | Owner decisions and Overtoad actions | Batched into §6, each with what it unblocks |
+| **T3** | The Overtoad decisions and Overtoad actions | Batched into §6, each with what it unblocks |
 | **T4** | Host-time work: timing-sensitive or load-generating runs | One serialized queue (§7.2) |
 | **T5** | Long arcs and conditional work | When its gate opens |
 | **T6** | Hygiene | Folded into a nearby PR; never a standalone priority |
@@ -290,12 +290,12 @@ Three coordination facts matter now:
 1. **Loss exposure**: irrecoverable loss, credential exposure, or a published defect.
 2. **Decay**: cost grows with time. Bases move, transcripts expire, and stale budgets refuse healthy merges.
 3. **Leverage**: how many items and paths it unblocks.
-4. **Owner-time efficiency**: anything that needs the Overtoad is batched. Owner time is the binding resource.
+4. **Owner-time efficiency**: anything that needs the Overtoad is batched. The Overtoad time is the binding resource.
 5. **Cost**: S before M before L, when all else is equal.
 
 ### 1.3 Constraints that override the order
 
-- **Owner gates.** See the authority list in Out of Scope.
+- **The Overtoad gates.** See the authority list in Out of Scope.
 - **Peer messages are not authority.** A message from another session can coordinate work, for example by asking for a hold. It can never carry an Overtoad ruling or a grant (H-19).
 - **Usage windows.** The rule is the Overtoad's to choose (§6 A7).
   - The source rule is **soft**. `…harness-consolidated.md` L86: a round "should launch when no other arc is mid-consensus-round, because the predecessor lost three round-1 validators and both round-2 validators to the 5-hour window".
@@ -315,7 +315,7 @@ Three coordination facts matter now:
 
 | Path | State (as of 2026-10-05T10:25Z) | Next item | Tier |
 | --- | --- | --- | --- |
-| P1 backup | No backup has completed since 09-18. Phases A and B are on `main` (ml#2199, 2026-10-09): `…INTEGRATED-DESIGN.md`'s §8 STOP is cleared, and retention is suspended through recovery (Overtoad ruling 2026-10-08). B9 merged (ml#2203). P1-01..04 are done (ml#2134); #2129 is closed. The watchdog's `--backup-id 2` deploy is unverified (Overview 1). `…PHASE-B-CONSENSUS-RECORD.md` is on `main` (ml#2179, ml#2199), not yet gated (S0.3). | Owner sitting (§4); P1-18 after Phase C | T0/T1 |
+| P1 backup | No backup has completed since 09-18. Phases A and B are on `main` (ml#2199, 2026-10-09): `…INTEGRATED-DESIGN.md`'s §8 STOP is cleared, and retention is suspended through recovery (Overtoad ruling 2026-10-08). B9 merged (ml#2203). P1-01..04 are done (ml#2134); #2129 is closed. The watchdog's `--backup-id 2` deploy is unverified (Overview 1). `…PHASE-B-CONSENSUS-RECORD.md` is on `main` (ml#2179, ml#2199), not yet gated (S0.3). | The Overtoad sitting (§4); P1-18 after Phase C | T0/T1 |
 | P2 canopy | The replay fix shipped in canopy 0.9.0 (10-17) and 0.10.0 (11-15). `…E2E-VALIDATION-EVIDENCE.md`'s Phase 10 (ml#2157) filed F-060..067 (P1 064; 065 awaits a ruling) and recorded 061/062 FIXED by canopy#685; Phase 11 (ml#2183) recorded P2-05's census (F-058 live, F-068 filed; 23 open, 7 P1). P2-06 merged as canopy#731 (10-09; evidence: ml#2196); Phase 12 is owed (`…phase12-owed.md`). Y2 wave 2 stalled at round 15 (W1.10 and W1.12 landed parts; XC-P12). | P2-03; Phase 12 | T0/T1 |
 | P3 defect register | P3-07 merged on 11-08 (ml#2523) and shipped in R-OBS-SC-2 (observability 0.4.2, service-core 0.7.2; 11-09). data 0.17.0 shipped without P3-03 and P3-09, and R-DATA-2 is owed (Overtoad ruling 2026-10-10; §5). The data fix-forward branch has no PR: 2 ahead and 24 behind `v0.17.0` (26 behind `main` after data#479), and data#454 and data#475 also edit three of its files. Three S rows are unfiled. APD-ECO-016 filed FIXED 11-15 (ml#2576); data's fix waits for 0.18.0. | S0.4; P3-01 | T0 |
 | P4 release | Served on 10-10: observability 0.4.1, service-core 0.7.1, data 0.17.0. All five then gated were served by 10-25: model 0.4.0, data-client 0.6.0, ci-tools 0.9.1, data 0.17.1, cascor 0.12.0. P12 added canopy 0.9.0, recurrence 0.6.0–0.8.1, model 0.5.0–0.6.0, juniper-ml 0.11.0–0.11.4, recurrence-client 0.3.1. Then cascor 0.13.0, R-OBS-SC-2 (11-09), juniper-ml 0.11.5, cascor 0.14.0 and canopy 0.10.0 (11-15). R-DATA-2 is owed. P4's Wave 4 waits on Docker Hub secrets (10-10). | §5's cuts | T1 |
@@ -469,9 +469,9 @@ Its job summary also links each hit as a public `blob/<sha>/<file>#L<line>` URL 
 | Step | Who | What |
 | --- | --- | --- |
 | 1 | Session | Local full-history scans of each public repository (`gitleaks git`) on a fresh `--mirror` clone, with the defaults, the gate's interim rules and the exact config step 3 will ship, each on its own, under both v8.30.1 and CI's 8.24.3 (note 1). Report to an Overtoad-only `0600` path, created before the scan (note 1), outside every repository; shared records carry counts and rule IDs only |
-| 2 | Owner | Rotate every real hit. A baseline file needs an Overtoad ruling |
+| 2 | The Overtoad | Rotate every real hit. A baseline file needs an Overtoad ruling |
 | 3 | Session | Per repository, an ordinary validated PR: `[extend]` with `useDefault = true`, plus the B9-class rules (`…RECOVERY-PLAN.md` B9; P1-11), required because the defaults miss the passphrase class, written so that the config passes the gate (note 3). `GITLEAKS_VERSION: 8.30.1` in the action's env. Recurrence also gets a gitleaks step, a config and P1-11's pre-commit hook. juniper-data goes last (note 2) |
-| 4 (independent) | Owner (§6 A3) | Secret scanning and push protection in juniper-deploy; non-provider patterns in all nine repositories. GitHub's alerts are private, so this does not wait for steps 1–3: Wave 0's sitting item 7 does it in the first sitting |
+| 4 (independent) | The Overtoad (§6 A3) | Secret scanning and push protection in juniper-deploy; non-provider patterns in all nine repositories. GitHub's alerts are private, so this does not wait for steps 1–3: Wave 0's sitting item 7 does it in the first sitting |
 | juniper-ml, done out of order (ml#2203) | Session | One PR scanned, baselined and shipped. Still owed for juniper-ml: step 1's v8.30.1 and `b9.toml` runs and its text export; step 2's rotation of S-1, which P0's re-key retires; and the Overtoad's ruling on the 32-entry baseline. It ships one rule, not twelve. It pins 8.24.3 in both the hook and CI with a drift test, so moving to 8.30.1 moves both |
 
 1. **Step 1's instrument.** Use the two configs that `util/ad-hoc/2026-10-04_gitleaks_zero_rule_probe.py` writes to its `--workdir` (`defaults.toml` and `b9.toml`), and the config step 3 will ship; the tool's own `--scan-dir` cannot scan history.
@@ -748,7 +748,7 @@ For any item, read its path's handoff **and** its extraction report's §4, which
 
 ### Wave 0 — now (T0)
 
-**Owner sitting, in this order.** The rulings that gate the host steps come first, because each takes minutes. `…RECOVERY-PLAN.md` §6.3's "In this order" covers only its steps 1–9, which this sitting runs as items 2–4. Nothing needs preparing before item 1, so the host steps never wait on session prep. Items 4–8 go ahead while item 3's runs complete unattended, since those last hours.
+**The Overtoad sitting, in this order.** The rulings that gate the host steps come first, because each takes minutes. `…RECOVERY-PLAN.md` §6.3's "In this order" covers only its steps 1–9, which this sitting runs as items 2–4. Nothing needs preparing before item 1, so the host steps never wait on session prep. Items 4–8 go ahead while item 3's runs complete unattended, since those last hours.
 
 Four session items come before **sitting item 8**: S0.9 (A1's asks, A9's menu and O7's remainder for A5), S0.10 (the CI budgets that A8 depends on), S0.12 (A6's compaction list) and S0.13 (the reads of ml#2183, ml#2185 and ml#2196, for A10). S0.3's R3B DEFECT-1 menu is done: the Overtoad ruled on 2026-10-08, and ml#2199 folded it in.
 S0.13 gates only A10's limbs, which move to the mid-wave sitting if S0.13 is not done; the rest of item 8 does not wait for it (`EX/round11-laneB2-schedule.md` R11B2-08). S0.7 no longer feeds it: the fleet rows are done (XC-FLEET).
@@ -1260,7 +1260,7 @@ P12 shipped it: W1.13 cut 0.6.0 on 2026-10-10, and recurrence#196 set recurrence
 
 ---
 
-## 6. Owner packet
+## 6. The Overtoad packet
 
 IDs are local to their path, so each carries a path prefix. Every row's options, recommendation and source are in the named extraction report's §2, except A10's limbs, whose options are in its row and the note below the table.
 
@@ -1420,7 +1420,7 @@ Rounds run under the rule chosen at §6 A7; the proposed default is in §1.3. Ev
   - Items 7 and 8 (P3-01, P3-09) carry only the first escalator, as does item 9.
 - **Totals.** At least **18 rounds and 90 agent runs**, with more wherever a round's corrections need a third. `…CONSENSUS-PROCEDURE.md`'s one de-escalator is an end-to-end reproduction by a *different* instrument (`…CONSENSUS-PROCEDURE.md` L96–97). No item has one, so none is planned. The gate tool cannot serve for XC-LEAKS, because it made the measurement it would be checking.
 - **Rate.** Under the three-agent cap, a round runs in two batches: Lane A, then Lane B. At one to two rounds per day, 18 rounds take 9–18 days.
-- **Owner sittings.** At least four before the Wave 1 exit: Group A, the mid-wave sitting, and at least two release-cut sittings. There are two because R-OBS-SC-2 must be on PyPI before the second lock round, which comes before R-DATA-2 and R-CANOPY-A. Group B's items gate Wave 2 lanes and Wave 4, each when its input exists; none is in the Wave 1 exit.
+- **The Overtoad sittings.** At least four before the Wave 1 exit: Group A, the mid-wave sitting, and at least two release-cut sittings. There are two because R-OBS-SC-2 must be on PyPI before the second lock round, which comes before R-DATA-2 and R-CANOPY-A. Group B's items gate Wave 2 lanes and Wave 4, each when its input exists; none is in the Wave 1 exit.
 - **CI and merges.** Merge latency runs one to three hours per PR under the `strict` rulesets.
 - **What fills the rest.** At two rounds a day the rounds take 9 days of a three-week estimate; at one a day, 18 days of five weeks. The range is a judgement on the serial work around them, not a sum:
   - each item's corrections are written and frozen between its two rounds;
@@ -1525,7 +1525,7 @@ This updates the table in `…INDEX_consolidated-development-paths.md`.
 | XC-LEAKS config PRs | The local full-history scans, then the Overtoad's rotation of every hit; juniper-data's PR last. Each PR in a repository that rescans history adds a `.gitleaksignore` of the rotated hits or stops those rescans (§3 XC-LEAKS note 2): data, canopy and deploy in their config PRs (juniper-ml's merged first, ml#2203, with its baseline and S-1 unrotated), and the other four that rescan in small PRs of their own | Hard. A history rescan prints each hit in its public log (`-v`) and summary |
 | P2-01's F-061/062 FIXED records | P3-06 | ml#2157 recorded them before P3-06 validated canopy#685; if P3-06 refutes the fix, the ledger reopens them |
 | P5-11 | — | First: P6 OD-3 depends on what it surfaces. Bypassed 2026-10-27: P6-08's train / val half merged first, under the Overtoad's rulings (XC-P12 action 4). Done 2026-10-28 as ml#2381 |
-| P12 phase 0 (merged) | Owner ratification: R6, P6 OD-2, canopy#685 (a) | Ratify or revert |
+| P12 phase 0 (merged) | The Overtoad ratification: R6, P6 OD-2, canopy#685 (a) | Ratify or revert |
 | P12 R5 (gates only W5.4) | The consensus review of `…EQUITIES-CV-BLOWUP-INVESTIGATION.md` | Met: ml#2168, 2026-10-05 |
 | P12 W1.11 / M1 | R-DATA on PyPI and GHCR; W1.11's floor and pin PRs are P4-14 and R-ML-a's, opened only then (§10) | W1.11 met on 2026-10-10 (deploy#243, deploy#245, ml#2190), its PRs opened earlier as drafts (§10). W1.13, W1.14, 2c's name and the Phase 1 rulings were done by 2026-10-18. Every M1 landing is on `main`, and the W1.11 and W1.12 smokes passed on the 0.8.0 image (2026-10-25; `…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` v1.7.17) |
 | P12-48, and what remains of Y2 2b/2c | P2 O7, merged in the order 2c → 2a → 2b | W1.10 and W1.12 landed through P12 on 2026-10-05, without O7 (XC-P12); 2c must reconcile the snapshot-directory name with W1.10's: settled as W1.10's on 2026-10-18 (juniper-canopy#751) |

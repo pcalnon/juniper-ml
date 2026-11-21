@@ -246,9 +246,9 @@ Every setting has a `Field(..., description=...)` Pydantic docstring; CI asserts
 
 ## 3. Phase index
 
-Owner key: **C**=backend-cascor, **Y**=backend-canopy, **F**=frontend, **S**=SDK, **Sec**=security review, **O**=ops.
+The Overtoad key: **C**=backend-cascor, **Y**=backend-canopy, **F**=frontend, **S**=SDK, **Sec**=security review, **O**=ops.
 
-| # | Phase | Goal (one line) | Owner | Effort (o/e/p) | Entry deps | Exit top criterion | Rollback TTF | NOT-in-phase |
+| # | Phase | Goal (one line) | The Overtoad | Effort (o/e/p) | Entry deps | Exit top criterion | Rollback TTF | NOT-in-phase |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **0-cascor** | Cascor `/ws/training` emits `seq`, advertises `server_instance_id`+`replay_buffer_capacity`, supports `resume`, fixes state coalescer+broadcast_from_thread | C | 1.5/2.0/3.0 | cascor main clean; GAP-WS-19 verified | `cascor_ws_seq_gap_detected_total==0` after 72h soak | 15 min revert | Full Phase E; permessage-deflate; topology chunking; seq on `command_response` |
 | 2 | **A-SDK** (parallel with 1) | `CascorControlStream.set_params(params, timeout=1.0, command_id=...)` ships to PyPI | S | 0.5/1.0/1.5 | cascor-client main clean | `test_set_params_caller_cancellation` green | PyPI yank | Canopy adapter refactor; SDK retries; debounce |
@@ -1283,7 +1283,7 @@ All 13 resolved. **No item in this plan is TBD.**
 
 10 CCCs from R2-03, with per-phase touchpoints integrated in sections 4-14. This section lists each CCC's owning role and key acceptance criteria.
 
-| # | CCC | Owner | Key acceptance criteria |
+| # | CCC | The Overtoad | Key acceptance criteria |
 |---|---|---|---|
 | CCC-01 | Wire-format schema evolution | backend-cascor lead | `command_id` rename enforced; additive-only contract tested; rollout state matrix in Phase 0-cascor PR |
 | CCC-02 | Observability stack | backend-canopy lead | Metric-before-behavior via CI; SLO panel deployed; page alerts test-fired; metrics-presence in `fast` lane |

@@ -583,7 +583,7 @@ since 2026-09-23; the Release **creates** the tag, so deliberately **no** `--ver
   `required_signatures` rule and the armed `--auto` merge **completes with zero clicks**. (A plain
   runner-side `git commit` is unsigned and left an all-green archive PR BLOCKED behind that rule until an
   Overtoad admin one-click — 2026-07-23 run 30051952226 / ml#707; the API commit removes that block with no
-  security-posture change.) **Owner one-click is now only the degraded/manual fallback** — e.g. if
+  security-posture change.) **The Overtoad one-click is now only the degraded/manual fallback** — e.g. if
   `allow_auto_merge` is off (a graceful degrade, not a HALT) or the auto-merge never lands.
 
 - **The armed auto-merge was blocked (2026-07-29) — resolved via App bypass actor.**
@@ -817,7 +817,7 @@ copies TestPyPI's files to PyPI) skips the build and both publish jobs and runs 
 | `HALT_TESTPYPI` | any `*testpypi*` job `conclusion=failure` (the build job did not fail) | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue` | Inspect the TestPyPI job's failed step. Transient (TestPyPI not yet serving the upload): "Re-run failed jobs" on the run, within 30 days. A broken package (a real install-check failure): fix it and cut a new patch version, never the republish dispatch (procedure §11.8). |
 | `HALT_PUBLISH` | run `status=completed` and `conclusion` in `{failure, cancelled, timed_out}` **and** no build or TestPyPI job has `conclusion=failure` (a cancelled build lands here too, as does a failed republish run) | **No** — note only: `"the publish run failed, was cancelled or timed out, with no failed build or TestPyPI job: open the run (no issue is filed for this class)."` | Open the publish run UI; diagnose the failure (cancelled deploy, timed-out job, a failed PyPI or republish job, etc.). Do **not** wait for a GitHub issue. Archive + Release were already cut — re-entry resumes at the monitor and must not re-cut. |
 | `PENDING_PYPI_APPROVAL` | run `waiting` / TestPyPI ok + pypi job parked | n/a (success for the train) | Approve Gate 2 when ready (§3.3). |
-| `RELEASED` | run completed `success` (both gates done) | n/a | Owner already approved; nothing to do. |
+| `RELEASED` | run completed `success` (both gates done) | n/a | The Overtoad already approved; nothing to do. |
 
 **Why the asymmetry.** `testpypi-verify-failed` and `build-failed` are named, recoverable §8 classes with
 stable `reason_key`s for dedup. A generic failure outside the build and TestPyPI jobs has no single reason key worth filing — the
@@ -914,7 +914,7 @@ Consequences for recovery:
 - Only **one train runs at a time** (`concurrency: group: release-train, cancel-in-progress: false`,
   `release-train.yml`), so two runs never race the same immutable index (plan §8).
 
-## 6. Owner setup actions (one-time, provisioning)
+## 6. The Overtoad setup actions (one-time, provisioning)
 
 These are **not** train actions — they are Overtoad console/CLI actions the train depends on:
 
@@ -1064,7 +1064,7 @@ Overtoad-only) and nothing outside pull-request merges.
    `createCommitOnBranch`), yielding a **GitHub-signed / Verified** commit under the App / `GITHUB_TOKEN`
    identity (§3.3). Previously the commit was a plain unsigned runner-side `git commit`, so an all-green
    archive PR stayed BLOCKED behind that rule until an Overtoad admin one-click (2026-07-23 run 30051952226
-   / ml#707). Owner one-click is now only the degraded/manual fallback (e.g. `allow_auto_merge` off). No
+   / ml#707). The Overtoad one-click is now only the degraded/manual fallback (e.g. `allow_auto_merge` off). No
    security-posture change — the PyPI deploy still waits at the Overtoad-gated `pypi` environment (Gate 2).
    The **live proof** (an archive PR auto-merging with zero clicks) rides the next real ceremony dispatch.
 6. **Summary / Slack `<<'PY'` late-failure class (RESOLVED #708 + #723).** Detect / propose / ceremony

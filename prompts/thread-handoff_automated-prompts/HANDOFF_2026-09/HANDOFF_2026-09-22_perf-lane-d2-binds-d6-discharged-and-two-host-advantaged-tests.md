@@ -174,7 +174,7 @@ never ratified.
      resolves to instead. The runnable invocation is the first block of the probe note's §8
      (`notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md`), which
      already uses absolute paths.
-   - **`--benchmark-compare=<N>`, NEVER `--benchmark-compare-fail`.** Owner decision 2.5: PF-4
+   - **`--benchmark-compare=<N>`, NEVER `--benchmark-compare-fail`.** The Overtoad decision 2.5: PF-4
      is **report-only on timing, permanently** (P2 plan `:338`). A tolerance gate is worse than
      useless here — §8.4 measured six competing processes at **+19.9%**, i.e. blind to real
      regressions yet firing on an ordinary loaded host. Cutting a fresh reference does not

@@ -458,7 +458,7 @@ already go to `/root/.cache/duplicati-rekey` (root's home on `/`).
 8. **A failed trial pauses Phase D at step 0** (§1.4). The documents carry no such branch. The fix PR, then a re-run of
    step 0, step 1 and step 3's stage gate, all come before step 6.
 
-**Owner rulings, 2026-10-30** (asked by the designing session at 2026-10-29 23:19 CDT, before round 3 reported; answered
+**The Overtoad rulings, 2026-10-30** (asked by the designing session at 2026-10-29 23:19 CDT, before round 3 reported; answered
 2026-10-30 03:18 CDT):
 
 - **The trial's form (item 1):** approved as the question put it: the runtime copy plus one drop-in carrying the
@@ -503,7 +503,7 @@ A ruling against one of them changes this document first: a fix PR, then step 0,
 - **Where it is measured instead.** The trial runs production's option words with console logging on, and the planted
   marker shows the logging reached the journal. So §1.4's count of exactly 1, the marker, is the measurement. Step 10
   keeps its count, but its 0 is not evidence.
-- **Owner ruling, Phase E:**
+- **The Overtoad ruling, Phase E:**
   - add `--log-console --log-level=Warning` to `DAEMON_OPTS` (a blessed change), or
   - re-point AC-14 at the server's own log.
 - **Adding `--log-console` needs an AC-8 check first.** Job runs log in non-isolating scopes, so every job warning would

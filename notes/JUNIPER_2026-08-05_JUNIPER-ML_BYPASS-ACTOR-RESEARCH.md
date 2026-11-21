@@ -45,7 +45,7 @@ The ruleset does **not** have six *always*-bypass actors. Live JSON shows **five
 
 ## §3 DeployKey audit path (Overtoad-side)
 
-Deploy keys are repo-scoped SSH keys; an `always` DeployKey bypass lets *any* holder push/force-push/delete `main` past every rule. Enumerated (read-only): juniper-ml has the 2 writable keys in §1; juniper-cascor likewise (`143581480` last_used **2026-07-30**, `144170557` "-Turing"). No SSH-push-to-main automation was found in `util/`, `scripts/`, or `docs/` (grep clean). Owner check: Settings → Deploy keys; identify what "juniper deploy key" and the "Turing" host key authenticate for — if they only fetch/clone, the bypass entry is dead weight → remove; if something pushes main via a key, keep and document it.
+Deploy keys are repo-scoped SSH keys; an `always` DeployKey bypass lets *any* holder push/force-push/delete `main` past every rule. Enumerated (read-only): juniper-ml has the 2 writable keys in §1; juniper-cascor likewise (`143581480` last_used **2026-07-30**, `144170557` "-Turing"). No SSH-push-to-main automation was found in `util/`, `scripts/`, or `docs/` (grep clean). The Overtoad check: Settings → Deploy keys; identify what "juniper deploy key" and the "Turing" host key authenticate for — if they only fetch/clone, the bypass entry is dead weight → remove; if something pushes main via a key, keep and document it.
 
 ## §4 The claude-app question
 
@@ -55,7 +55,7 @@ Deploy keys are repo-scoped SSH keys; an `always` DeployKey bypass lets *any* ho
 
 Restating the validated P3 finding with fresh evidence: PR **creation** is not a `main`-ref operation and `cursor/**` branches are ungoverned (ruleset targets `~DEFAULT_BRANCH` only), so cursor's bypass has **zero effect on the live August storm** (ml PRs to #917, cascor to #475, all `app/cursor`). The bypass matters **only if a merge-queue rule is added** — every `always` actor skips a queue, so removing the app bypasses is a **prerequisite** for a queue to bind fleet PRs. Even then, Role5 means a queue never binds *Overtoad* batch-merges unless the Overtoad voluntarily routes through "Merge when ready" — the post-merge net (main-verify) remains the Overtoad-merge residual's only check. Caveat discovered en route: the Overtoad's notes record the `merge_queue` rule **422-ing on personal-account repos** (plan-gated) — verify availability in the UI before planning around it.
 
-## §6 Owner discussion agenda
+## §6 The Overtoad discussion agenda
 
 1. **Identify 1276151** (Settings → Rules → bypass list renders app names; or Settings → GitHub Apps) — an unnamed `always` actor on ml **and** cascor. Then KEEP (if a deliberate main-writer) or REMOVE. *Recommendation: identify; expect REMOVE.*
 2. **DeployKey bypass** — audit the two writable keys (especially the 2026-08-03-active one) per §3. *Recommendation: REMOVE the bypass entry after confirming fetch-only usage.*

@@ -55,7 +55,7 @@
 | 22 | B13: `APD-ML-007` | `ceremony.py:462` and `:1011` confirmed. The release was published 08:52:14Z at `39d1cab2`, and the next main commit is at 08:57:15Z. The notes equal the `[0.16.0]` section's 244 non-blank lines in order, with 15 bullets and 4 blanks dropped. `--target-sha` is opt-in, nothing checks the root, and the first heading is used. | REPRODUCED (NIT N4) |
 | 23 | B14: `docs/REFERENCE.md` and the §5.1 `APD-ECO-008` row | `docs-full-check.yml` has no `if:` anywhere, and its link check (`:125`) runs before the drift step (`:256`). `release-train.yml` clones siblings. `ci.yml:500` runs the test without them. On a synthetic root with canopy missing: `FAILED (failures=2)`. | REPRODUCED |
 | 24 | A-nit: `APD-ML-008`, "would skip only those forks' sites: `OK (skipped=3)`" (L1305) | The count is right, but every fork site is skipped, canopy's included. | **PARTLY REFUTED** (L1) |
-| 25 | Owner rulings "verbatim" (L1494-1504) | Labels, sessions and times all match the transcripts (07:32:48Z `bc31e993`, 07:53:26Z `8f86dec2`). Both descriptions are truncated. | REPRODUCED (NIT N5) |
+| 25 | The Overtoad rulings "verbatim" (L1494-1504) | Labels, sessions and times all match the transcripts (07:32:48Z `bc31e993`, 07:53:26Z `8f86dec2`). Both descriptions are truncated. | REPRODUCED (NIT N5) |
 | 26 | The rejection reasons | B12 holds: the checksum already differed from served bytes at `v0.15.0`. B15 holds. The APD-ML-008 A-nit's reason is imprecise. | Mixed (NIT N6) |
 | 27 | "all 26 archived reports equal their agents' last messages" | Not re-derived. | NO ARTIFACT |
 

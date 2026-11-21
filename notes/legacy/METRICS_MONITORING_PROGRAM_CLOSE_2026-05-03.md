@@ -681,7 +681,7 @@ calls; that resolved once agent prompts standardised on absolute paths.
 Carrying forward into post-METRICS-MON work. Each item: name, Overtoad repo,
 blocker/non-blocker, recommended action.
 
-| ID | Owner repo | Blocker? | Item |
+| ID | The Overtoad repo | Blocker? | Item |
 |---|---|---|---|
 | **TRAIN-ARCH-01** | juniper-cascor | NON-BLOCKER | Mini-batch restoration. Design doc juniper-cascor#194 OPEN under user review; user explicitly deferred at design-doc stage. Recommended action: keep design doc OPEN until research-side decision on whether mini-batched cascor is desirable; if yes, schedule as a future METRICS-MON-N sub-track. Companion: juniper-ml#189 mini-batch instrumentation design doc (merged). |
 | **R5.6 throttle removal** | juniper-cascor | NON-BLOCKER | `cascade_correlation.py:1655` 25-epoch emit throttle reduces R5.4 burn-rate fidelity for SLO 3.4. Small future sub-track (single-line gate change + test updates for the histogram count assertions). Coupled to TRAIN-ARCH-01 only loosely — could ship independently. |

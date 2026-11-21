@@ -27,10 +27,10 @@ Continue the **juniper-ml performance lane** (PF-1..PF-8 suites, Overtoad decisi
 - PF-1 successor baseline `pf1-2026-09-23-blas2` minted (capped, cascor `0d2d826`). PF-3 re-shaped to 14 cells; D3's one-cell check passed. PF-2 axis 2 built at the 5,882 ceiling and run (no knee, so the in-process follow-up does not fire). PF-2 axis 3 built and run, plus a 5-seed probe (ml#2068, ml#2078).
 - `util/thread_width.py` + `tests/test_thread_width.py` built and wired into CI as the 168th suite (ml#2068, `2b53255a`).
 - Python 3.14 micro reference cut, LOADED by Overtoad ruling: `Linux-CPython-3.14-64bit/0001` (cascor `0e016a7`).
-- juniper-data#432 filed (additive-sizing 400). 09-17 D6 work rescued (ml#2031). Owner rulings recorded in `notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md` §5 and §6.
+- juniper-data#432 filed (additive-sizing 400). 09-17 D6 work rescued (ml#2031). The Overtoad rulings recorded in `notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md` §5 and §6.
 - The 09-24 handoff's own merge-wait PR, **ml#2078, MERGED** 2026-09-24T09:45:51Z as `514b6c24`.
 
-**Owner rulings in the rulings note (`…SIX-OWNER-DECISIONS-RULED.md`) §5 and §6 are FINAL — do not re-ask.** PF-3 waits for a quiet window (no `clamscan`, 1-minute load that STAYS under ~6). PF-2 axis 1's instrument: publish `epochs_completed` from cascor as a structured record; do not parse the log. D2 key names ratified as-is, no second knob. D4 axis 2 "10,000 now, in-process later". D6 advisory first. D1 "pay the debt, then flip" (done).
+**The Overtoad rulings in the rulings note (`…SIX-OWNER-DECISIONS-RULED.md`) §5 and §6 are FINAL — do not re-ask.** PF-3 waits for a quiet window (no `clamscan`, 1-minute load that STAYS under ~6). PF-2 axis 1's instrument: publish `epochs_completed` from cascor as a structured record; do not parse the log. D2 key names ratified as-is, no second knob. D4 axis 2 "10,000 now, in-process later". D6 advisory first. D1 "pay the debt, then flip" (done).
 
 **Remaining work, in priority order:**
 

@@ -356,7 +356,7 @@ REMAINING WORK, ordered by dependency
   3. .github/workflows/ci.yml and docs/REFERENCE.md still say "102 structural problems across
      21 files ... 1 under notes/code-review/". At 6ccf80fa it is 73/15 and notes/code-review/
      is ZERO. §3 item 7. No Overtoad needed.
-  4. Owner decisions: §3 items 1, 6, 8, 9.
+  4. The Overtoad decisions: §3 items 1, 6, 8, 9.
 
 THE SLACK NUMBER: FIVE REPOS NEGATIVE, AND I GOT THIS WRONG TWICE BEFORE THIS LINE.
   The rule is SOURCED, so use it as written -- do not re-derive a "better" one:
@@ -772,7 +772,7 @@ Notes on the rows that need more than a cell:
      |---|---|---|
      | #1976 | `### 0.5 \`JuniperCascor1\` environment repair — Overtoad has not ruled, asked 3+ times` | `### 0.5 ~~…environment repair~~ — **MOOT, CLOSED 2026-09-21**` |
      | #1976 | `### 5.1 \`JuniperCascor1\` is broken and the Overtoad has not ruled` | `### 5.1 ~~…is broken~~ — **OBSOLETE as of 2026-09-21, the env is REPAIRED**` |
-     | #1973 | `### 0.6 Owner decisions still owed` | `… — NONE, as of 2026-09-21` |
+     | #1973 | `### 0.6 The Overtoad decisions still owed` | `… — NONE, as of 2026-09-21` |
      | #1992 | `### 8.4 NEW outstanding work — none of it tracked by any issue or PR` | `… — untracked when found; **§8.7 records where each one now lives**` |
      | #1983 | `### APD-CASCOR-005 — … in two of three copies` | `… in three of four copies` (a correction, not a status) |
      | #2009 | `## 3. DECISION REQUIRED — repository secret, or environment secret?` | `## 3. RULED 2026-09-22 — Option B: …` |
@@ -1135,7 +1135,7 @@ its own window; the three raised maxima as single healthy passes; the 09-21 burs
 lockfile PRs and how each was released; #1970's executed runs; the alarm history; and the soak
 census at its census point, except the PR count.
 
-**Owner ruling during round 2.** The three raises went to the Overtoad with both cases; the Overtoad
+**The Overtoad ruling during round 2.** The three raises went to the Overtoad with both cases; the Overtoad
 ruled SHIP on 2026-09-22. The general question is OWNER DECISION 2.
 
 **Between rounds 2 and 3**, changes came from outside the lanes. CodeQL alert 716

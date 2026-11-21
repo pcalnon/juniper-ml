@@ -104,7 +104,7 @@ Aliases: **HO** is `HANDOFF_2026-10-03_partition-arc-decision-12-consolidated.md
 - Set `max_epochs` and `output_epochs` to the same value.
 - Write the result up beside V-2.
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options, and the source's recommendation | Blocks | Source |
 |---|---|---|---|---|

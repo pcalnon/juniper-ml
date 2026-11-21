@@ -1889,7 +1889,7 @@ but sys.path mutation remains. Long-term: IPC or make Cascor installable package
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Notes**:
 

@@ -15,7 +15,7 @@ Two invariants matter more than the rest:
 
 1. **No branch-type policy may exist.**  Adding a ``main`` branch policy is the
    single edit that re-opens the arbitrary-ref hole while leaving every tag
-   pattern intact and the environment still looking configured.  Owner decision
+   pattern intact and the environment still looking configured.  The Overtoad decision
    D3 was explicitly tag-only.
 2. **The ``pypi`` reviewer gate must survive.**  ``PUT``ing an environment is a
    create-or-update, so a careless payload can clear ``required_reviewers``
@@ -86,7 +86,7 @@ PUBLISH_ENVS = ("pypi", "testpypi")
 # doubles as an anti-resurrection guard.
 NON_PUBLISHING_REPOS = ("juniper-deploy",)
 
-# Owner decision D2.  `v*` / `juniper-*-v*` are the live conventions; the `rc` /
+# The Overtoad decision D2.  `v*` / `juniper-*-v*` are the live conventions; the `rc` /
 # `hf` pairs were registered ahead of any release-candidate or hotfix use.
 EXPECTED_TAG_PATTERNS = frozenset(
     {

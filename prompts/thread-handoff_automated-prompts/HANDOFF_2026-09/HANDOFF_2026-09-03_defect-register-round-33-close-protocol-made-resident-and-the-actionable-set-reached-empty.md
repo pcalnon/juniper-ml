@@ -190,5 +190,5 @@ Attack in this order:
 - [x] Handoff document generated (this file)
 - [ ] PR opened for this document
 - [ ] **Consensus validation of THIS document** (§6) — the successor's first work
-- [ ] **Owner answers pending on four rows** — `APD-DATA-018`, `APD-DATA-019`, `APD-ECO-003`,
+- [ ] **The Overtoad answers pending on four rows** — `APD-DATA-018`, `APD-DATA-019`, `APD-ECO-003`,
       `APD-ECO-001`. Until one lands, there is no register work a session may do unasked.

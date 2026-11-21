@@ -81,7 +81,7 @@ One successor should own both lanes. If the Overtoad starts two sessions:
 7. **[R] The fork-drift marker** (Appendix E), once item 6 has filed APD-ECO-013.
 8. **[R] Verify on the real services, then file** (a) the 422-echo defect, (b) the primer toy's copy of it, and the primer's stale lines 4742-4743 (Appendices A and J).
 9. **[R] PATCH the bodies of juniper-ml#2080 and #2088** with `gh api -X PATCH` (Appendix J).
-10. **[R/F] Owner decisions:** Appendix B, each tagged with the lane that asks it. Surface them; decide none.
+10. **[R/F] The Overtoad decisions:** Appendix B, each tagged with the lane that asks it. Surface them; decide none.
 
 ## Key context and traps (part of the prompt)
 

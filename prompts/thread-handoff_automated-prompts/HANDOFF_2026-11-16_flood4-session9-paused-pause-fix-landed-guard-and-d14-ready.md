@@ -62,7 +62,7 @@ status); the 2026-11-12 rulings' service-core and canopy items (two service-core
 lifecycle races beside N-2; five lockfile-print ports + one canopy docs line; canopy :8100; canopy's relay test);
 owed Dependabot reads for juniper-data, juniper-data-client, juniper-cascor-client and juniper-ml.
 
-Owner decisions open (guard): pursue the printing-substitution gap (e.g. `d$(printf %s o)as id`; JL1's generator still
+The Overtoad decisions open (guard): pursue the printing-substitution gap (e.g. `d$(printf %s o)as id`; JL1's generator still
 finds 218 unsafe words, 100 of its 101 kept examples are printing substitutions); accept that the 3 s analysis budget
 refuses a few 24-30 KB brace commands main passes.
 ```
@@ -74,7 +74,7 @@ refuses a few 24-30 KB brace commands main passes.
   brief (`briefs/J4_guard_hardening_reworded.txt`: defensive framing; the guard only receives JSON payloads; bash prints
   expansions with printf in a scratch HOME; harmless markers; never the dead J2's probe script; stop on a safety stop)
   ran three agents (J4, JL1, J4's fix-up) with NO stop. Validated: the guard is the Overtoad's D11 hook for turing, not
-  installed on this host; every listed loophole reproduced on main (B1 by the orchestrator too); efficacy is real but
+  installed on this host; every listed loophole reproduced on main (B1 by the orchestrator too); efficacy isLreal but
   bounded: gaps 1-11 (a script written in one call and run in the next) stay open by design.
 - **Ruling 37 was overtaken**: another session fixed the three failing scheduled lanes (worker#231, data-client#263,
   cascor-client#198: `-m integration`) during a blocked dialog; session 9's worker conftest carrier was NOT landed.

@@ -35,7 +35,7 @@ R-OBS-SC-2's session-side work ends when the v1.15.15 PR merges. What remains is
 ## Remaining work
 
 1. **Post-merge re-check** (commands below).
-2. **Owner items** (report them; do not act). The plan's §6 lists them:
+2. **The Overtoad items** (report them; do not act). The plan's §6 lists them:
    - Whether the per-lock probe may stand in for S0.11's relay run at the trio's restart.
    - Who may move the juniper-ml primary, which `JuniperCascor1` imports. O13 names four other primaries.
    - Who opens the consumers' floor PRs, and juniper-ml 0.11.5 for the `[tools]` floor `juniper-observability>=0.4.2`.

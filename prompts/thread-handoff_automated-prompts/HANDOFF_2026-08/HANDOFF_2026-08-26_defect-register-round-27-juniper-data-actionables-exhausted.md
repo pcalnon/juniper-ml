@@ -248,7 +248,7 @@ it to the Overtoad; keep carrying it here (or add a §4.3 note in the next regis
    and Question A are juniper-data work and need the **JuniperData** env
    (`/opt/miniforge3/envs/JuniperData/bin/python`; run pytest from the worktree root so
    `pythonpath = ["."]` imports the worktree, not the editable install — §5.6).
-3. **Owner questions — put these to Paul as written; do not action either unilaterally.** Whichever
+3. **The Overtoad questions — put these to Paul as written; do not action either unilaterally.** Whichever
    way he answers, a register touch on the rows is owed (a §4.1 / §4.6 note in the style of the
    routing notes — the register has no Overtoad-decision marker, only prose notes).
    - **Question A (`APD-DATA-005` + `-024`, one decision):** `api_key_header` (`api/security.py:29`)

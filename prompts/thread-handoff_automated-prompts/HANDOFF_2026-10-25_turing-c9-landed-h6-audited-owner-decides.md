@@ -28,7 +28,7 @@
 - **H5, option B** is intact: the hardening check exited 0 at 08:13:41Z with `--offline`. B.5 is still pending (both `origin`s set).
 - **H6:** none of VS Code's four servers has ever started from VS Code on turing (VS Code's newest log session is 2026-03-26). The decisions are the Overtoad's.
 
-## Owner steps
+## The Overtoad steps
 
 1. **C8 install, now including K12 and C9.** From a real terminal, in the primary checkout:
 

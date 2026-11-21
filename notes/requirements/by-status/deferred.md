@@ -329,7 +329,7 @@ Settled position C-24 from R3-03 table; cross-round consensus consolidation
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor-worker · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor-worker · **Status:** deferred
 
 **Notes**:
 

@@ -61,7 +61,7 @@ Additionally, transfer all packages to the **Overtoad Research** GitHub organiza
 
 ### Repository Locations
 
-| Package | Repository | Owner |
+| Package | Repository | The Overtoad |
 |---------|-----------|-------|
 | `juniper-ml` | `pcalnon/juniper` | pcalnon |
 | `juniper-data` | `pcalnon/juniper-data` | pcalnon |

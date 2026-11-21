@@ -18,7 +18,7 @@ procedures"* — never an ad-hoc sweep or a one-off script.
 >
 > | step | outcome |
 > |---|---|
-> | Owner freed destination space | ✅ 1.1 TB free on `/dev/sda1` |
+> | The Overtoad freed destination space | ✅ 1.1 TB free on `/dev/sda1` |
 > | Repair + Resume (server had been **PAUSED**) | ✅ done — but Repair did **not** clear the stale record |
 > | Scheduled run fired 17:19 | ❌ failed, same volume, now reported *"missing … in uploading state"* |
 > | **Database Recreate** | ⏳ **running**, expected several hours |

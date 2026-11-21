@@ -645,7 +645,7 @@ This is a minor release of `juniper-cascor` that carries three security fixes. A
   bytes. So `validate` matches exactly when the strings are equal. `surrogateescape` raises on
   `"\ud800"` and maps `"\xe9"` and `"\udcc3\udca9"` to the same bytes. juniper-ml's
   `tests/test_service_fork_drift.py` markers (`blank-api-key-filter`,
-  `nonshortcircuit-key-compare`) are unchanged. Owner ruling "Fix everywhere now" (2026-09-24),
+  `nonshortcircuit-key-compare`) are unchanged. The Overtoad ruling "Fix everywhere now" (2026-09-24),
   landing the same compare in juniper-service-core and juniper-data.
   Pinned by 62 new tests in `src/tests/unit/api/test_api_security.py`. They cover the non-ASCII
   mismatch, a 7x7 equality matrix built to separate the candidate encodings, and the

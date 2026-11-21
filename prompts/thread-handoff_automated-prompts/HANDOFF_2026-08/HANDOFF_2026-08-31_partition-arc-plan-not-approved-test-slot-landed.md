@@ -33,7 +33,7 @@ full before acting** — §3 and §4 here are pointers, not substitutes.
     in selection pressure both returned intervals containing zero. **The consequence that matters:
     the motivation for the three-way split is *methodological, not performance*** — selection and
     reporting must not share rows, which is provable without statistics. The design must **not**
-    claim the reported numbers are inflated; measurably, they are not. Owner decision 4
+    claim the reported numbers are inflated; measurably, they are not. The Overtoad decision 4
     (re-measure) survives anyway, for the unrelated V-1 reason below: the old numbers are not
     inflated, they describe *different data*. (ml#1477, ml#1493; collector
     `util/ad-hoc/2026-08-29_val_split_bias_collect.py`, suites `e-o-val-split-bias-cap4.yaml` /

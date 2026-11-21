@@ -41,7 +41,7 @@ This session was asked to **develop a validated, correct, effective prompt** (no
 
 ## 3. How the prompt was developed (work performed)
 
-1. **Owner scoping (two `AskUserQuestion` rounds).** The plan is multi-phase; the Overtoad first chose the **entry point** (Canopy A1 — the env-floor guard, the plan's mandated canopy-first start). Grounding then discovered A1's canopy deliverable already exists (§5), so a second question confirmed the **rescope** to §10.1's shared tool.
+1. **The Overtoad scoping (two `AskUserQuestion` rounds).** The plan is multi-phase; the Overtoad first chose the **entry point** (Canopy A1 — the env-floor guard, the plan's mandated canopy-first start). Grounding then discovered A1's canopy deliverable already exists (§5), so a second question confirmed the **rescope** to §10.1's shared tool.
 2. **Grounding (two read-only `Explore` sub-agents + the discovery CLI).** Re-confirmed at current HEAD: the floor drift the guard targets, the crash sites, the mocked seams, the existing canopy floor test, the `juniper-ci-tools` packaging/console-script idiom, the CI gate, the publish flow, the canopy CI insertion point, and the consumer-pin guards.
 3. **Authoring.** Filled a copy of `task.md`, mapping the Overtoad's intent to ordered directives + measurable acceptance criteria, injecting only grounded anchors.
 4. **Validation (`prompt-validator` subagent).** Iter-1 FAIL → fix → iter-2 PASS (§2).

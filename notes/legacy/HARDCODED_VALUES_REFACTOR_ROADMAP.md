@@ -325,7 +325,7 @@ Training hyperparameter defaults should be consistent (or intentionally differen
 
 ## Risk Register
 
-| #  | Risk                                | Likelihood | Impact   | Mitigation                                     | Owner |
+| #  | Risk                                | Likelihood | Impact   | Mitigation                                     | The Overtoad |
 |----|-------------------------------------|------------|----------|------------------------------------------------|-------|
 | R1 | Constants hold wrong values         | Very Low   | High     | Copy exact literals; test validates            |       |
 | R2 | Import cycles                       | Low        | Medium   | Constants modules have no app-layer imports    |       |

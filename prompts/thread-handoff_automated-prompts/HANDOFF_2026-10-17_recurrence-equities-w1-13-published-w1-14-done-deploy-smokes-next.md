@@ -100,7 +100,7 @@ Continue the arc from the plan v1.6.0. **All four W1.13 publications are on PyPI
    - juniper-ml#2227;
    - the open six above;
    - the parent `Juniper/AGENTS.md` "RELEASED to PyPI" paragraph: absent on turing, unversioned, updated with the last pin per W1.13.
-5. **Owner items** (unchanged):
+5. **The Overtoad items** (unchanged):
    - dates;
    - R1–R8 confirmation (R2, R3, R7 and R8's alternative now *ship*; a re-ruling means a release), and R5;
    - W5.8 (B) vs W5.11; W5.9 / W5.10;

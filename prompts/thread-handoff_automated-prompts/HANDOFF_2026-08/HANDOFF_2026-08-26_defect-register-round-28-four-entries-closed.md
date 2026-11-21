@@ -121,7 +121,7 @@ If the harness worktree refuses `git checkout main`, that is normal — cut task
 | `APD-DATA-005` + `APD-DATA-024` | data#295 | ml#1418 | `d3c806d0` / `e07e3b96` |
 | `APD-CASCOR-003` (**partial**) + unfiled `operation_id` sibling | cascor#593 | ml#1420 (armed) | `d68e6541` |
 
-**Owner decisions taken this session** (put as questions, answered): merge approval re-granted for
+**The Overtoad decisions taken this session** (put as questions, answered): merge approval re-granted for
 this arc — **it does NOT carry across sessions, ask every session**; Question A answered **(a) serve
 `/openapi.json` behind the key**; Question B (`RCLIENT-004`/`ECO-004` TypedDicts) **deferred, not
 rejected**, with the reason now a §4.6 register note.

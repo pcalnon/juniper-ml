@@ -228,7 +228,7 @@ $ gh api --paginate "advisories?ecosystem=npm&per_page=100&affects=<99 pins from
 - **Severity**: minor
 - **Location**: upstream `SaptaDey/Adaptive-Graph-of-Thoughts-MCP-server`; `LICENSE:1`; `pyproject.toml:8`, `:14`; `manifest.json:13`; `package.json:14`
 - **Problem**
-  - **Owner and activity**: a personal account created 2023-08-15, with 41 public repositories. The repository has 32 stars and 9 forks and no security advisory.
+  - **The Overtoad and activity**: a personal account created 2023-08-15, with 41 public repositories. The repository has 32 stars and 9 forks and no security advisory.
   - **HEAD signature**: HEAD `1f7c6cee` merges PR #158, written by the Copilot coding agent. Its `verified: true` is GitHub's own web-flow signature on the merge (committer `GitHub`, reason `valid`), not the author's key. One of the six newer commits, `07b97361c130`, is unsigned.
   - **Security-titled PRs**: a burst landed on 2025-06-20 to 2025-06-22, among them "Fix authentication bypass in verify_token" (#101), "Fix token verification bypass" (#121), "Fix Cypher injection in Neo4j utilities" (#122) and "Fix credential exposure in Neo4j debug logs" (#100). The fail-open Basic authentication of AGOT-A3 survived them all.
   - **A regressed bump**: PR #136 raised the Inspector to 0.14.3 and merged on 2025-06-22, yet HEAD's root `package.json:14` declares `^0.1.0`. PR #158's 15 files do not include it; the reverting commit was not traced.
@@ -611,7 +611,7 @@ $ gh api --paginate "advisories?ecosystem=npm&per_page=100&affects=<174 name@ver
 - **Severity**: minor
 - **Location**: upstream `QuixiAI/agi-mcp-server`
 - **Problem**
-  - **Owner and activity**: the Overtoad is an organization (QuixiAI, created 2024-01-02, 90 public repositories). The repository was created 2025-06-21 and has 6 stars and 4 forks.
+  - **The Overtoad and activity**: the Overtoad is an organization (QuixiAI, created 2024-01-02, 90 public repositories). The repository was created 2025-06-21 and has 6 stars and 4 forks.
   - **Unsigned commits**: HEAD `9eceac9e` (2025-06-21, "update README.md") is unsigned (`verification.reason: unsigned`), and so is the one later commit.
   - **Security and issue history**: no security advisory. The whole issue and PR history is two items: an open "ChatGPT official integration / app?" issue and a closed badge PR.
   - **Test runner**: `package.json:52` pins a beta, vitest 4.0.0-beta.1.
@@ -815,7 +815,7 @@ These recommendations are the auditor's; **the decision is the Overtoad's**. Thi
 | What enabling a tool would require | Under C9 (§18.2 :944), which covers Serena first, each of those four tools would need C9 extended to its name, or a `permissions.deny` rule for `mcp__adaptive-graph-of-thoughts__<tool>` (§18.2 :945). `graph_reasoning` writes no file but writes to and deletes from Neo4j, so it would need a deny rule. |
 | Docker artifacts | None: no image, container or volume (§6.1) |
 
-Owner commands:
+The Overtoad commands:
 
 ```bash
 # 1. Before removal: confirm the server is still unconfigured (keys and booleans only; --offline skips the GitHub reads)
@@ -834,7 +834,7 @@ rm -rf ~/.claude/mcp-servers/adaptive-graph-of-thoughts
 | What enabling a tool would require | No tool falls under C9's path rule (§18.2 :944-945). The 10 Postgres writers would each need a `permissions.deny` rule for `mcp__agi-memory__<tool>`, or the Overtoad's explicit acceptance (§8.3): `create_memory`, `create_memory_cluster`, `create_memory_relationship`, `create_working_memory`, `consolidate_working_memory`, `get_memory`, `activate_cluster`, `archive_old_memories`, `prune_memories` and `cleanup_expired_working_memory`. |
 | Docker artifacts | None: no image, container or volume, and the `QuixiAI/Hexis` stack was never deployed (§6.1) |
 
-Owner commands:
+The Overtoad commands:
 
 ```bash
 # 1. Remove the tree, including node_modules and the three esbuild binaries

@@ -286,7 +286,7 @@ P = PRESENT, A = ALTERED, L = LOST, R = RETIRED. Ranges group consecutive items 
 | D3-011–013 | Peer in flight; validate #438; second fix-forward | App I; #2088 (spot-checked register L527, L1737, L1302 on main) | R |
 | D3-014–015 | Closes PR; canopy nit | App A; the fix is in the canopy E2E handoff `:53-66` | P |
 | D3-016 | Four reports | #2084 (file list checked) | R |
-| D3-017–018 | Owner decisions; strict | App B, L128 | P |
+| D3-017–018 | The Overtoad decisions; strict | App B, L128 | P |
 | D3-019 | Whole-file trap reason | L116 | A (N17) |
 | D3-020–022 | §2 line; /tmp; `gh pr edit` | L133, L155, L130 | P |
 | D3-023–024 | Verification commands; hazy-beaming-map | overtaken; L10 | R |

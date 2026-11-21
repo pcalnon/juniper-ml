@@ -5,7 +5,7 @@
 **Date**: 2026-08-23
 **Status**: Stages 1 + 3 **SHIPPED** 2026-08-23 (juniper-canopy#507, #508) — see §12 for the measured
 outcome and the corrections implementation forced on this document. Stage 2 remains proposed, with a
-widened scope. Owner decision on §9.1 was: Stage 1 + Stage 3 in Phase 2, Stage 2 as a follow-on.
+widened scope. The Overtoad decision on §9.1 was: Stage 1 + Stage 3 in Phase 2, Stage 2 as a follow-on.
 **Closes**: F-CANOPY-027 (P0/P1), F-CANOPY-004 (P0/P1)
 **Evidence**: [`JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`](JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md)
 § F-CANOPY-027 → `ROOT CAUSE (2026-08-23)`, and § `Phase 2 — investigation 3`
@@ -277,7 +277,7 @@ would still starve the lowest-priority terminal callbacks.
 |---|---|
 | A panel goes stale because its gate never re-enables | The clientside callback is the single writer of every `disabled` flag; Stage 3's guard asserts exactly one writer. `dcc.Store`-driven tab restore already sets `active_tab` on load, so the initial tab arms correctly. |
 | Tab switch feels slower | `active_tab` stays an Input on each fetcher (§6.1), so activation fetches immediately — same as today. |
-| A background panel genuinely needs to keep polling while hidden | None identified: all 13 are pure display surfaces. **Owner question §9.3.** |
+| A background panel genuinely needs to keep polling while hidden | None identified: all 13 are pure display surfaces. **The Overtoad question §9.3.** |
 | Stage 1 helps but does not clear the cap | Fallback knob §8.3 below; and Stage 2 is additive. |
 | Clientside callback ordering vs. the `visualization-tabs.children` rebuild | The rebuild fires once, from `model-class-store` hydration. The `disabled` outputs target `tabpoll-*` intervals that live **outside** the tabs container, so the rebuild cannot detach them. Verify with `e2e_f027_slots.py` across a rebuild. |
 

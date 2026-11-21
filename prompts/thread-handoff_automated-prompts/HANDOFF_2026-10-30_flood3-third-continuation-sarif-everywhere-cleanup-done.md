@@ -74,7 +74,7 @@ Nothing is owed unless the Overtoad asks. What remains:
 
 ## Remaining work
 
-1. **Owner calls.** A session acts on none of these without the Overtoad's word, and on 1.7 not even then.
+1. **The Overtoad calls.** A session acts on none of these without the Overtoad's word, and on 1.7 not even then.
    1. **Close register row APD-ML-002.** The close condition is met by evidence:
       - the run's state is `/home/pcalnon/.local/state/juniper-experiments/20261030T084056Z-0ac7` (juniper-ml#2390);
       - the procedure is `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` § "Closing a row", four touches, since the row has no §3 entry;
@@ -173,7 +173,7 @@ curl -s https://pypi.org/pypi/pytest-benchmark/json | python3 -I -c 'import json
 
 ## Residue: the remaining work of `HANDOFF_…Overtoad-calls-open.md`, item by item
 
-1. **Owner calls:**
+1. **The Overtoad calls:**
    - 1.0, the duplicate: stopped, and its three worktrees removed.
    - 1.1, Codecov in the Dependabot stores: still open (item 1.2 here).
    - 1.2, SARIF elsewhere: done, in five PRs.

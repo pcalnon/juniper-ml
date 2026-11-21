@@ -137,7 +137,7 @@ is entirely absent.
 cd /home/pcalnon/Development/python/Juniper/juniper-ml
 git fetch origin main && git log origin/main --oneline -1
 D=notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md
-git show origin/main:$D | grep -c '^### 10.1 Owner rulings'   # expect 1
+git show origin/main:$D | grep -c '^### 10.1 The Overtoad rulings'   # expect 1
 git show origin/main:$D | grep -c 'UMask=0027'                # expect >=1  (D-14 ruled)
 git show origin/main:$D | grep -c '^### 10.2 D-2 execution'   # expect 1
 git show origin/main:$D | grep -c 'nvme0n1p5'                 # expect 2    (note 10.2b)

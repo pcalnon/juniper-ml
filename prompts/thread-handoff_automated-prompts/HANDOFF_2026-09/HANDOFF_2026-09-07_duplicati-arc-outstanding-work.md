@@ -67,7 +67,7 @@ Do not confuse this with §8.23's refuted *hazard* — that closed a risk, not t
 - Post-reboot, sdc4 is absent, so `util/ad-hoc/yamaguchi_retire_tier3.py` refuses at gate 0
   (`not a mountpoint`, exit 3), the durability check prints `ABSENT` not `NOT DURABLE`, and
   `util/ad-hoc/yamaguchi_records_sync.bash` refuses (§1 item 5). **None is a fault.**
-- Owner decision: **prepare it; the Overtoad reboots on his own schedule.**
+- The Overtoad decision: **prepare it; the Overtoad reboots on his own schedule.**
 - Combine with §8.23.3's proactive sample: **read `paused-until` during the restart's
   30-minute `startup-delay` window** — that is the baseline nobody has captured (§1 item 7).
 

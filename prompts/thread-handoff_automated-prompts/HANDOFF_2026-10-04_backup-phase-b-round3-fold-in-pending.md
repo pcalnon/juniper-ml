@@ -194,7 +194,7 @@ Read `HANDOFF_2026-10-03_backup-arc-consolidated.md` too: it keeps the traps and
 5. **B9** as its own PR: a gitleaks content rule plus a hook. Go is at `/snap/bin/go`. The repo setting
    `secret_scanning_non_provider_patterns` is the Overtoad's to change.
 
-## Owner actions
+## The Overtoad actions
 
 - **The watchdog deploy has not run.**
   - The primary checkout was synced on 2026-10-05 at 14:23 CDT, after that day's 12:00 run had again exited 2

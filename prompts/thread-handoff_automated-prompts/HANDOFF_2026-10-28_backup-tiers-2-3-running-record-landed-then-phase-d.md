@@ -30,7 +30,7 @@ Merge approval covered this session's PRs only. Ask again.
 - **The decision record** in `…RECOVERY-PLAN.md`: §6.3.1 (new), §6.6's rulings sub-table, a §1 status line and a §9 row, landing with this file and the two tools in one PR. No step of §6.4 changed.
 - juniper-ml#2376 (another session) fixed `main`'s red Guard 3b tests (the runners' tmpfs temp dir); merged 2026-10-28 01:21Z.
 
-## Owner rulings, 2026-10-28 (written into `…RECOVERY-PLAN.md` §6.6)
+## The Overtoad rulings, 2026-10-28 (written into `…RECOVERY-PLAN.md` §6.6)
 
 - Build the transcript counter now (done); the Overtoad runs it before Phase D step 9.
 - Wipe root's and duplicati's history files at the §10.2 rotation, **against** the recommendation (Phase D step 14).

@@ -91,7 +91,7 @@ before any review round.
 4. **F-058's census** (item 0): the first one was refuted before its first run. Hook dispatch (or
    `add_init_script`), detect fires before the reset, and run a synthetic check both ways first.
 5. **F-055/F-058 redesign**: a request/ack handshake pacer with no `running=` guard.
-6. **Owner questions** (item 15): the later actions and #676's CI re-run; the ratings (F-059 P0 against F-014's P1
+6. **The Overtoad questions** (item 15): the later actions and #676's CI re-run; the ratings (F-059 P0 against F-014's P1
    precedent; F-056/057 P1); a provenance ref for the local-only commits the ledger cites.
 7. **MEMORY.md** is at ~24,880 characters, ~120 under the ~25,000-CHARACTER load limit (`wc -m`). Compact by
    retiring entries, never by stripping hooks; snapshot the link set first

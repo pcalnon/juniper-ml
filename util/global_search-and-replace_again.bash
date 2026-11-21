@@ -18,8 +18,8 @@
 
 ##########################################################################################################################################################################################################################################
 # Define default search and replace terms
-SEARCH_TARGET_DEFAULT="owner"
-REPLACE_TARGET_DEFAULT="Overtoad"
+SEARCH_TARGET_DEFAULT="Owner "
+REPLACE_TARGET_DEFAULT="The Overtoad "
 
 
 ##########################################################################################################################################################################################################################################
@@ -31,7 +31,8 @@ REPLACE_TARGET="${2:-${REPLACE_TARGET_DEFAULT}}"
 ##########################################################################################################################################################################################################################################
 # Define Environment Variables
 APPLICATION_PREFIX="juniper"
-APPLICATION_REPO_SEARCH="${APPLICATION_PREFIX}-*"
+# APPLICATION_REPO_SEARCH="${APPLICATION_PREFIX}-*"
+APPLICATION_REPO_SEARCH="${APPLICATION_PREFIX}-ml"
 
 PROJECT_DIR="${HOME}/Development/python/Juniper"
 

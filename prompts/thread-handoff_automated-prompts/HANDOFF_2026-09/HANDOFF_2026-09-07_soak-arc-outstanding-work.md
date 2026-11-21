@@ -380,7 +380,7 @@ because a successor who does not read it will re-derive false confidence:
   label-shuffle gives p ≈ 0.0002–0.0006. The conclusion survives; the label is wrong and
   uncorrected in the surviving document.
 
-## 7. Owner decisions — DO NOT DECIDE THESE
+## 7. The Overtoad decisions — DO NOT DECIDE THESE
 
 1. Whether **index-recovery** becomes a scored outcome (registry + ledger change; see item F's
    authoring rule first).

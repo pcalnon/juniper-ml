@@ -50,7 +50,7 @@ the fact goes the other way.
 - [§8 Migration path](#8-migration-path)
 - [§9 What this proposal does NOT solve](#9-what-this-proposal-does-not-solve)
 - [§10 Dependencies on companion proposals](#10-dependencies-on-companion-proposals)
-- [§11 Owner decisions and open questions](#11-Overtoad-decisions-and-open-questions)
+- [§11 The Overtoad decisions and open questions](#11-Overtoad-decisions-and-open-questions)
 - [§12 Facts this design needs that MECH leaves unverified](#12-facts-this-design-needs-that-mech-leaves-unverified)
 - [§13 Verification strategy](#13-verification-strategy)
 - [Appendix A — measurement commands](#appendix-a--measurement-commands)
@@ -65,12 +65,12 @@ the fact goes the other way.
 Every one of those four gates enforces structure or currency. Not one enforces size, rate, or
 admission. Each is satisfied by a commit that appends five hundred lines:
 
-| Gate | Enforces | Satisfied by a +500-line append? |
-|------|----------|----------------------------------|
-| [`tests/test_agents_md_version_drift.py`](../tests/test_agents_md_version_drift.py) | header `**Version**` == `pyproject` | yes |
-| [`tests/test_agents_md_header_schema.py`](../tests/test_agents_md_header_schema.py) | six header fields, ISO date | yes |
-| [`tests/test_agents_md_tree_drift.py`](../tests/test_agents_md_tree_drift.py) | every top-level dir appears in the tree | yes — an append can only *help* |
-| [`.github/workflows/agents-md-touch-up.yml`](../.github/workflows/agents-md-touch-up.yml) | `**Last Updated**` bumped | yes |
+| Gate                                                                                      | Enforces                                | Satisfied by a +500-line append? |
+|-------------------------------------------------------------------------------------------|-----------------------------------------|----------------------------------|
+| [`tests/test_agents_md_version_drift.py`](../tests/test_agents_md_version_drift.py)       | header `**Version**` == `pyproject`     | yes                              |
+| [`tests/test_agents_md_header_schema.py`](../tests/test_agents_md_header_schema.py)       | six header fields, ISO date             | yes                              |
+| [`tests/test_agents_md_tree_drift.py`](../tests/test_agents_md_tree_drift.py)             | every top-level dir appears in the tree | yes — an append can only *help*  |
+| [`.github/workflows/agents-md-touch-up.yml`](../.github/workflows/agents-md-touch-up.yml) | `**Last Updated**` bumped               | yes                              |
 
 The file is *thoroughly* guarded — against everything except getting bigger.
 
@@ -131,16 +131,16 @@ at `main` = `e209b74`, clean tree.
 
 First-parent (main-line) accounting of every merge that touched `AGENTS.md`:
 
-| Month | Main-line commits | Grew | Shrank | Net bytes |
-|-------|------------------:|-----:|-------:|----------:|
-| 2026-02 | 1 | 1 | 0 | +3,028 |
-| 2026-03 | 7 | 7 | 0 | +1,607 |
-| 2026-04 | 6 | 5 | 0 | +13,538 |
-| 2026-05 | 23 | 21 | 0 | +14,564 |
-| 2026-06 | 42 | 34 | 2 | +25,663 |
-| 2026-07 | 86 | 71 | 12 | +55,796 |
-| 2026-08 (to 08-18) | 35 | 33 | **0** | +50,430 |
-| **Total** | **200** | **172** | **14** | **+164,626** |
+| Month              | Main-line commits |    Grew | Shrank |    Net bytes |
+|--------------------|------------------:|--------:|-------:|-------------:|
+| 2026-02            |                 1 |       1 |      0 |       +3,028 |
+| 2026-03            |                 7 |       7 |      0 |       +1,607 |
+| 2026-04            |                 6 |       5 |      0 |      +13,538 |
+| 2026-05            |                23 |      21 |      0 |      +14,564 |
+| 2026-06            |                42 |      34 |      2 |      +25,663 |
+| 2026-07            |                86 |      71 |     12 |      +55,796 |
+| 2026-08 (to 08-18) |                35 |      33 |  **0** |      +50,430 |
+| **Total**          |           **200** | **172** | **14** | **+164,626** |
 
 - **172 merges grew the file. 14 shrank it.** A 12:1 event ratio.
 - The **fourteen** shrinking merges removed **2,628 bytes between them**. The largest single
@@ -155,19 +155,19 @@ diligence — it is what an unpriced resource looks like. Nothing ever made anyo
 
 Trailing-30-day net growth of `AGENTS.md`, sampled fortnightly:
 
-| Window ending | 30-day net bytes | |
-|---------------|-----------------:|---|
-| 2026-03-31 | +1,607 | pre-flood |
-| 2026-04-14 | +13,522 | pre-flood |
-| 2026-04-28 | +13,538 | pre-flood |
-| 2026-05-12 | +2,261 | pre-flood |
-| 2026-05-26 | +14,580 | pre-flood |
-| 2026-06-09 | +12,672 | pre-flood |
-| 2026-06-23 | +2,553 | pre-flood |
-| 2026-07-07 | +28,013 | |
-| 2026-07-21 | +38,781 | |
-| 2026-08-04 | +54,071 | |
-| **2026-08-18** | **+92,796** | |
+| Window ending  | 30-day net bytes |           |
+|----------------|-----------------:|-----------|
+| 2026-03-31     |           +1,607 | pre-flood |
+| 2026-04-14     |          +13,522 | pre-flood |
+| 2026-04-28     |          +13,538 | pre-flood |
+| 2026-05-12     |           +2,261 | pre-flood |
+| 2026-05-26     |          +14,580 | pre-flood |
+| 2026-06-09     |          +12,672 | pre-flood |
+| 2026-06-23     |           +2,553 | pre-flood |
+| 2026-07-07     |          +28,013 |           |
+| 2026-07-21     |          +38,781 |           |
+| 2026-08-04     |          +54,071 |           |
+| **2026-08-18** |      **+92,796** |           |
 
 Three readings, all load-bearing:
 
@@ -190,18 +190,18 @@ maximum is where §6.2's terminal rate budget comes from. It is not a guess.
 BASE §8 reports 164 lines carrying mandatory language and shows by sampling that most of it
 describes utility internals rather than agent behaviour. Locating those lines by section:
 
-| Lines with mandatory language | Section |
-|------------------------------:|---------|
-| 87 | `## Key Files` |
-| 16 | `## CI/CD Pipelines` |
-| 5 | `## Thread Handoff` |
-| 4 | `## Shared Service-Core Contracts` |
-| 4 | `## Repository Structure` |
-| 3 | `## Conventions` |
-| 2 | `## Publishing` |
-| 2 | `## Worktree Procedures` |
-| 1 | `## Pull Request Conventions` |
-| **124** | **total** |
+| Lines with mandatory language | Section                            |
+|------------------------------:|------------------------------------|
+|                            87 | `## Key Files`                     |
+|                            16 | `## CI/CD Pipelines`               |
+|                             5 | `## Thread Handoff`                |
+|                             4 | `## Shared Service-Core Contracts` |
+|                             4 | `## Repository Structure`          |
+|                             3 | `## Conventions`                   |
+|                             2 | `## Publishing`                    |
+|                             2 | `## Worktree Procedures`           |
+|                             1 | `## Pull Request Conventions`      |
+|                       **124** | **total**                          |
 
 **107 of 124 — 86 % — sit inside the three genre-B sections.** Only seventeen lines in the
 whole file are mandatory language attached to a genre-A agent behaviour, and of those, four
@@ -246,11 +246,11 @@ its own Weaknesses paragraph rather than in a footnote.
 
 Three new artifacts carry the whole scheme:
 
-| Artifact | Role | Modelled on |
-|----------|------|-------------|
-| `conf/memory_budget.toml` | the declared budgets — governed targets, level ceilings, rate ceilings, section allocations | `conf/` already exists (`AGENTS.md:180-376` tree), so no new top-level dir and no `test_agents_md_tree_drift.py` impact |
-| `util/memory_budget_check.py` | the checker: OK / WARN / FAIL rows, `--json`, `--strict`, exit 0/1/2 | [`util/agent_suite_doctor.py:13-14`](../util/agent_suite_doctor.py) |
-| `tests/test_memory_budget_check.py` | **the** gate — `util/` is outside every pre-commit Python hook's scope, so a unittest is the only gate | the stated convention for `util/env_floor_drift_check.py`, `util/release_train/archive_guard.py`, and every sibling |
+| Artifact                            | Role                                                                                                   | Modelled on                                                                                                             |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+| `conf/memory_budget.toml`           | the declared budgets — governed targets, level ceilings, rate ceilings, section allocations            | `conf/` already exists (`AGENTS.md:180-376` tree), so no new top-level dir and no `test_agents_md_tree_drift.py` impact |
+| `util/memory_budget_check.py`       | the checker: OK / WARN / FAIL rows, `--json`, `--strict`, exit 0/1/2                                   | [`util/agent_suite_doctor.py:13-14`](../util/agent_suite_doctor.py)                                                     |
+| `tests/test_memory_budget_check.py` | **the** gate — `util/` is outside every pre-commit Python hook's scope, so a unittest is the only gate | the stated convention for `util/env_floor_drift_check.py`, `util/release_train/archive_guard.py`, and every sibling     |
 
 ---
 
@@ -258,10 +258,10 @@ Three new artifacts carry the whole scheme:
 
 **Two axes, because one is not enough.**
 
-| Axis | Metric | What it controls | Why it must exist |
-|------|--------|------------------|-------------------|
-| **RATE** | net bytes added to a governed file over a rolling 30 days, measured on `main` | the disease | satisfiable **today**, with no destination and no cleanup: add less, or offset |
-| **LEVEL** | absolute bytes of a governed file | the terminal target | makes a cleanup *stick*; without it the rate axis alone permits indefinite slow growth |
+| Axis      | Metric                                                                        | What it controls    | Why it must exist                                                                      |
+|-----------|-------------------------------------------------------------------------------|---------------------|----------------------------------------------------------------------------------------|
+| **RATE**  | net bytes added to a governed file over a rolling 30 days, measured on `main` | the disease         | satisfiable **today**, with no destination and no cleanup: add less, or offset         |
+| **LEVEL** | absolute bytes of a governed file                                             | the terminal target | makes a cleanup *stick*; without it the rate axis alone permits indefinite slow growth |
 
 The rate axis ships and blocks first. This is the crux of the design and the answer to the
 central objection (§5.1): a level budget is unsatisfiable until somewhere else exists to put
@@ -492,10 +492,10 @@ than inventing anything. The reference implementation is
 
 **Two trailers, with deliberately different economics:**
 
-| Trailer | Waives | Economics |
-|---------|--------|-----------|
-| `Allow-Budget-Overrun: <file>\|*` | the rate check and the level check, **for this PR only** | a **loan**. The ceiling is unchanged, so the *next* PR touching that file inherits the overrun and fails until it is repaid or a raise is authorised. |
-| `Allow-Budget-Raise: <file>\|*` | ratchet rule 1, permitting a declared ceiling to increase | a **permanent, legible** concession. The number goes up in a diff, in a config file, where a reviewer sees it. |
+| Trailer                           | Waives                                                    | Economics                                                                                                                                             |
+|-----------------------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Allow-Budget-Overrun: <file>\|*` | the rate check and the level check, **for this PR only**  | a **loan**. The ceiling is unchanged, so the *next* PR touching that file inherits the overrun and fails until it is repaid or a raise is authorised. |
+| `Allow-Budget-Raise: <file>\|*`   | ratchet rule 1, permitting a declared ceiling to increase | a **permanent, legible** concession. The number goes up in a diff, in a config file, where a reviewer sees it.                                        |
 
 The loan structure is the anti-abuse mechanism, and it is the one thing here that
 `Allow-Symbol-Loss:` does not have. A symbol-loss waiver is a free pass: it costs the author
@@ -601,15 +601,15 @@ decidable by an agent at 02:00 without judgement calls about importance.
 
 Ordered; take the first match.
 
-| # | Question | Destination | Resident cost |
-|---|----------|-------------|---------------|
-| 1 | Can a machine check it deterministically? | a **hook** (D6) or a **CI gate**; delete the prose or reduce it to one line naming the gate | ~0 |
-| 2 | Does it fail the cross-task test *and* describe a component's internal contract? | `docs/REFERENCE.md` section + the pinning test's docstring | 0 (read on demand) |
-| 3 | Is it a multi-step procedure? | `.claude/skills/<name>/SKILL.md` — MECH §4a: body loads only on use | name + description only |
-| 4 | Does it only matter when touching certain paths? | `.claude/rules/<name>.md` **with `paths:` frontmatter** — MECH §4b: triggers when Claude reads matching files | ~0 until triggered |
-| 5 | Is it a war story, a post-mortem, an incident record? | `notes/` per the [naming convention](JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md) | 0 |
-| 6 | Passes the cross-task test — every session needs it? | **resident core**, and it must displace an equal number of bytes | full |
-| 7 | Cannot decide, or the session is ending? | `notes/memory-inbox/<UTC>_<slug>.md` (D5) | 0 |
+| # | Question                                                                         | Destination                                                                                                   | Resident cost           |
+|---|----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|-------------------------|
+| 1 | Can a machine check it deterministically?                                        | a **hook** (D6) or a **CI gate**; delete the prose or reduce it to one line naming the gate                   | ~0                      |
+| 2 | Does it fail the cross-task test *and* describe a component's internal contract? | `docs/REFERENCE.md` section + the pinning test's docstring                                                    | 0 (read on demand)      |
+| 3 | Is it a multi-step procedure?                                                    | `.claude/skills/<name>/SKILL.md` — MECH §4a: body loads only on use                                           | name + description only |
+| 4 | Does it only matter when touching certain paths?                                 | `.claude/rules/<name>.md` **with `paths:` frontmatter** — MECH §4b: triggers when Claude reads matching files | ~0 until triggered      |
+| 5 | Is it a war story, a post-mortem, an incident record?                            | `notes/` per the [naming convention](JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md)           | 0                       |
+| 6 | Passes the cross-task test — every session needs it?                             | **resident core**, and it must displace an equal number of bytes                                              | full                    |
+| 7 | Cannot decide, or the session is ending?                                         | `notes/memory-inbox/<UTC>_<slug>.md` (D5)                                                                     | 0                       |
 
 Row 7 is not a cop-out; it is the load-bearing row. It guarantees the procedure **always
 terminates in a write**, which is what stops a blocked append from becoming a lost lesson.
@@ -710,15 +710,15 @@ Rules, all mechanical:
 
 #### What happens when three sessions each add 40 lines to the same section on the same day
 
-| | Status quo | Under D5 |
-|---|---|---|
-| Paths touched | all three edit `AGENTS.md § Key Files` | three distinct new files |
-| Git outcome | overlapping hunks in a 54-PR cluster; two of three conflict | **zero conflicts, by construction** |
-| Human action | rebase, then *re-author* the conflicted hunk by hand | none |
-| Failure mode | the #801/#803 class: re-authoring takes one side and deletes the other; net-negative diffs pass as reflow (§3.4) | none available — no shared file, no merge, no re-authoring |
-| Lost-update risk | real, and demonstrated | moved to the curation step, where guard rule 4 blocks it |
-| Latency to resident | minutes (and wrong) | one curation cycle (and right) |
-| Resident bytes added | +120 lines, unreviewed | 0 until curated |
+|                      | Status quo                                                                                                       | Under D5                                                   |
+|----------------------|------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| Paths touched        | all three edit `AGENTS.md § Key Files`                                                                           | three distinct new files                                   |
+| Git outcome          | overlapping hunks in a 54-PR cluster; two of three conflict                                                      | **zero conflicts, by construction**                        |
+| Human action         | rebase, then *re-author* the conflicted hunk by hand                                                             | none                                                       |
+| Failure mode         | the #801/#803 class: re-authoring takes one side and deletes the other; net-negative diffs pass as reflow (§3.4) | none available — no shared file, no merge, no re-authoring |
+| Lost-update risk     | real, and demonstrated                                                                                           | moved to the curation step, where guard rule 4 blocks it   |
+| Latency to resident  | minutes (and wrong)                                                                                              | one curation cycle (and right)                             |
+| Resident bytes added | +120 lines, unreviewed                                                                                           | 0 until curated                                            |
 
 The trade is explicit: **latency instead of loss.** Knowledge is durable and greppable
 immediately; it becomes *resident* only after triage. A session running between the write and
@@ -808,13 +808,13 @@ sections**, describing utility internals — specifications for scripts, already
 those scripts' own tests. Those are not agent directives and converting them to hooks is
 meaningless. The genuinely hook-able set is small:
 
-| Directive | Location | Enforcement | Prose retired |
-|-----------|----------|-------------|---------------:|
-| Scripts go under `util/`; `/tmp/` is prohibited as a script home | `AGENTS.md:904-918` | `PreToolUse` on `Write`/`Edit`: deny a `.py`/`.bash`/`.sh` target under `/tmp/` | ~1,700 B |
-| Never a bare `git push <tag>`; cut a GitHub Release | `AGENTS.md:113-114` | `PreToolUse` on `Bash`: deny `git push` matching a tag ref | ~400 B |
-| Worktrees live in the centralized dir, never inside a repo | `AGENTS.md:1034` | `PreToolUse` on `Bash`: deny `git worktree add` outside the centralized path | ~200 B |
-| Never `grep` `id_assignments.yaml` for content | `AGENTS.md:940` | `PreToolUse` on `Grep`/`Bash` targeting that path | ~150 B |
-| **Total** | | | **~2,450 B** |
+| Directive                                                        | Location            | Enforcement                                                                     | Prose retired |
+|------------------------------------------------------------------|---------------------|---------------------------------------------------------------------------------|--------------:|
+| Scripts go under `util/`; `/tmp/` is prohibited as a script home | `AGENTS.md:904-918` | `PreToolUse` on `Write`/`Edit`: deny a `.py`/`.bash`/`.sh` target under `/tmp/` |      ~1,700 B |
+| Never a bare `git push <tag>`; cut a GitHub Release              | `AGENTS.md:113-114` | `PreToolUse` on `Bash`: deny `git push` matching a tag ref                      |        ~400 B |
+| Worktrees live in the centralized dir, never inside a repo       | `AGENTS.md:1034`    | `PreToolUse` on `Bash`: deny `git worktree add` outside the centralized path    |        ~200 B |
+| Never `grep` `id_assignments.yaml` for content                   | `AGENTS.md:940`     | `PreToolUse` on `Grep`/`Bash` targeting that path                               |        ~150 B |
+| **Total**                                                        |                     |                                                                                 |  **~2,450 B** |
 
 **~2,450 bytes of 170,137 — 1.4 % of the file, 7.5 % of the genre-A residue.**
 
@@ -897,11 +897,11 @@ producing a ranked eviction-candidate list. The candidates are *proposed*; a hum
 
 **Three staleness signals, in descending confidence.**
 
-| Signal | How measured | Strength | Verdict |
-|--------|--------------|----------|---------|
-| **Dead referent** | every backticked path-shaped token in the file; does the path resolve? | strongest available — a file documenting something that moved is wrong *now* | WARN + candidate |
-| **Blame age** | `git blame` line age vs the file's median | weak on its own — a stable rule is old *because it is right* | tie-breaker only |
-| **Closed-issue citation** | a line citing `#NNN` where the issue is closed **and** a pinning test exists | this repo's own convention says the test is then the record | WARN + candidate |
+| Signal                    | How measured                                                                 | Strength                                                                     | Verdict          |
+|---------------------------|------------------------------------------------------------------------------|------------------------------------------------------------------------------|------------------|
+| **Dead referent**         | every backticked path-shaped token in the file; does the path resolve?       | strongest available — a file documenting something that moved is wrong *now* | WARN + candidate |
+| **Blame age**             | `git blame` line age vs the file's median                                    | weak on its own — a stable rule is old *because it is right*                 | tie-breaker only |
+| **Closed-issue citation** | a line citing `#NNN` where the issue is closed **and** a pinning test exists | this repo's own convention says the test is then the record                  | WARN + candidate |
 
 **The dead-referent signal, measured honestly.** Running it today over `AGENTS.md`: 164
 distinct path-shaped backtick tokens, **7 unresolved**:
@@ -1017,13 +1017,13 @@ This repo's own history is the evidence, and it is not favourable.
 
 What stops the budget waiver becoming the default path:
 
-| Mechanism | Effect | Honest strength |
-|-----------|--------|-----------------|
-| **The loan structure** (D3) | an overrun hands the bill to the next author on that file | strong — it is the only mechanism here with an *automatic* cost |
-| **Ratchet interlock** | `>1` waiver in the window stalls the rate step-down | strong — over-waiving freezes visible progress |
-| **Mandatory free-text reason** | a bare trailer FAILs | moderate — friction, not prevention |
-| **Slack alarm at 3/month** | trend visible before habit | moderate — depends on someone reading it |
-| **`::warning::` + step summary** | visible without opening logs | weak alone, necessary in combination |
+| Mechanism                        | Effect                                                    | Honest strength                                                 |
+|----------------------------------|-----------------------------------------------------------|-----------------------------------------------------------------|
+| **The loan structure** (D3)      | an overrun hands the bill to the next author on that file | strong — it is the only mechanism here with an *automatic* cost |
+| **Ratchet interlock**            | `>1` waiver in the window stalls the rate step-down       | strong — over-waiving freezes visible progress                  |
+| **Mandatory free-text reason**   | a bare trailer FAILs                                      | moderate — friction, not prevention                             |
+| **Slack alarm at 3/month**       | trend visible before habit                                | moderate — depends on someone reading it                        |
+| **`::warning::` + step summary** | visible without opening logs                              | weak alone, necessary in combination                            |
 
 **What does *not* work, and I am not going to claim it does:** three of the ruleset's five
 always-bypass actors can click-merge past every non-nuclear stage
@@ -1069,14 +1069,14 @@ def test_checker_flags_a_missing_dir(self) -> None:
 
 `tests/test_memory_budget_check.py` carries the same discipline, one test per trap:
 
-| Test | Pins |
-|------|------|
-| `test_synthetic_over_budget_fixture_fails` | the gate can fail at all — a fixture 1 byte over must FAIL, one at the limit must PASS |
-| `test_target_list_is_explicit_and_nonempty` | zero targets is FAIL, never OK; no glob-derived targets |
+| Test                                                | Pins                                                                                                                                                |
+|-----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `test_synthetic_over_budget_fixture_fails`          | the gate can fail at all — a fixture 1 byte over must FAIL, one at the limit must PASS                                                              |
+| `test_target_list_is_explicit_and_nonempty`         | zero targets is FAIL, never OK; no glob-derived targets                                                                                             |
 | `test_governed_target_is_agents_md_not_the_symlink` | asserts the target resolves to `AGENTS.md`; asserts `CLAUDE.md` currently *does* share its bytes, so the test documents why the distinction matters |
-| `test_unresolvable_baseline_raises` | a shallow / missing 30-day baseline exits **2**, never 0 — no `or 0` coercion anywhere |
-| `test_declared_section_absent_fails` | a renamed heading is FAIL with a naming message, never a silent zero |
-| `test_measured_size_matches_ground_truth` | the checker's byte count equals `os.stat().st_size` for the real file — the measurement path is exercised against reality, not against itself |
+| `test_unresolvable_baseline_raises`                 | a shallow / missing 30-day baseline exits **2**, never 0 — no `or 0` coercion anywhere                                                              |
+| `test_declared_section_absent_fails`                | a renamed heading is FAIL with a naming message, never a silent zero                                                                                |
+| `test_measured_size_matches_ground_truth`           | the checker's byte count equals `os.stat().st_size` for the real file — the measurement path is exercised against reality, not against itself       |
 
 The last one is the general antidote and is worth stating as a principle: **a checker must be
 tested against ground truth it did not compute.** A gate that only compares its own output to
@@ -1103,10 +1103,10 @@ it duplicates, with a 512-character line-length limit permitting far more.
 
 Consider the three ways to satisfy the budget:
 
-| Move | Budget | Docs screen | Result |
-|------|--------|-------------|--------|
-| Compress prose in place (delete lines, keep headings) | passes | **FAILS** on a `>=5`-line deletion run | blocked |
-| Delete a subsection wholesale | passes | **FAILS** on the deleted heading | blocked |
+| Move                                                                          | Budget | Docs screen                                                                                                                                           | Result                  |
+|-------------------------------------------------------------------------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|
+| Compress prose in place (delete lines, keep headings)                         | passes | **FAILS** on a `>=5`-line deletion run                                                                                                                | blocked                 |
+| Delete a subsection wholesale                                                 | passes | **FAILS** on the deleted heading                                                                                                                      | blocked                 |
 | **Move** content to `docs/REFERENCE.md` / a rule / a skill, leaving a pointer | passes | FAILs → **waived with `Allow-Docs-Rewrite:`**, and the waiver is legitimate because the content demonstrably exists at the destination in the same PR | **the only clean path** |
 
 **Compression is mechanically the hardest option and relocation is the easiest.** That is the
@@ -1151,26 +1151,26 @@ intervening rules"; the fifteen section figures sum exactly to 170,137
 > content. BASE's figures are the fact base; mine are used only where a full partition summing
 > to the file total is needed, and the convention is stated so a reviewer can reproduce either.
 
-| Section | Now (B) | % | Genre | Terminal allocation (B) | Δ |
-|---------|--------:|--:|-------|------------------------:|--:|
-| header + `## What This Is` | 929 | 0.5 | A | 900 | −29 |
-| `## Build & Package Commands` | 4,617 | 2.7 | mixed | 1,400 | −3,217 |
-| `## Publishing` | 3,656 | 2.1 | B | 900 | −2,756 |
-| `## Shared Observability Helpers` | 1,505 | 0.9 | B | 300 | −1,205 |
-| `## Shared Service-Core Contracts` | 3,531 | 2.1 | B | 300 | −3,231 |
-| `## Repository Structure` | 21,833 | 12.8 | B | 1,800 | −20,033 |
-| `## Key Files` | 99,627 | 58.6 | B | 6,000 | −93,627 |
-| `## CI/CD Pipelines` | 16,167 | 9.5 | B | 1,800 | −14,367 |
-| `## Pre-commit Hooks` | 2,085 | 1.2 | A | 1,200 | −885 |
-| `## Secrets Management (SOPS)` | 492 | 0.3 | A | 492 | 0 |
-| `## Ecosystem Context` | 2,315 | 1.4 | A | 1,100 | −1,215 |
-| `## Conventions` | 2,488 | 1.5 | A | 1,800 | −688 |
-| `## Pull Request Conventions` | 2,853 | 1.7 | A | 1,800 | −1,053 |
-| `## Worktree Procedures` | 4,165 | 2.4 | A | 1,200 | −2,965 |
-| `## Thread Handoff` | 3,874 | 2.3 | A | 1,400 | −2,474 |
-| **Allocated** | **170,137** | 100 | | **22,392** | **−147,745** |
-| unallocated reserve | — | | | 7,608 | |
-| **`max_bytes` ceiling** | — | | | **30,000** | |
+| Section                            |     Now (B) |    % | Genre | Terminal allocation (B) |            Δ |
+|------------------------------------|------------:|-----:|-------|------------------------:|-------------:|
+| header + `## What This Is`         |         929 |  0.5 | A     |                     900 |          −29 |
+| `## Build & Package Commands`      |       4,617 |  2.7 | mixed |                   1,400 |       −3,217 |
+| `## Publishing`                    |       3,656 |  2.1 | B     |                     900 |       −2,756 |
+| `## Shared Observability Helpers`  |       1,505 |  0.9 | B     |                     300 |       −1,205 |
+| `## Shared Service-Core Contracts` |       3,531 |  2.1 | B     |                     300 |       −3,231 |
+| `## Repository Structure`          |      21,833 | 12.8 | B     |                   1,800 |      −20,033 |
+| `## Key Files`                     |      99,627 | 58.6 | B     |                   6,000 |      −93,627 |
+| `## CI/CD Pipelines`               |      16,167 |  9.5 | B     |                   1,800 |      −14,367 |
+| `## Pre-commit Hooks`              |       2,085 |  1.2 | A     |                   1,200 |         −885 |
+| `## Secrets Management (SOPS)`     |         492 |  0.3 | A     |                     492 |            0 |
+| `## Ecosystem Context`             |       2,315 |  1.4 | A     |                   1,100 |       −1,215 |
+| `## Conventions`                   |       2,488 |  1.5 | A     |                   1,800 |         −688 |
+| `## Pull Request Conventions`      |       2,853 |  1.7 | A     |                   1,800 |       −1,053 |
+| `## Worktree Procedures`           |       4,165 |  2.4 | A     |                   1,200 |       −2,965 |
+| `## Thread Handoff`                |       3,874 |  2.3 | A     |                   1,400 |       −2,474 |
+| **Allocated**                      | **170,137** |  100 |       |              **22,392** | **−147,745** |
+| unallocated reserve                |           — |      |       |                   7,608 |              |
+| **`max_bytes` ceiling**            |           — |      |       |              **30,000** |              |
 
 Arithmetic: `900+1,400+900+300+300+1,800+6,000+1,800+1,200+492+1,100+1,800+1,800+1,200+1,400 = 22,392`;
 `30,000 − 22,392 = 7,608` reserve.
@@ -1197,13 +1197,13 @@ proposal's design.
 
 Each step requires the prior step held for 30 days with `<= 1` waiver.
 
-| Phase | `max_net_bytes_30d` | Mode | Basis |
-|-------|--------------------:|------|-------|
-| P1 | 5,000 | **advisory** | deliberately set at the *terminal* value during soak so the report shows the true end-state bite rate (today: 18.6× over) while blocking nothing |
-| P2 | 60,000 | blocking | ~⅔ of the measured 92,796 — a real constraint the current rate clearly breaches |
-| P3 | 30,000 | blocking | ~2.4× the pre-flood median of 12,672; ≈1,000 B/day |
-| P4 | 15,000 | blocking | the **measured** pre-flood sustained maximum (14,580, §3.2) |
-| P5 | 5,000 | blocking | ≈165 B/day — roughly one short bullet per day |
+| Phase | `max_net_bytes_30d` | Mode         | Basis                                                                                                                                            |
+|-------|--------------------:|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| P1    |               5,000 | **advisory** | deliberately set at the *terminal* value during soak so the report shows the true end-state bite rate (today: 18.6× over) while blocking nothing |
+| P2    |              60,000 | blocking     | ~⅔ of the measured 92,796 — a real constraint the current rate clearly breaches                                                                  |
+| P3    |              30,000 | blocking     | ~2.4× the pre-flood median of 12,672; ≈1,000 B/day                                                                                               |
+| P4    |              15,000 | blocking     | the **measured** pre-flood sustained maximum (14,580, §3.2)                                                                                      |
+| P5    |               5,000 | blocking     | ≈165 B/day — roughly one short bullet per day                                                                                                    |
 
 Soaking at the terminal value and blocking on a ladder is deliberate: an advisory gate set at
 the *blocking* threshold tells you only whether that threshold is survivable, whereas one set
@@ -1215,14 +1215,14 @@ Status quo, two projections, both from the fact base:
 **(a)** linear at the measured 92,796 bytes/30 days = 3,093 B/day;
 **(b)** BASE §2's characterisation — "roughly doubling every two months."
 
-| Date | (a) linear | (b) doubling/2 mo | **Proposal D alone** | **D + a cleanup companion** |
-|------|-----------:|------------------:|---------------------:|----------------------------:|
-| 2026-08-18 | 170,137 | 170,137 | 170,137 | 170,137 |
-| +30 d (2026-09-17) | 262,927 | ~219,000 | ≤230,137 (P2, R=60,000) | ≤230,137 |
-| +60 d (2026-10-17) | 355,717 | 340,274 | ≤260,137 (P3, R=30,000) | ≤175,000 (cycle 1; ceiling ratchets to ≤183,000) |
-| +90 d (2026-11-16) | 448,507 | ~480,000 | ≤275,137 (P4, R=15,000) | ≤120,000 |
-| +120 d (2026-12-16) | 541,297 | 680,548 | ≤280,137 (P5, R=5,000) | ≤60,000 |
-| +180 d (2027-02-14) | 726,877 | 1,361,096 | **≤290,137** | **≤30,000, held indefinitely** |
+| Date                | (a) linear | (b) doubling/2 mo |    **Proposal D alone** |                      **D + a cleanup companion** |
+|---------------------|-----------:|------------------:|------------------------:|-------------------------------------------------:|
+| 2026-08-18          |    170,137 |           170,137 |                 170,137 |                                          170,137 |
+| +30 d (2026-09-17)  |    262,927 |          ~219,000 | ≤230,137 (P2, R=60,000) |                                         ≤230,137 |
+| +60 d (2026-10-17)  |    355,717 |           340,274 | ≤260,137 (P3, R=30,000) | ≤175,000 (cycle 1; ceiling ratchets to ≤183,000) |
+| +90 d (2026-11-16)  |    448,507 |          ~480,000 | ≤275,137 (P4, R=15,000) |                                         ≤120,000 |
+| +120 d (2026-12-16) |    541,297 |           680,548 |  ≤280,137 (P5, R=5,000) |                                          ≤60,000 |
+| +180 d (2027-02-14) |    726,877 |         1,361,096 |            **≤290,137** |                   **≤30,000, held indefinitely** |
 
 Read this table honestly:
 
@@ -1255,14 +1255,14 @@ Frontmatter and block-level HTML comments are stripped before measuring (v2.1.21
 
 Measured today at `~/.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml/memory/MEMORY.md`:
 
-| Measure | Value | Limit | Nominal headroom |
-|---------|------:|------:|-----------------:|
-| Lines | 139 | 200 | 61 lines |
-| Bytes | 20,388 | ~25,600 | 5,212 bytes |
-| Characters | 20,049 | — | — |
-| Mean bytes/line | **146.7** | — | — |
-| Sibling topic files in the directory | 153 | — | — |
-| Frontmatter / HTML comments present | **none** | — | every byte counts |
+| Measure                              |     Value |   Limit |  Nominal headroom |
+|--------------------------------------|----------:|--------:|------------------:|
+| Lines                                |       139 |     200 |          61 lines |
+| Bytes                                |    20,388 | ~25,600 |       5,212 bytes |
+| Characters                           |    20,049 |       — |                 — |
+| Mean bytes/line                      | **146.7** |       — |                 — |
+| Sibling topic files in the directory |       153 |       — |                 — |
+| Frontmatter / HTML comments present  |  **none** |       — | every byte counts |
 
 ### 7.2 The real headroom is 43 % smaller than the line count suggests
 
@@ -1328,11 +1328,11 @@ configuration schema, or the exit protocol. See §12.1. If hooks turn out to be 
 today.** The index is a flat list whose mean entry is 146.7 bytes and whose longest is **791
 bytes** — a single entry consuming 3.9 % of the entire budget. Three rules, checkable by (1):
 
-| Rule | Effect |
-|------|--------|
-| **Per-entry cap of 120 bytes** | at 139 entries: `139 × 146.7 = 20,391` → `139 × 120 = 16,680`. **Frees 3,711 bytes ≈ 31 additional entries — nearly doubling the remaining headroom, with no entry removed.** |
-| **One line per entry, no continuations** | keeps the line and byte axes proportional so §7.2's asymmetry cannot re-open |
-| **Detail belongs in the topic file** | the index is an *index*; the 153 topic files are unbudgeted and free |
+| Rule                                     | Effect                                                                                                                                                                        |
+|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Per-entry cap of 120 bytes**           | at 139 entries: `139 × 146.7 = 20,391` → `139 × 120 = 16,680`. **Frees 3,711 bytes ≈ 31 additional entries — nearly doubling the remaining headroom, with no entry removed.** |
+| **One line per entry, no continuations** | keeps the line and byte axes proportional so §7.2's asymmetry cannot re-open                                                                                                  |
+| **Detail belongs in the topic file**     | the index is an *index*; the 153 topic files are unbudgeted and free                                                                                                          |
 
 **(4) Eviction with a real criterion.** Same cadence as D7. `MEMORY.md`'s natural staleness
 signal is stronger than `AGENTS.md`'s: an entry whose topic file has not been read or written
@@ -1391,13 +1391,13 @@ branch ruleset, never via the Quality-Gate `needs:`**.
 
 ### Phase 0 — Measure and report (advisory, zero risk)
 
-| Adds | |
-|------|--|
-| `util/memory_budget_check.py` | checker: level, rate, per-section, `MEMORY.md` index; `--json`, `--strict`; exit 0/1/2 |
-| `tests/test_memory_budget_check.py` | the gate for `util/`, incl. every §5.3 negative control |
-| `conf/memory_budget.toml` | governed targets, units, ceilings, rate schedule, allowlists |
-| `.github/workflows/memory-budget-alarm.yml` | daily report + waiver ledger + inbox depth; Slack on breach |
-| CI wiring | one line in `ci.yml`'s Regression Tests run-list |
+| Adds                                        |                                                                                        |
+|---------------------------------------------|----------------------------------------------------------------------------------------|
+| `util/memory_budget_check.py`               | checker: level, rate, per-section, `MEMORY.md` index; `--json`, `--strict`; exit 0/1/2 |
+| `tests/test_memory_budget_check.py`         | the gate for `util/`, incl. every §5.3 negative control                                |
+| `conf/memory_budget.toml`                   | governed targets, units, ceilings, rate schedule, allowlists                           |
+| `.github/workflows/memory-budget-alarm.yml` | daily report + waiver ledger + inbox depth; Slack on breach                            |
+| CI wiring                                   | one line in `ci.yml`'s Regression Tests run-list                                       |
 
 Blocks nothing. `RELEASE_TRAIN_MODE`-style kill switch: repo variable `MEMORY_BUDGET_MODE`
 (`off` \| `report` \| `advisory` \| `blocking`, default `report`).
@@ -1405,12 +1405,12 @@ Blocks nothing. `RELEASE_TRAIN_MODE`-style kill switch: repo variable `MEMORY_BU
 
 ### Phase 1 — Advisory PR gate + the inbox (soak)
 
-| Adds | |
-|------|--|
-| `ci.yml` job `memory-budget` | `pull_request` + `merge_group`; **never** in the Quality Gate `needs:`; `merge_group` short-circuits green before checkout |
-| `tests/test_memory_budget_workflow.py` | workflow lint, modelled on `tests/test_archive_guard_workflow.py` |
-| `notes/memory-inbox/README.md` | the D5 contract, ~20 lines |
-| `docs/REFERENCE.md` § Memory Budget Governance | the operator surface, incl. the D4 routing table |
+| Adds                                           |                                                                                                                            |
+|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| `ci.yml` job `memory-budget`                   | `pull_request` + `merge_group`; **never** in the Quality Gate `needs:`; `merge_group` short-circuits green before checkout |
+| `tests/test_memory_budget_workflow.py`         | workflow lint, modelled on `tests/test_archive_guard_workflow.py`                                                          |
+| `notes/memory-inbox/README.md`                 | the D5 contract, ~20 lines                                                                                                 |
+| `docs/REFERENCE.md` § Memory Budget Governance | the operator surface, incl. the D4 routing table                                                                           |
 
 Rate budget soaks at the **terminal** R = 5,000 (§6.2 P1). Job name carries an
 `(Advisory)` suffix — the `e209b74` pre-flight note records that the suffix is part of the
@@ -1501,20 +1501,20 @@ Stated plainly, without hedging.
 Which parts of Proposal D stand alone, and which do not. This is the honest accounting the
 brief asks for, and it is unflattering in exactly two rows.
 
-| Element | Stands alone? | Dependency |
-|---------|---------------|------------|
-| D1 **rate** axis | **Yes** | none — satisfiable today by any author |
-| D1 **level** axis | **No** | inert until a companion cuts the file. Ships as a placeholder for the ratchet. |
-| D2 ratchet rule 1 (monotone) | **Yes** | none |
-| D2 rule 2 (anti-banking) | **No** | only fires when a cleanup PR exists — i.e. on a companion's PR |
-| D2 rule 3 (rate step-down) | **Yes** | none |
-| D3 waiver + ledger | **Yes** | none |
-| D4 routing rows 1, 5, 7 (hook / notes / inbox) | **Yes** | none |
-| D4 routing rows 2, 3, 4 (REFERENCE / skill / rule) | **Partly** | destinations exist, but the *bulk migration* into them is a companion's work. Proposal D routes marginal new content; it does not move the existing 137,627 bytes. |
-| D5 inbox + curation | **Yes** | none |
-| D6 hooks | **Yes** | subject to §12.1 |
-| D7 eviction | **Partly** | needs destinations for evicted content (same as D4 rows 2–4) |
-| §7 `MEMORY.md` | **Yes** | none — and it is the one part that ships fastest and matters soonest |
+| Element                                            | Stands alone? | Dependency                                                                                                                                                         |
+|----------------------------------------------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| D1 **rate** axis                                   | **Yes**       | none — satisfiable today by any author                                                                                                                             |
+| D1 **level** axis                                  | **No**        | inert until a companion cuts the file. Ships as a placeholder for the ratchet.                                                                                     |
+| D2 ratchet rule 1 (monotone)                       | **Yes**       | none                                                                                                                                                               |
+| D2 rule 2 (anti-banking)                           | **No**        | only fires when a cleanup PR exists — i.e. on a companion's PR                                                                                                     |
+| D2 rule 3 (rate step-down)                         | **Yes**       | none                                                                                                                                                               |
+| D3 waiver + ledger                                 | **Yes**       | none                                                                                                                                                               |
+| D4 routing rows 1, 5, 7 (hook / notes / inbox)     | **Yes**       | none                                                                                                                                                               |
+| D4 routing rows 2, 3, 4 (REFERENCE / skill / rule) | **Partly**    | destinations exist, but the *bulk migration* into them is a companion's work. Proposal D routes marginal new content; it does not move the existing 137,627 bytes. |
+| D5 inbox + curation                                | **Yes**       | none                                                                                                                                                               |
+| D6 hooks                                           | **Yes**       | subject to §12.1                                                                                                                                                   |
+| D7 eviction                                        | **Partly**    | needs destinations for evicted content (same as D4 rows 2–4)                                                                                                       |
+| §7 `MEMORY.md`                                     | **Yes**       | none — and it is the one part that ships fastest and matters soonest                                                                                               |
 
 **The summary sentence.** Proposal D is a complete solution to *rate* and a partial solution to
 *level*. A proposal that reorganises `AGENTS.md` is a complete solution to *level* and no
@@ -1525,21 +1525,21 @@ worse than 290 KB later; if the Overtoad adopts exactly one *and* expects it to 
 
 ---
 
-## 11. Owner decisions and open questions
+## 11. The Overtoad decisions and open questions
 
 Marked as decisions, not guessed at.
 
-| # | Decision | Options | Recommendation |
-|---|----------|---------|----------------|
-| **OD-1** | Terminal `max_bytes` for `AGENTS.md` | 30,000 (§6.1) / 34,263 (BASE §8) / other | 30,000 — converges from two routes |
-| **OD-2** | Rate schedule aggressiveness | §6.2 ladder / compressed / slower | as tabled; compress only after Phase 2's precondition 2 passes cleanly |
-| **OD-3** | `LEVEL_SLACK` | 8,000 / other | 8,000 ≈ 2.6 days at the current rate, ≈ 16 days at R=15,000 |
-| **OD-4** | Waiver alarm threshold | `MEMORY_WAIVER_ALARM` default 3/month | 3 |
-| **OD-5** | Fleet-wide rollout | juniper-ml only / all nine (BASE §7) | ml first; revisit at Phase 3. canopy (94,373) and cascor (70,118) are on the same curve. |
-| **OD-6** | Per-section Overtoadship for the fleet | adopt as a Cursor-dashboard control / reject | request it as a *supplement* (flood analysis `:502-504`); do not make Proposal D depend on it |
-| **OD-7** | Parent `Juniper/AGENTS.md` (§9.5) | leave / `claudeMdExcludes` / put it under version control | **decide explicitly** — it is 11,016 ungoverned additive bytes with no `.git` at all |
-| **OD-8** | `MEMORY.md` per-entry cap | 120 bytes / other | 120 — frees 3,711 bytes ≈ 31 entries |
-| **OD-9** | Does the `memory-budget` job name carry `(Advisory)`? | yes / no | decide **before** Phase 1: the suffix is part of the required-context string (`e209b74`) |
+| #        | Decision                                              | Options                                                   | Recommendation                                                                                |
+|----------|-------------------------------------------------------|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| **OD-1** | Terminal `max_bytes` for `AGENTS.md`                  | 30,000 (§6.1) / 34,263 (BASE §8) / other                  | 30,000 — converges from two routes                                                            |
+| **OD-2** | Rate schedule aggressiveness                          | §6.2 ladder / compressed / slower                         | as tabled; compress only after Phase 2's precondition 2 passes cleanly                        |
+| **OD-3** | `LEVEL_SLACK`                                         | 8,000 / other                                             | 8,000 ≈ 2.6 days at the current rate, ≈ 16 days at R=15,000                                   |
+| **OD-4** | Waiver alarm threshold                                | `MEMORY_WAIVER_ALARM` default 3/month                     | 3                                                                                             |
+| **OD-5** | Fleet-wide rollout                                    | juniper-ml only / all nine (BASE §7)                      | ml first; revisit at Phase 3. canopy (94,373) and cascor (70,118) are on the same curve.      |
+| **OD-6** | Per-section Overtoadship for the fleet                | adopt as a Cursor-dashboard control / reject              | request it as a *supplement* (flood analysis `:502-504`); do not make Proposal D depend on it |
+| **OD-7** | Parent `Juniper/AGENTS.md` (§9.5)                     | leave / `claudeMdExcludes` / put it under version control | **decide explicitly** — it is 11,016 ungoverned additive bytes with no `.git` at all          |
+| **OD-8** | `MEMORY.md` per-entry cap                             | 120 bytes / other                                         | 120 — frees 3,711 bytes ≈ 31 entries                                                          |
+| **OD-9** | Does the `memory-budget` job name carry `(Advisory)`? | yes / no                                                  | decide **before** Phase 1: the suffix is part of the required-context string (`e209b74`)      |
 
 **Open questions.**
 
@@ -1626,11 +1626,11 @@ re-tune is itself a visible, waivered event.
 
 ### 13.1 Unit and structural gates
 
-| Test | Covers | Precedent |
-|------|--------|-----------|
-| `tests/test_memory_budget_check.py` | every §5.3 negative control; rate/level maths; ratchet rules 1–3; waiver parse incl. `test_waiver_requires_reason` and `test_waiver_does_not_waive_ratchet_rule_1`; `MEMORY.md` stripping + binding-axis selection; exit matrix 0/1/2 | `tests/test_release_train_archive_guard.py` — hermetic, injected diff, no network |
-| `tests/test_memory_budget_workflow.py` | job present on `pull_request` + `merge_group`; **absent** from the Quality Gate `needs:`; `merge_group` short-circuit before checkout; `fetch-depth: 0`; `permissions: contents: read` | `tests/test_archive_guard_workflow.py`, `tests/test_ci_sequence_safety_hatch.py` |
-| extension to `tests/test_agent_suite_doctor.py` | `check_hooks` fail-closed on absent/empty config | `DoctorDiscoveryCheckTest`, `agent_suite_doctor.py:167-186` |
+| Test                                            | Covers                                                                                                                                                                                                                                | Precedent                                                                         |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| `tests/test_memory_budget_check.py`             | every §5.3 negative control; rate/level maths; ratchet rules 1–3; waiver parse incl. `test_waiver_requires_reason` and `test_waiver_does_not_waive_ratchet_rule_1`; `MEMORY.md` stripping + binding-axis selection; exit matrix 0/1/2 | `tests/test_release_train_archive_guard.py` — hermetic, injected diff, no network |
+| `tests/test_memory_budget_workflow.py`          | job present on `pull_request` + `merge_group`; **absent** from the Quality Gate `needs:`; `merge_group` short-circuit before checkout; `fetch-depth: 0`; `permissions: contents: read`                                                | `tests/test_archive_guard_workflow.py`, `tests/test_ci_sequence_safety_hatch.py`  |
+| extension to `tests/test_agent_suite_doctor.py` | `check_hooks` fail-closed on absent/empty config                                                                                                                                                                                      | `DoctorDiscoveryCheckTest`, `agent_suite_doctor.py:167-186`                       |
 
 All hermetic: synthetic fixture repos, injected diffs, `tests/redacted_env.py`'s `RedactedEnv`
 for any subprocess environment (required by `tests/test_env_repr_safety.py`).

@@ -3739,7 +3739,7 @@ D is **generated**, never hand-edited:
 So a change to the wrapper/installer/contract reaches D through step 2, and every prose change to D is an
 edit added to the clearing script. A is hand-edited directly.
 
-## Owner ruling (2026-10-08, this session) — R3B DEFECT-1
+## The Overtoad ruling (2026-10-08, this session) — R3B DEFECT-1
 
 The Overtoad chose: **suspend retention during recovery** — step 10's edits remove the job's
 `retention-policy`, so the first backup after recovery deletes nothing; it is restored only after AC-4's

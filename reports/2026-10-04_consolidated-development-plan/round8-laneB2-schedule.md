@@ -71,7 +71,7 @@ Totals: 0 BLOCKER, 5 MAJOR, 13 MINOR, 7 NIT (25 findings).
 - **The cut itself.** juniper-data-client's `publish.yml` fires on `release: published`, and its `pypi` and `testpypi` environments allow tags `v*` from any branch (GET), so a 0.5.1 tag on a maintenance branch publishes; tag `v0.5.0` exists (`02c0b723`).
 - **§7.1's arithmetic holds.** 1+1+1+1+1+3+1+1 = 10 items; 20 rounds and 100 runs; 10–20 days, which is 10 of 21 and 20 of 35. The cells and escalators are `…CONSENSUS-PROCEDURE.md` L84, L85, L89, L91–L93, L96–L98 and L110 (§3's heading is L77; L76 is blank). Item 4's two iterations are canopy#685's validation and its fix-forward's round, as S0.5 now says.
 - **Cascor's line.** The image lock PR follows R-OBS-SC only; R-CASCOR follows P3-05, P3-08 and the locks (L575, L671).
-- **Owner rows.**
+- **The Overtoad rows.**
   - Every A2 ruling has one slot: O-1, -2, -7, -8, -12, -13, -14 and DEFECT-1 at item 8; O-10, N-1 and N-2 at item 1; O-6 with P1-10's merge; O-5, O-9 and P1-21 in Group B, matching §6.6's E gates; O-3, N-3, N-5 and N-6 in Group C; O-11 by XC-CRED at item 6; O-4 resolved.
   - P3 D-10's nine rows split four (A4) and five (Group B) (`EX/extraction-P3-defect-register.md` L148). P4 D-1..D-15 and P6 OD-1..OD-14 each have one slot.
   - No sitting waits on its own output: the mid-wave items wait on P3-07's and P3-03's validations or on S0.7's and S0.2's outputs; R-OBS-SC waits on D-02/D-03; the restarts have left the sitting.

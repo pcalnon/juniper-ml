@@ -45,7 +45,7 @@ Write plan v1.15.15 of `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-
    - The follow-ups (step 2 below).
 
    Check §2, §5 (the R-OBS-SC-2 row, L974; R-CASCOR, L978), §9 (cross-path dependencies, L1315–1318), Wave 1's "Security delivery" and the exit list (L905) for every statement this moves. Commit the three handoffs and the tools below in the same PR.
-2. **Owner items to surface (report, do not act)**:
+2. **The Overtoad items to surface (report, do not act)**:
    - juniper-ml's `[tools]` floor `juniper-observability>=0.4.2` needs meta 0.11.5.
    - New image cuts are owed before any running image carries the fix: data (R-DATA-2), cascor, canopy and recurrence (see step 1).
    - The forks' `RateLimiter` still truncates with no floor (data `juniper_data/api/security.py:250/:254`, cascor `src/api/security.py:229/:233`, canopy `src/security.py:270/:274`), so APD-SVCCORE-004's `Retry-After: 0` is live in all three, with no register row. Separately, data `:427` and cascor `:386` keep `FailedAuthThrottle`'s `max(1, int(...))` round-down (the wait comes out a second short), which 0.7.2 fixed only in service-core.

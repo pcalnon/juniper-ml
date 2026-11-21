@@ -83,7 +83,7 @@ Conventions for this report:
 - **Verdict:** REFUTED. The fact moved before the commit, in text the fix pass re-asserted. **MAJOR**: a disposition changes.
 - **Evidence:**
   - juniper-data#421 ("the container image can generate equities -- yfinance joins the image lock") merged at 00:56:08Z as `68c3cd7c`.
-  - Its body opens: "Owner decision, 2026-09-22: the juniper-data container image must be able to generate the equities datasets."
+  - Its body opens: "The Overtoad decision, 2026-09-22: the juniper-data container image must be able to generate the equities datasets."
   - The post-merge census run itself reads juniper-data at `68c3cd7c`.
   - No data release has been cut since v0.15.0.
 - **Fix:** "Ruled; lock fixed by data#421; ships with the next juniper-data release."

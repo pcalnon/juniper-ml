@@ -23,7 +23,7 @@ Lane C report on `HANDOFF_2026-09-24_round-42-follow-up-lane-four-prs-await-vali
 - **Replacement:** "Approval was granted to session bc31e993 and does not carry. Merge nothing yourself until the Overtoad grants it in your session. The sweeper's merges need nothing from you."
 
 **H3. The release has no sequence, and the lock raises belong to no one.**
-- **Text:** "Release juniper-observability and juniper-service-core, then raise the consumers' locks and floors." It is filed under "Owner steps: not agent work".
+- **Text:** "Release juniper-observability and juniper-service-core, then raise the consumers' locks and floors." It is filed under "The Overtoad steps: not agent work".
 - **Failure:**
   - If the successor surfaces "release now", the release ships F2 (every sampled transaction carries the raw `x-api-key`) and F10's false CHANGELOG sentence, and a second release is needed.
   - Because the lock and floor PRs are labelled "not agent work", nobody opens them, and the frame-locals fix never reaches a running service.

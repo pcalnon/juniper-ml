@@ -69,7 +69,7 @@ Origin-session validators already confirmed all of this at `27521e5` (`propose.p
 ## Key context / gotchas
 
 - **Concurrent sessions are active in this ecosystem** (release-train work shipped 3 PRs in parallel with the origin session). Before opening any PR: `gh pr list` in the target repo as a dup-guard, and re-check `git log origin/main` freshness.
-- **juniper-ml main enforces `required_signatures`**: automation commits made with `-c commit.gpgsign=false` leave PRs BLOCKED even when all checks are green (gh auto-merge is disabled repo-wide). Owner merges handle this; do not use `--admin` except for the notes-archive-only exemption class.
+- **juniper-ml main enforces `required_signatures`**: automation commits made with `-c commit.gpgsign=false` leave PRs BLOCKED even when all checks are green (gh auto-merge is disabled repo-wide). The Overtoad merges handle this; do not use `--admin` except for the notes-archive-only exemption class.
 - The HO-2 incident class is the *reason* for Item 1: an empty/placeholder secret silently disables `APIKeyAuth` and the service serves open with a healthy health check. `JUNIPER_SKIP_AUTH_POSTURE_CHECK` is the escape hatch — mention it in each adoption PR.
 - Never paste local pytest failure output into public places without scrubbing: pytest's failure repr can include `subprocess.run`'s `env` kwarg, with `ANTHROPIC_API_KEY` near the visible front (observed first-hand in the origin session's failure paste).
 - juniper-service-core's dependency-free top-level `import juniper_service_core` guarantee must survive (auth_posture is stdlib-only; nothing to do, just don't break it).

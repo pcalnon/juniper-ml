@@ -255,7 +255,7 @@ first — the shape in `memory/feedback_squash_merge_first_commit_only.md`.
 
 **Outside git** — harness memory: `project_container_registry_rollout_2026-09-08.md`,
 `reference_contended_merge_lane_use_native_automerge.md`, `MEMORY.md`. Linkset gate 222 → 224,
-**zero dropped**. **Owner ruled 2026-09-21: do not retire live memories** to meet the 20 KB target;
+**zero dropped**. **The Overtoad ruled 2026-09-21: do not retire live memories** to meet the 20 KB target;
 the index stays over budget deliberately.
 
 ## Verification commands

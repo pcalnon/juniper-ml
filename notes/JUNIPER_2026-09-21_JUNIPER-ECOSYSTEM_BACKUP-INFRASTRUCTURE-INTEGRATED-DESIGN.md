@@ -148,7 +148,7 @@ Each rule below is load-bearing for §7/§8. Citations name the document that re
 
 `/var/lib/docker/volumes` (16 Juniper volumes) and `/opt/miniforge3/envs` (**62 GB**, measured
 2026-09-21; the record's 47 GB is stale) are in **no** tier; the tar lane covers ten repos but not `juniper-legacy` (18 GB, no `.git`) or the parent-level `notes/ prompts/ util/ backups/` (per `APPLICATION_REPOS` at `util/juniper-backup.bash:102`; the 08-21 handoff's §3 table marked both as tar-covered at the time); GitHub-side state has no local copy; the `sops-backup-key.sh` escrow was never confirmed run; offsite was never ruled on
-(`HANDOFF_2026-08-21_backup-systematization-design-arc.md` §2.1, §3, O-2, O-5). Owner items still open from YAM §8.25–§8.27:
+(`HANDOFF_2026-08-21_backup-systematization-design-arc.md` §2.1, §3, O-2, O-5). The Overtoad items still open from YAM §8.25–§8.27:
 `sda` SMART **read 2026-09-23 and PASSED** (note 10.2a) — closed, the read-only loop probe of the destroyed `sdc4`, the sdc2 grow, cloud reporting (deferred), the user-lane removal PR, the watchdog `ProgramState` check, the dead `yamaguchi_records_sync.bash`.
 
 ### 3.5 Contradictions in the record that this design settles
@@ -2402,7 +2402,7 @@ scrub; the Overtoad's 2026-09-24 amendment moved the ruling to match it (§10.1,
 *after* P0 only because it also carries work that follows the recovery; an operator working top to bottom would
 otherwise run the recovery with that path open.
 
-**0. Owner gates — RULED 2026-09-22 (§10.1); this step is now a verification, not a decision.** (a) Confirm the
+**0. The Overtoad gates — RULED 2026-09-22 (§10.1); this step is now a verification, not a decision.** (a) Confirm the
 installed artifacts match the rulings: `UMask=0027` in the unit (D-14), `AmbientCapabilities=CAP_DAC_READ_SEARCH`
 with the §7.3.2 confinement set (D-4), `--webservice-interface=loopback` (D-9),
 `--require-db-encryption-key` (D-1) and D-9's two web-service options — all in the installed `/etc/default/duplicati` since the 2026-10-03 change — and a `.blessed.sha256` written by the installer listing its seven files (D-6). D-2's rotation is
@@ -2977,7 +2977,7 @@ Notes on the criteria above:
 
 ---
 
-## 10. Owner decisions
+## 10. The Overtoad decisions
 
 **Seven of the fourteen are RULED — on 2026-09-22, with D-8's timing amended on 2026-09-24 — and §10.1 is
 binding.** This table keeps the question each ruling answered and the recommendation it was made against, so a
@@ -3012,7 +3012,7 @@ Notes on the decisions above:
 
 ---
 
-### 10.1 Owner rulings — 2026-09-22
+### 10.1 The Overtoad rulings — 2026-09-22
 
 All seven open gates were ruled by the Overtoad in one interactive session on 2026-09-22. **The Ruling
 column below is binding and the Recommendation column above is historical.** D-3, D-5, D-7, D-10, D-11,

@@ -132,7 +132,7 @@ Abbreviations: "consolidated" = `prompts/thread-handoff_automated-prompts/HANDOF
 | APD-ECO-001 / -003 / -004 | R / R / M | ecosystem / three clients | none (D-E, C-A, C-B) |
 | APD-RCLIENT-004 | M | recurrence-client | none (C-C) |
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options; the source's recommendation | Blocks | Source |
 |---|---|---|---|---|

@@ -44,7 +44,7 @@ Nothing is owed unless the Overtoad asks. What remains is the Overtoad's (Remain
    - juniper-ml#2379, the 0.13.0 notes archive, which is armed to auto-merge;
    - this handoff's PR.
    Merge #2378 and this PR with `util/safe_merge.py`. The approval for that does not carry to a new session.
-3. **Owner decisions:**
+3. **The Overtoad decisions:**
    - Codecov: add `CODECOV_TOKEN`, to the Dependabot store too, or drop the step.
    - cascor `ci.yml:659`: `continue-on-error: ${{ github.event_name != 'pull_request' }}` or leave it.
 4. **ml#2064 is juniper-ml#2381**, open at head `edbe25c1`, from the `agent-af4830ffb939894cb` lane.

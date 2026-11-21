@@ -160,7 +160,7 @@ Both arms consume the same three partitions, so the tiers become comparable by c
 
 ## 6. Options considered — **DECIDED 2026-08-29: O-1**
 
-> **Owner decision.** juniper-data owns the split (O-1). cascor consumes `X_val` when present and
+> **The Overtoad decision.** juniper-data owns the split (O-1). cascor consumes `X_val` when present and
 > may fall back to `X_test` **only** behind an explicit run-with-warnings switch (§6.1). For legacy
 > datasets whose metadata carries sufficient provenance / construction detail, juniper-data
 > compensates rather than refusing — see §6.2.
@@ -360,7 +360,7 @@ stopping. The gap is the bias this design removes. One cell, both arms, no new t
 metrics hook — the same harness used for the tensor probe. Without it the design ships with an
 unquantified motivation, and §7's "existing baselines shift" has no size attached.
 
-## 9. Owner decisions — SETTLED 2026-08-29
+## 9. The Overtoad decisions — SETTLED 2026-08-29
 
 | # | question | **decision** |
 | --- | --- | --- |
@@ -387,7 +387,7 @@ unquantified motivation, and §7's "existing baselines shift" has no size attach
   behavioural change to the arm that was previously unregularised. Measure it rather than assuming
   it is benign.
 
-### 9.2 Owner decisions — SETTLED 2026-08-31 (plan §3's D-1 and D-2)
+### 9.2 The Overtoad decisions — SETTLED 2026-08-31 (plan §3's D-1 and D-2)
 
 Ruled after the implementation plan's D-1 was **re-posed**: the plan justified the question by
 claiming `full == train + test` is *"already violated by every shuffled tabular generator"*, which is

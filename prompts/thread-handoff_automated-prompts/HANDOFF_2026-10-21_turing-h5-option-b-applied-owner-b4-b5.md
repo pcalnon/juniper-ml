@@ -39,7 +39,7 @@
 - **Advisories.** 92 active for the installed npm set (3 critical, 29 high, 55 medium, 5 low), against the analysis' 89 at 10:11Z. They are reported, not judged.
 - **Re-check it any time** with `python3 -I util/ad-hoc/2026-10-21_turing_h5_hardening_check.py`; exit 0 means option B is intact and the rest of the restored state holds. `--offline` skips the GitHub reads and the tree comparison. The restore check now exits 1 by design.
 
-## Owner steps
+## The Overtoad steps
 
 1. **B.4 (RR-12).** In Little Snitch, add a standing rule for `/usr/local/Cellar/node/25.8.1_1/bin/node`:
    - deny `github.com` and `codeload.github.com`;
@@ -56,7 +56,7 @@
 
    Reverse with `git -C <tree> remote add origin <URL>`; the URLs are in the analysis' §3.1.
 3. **C0 (O-8)**, before the first Time Machine backup: `tmutil addexclusion ~/.claude/mcp-servers`, then `tmutil isexcluded ~/.claude/mcp-servers` should report `[Excluded]`.
-4. **C2 (RR-11)**, with Owner block 1: firewall on, stealth on, and `socketfilterfw --setblockall on`. Or, if something inbound is needed, per-app inbound denies for `com.docker.backend`, `node` and the env Pythons.
+4. **C2 (RR-11)**, with The Overtoad block 1: firewall on, stealth on, and `socketfilterfw --setblockall on`. Or, if something inbound is needed, per-app inbound denies for `com.docker.backend`, `node` and the env Pythons.
 
 ## Standing rules (unchanged by B)
 

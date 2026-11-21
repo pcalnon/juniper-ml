@@ -65,7 +65,7 @@ document did it again and was caught in validation. The accurate position:
 > protected only by one ancestor's mode: a later `chmod` on `/mnt/Backups/Ubuntu`, or a second
 > account, converts it into a real leak with no further warning.
 
-**Owner decision taken 2026-08-30: accept as-is and document it.** Rejected: `SETTINGS_ENCRYPTION_KEY`
+**The Overtoad decision taken 2026-08-30: accept as-is and document it.** Rejected: `SETTINGS_ENCRYPTION_KEY`
 (adds a *third* key needing escrow, and losing it makes the server DB unreadable — worse recovery
 story), and excluding the snapshot from the backup (defeats its purpose; the archive already holds a
 cleartext copy anyway).

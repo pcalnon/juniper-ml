@@ -163,7 +163,7 @@ Claude Code's own worktrees: `.claude/worktrees/<name>` on branch `worktree-<nam
 
 ### 2.5 How design paths carry status today
 
-627 tracked markdown files under `notes/` (Lane A1, `find notes -name '*.md'`); the naming convention is ratified but ungated. **The header Status is not a controlled vocabulary**: 153 distinct leading tokens over 366 docs that carry a Status in their first 30 lines (261 do not); 42 of those headers use `**Status:**` (colon inside the bold) and 3 plain `Status:`, which a `**Status**:`-only regex misses (Lane B2). Lane B1 applied v2's class rules to 629 notes: 20 headers whose leading token is an ACTIVE-class word were classified terminal by a later word in the line — among them V3 itself ("DESIGN, revision 2. Revision 1 was REJECTED …") and "Analysis — Overtoad decisions required, nothing implemented" — so a terminal keyword *anywhere* in the line is not a usable transition signal (§4.3). There is no `Superseded-by` field anywhere; supersession is a banner in the older doc or a `**Supersedes…**:` header line in the newer one (18 such lines, 3 in the exact spelling). Owner decisions are per-document tables whose rulings are appended with the chosen and rejected options (defect register §2.4, `:325-326`); decision ids are local to each document (every arc has a D-1). The live state of an arc sits in its handoff chain (210 handoffs). Edits are effectively append-only: the Sequence Safety docs screen (`juniper-ci-tools/juniper_ci_tools/docs_additions_check.py`) fails a PR that deletes a heading unless the same hunk adds one, or deletes ≥5 consecutive lines with no adjacent addition, absent an `Allow-Docs-Rewrite: <path>` trailer.
+627 tracked markdown files under `notes/` (Lane A1, `find notes -name '*.md'`); the naming convention is ratified but ungated. **The header Status is not a controlled vocabulary**: 153 distinct leading tokens over 366 docs that carry a Status in their first 30 lines (261 do not); 42 of those headers use `**Status:**` (colon inside the bold) and 3 plain `Status:`, which a `**Status**:`-only regex misses (Lane B2). Lane B1 applied v2's class rules to 629 notes: 20 headers whose leading token is an ACTIVE-class word were classified terminal by a later word in the line — among them V3 itself ("DESIGN, revision 2. Revision 1 was REJECTED …") and "Analysis — Overtoad decisions required, nothing implemented" — so a terminal keyword *anywhere* in the line is not a usable transition signal (§4.3). There is no `Superseded-by` field anywhere; supersession is a banner in the older doc or a `**Supersedes…**:` header line in the newer one (18 such lines, 3 in the exact spelling). The Overtoad decisions are per-document tables whose rulings are appended with the chosen and rejected options (defect register §2.4, `:325-326`); decision ids are local to each document (every arc has a D-1). The live state of an arc sits in its handoff chain (210 handoffs). Edits are effectively append-only: the Sequence Safety docs screen (`juniper-ci-tools/juniper_ci_tools/docs_additions_check.py`) fails a PR that deletes a heading unless the same hunk adds one, or deletes ≥5 consecutive lines with no adjacent addition, absent an `Allow-Docs-Rewrite: <path>` trailer.
 
 Design consequence: the goal ledger holds an **explicit, Overtoad-owned class** per path; the document's prose is read only for two unambiguous transition signals (§4.3).
 
@@ -206,7 +206,7 @@ v2 made the controller an interactive `/loop` session because it is the only sur
 | Worktrees | `isolation: worktree` = juniper-ml only; agents' cwd fixed | code-created ecosystem worktree per task in the task's repo, absolute paths in every brief; no isolation checks in the child (it launches from the main checkout, edits nothing there) |
 | Replay / idempotence | the runtime replays failed-and-later agents inside the session | each cycle is a fresh run; idempotence comes from deterministic branch names and DUP-GUARD (§6.5) |
 | Handoff | needed after N ticks (context growth) | none: the controller has no context; each child starts fresh |
-| Owner visibility | `/workflows` live view | the run directory (`stream.jsonl`, `status.json`) and the cycle record; no live view |
+| The Overtoad visibility | `/workflows` live view | the run directory (`stream.jsonl`, `status.json`) and the cycle record; no live view |
 | Odometer | refreshed by the dispatcher's own turns | needs an interactive heartbeat when no Overtoad session is live (§5.1) |
 | Precedent in repo | none | SOAK (`util/soak_run_probe.py`, timer unit, exit-code contract) |
 
@@ -555,7 +555,7 @@ The freed cost of a task that raises a decision is spent in the same cycle on a 
 
 ---
 
-## 10. Owner decisions
+## 10. The Overtoad decisions
 
 | ID | Decision | Recommendation | Why it cannot be defaulted |
 | --- | --- | --- | --- |

@@ -19,7 +19,7 @@ Continue executing the CLI test/validation/experimentation program for juniper-c
 - Driver test idiom: scripted stub `http.server` plays all services; `RedactedEnv` for subprocess arms; `sys.path.insert(REPO_ROOT/"util")` + `from experiments import run_experiment`.
 - Headless commits need `git -c commit.gpgsign=false commit`. Merging: unsigned commits leave PRs OPEN/BLOCKED under the `required_signatures` ruleset — the Overtoad merges with the admin bypass (`gh pr merge --squash --admin` completed the Overtoad-stated merges of ml#878/#879 this session).
 - CI already installs numpy for the driver tests; matplotlib will need the same treatment in the tests job when Wave 2.4 lands (mirror the numpy install-comment pattern).
-- Owner decision still pending (not urgent): recurrence `namespace="juniper_recurrence"` alignment vs shipped generic-family scoping. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
+- The Overtoad decision still pending (not urgent): recurrence `namespace="juniper_recurrence"` alignment vs shipped generic-family scoping. Deploy micro-PR candidate still open: `tests/test_provenance_sha.py` gpg fixture.
 
 ## Verification for the new thread
 

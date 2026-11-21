@@ -8,7 +8,7 @@
 
 **The record**: plan v1.15.16 (`notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, juniper-ml#2588) records everything up to 2026-11-15 ~06:07Z. This file covers what came after, and what remains. Every state fact below was read from `gh`, PyPI or the disk between 05:41Z and 13:10Z. `[moves]` marks state that an armed merge or the Overtoad changes.
 
-## Owner rulings this session (verbatim; times from the transcript, `util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py b9dfa450`)
+## The Overtoad rulings this session (verbatim; times from the transcript, `util/ad-hoc/2026-11-09_r_obs_sc_2_Overtoad_answers.py b9dfa450`)
 
 - **Merge approval**: "merge approval granted", with "continue work arc from handoff: …". It is per-session and does not carry over.
 - **Directive** (typed 05:14:10Z): "this needs to be fixed. deploy to pypi should send the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks again."

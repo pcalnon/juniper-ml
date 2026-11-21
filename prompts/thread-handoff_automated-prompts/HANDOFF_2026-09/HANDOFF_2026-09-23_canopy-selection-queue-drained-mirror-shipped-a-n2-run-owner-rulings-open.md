@@ -38,7 +38,7 @@ Continue the canopy selection-reachability arc:
 
 ### Remaining work, in order
 
-1. **Owner rulings.** Ask them first; they were put to the Overtoad at the end of this session.
+1. **The Overtoad rulings.** Ask them first; they were put to the Overtoad at the end of this session.
    1. **X8 + A-N9.**
       - juniper-data declares `equities_seq` `task_type="classification"`; canopy labels it `regression`.
         `TestX8TaskTypeDivergenceIsDeliberate` pins that relabelling leaves the LMU **zero** datasets.

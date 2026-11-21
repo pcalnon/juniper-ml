@@ -37,7 +37,7 @@ control arm exists. E-C's moon curve: 1.0 / 1.0 / 1.0 / 0.975.
 1. **E-C's spiral rows are `max_iterations`-bound at 12 units** (the inherited `spiral-baseline`
    cap), so their flat ≈0.63–0.66 curve is a capacity artifact — the same reading F-6 gave for the
    old 2-unit smoke cap, one cap up. A spiral noise-robustness curve needs those four cells at an
-   E-I-class `max_iterations` (≥ 64). **Owner decision**; the closed R-4 disposition is not
+   E-I-class `max_iterations` (≥ 64). **The Overtoad decision**; the closed R-4 disposition is not
    reopened by noting it.
 2. **`run_experiment.py` tears a `timed_out` / `stalled` cell down with a plain SIGTERM** —
    `preempt_training` (`POST /v1/training/stop` + wait) is only used for a 409 on start. Meant to

@@ -145,7 +145,7 @@ This is a net-new identify-first item.
 Both unidentified IDs behave like the release-train App: `/apps/<slug>` 404s for every candidate slug tried,
 which is the signature of a **private / unlisted** GitHub App. `/user/installations` is unavailable to the
 session token (**[live 2026-08-09]**: HTTP 403, "You must authenticate with an access token authorized to a
-GitHub App"), and `/app/installations/<id>` requires an App JWT (**[live 2026-08-09]**: HTTP 401). Owner UI is
+GitHub App"), and `/app/installations/<id>` requires an App JWT (**[live 2026-08-09]**: HTTP 401). The Overtoad UI is
 therefore genuinely required (§3.3).
 
 ### 3.3 Deploy keys
@@ -159,7 +159,7 @@ therefore genuinely required (§3.3).
 | juniper-cascor | 143581480 | `juniper-cascor deploy key` | 2026-02-21 | 2026-08-06 |
 | juniper-cascor | 144170557 | `Juniper Cascor Deploy Key - Turing` | 2026-02-28 | 2026-05-07 |
 
-Owner decision 2026-08-09 (session record): **Turing keys RETAINED.** This plan therefore does not propose
+The Overtoad decision 2026-08-09 (session record): **Turing keys RETAINED.** This plan therefore does not propose
 removing any deploy key, and does not propose removing the `DeployKey` bypass entry — see §3.4/A1 for the
 residual note.
 
@@ -274,7 +274,7 @@ Neither `1276151` nor `946600` resolves through any public-App endpoint reachabl
 
 | Option | Description | Trade-off |
 |---|---|---|
-| **O1** | Owner names them in the UI, then decide KEEP / REMOVE per identity class. | Requires ~5 minutes of Overtoad UI time. Only option that produces a *name*. |
+| **O1** | The Overtoad names them in the UI, then decide KEEP / REMOVE per identity class. | Requires ~5 minutes of Overtoad UI time. Only option that produces a *name*. |
 | O2 | Remove both blind ("unknown ⇒ untrusted"). | Fast, but can silently break an integration the Overtoad deliberately installed; the failure surfaces later as an unexplained blocked automation. Violates identify-first. |
 | O3 | Leave as-is. | The status quo: two unnamed actors with unconditional authority to push, force-push, or delete `main` past all 8 rules on up to 8 repos. |
 
@@ -726,7 +726,7 @@ helper). Any PR already sitting in the queue merges or is ejected normally; noth
    `merge_queue` rule, so the ceremony's archive PR still merges immediately. If A3.6's follow-up experiment
    removes that bypass *while a queue is live*, the archive PR joins the queue and the ceremony's
    `--monitor-timeout 900` (`release-train.yml:740`) must absorb the extra latency. **Do not do both at once.**
-2. **Owner "Update branch" habit.** With a queue, manually updating a branch before merge is redundant and adds
+2. **The Overtoad "Update branch" habit.** With a queue, manually updating a branch before merge is redundant and adds
    churn; the queue builds the merge itself.
 3. **Consumers are not ready.** No sibling `sequence-safety.yml` listens on `merge_group` (§3.5). Enabling a queue
    on a sibling *after* promoting that context to required (A5) would stall it. Order there is: wire
@@ -1274,9 +1274,9 @@ Wire into **both** batteries, matching the house pattern:
 | Item | Evidence | Option | Recommendation |
 |---|---|---|---|
 | Legacy rsa4096 `B5AFCD0686585249` stub (old card `0006 09258397`) | §4.1 | Keep (harmless — a card-bound stub with no card present cannot sign) or `gpg --delete-secret-keys` + `--delete-keys`. | **Keep.** It is inert, and it is the only local means of *verifying* pre-2026-07-14 commits signed with it. Removing it would make historical signatures unverifiable on this host for no security gain. Revisit only if the ambiguity class (audit `A1-F6`) causes a concrete misresolution. |
-| ed448 `93E8591643C507FF` with **on-disk** signing-capable secret | §4.1; audit `A1-F7` | Keep / move the secret offline / delete. | **Owner call.** It is the only signing-capable private key on this disk (the ed25519 signing key is card-resident), so it is the one whose theft would allow forged Juniper-attributable signatures. Moving the secret to offline media preserves the key while removing the standing exposure. Not urgent, not this arc — but it should not be forgotten, and §11 tracks it. |
+| ed448 `93E8591643C507FF` with **on-disk** signing-capable secret | §4.1; audit `A1-F7` | Keep / move the secret offline / delete. | **The Overtoad call.** It is the only signing-capable private key on this disk (the ed25519 signing key is card-resident), so it is the one whose theft would allow forged Juniper-attributable signatures. Moving the secret to offline media preserves the key while removing the standing exposure. Not urgent, not this arc — but it should not be forgotten, and §11 tracks it. |
 | GPG-key registration on GitHub | audit `A1-F12`, `§8` item 1 | Confirm whether the legacy RSA key is still registered. | Blocked on token scope: `gh api /user/gpg_keys` needs `admin:gpg_key`. If the Overtoad wants it resolved: `gh auth refresh -h github.com -s admin:gpg_key` then re-query. Low priority — it only affects whether a *future* stale-key signature would fail loudly. |
-| `~/.gnupg` backup archive + `*-DELETE_ME` dirs at 664/775 | audit `A1-F8`, `L1` | Move offline / tighten modes. | **Owner call**, out of this arc's scope. Flagged because key-backup material inside a live keyring directory at group-readable modes is the higher-consequence of the hygiene items. |
+| `~/.gnupg` backup archive + `*-DELETE_ME` dirs at 664/775 | audit `A1-F8`, `L1` | Move offline / tighten modes. | **The Overtoad call**, out of this arc's scope. Flagged because key-backup material inside a live keyring directory at group-readable modes is the higher-consequence of the hygiene items. |
 
 ---
 
@@ -1775,7 +1775,7 @@ unsatisfiable required check.
 
 ---
 
-## 11. Owner decisions and open questions
+## 11. The Overtoad decisions and open questions
 
 | # | Decision / question | Recommendation | Status |
 |---|---|---|---|
@@ -1788,7 +1788,7 @@ unsatisfiable required check.
 | Q7 | Record the canonical `merge_queue` rule JSON | Paste the §A4.4 Step-2 read-back here and into `docs/REFERENCE.md` | **PENDING Q6** |
 | Q8 | Promote sequence-safety to required | **Yes**, on ~2026-08-21 after the §A5.2 checklist; per-repo; contexts per §A5.3 (ml#1011) | **OPEN — dated** |
 | Q9 | Keep the legacy RSA stub in the keyring | **Keep** (inert; needed to verify historical signatures) | Recommendation stands |
-| Q10 | The ed448 key's on-disk signing-capable secret | **Owner call** — move offline or accept; it is the only signing-capable private key on this disk | **OPEN** |
+| Q10 | The ed448 key's on-disk signing-capable secret | **The Overtoad call** — move offline or accept; it is the only signing-capable private key on this disk | **OPEN** |
 | Q11 | Confirm whether the legacy RSA key is still registered on GitHub | `gh auth refresh -h github.com -s admin:gpg_key`, then `gh api /user/gpg_keys`; low priority | **OPEN — optional** |
 | Q12 | Create `.serena/project.yml` for data-client / deploy / recurrence | **Defer** until symbol tooling is actually needed there | **DEFERRED** |
 | Q13 | Reconcile the Serena project-name eras (`juniper_ml` vs `juniper-canopy`) | **Defer** — path-based activation makes it cosmetic | **DEFERRED** |

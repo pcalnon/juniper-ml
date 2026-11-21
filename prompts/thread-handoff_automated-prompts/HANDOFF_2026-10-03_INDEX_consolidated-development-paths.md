@@ -48,14 +48,14 @@ Each consolidated file's "Dependencies on other paths" section is authoritative.
 | From | On | Nature |
 |---|---|---|
 | P5 spec v3 / W10 | P4 | The juniper-data and juniper-recurrence releases. The next data release (X8 #437, #436, #438, #440) has not been cut. |
-| P5, P4 (Wave 4, recurrence#178) | Owner | **DONE 2026-10-03.** The Overtoad widened `CROSS_REPO_DISPATCH_TOKEN`. Verified green: data run 37114403856 and recurrence run 37114410788. |
+| P5, P4 (Wave 4, recurrence#178) | The Overtoad | **DONE 2026-10-03.** The Overtoad widened `CROSS_REPO_DISPATCH_TOKEN`. Verified green: data run 37114403856 and recurrence run 37114410788. |
 | P3 (next data release) | P3 item 1 → P4 | The data fix-forward must merge and be validated before the next juniper-data release. |
 | P3 (Sentry fix delivery) | P4 | The juniper-observability and service-core releases. Only one session should cut them. |
 | P2 (canopy fixes on PyPI), P6/P7 (cascor changes on PyPI) | P4 | The canopy release (23 unreleased changes) and the cascor release (17), both Overtoad-gated. |
 | P2 ↔ P3 | — | F-CANOPY-060..062 and the "Nothing was loaded" copies are P3's findings, recorded in P2's canopy ledger. Phase 10 (ml#2157) filed them as F-CANOPY-060 to -063, the copies as **063**. P3 was told on 2026-10-08, under its item 11. Only P3's item 3, the validation of #685, remains. |
 | P5 items 3–4, P7 P2.1 timing | P6 | `util/experiments/` edits and host-load-sensitive measurements wait until the perf lane is quiet. |
 | P5 (`routes/datasets.py`) | P3 item 1 | Sequence after the data fix-forward. |
-| P2 (trio holds the cascor primary) | Owner (O13) | Stopping the trio may also free P6. |
+| P2 (trio holds the cascor primary) | The Overtoad (O13) | Stopping the trio may also free P6. |
 | P10 ↔ P2 | — | X7 / canopy#661 is carried only by P10. |
 | P8 | All | Soft. Every path shares the account's usage windows, so launch consensus rounds when no other arc is mid-round. |
 | All | — | Every path edits the auto-memory `MEMORY.md`, which is over budget. Re-read it before each write. The Overtoad's PR sweeper arms open PRs unseen. |

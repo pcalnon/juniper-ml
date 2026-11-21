@@ -58,7 +58,7 @@ Ask the Overtoad for merge approval again in a new session.
   `D/tmp/phase-d-sitting/segment-2026-11-14b.md`. If you edit a segment, edit `W`'s copy and re-run the assembler.
 - Memory: `project_backup_arc_hub.md` has the 2026-11-15 paragraph; the MEMORY.md line was updated.
 
-### Owner rulings this session (answers verbatim)
+### The Overtoad rulings this session (answers verbatim)
 
 - Dialog, 2026-11-15 00:08:36Z:
   - May the probe list the destination's file names (the census): "Accept as built (Recommended)".
@@ -72,7 +72,7 @@ Ask the Overtoad for merge approval again in a new session.
   directory that were group writable. the group Overtoadship of these files is duplicati. since the pcalnon user is a
   member of the duplicati group, this allows files to be processed by Dropbox." D-14 stands. **Never propose
   group-writable volumes**; `0017` is the Overtoad's own interim.
-- Owner request: "move the watchdog check to 8:00pm CST" and "move the scheduled backup time to 7:00am CST". Done
+- The Overtoad request: "move the watchdog check to 8:00pm CST" and "move the scheduled backup time to 7:00am CST". Done
   (#2583, the Overtoad's installs and the second save).
 
 ### Status of every predecessor item

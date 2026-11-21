@@ -98,11 +98,11 @@ All under `juniper-ml/.amp/in/artifacts/recurrence-equities-audit/`:
 
 ## 3. Findings register
 
-Each finding carries an ID used by the work items in §6. Severity: **Blocker** (the path cannot run or lies about running), **Major** (wrong result or operator cannot diagnose), **Minor**, **Doc**. Owner is the repo that must change.
+Each finding carries an ID used by the work items in §6. Severity: **Blocker** (the path cannot run or lies about running), **Major** (wrong result or operator cannot diagnose), **Minor**, **Doc**. The Overtoad is the repo that must change.
 
 ### 3.1 Environment and launcher (ENV)
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-E1 | Blocker | `JuniperCascor1` serves model 0.1.5 and service-core 0.5.0 under an app pinned to `>=0.3.0,<0.4.0` / `>=0.6.0,<0.8.0`. 0.1.5 lacks `derive_full_split`, so every `split="full"` request (`/v1/crossval`) 422s with `missing required key 'X_full'`. Shadowed checkout returns 200 on the same request. | `00-baseline.txt` (versions); `tests-bench-env.log` (import failure ×14); `31-c-crossval-plain.txt` vs `24-c-crossval-shadow.txt`; `routers/crossval.py:65-73` | host env / juniper-ml launcher |
 | F-E2 | Blocker | The launcher gates the recurrence env on the console script existing and on `/v1/health/ready` only; no `pip check`, no version floor, no import probe. | `util/experiment_stack.bash:731-757`; `util/isolated_stack.bash:363-380` | juniper-ml |
@@ -112,7 +112,7 @@ Each finding carries an ID used by the work items in §6. Severity: **Blocker** 
 
 ### 3.2 CLI experiment driver and suite (DRV)
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-D1 | Blocker | A cell whose crossval 422'd is recorded `outcome: succeeded` with `exit_code: 1`, `acceptance.ok: false`; the suite prints `succeeded`, counts a success, exits 0. `run_suite.py:694` copies `manifest.outcome`, which the driver sets from train alone (`run_experiment.py:1993`); crossval/predict failures only add acceptance reasons (`:1932-1948`). | `scenario-a-suite/registry.jsonl`; `11-scenario-a-suite.exit` = 0; `run_suite.py:694,781-782`; `run_experiment.py:1993,2030` | juniper-ml |
 | F-D2 | Blocker | `_headline_metrics` reads `train_r2`/`cv_r2`/`r2` at the top of `stats["recurrence"]`, but the train numbers nest under `final_metrics` → `metrics: {}` for every recurrence cell; `aggregate.csv`/`REPORT.md` carry no r2. | `run_suite.py:585-600`; `scenario-a-runs/…/artifacts/results/stats.json`; `run_experiment.py:1999-2004` | juniper-ml |
@@ -132,7 +132,7 @@ Details (DRV):
 
 ### 3.3 Recurrence service and model code (SVC)
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-S1 | Blocker | `juniper-recurrence train` exposes `--generator` but no `--params`/`--params-file`; the CLI passes no `params`, so `load_sequence_data` receives `None` and `data.py` substitutes `{}` — equities runs at bare defaults and 422s on NaN. The only CLI route to a trainable equities fit is `--dataset <id>` of an artifact minted elsewhere. | `main.py:50-66,137-144`; `data.py:45-46`; `32/33-g-cli-params-*.txt` (exit 2) | juniper-recurrence |
 | F-S2 | Major | Reader prefers `y_reg_{split}` but silently falls back to one-hot `y_{split}`; a regression run becomes a two-output direction fit with no warning. | `juniper_recurrence_model/data.py:153-159` | juniper-recurrence-model |
@@ -156,7 +156,7 @@ Key inventory for `equities_seq` (per split `train/val/test`, from `42-npz-inven
 Not emitted: `seq_lengths_*`, `t_*`, `padding_mask_*`, `*_full`. Flat `equities`: `X (N,15) f32`, `y (N,2)`, `y_reg (N,1)`, provenance date arrays.
 All numeric keys were 100 % finite in the audited artifacts (which were minted with `drop` or with no fundamentals columns missing for AAPL).
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-P1 | Blocker | Bare defaults are untrainable: `fundamentals_fill="nan"`, `normalize_features=False`, `regression_target="next_close"` → NaN in columns 7/8/14 (`total_shares`, `market_cap`, `days_since_report`) → recurrence 422 `X_train has non-finite values`. Canopy measured 9.1 % non-finite at defaults. (`juniper-data#409`) | `equities/defaults.py:33-50,103`; `27-f-default-nan.txt`; `model_registry.py:306-330` | juniper-data (preset) + every caller (explicit params) |
 | F-P2 | Major | `cost_basis` is NaN before `purchase_date` regardless of `fundamentals_fill`; `drop` only removes missing-share rows. A purchase date after series start yields non-finite windows under `drop`. | `equities/generator.py:924-927,938-956` | juniper-data (Overtoad ruling) |
@@ -173,7 +173,7 @@ Details (DATA):
 
 ### 3.5 Canopy integration (CAN)
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-C1 | Blocker | The service's 422 `detail` body is dropped end to end: adapter keeps it only as `body=` on the exception; `outbound_error_text` returns `str(exc)` for status-bearing errors; backend logs `recurrence fit failed: %s` with that string; UI shows `recurrence service error 422 on POST /v1/train` truncated to 120 chars. | `recurrence_service_adapter.py:325-333`; `outbound_errors.py:45-62`; `recurrence_backend.py:214-226,264-296`; `dashboard_manager.py:7337-7397` | juniper-canopy |
 | F-C2 | Major | Staged form values override the registry seed wholesale (`params.update(cfg["nn_dataset_params"])`), so `regression_target: next_close`, `start_date: 2000-01-01`, `max_symbols: 14` from the equities form reach the service. No preview of the effective request before Start. | `recurrence_backend.py:126-131`; `model_registry.py:332-336`; `logs/juniper-canopy_2026-09-26_0332.log:219` | juniper-canopy |
@@ -189,7 +189,7 @@ Details (DATA):
 
 ### 3.6 Logging and observability (LOG)
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-L1 | Blocker | Exceptions inside the synchronous `lifecycle.run(...)` and `cross_validate(...)` are not caught or logged by the recurrence routes; the `logger.exception("Training failed")` in service-core lives only in the background-thread path. A numerical failure is a bare 500. | `routers/training.py:91`; `routers/crossval.py:117-130`; `juniper_service_core/lifecycle/manager.py:257-284` | juniper-recurrence |
 | F-L2 | Blocker | No `RequestIdMiddleware` in `build_app()`; canopy sends no `X-Request-ID`; the data-client would forward a ContextVar id that is never set. Canopy → recurrence → juniper-data logs cannot be joined. | `app.py:93-139`; `recurrence_service_adapter.py:297-301`; `juniper_data_client/client.py:304-328`; `juniper_observability/request_id.py:62-89` | juniper-recurrence, juniper-canopy |
@@ -207,7 +207,7 @@ Details (DATA):
 
 Current state (2026-10-03): app 234, model 141, client 75, bench 37, repo 57 (+7 subtests). Shadowed: all green. As-served: app 233/1, bench 23/14 (§3.1 F-E4). Canopy's recurrence tests: 5 failed / 15 errors, all libtorch ABI (env). juniper-data `test_val_emission_guards.py`: 16 passed; `-k equities` unit: 170 passed. juniper-ml driver/suite/launcher tests: 524 passed / 1 failed (unrelated E-C wall-budget pin) / 4 skipped.
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-T1 | Major | App fixtures are train-only synthetic stubs with `validate_npz_contract` monkeypatched to `lambda …: "sequence"`; `equities` vs `equities_seq` differ only in id resolution. No app test runs the real validator on an equities-shaped three-partition artifact. | `juniper-recurrence/tests/conftest.py:42-48,72`; `test_data_adapter.py:15-46` | juniper-recurrence |
 | F-T2 | Major | No `/v1/train` route test for 2-D X, non-finite X, non-finite y, missing `dt`/`t`, or a juniper-data 422 (14-symbol cap). Present: 502, 409. | `tests/test_routes.py:64-71,118-122,213-225` | juniper-recurrence |
@@ -221,7 +221,7 @@ Current state (2026-10-03): app 234, model 141, client 75, bench 37, repo 57 (+7
 
 ### 3.8 Documentation (DOC)
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-X1 | Doc (misleading) | Recurrence README and client README show `client.train(name="equities", …)` — flat 2-D `equities`, which the service refuses. | `juniper-recurrence/README.md:173,177`; `juniper-recurrence-client/README.md:43,50` | juniper-recurrence |
 | F-X2 | Doc (missing) | No runbook for "recurrence against equities" from canopy or from the CLI; the only accurate parameter guidance is in dated source comments (`model_registry.py:286-336`). | canopy `docs/USER_MANUAL.md:252-262`; `docs/REFERENCE.md`; `ENVIRONMENT_SETUP.md` | juniper-canopy, juniper-recurrence, juniper-ml |
@@ -237,7 +237,7 @@ Current state (2026-10-03): app 234, model 141, client 75, bench 37, repo 57 (+7
 
 ### 3.9 Scientific validity (SCI)
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-SCI1 | Major | Shadowed crossval on the E-H dataset selector **at the service defaults** (`readout=linear`, `ridge=0.0`): train-fold r2 +0.45 → +0.14; eval-fold r2 −83,452 / −815 / −3.7 / −78 / −6,059; aggregate −18,081. **The E-H suite's own RFF configuration has not been measured on this artifact.** Cause unresolved — see below. | `24-c-crossval-shadow.txt`; `21-recurrence-shadow.log:14` (`readout=linear`); `settings.py:183` (`default_ridge = 0.0`) | recurrence bench + juniper-ml suite |
 | F-SCI2 | Major | Multi-ticker expanding CV is not chronological (F-P7). The 5-symbol canopy seed, if ever cross-validated, would train on all eras of ticker 0 and validate on the early era of ticker 1. | §3.4 F-P7 | juniper-recurrence |
@@ -269,7 +269,7 @@ The mechanism is `lstsq`'s relative cutoff under a σ_max set by the `market_cap
 
 ### 3.10 Deployment pins (DEPLOY)
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-DEP1 | Blocker (deployment) | `juniper-deploy/docker-compose.yml` pins `juniper-data:0.16.0`, `juniper-recurrence:0.5.0`, `juniper-canopy:0.8.1`; the Compose stack serves `equities_seq` as `5.0.0 / classification` **by construction** (the v1.0.0 "canopy refuses the pair" is withdrawn 2026-10-08 — see F-P4). Also measured 2026-10-08: this host's local `juniper-data:0.16.0`, `juniper-recurrence:0.5.0`, `juniper-canopy:0.8.1` and `juniper-cascor:0.11.0` tags are **dev builds**, not the published images (local recurrence 0.5.0 is `be081fa`, published `4f601b1`); juniper-deploy#245's `--published` mode runs each by GHCR digest. **juniper-data half resolved 2026-10-10**: `docker-compose.yml:164,523` and Helm `data.image.tag` pin `0.17.0` (juniper-deploy#243, merged as `3ce86fb2`); the recurrence and canopy pins move with W1.13. **2026-10-17**: juniper-deploy#249 moves them to `0.6.0` / `0.9.0` (published images checked: index digests `bb2f4ac5…` / `b262d978…`, revisions = the Release tags' commits). **Resolved 2026-10-18**: #249 merged as `aa2a6fb0` after both smokes passed on the published images; `main` pins data `0.17.0`, recurrence `0.6.0` and canopy `0.9.0` (Compose, and Helm `canopy.image.tag`). | `docker-compose.yml:164,523` (data), `:598` (recurrence), `:686,830,921` (canopy) | juniper-deploy |
 | F-DEP2 | Major | The recurrence Compose service declares **no volume** and no `JUNIPER_RECURRENCE_SNAPSHOTS_DIR`, although `settings.py:189-203` documents a bind-mount decision for snapshots; snapshots written in the container die with it. | `docker-compose.yml:589-647` (no `volumes:`); `settings.py:189-203`; `JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md` | juniper-deploy, juniper-recurrence |
@@ -281,7 +281,7 @@ Details (DEPLOY):
 
 ### 3.11 Concurrency and shared-service identity (CONCURRENCY)
 
-| ID | Severity | Finding | Evidence | Owner |
+| ID | Severity | Finding | Evidence | The Overtoad |
 | --- | --- | --- | --- | --- |
 | F-CON1 | Major | Canopy and the CLI stack can point at **the same** recurrence service (native `:8210` or Compose `:8211`) and nothing distinguishes their runs: one process-wide `train_lock`, one in-memory model, one snapshot directory. | `routers/training.py:44-105`; `routers/predict.py:36-38`; `lifecycle` single-model state | juniper-recurrence |
 | F-CON2 | Major | No run identity: `/v1/train` returns no operation or model id; `/v1/predict` and `/v1/snapshots/save` accept none; `GET /v1/training/status` reports state without saying which request produced it. (Snapshot *resources* have ids — see Details.) | `schemas.py:162-168` (`TrainResponse`), `:179-196` (`StatusResponse`); `routers/predict.py`; `routers/snapshots.py` | juniper-recurrence, juniper-canopy (consumer) |
@@ -350,7 +350,7 @@ Table convention: where a work item's Change or Acceptance text exceeds one tabl
 
 ### Phase 0 — Stop lying, and measure the real thing (P0)
 
-| WI | Closes | Owner | Change | Acceptance | Size |
+| WI | Closes | The Overtoad | Change | Acceptance | Size |
 | --- | --- | --- | --- | --- | --- |
 | W0.1 | F-E1, F-E4 | operator (Paul); recipe in `juniper-recurrence/AGENTS.md` | Repair `JuniperCascor1` (editable model 0.3.x + service-core 0.7.x; remove stale service-core pair; restart pre-repair listeners; record recipe and `python -s` probe). | Scoped `pip check` clean; `python -s` probe ok; bench 37/37 as-served; `/v1/crossval` 200 on `equities_seq-6.0.0-…` without `PYTHONPATH`; recipe recorded. | S |
 | W0.2 | F-E2, F-E5 | juniper-ml | `recurrence_up` preflight before `serve`: scoped `pip check`, floors from `pyproject.toml`, `derive_full_split` import; refuse verbatim; `--skip-env-preflight` logs loudly. | Synthetic stale env refuses with the text; unrelated `pip check` noise does **not** refuse; as-served host env refuses until W0.1. | M |
@@ -383,7 +383,7 @@ Details (P0):
 
 ### Phase 1 — Make both entry points runnable, and deploy the contract (P1)
 
-| WI | Closes | Owner | Change | Acceptance | Size |
+| WI | Closes | The Overtoad | Change | Acceptance | Size |
 | --- | --- | --- | --- | --- | --- |
 | W1.1 | F-P1 | juniper-data | **(a) now**: document the recurrence-ready **explicit bundle** in the `equities_seq` docstring, REFERENCE and runbooks (needs no ruling). **(b) optional, ruling R1**: a `preset: "lmu"` param expanding to the bundle and hashed into `dataset_id`. | (a) docs reviewed against `defaults.py`/`params.py`; (b) unit test: preset expands to the bundle and changes the id. | S / S–M |
 | W1.2 | F-C2, F-C3 | juniper-canopy | `recurrence_backend` forwards only params in the generator's schema (`dataset_schema.py`); no `_STAGED_PARAM_KEYS` translation where `n_samples`/`noise` do not exist. Precedence policy per ruling R7 (recommended default in Details). | `test_recurrence_staging.py`: three separate tests (untouched form; staged generic field; explicitly edited equities field) — see Details. | M |
@@ -392,7 +392,7 @@ Details (P0):
 | W1.5 | F-S6, F-S9, F-C4, F-D5, F-CON1, F-CON2 | recurrence + canopy + juniper-ml | **Service**: `operation_id` on train/409/status; terminal `failed`; `expect_operation_id` on predict/save; data-client timeout setting. **Canopy**: poll status after `ReadTimeout`; never `succeeded` blindly. **Driver**: separate dataset-create timeout. Runbooks: one caller per service. | Route tests (409, status, stale id → 409); adapter tests for **four races**; driver test with a 40 s fake data server — see Details. | L |
 | W1.6 | F-C5, F-C6, F-C7 | juniper-canopy | 401 remedy names `JUNIPER_CANOPY_RECURRENCE_API_KEY`/`_FILE`; `RecurrenceStatus` gains `restored` + `restored_from` mapped to model-present; 429 mapped to `RecurrenceServiceRateLimited` with `Retry-After` in the message. | Three adapter tests. | S |
 | W1.7 | F-C8 | juniper-canopy | Replace the hard-coded `0.1.0` with the service's reported version from `/v1/health` (or `GET /`), add `juniper-recurrence-client>=0.3.0,<0.5.0` (or a documented contract floor) to `pyproject.toml` `[service]` extra. | Registry test reads version from a fake health payload. | S |
-| W1.8 | F-P2 | juniper-data | Owner ruling **R3**: under `fundamentals_fill="drop"`, either drop pre-purchase rows too, or fill `cost_basis` with a documented finite sentinel, or refuse the request when `purchase_date` is after `start_date`. Implement the ruling; bump `generator_version` only if emitted values change for an existing id. | Unit test for the chosen behaviour; `test_val_emission_guards.py` allow-list updated if bumped. | S–M |
+| W1.8 | F-P2 | juniper-data | The Overtoad ruling **R3**: under `fundamentals_fill="drop"`, either drop pre-purchase rows too, or fill `cost_basis` with a documented finite sentinel, or refuse the request when `purchase_date` is after `start_date`. Implement the ruling; bump `generator_version` only if emitted values change for an existing id. | Unit test for the chosen behaviour; `test_val_emission_guards.py` allow-list updated if bumped. | S–M |
 | W1.9 | F-D4 | juniper-ml | Launcher records the resolved recurrence CLI path **and effective launch settings** in `${RUN_DIR}/ports.json` (or `env/launch.env`); driver prefers the recorded path over `shutil.which` and asserts **rerun parity** for `save_model`. | Driver test: `save_model_rerun.cmd[0]` equals the launcher-recorded path; parity test fails when the recorded interpreter differs from the served one. | S |
 | W1.10 | F-D9, F-L11 | juniper-ml | `recurrence_up` exports `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${RUN_DIR}/snapshots` and passes `JUNIPER_RECURRENCE_LOG_LEVEL`/`LOG_FORMAT` when set in the environment. | Launcher test (bash harness in `juniper-ml/tests/`) asserts the exported env. | S |
 | W1.11 | F-P4, F-DEP1 | juniper-data + juniper-ml + juniper-deploy | **(moved from P5)** Release juniper-data 0.17.0 (`equities_seq` 6.0.0/regression, #437); bump the juniper-ml `[all]` floor; move the Compose pins (one PR per pin); add a canopy → recurrence → juniper-data smoke to `juniper-deploy-test`. | PyPI 0.17.0 probe shows `regression`; wheel probe re-run; `docker compose config` shows the new pins; smoke passes on published images. **M1 requires it**; slip rule in Details. | M (release + ops) |
@@ -423,7 +423,7 @@ Details (P1):
 
 ### Phase 2 — Observability (P2)
 
-| WI | Closes | Owner | Change | Acceptance | Size |
+| WI | Closes | The Overtoad | Change | Acceptance | Size |
 | --- | --- | --- | --- | --- | --- |
 | W2.1 | F-L1 | juniper-recurrence | Wrap `lifecycle.run` and `cross_validate` in `try/except Exception`; `logger.error(..., exc_info=True)` with dataset id, split, shape, `d`, resolved theta, readout, ridge, folds, elapsed; return 500 with an `incident_id` echoed in the log. | Route test with a model that raises → one ERROR line with the fields, 500 body has `incident_id`. | S |
 | W2.2 | F-L2 | juniper-recurrence + juniper-canopy | Add `RequestIdMiddleware` to `build_app()`; adapter sends `X-Request-ID` (inbound canopy id or a fresh uuid) and logs the echoed id; verify the data-client forwards it. | Three-service integration test (fake data server) asserts the same id in all three logs. | M |
@@ -438,7 +438,7 @@ Details (P1):
 
 ### Phase 3 — Tests and CI (P3)
 
-| WI | Closes | Owner | Change | Acceptance | Size |
+| WI | Closes | The Overtoad | Change | Acceptance | Size |
 | --- | --- | --- | --- | --- | --- |
 | W3.0a | F-T3 | juniper-recurrence | Rewrite `test_crossval_routes.py` fixture to a three-partition equities-shaped artifact (no `_full`, `ticker_code_*` present, two tickers), run the **real** `validate_npz_contract`, assert 200 and that `dataset.split == "full"` with `n_windows == train+val+test`. Uses the W3.2 fixture; P3 landing order **W3.1 → W3.2 → W3.0a**. | Test fails on model 0.1.5, passes on 0.3.0 (red/green verified by shadow toggle). | S |
 | W3.0b | F-E3 | juniper-recurrence | `/v1/health/ready` additionally asserts `derive_full_split` is importable and `juniper_recurrence_model.__version__` satisfies the app's pin; report both in the ready payload. (W0.2's launcher preflight covers the host path in P0; this covers the Compose path, where there is no launcher.) | Route test with a monkeypatched stale module returns 503 with the reason. | S |
@@ -452,7 +452,7 @@ Details (P1):
 
 ### Phase 4 — Documentation (P4)
 
-| WI | Closes | Owner | Change | Acceptance | Size |
+| WI | Closes | The Overtoad | Change | Acceptance | Size |
 | --- | --- | --- | --- | --- | --- |
 | W4.1 | F-X2, F-X3, F-X4, F-CON3 | juniper-recurrence + juniper-canopy | New `juniper-recurrence/docs/RUNBOOK_EQUITIES_CLI.md` and canopy `docs/RUNBOOK_EQUITIES_RECURRENCE.md`; both state the **required** conditioning and exclusive single-caller Overtoadship of a service; **defer** r² interpretation until R5. | Linted; linked from README/USER_MANUAL/REFERENCE/ENVIRONMENT_SETUP; no r² interpretation text before R5. | M |
 | W4.2 | F-X1 | juniper-recurrence | README and client README examples use `equities_seq` with explicit params; add one sentence that flat `equities` is refused and why. | Doc test (`tests/test_readme_examples.py` if present) or manual. | S |
@@ -470,7 +470,7 @@ Details (P4):
 
 ### Phase 5 — Scientific validity (P5)
 
-| WI | Closes | Owner | Change | Acceptance | Size |
+| WI | Closes | The Overtoad | Change | Acceptance | Size |
 | --- | --- | --- | --- | --- | --- |
 | W5.1 | F-SCI1 (cause) | recurrence bench + juniper-ml | **Cause investigation note** `JUNIPER_<date>_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md` (§1 = W0.8, §2 = W0.9); content gated by W0.9's verdict (no-go → defect investigation over candidates a–d; go → record the sane number). Ends in an R5 recommendation. | Note exists with the matrix, the per-candidate verdicts, and an R5 recommendation; reviewed under the consensus procedure before R5 is ruled. | L |
 | W5.2 | F-P7, F-SCI2; **landed 2026-10-19** (model half juniper-recurrence#214, `b8728df7`, model 0.6.0; service half juniper-recurrence#215, `5e0e2b2e`, recurrence 0.8.0 cut via #220, `6a98515e`; bench row juniper-recurrence#219, `87a28761`; driver juniper-ml#2256) | juniper-recurrence + juniper-model-core (integration) | **Independent of W5.1.** Pass model-core's existing `order=`/`groups=` from `routers/crossval.py`; expose `ticker_code_*`, `window_end_date_*`, `target_dt_*` via `SequenceData`; cut folds on global `window_end_date`; embargo in windows ≥ `lookback` (separate `embargo_days` gap); exclude `test`. | Four tests (chronology; lookback non-overlap; label availability; `test` excluded) — see Details. Bench gains a multi-ticker row. **Done 2026-10-19** except the bench row: `juniper-recurrence/tests/test_crossval_folds.py` (10 tests) and the route test `test_crossval_pool_excludes_test_and_cuts_a_panel_on_the_date` pin the four; the E-H row re-measured on the trainval pool (1,522 windows; five expanding folds of 253 eval windows, embargo = look-back 64 per entity, `util/ad-hoc/2026-10-19_w5_2_eh_remeasure.py`): the bare 0.7.0 default (linear, GCV on the standardised block) **cv_r2 −0.298, cv_r2_std 0.281**; the recommended RFF / ridge 1.0 / 256 / median configuration **cv_r2 −0.111, cv_r2_std 0.041** — both inside the R5 band (`cv_r2 ∈ [−1.0, +0.5]`, `cv_r2_std ≤ 0.5`). **The bench row landed 2026-10-20** (juniper-recurrence#219, `87a28761`, after the 0.8.0 cut): `Dataset` carries `order` / `groups` / `embargo`, `equities_seq` pools the composed `trainval` view with `embargo = lookback`, `run_dataset` passes them to model-core and records a `folding` block, and an `equities_seq_panel` row (AAPL + MSFT) joins the single-ticker one; four stubbed bench tests, 41 pass. | L |
@@ -631,7 +631,7 @@ Round 2 judged the v1.1.0 M1 (2026-11-07) non-credible: P1 then held one L, thre
 
 ### Near-Term (Next 2-4 Weeks)
 
-- Owner rulings **R1–R8** (§"Risks & Assumptions"). R6 (degraded exit semantics) gates W0.3 and so is needed first; R2, R3, R7, R8 gate P1 items (W1.4, W1.8, W1.2, W1.3); R1 is optional (W1.1b); R5 waits on W0.9's verdict; R4 is converted to a note (no ruling needed).
+- The Overtoad rulings **R1–R8** (§"Risks & Assumptions"). R6 (degraded exit semantics) gates W0.3 and so is needed first; R2, R3, R7, R8 gate P1 items (W1.4, W1.8, W1.2, W1.3); R1 is optional (W1.1b); R5 waits on W0.9's verdict; R4 is converted to a note (no ruling needed).
 - P0 in one PR per repo (juniper-ml, juniper-recurrence, juniper-canopy) plus the operator env repair on the host (W0.1); re-run Scenario A and attach the new `registry.jsonl` showing `degraded` → then `succeeded` after W0.1; run W0.8 and write §1 of the W5.1 note; run the W0.9 matrix once W0.1 and W0.6 have landed and issue the go/no-go as §2 — M0 closes on that verdict.
   **Progress 2026-10-04**: W0.8 and W0.9 are done and the verdict is GO (`JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`); juniper-recurrence#189 (W0.1 recipe) and #190 (W0.6, W0.7 service half) are merged; juniper-ml was split into two PRs (W0.2; W0.3 + W0.4) for independent review; the Scenario-A re-run with `degraded` is still owed once W0.3 lands; the W5.1 note's consensus review is owed before R5.
 - P1 in dependency order: juniper-data-client (W1.4) → juniper-recurrence-model (W1.3, W1.4) → juniper-recurrence (W1.5 service half) → juniper-canopy (W1.2, W1.5 canopy half, W1.6, W1.7) → juniper-ml (W1.5 driver half, W1.9, W1.10); juniper-data (W1.1, W1.8, W1.11 release) and juniper-deploy (W1.11 pins + smoke, W1.12) in parallel; W1.13 publications last, in data-client → model → recurrence → canopy order.
@@ -672,7 +672,7 @@ Round 2 judged the v1.1.0 M1 (2026-11-07) non-credible: P1 then held one L, thre
   - **Left for M1** (as of v1.6.2; both done later that day, next block): the Overtoad cuts recurrence **0.6.1** and approves its PyPI gate, then decides whether the Compose pin follows it; the Overtoad rulings. Follow-ups, all still open on 2026-10-18: juniper-ml#2227, #2210 and #2211; juniper-canopy#735–#738, where #738 is canopy's 5xx-detail follow-on, now possible with 0.6.0 deployed; `docs/REFERENCE.md:177`'s pins sentence waits for the 0.11.x matrix row.
 
   **Progress 2026-10-18, turing deploy-smokes session** (the Overtoad ruled interactively in-session; every commit through the GitHub-signed API path):
-  - **Owner rulings taken** on every open item, recorded under "Ruled 2026-10-18, turing deploy-smokes session" in Risks & Assumptions. M1 does not wait for 0.6.1.
+  - **The Overtoad rulings taken** on every open item, recorded under "Ruled 2026-10-18, turing deploy-smokes session" in Risks & Assumptions. M1 does not wait for 0.6.1.
   - **juniper-deploy#249 merged** from this session through `util/safe_merge.py` (squash of `980989e9`; the Linux host's 8/8 and 3/3 smokes above were the evidence). Turing could not run the smokes itself, and three traps were met on the way: the snapshot smoke's `compose up` tries to **build** juniper-data from `../juniper-data` when the image is not local (no such path beside a worktree; juniper-deploy#250 filed; pre-pulling is the workaround); Docker Desktop's bundled Compose v2.2.1 lacks `--wait-timeout`, so Compose v5.6.0 was installed at user level (`~/.docker/cli-plugins/`, checksum verified, Docker Desktop untouched; bring-up plan D3 still owns the Desktop upgrade); GHCR pulls over turing's link (about 180–300 KiB/s in all) fail with `unexpected EOF` and were abandoned once the Linux host's results landed.
   - **recurrence 0.6.1 cut** under the 0.6.0 delegation, each step checked against concurrent sessions first: proposal juniper-recurrence#207 (version, CHANGELOG `[0.6.1]`, AGENTS.md rows) merged as `cad03ed5` with CI green; the release-train ceremony then ran from turing (`--cross-repo --target-sha cad03ed5…`, the recurrence tree extracted at that commit), archived the notes as juniper-ml#2238 (auto-merge armed), cut Release `juniper-recurrence-v0.6.1` and parked at **PENDING_PYPI_APPROVAL**. **The Overtoad approved the `pypi` gate, and 0.6.1 reached PyPI at 19:02Z** (run 39152653722: build, TestPyPI and PyPI all green; the index's `requires_dist` carries model `>=0.4.0,<0.5.0` and data-client `>=0.6.0,<0.7.0`; wheel `c63ebc79…`, sdist `b8c27e9a…`). **The floor followed in the next turing session**: juniper-ml#2243, `a442ade3` (the seven lockstep sites of juniper-ml#2232, applied by `util/ad-hoc/2026-10-18_raise_recurrence_floor_0_6_1.py`; pre-flight 32 packages on Python 3.12, 3.13 and 3.14, resolving recurrence 0.6.1, model 0.4.0, client 0.3.0, data-client 0.6.0, service-core 0.7.1; `docs/REFERENCE.md` landed first try as its own signed commit, the link idle). The handoff's note that the publish workflow does not build the image was wrong: the `0.6.1` image is on GHCR (`publish-image.yml` fires on the Release; index digest `sha256:d00478fb…`, revision `cad03ed5`, linux/amd64 + linux/arm64), so the Compose pin can follow when the Overtoad rules.
   - **2c reconciled** in juniper-ml (`util/isolated_stack.bash` sets `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${RUN_DIR}/snapshots` for the `--with-recurrence` leg and creates the dir; `tests/test_isolated_stack_script.py` pins it) and filed for canopy Lane B (juniper-canopy#751).
@@ -829,7 +829,7 @@ All items share dependencies on:
 - **A5**: `juniper-canopy` continues to call the recurrence service over HTTP via `recurrence_service_adapter.py` (no in-process backend).
 - **A6**: one Overtoad plus agent sessions is the staffing for the milestone dates.
 
-### Owner rulings required
+### The Overtoad rulings required
 
 | Ruling | Question | Plan's recommendation | Gates |
 | --- | --- | --- | --- |
@@ -944,10 +944,10 @@ Producer-side `normalize_features: true` remains a valid convenience for the hap
 | 2026-10-08 | 1.5.0 | P1 wave 2 complete: W1.2 Done (juniper-canopy#733, R7's recommended default applied pending ruling), W1.5 canopy half + W1.7 display half Done (juniper-canopy#732), W1.5 driver half Done (juniper-ml#2195); W1.11 code half in draft (juniper-deploy#243, #245, juniper-ml#2190). Corrections by measurement: **F-P4 / F-DEP1 / §1** — canopy does not refuse recurrence + `equities_seq` under published juniper-data 0.16.0 (its gate reads canopy's own label; the fit completed), the lag is in the producer's stored meta, severity left to the Overtoad; **F-C3 / §1** — juniper-data silently drops the generic params, no 422; F-DEP1 records that this host's local release image tags are dev builds. "Applied pending ruling" paragraph gains R7; progress paragraph added. Not consensus-reviewed. | Paul Calnon |
 | 2026-10-09 | 1.5.1 | F-P4 / §1 correction qualified: the "not refused" conclusion rests on the code (`compatible()` reads canopy's own label; `/api/train/start` checks none) — juniper-deploy#245's run never reached the gate. W1.11: canopy comment half Done (juniper-canopy#734); juniper-data v0.17.0 Release cut, PyPI publish awaiting approval. Published ≤0.16.0's `classification` is at 5.0.0 only in 0.15.0 / 0.16.0 (0.14.0 was 3.0.0). | Paul Calnon |
 | 2026-10-10 | 1.5.2 | **W1.11 Done**: juniper-data 0.17.0 published (PyPI 2026-10-10 09:02Z; GHCR image from the 2026-10-08 Release); juniper-deploy#243 (pins), #245 (smoke, 3/3 on published images) and juniper-ml#2190 (`[servers]` floor) merged after the publication checks (wheel and image probes, each with a control). F-P4, F-DEP1 (data half), §1's row, the Success Metrics pins row, the M1 row, the dependency rows and the Compose-stack risk marked resolved / met / retired. Executive summary item 4 corrected: its "which canopy's regression gate refuses" had survived the 2026-10-08 correction of §1 / F-P4. W1.13 row: preconditions met; recurrence `main`'s `[bench]` cap `juniper-data<0.17.0` recorded. 2c still not landed. Table repairs: W1.5's status row carried its last two cells twice; the 1.4.1 change-log row lacked its Author cell. | Paul Calnon |
-| 2026-10-17 | 1.6.0 | **W1.14 Done** (Overtoad-accepted 2026-10-17; juniper-recurrence#203): F-S10 resolved, and its row now also records the status-record and driver-manifest sinks found while fixing it. **W1.13: all four Releases cut** — data-client 0.6.0 and model 0.4.0 on PyPI (each wheel probed with a control); recurrence 0.6.0 (#204, #205; notes juniper-ml#2223) and canopy 0.9.0 (#750; condensed notes juniper-ml#2225) on PyPI (Overtoad-approved gates; 22:08–22:09Z) and GHCR; pins juniper-deploy#249 open, smokes owed. Status rows (W1.13 rewritten, W1.14 added), M1 row, F-DEP1 row (canopy line refs corrected to `:686,830,921`), Overview item 5, dependency row and What's Next (Progress 2026-10-17) updated. Owner rulings of 2026-10-17 recorded; "Applied pending ruling" no longer says nothing is released. Follow-ups: the six the 2026-10-10 handoff called unfiled are canopy#735–#738 and juniper-ml#2210/#2211 (filed 2026-10-10, open); release-train defect juniper-ml#2227 filed. | Paul Calnon |
+| 2026-10-17 | 1.6.0 | **W1.14 Done** (Overtoad-accepted 2026-10-17; juniper-recurrence#203): F-S10 resolved, and its row now also records the status-record and driver-manifest sinks found while fixing it. **W1.13: all four Releases cut** — data-client 0.6.0 and model 0.4.0 on PyPI (each wheel probed with a control); recurrence 0.6.0 (#204, #205; notes juniper-ml#2223) and canopy 0.9.0 (#750; condensed notes juniper-ml#2225) on PyPI (Overtoad-approved gates; 22:08–22:09Z) and GHCR; pins juniper-deploy#249 open, smokes owed. Status rows (W1.13 rewritten, W1.14 added), M1 row, F-DEP1 row (canopy line refs corrected to `:686,830,921`), Overview item 5, dependency row and What's Next (Progress 2026-10-17) updated. The Overtoad rulings of 2026-10-17 recorded; "Applied pending ruling" no longer says nothing is released. Follow-ups: the six the 2026-10-10 handoff called unfiled are canopy#735–#738 and juniper-ml#2210/#2211 (filed 2026-10-10, open); release-train defect juniper-ml#2227 filed. | Paul Calnon |
 | 2026-10-18 | 1.6.1 | **W1.13's deploy smokes passed** on juniper-deploy#249's head `980989e9`, on a Linux host, every image by its GHCR digest. W1.12's snapshot round trip was 8/8, its first run on a published image; W1.11's canopy → recurrence → juniper-data smoke was 3/3. The outputs are on #249, whose merge is left to the turing session. **Floors gap**: recurrence 0.6.0 shipped without the Overtoad's 2026-10-10 "raise both floors" ruling (model `>=0.4.0`, data-client `>=0.6.0`), so an in-place upgrade keeps the old pair, `pip check` stays clean and the app serves. That was measured with `util/ad-hoc/2026-10-18_recurrence_stale_pair_probe.py`, which reports REPRODUCED on 0.6.0 and CURRENT on the fix. juniper-recurrence#206 raised the floors and merged as `509ea25f`; 0.6.1 is owed. The ruling is recorded as **Ruled 2026-10-10**, with canopy 0.9.0's advisory. Updated: Status line, M1 row, W1.13 status row and What's Next (Progress 2026-10-18). | Paul Calnon |
 | 2026-10-18 | 1.6.2 | **W1.13's last two landings merged**: juniper-deploy#249 as `aa2a6fb0` (Compose and Helm pins recurrence `0.6.0`, canopy `0.9.0`) and the juniper-ml extras, juniper-ml#2232 as `2719f7f3` (`[recurrence]` ceilings `<0.5.0` / `<0.7.0`; floors `juniper-canopy>=0.9.0` and `juniper-recurrence>=0.6.0`; pre-flight against real PyPI 61 / 32 / 95 packages on Python 3.12–3.14). The Overtoad's extras rulings recorded as **Ruled 2026-10-18**: the two security floors raised, the meta-package's model floor kept at `>=0.3.0`. F-DEP1 resolved; the Success Metrics pins row met; the M1 row, W1.13 status row, Overview item 5, roadmap Fix line, dependency row and Progress 2026-10-18 updated. Owed: recurrence 0.6.1 (Overtoad cut and gate, then the Compose-pin decision); follow-ups juniper-ml#2227 / #2210 / #2211 and juniper-canopy#735–#738, all still open. | Paul Calnon |
-| 2026-10-18 | 1.7.0 | **Owner rulings taken interactively in the turing deploy-smokes session** (recorded as "Ruled 2026-10-18, turing deploy-smokes session"): R1–R8 confirmed as shipped (R1's preset not commissioned); R5's amended band accepted; W5.8 (B) + W5.9 + W5.10 accepted for recurrence 0.7.0 / model 0.5.0 (CHANGELOG Changed), W5.11 declined; F-P8 Major + W5.7 guard accepted; F-P4 re-rated Major (resolved); milestone dates confirmed and **M1 does not wait for 0.6.1**; 0.6.1's cut delegated to the turing session; W0.1's service-core half Overtoad-run at the next cascor restart; 2c reconciled to `${RUN_DIR}/snapshots` (juniper-ml `isolated_stack.bash`; juniper-canopy#751). **Done**: juniper-deploy#249 merged by this session (squash of `980989e9`); **recurrence 0.6.1** proposed (juniper-recurrence#207, `cad03ed5`), archived (juniper-ml#2238) and its Release cut by the ceremony, publish parked at the `pypi` gate; juniper-ml#2227 fixed in `ceremony.py` (this PR); canopy 0.9.0's full notes re-archived (juniper-ml#2234); juniper-deploy#250 filed; juniper-canopy#738 / #702 annotated. Rows: W0.1, a new W5.8–W5.11 status row, F-P4 / F-P8 severity, W5.8–W5.11 roadmap, the dependency row's placement, M0–M4 dates, Progress 2026-10-18 (turing). | Paul Calnon |
+| 2026-10-18 | 1.7.0 | **The Overtoad rulings taken interactively in the turing deploy-smokes session** (recorded as "Ruled 2026-10-18, turing deploy-smokes session"): R1–R8 confirmed as shipped (R1's preset not commissioned); R5's amended band accepted; W5.8 (B) + W5.9 + W5.10 accepted for recurrence 0.7.0 / model 0.5.0 (CHANGELOG Changed), W5.11 declined; F-P8 Major + W5.7 guard accepted; F-P4 re-rated Major (resolved); milestone dates confirmed and **M1 does not wait for 0.6.1**; 0.6.1's cut delegated to the turing session; W0.1's service-core half Overtoad-run at the next cascor restart; 2c reconciled to `${RUN_DIR}/snapshots` (juniper-ml `isolated_stack.bash`; juniper-canopy#751). **Done**: juniper-deploy#249 merged by this session (squash of `980989e9`); **recurrence 0.6.1** proposed (juniper-recurrence#207, `cad03ed5`), archived (juniper-ml#2238) and its Release cut by the ceremony, publish parked at the `pypi` gate; juniper-ml#2227 fixed in `ceremony.py` (this PR); canopy 0.9.0's full notes re-archived (juniper-ml#2234); juniper-deploy#250 filed; juniper-canopy#738 / #702 annotated. Rows: W0.1, a new W5.8–W5.11 status row, F-P4 / F-P8 severity, W5.8–W5.11 roadmap, the dependency row's placement, M0–M4 dates, Progress 2026-10-18 (turing). | Paul Calnon |
 | 2026-10-18 | 1.7.1 | **recurrence 0.6.1 published**: the Overtoad approved the `pypi` gate; run 39152653722 green through build, TestPyPI and PyPI; the index serves 0.6.1 at 19:02Z with `requires_dist` model `>=0.4.0,<0.5.0` and data-client `>=0.6.0,<0.7.0`, closing the v1.6.1 floors gap on the index. Updated: Status line, M1 row, P1 status row, Progress 2026-10-18 (both blocks), the 0.6.1 ruling line, the 2026-10-10 floors dependency note. Owed: the juniper-ml `[recurrence]` floor to `>=0.6.1`; the Compose-pin decision; then P5 (W5.10 → W5.8 (B) + W5.9; W5.2, W5.4; W5.7). | Paul Calnon |
 | 2026-10-18 | 1.7.2 | **The juniper-ml `[recurrence]` floor is `>=0.6.1`** (juniper-ml#2243, `a442ade3`; the Overtoad's ruling of 2026-10-18, taken once 0.6.1 was on PyPI). The seven lockstep sites of juniper-ml#2232 moved by `util/ad-hoc/2026-10-18_raise_recurrence_floor_0_6_1.py`; the model `>=0.3.0` and data-client `>=0.5.0` floors kept, 0.6.1's own floors doing the forcing. Pre-flight against real PyPI: `[recurrence]` 32 packages on Python 3.12, 3.13 and 3.14, resolving recurrence 0.6.1, model 0.4.0, data-client 0.6.0. Recorded for the Compose-pin decision: the `0.6.1` image is on GHCR (`publish-image.yml` fires on the Release; index digest `sha256:d00478fb…`, revision `cad03ed5`, linux/amd64 + linux/arm64); the Helm chart has no recurrence image. Updated: Status line, M1 row, P1 status row, Progress 2026-10-18 (turing), the Overtoad's open list, the turing-session ruling line. Owed: the Compose-pin ruling; then P5 (W5.10 → W5.8 (B) + W5.9; W5.2, W5.4; W5.7), P2–P4 alongside. | Paul Calnon |
 | 2026-10-19 | 1.7.3 | **The Compose recurrence pin followed to 0.6.1** (Overtoad ruling 2026-10-19 UTC; juniper-deploy#251 merged as `b645acfd`): `docker-compose.yml` pins `juniper-recurrence:0.6.1`, and the prose naming 0.6.0 in `README.md`, `docs/REFERENCE.md` and `scripts/test_recurrence_snapshots.sh` now names 0.6.1 with the routes shipped in 0.6.0; the Helm chart has no recurrence image. **Every M1 landing is on `main`.** The W1.12 snapshot and W1.11 canopy smokes are owed on a host whose Docker reaches GHCR at the next bring-up, the image differing from 0.6.0's in package metadata only. Updated: Status line, M1 row, P1 status row, the Overtoad's open list. Owed: P5 (W5.10 → W5.8 (B) + W5.9; W5.2, W5.4; W5.7) with P2–P4 alongside; the Overtoad's W0.1 service-core half and the parent AGENTS.md paragraph; the open follow-ups. | Paul Calnon |

@@ -71,7 +71,7 @@ Tier 2 has been broken since 2026-09-07 [VERIFIED 2026-10-03: main's design, lin
 2. **Run a narrow validation round on round 8's corrections before opening the PR.** *Agent-doable.* The SOP (`feedback_multi_agent_adversarial_validation_sop.md`) applies because the Overtoad's sweeper arms open PRs.
 3. **Re-confirm merge approval with the Overtoad.** *Owner-gated.* The Overtoad granted merge approval for this arc's PRs in the 2026-09-24 session, and the D-8 handoff says to re-confirm it. Then arm with `gh pr merge N --squash --auto` and run `util/ad-hoc/2026-09-22_shepherd_automerge.bash N`.
 4. **The §8 follow-up change, which removes the STOP.** *Agent-doable; it needs its own validation round.* Its scope is listed under Context ("§8 follow-up scope") [UNVERIFIED — from the D-8 handoff].
-5. **Owner decisions** raised by round 4–8 [UNVERIFIED — from the D-8 handoff]:
+5. **The Overtoad decisions** raised by round 4–8 [UNVERIFIED — from the D-8 handoff]:
    - confirm or widen the two narrow readings (note 10.1g);
    - the fate of P0.5b;
    - where the D-1 flag lives durably;
@@ -79,7 +79,7 @@ Tier 2 has been broken since 2026-09-07 [VERIFIED 2026-10-03: main's design, lin
    - S-3c (the frozen 811 volumes and `PASSPHRASE_OLD`);
    - whether to release P0.5a item 2's timer stop on its own, since the snapshot timer still runs the primary checkout's script as root daily.
    - Still open from §10, and gating nothing in P0 or §10.2 [NOT RE-PROBED — from the 09-24 seven-decisions handoff, validated]: D-3, D-5 (gates P3 step 3), D-7, D-10, D-11, D-12 and D-13 (D-13 is named in §7.3.2's confinement set).
-6. **Owner may act now, inside the release** [UNVERIFIED — from the D-8 handoff]:
+6. **The Overtoad may act now, inside the release** [UNVERIFIED — from the D-8 handoff]:
    - P0.5a items 1, 5 (per its new text), 6 and 7, with item 1 still before item 4;
    - P3 (steps 1–2; step 3 waits on D-5);
    - §6's sink checklist and S-4's `chmod 0600`, **"with two limits: no history file is wiped before P0 step 3 tests the keys it may hold, and no transcript is purged before this arc's reports are archived."**;
@@ -101,7 +101,7 @@ Tier 2 has been broken since 2026-09-07 [VERIFIED 2026-10-03: main's design, lin
    - `util/ad-hoc/duplicati_api.py` still has `PW_FILE` defaulting to `.env`. The D-8 handoff's "step 9 client change unlanded" is the same item;
    - `juniper-backup-failure.service` and `util/install_juniper_backup_timer.bash` are absent (P3 step 2);
    - **Owner-gated, not session work:** B3 O-2 (can `duplicati-server-util --server-datafolder=<copy>` mint a token without `--password`?) is to be settled on a throwaway server with a scratch data folder, never the live one [NOT RE-PROBED — from the 09-21 handoff §1.4]. It runs a Duplicati binary, which the D-8 handoff's hard rules forbid to a session, so the Overtoad runs it, after the STOP lifts (item 7).
-9. **Owner items carried from 09-21 that the design does not record** [NOT RE-PROBED — from the 09-21 handoff §1.5, validated; current status unknown]:
+9. **The Overtoad items carried from 09-21 that the design does not record** [NOT RE-PROBED — from the 09-21 handoff §1.5, validated; current status unknown]:
    - Rotate the TestPyPI token. Lane A3's harness printed `TEST_TWINE_*` into a subagent transcript. `~/.bashrc` is the only startup file naming it.
    - Feed a root-history key candidate to the key-hash probe (see Context).
 10. **Housekeeping.**
@@ -138,7 +138,7 @@ Tier 2 has been broken since 2026-09-07 [VERIFIED 2026-10-03: main's design, lin
 
 ## Context the remaining work needs
 
-### Owner rulings of 2026-09-24 (final) [UNVERIFIED — from the D-8 handoff]
+### The Overtoad rulings of 2026-09-24 (final) [UNVERIFIED — from the D-8 handoff]
 
 - **D-8 amended**: one scrub, run before P0, as P0.5a item 4. The 09-22 ruling ("scrub once after P1") was made from §10's stale Recommendation column.
 - **P0 gate**: items 1, 2 and 4 before P0; items 5–7 "run in the same session".
@@ -149,7 +149,7 @@ Tier 2 has been broken since 2026-09-07 [VERIFIED 2026-10-03: main's design, lin
   - **"This arc's validation reports"** means every round of the arc, archived verbatim into a record merged to `main`. R is unmerged, so no transcript may be purged now.
 - **P3 on the branch design** is headed "*Released by the Overtoad's 2026-09-24 ruling (note 10.1g); step 3 still waits on D-5.*" [VERIFIED 2026-10-03: `git show` on the branch].
 
-### Owner rulings of 2026-09-22 (§10.1, on main) [VERIFIED 2026-10-03: ml#2029 merged]
+### The Overtoad rulings of 2026-09-22 (§10.1, on main) [VERIFIED 2026-10-03: ml#2029 merged]
 
 - **D-1**: keep DB encryption, with a distinct key in `/etc/credstore` via `LoadCredential=` and `--require-db-encryption-key`.
 - **D-2**: rotate the passphrase **and keep** the existing sets. `recompress --reencrypt --new-passphrase` re-encrypts the volumes; rotation alone does not.
@@ -317,7 +317,7 @@ git diff --stat 6c23fdde origin/main -- notes/JUNIPER_2026-09-21_JUNIPER-ECOSYST
 D=notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md
 git show origin/main:$D | grep -c 'Re-decide D-2'        # 1 until the D-8 change lands
 git show origin/main:$D | grep -c 'all 877 dindex'       # 2 until the D-8 change lands
-git show origin/main:$D | grep -c '^### 10.1 Owner rulings'   # 1
+git show origin/main:$D | grep -c '^### 10.1 The Overtoad rulings'   # 1
 gh pr list -R pcalnon/juniper-ml --state all --search "D-8 in:title"   # baseline: only #2099 (the handoff); any other PR means step 1 moved on
 # in the salamander worktree only:
 python3 util/ad-hoc/2026-09-24_amend_d8_and_repair_backup_design.py --self-test | tail -1

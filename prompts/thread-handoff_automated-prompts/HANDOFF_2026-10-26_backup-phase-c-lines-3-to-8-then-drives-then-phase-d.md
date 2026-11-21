@@ -46,7 +46,7 @@ Also measured:
 
 **This handoff's own PR** also commits `util/ad-hoc/2026-10-10_s7_env_reconcile.py`, Line 7's checker, which has sat untracked since 10-10. It prints names and booleans only. Its two recorded fingerprints were already on `main`, in four files.
 
-## Owner rulings, 2026-10-10 and 2026-10-25 — not yet written into `…RECOVERY-PLAN.md`
+## The Overtoad rulings, 2026-10-10 and 2026-10-25 — not yet written into `…RECOVERY-PLAN.md`
 
 | # | Ruling | Against the recommendation? |
 | --- | --- | --- |
@@ -178,7 +178,7 @@ Write the rulings table above into `…RECOVERY-PLAN.md` §6.6, with O-13's diss
 - the gitleaks fleet fix;
 - Phase C's progress.
 
-### 5. Owner questions and actions still open
+### 5. The Overtoad questions and actions still open
 
 - **O-11**: rotate the TestPyPI token.
 - **juniper-recurrence runs no secret scan** in any workflow (10-25 survey). Does the Overtoad want a follow-up PR?

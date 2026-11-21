@@ -33,7 +33,7 @@ discrepancy is recorded in §5 (T-14 … T-17).
 
 ---
 
-## 1. Objective & Owner Mandate
+## 1. Objective & The Overtoad Mandate
 
 ### 1.1 Mandate (reproduced faithfully)
 
@@ -735,7 +735,7 @@ Any additional drift found in Phase 1 is appended to this table before the Phase
 
 ## 13. Acceptance Criteria
 
-| # | Owner requirement | Measurable criterion |
+| # | The Overtoad requirement | Measurable criterion |
 |---|---|---|
 | **A-1** | (a) All top-tab-menu pages open and display contents as expected | All 15 tabs in §3.2 have a `PASS` row in both the tab-open and content-render matrix columns on the LIVE lane, plus the cascade-suppression variant for a one-shot model; zero rows left at the initial `—`. |
 | **A-2** | (b) All documented functionality works from the front end | Every behavioural claim in the enumerated claim set — the §11 drift table (D-1…D-8) plus any USER_MANUAL / REFERENCE claim found and appended during Phase 1 — has a matrix row (or ledger entry) with a terminal status; each divergence is either a `FIXED-IN <PR>` ledger entry or a §11 drift row. (The matrix is code-derived; §11 is the doc-claim denominator, kept current as Phase 1 finds more.) |

@@ -13,7 +13,7 @@ Continue the arc from plan v1.7.0. **M1's code, publication and deployment halve
 
 ## Completed this session (2026-10-18)
 
-- **Owner rulings, taken interactively** (plan "Ruled 2026-10-18, turing deploy-smokes session"):
+- **The Overtoad rulings, taken interactively** (plan "Ruled 2026-10-18, turing deploy-smokes session"):
   - R1–R8 confirmed as shipped (R1's preset not commissioned); R5's amended band accepted (`cv_r2 ∈ [−1.0, +0.5]`, `cv_r2_std ≤ 0.5`, gate, row-scoped, encoded by W5.4 after W5.2);
   - W5.8 (B) + W5.9 + W5.10 accepted for **recurrence 0.7.0 / model 0.5.0** (CHANGELOG Changed; W5.10 first, may ship in a 0.6.x); W5.11 declined;
   - F-P8 Major with the W5.7 guard; F-P4 re-rated Major (resolved);

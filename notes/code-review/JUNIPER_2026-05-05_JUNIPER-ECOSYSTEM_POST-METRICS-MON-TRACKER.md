@@ -38,7 +38,7 @@ When an item closes, log it in §5 with the closing PR + date and remove the row
 
 ## 2. Top-priority items
 
-| ID | Title | Severity | Owner repo | Target / trigger | Blocker for | Status | Action checklist |
+| ID | Title | Severity | The Overtoad repo | Target / trigger | Blocker for | Status | Action checklist |
 |----|-------|:--------:|------------|------------------|-------------|:------:|------------------|
 | **CALIB-01** | T+30d SLO target calibration | P3 | juniper-deploy | 2026-06-02 (window close) → 2026-06-15 (catalog revisit deadline) | LIFT-01 (gate lift) | open | Pull p50/p95/p99 over the 30-day window; ratify or open a calibration PR adjusting `SLO_CATALOG_2026-05-03.md` §3 targets and the burn-rate factors in `prometheus/alert_rules.yml`. |
 | **R5.1c-BUCKETS** | Cascor sub-ms bucket re-evaluation | P2 | juniper-cascor | After CALIB-01 ratifies | LIFT-01 (cleaner SLO 4.4 burn precision) | open | If the calibrated SLO 4.4 target stays in 25–100 ms, ship `_WS_SUB_MS_LATENCY_BUCKETS_V2` with `0.025` and `0.2` boundaries (per `HISTOGRAM_BUCKETS_RATIONALE_2026-05-02.md` §5.4). Otherwise re-evaluate. |
@@ -61,7 +61,7 @@ When an item closes, log it in §5 with the closing PR + date and remove the row
 
 ### 3.1 CALIB-01 — T+30d SLO target calibration
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Background.** The R5.1 SLO catalog (juniper-deploy `notes/SLO_CATALOG_2026-05-03.md`) deliberately picked conservative initial targets (e.g. canopy 99.5% availability over 30 d, canopy p95 < 500 ms over 7 d, cascor train-job 99.0%, train-epoch p95 < 5 s, data-service 99.5%) without any production traffic baseline. §2.6 explicitly marks every target *"initial — to revisit after 30-day soak"*. R5.4's burn-rate alerts ship in **log-only severity** for the first 30 days; once a baseline exists, the targets get tightened or relaxed and then the alerts move to paging severity (LIFT-01).
 
@@ -96,7 +96,7 @@ The catalog itself flags 2026-06-15 in §6 Q6 as the revisit deadline. The 30-da
 
 ### 3.2 R5.1c-BUCKETS — Cascor sub-ms bucket re-evaluation
 
-**Severity:** P2 · **Owner repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
+**Severity:** P2 · **The Overtoad repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
 
 **Background.** Audit finding D.2 (P2) flagged that the catalog §4.4 SLO target `p95 < 50 ms` for `juniper_cascor_ws_command_handler_seconds` sits one bucket below the `+inf` cap of the current `_WS_SUB_MS_LATENCY_BUCKETS` layout. The cascor `notes/observability/HISTOGRAM_BUCKETS_RATIONALE_2026-05-02.md` §5.4 audit-acceptance note explicitly defers the bucket-headroom adjustment to **R5.1c (post-soak)** for three reasons: (i) tightening before calibration risks doing the work twice, (ii) `_WS_SUB_MS_LATENCY_BUCKETS` is shared with `broadcast_send_duration_seconds`, so any split has wider blast radius than D.2 alone warrants, (iii) operational impact during soak is bounded because the alerts are log-only.
 
@@ -123,7 +123,7 @@ If the calibrated target lands outside 25–100 ms, do not ship V2 blindly — r
 
 ### 3.3 OBS-ROUTE-CRED — Alertmanager `tickets` receiver real-credentials rotation
 
-**Severity:** P1 (soft-blocker) · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P1 (soft-blocker) · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Background.** OBS-ROUTE-01 (juniper-deploy#60, merged 2026-05-05) closed audit findings 3.2 (P1) and B.1 (P3) by wiring the alertmanager `default` / `critical` / `tickets` receivers to an SMTP email path. The credentials shipped are **placeholders**: `alertmanager/alertmanager.yml` carries `CHANGE_BEFORE_PRODUCTION_USE` literals for `to:`, `smtp_from`, `smtp_auth_username`; `.env.secrets.enc` (SOPS / age-encrypted) carries placeholder values for `ALERTMANAGER_SMTP_PASSWORD`, `ALERTMANAGER_SMTP_USER`, `SMTP_FROM_DOMAIN`, `TICKET_ALERT_RECIPIENT_EMAIL`, `CRITICAL_ALERT_RECIPIENT_EMAIL`, `DEFAULT_ALERT_RECIPIENT_EMAIL`; `secrets.example/alertmanager_smtp_password.txt` contains the literal string `CHANGE_BEFORE_PRODUCTION_USE`.
 
@@ -155,7 +155,7 @@ Until rotation happens, every alertmanager email path is non-functional; this is
 
 ### 3.4 LIFT-01 — R5.4 alert log-only-severity gate lift
 
-**Severity:** P1 · **Owner repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
+**Severity:** P1 · **The Overtoad repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
 
 **Background.** Per `SLO_CATALOG_2026-05-03.md` §2.6 ("Provisional-targets caveat"), every R5.4 burn-rate alert ships in *log-only severity* for the first 30 days. The same §2.6 wording is repeated in §3.1, §3.2, §3.4, §3.5 and explicitly notes that paging severity is gated on (a) the soak-window calibration (CALIB-01) and (b) functional alertmanager routing (OBS-ROUTE-01 wired the routing layer; OBS-ROUTE-CRED provisions real notification paths). §3.3 and §3.4 additionally wait on catalog Q1 (cascor train-job completion counter — already shipped via juniper-cascor#188) and Q2 (per-mini-batch instrumentation — TRAIN-ARCH-01, deferred).
 
@@ -181,7 +181,7 @@ Until rotation happens, every alertmanager email path is non-functional; this is
 
 ### 3.5 AMTOOL-CI — `amtool check-config` snap-confinement gap
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Background.** Local validation of `alertmanager/alertmanager.yml` is blocked by snap confinement on the dev host: the `amtool` snap can't read files outside `~/snap/amtool/...`. OBS-ROUTE-01 documented the container-form workaround in `ALERTMANAGER_NOTIFICATION_RUNBOOK.md` §5.3 and §7: `docker run --rm -v "$(pwd)/alertmanager:/cfg:ro" --entrypoint amtool prom/alertmanager:v0.27.0 check-config /cfg/alertmanager.yml`. The workaround works locally and in CI; what's missing is a CI job that actually runs it on every PR that touches the alertmanager config.
 
@@ -206,7 +206,7 @@ Until rotation happens, every alertmanager email path is non-functional; this is
 
 ### 3.6 TRAIN-ARCH-01 — Cascor mini-batch restoration
 
-**Severity:** P3 (user-discretion) · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 (user-discretion) · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Background.** Discovered during R5.4-pre when an agent looking for the missing per-step hook found there was nothing to hook into: cascor is **full-batch end-to-end** (`cascade_correlation.py:1638` and `candidate_unit.py:564` use `for epoch in range(epochs):` with one full-tensor forward + backward + step). Git archaeology proved this is **absence, not regression** — the initial commit `2076d21` was already full-batch, and every legacy variant in `juniper-legacy/` matches.
 
@@ -226,7 +226,7 @@ The design doc `juniper-cascor` PR #194 (`notes/training/MINI_BATCH_RESTORATION_
 
 ### 3.7 R5.6-THROTTLE — Cascor 25-epoch emit throttle removal
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** deferred
 
 **Background.** `cascade_correlation.py:1655`'s lifecycle callback fires only on `epoch % 25 == 0 or epoch == epochs - 1`, so the R5.4-pre `training_step_duration_seconds` histogram observes per-25-epochs at worst, not per-epoch. This caps R5.4 burn-rate fidelity for SLO 3.4. Coupled to TRAIN-ARCH-01 only loosely — could ship independently if per-epoch granularity is desirable on its own.
 
@@ -242,7 +242,7 @@ The design doc `juniper-cascor` PR #194 (`notes/training/MINI_BATCH_RESTORATION_
 
 ### 3.8 R1.3.4-FLAG — Helm chart `worker.healthcheck.enabled` default flip
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** deferred
 
 **Background.** Carried forward from R1; never closed (deferred for burn-in). The healthcheck implementation shipped in worker image ≥ 0.4.0; the chart still defaults `worker.healthcheck.enabled: false` to avoid breaking older worker images.
 
@@ -263,7 +263,7 @@ The design doc `juniper-cascor` PR #194 (`notes/training/MINI_BATCH_RESTORATION_
 
 ### 3.9 R2-WORKER-DEDUP — juniper-cascor-worker contract-constant dedup
 
-**Severity:** P3 · **Owner repo:** juniper-cascor-worker · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor-worker · **Status:** deferred
 
 **Background.** Optional follow-up from R2 exit-gate decision: the worker has two duplicated literals (`LIVENESS_TICK_BUDGET_MS`, `READINESS_HEADER`) that could be sourced from the shared `juniper-observability` lib. Stable contract values; no observed maintenance burden. Decline if no maintenance pressure surfaces.
 
@@ -279,7 +279,7 @@ The design doc `juniper-cascor` PR #194 (`notes/training/MINI_BATCH_RESTORATION_
 
 ### 3.10 WORKER-PENDING-TASKS — `juniper_cascor_pending_tasks` worker→Prometheus bridge gap
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
+**Severity:** P3 · **The Overtoad repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
 
 > **STATUS UPDATE 2026-05-06:** This item was tracked as open in the
 > 2026-05-05 first-cut tracker but had actually been closed the day
@@ -306,7 +306,7 @@ The design doc `juniper-cascor` PR #194 (`notes/training/MINI_BATCH_RESTORATION_
 
 ### 3.11 DATA-CACHED-WIRE — `juniper_data_datasets_cached` Gauge has no production caller
 
-**Severity:** P2 · **Owner repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
+**Severity:** P2 · **The Overtoad repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
 
 **Background.** The post-METRICS-MON state report (juniper-ml#223 §15) found that `juniper_data_datasets_cached` Gauge is defined in `juniper_data/api/observability.py` and the helper `set_datasets_cached(n: int)` is mock-tested in `juniper_data/tests/unit/test_observability.py::TestDatasetMetrics::test_set_datasets_cached`, but **no production code path calls it**. Audit Dim A's dead-metric inventory missed this case (the audit grepped for unwired training/WS metrics in cascor/canopy more aggressively than for the data-side cache surface).
 
@@ -333,7 +333,7 @@ User direction (2026-05-06): **wire, do NOT remove**.
 
 ### 3.12 DASHBOARD-STALE-PANELS — 7 stale Grafana panels post audit-close
 
-**Severity:** P1 (operational — dashboards mislead operators) · **Owner repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
+**Severity:** P1 (operational — dashboards mislead operators) · **The Overtoad repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
 
 **Background.** The post-METRICS-MON state report (juniper-ml#223 §15) found two clusters of stale panels in `juniper-deploy/grafana/provisioning/dashboards/`:
 

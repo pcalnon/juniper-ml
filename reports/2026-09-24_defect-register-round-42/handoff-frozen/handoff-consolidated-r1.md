@@ -107,7 +107,7 @@ One successor should own both lanes. If the Overtoad starts two sessions:
 9. **[R] PATCH two PR bodies** with `gh api -X PATCH`:
    - juniper-ml#2080: the "A-nit on `APD-ML-008`" bullet (body L69, under "Rejected, with reasons", L65) moves to the applied items, citing #2088 (`ml2080-round1-laneA-reprobe.md` N6).
    - juniper-ml#2088: "Extended beyond the lanes" is false, because `register-fixforward2-round2-laneB-refute.md` N11 (line 120) named the list-route defect. Record in the closes PR that `2439d049`'s commit message ("which no lane named") is false too.
-10. **Owner decisions:** Appendix B. Surface them; decide none.
+10. **The Overtoad decisions:** Appendix B. Surface them; decide none.
 
 ## Key context and traps (part of the prompt)
 

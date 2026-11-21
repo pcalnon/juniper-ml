@@ -21,7 +21,7 @@ decision … Axis 1 is specifiable now."*
 
 ## 0. What this document is
 
-Owner decision **D4** of
+The Overtoad decision **D4** of
 [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md),
 turned into a specification.
 
@@ -386,7 +386,7 @@ over initialisation.
 
 | axis | calibration | status |
 |---|---|---|
-| 1 — candidate phase | none beyond floor/wall | **BLOCKED on its instrument (2026-09-23, §2 note).** No structured suite artifact carries `epochs_completed`, and the log carries it only for candidates that stop early. **Owner ruled 2026-09-24: publish it in cascor** as a structured per-phase record, rather than parse the log. The base also needs `candidate_epochs` ≈ 2000 |
+| 1 — candidate phase | none beyond floor/wall | **BLOCKED on its instrument (2026-09-23, §2 note).** No structured suite artifact carries `epochs_completed`, and the log carries it only for candidates that stop early. **The Overtoad ruled 2026-09-24: publish it in cascor** as a structured per-phase record, rather than parse the log. The base also needs `candidate_epochs` ≈ 2000 |
 | 2 — wide dataset range | largest completing cell at a chosen wall | **DONE 2026-09-23.** Ruled "10,000 now, in-process later"; built capped at 5,800 (the suite path's real ceiling is 5,882, per the second §1 correction); **RUN, no knee** (§3 RESULT), so the in-process follow-up does not fire |
 | 3 — spiral count | capacity budget that lets 2…10 differentiate | **DONE 2026-09-15 (§4.1)** — axis viable, but gate on **accuracy**; sample 2,3,4,5 not 2,6,10. **RUN 2026-09-23 (§4.2)**: separates 2 → 3 → 4 (test roc_auc 0.961 / 0.834 / 0.672). 5 scores 0.746, above 4, on one seed. Passes are bit-identical, so the observable is load-insensitive. **Seed probe 2026-09-24 (§4.3)**: the inversion was the seed. 4 beats 5 on roc_auc for 4 of 5 dataset seeds and on f1 for 5 of 5, but the seed spread (0.611–0.830 at 4) is about 5× the gap, so **a gate needs several seeds per cell** |
 

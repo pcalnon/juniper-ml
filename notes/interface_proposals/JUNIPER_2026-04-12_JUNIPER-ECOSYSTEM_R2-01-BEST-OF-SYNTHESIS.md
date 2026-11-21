@@ -1195,7 +1195,7 @@ Every RISK-NN from source doc §10 consolidated from R1-03 §14 with R1-02 mitig
 
 ### Risk compact matrix
 
-| ID | Phase | Owner | Kill switch | TTF |
+| ID | Phase | The Overtoad | Kill switch | TTF |
 |---|---|---|---|---|
 | 01 | H | backend-canopy | `git revert` | 5-10 min |
 | 02 | B | frontend+ops | `disable_ws_bridge=true` | 5 min |

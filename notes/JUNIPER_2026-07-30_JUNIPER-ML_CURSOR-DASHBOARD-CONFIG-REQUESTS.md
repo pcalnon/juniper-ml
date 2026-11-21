@@ -3,7 +3,7 @@
 **Project**: Juniper — juniper-ml (meta-package)
 **Author**: Claude (task-executor PR-CE), for Paul Calnon
 **Date**: 2026-07-30
-**Status**: Owner action pack — every control below is **dashboard-only** (Cursor's automation config lives only in the Cursor dashboard / GitHub App installation settings; there is no in-repo Cursor config file, so **nothing in this document changes repository behavior**). Each capability is unverified vendor surface and is marked *verify-in-dashboard*.
+**Status**: The Overtoad action pack — every control below is **dashboard-only** (Cursor's automation config lives only in the Cursor dashboard / GitHub App installation settings; there is no in-repo Cursor config file, so **nothing in this document changes repository behavior**). Each capability is unverified vendor surface and is marked *verify-in-dashboard*.
 **Source**: analysis-of-record [`§4 item 5`](JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md) (Overtoad answer: *"let's automate this, with specific feedback where necessary"*) + P3 §2 dashboard asks / OQ1–OQ2. Incident classes are drawn from the concurrency memory log's *"2026-07-26: Cursor Automation fleet"* section.
 
 ---

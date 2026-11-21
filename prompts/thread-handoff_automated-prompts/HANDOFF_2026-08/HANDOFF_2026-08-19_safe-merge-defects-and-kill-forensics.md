@@ -103,7 +103,7 @@ both `Sequence Safety` (08-18) and `Memory Budget` (08-20).
 Tracks the `76e4513b` content loss, **healed by ml#1165** (merged 08-18T08:16:03Z). main-verify is green
 ×6. Verify, then close.
 
-### 2.5 Owner decision — bypass actors (open)
+### 2.5 The Overtoad decision — bypass actors (open)
 
 **The roster is five rows on every repo**, not two:
 

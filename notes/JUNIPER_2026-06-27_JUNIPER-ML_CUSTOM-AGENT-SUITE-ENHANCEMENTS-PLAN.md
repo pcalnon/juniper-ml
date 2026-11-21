@@ -145,7 +145,7 @@ diagnosis** (surfaces the problem to a human) from **prevention / true-catch** (
 the Phase-1 static triad *detects*; only **E-1** (gated) and **E-8** (app-level) *catch or prevent* the "green
 tests / dead app" class.
 
-| id | One-line | First-party evidence | Severity | State | Owner repo | Failure-class addressed |
+| id | One-line | First-party evidence | Severity | State | The Overtoad repo | Failure-class addressed |
 |----|----------|----------------------|----------|-------|------------|--------------------------|
 | **G-1** | `prompts/templates/`→`agent_templates` rename drift | LIVE suite surface (`.claude/`, `prompts/agent_templates/`, `util/prompt_discovery/`) has **zero** `prompts/templates/` hits; remaining hits only in the guard test, a `ci.yml` comment, and historical `notes/`/handoff/`generated/` artifacts | n/a | **CLOSED** (verified swept, #566) | ml | doc/path drift |
 | **G-2** | `ecosystem.yaml` stale conda envs | `ecosystem.yaml:21-23` = JuniperCanopy1/JuniperCascor1 3.13 + JuniperData 3.14, matches live envs | n/a | **CLOSED** (#566) | ml | stale-fact injection |
@@ -259,7 +259,7 @@ TTL; reuse the probe's existing `cold_cache`/`unavailable` vocabulary.
 - **Risk + rollback.** Low. Risk: a clock-skew false-positive `stale`. Mitigation: HEAD-commit-time comparison
   (monotonic w.r.t. commits) is the primary signal; TTL is the secondary. Rollback: revert the single-file PR;
   the probe reverts to today's mtime-blind behavior.
-- **Owner repo.** ml. **JR-ID.** TBD — none invented.
+- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.2 E-2 — Environment floor-drift checker (the I-2 fix)
 
@@ -294,7 +294,7 @@ envs); state plainly the CI gate is structural (no conda in ubuntu CI) + a manua
 - **Risk + rollback.** Low-medium. Risk: dist-info parsing edge cases (extras, normalized names). Mitigation:
   reuse the proven `_read_dist_name` pattern (`editable_install_drift_check.py:132`). Rollback: revert the PR;
   no existing behavior changes (additive tool).
-- **Owner repo.** ml (tool) + canopy (process — adopt as a post-refactor reinstall check). **JR-ID.** TBD —
+- **The Overtoad repo.** ml (tool) + canopy (process — adopt as a post-refactor reinstall check). **JR-ID.** TBD —
   none invented.
 
 #### 6.3 E-5 — Mocked-seam gap auditor (novel `auditor` variant)
@@ -323,7 +323,7 @@ which mock an integration boundary and thereby leave the real construct/call pat
   data-client boundary and identifies at least one real construct/call path not exercised un-mocked.
 - **Risk + rollback.** Low. Risk: false positives (legitimate mocks). Mitigation: the agent reports, never
   edits or fails CI; the human triages. Rollback: delete the `.md` (and its optional test + `ci.yml` line).
-- **Owner repo.** ml. **JR-ID.** TBD — none invented.
+- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.4 E-3 — Cross-repo `--target-repo` mode (the A-1 fix)
 
@@ -366,7 +366,7 @@ unchanged; fix the validator side to use `git -C <target> rev-parse HEAD` (the r
   re-introducing the CWD bug. Mitigation: additive flag; the contract test asserts *zero* CWD-relative probe
   commands; explicit default-preservation + cross-repo dogfood criteria. Rollback: revert the single PR; the
   manual cross-repo override (passing `--repo-root <sibling>`) still works as it does today.
-- **Owner repo.** ml. **JR-ID.** TBD — none invented.
+- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.5 G-3 — `AGENTS.md` Repository-Structure tree refresh (Phase-1 gated rider)
 
@@ -391,7 +391,7 @@ change ships a wired gate").
   top-level dir is later added without a tree update (verify by a synthetic temp dir in the test fixture).
 - **Risk + rollback.** Negligible (doc + a self-locating lint). Rollback: revert the hunk + remove the test +
   its `ci.yml` line.
-- **Owner repo.** ml. **JR-ID.** TBD — none invented.
+- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
 
 ### Phase 2 — second wave
 
@@ -423,7 +423,7 @@ proves insufficient.
   source item (dogfood-demonstrated); both structural gates pass.
 - **Risk + rollback.** Low-medium (3→2 after fold-in shaping). Risk: R1.1 over-triggers. Mitigation: keep it
   `major` (not a blocker), so it informs rather than hard-fails. Rollback: revert the RUBRIC/validator hunks.
-- **Owner repo.** ml. **JR-ID.** TBD — none invented.
+- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.7 E-4 — Per-file coverage-gap mapper (advisory-first)
 
@@ -453,7 +453,7 @@ dotted-`--cov` workaround behind a documented shim.
 - **Risk + rollback.** Medium. Risk: coverage-tool fragility across repos. Mitigation: advisory exit-0 +
   documented shim; opt-in per repo. Rollback: do not adopt per-repo; the ci-tools module is inert until
   invoked. Promotion to a blocking gate requires separate Overtoad sign-off (OQ below).
-- **Owner repo.** ml → ci-tools. **JR-ID.** TBD — none invented.
+- **The Overtoad repo.** ml → ci-tools. **JR-ID.** TBD — none invented.
 
 #### 6.8 M-1 — `known_misses.yaml` RUBRIC-consult (minimal)
 
@@ -484,7 +484,7 @@ reship); DEFER the auto-append pipeline (premature at N=1; an unvalidated write-
   gates pass.
 - **Risk + rollback.** Low. Risk: negligible at N=1. Rollback: revert the RUBRIC/validator hunks + the
   `_EXPECTED_RUBRIC_IDS` addition.
-- **Owner repo.** ml. **JR-ID.** TBD — none invented.
+- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
 
 ### Phase 3 — later / gated
 
@@ -523,7 +523,7 @@ is structural-only + a documented manual smoke-verify step.
   uncertainty. Mitigations: Stage-0 kill-criterion + the Plan-B fallback; mandatory teardown/timeout/orphan-reap
   from day one; structural-only CI + manual verify. Rollback: each stage is its own PR; delete the Skill (+ test
   + `ci.yml` line); Stage 0 commits nothing.
-- **Owner repo.** ml. **JR-ID.** TBD — none invented.
+- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.10 E-6 — Click-through test author (gated)
 
@@ -543,7 +543,7 @@ is structural-only + a documented manual smoke-verify step.
   control and asserts an observable outcome; the output is presented for review and is never auto-merged.
 - **Risk + rollback.** Medium-high (R=4). Risk: low-value or flaky generated tests. Mitigation: human review
   gate; gated behind E-1 Stage 2. Rollback: do not adopt; delete any Skill surface.
-- **Owner repo.** ml. **JR-ID.** TBD — none invented.
+- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
 
 ### Companion (app-level, not a suite PR)
 
@@ -571,7 +571,7 @@ Plan-B. **App-level** — owned by the app (canopy first), **not** part of the s
 - **Risk + rollback.** Low-medium. Risk: a false-positive at boot blocking a legitimate start. Mitigation:
   clear message + an optional documented escape-hatch env var (Overtoad to decide). Rollback: remove the
   self-check call (single call site).
-- **Owner repo.** canopy (app change) + candidate `juniper-service-core` (shared helper). **JR-ID.** TBD —
+- **The Overtoad repo.** canopy (app change) + candidate `juniper-service-core` (shared helper). **JR-ID.** TBD —
   none invented.
 
 ---

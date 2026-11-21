@@ -91,7 +91,7 @@ led by F-CANOPY-054 and the latency root cause behind F-053.
    `replay-player-panel-weight-drain`, and timestamp-only `/api/state` rewrites. Then re-profile.
 4. **The top status bar**: a one-browser measurement, then file or fold. It is a candidate fourth
    writer of the F-053 class.
-5. **Owner decisions**: F-CANOPY-004's contract (interaction re-render measured at 22–30 s against
+5. **The Overtoad decisions**: F-CANOPY-004's contract (interaction re-render measured at 22–30 s against
    ≤16 s), and `FULL_HISTORY_POLL_TICK_MODULUS` → 1 (measured 32.4 s).
 6. **Source-derived, unobserved**: canopy#613's guard vs the apply clamp; CAN-015's replay-player loop.
 7. **F-CANOPY-049**, and #674's follow-ups: the same swallow-and-forget pattern in

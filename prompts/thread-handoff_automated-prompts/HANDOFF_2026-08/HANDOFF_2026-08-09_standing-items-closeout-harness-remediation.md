@@ -5,7 +5,7 @@ Continue the standing-items closeout + harness-remediation arc (juniper-ml + eco
 
 ## Completed so far (2026-08-09 session)
 
-- recurrence#104 + #105 MERGED (seq-safety net live on recurrence, soak started; ci-tools pins widened). Owner decisions recorded: Turing deploy keys RETAINED; codeql merge_group divergence ACCEPTED; recurrence rollout EXECUTED.
+- recurrence#104 + #105 MERGED (seq-safety net live on recurrence, soak started; ci-tools pins widened). The Overtoad decisions recorded: Turing deploy keys RETAINED; codeql merge_group divergence ACCEPTED; recurrence rollout EXECUTED.
 - /doctor: AGENTS.md trimmed (-5,029 chars, 3 derivable blocks; drift gates green) — **UNCOMMITTED in session worktree `cryptic-dancing-badger`**; chrome-devtools + deepwiki disabled for juniper-ml; auto-mode declined.
 - Audit + plan docs authored by the custom auditor/planner agents and PR'd (with this handoff) from branch `docs/standing-items-closeout-harness-remediation`.
 

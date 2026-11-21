@@ -150,7 +150,7 @@ Continue the juniper-cascor logging redesign
 - 5.5: a probe must not reconstruct the code under test. P0.4(d)(i) was exactly such a constants check;
 - 5.9: `git grep -E '(?:…)'` returns empty silently.
 
-**Owner rulings in force** (`…ROADMAP.md` §13.1) [UNVERIFIED — summarised from `HANDOFF_2026-09-24_logging-arc-p04-merged-finish-round-2-then-p21.md`, not validated; only decision 6's text was re-read]:
+**The Overtoad rulings in force** (`…ROADMAP.md` §13.1) [UNVERIFIED — summarised from `HANDOFF_2026-09-24_logging-arc-p04-merged-finish-round-2-then-p21.md`, not validated; only decision 6's text was re-read]:
 
 - decision 1: P2 runs, because the gate cleared 10 %;
 - decision 4: converge the mirror;

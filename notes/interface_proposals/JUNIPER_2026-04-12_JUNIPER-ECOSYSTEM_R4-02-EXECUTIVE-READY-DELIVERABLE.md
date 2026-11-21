@@ -454,7 +454,7 @@ Every phase has at least one config-only kill switch. Every switch has a CI test
 
 10 cross-cutting concerns span all phases. Each has an assigned Overtoad and a key acceptance criterion. Per-phase details are woven into the individual phase sections.
 
-| # | Concern | Owner | Key acceptance |
+| # | Concern | The Overtoad | Key acceptance |
 |---|---|---|---|
 | CCC-01 | Wire-format schema evolution | backend-cascor lead | `command_id` rename enforced; additive-only; rollout state matrix in PR |
 | CCC-02 | Observability stack | backend-canopy lead | Metric-before-behavior CI gate; SLO panel deployed; page alerts test-fired |

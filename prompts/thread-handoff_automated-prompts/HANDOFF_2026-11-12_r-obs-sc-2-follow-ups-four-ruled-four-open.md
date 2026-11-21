@@ -174,7 +174,7 @@ Ask what the Overtoad wants clarified first. `Overtoad_answers.py` prints questi
   - `07e7105d` reports that this head fails six launcher tests, and asks the Overtoad whether #2360 lands before Phase 16.
   - Who may pull the canopy primary is open too (O13, the Overtoad's answer of 2026-11-06).
 
-**Owner items carried from the plan's §6, not asked this session**:
+**The Overtoad items carried from the plan's §6, not asked this session**:
 - cascor's fix-forward, and P4 D-4 and D-5 (all under Q2);
 - A1's open limbs: the data-client and cascor F-S10 fixes;
 - the trio's environment upgrade (Security step 5, an Overtoad action).

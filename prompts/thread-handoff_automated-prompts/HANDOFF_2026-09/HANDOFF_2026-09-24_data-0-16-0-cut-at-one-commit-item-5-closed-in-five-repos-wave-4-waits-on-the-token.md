@@ -55,7 +55,7 @@ reference below names its document:
   never `/tmp`. The Overtoad ruled on 2026-09-21 that no live memory is retired to meet the MEMORY.md
   target.
 
-### Owner gates — tell the Overtoad; you run none of them
+### The Overtoad gates — tell the Overtoad; you run none of them
 
 1. **PyPI for juniper-data 0.16.0.** Run 35977786108's `Publish to PyPI` job waits at the `pypi`
    environment. After the Overtoad approves, see Remaining item 1.
@@ -86,7 +86,7 @@ reference below names its document:
    - Ask the Overtoad before editing the parent `Juniper/AGENTS.md` Data Contract, which is
      unversioned and has no PR. It should say that arc_agi's `generator_version` is `4.0.0` from
      juniper-data 0.16.0 (juniper-data#430), and list 0.16.0 among the versions that moved.
-2. **The juniper-deploy repin, once the Overtoad assigns it to you** (Owner gate 3). It covers
+2. **The juniper-deploy repin, once the Overtoad assigns it to you** (The Overtoad gate 3). It covers
    juniper-deploy's `docker-compose.yml:164` and `:517` (the demo seed),
    `k8s/helm/juniper/values.yaml:40`, and juniper-deploy's `CHANGELOG.md`.
    `scripts/verify_published_images.py` already reports the pin as STALE. Check for an open deploy

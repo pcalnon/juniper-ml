@@ -302,7 +302,7 @@ v1's tiers and criteria stand (v1 §1.1, §1.2): loss exposure first, then decay
 | T0-3 | **Land Phase 16's frozen work, or copy it off the one worktree** | P2's session | 33 rounds of work sit in one local unsigned commit; Tier 1's daily run is its only other copy |
 | T0-4 | **juniper-recurrence's gitleaks step, config and hook** | A session, after v1's step 1 scan of its history | The only public repository that scans nothing (v1 §3 XC-LEAKS; H-17) |
 | T0-5 | **P3-08 and P3-09**: cascor's and data's Sentry F-fixes | Unowned (§4.2) | v1's T0 since 2026-10-04; each needs a validation round before it reaches a branch |
-| T0-6 | **A1's F-S10 limbs**: accept or decline the data-client source fix and the cascor fix | Owner ruling | data-client 0.6.0 serves the unfixed error text; cascor and canopy relay it (v1, Overview 2; H-22) |
+| T0-6 | **A1's F-S10 limbs**: accept or decline the data-client source fix and the cascor fix | The Overtoad ruling | data-client 0.6.0 serves the unfixed error text; cascor and canopy relay it (v1, Overview 2; H-22) |
 | T0-7 | **P9-13**: re-measure the nine CI budgets, report only | A session, small | A stale budget refuses healthy merges on every path |
 
 - H-14 stays in force for every suite and service run: the host's session environment sets `SENTRY_SDK_DSN` non-empty (`…r-obs-sc-2-follow-ups.md`, Traps). **[H]**
@@ -380,7 +380,7 @@ Measured by the probe on 2026-11-12. "Past" is how many commits `main` is past t
 
 ---
 
-## 6. Owner packet
+## 6. The Overtoad packet
 
 There is no standing merge grant: each session asks in its own first turn (v1's H-2). The numbering is new; each item names where its options and recommendation are.
 
@@ -389,7 +389,7 @@ There is no standing merge grant: each session asks in its own first turn (v1's 
 Each of these was put to the Overtoad by a live arc and came back to be clarified, or was never answered. Answering them unblocks the most work per minute.
 
 1. **Per-session merge approval**, for each arc that asks. P3's follow-up session holds one (2026-11-12T00:39Z). **[H]**
-2. **P2 and P14: does juniper-ml#2360 land before Phase 16?** Phase 16's landing step assumes #2360 lands last, with its gate baseline regenerated to count Phase 16's lines. If #2360 goes first, Phase 16's PR meets the gate instead (`…canopy-phase16-round33.md`, "Owner questions still open").
+2. **P2 and P14: does juniper-ml#2360 land before Phase 16?** Phase 16's landing step assumes #2360 lands last, with its gate baseline regenerated to count Phase 16's lines. If #2360 goes first, Phase 16's PR meets the gate instead (`…canopy-phase16-round33.md`, "The Overtoad questions still open").
 3. **P2: a rule that lets O13's list converge.** O13 lists every pull of `main` on a date a trio primary was pulled. The primaries were pulled in four batches after the freeze, so each round finds the list incomplete, which the arc's rule rates MAJOR. The session asks for a ruling that closes the list at a stated read time (same section). With it: O13's standing parts (who made the pulls; who may pull the canopy primary; the four legs' leave), and the menu for the 14 undated drivers' defaults.
 4. **P3: round 2's four questions**, sent back on 2026-11-12 to be clarified (`…r-obs-sc-2-follow-ups.md`, "Round 2"):
    - **Q1** when juniper-observability 0.4.3's design starts;
@@ -400,12 +400,12 @@ Each of these was put to the Overtoad by a live arc and came back to be clarifie
 5. **P15: decisions D1 to D9**, which the Overtoad asked to clarify before answering, and whether to close #2404 and #2406 as stale (`…flood4-seven-landed.md`, "Open decisions").
 6. **P1: Q1 to Q5** (`…backup-phase-d-sitting.md`, "Open questions"): AC-3's count criterion; the run of 2026-11-08 23:41Z that the Overtoad did not start; a durable fix for AC-7; the drill sample's scope; where the three new scripts land.
 
-### 6.2 Owner actions — minutes each, no ruling needed
+### 6.2 The Overtoad actions — minutes each, no ruling needed
 
 7. **XC-LEAKS settings** (T0-1).
 8. **The trio's environments**: `JuniperData` (its `python3.14t`) and `JuniperCanopy1` hold observability 0.4.0 and service-core 0.5.0 (`…r-obs-sc-2-follow-ups.md`, Q3). **[H]**
 9. **Rotations with no record**: the TestPyPI credential captured into a transcript on 2026-09-21 (`…RECOVERY-PLAN.md`, I-31 and O-11), and turing's Hugging Face credential (`…turing-check-wording.md`, Overtoad step 2).
-10. **Turing's nine steps** (`…turing-check-wording.md`, "Owner steps"). K13 comes first in the signing chain.
+10. **Turing's nine steps** (`…turing-check-wording.md`, "The Overtoad steps"). K13 comes first in the signing chain.
 11. **`pypi` gates as they arrive**, juniper-ml 0.11.5 first.
 
 ### 6.3 Carried from v1's packet, still open

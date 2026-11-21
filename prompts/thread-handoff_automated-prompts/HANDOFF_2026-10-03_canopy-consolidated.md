@@ -455,7 +455,7 @@ a waiver trailer must be in a COMMIT body.
 - Trap: an ignored path can still be committed (the A-N2 report's 92 `**/logs/` files were force-added) — compare with main before calling
   anything "ignored".
 
-### Owner batch (one message) — O1–O17
+### The Overtoad batch (one message) — O1–O17
 
 O1 merge approval for this session (none carried). O2 A6 provenance refs (urgent before any cleanup). O3 ledger item 17. O4 the account's
 later actions (A6). O5 the ratings (A6). O6 ledger items 3, 4, 9 (M-DATASET), 10. O7 Y2: continue after the lapsed claim? who runs it? sweeper

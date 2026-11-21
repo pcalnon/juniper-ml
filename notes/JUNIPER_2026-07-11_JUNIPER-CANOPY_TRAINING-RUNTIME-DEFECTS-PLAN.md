@@ -138,7 +138,7 @@ Guard rails required by validation (§11 skeptic #1, #6): the store poll must re
 the upstream call inside `async def get_metrics_history` (`main.py:1217-1227`) must move to a thread (`asyncio.to_thread`) so a slow cascor cannot stall canopy's event loop; and full-history display modes must bound their fetch (today `limit=0` fetches up to 10k rows per tick, `:5207-5210`).
 Path-B trustworthiness is the N2/C3/CL1 workstream: supervised reconnect with logging, half-open detection (the supervisor's `is_connected` is `_ws is not None`, `cascor_service_adapter.py:99-100` — blind to dead sockets), client ping/pong handling, `/api/state` made live-first for base fields (§11 skeptic #5: it already pays a live cascor call per GET — derive status/epoch from that same fetch, keep the relay-fed global for demo mode and WS push granularity), and a degraded-mode indicator.
 Dead-end stores removed or wired when O3 lands. Header semantics fixed in N6 with C2b's surface reconciliation. E-3 resolves root cause 4 before N2 is finalized.
-**Owner decision (Q6)**: the target architecture is WS-preferred — real-time surfaces (tiles, charts, state, topology) are fed by the WS path once it demonstrably delivers, with polling reserved for data that is not needed in (near-)real time; the arbiter is display accuracy and interaction responsiveness.
+**The Overtoad decision (Q6)**: the target architecture is WS-preferred — real-time surfaces (tiles, charts, state, topology) are fed by the WS path once it demonstrably delivers, with polling reserved for data that is not needed in (near-)real time; the arbiter is display accuracy and interaction responsiveness.
 Concretely: E-1 → C6 (cascor emits per-epoch metrics on `/ws/training`) → N8 (wire `ws-metrics-buffer`/`ws-state-buffer` into tile/state Outputs — the O3 posture — and demote N1's un-gated polls to a liveness-gated fallback, the O1 posture). N1 remains the correctness bridge until C6/N8 land.
 
 **Tests.** Unit: store-poll un-gating + empty-guard (`no_update` on empty fetch with non-empty store); to_thread wrapping. UI harness (canopy `src/tests/ui/`): WS-silent scenario — tiles advance via poll within 2 s on a long-lived tab; post-completion charts persist under the 1 Hz poll; header matches a scripted cascor status.
@@ -206,7 +206,7 @@ canopy should defensively clamp/validate seeded values against the documented PA
 Cascor C2b: bound coherence (default `epochs_max` ≤ PATCH ceiling) + reconcile the `/v1/network` vs `/v1/training/status` parameter surfaces (single source of truth) + document counter semantics.
 Canopy N5: clamp/validate backend-seeded form values against the PATCH bounds at init and apply; surface `response.text` verbatim in the toast; skip the WS-first leg while the control stream is marked dead (consumes N2's liveness state).
 
-**Owner decision (Q1)**: `epochs_max` has outlived its original role (a hard stop for a simple, plateau-prone early model) and now risks shadowing the granular limits that superseded it (per-candidate epochs, pool-wide iterations, output-training epochs, output iterations).
+**The Overtoad decision (Q1)**: `epochs_max` has outlived its original role (a hard stop for a simple, plateau-prone early model) and now risks shadowing the granular limits that superseded it (per-candidate epochs, pool-wide iterations, output-training epochs, output iterations).
 C2b therefore carries a role reevaluation with three sanctioned outcomes: (a) a deliberately-large sentinel that can never shadow the granular limits; (b) full removal of the meta-parameter (calculation, tracking, gating, and display code); or (c) a per-run derived cap computed from the granular limits.
 Provisional recommendation: (c), with (b) as the simplification fallback — to be ratified in C2b's design/PR.
 
@@ -235,7 +235,7 @@ Status code for "generator unavailable": 503 invites retries/health-tooling misr
 juniper-data D2: add `datasets` behind a `[mnist]` extra; install in the Docker image and the `JuniperData` env; document the HF cache/offline posture; add a real-generation test (cache-seeded or skip-marked offline).
 Canopy N7: consume the availability flag to grey out unavailable dataset types with the reason — compat posture: flag-absent (older juniper-data) defaults to available, and the deploy-level juniper-data version floor is bumped when N7 lands (canopy reads `/v1/generators` via direct httpx, `main.py:1555-1567` — no client-library release needed).
 Cascor: no change on this path (its 409 already carries the upstream text).
-**Owner decision (Q2)**: MNIST availability is a near-term research goal — infrastructure for the multi-dataset continual-training experiment (repeatedly training a single cascor model on diverse dataset types).
+**The Overtoad decision (Q2)**: MNIST availability is a near-term research goal — infrastructure for the multi-dataset continual-training experiment (repeatedly training a single cascor model on diverse dataset types).
 D2 is promoted into wave 1 as a fast-follow to D1, and a successful isolated-stack MNIST E2E run becomes a wave-1 exit criterion.
 
 **Tests.** D1: unavailable generator → 501/422 + hint (no 500); availability flag present. D2: real generation produces contract-compliant NPZ shapes. N7: unavailable type not selectable with reason shown; flag-absent compat. E2E: staged MNIST trains end-to-end on the isolated stack once D2 lands.
@@ -265,7 +265,7 @@ Canopy N3: implement the promised sequence — lightweight confirm → `stop()` 
 Interaction with cascor#396 staging semantics verified safe: `stop_training()`/`reset()` do not touch `_pending_dataset_config` (`manager.py:2104-2150`); consume-then-clear happens under `_lock` in `start_training` (`:1902-1904`), fetch-failure preserves staging — no lost/double-consumed staging in stop→await→start.
 The prior doc's fifth follow-up bullet (cascor-side auto-create/restart alternative) was revisited: still not chosen (canopy-side orchestration keeps the engine API minimal, consistent with the 2026-07-09 decision); a cascor-side atomic restart remains the documented fallback if the stop-window race proves troublesome.
 
-**Owner decisions (Q3 + Q4)**: the confirm is ratified and specified — a simple confirm modal (assuming all other meta-parameters, structures, and processes unchanged) with an expandable dropdown of collapsible sub-sections enabling granular verification AND in-place modification of network params, meta-params, and components (this supersedes the deferred PR-D defaults modal).
+**The Overtoad decisions (Q3 + Q4)**: the confirm is ratified and specified — a simple confirm modal (assuming all other meta-parameters, structures, and processes unchanged) with an expandable dropdown of collapsible sub-sections enabling granular verification AND in-place modification of network params, meta-params, and components (this supersedes the deferred PR-D defaults modal).
 The modal leads with a **start-fresh toggle (default off)**: off = continue training the current model as trained, retaining metrics/history for cross-dataset continuity (Q4 use-case 1); on = discard the model and all retained data — functionally a clean stack launch except artifacts with permanence expectations, e.g. snapshots (Q4 use-case 2; also U-1's reset-model vs reset-training distinction).
 An explicit clear-metrics control (use-case 1's optional clearing) ships with a fallback — confirm-before-clear or an undo — available at any point until the new run begins; the cascor-side semantics are unit C5.
 The granular verify/modify section intersects N5's apply contract; if its footprint grows N3 materially it splits off as N3b (noted in the roadmap).
@@ -286,7 +286,7 @@ stop sending inapplicable params, and reword the model hint (e.g. "rank-2 (tabul
 
 **Tests.** Unit: per-type visible-param sets; staged payload contains only applicable keys; hint text snapshot.
 
-**Owner addition (U-6)**: the left-menu `Current Dataset` sub-section is part of the same defect — it stays titled and parameterized for Spiral regardless of the selected type; N7 renames it per selected type and shows that type's relevant (read-only and/or editable) meta-parameters.
+**The Overtoad addition (U-6)**: the left-menu `Current Dataset` sub-section is part of the same defect — it stays titled and parameterized for Spiral regardless of the selected type; N7 renames it per selected type and shows that type's relevant (read-only and/or editable) meta-parameters.
 
 ### U — Outstanding UI items (Overtoad-reported 2026-07-11)
 
@@ -433,7 +433,7 @@ Multi-agent validation per the driving prompt (directive 10), all agents on Fabl
 Round 1 (3 agents): findings raised **27** (8 + 6 + 13); resolved **27** (this revision); unresolved grounding findings: **0**.
 Items that remain genuinely undecidable from this session's evidence are carried as OPEN experiments (E-1/E-2/E-3) and Overtoad questions (§12), not as claims.
 
-## 12. Owner Decisions (questions answered 2026-07-11)
+## 12. The Overtoad Decisions (questions answered 2026-07-11)
 
 ### Questions
 

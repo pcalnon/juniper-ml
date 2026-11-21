@@ -82,11 +82,11 @@ Single tabular page. Every item here is SETTLED — do not re-litigate. Source p
 
 ## 2. Phase index
 
-Owner key: **C**=backend-cascor, **Y**=backend-canopy, **F**=frontend, **S**=SDK, **Sec**=security review, **O**=ops.
+The Overtoad key: **C**=backend-cascor, **Y**=backend-canopy, **F**=frontend, **S**=SDK, **Sec**=security review, **O**=ops.
 
 Effort triple = optimistic / expected / pessimistic (eng-days).
 
-| # | Phase | Goal (one line) | Owner | Effort | Entry deps | Exit top criterion | Rollback TTF | NOT-in-phase |
+| # | Phase | Goal (one line) | The Overtoad | Effort | Entry deps | Exit top criterion | Rollback TTF | NOT-in-phase |
 |---|---|---|---|---|---|---|---|---|
 | 1 | **0-cascor** (was Phase A-server) | Cascor `/ws/training` emits monotonic `seq`, advertises `server_instance_id`+`replay_buffer_capacity`, supports `resume`, fixes state coalescer | C | 1.5/2.0/3.0 | cascor main clean; GAP-WS-19 verified | `cascor_ws_seq_gap_detected_total==0` after 72h soak | 15 min revert | Full Phase E; permessage-deflate; topology chunking; seq on `command_response` |
 | 2 | **A-SDK** (parallel with 1) | `CascorControlStream.set_params(params, timeout=1.0, command_id=...)` ships to PyPI | S | 0.5/1.0/1.5 | cascor-client main clean | `test_set_params_caller_cancellation` green | PyPI yank or pin downgrade | Canopy adapter refactor; SDK retries; debounce |
@@ -1042,7 +1042,7 @@ Every switch below has a CI test (`test_<switch>_env_override`) flipping the fla
 
 ## 16. Risk register
 
-| ID | Risk | Sev/Lik | Phase | Owner | Kill switch (TTF) | Signal |
+| ID | Risk | Sev/Lik | Phase | The Overtoad | Kill switch (TTF) | Signal |
 |---|---|---|---|---|---|---|
 | 01 | Dual metric format removed aggressively | H/M | H | Y | `git revert` (5-10 min) | `/api/metrics` shape hash drift |
 | 02 | Phase B clientside-callback debuggability | M/H | B | F+O | `disable_ws_bridge=true` (5 min) | `drain_callback_gen` stuck; `browser_js_errors > 0` |

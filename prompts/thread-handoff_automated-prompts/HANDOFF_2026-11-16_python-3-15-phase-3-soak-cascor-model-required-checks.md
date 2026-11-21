@@ -22,7 +22,7 @@ chose a 7-day soak that ends **2026-11-23**. On or after that date:
 Do not start phase 3 earlier, and do not move `/usr/bin/python3` off 3.14 (phase 4). **Merge approval for this arc's
 PRs was granted in this session (2026-11-16). It does not carry to a new session.**
 
-## Owner rulings this session (2026-11-16, from the dialog)
+## The Overtoad rulings this session (2026-11-16, from the dialog)
 
 1. **Phase 3 timing**: "Soak 7 days first". The legs stay informational until 2026-11-23. Then re-count the warnings
    across every run, and start if none were real.

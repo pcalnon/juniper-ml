@@ -449,7 +449,7 @@ There is no separate later wiring task: the drift gate forbids one.
 
 | ID | Task | Pri | Actor | Depends | Acceptance |
 |---|---|---|---|---|---|
-| F1 | Owner ruling on D1 | P1 | OWNER | — | recorded under D1 |
+| F1 | The Overtoad ruling on D1 | P1 | OWNER | — | recorded under D1 |
 | F2 | Get a 1000baseT link on `en7` (cable, switch port or dongle) | P1 | OWNER | — | `ifconfig en7` media shows `1000baseT`, status active; `iperf3` to yamaguchi ≥ 800 Mb/s (G-NET) |
 | F3 | Headroom baseline: ≥ 480 samples per mode at 60 s intervals (`vm_stat`, `sysctl vm.swapusage`), in dev mode and node mode. Node mode means desktop apps and Docker Desktop quit, with no VM running; the Overtoad sets the state | P1 | AGENT | D0 | `reports/<run-date>_turing-headroom/` with p50/p95 free memory and swap |
 | F5a | `util/macvm_ctl.bash {start,stop,status}`: G-MEM check before `start`, refuse on failure | P1 | AGENT | — | `tests/test_macvm_ctl.py` (R-F5) with stubbed `VBoxManage` / `vm_stat` |
@@ -500,9 +500,9 @@ Arc H   H0 ─> H5 ; H1 ─> H2 ─> H3 (needs G1, B4) ; D0 ─> H4
 
 **Sessions.** Every task appears exactly once below (B1 is split by actor). Each session ends with a handoff prompt archived to `prompts/thread-handoff_automated-prompts/` (AGENTS.md § Thread Handoff).
 
-0. **Owner block 0:** C8 (agent guardrails), before any agent session.
+0. **The Overtoad block 0:** C8 (agent guardrails), before any agent session.
 1. **Session 1 (AGENT):** A1, A8, C4, D0, H0, B1-install, G2, B7, B8, A4, A5, A7, F5a, F3 (starts sampling).
-2. **Owner block 1:** C0, then A2, A3, B1-verify, B2–B6, C1–C3, C5, C7, E4, A6, F1, F2.
+2. **The Overtoad block 1:** C0, then A2, A3, B1-verify, B2–B6, C1–C3, C5, C7, E4, A6, F1, F2.
 3. **Session 2 (AGENT):** D1-tools, D6, D5, D2-upg (with an Overtoad B5 re-check), D3 (OWNER), D4, E1–E3, G1, G4, G5, G6, B9.
 4. **Session 3 (AGENT):** H1–H5, E5, E6.
 5. **Session 4 (OWNER + AGENT):** F4, F5b, F7, C6, E7, then F6 once the cluster exists.
@@ -808,7 +808,7 @@ One reviewer checked v1.0.0 against every round-1 MAJOR and found all of them re
 
 - **MAJOR.** D11 item 4 now says pattern rules don't bind Bash, and requires sandbox read-deny or a PreToolUse hook. Negative tests were added for `cat ~/.ssh/config` and flag-first `gh api -X`.
 - **MINOR:**
-  - The new task C8 applies the agent guardrails before Session 1 (Owner block 0), and H3 now depends on C8.
+  - The new task C8 applies the agent guardrails before Session 1 (The Overtoad block 0), and H3 now depends on C8.
   - `tag.gpgsign` is now neutralized too (`GIT_CONFIG_COUNT=2`).
   - The §7 joins and shared-file statements are now accurate.
   - Task-versus-decision D-numbers are qualified.
@@ -830,7 +830,7 @@ Session 1 ran on turing from 2026-10-17 to 2026-10-19. Its handoffs are:
 
 This section records what the session did and corrects the plan where measurement overtook it.
 
-### 16.1 Owner rulings
+### 16.1 The Overtoad rulings
 
 - **D6 (2026-10-17): conda-forge plus vendor binaries, not Homebrew.** On Intel turing every `brew install` builds from source and upgrades dependencies, per the header of `conf/hosts/turing/hosttools-environment.yml`.
   - The CLI tools come from the conda-forge env `JuniperHostTools` that the file specifies. Only the named binaries are symlinked into `~/.local/bin`.
@@ -889,7 +889,7 @@ This section records what the session did and corrects the plan where measuremen
 
 Session 2 ran on turing on 2026-10-19. It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-1-six-code-prs-landed-Overtoad-steps-next.md`, and its own handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-2-e6-d5-d6-h1-done-e2-blocked-on-little-snitch.md`.
 
-### 17.1 Owner rulings
+### 17.1 The Overtoad rulings
 
 - **D5 (2026-10-19): demote, don't remove.** `/opt/local/{bin,sbin}` move to the end of PATH. Removing them would drop 128 MacPorts-only commands, including the Overtoad's `gpg2`, `gnupg` and `gnupg2` links into Homebrew's gnupg Cellar (`reports/2026-10-19_turing-d5-path-inventory/`).
 - **Order (2026-10-19): E2 next**, ahead of the G-arc PRs and of MCP (H4, H5).
@@ -923,7 +923,7 @@ Session 2 ran on turing on 2026-10-19. It continued from `prompts/thread-handoff
 
 Session 3 ran on turing on 2026-10-19/20 (EDT; 2026-10-20 UTC). It continued from `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-2-e6-d5-d6-h1-done-e2-blocked-on-little-snitch.md`. Its handoffs are `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-session-3-g5-g6-g4-landed-e2-two-envs-created-pypi-blocked.md`, written with the record PR (juniper-ml#2277), and `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-session-3-final-e2-validated-g1-next.md`, written after E2's validation (v1.4.1). G1 and G4's promotion landed in the following session (v1.4.2), whose handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_turing-g1-landed-g4-promoted-h2-next.md`. H2 and H4 landed in the session after that (v1.4.3), whose handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-landed-c9-next.md`. H5 landed alongside them, in the "mac dev" session (v1.4.4), whose handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-audit-landed-Overtoad-decides.md`. The same session removed and restored H5's trees and landed a risk analysis of the restored state (juniper-ml#2310, `0c9a0baf`). The Overtoad chose option B in the next session (v1.4.5), whose handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h5-option-b-applied-Overtoad-b4-b5.md`. The arc's main handoff was the "code signing" session's `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_turing-h2-h4-h5-landed-rs9-fixed-c9-next.md` (juniper-ml#2305), where C9 was next. C9 landed and H6's audit ran in the session after that (v1.4.6), whose handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-c9-landed-h6-audited-Overtoad-decides.md`. The Overtoad ruled on H4's usage report, C2's form and H6 in the next session, "macos dev env setup" (v1.4.7), whose handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-25_turing-h4-usage-off-c2-block-all-gate-h6-deferred.md`. The Overtoad applied C2 during the next session, "modular-meandering-crayon" (v1.4.8), which narrowed G-SEC's firewall condition to the sentence turing printed; its handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-c2-applied-gate-reads-getter-sentence.md`. Two sessions continued from it: "cached-enchanting-cosmos-84" took H3, and "c9-landed-h6-audited-Overtoad-decides" (v1.4.9) applied H6 once the Overtoad resumed it. The latter's handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_turing-h6-applied-token-rotation-and-first-sync-Overtoad.md`. The former ran H3 (v1.4.10) once the Overtoad had installed C8; its handoff is `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-27_turing-h3-passed-c8-installed-Overtoad-steps.md`. The "t1" session (8161e3) landed E-H3's wording follow-up (v1.4.11); its handoff, `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-30_turing-check-wording-fixed-Overtoad-steps.md`, is now the arc's main handoff.
 
-### 18.1 Owner rulings
+### 18.1 The Overtoad rulings
 
 - **Merging.** Approval is granted for every PR in the session's work arc, merging only after green, as in §16.1. It does not cover the `pypi` deployment gate.
 - No new decision ruling. The E2-first order of §17.1 stood. E2 went first, and the G-arc ran while E2 waited on the Overtoad's Little Snitch approval.

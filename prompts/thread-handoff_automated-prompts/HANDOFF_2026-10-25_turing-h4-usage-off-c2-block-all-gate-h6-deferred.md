@@ -34,7 +34,7 @@
 - **Release 0.11.2.** The recurrence session's 0.11.2 proposal, juniper-ml#2339, moves `[Unreleased]` into `## [0.11.2]`. It held its merge for #2338 by agreement (cross-session message), so the CHANGELOG entries of #2335 and #2338 ride 0.11.2. On the proposal's head, `9a0d8b29`, both sit under `[0.11.2]` / `### Changed`. The three doc-edits scripts' checks, the H4 (`--mutants 7/7`), C2 (`--mutants 11/11`) and C9 (`--mutants 26/26`) ones, print "nothing to do" both before and after the cut, measured on that head's CHANGELOG (E-CUT). Before this session's record PR, they reported the cut as a pending edit.
 - **E-LAND-2 is closed.** After #2320 merged, the C9 doc-edits check printed "nothing to do", and the C9/H6 record's dry run reported all 7 edits `present`.
 
-## Owner steps
+## The Overtoad steps
 
 1. **C8 install, including K12 and C9** (unchanged). From a real terminal, in the primary checkout:
 

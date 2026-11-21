@@ -1341,7 +1341,7 @@ Troubleshooting:
 
 ## Pointer-Follow Soak
 
-The pointer-follow soak asks whether a **fresh, unprimed** local `claude -p` session retrieves a **relocated** fact from its pointer (usually a `docs/REFERENCE.md` heading) rather than from source. Owner decision 2026-09-03: the soak exists **to inform relocation decisions**, not to print a pooled pass/fail about "relocation in general."
+The pointer-follow soak asks whether a **fresh, unprimed** local `claude -p` session retrieves a **relocated** fact from its pointer (usually a `docs/REFERENCE.md` heading) rather than from source. The Overtoad decision 2026-09-03: the soak exists **to inform relocation decisions**, not to print a pooled pass/fail about "relocation in general."
 
 - Protocol: [`notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`](../notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md)
 - Trigger / unattended-path design: [`notes/JUNIPER_2026-09-03_JUNIPER-ML_SOAK-TRIGGER-DESIGN-CONVERSATION.md`](../notes/JUNIPER_2026-09-03_JUNIPER-ML_SOAK-TRIGGER-DESIGN-CONVERSATION.md) §§8–9
@@ -3243,7 +3243,7 @@ The tool prints the current rate from `conf/memory_index_baseline.json` `history
 | Rows | lines matching `- [Title](slug)hook` | not a hard cap |
 | New-row hook | `len(hook)` vs `--hook-max` (default **120**) | new slugs only |
 
-Owner decision #4 is "120 bytes on NEW entries only". A **whole-line** 120-byte reading is unwritable: the link alone averages ~90 characters and reaches 115. The shipped comparison is `len(hook)` (Python characters after the closing `)`), which is the only reading the corpus can satisfy. Grandfathered slugs never fire, so the first run does not produce 137 findings and get ignored.
+The Overtoad decision #4 is "120 bytes on NEW entries only". A **whole-line** 120-byte reading is unwritable: the link alone averages ~90 characters and reaches 115. The shipped comparison is `len(hook)` (Python characters after the closing `)`), which is the only reading the corpus can satisfy. Grandfathered slugs never fire, so the first run does not produce 137 findings and get ignored.
 
 "NEW" is any parsed slug absent from `conf/memory_index_baseline.json`. `MEMORY.md` has **no git history**, so the tool carries its own baseline. A missing baseline is tolerated (`slugs: []`); every row is then new.
 
@@ -5237,7 +5237,7 @@ Workflow header version **0.3.0** (juniper-ml#928). A red streak must stay loud 
 | **First failure** | `gh issue create` with that title; body names the first failing SHA, job results, run URL, and the standing remediation pointer (`Allow-Symbol-Loss` / `Allow-Docs-Rewrite` trailers; flood-remediation analysis doc) |
 | **Later failures in the streak** | Search open issues for that **exact** title; `gh issue comment` with the new SHA + run URL (no second issue) |
 | **Green path** | `notify` is `if: failure()` only — success is a no-op; the issue is **not** auto-closed |
-| **Owner close** | Close the tracking issue **after adjudication** (restore the loss, or land a trailer-waived follow-up that greens main-verify) |
+| **The Overtoad close** | Close the tracking issue **after adjudication** (restore the loss, or land a trailer-waived follow-up that greens main-verify) |
 | **Slack** | Non-blocking; missing `SLACK_WEBHOOK_URL` skips; a post failure never fails the workflow |
 
 Re-runs of the **same** failing SHA still hit `failure()` and comment again if the issue remains open — that is intentional (loud until the Overtoad closes).
@@ -5318,7 +5318,7 @@ gh run download <run-id> -n sequence-safety-report
 | Initial / force-push tip never ran the battery | The detector must fail-open to `run=true` when no parent base resolves — inspect the `Detect relevant path changes` step log. |
 | Many open “main-verify failed at \<SHA\>” issues | Pre-0.3.0 per-SHA titles. Current notify uses one stable title; close stale SHA-keyed issues after adjudication and rely on `main-verify: post-merge verification failing`. |
 | Silent main red (no Slack) | Confirm `SLACK_WEBHOOK_URL` is set; notify is non-blocking and never fails the workflow. Tracking issue title is SHA-keyed (re-runs comment, not reopen). |
-| Tracking issue still open after green | Expected — notify does not auto-close. Owner closes after adjudication. |
+| Tracking issue still open after green | Expected — notify does not auto-close. The Overtoad closes after adjudication. |
 | Battery list drift vs `ci.yml` | Keep both enumerations in lockstep in the same PR (see SYNC NOTE in `main-verify.yml`). |
 
 Related: the per-PR `sequence-safety` job in `ci.yml` is a **required** ruleset context (absent from Quality Gate `needs:`). Fleet predicted-merge shells out to the same symbol CLI on a throwaway merge result (`util/fleet_triage/predict_merge.py` → the `juniper-symbol-loss-check` console script (juniper-ci-tools >=0.8.0); the 2026-07-28 flood-census ad-hoc screens are retired under `util/ad-hoc/retired/` with a `_RETIRED-2026-08-05` suffix).
@@ -5725,7 +5725,7 @@ The table renderer prints `WORK INVARIANT HOLDS` / `BROKEN` and a `drive` vs `st
 
 #### Workload identity (juniper-ml#1613)
 
-Owner decision 2026-09-04: a `step_count` mismatch is a **FAILURE**, not a warning. That statement is only true when both sides ran the **same workload**, so identity is checked first:
+The Overtoad decision 2026-09-04: a `step_count` mismatch is a **FAILURE**, not a warning. That statement is only true when both sides ran the **same workload**, so identity is checked first:
 
 | Condition | Verdict | What it is |
 |-----------|---------|------------|

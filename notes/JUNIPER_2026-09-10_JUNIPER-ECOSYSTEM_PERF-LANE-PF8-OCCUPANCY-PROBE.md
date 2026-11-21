@@ -474,7 +474,7 @@ cascor stack on `:8202`. Ambient, not idle — the sweep's own standard (§8.2 o
 
 ---
 
-## 6. Owner decisions — three carried, two new
+## 6. The Overtoad decisions — three carried, two new
 
 1. **PF-2's axis** (2026-09-09 handoff §1 item 1, first bullet) — unchanged. One constraint added
    by §2.3: whatever the scenario becomes, its suite must fix the thread budget explicitly, because

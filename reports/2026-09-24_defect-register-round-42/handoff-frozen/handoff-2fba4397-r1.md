@@ -61,7 +61,7 @@ Continue defect-register round 42 for the Juniper ecosystem. The register is `no
    - (a) Any FastAPI service without its own `RequestValidationError` handler answers a lone-surrogate echo with a 500, because FastAPI's default 422 is a `JSONResponse`. Primer line 4742 says juniper-data registers none. This is input to D-C.
    - (b) The primer's `idempotent_jobs.py` example echoes client strings through `JSONResponse` (around primer line 2687).
 6. **PATCH #2080's body** (`gh api -X PATCH`). Its rejection of the APD-ML-008 nit was wrong (ml2080 lane A N6); #2088 applies the nit as H2.
-7. **Owner decisions to surface** (Appendix B has C-A…D-G):
+7. **The Overtoad decisions to surface** (Appendix B has C-A…D-G):
    - #437's breaking marker;
    - APD-ML-008's silent-path remedy;
    - the observability and service-core releases that the key-leaks fixes need;

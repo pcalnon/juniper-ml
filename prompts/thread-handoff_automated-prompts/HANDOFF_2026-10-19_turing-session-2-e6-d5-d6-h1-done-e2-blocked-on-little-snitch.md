@@ -43,7 +43,7 @@
   - Upstream drift: cascor's Linux spec pins torch 2.9.1, below the repo's own 2.10.0 floor. canopy's `[test]` extra
     needs newer packaging, coverage and anyio than its spec pins.
 
-## Owner steps
+## The Overtoad steps
 
 1. **Install the C8 guard.** The primary checkout is 21 commits behind `main` and predates juniper-ml#2242, so pull
    it first:
@@ -68,7 +68,7 @@
    - fix roaming, or use Ethernet on `en7` (F2);
    - reserve turing's address (A6).
 7. **F3 node mode:** quit the desktop apps and Docker Desktop, with no VM running, then say so.
-8. **The rest of Owner block 1:** C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
+8. **The rest of The Overtoad block 1:** C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
 
 ## Agent next
 

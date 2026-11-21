@@ -10,7 +10,7 @@
 
 ## 0. What this document is
 
-Owner decision **D6** of
+The Overtoad decision **D6** of
 [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md)
 ruled: *do not gate `epochs_completed` on exact match yet — characterise the spread under
 controlled conditions first*, because round 1 had observed requested-100 → **52** and round 2

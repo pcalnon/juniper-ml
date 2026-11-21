@@ -416,7 +416,7 @@ class GhSurfaceInvariantTest(unittest.TestCase):
         # allowed_repos=None leaves the repo VALUE unchecked but the path-shape + mutation-name guards bite
         ce._assert_gh_allowed(refs)  # must not raise
         ce._assert_gh_allowed(gql)  # must not raise
-        # a cross-repo archive Release owning-repo is still expressible on the graphql repoWithOwner bound
+        # a cross-repo archive Release owning-repo is still expressible on the graphql repoWithThe Overtoad bound
         ce._assert_gh_allowed(["api", "repos/pcalnon/juniper-cascor-client/git/refs", "-X", "POST", "-f", "ref=refs/heads/x", "-f", "sha=a"], allowed)
 
     def test_assert_gh_allowed_rejects_stray_api(self):
@@ -431,7 +431,7 @@ class GhSurfaceInvariantTest(unittest.TestCase):
             ["api", "repos/pcalnon/juniper-ml/git/refs", "-X", "POST", "-f", "sha=a"],  # POST without a ref= field (must not pass)
             ["api", "graphql", "-f", "query=mutation { addStar(input: {}) { clientMutationId } }", "-f", "repoWithOwner=pcalnon/juniper-ml"],  # a different mutation
             ["api", "graphql", "-f", f"query={ce._CREATE_COMMIT_ON_BRANCH_MUTATION}", "-f", "repoWithOwner=pcalnon/juniper-evil"],  # createCommit to a repo outside the 8
-            ["api", "graphql", "-f", f"query={ce._CREATE_COMMIT_ON_BRANCH_MUTATION}"],  # createCommit with no repoWithOwner bound
+            ["api", "graphql", "-f", f"query={ce._CREATE_COMMIT_ON_BRANCH_MUTATION}"],  # createCommit with no repoWithThe Overtoad bound
             # a forbidden token riding an otherwise-sanctioned refs POST (defence-in-depth in _assert_api_allowed)
             ["api", "repos/pcalnon/juniper-ml/git/refs", "-X", "POST", "-f", "ref=refs/heads/x", "-f", "sha=a", "secrets"],
         ]
@@ -788,7 +788,7 @@ class PreconditionHaltTest(unittest.TestCase):
         self.assertEqual(plan.action_kinds[0], "open_archive_pr")
 
     def test_an_archive_the_old_cap_halted_is_now_planned(self):
-        # Owner ruling 2026-10-26: the default rose from 125,000 to 1,000,000 after the runner-side
+        # The Overtoad ruling 2026-10-26: the default rose from 125,000 to 1,000,000 after the runner-side
         # measurement (every GraphQL body up to 16 MiB accepted from a GitHub-hosted runner). An archive
         # whose encoding lies between the two, as juniper-canopy 0.9.0's 103 KB notes did, now plans
         # instead of HALTing for a condense.
@@ -1130,7 +1130,7 @@ class ExecuteTest(unittest.TestCase):
         self.assertTrue(any(c[0] == "upsert_halt_issue" for c in rec.calls))
 
     def test_execute_both_gates_done_is_released(self):
-        # Owner already approved Gate 2: classify_publish_run -> RELEASED must surface as the
+        # The Overtoad already approved Gate 2: classify_publish_run -> RELEASED must surface as the
         # execute final state (not HALTED / PENDING / IN_PROGRESS). No halt issue; archive+Release
         # already cut before the monitor returns.
         rec, src = self._mk(run_status=RELEASED_RUN)

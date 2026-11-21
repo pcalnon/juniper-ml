@@ -6,7 +6,7 @@ Almost every fact in the v1.15.16 revision of `notes/JUNIPER_2026-10-04_JUNIPER-
 - **Repos:** the floors on `main`, juniper-deploy's pins (in `docker-compose.yml` and also in Helm `values.yaml`), and the locks at `v0.14.0` and `v0.10.0`.
 - **Citations:** every `file:line` cited, read at its ref.
 - **Defect register and CI:** the two `APD-ECO-016` rows, the note on `APD-ECO-010`'s row, and the Docs Full Check log (17 tests, OK).
-- **Owner rulings:** all 14 labels, times and option texts, read from the transcripts.
+- **The Overtoad rulings:** all 14 labels, times and option texts, read from the transcripts.
 - **Host:** the primary on `main` at `eeb5c694`; parent `AGENTS.md` at `f3f69b34…` (mtime 23:54:29.62Z), with its prior copy at `90df2783…`; both environments at 0.4.0/0.5.0; trio ports closed.
 
 Both `pypi` gates were still waiting at 04:19Z (my own read) and again at 04:36Z (my run of the re-probe: 156 PASS, 0 FAIL). The defects are listed below.

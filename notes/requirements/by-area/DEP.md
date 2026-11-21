@@ -21,7 +21,7 @@
 
 **Detail**:
 
-**Severity:** P1 · **Owner repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
+**Severity:** P1 · **The Overtoad repo:** juniper-deploy · **Status:** blocked (gated on CALIB-01 + OBS-ROUTE-CRED)
 
 **Notes**:
 
@@ -362,7 +362,7 @@ but app may be configured differently. Use env vars or expose-port-agnostic prob
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
@@ -730,7 +730,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** deferred
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** deferred
 
 **Notes**:
 

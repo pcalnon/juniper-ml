@@ -105,7 +105,7 @@ Remaining work (ordered):
 
 ## Context the remaining work needs
 
-**Owner ruling (quoted, 2026-09-24)**: the PR sweeper is the Overtoad's — "Mine: fix forward". It readies, arms and merges open PRs as `pcalnon` with the DEFAULT squash body. Do not fight it; validate a pushed branch before opening its PR. Memory: `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`. [UNVERIFIED — from the 09-24 handoff, which was not validated; consistent with ml#2035's auto-merge enabled by pcalnon, VERIFIED 2026-10-03]
+**The Overtoad ruling (quoted, 2026-09-24)**: the PR sweeper is the Overtoad's — "Mine: fix forward". It readies, arms and merges open PRs as `pcalnon` with the DEFAULT squash body. Do not fight it; validate a pushed branch before opening its PR. Memory: `reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md`. [UNVERIFIED — from the 09-24 handoff, which was not validated; consistent with ml#2035's auto-merge enabled by pcalnon, VERIFIED 2026-10-03]
 
 **Merge mechanics** [UNVERIFIED — from `HANDOFF_2026-09-24_ci-tools-reevaluation-all-nine-prs-merged-and-the-banner-still-says-three-are-open.md`, which was not validated]: juniper-ml's ruleset is `strict` — an armed PR that goes BEHIND waits forever; fix with `gh api -X PUT repos/pcalnon/<repo>/pulls/<n>/update-branch`, one PR at a
 time. Commits must be signed: `util/open_signed_pr.py` (new PR), `util/push_signed_commit.py` (append; promoted by ml#2036). `gh pr edit` broken on gh 2.46 (use `gh api -X PATCH`); gh 2.46 has no `gh

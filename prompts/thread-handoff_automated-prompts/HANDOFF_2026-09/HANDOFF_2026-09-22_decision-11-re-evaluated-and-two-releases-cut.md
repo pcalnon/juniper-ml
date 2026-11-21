@@ -29,7 +29,7 @@
 >    memory file `project_decision_11_released_2026-09-11.md`.
 > 2. **Decide `juniper-ml[servers]`' `juniper-data>=0.14.0` floor** (§3 R-5). 0.15.0 carries a
 >    BREAKING generator major; the floor still admits the version serving the old contract. This
->    is N-3's exact shape, and N-3 was ruled "raise it". **Owner decision.**
+>    is N-3's exact shape, and N-3 was ruled "raise it". **The Overtoad decision.**
 > 3. **Write the release-ceremony lesson into the procedure** (§3 R-6). Four failure shapes fired
 >    this session; all four live only in this archived prompt.
 > 4. Then the carried tickets: juniper-data#411, juniper-recurrence#178, juniper-cascor#668,

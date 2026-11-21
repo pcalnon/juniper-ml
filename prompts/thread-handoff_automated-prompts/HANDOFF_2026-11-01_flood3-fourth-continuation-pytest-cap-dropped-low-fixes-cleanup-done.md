@@ -56,7 +56,7 @@ Nothing is owed unless the Overtoad asks. What remains is Overtoad calls (Remain
 
 ## Remaining work
 
-1. **Owner calls.** A session acts on none of these without the Overtoad's word, and on 1.5 not even then.
+1. **The Overtoad calls.** A session acts on none of these without the Overtoad's word, and on 1.5 not even then.
    1. **`CODECOV_TOKEN` in the Dependabot stores** of juniper-data and juniper-canopy. Only the Overtoad can add it. `python3 -I util/ad-hoc/2026-10-29_codecov_token_secret_census.py` re-reads the stores (GET only): `dependabot=-` in all nine rows on 2026-11-01.
    2. **The stopped duplicate's own worktree,** `.claude/worktrees/iridescent-sniffing-snail`: HEAD `c77b7be5`, on `main`, unlocked, `tmp/` 12 KB (`session-0f840224/`). Offered on 2026-11-01 and not chosen.
       - Route B (the gates, then `git worktree remove` and `git branch -d worktree-iridescent-sniffing-snail`) keeps the session record.
@@ -122,7 +122,7 @@ ls /home/pcalnon/Development/python/Juniper/juniper-ml/tmp/worktree-cleanup-2026
 
 ## Residue: the remaining work of `HANDOFF_…cleanup-done.md`, item by item
 
-1. **Owner calls:**
+1. **The Overtoad calls:**
    - 1.1, APD-ML-002: closed by another session (juniper-ml#2397).
    - 1.2, Codecov in the Dependabot stores: still open (item 1.1 here).
    - 1.3, `iridescent-sniffing-snail`: offered, not chosen (item 1.2 here).

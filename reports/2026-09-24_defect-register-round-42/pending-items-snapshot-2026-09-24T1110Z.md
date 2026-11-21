@@ -70,7 +70,7 @@ Source of each item in brackets. Verify every one against source before filing.
   /home/pcalnon/Development/python/Juniper/worktrees/juniper-data--fix--conditional-requests-round3-followups--20260924-0323--39d1cab2/).
 - #2080 + #2075-v3 post-merge validation lanes: A a3212838e6d1674b7, B a833573c5bbdf2a36 (scratch r42/pr2080-lane{A,B}).
   Archive as ml2080-round1-laneA-reprobe.md / ml2080-round1-laneB-refute.md.
-- PyPI v0.16.0 publish run 35977786108 WAITING Overtoad approval; ships batch-tags race, NBSP star, symlink fault (fixed by #438). Owner decision.
+- PyPI v0.16.0 publish run 35977786108 WAITING Overtoad approval; ships batch-tags race, NBSP star, symlink fault (fixed by #438). The Overtoad decision.
 
 ## SECOND fix-forward (register + primer), from ml2080-round1-lane{A-reprobe,B-refute}.md -- both lanes agree on H1/M1
 Register (notes/...DEFECT-REGISTER.md at main):

@@ -225,7 +225,7 @@ Round 36's five PRs (data#376/#377, cascor#621/#624, ml#1791/#1795) all merged; 
 
 ---
 
-## 3. Owner rulings — do not re-litigate
+## 3. The Overtoad rulings — do not re-litigate
 
 | Date | Question | Ruling |
 |---|---|---|
@@ -375,6 +375,6 @@ in this order:
 - [ ] The three look-ahead paths and the 8-K restatement defect (§0.6, §0.7)
 - [ ] File the `_PROJECT_API_TRUNCATABLE_GENERATORS` fork-drift row (§0.8)
 - [ ] The CIK-only SEC shares cache key — no version, no TTL (§0.9)
-- [ ] Owner unparking, if any of the other 16 open rows are to be actioned (§0.11)
+- [ ] The Overtoad unparking, if any of the other 16 open rows are to be actioned (§0.11)
 - [ ] `equities_seq` binds no deployment defaults — live cache-key collision (§0.12)
 - [ ] `accepted_via_allow_truncated_datasets` can deny the acceptance it annotates (§0.13)

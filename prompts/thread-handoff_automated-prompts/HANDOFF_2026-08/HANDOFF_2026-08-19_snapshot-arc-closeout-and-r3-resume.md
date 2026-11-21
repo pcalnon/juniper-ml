@@ -1,7 +1,7 @@
 # HANDOFF 2026-08-19 — snapshot arc closed; R3 resume is next
 
 Successor to
-[`HANDOFF_2026-08-15_q6-resolved-and-Overtoad-decision-register.md`](HANDOFF_2026-08-15_q6-resolved-and-Overtoad-decision-register.md).
+[`HANDOFF_2026-08-15_q6-resolved-and-the-overtoad-decision-register.md`](HANDOFF_2026-08-15_q6-resolved-and-overtoad-decision-register.md).
 
 **Nothing from this arc is in flight.** Fourteen PRs merged (9 juniper-ml, 3 juniper-cascor,
 2 juniper-deploy) plus one direct-to-main cascor commit. This document is the only deliverable
@@ -22,20 +22,20 @@ functions*, and no single offset recovered the set.
 
 ## 1. Shipped this arc — do NOT redo
 
-| PR | repo | what |
-|---|---|---|
-| ml#1129 | juniper-ml | Q-6 closure propagated into **10** stale register sites |
-| ml#1136 | juniper-ml | **F-P1-2 closed — premise refuted**; P1.6 + P3 criteria 6/8 evidenced |
-| ml#1137 | juniper-ml | snapshot-lifecycle design + §12 perf-lane phase gating + census script |
-| ml#1138 | juniper-ml | Grafana port configurability proven; corrected D-1 remedy |
-| ml#1144 → ml#1164 | juniper-ml | D-A demotion, then its **retraction** (§4) |
-| ml#1150 / ml#1172 | juniper-ml | ecosystem port registry; S-5 answer recorded |
-| ml#1181 | juniper-ml | cross-repo reference sweep preserved in `util/ad-hoc/` |
-| deploy#183 / #186 | juniper-deploy | `PROMETHEUS_HOST_PORT`; monitoring tier honours `BIND_HOST` |
+| PR                   | repo           | what                                                                                                                                                      |
+|----------------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ml#1129              | juniper-ml     | Q-6 closure propagated into **10** stale register sites                                                                                                   |
+| ml#1136              | juniper-ml     | **F-P1-2 closed — premise refuted**; P1.6 + P3 criteria 6/8 evidenced                                                                                     |
+| ml#1137              | juniper-ml     | snapshot-lifecycle design + §12 perf-lane phase gating + census script                                                                                    |
+| ml#1138              | juniper-ml     | Grafana port configurability proven; corrected D-1 remedy                                                                                                 |
+| ml#1144 → ml#1164    | juniper-ml     | D-A demotion, then its **retraction** (§4)                                                                                                                |
+| ml#1150 / ml#1172    | juniper-ml     | ecosystem port registry; S-5 answer recorded                                                                                                              |
+| ml#1181              | juniper-ml     | cross-repo reference sweep preserved in `util/ad-hoc/`                                                                                                    |
+| deploy#183 / #186    | juniper-deploy | `PROMETHEUS_HOST_PORT`; monitoring tier honours `BIND_HOST`                                                                                               |
 | cascor **`5f15a45`** | juniper-cascor | **optimizer restore fixed** — faithful class, state, lr. *(Landed on main via merge `cb8a30e`; `git show cb8a30e` shows the WRONG diff — use `5f15a45`.)* |
-| cascor#534 | juniper-cascor | logger creates its dir on demand; `.gitignore` stops ignoring the snapshots package |
-| cascor#536 | juniper-cascor | model constants re-extracted; **drift gate made to actually fire** |
-| cascor#537 | juniper-cascor | service snapshot destination moved **out of the importable package** |
+| cascor#534           | juniper-cascor | logger creates its dir on demand; `.gitignore` stops ignoring the snapshots package                                                                       |
+| cascor#536           | juniper-cascor | model constants re-extracted; **drift gate made to actually fire**                                                                                        |
+| cascor#537           | juniper-cascor | service snapshot destination moved **out of the importable package**                                                                                      |
 
 ---
 

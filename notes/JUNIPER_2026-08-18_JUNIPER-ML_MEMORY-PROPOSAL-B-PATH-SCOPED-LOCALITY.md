@@ -435,7 +435,7 @@ Reasoning:
    what MECH §4d says `/doctor` cuts as derivable), the correct fix is to prune the parent file,
    not to exclude it. Excluding is all-or-nothing at file granularity.
 
-**Owner decision D-1 (§12):** whether to adopt `claudeMdExcludes` for the parent. My recommendation
+**The Overtoad decision D-1 (§12):** whether to adopt `claudeMdExcludes` for the parent. My recommendation
 is no; the dedup in point 3 is the better trade and is a prerequisite for the §4.3 line budget
 either way.
 
@@ -1208,7 +1208,7 @@ one, is how it gets deferred again.
 
 ---
 
-## 12. Owner decisions and open questions
+## 12. The Overtoad decisions and open questions
 
 | # | Decision | Recommendation | Consequence if reversed |
 |---|----------|----------------|-------------------------|

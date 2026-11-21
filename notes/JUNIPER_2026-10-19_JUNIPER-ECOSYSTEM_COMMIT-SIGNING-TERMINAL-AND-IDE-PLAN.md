@@ -68,7 +68,7 @@ Items 6 to 8 together lead to **the sequencing rule: no card goes into turing un
 
 **In scope**
 
-- Owner commits on a developer host in any checkout under the Juniper root, including linked worktrees, from:
+- The Overtoad commits on a developer host in any checkout under the Juniper root, including linked worktrees, from:
   - a terminal;
   - the Source Control views of Cursor and VS Code: commit, amend, and the merge, rebase and cherry-pick commands that create commits;
   - both IDEs' integrated terminals.
@@ -565,7 +565,7 @@ The conventions follow bring-up plan §8: exit 0 / 1 / 2, `--help`, `--dry-run` 
 - **E-B4-SCOPE.** `git config --global` becomes the S1 include.
 - **E-B4-GPG.** `$(brew --prefix)/bin/gpg` stands, as the literal `/usr/local/bin/gpg`.
 - **E-G-SIGN.** As above.
-- **E-ACTIVE.** Owner commits in the tree fail closed until B2 and B3 (S8).
+- **E-ACTIVE.** The Overtoad commits in the tree fail closed until B2 and B3 (S8).
 - **E-D11-S.** D11's environment does not stop an explicit `-S`, `-c include.path=` or `--config-env`. So no card goes into turing until C8 and K12 are in place, which holds B2 and B3 (K6, K7) back too, and B4's touch policy follows the S11 ruling.
 - **E-D5-LINE.** The D5 row's `~/.bash_profile:87` is now `:92`.
 
@@ -616,7 +616,7 @@ Delete the include by hand only when no other include still points at it. `--rem
 | A clone outside the root lands unsigned commits | L | M | clone into the root; the hazard's `%G?` check |
 | A concurrent session's whole-file upload reverts the shared-file edits | M | M | build from fresh `origin/main`; an idempotent apply script; re-check after merge |
 
-## 13. Owner checklist (credential-bearing)
+## 13. The Overtoad checklist (credential-bearing)
 
 **Run every line in a real terminal**, not as `! <cmd>`. The Claude Code session carries D11's environment, which disables signing and fails K9's preflight by design. Run the steps in this order.
 
@@ -719,7 +719,7 @@ The trust gate needs three values to agree: the Overtoad's reading from the inde
   - mkdir 0700 and a Python-written header; R-S8 with the same-pattern layout; an exact rollback (`--remove`, `--fixed-value`);
   - the global-file rule; the dry-run exit; the key grammar; `--include-file` refusals;
   - platform-independent IDE paths and profiles; JSONC cases; an injectable date; the YOLO FAIL.
-- **Owner steps:**
+- **The Overtoad steps:**
   - landing via the retry pusher; the `:75` count; the `main-verify.yml` mirror;
   - I-SIGN with Commit Empty, Dock launches, T7 under the root, and agent prompt rows;
   - K12's command forms; the K6 verification and gated trust; the PIN-lockout guard; the yamaguchi ruling; S8 recovery;

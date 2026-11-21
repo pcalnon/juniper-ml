@@ -195,7 +195,7 @@ Started 2026-08-21 ~18:20. Still running at time of writing (~21 h).
 - **Was the Jul-13 deletion retention, or damage?** §5. `list-broken-files` answers it.
 - **The root `duplicati-server` on :8200** — its `yamaguchi` job has never completed a backup, it runs
   privileged, and its config is unreadable without sudo. Candidate for **removal**, not migration.
-  Owner wants Duplicati on a dedicated system user; note the real job runs in a **user-session**
+  The Overtoad wants Duplicati on a dedicated system user; note the real job runs in a **user-session**
   instance that dies with the session — plausibly why a 42-day outage went unnoticed.
 - **The 50 MB skip** — excludes ~121 GB across 74 files (~88 % of `Juniper/` by volume, measured
   2026-08-22; recount, this tree changes daily) **and all three archived job databases** (2.26 /

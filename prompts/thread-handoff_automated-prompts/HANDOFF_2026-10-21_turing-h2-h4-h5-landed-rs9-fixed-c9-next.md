@@ -38,7 +38,7 @@
 - **H5:** both `~/.claude/mcp-servers/adaptive-graph-of-thoughts` and `~/.claude/mcp-servers/agi-mcp-server` are still present. The Overtoad's decision is pending.
 - **E-H4-WHEEL:** rustup holds no toolchain at 1.83 or later. The default `stable` is 1.71.0, beside 1.49.0, 1.56.0 and 1.56.1. So Serena v1.7.0 still cannot build on turing.
 
-## Owner decisions and steps
+## The Overtoad decisions and steps
 
 1. **E-H4-WHEEL: Serena on turing.** Choose one:
    - (a) install a Rust 1.83+ toolchain beside 1.71 and build once (the command is in plan §18.3);
@@ -55,7 +55,7 @@
    - the network (F2, A6);
    - F3 node mode;
    - commit signing (§19): no YubiKey into turing until C8 and K12 are installed and K13 is done;
-   - the rest of Owner block 1.
+   - the rest of The Overtoad block 1.
 
    After each block, run `python3 util/host_state_check.py`.
 

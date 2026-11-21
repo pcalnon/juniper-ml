@@ -61,7 +61,7 @@ Short names used below: **HANDOFF** = `HANDOFF_2026-10-03_dynamic-workflow-harne
 | P8-26 | Decide whether to delete the seed branch `design/dynamic-workflow` (`27ea09a1`) after the design merges | HANDOFF item 4 (PR body) | [VERIFIED 2026-10-04: it exists on origin (REST) and locally at `27ea09a1`] | OWNER-ACTION | P8-08 | juniper-ml | S | HYGIENE |
 | P8-27 | Resolve, or record in §12, the R1 residuals the round-2 briefs omit: the cost of calibration bursts and whether 5 per window suffice; the compare-endpoint cost of `--expect-base` | R1 l.30, l.50 | [NOT RE-PROBED — research] | Record in P8-05; measure in P8-14 / P8-19 | — | juniper-ml | S | RESEARCH |
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options; source recommendation | Blocks | Source |
 |---|---|---|---|---|
@@ -135,7 +135,7 @@ Short names used below: **HANDOFF** = `HANDOFF_2026-10-03_dynamic-workflow-harne
 
 1. **P8-03, then P8-02**: amend the briefs and launch round 2 once this planning fan-out has finished and no other path is mid-round.
 2. **P8-04 → P8-05 → P8-07 → P8-08**: archive, reconcile, fold v4 (including the stale pilot and §5 rows 4, 5, 7 and 8), run the gates, and open the v4 PR. That PR asks for D-1..D-12 and RS-1/RS-2.
-3. **Owner (P8-14 / P8-15)**: decide whether P0 starts as soon as round 2 reports, since D-10 cannot be ruled until P0 has collected at least 3 weekly windows of data.
+3. **The Overtoad (P8-14 / P8-15)**: decide whether P0 starts as soon as round 2 reports, since D-10 cannot be ruled until P0 has collected at least 3 weekly windows of data.
 
 The cheap side items can run at any time: P8-10 (before ~10-22), P8-09 and P8-01.
 

@@ -80,7 +80,7 @@ Continue defect-register round 42 for the Juniper ecosystem.
      - Primer lines 4742-4743 have been stale since data#281: they say juniper-data registers no such handler.
    - (b) The primer's `idempotent_jobs.py` example echoes client strings through `JSONResponse` (primer line 2687). `store.complete` (2686) stores the payload before rendering it, so every replay of that key (2662) fails the same way.
 7. **PATCH juniper-ml#2080's body** with `gh api -X PATCH`. Its rejection of the APD-ML-008 nit was wrong (`ml2080-round1-laneA-reprobe.md` N6); #2088 applies the nit.
-8. **Owner decisions to surface:** Appendix B.
+8. **The Overtoad decisions to surface:** Appendix B.
 
 ## Key context and traps (part of the prompt)
 - **Routing.** Canopy combined is "canopy combined [577a1c]"; containers is "containers [2703c8]". The canopy E2E session has exited.
@@ -202,7 +202,7 @@ df -i /tmp | tail -1
 
 ## Appendix B: Overtoad decisions, and the later arc items
 
-**Owner decisions to surface:**
+**The Overtoad decisions to surface:**
 - **#437's breaking marker.** Data's `[Unreleased]` carries #437's `equities_seq` 6.0.0, a `dataset_id` change, and the notes renderer computes breaking = NO.
 - **APD-ML-008's silent-path remedy:** a variable only the drift step sets.
 - **Releases:**

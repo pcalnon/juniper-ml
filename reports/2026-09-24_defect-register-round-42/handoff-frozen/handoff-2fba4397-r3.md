@@ -102,7 +102,7 @@ Continue defect-register round 42 for the Juniper ecosystem.
 7. **PATCH two PR bodies** with `gh api -X PATCH`.
    - juniper-ml#2080: move the bullet "A-nit on `APD-ML-008`" (body L69, under "Rejected, with reasons", L65) to the applied items, citing #2088 (`ml2080-round1-laneA-reprobe.md` N6).
    - juniper-ml#2088: "Extended beyond the lanes" (the list route) is false; `register-fixforward2-round2-laneB-refute.md` N11 (line 120) named it. `2439d049`'s commit message, "which no lane named", is false too; record that in the closes PR.
-8. **Owner decisions:** Appendix B.
+8. **The Overtoad decisions:** Appendix B.
 
 ## Key context and traps (part of the prompt)
 - **Routing:** "canopy combined [577a1c]" and "containers [2703c8]". The canopy E2E session has exited.

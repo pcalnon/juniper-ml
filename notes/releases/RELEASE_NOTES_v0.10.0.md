@@ -134,7 +134,7 @@
   the `/tmp` one: **`util/ad-hoc/` placement protects work from `/tmp` reaping, not from never
   being committed**, and to `git`, to CI and to the next session an uncommitted file in a
   sibling worktree is indistinguishable from one that does not exist. That worktree is locked;
-  the lock is currently the only thing preserving it. **Owner action**: commit those two files,
+  the lock is currently the only thing preserving it. **The Overtoad action**: commit those two files,
   or retire them in favour of this one. Also recorded, because the shape recurs: this session's
   searches used `d6-epochs-spread` / `epochs_spread`, patterns taken from the *evidence
   directory's* name, and the instrument is `epochs_completed_spread` — neither is a substring.
@@ -165,7 +165,7 @@
   is breaking. Applied by `util/ad-hoc/2026-09-22_raise_data_floor_0_15_0.py`, which asserts each
   site's exact text, requires exactly one match apiece, and refuses to open this section unless
   `[Unreleased]` is empty.
-- **Owner rulings recorded for the four `Not decided:` clauses of D1, D2, D4 and D6**
+- **The Overtoad rulings recorded for the four `Not decided:` clauses of D1, D2, D4 and D6**
   (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`, new §5 plus
   a pointer under each clause). D2: `blas_threads` / `num_processes` / `eval_metrics_enabled`
   ratified as-is, with no second knob. D4 axis 2: 10,000 now, in-process later (the suite path's

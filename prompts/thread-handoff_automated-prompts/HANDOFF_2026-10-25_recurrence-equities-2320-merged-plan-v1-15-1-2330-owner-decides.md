@@ -42,7 +42,7 @@ This session (turing session 11, "recurrence equities" [42fe25], started from th
 2. **Re-check #2334 after merge**, about an hour later:
    - `git show origin/main:notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md | grep -c "^- \*\*Version\*\*: 1.15.1"` should print 1, or show a later version that keeps the v1.15.1 lines;
    - `python3 -I util/ad-hoc/2026-10-25_consolidated_plan_v1_15_1_session_record.py --check` on a tree at `main` should exit 0.
-3. **Owner items carried** from v1.7.16:
+3. **The Overtoad items carried** from v1.7.16:
    - the parent `Juniper/AGENTS.md` RELEASED paragraph;
    - the recurrence-client 0.3.1 release;
    - juniper-config-tools 0.2.0;

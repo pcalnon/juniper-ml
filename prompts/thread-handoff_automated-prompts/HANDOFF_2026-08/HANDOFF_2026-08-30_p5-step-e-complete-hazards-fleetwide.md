@@ -33,7 +33,7 @@ REMAINING WORK
    On juniper-ml use `gh pr merge 1506 --squash --auto` + util/wait_for_checks.py; do NOT use
    safe_merge --no-auto-fallback (main merges every ~8-15 min against ~10 min CI, so the
    client-side race is unwinnable and it exits 0 having merged nothing).
-3. Owner decisions C.1/C.2/C.5/C.6 were TAKEN on 2026-08-29/30 and are UNSTARTED work, not
+3. The Overtoad decisions C.1/C.2/C.5/C.6 were TAKEN on 2026-08-29/30 and are UNSTARTED work, not
    settled positions — read #1326 comment 5467340380 for their text before assuming otherwise.
 4. HEADROOM IS THE URGENT RISK, not size: juniper-data-client has 486 chars and cascor-worker
    783, against a BLOCKING required gate. One added paragraph in either FAILS CI. Check with

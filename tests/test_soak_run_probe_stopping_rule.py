@@ -332,7 +332,7 @@ class RealRunIsGatedThroughMain(unittest.TestCase):
 
 
 class ForceIsNarrowedToANamedProbe(unittest.TestCase):
-    """Owner decisions D1/D3, ruled 2026-09-17, enforced rather than written down.
+    """The Overtoad decisions D1/D3, ruled 2026-09-17, enforced rather than written down.
 
     ``notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md``:
     D1 authorises a named probe on request and declines the campaign; D3 admits

@@ -132,7 +132,7 @@ not merge the two.
 
 ---
 
-## 3. Owner decisions and parked items
+## 3. The Overtoad decisions and parked items
 
 None is blocked on engineering. Do not "make progress" by guessing Paul's answer.
 
@@ -140,9 +140,9 @@ Sources in this table: **P3 rollup** = `notes/JUNIPER_2026-08-08_JUNIPER-ECOSYST
 
 | item                          | nature                                                                                                                                                                             | source                            |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
-| **F-P1-2**                    | Owner decision — a native Grafana v13.0.1 owns `:3000` (apt, systemd `active`+`enabled` since 2026-07-15, non-default creds, **binds `*:3000`**). Options package already written. | P3 rollup §3                      |
-| **Q-8**                       | Owner call — where run-level performance baselines live. Also gates the `JR-CAS-OBS-004` targets (plan:1160).                                                                      | plan:1147                         |
-| **Q-10**                      | Owner call — dedicated `JuniperRecurrence` conda env vs riding `JuniperCascor1`. Hygiene, explicitly *not* a blocker.                                                              | plan:1149                         |
+| **F-P1-2**                    | The Overtoad decision — a native Grafana v13.0.1 owns `:3000` (apt, systemd `active`+`enabled` since 2026-07-15, non-default creds, **binds `*:3000`**). Options package already written. | P3 rollup §3                      |
+| **Q-8**                       | The Overtoad call — where run-level performance baselines live. Also gates the `JR-CAS-OBS-004` targets (plan:1160).                                                                      | plan:1147                         |
+| **Q-10**                      | The Overtoad call — dedicated `JuniperRecurrence` conda env vs riding `JuniperCascor1`. Hygiene, explicitly *not* a blocker.                                                              | plan:1149                         |
 | **W-12 / Q-7**                | Parked — `csv_import` corpus. The plan's Q-7 row says "Defer until a corpus is defined". It has blocked nothing.                                                                   | plan:1095 (W-12), plan:1146 (Q-7) |
 | **PF threshold ratification** | The *thresholds* are Paul's. The lane itself is §2.3 above.                                                                                                                        | plan §12                          |
 | **F-P1-4**                    | Owner's to keep or delete — snapshot `.h5` debris.                                                                                                                                 | P1 smoke note:37 (§2 Findings)    |

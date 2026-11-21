@@ -3,7 +3,7 @@
 - **From:** the 2026-10-17/18 session on turing, named "turing dev env". It continues `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-17_turing-prs-landed-session-1-partial-Overtoad-c8-a1-d6-next.md`.
 - **Plan of record:** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` v1.0.0. Task and gate IDs below refer to it.
 
-## Owner rulings this session
+## The Overtoad rulings this session
 
 - **D6, how packages reach Intel turing:** conda-forge plus vendor binaries.
   - A dedicated conda env, `JuniperHostTools`, holds the tools; only the named binaries are symlinked into `~/.local/bin`, which is already first on PATH.
@@ -117,7 +117,7 @@
   bash util/install_claude_agent_guard.bash          # prints the entry
   bash util/install_claude_agent_guard.bash --apply  # installs it
   ```
-- The rest of Owner block 1: C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
+- The rest of The Overtoad block 1: C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
 
 **Agent, once the link passes the gate:**
 

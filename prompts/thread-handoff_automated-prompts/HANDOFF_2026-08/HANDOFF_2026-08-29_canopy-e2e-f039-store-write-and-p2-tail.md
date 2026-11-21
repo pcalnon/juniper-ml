@@ -195,7 +195,7 @@ separates them.**
    score it accordingly rather than filing a new defect. Named fix: adopt
    `metrics_panel._hidden_unit_addition_markers`' whole-window scan (`metrics_panel.py:1999-2003`) with
    dedupe so a dismissed pulse cannot re-arm.
-8. **Owner decision 4 (live 3-D, "both arms")** — a demo arm on `/api/dataset/generate` (demo-gated **by
+8. **The Overtoad decision 4 (live 3-D, "both arms")** — a demo arm on `/api/dataset/generate` (demo-gated **by
    design**) and a live arm on `/api/stage_dataset`. The sequence control set **M-DATASET-17..26 is 10
    already-BLOCKED rows** gated on this (`dataset-plotter-seq-controls` ships `display:none`, revealed
    only for a sequence dataset). **They are gated on the Overtoad's scoping decision as well as on the

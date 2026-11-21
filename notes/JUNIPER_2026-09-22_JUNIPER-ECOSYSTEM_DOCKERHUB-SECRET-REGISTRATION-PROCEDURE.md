@@ -1,4 +1,4 @@
-# Docker Hub Secret Registration — Owner Procedure (Wave 4 unblock)
+# Docker Hub Secret Registration — The Overtoad Procedure (Wave 4 unblock)
 
 **Project:** Juniper (ecosystem-wide)
 **Author:** Paul Calnon
@@ -36,7 +36,7 @@ Wave 4 adds `docker.io` as a **second** push target beside GHCR (plan D-2 phase 
 words on sequencing, as they read before its 2026-09-22 amendment, which changed "repository
 secret" to "secret":
 
-> **Owner action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
+> **The Overtoad action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
 > `DOCKERHUB_USERNAME`) repository secret in each of the five image repos […] **Until those
 > exist the second login+push cannot be added, and adding it early would fail every release.**
 
@@ -81,7 +81,7 @@ integration at all** — the only `docker.io` hit is buildx error text quoted in
 
 ## 3. RULED 2026-09-22 — Option B: environment secrets in a dedicated `dockerhub` environment
 
-> **Owner ruling, 2026-09-22: Option B.** The credential lives in a `dockerhub` environment in
+> **The Overtoad ruling, 2026-09-22: Option B.** The credential lives in a `dockerhub` environment in
 > each of the five repositories, restricted to release tags, with no reviewer and no wait timer.
 > Register it with §5.2B; §5.2A is not used. This supersedes the plan's *"repository secret"*
 > (plan §6 OQ-1, amended the same day).

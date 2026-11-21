@@ -212,7 +212,7 @@ Overtoad: the in-session approval of 2026-09-21 covered the merge that landed th
 - Settle B3 O-2 (can `duplicati-server-util --server-datafolder=<copy>` mint a token as the server's uid without `--password`?) against a throwaway server on a scratch data folder — never against the live server.
 - Write the D2 unit (`juniper-backup-failure.service`; the reporter takes the unit name as `$1`, default `duplicati-backup.service`); note that the watchdog user unit runs the PRIMARY checkout's `yamaguchi_watchdog.py` with no `--backup-id`, and that `util/install_duplicati_service.bash` and `~/.config/duplicati-backup/web-credential` exist only inside the design today.
 
-### 1.5 Owner actions (each blocks something)
+### 1.5 The Overtoad actions (each blocks something)
 
 1. **Rotate the TestPyPI token.** Lane A3's harness printed `env | grep '^TEST_'` into a scratch file
    (since regenerated) **and into a tool result** — i.e. its subagent transcript, a cloud-linked sink (round 2, count-only: one `TEST_TWINE_*=` line and one token-shaped line in A3's transcript).

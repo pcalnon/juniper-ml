@@ -47,7 +47,7 @@ There are two lanes. One successor should own both. If two sessions split them, 
 7. **[R] The fork-drift `surrogatepass` marker**, after item 6 files APD-ECO-013. Agent-doable.
 8. **[R] Verify on the real services, then file** (a) the 422-echo defect, (b) the primer toy's copy of it, and (c) primer lines 4742-4743, which are stale. Correct the primer IN PLACE. Agent-doable.
 9. **[R] PATCH the bodies of juniper-ml#2080 and #2088** with `gh api -X PATCH`. Not done [VERIFIED 2026-10-03: #2088's body still has "Extended beyond the lanes"; #2080's still has the "A-nit on" bullet and no "Applied by #2088" row]. Agent-doable.
-10. **[R/F] Owner decisions: surface them, decide none.** **[F]:** the observability and service-core releases (ask only after item 4's juniper-ml PR validates) and who opens the cap/lock/floor PRs; canopy#685 calls (a)-(c); the stray canopy branches `pr-63`/`pr-683` (both still at `4caf9389` [VERIFIED 2026-10-03]); whether to purge test events from live Sentry. **[R]:** #437's breaking marker; APD-DATA-055's `If-Match` half;
+10. **[R/F] The Overtoad decisions: surface them, decide none.** **[F]:** the observability and service-core releases (ask only after item 4's juniper-ml PR validates) and who opens the cap/lock/floor PRs; canopy#685 calls (a)-(c); the stray canopy branches `pr-63`/`pr-683` (both still at `4caf9389` [VERIFIED 2026-10-03]); whether to purge test events from live Sentry. **[R]:** #437's breaking marker; APD-DATA-055's `If-Match` half;
     APD-ML-008's silent-path remedy; the register's nine parked rows; whether the CodeQL `paths-ignore` question still matters now that the highs are dismissed; the next juniper-data release; when to start the later arc items; worktree and branch cleanup.
 11. **[R] Canopy-ledger hand-over** (`[ALSO P2]`). F-CANOPY-060…062 are still not in `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` (it stops at 059) [VERIFIED 2026-10-03: grep]. Send #685's validation outcome and the stale "Nothing was loaded" copies to the P2 (canopy) session. If there is none, record them yourself.
     **Update 2026-10-08, from P2** (no P3 session was running to tell): P2's side of this item is done. The canopy ledger's Phase 10
@@ -316,7 +316,7 @@ Re-verify every anchor at `main` first.
 - juniper-ml#2088: in body L47, replace "**Extended beyond the lanes:**" with "**Named by round-2 lane B** (`register-fixforward2-round2-laneB-refute.md` N11, line 120):".
 - cascor#689: F9's body PATCH (it still says "4001" [VERIFIED 2026-10-03: grep count 2]).
 
-### Owner decisions (item 10), full text
+### The Overtoad decisions (item 10), full text
 
 Ask each as a question with its options (yes/no where none are listed), and record the question, the options and the answer verbatim in the register.
 - **[F] The releases:** see "Release facts" above.

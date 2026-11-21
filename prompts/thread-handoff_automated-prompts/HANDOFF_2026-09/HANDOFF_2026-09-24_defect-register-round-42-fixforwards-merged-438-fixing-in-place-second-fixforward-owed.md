@@ -43,7 +43,7 @@ Continue defect-register round 42 for the Juniper ecosystem. The register is `no
    - record the peer's residue.
 4. **The canopy nit goes to the canopy E2E ledger, not the register.** `src/frontend/dashboard_manager.py:8410` cuts " The resulting dataset" and so drops juniper-data's truncation warning (`juniper_data/core/limits.py:168`). So do the peer's LOW 3/4, which the canopy leak PR fixes.
 5. **Put the four untracked reports into the next PR**, with the archiver's local MISSING entries: `data438-round1-lane{A-reprobe,B-refute}.md` and `ml2080-round1-lane{A-reprobe,B-refute}.md`.
-6. **Owner decisions** to surface:
+6. **The Overtoad decisions** to surface:
    - #2081's CodeQL;
    - the v0.16.0 PyPI approval (it ships defects #438 fixes; 0.16.1 is the alternative);
    - #437's breaking marker;

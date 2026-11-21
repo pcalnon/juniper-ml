@@ -100,7 +100,7 @@ a small change from the branch as it stands.
 
 ---
 
-## 3. Owner rulings, 2026-09-05 — do not re-litigate
+## 3. The Overtoad rulings, 2026-09-05 — do not re-litigate
 
 Round 35 flagged an ambiguity and recorded it **only in its own handoff prompt** — not in data#366's
 body, not in the register, not in any note. It had therefore never reached the Overtoad. Put to them

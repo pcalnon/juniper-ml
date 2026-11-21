@@ -105,7 +105,7 @@ HANDOFF_2026-10-03_ci-budget-arc-consolidated.md (merge mechanics, sandbox, chec
 
 ## Context the remaining work needs
 
-**Owner rulings (quoted from the 09-09 handoff)**: "THE THREE RAISES ARE RULED: the Overtoad approved shipping them on 2026-09-22, over a recorded dissent." OWNER 4: "Ruled OUT on 2026-09-15." The SHIP
+**The Overtoad rulings (quoted from the 09-09 handoff)**: "THE THREE RAISES ARE RULED: the Overtoad approved shipping them on 2026-09-22, over a recorded dissent." OWNER 4: "Ruled OUT on 2026-09-15." The SHIP
 ruling "covers the three raises only" — it does not settle OWNER 2. Both sides of OWNER 2 (HOLD / SHIP and the counter to each) are written out above `REPO_TIMEOUTS` in `util/safe_merge.py` and in the
 09-09 handoff's §1 block; options there: keep raises and decide only the at-ceiling case; size on queue-free span; size on uncontended heads; raise the ceiling (risk above ~3600 s, the worker lease);
 keep the auto-merge net armed on a timeout refusal. [NOT RE-PROBED — 09-09 handoff, validated rounds 1-5]

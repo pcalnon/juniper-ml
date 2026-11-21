@@ -61,7 +61,7 @@ says why the attempt to claim otherwise was withdrawn.
    `fundamentals_fill="drop"`, Start, answer the modal. Record the run in the canopy E2E ledger
    (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`), not here.
 
-5. **Owner decisions. The empty set is still empty — do not action any of these without a ruling.**
+5. **The Overtoad decisions. The empty set is still empty — do not action any of these without a ruling.**
    - **Is option 3 a caller right?** Round 37 said expressing it caller-side needs a schema change.
      This round "refuted" that on `model_fields_set`; **round 2 reversed the refutation** and round
      37 is substantially right (§4). Mechanism: `EquitiesGenerator.bind_deployment_defaults` ends in
@@ -152,7 +152,7 @@ Auto-merge was armed natively on every PR under the Overtoad's session-wide appr
 `gh pr view <N> --json state,mergedAt,mergeCommit` **and** check the content is on `main` — a MERGED
 badge is not ancestry, and `util/safe_merge.py` prints the *head* SHA, not the squash commit (§5.9).
 
-## 3. Owner rulings — carried, none new
+## 3. The Overtoad rulings — carried, none new
 
 No ruling was sought. Round 37's §3 table stands (option 3 = fail/cancel/deselect;
 `fundamentals_fill="nan"`; `APD-DATA-019` kept open and re-scoped). §0.5 lists what now needs one.
@@ -357,5 +357,5 @@ whether round 37's own validation rounds ran as it describes (no record exists).
 - [x] cascor follow-ups PR — juniper-cascor#640, MERGED `53c0338`; three register rows closed (§0.2)
 - [ ] The two canopy findings filed in the E2E ledger (§0.6)
 - [ ] Live E2E of the prompt on equities (§0.4)
-- [ ] Owner decisions (§0.5)
+- [ ] The Overtoad decisions (§0.5)
 - [ ] Round 3, on this finished document (§0.1)

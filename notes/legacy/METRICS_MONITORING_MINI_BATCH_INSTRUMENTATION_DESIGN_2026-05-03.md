@@ -387,7 +387,7 @@ post-R5 convention.)
 
 (Format mirrors the R3/R4/R5 entry-plan-Q convention.)
 
-| ID | Question | Owner | Default if not pinned |
+| ID | Question | The Overtoad | Default if not pinned |
 |---|---|---|---|
 | **Q1 (buckets)** | What bucket boundaries? Re-use the R5.4-pre layout `(0.05, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 30.0, +inf)` or design a new layout calibrated against the production per-epoch data the R5.4 alerts will collect? | METRICS-MON Overtoad | Re-use R5.4-pre layout for v1; revisit at first phase boundary. **Per the parent-task scope, this is out-of-scope for this design doc.** |
 | **Q2 (name)** | Final metric name: `..._seconds_per_step`, `..._per_minibatch`, or refactor existing to `..._per_epoch_seconds` + new `..._per_step_seconds`? | METRICS-MON Overtoad | `..._seconds_per_step` (additive, breaks no existing alerts). |

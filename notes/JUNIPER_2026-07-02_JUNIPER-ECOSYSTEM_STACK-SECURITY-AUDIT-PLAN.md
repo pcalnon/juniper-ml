@@ -373,7 +373,7 @@ container inspect, config parity), the hardening recommendations, and the report
 | SP2 | Static/read-only verification of each finding at the evidence bar | Fable | verified findings |
 | SP2′ **(done 2026-07-02, §5.2)** | Active/dual-use verification of the §8 register on an isolated stack | Opus | HO-1…HO-8 artifacts ✓ |
 | SP3 | Author the security findings report (Critical→Low, diffed vs the 24-finding baseline) | Fable + Opus (HO items) | report doc |
-| SP4 | Owner triage → issues/PRs; deploy/secret changes are Overtoad-gated | Overtoad | tracked follow-ups |
+| SP4 | The Overtoad triage → issues/PRs; deploy/secret changes are Overtoad-gated | Overtoad | tracked follow-ups |
 
 ## 10. Appendix — key references
 

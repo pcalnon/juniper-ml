@@ -149,7 +149,7 @@ forks, each fork about 0.65M tokens.
   one plain command per call. The host's `grep` is ugrep (complexity limits, honours `.gitignore`): use `command grep`.
 - **MEMORY.md** is about 20.4 KB (target 20 KB, not the hook's 17.1): retire entries into hubs, never strip hooks.
 
-## Owner questions still open
+## The Overtoad questions still open
 
 - **#2360's order (new):** is #2360 to land before Phase 16 now? Its auto-merge is armed and its CI queued.
 - **O13's convergence (new):** O13 enumerates every pull of `main` on a date a trio primary was pulled, and the

@@ -128,7 +128,7 @@ including the ecosystem `AGENTS.md`.
 
 ### D-2 — how is additive sizing implemented?
 
-Owner decision 2 mandates honouring the requested training count and **generating** extra points.
+The Overtoad decision 2 mandates honouring the requested training count and **generating** extra points.
 `split_data` raises when `train_ratio + test_ratio > 1.0` (`core/split.py:64-65`), so a
 train-at-100 % model violates that function's own invariant — making `split.py` "three-way" **is**
 the carve-up the design rejected.
@@ -249,7 +249,7 @@ invariant to "Chunk 4 gate" and then described no gate.
 - **That v3 is correct.** v2 read as sound and contained a prescription that would have broken every
   tabular artifact in the ecosystem.
 - **Runtime pass/fail.** No test body was executed at any point.
-- **D-1 and D-2.** Owner rulings with no artifact to appeal to.
+- **D-1 and D-2.** The Overtoad rulings with no artifact to appeal to.
 - **Whether `PostgresDatasetStore` is live.** Circumstantially dormant — its DDL declares
   `n_classes`/`class_distribution` `NOT NULL` while `DatasetMeta` allows both `None`, so the table
   is already incompatible with regression artifacts. If dormant, R-3 and R-4 are theoretical.

@@ -8622,7 +8622,7 @@ Operational tuning only.
 
 **Detail**:
 
-**Severity:** P2 · **Owner repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
+**Severity:** P2 · **The Overtoad repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
 
 **Notes**:
 
@@ -8637,7 +8637,7 @@ Operational tuning only.
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
@@ -9946,7 +9946,7 @@ Cross-link: panels bind catalog §3.5 (`dataset_post_total`) and §4.7.
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
+**Severity:** P3 · **The Overtoad repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
@@ -15476,7 +15476,7 @@ CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; partially remediated prior; full co
 
 **Detail**:
 
-**Severity:** P2 · **Owner repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
+**Severity:** P2 · **The Overtoad repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
 
 **Notes**:
 

@@ -6158,7 +6158,7 @@ recovery value `"healthy"`; D-1's stale "exactly two writers" docstring no longe
 to the canopy USER_MANUAL truth-up); the depth-label "0 of N" cosmetic reads as already fixed in code
 (`_apply_hierarchy_filter` returns `"all"` for the unfiltered case) — verify live.
 
-**Owner decisions requested (carried in the handoff):** the F-CANOPY-004 latency disposition — accept and
+**The Overtoad decisions requested (carried in the handoff):** the F-CANOPY-004 latency disposition — accept and
 document a freshness contract now (post-Stage-2: 3–16 s interaction renders, 20–40 s fresh-session
 population) versus open the JR-CAN-PERF-004 WS-migration workstream; recommendation: the contract now, the
 migration as a planned workstream — and the open-P2 set (§6.3).
@@ -6305,7 +6305,7 @@ are unblocked by the F-CANOPY-006/-027 closures and can run on this same bring-u
   question to the ledger. **D-11** — both package `__version__` literals (`"0.5.0"` vs pyproject `0.6.0`)
   now resolve from `importlib.metadata`, the OBS-1 single source.
 
-Owner decisions unchanged and now **sharper**: F-CANOPY-004's freshness contract is the gate on a clean
+The Overtoad decisions unchanged and now **sharper**: F-CANOPY-004's freshness contract is the gate on a clean
 live render for F-035, F-011 and the rest — this re-drive is the strongest evidence yet that the fixes
 are correct *and* that F-004 is what stands between them and a snappy live UI.
 
@@ -6313,7 +6313,7 @@ are correct *and* that F-004 is what stands between them and a snappy live UI.
 
 ## Phase 2 — the §6.3 topology re-drive (2026-08-26, later session): F-CANOPY-004 ACCEPTED, F-CANOPY-037 found
 
-Owner decisions taken at the top of this session (all four): F-CANOPY-004 → **accept the freshness contract
+The Overtoad decisions taken at the top of this session (all four): F-CANOPY-004 → **accept the freshness contract
 now AND schedule the WS migration** (JR-CAN-PERF-004); run the **full** fix-independent re-drive block on a
 live bring-up; fix **all 11** canopy P2s (F-CASCOR-002 upstream); and **enable a live 3-D posture** for
 M-DATASET-17..26 rather than settling for the DEMO lane.
@@ -6422,7 +6422,7 @@ F-CANOPY-037 is fixed.
 
 ## Phase 4 — the P2 fix wave (2026-08-27): 8 of 11 addressed, 1 re-diagnosed, 2 deferred
 
-Owner decision 3 ("fix all 11 canopy P2s"), executed as far as source work can take it. No stack was
+The Overtoad decision 3 ("fix all 11 canopy P2s"), executed as far as source work can take it. No stack was
 brought up; every fix is grounded in the Phase 1–3 measurements plus source tracing.
 
 > **STATUS CORRECTION (2026-08-29).** This section was written before the wave merged and said
@@ -6498,7 +6498,7 @@ Everything from Phase 3, plus: the **live re-drive of every row these eight fixe
 merge (C2.9-05, M-PARAMETERS-04/-05/-06, M-METRICS-03, M-WORKERS-02, C2.1-01/02 and the Network Editor
 patch rows); **F-CANOPY-033's redux re-trace**; and **F-CANOPY-036's Overtoad decision**.
 
-### Owner decision 4 (the live 3-D posture) — unblocked by source diagnosis, no stack needed
+### The Overtoad decision 4 (the live 3-D posture) — unblocked by source diagnosis, no stack needed
 
 M-DATASET-17..26 were recorded as blocked on two symptoms. Neither is a defect; both are now
 explained, which turns this workstream from "blocked" into "has a recipe plus one design question".
@@ -6575,7 +6575,7 @@ pre-merge build before writing either conclusion down.
   the same request-body extraction. Its zeros are instrument artifacts. The DOM reads (`sig`, `traces`,
   `counts`) and the response bytes are the trustworthy signals.
 
-### Owner decision 4 (live 3-D) — the provisioning half is CONFIRMED live
+### The Overtoad decision 4 (live 3-D) — the provisioning half is CONFIRMED live
 
 The stack was brought up with `JUNIPER_E2E_DATA_EXTRAS=api,equities`, and `GET /v1/generators` on the data
 leg now reports **`equities available=True`** and **`equities_seq available=True`** (they were
@@ -10044,7 +10044,7 @@ Phase 8's list, renumbered from 0. The cuts merged as canopy#676 (`e9053227`).
 8. **M-CANDIDATES-10/-11** (Phase 8 item 9), now re-drivable (Phase 7 item 10).
 9. Unchanged (Phase 8 item 10; Phase 7 item 11): M-DATASET-17..26 (the Overtoad's question), the M-TOPOLOGY-16
    fade half, and F-038's browser-level test gap.
-10. **Owner question**: the metrics replay drives no chart (Phase 8 item 11).
+10. **The Overtoad question**: the metrics replay drives no chart (Phase 8 item 11).
 11. **The starvation mechanism, re-derived under FIFO** (Phase 8 item 12). Unstarted; canopy's comment at
     `dashboard_manager.py`'s `_GATED_POLL_INTERVALS` block still says "the lowest-priority callbacks".
 12. **F1 and the round-1 minors of Phase 8** (items 13 and 14), unchanged.

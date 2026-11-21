@@ -56,7 +56,7 @@ What the results establish:
 - **The journal has aged out the 09-20 secret echoes.** It holds one boot (up since 2026-09-07), whose first entry is Sun 2026-10-18 08:22:47 CDT, at 3.9G: journald has rotated the older entries out. That changes Phase D step 2 (Remaining §3).
 - **The Tier 2 installer's dry run is clean** (Remaining §1).
 
-## Owner rulings, 2026-10-10 to 2026-10-26 — not yet written into `…RECOVERY-PLAN.md`
+## The Overtoad rulings, 2026-10-10 to 2026-10-26 — not yet written into `…RECOVERY-PLAN.md`
 
 | # | Ruling | Against the recommendation? |
 | --- | --- | --- |
@@ -167,7 +167,7 @@ Write the rulings table above into `…RECOVERY-PLAN.md` §6.6, with O-13's and 
 - The session can write one under `util/ad-hoc/`: it reads the values from the credential files by path and prints per-file counts only. The Overtoad runs it, because it reads secrets.
 - **Sequence:** Phase D step 9 shreds the service `.env`, the only holder of the 64-character key and its commented secrets, so a count after step 9 covers only `PASSPHRASE` and `PASSPHRASE_OLD`.
 
-### 6. Owner questions and actions still open
+### 6. The Overtoad questions and actions still open
 
 - **O-11**: rotate the TestPyPI token.
 - **The history-file wipe trigger** (Phase D's "New" delta above). Recommended: Phase D step 14, after AC-4's first drill.

@@ -12,7 +12,7 @@ are visible but block nothing. The next step is **phase 2: work through the 3.15
 Overtoad's go-ahead. Do not start it, and do not make any 3.15 check required (phase 3) or move the host default
 (phase 4).**
 
-## Owner rulings (2026-11-14)
+## The Overtoad rulings (2026-11-14)
 
 1. Local: a juniper-ml `util/` helper plus `conf/python_versions.yaml` (blocking 3.12-3.14, informational 3.15),
    never in pre-commit. 2. **No 3.15 pre-commit** in phase 1. 3. juniper-harcot in scope; **juniper-deploy gets a

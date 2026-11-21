@@ -69,7 +69,7 @@ below names its document:
   **Add no index line;** link a new memory from an indexed one with `[[name]]`. No live memory is
   retired to make room (Overtoad, 2026-09-21).
 
-### Owner gates — tell the Overtoad; you run none of them
+### The Overtoad gates — tell the Overtoad; you run none of them
 
 1. **Wave 4's credential.** The Overtoad runs `…REGISTRATION-PROCEDURE.md` §2, §5.2B step 3a, §4, §5.2B
    step 3 and §6, in that order. The document's header lists the steps, and those sections hold the

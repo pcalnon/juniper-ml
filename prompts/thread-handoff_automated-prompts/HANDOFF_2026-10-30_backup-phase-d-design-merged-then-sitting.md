@@ -60,7 +60,7 @@ Merge approval for this sitting's PRs: ask the Overtoad again (2026-10-29's appr
     SIGQUIT across the write, and turns core dumps off.
   - **Round 4 found the rulings overstated** (three departures were never asked) and this file missing three items of
     `…10-29…md`'s. Both are fixed: the runbook's §3, and Continue items 2, 4 and 8 here.
-- **Owner rulings, 2026-10-30** (the runbook's §3):
+- **The Overtoad rulings, 2026-10-30** (the runbook's §3):
   - the trial's form: a runtime unit plus the drop-in;
   - the five departures the question listed (the runbook's §3 items 5 to 8, and item 4's redirect);
   - `PrivateTmp` accepted for Phase D;

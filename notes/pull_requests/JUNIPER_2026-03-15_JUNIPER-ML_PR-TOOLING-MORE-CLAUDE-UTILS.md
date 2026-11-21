@@ -23,7 +23,7 @@ Separately, planning and reference documents accumulated inconsistent table form
 
 ## Priority & Work Status
 
-| Priority | Work Item                                          | Owner       | Status   |
+| Priority | Work Item                                          | The Overtoad       | Status   |
 |----------|----------------------------------------------------|-------------|----------|
 | P1       | Worktree cleanup and branch pruning scripts        | Paul Calnon | Complete |
 | P2       | Conda environment activation script                | Paul Calnon | Complete |

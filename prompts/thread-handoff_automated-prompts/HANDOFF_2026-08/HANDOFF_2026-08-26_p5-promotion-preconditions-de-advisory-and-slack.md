@@ -98,7 +98,7 @@ Also this session: `util/ad-hoc/2026-08-26_p5_fleet_state.py` (API census, `--du
    primary pull is an Overtoad action from an isolated session.
 7. **Step e stays Overtoad-sequenced**: `docs/REFERENCE.md` must exist in cascor and recurrence before any cut;
    the cut lands on `main` with the primary pulled BEFORE any worktree carries the trimmed file (plan hazard).
-8. Owner decisions carried forward unchanged: soak rung 1 (policy stratum 24/24), parent `Juniper/AGENTS.md`,
+8. The Overtoad decisions carried forward unchanged: soak rung 1 (policy stratum 24/24), parent `Juniper/AGENTS.md`,
    worktree settings asymmetry (LEAVE IT), MEMORY.md 120-byte cap on new entries.
 
 ### Key context

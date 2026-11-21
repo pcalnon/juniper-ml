@@ -70,7 +70,7 @@ comments. Two sessions duplicated each other on 08-25 from ONE handoff.
    asks for < 17.1KB. This session trimmed the over-long rows and evicted six duplicate rows (−1.7KB);
    the rest is a P0-style round-2 eviction — an Overtoad decision (the recorded policy is a cap on NEW
    entries only). Do not bulk-rewrite rows other live sessions own.
-5. **Owner decisions unchanged** (soak's null-experiment question; worktree convergence LEAVE IT;
+5. **The Overtoad decisions unchanged** (soak's null-experiment question; worktree convergence LEAVE IT;
    Skills deferred; the MEMORY.md cap). Do not re-propose.
 
 ### Key context

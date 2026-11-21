@@ -243,7 +243,7 @@ does the proxy route's docstring (`main.py:2985`). The fix is canopy's wording, 
 - **KEEP** the canopy worktree `…fix--f055-status-bar-running-guard--20260923-1425--ce78e0de`. It holds the refuted
   first fix (`884d22fb`, `cf6fb1dc`, `7a4a2e33`) as provenance.
 
-**A6. Owner questions (ledger item 15).**
+**A6. The Overtoad questions (ledger item 15).**
 
 - **The account's later actions**, none made by a Claude Code session on this host:
   - the update-branches on ml#2066 and data#434 (23:16–23:17Z);

@@ -102,7 +102,7 @@ repo's re-measured `max` (canopy 1,982; cascor 9,609).
 
 **5. `docs/REFERENCE.md` must exist in cascor and recurrence before any cut** (step e). Unchanged.
 
-**6. Owner decisions carried forward unchanged**: the soak's next step (policy stratum 24/24 =
+**6. The Overtoad decisions carried forward unchanged**: the soak's next step (policy stratum 24/24 =
 100% — rung 1 as stated is a null experiment); parent `Juniper/AGENTS.md` and the worktree
 settings asymmetry (LEAVE IT); MEMORY.md 120-byte cap on new entries only.
 

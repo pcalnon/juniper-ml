@@ -69,7 +69,7 @@ Timings: recurrence rows 1.7–6.5 s total (equities_seq dominated by the 3.0 s 
 P0 ✓ · P1 ✓ (F-P1-3b CLI-path completion open as a §12 perf item) · Wave 4 register ✓ (W-1/2/3/5/8/9/10/11 + W-4 docs) · **P2 ✓ (this document)**.
 The §10.4 P3 criteria are substantially evidenced by P1 (spiral reference run), the W-8 bench baseline (ratified bands PASS; `delay_product` RFF ≫ linear in-repo), and this matrix.
 Remaining program work: Wave 5 concurrency hardening (W-6 snapshots dir, W-7 `--results-dir`, launcher multi-run + Q-6 log-dir class), W-12/Q-7 `csv_import` corpus, and the §12 performance lane (owns F-P1-3b).
-Owner decisions still open: F-P1-2 (native Grafana v13 squatting :3000), stale cascor image rebuild, F-P1-3b profiling priority.
+The Overtoad decisions still open: F-P1-2 (native Grafana v13 squatting :3000), stale cascor image rebuild, F-P1-3b profiling priority.
 
 > **Update (2026-08-15) — F-P1-3b is REFUTED; this paragraph's forward-looking items are superseded.**
 > Three references above are stale and must not be picked up as work:
@@ -79,7 +79,7 @@ Owner decisions still open: F-P1-2 (native Grafana v13 squatting :3000), stale c
 >   never blocked on compute, but on a post-training `plt.show()` (cascor#517).
 > - "the §12 performance lane (**owns F-P1-3b**)" — the perf lane no longer owns it. The lane itself
 >   remains open; its F-P1-3b premise does not.
-> - "Owner decisions still open: … **F-P1-3b profiling priority**" — withdrawn as a decision. There is
+> - "The Overtoad decisions still open: … **F-P1-3b profiling priority**" — withdrawn as a decision. There is
 >   nothing to prioritise profiling *for* on this finding.
 >
 > F-P1-3b claimed structural direct-CLI compute overhead. It was **withdrawn** for lack of evidence

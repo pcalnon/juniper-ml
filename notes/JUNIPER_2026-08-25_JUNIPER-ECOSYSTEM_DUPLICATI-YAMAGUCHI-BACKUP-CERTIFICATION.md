@@ -1937,7 +1937,7 @@ targeted `_yamaguchi_records/` (mode **0775**) rather than `_yamaguchi_keys/` (*
 any local account"; that was false and was caught in validation, which is worth recording because
 the predecessor chain had *already* flagged overstatement of exactly this shape.
 
-**Owner decision (2026-08-30): accept as-is and document.** `SETTINGS_ENCRYPTION_KEY` was rejected —
+**The Overtoad decision (2026-08-30): accept as-is and document.** `SETTINGS_ENCRYPTION_KEY` was rejected —
 it adds a third key needing escrow and makes the DB unreadable if lost. Excluding the snapshot from
 the backup was rejected — it defeats the purpose and the archive holds a cleartext copy regardless.
 The recipe target was changed to `_yamaguchi_keys/`.
@@ -2422,7 +2422,7 @@ Note the interaction: moving the 196 GB copy *to sda1* preserves the unique rest
 
 ### 8.25 Addendum (2026-09-01) — the frozen set is preserved and certified, and sdc4 is cleared by three-lane consensus
 
-Owner decision (2026-09-01): **keep** restore point `20260826T181206Z`. Executed, certified, then
+The Overtoad decision (2026-09-01): **keep** restore point `20260826T181206Z`. Executed, certified, then
 verified for retirement by independent-agent consensus.
 
 #### 8.25.1 The copy, and its certification
@@ -2778,7 +2778,7 @@ guards the only remaining copy of the live destination.
 
 #### 8.27.5 Escrow printing is CLOSED
 
-`~/.cache/yamaguchi-key-escrow-sheet.txt` is **absent**. Owner confirms (2026-09-08): **printed, then
+`~/.cache/yamaguchi-key-escrow-sheet.txt` is **absent**. The Overtoad confirms (2026-09-08): **printed, then
 removed.** The paper copy exists, and the §8.24.1 interim — a synced password-manager copy, accepted
 as a trust-model improvement rather than a fix — is now backed by a record that fails independently of
 an account, a provider and a reachable device. **This item is closed.** The sheet remains regenerable

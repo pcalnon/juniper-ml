@@ -24,7 +24,7 @@
 
 | # | from | what |
 | --- | --- | --- |
-| 1 | #573 scope 1 | A console sink that can be turned off independently of the file sink. **Owner decision 4 stands: the stream stays stdout** (provisional). This item is about *disableability*, not relocation |
+| 1 | #573 scope 1 | A console sink that can be turned off independently of the file sink. **The Overtoad decision 4 stands: the stream stays stdout** (provisional). This item is about *disableability*, not relocation |
 | 2 | #573 scope 2 | Richer sinks — a sink abstraction, formatted and optionally colourised console output, explicit rotation with a single Overtoad |
 | 3 | #573 scope 3 | Per-logger levels, from config file **and** environment variable |
 | 4 | #573 scope 4 | Structured export — JSON as a second sink; the ELK shipper itself stays deferred |
@@ -455,7 +455,7 @@ green; per-run bytes down by the factor P0.3 measured.
   test against; `PIPE_BUF` is.
 - **P3-G4 — the fallbacks stay on the table.** Per-PID files (changes the artifact layout ~17 scripts
   depend on) and a parent writer thread (cleanest, most machinery, itself a fork-safety hazard).
-  Owner decision 3 is explicitly provisional, **and its premise — `fork` — is refuted**; it has never
+  The Overtoad decision 3 is explicitly provisional, **and its premise — `fork` — is refuted**; it has never
   been re-issued against the forkserver model. P3.4 is where it is confirmed or replaced.
 - **P3-G5 — colour never reaches the file sink.**
 - **P3-G6 — no reduction in what is logged, checked on the RIGHT stream.** A file-sink record count is
@@ -696,7 +696,7 @@ allocates a closure per call **even when suppressed**, a new per-call cost at ~8
 | 3 | **P5.1** — upstream, keep, or narrow the `configure_logging` fork? | (a) moves a fleet-wide pin **and deletes the only rotator**; (c) recommended, leaves a documented divergence |
 | 4 | **P0.6 / mirror** — is `juniper-cascor-model`'s logger backported in Wave 2, or frozen? | `test_drift.py`'s docstring promises Wave 2. Until decided, every logger change has an undefined obligation to a second tree **and to a published package** |
 | 5 | **P4.1** — per-instance loggers, or named sub-loggers on the class? | Per-instance means de-classmethod-ing `isEnabledFor` and breaking ~1,200 call sites. This decides whether P4 is M or L |
-| 6 | **Owner decision 5 is still open and still yours.** The call-site migration scope was deferred pending the analysis; the analysis was delivered and its recommendation overturned by measurement. **This roadmap schedules P6 but does not take the decision** | The design reserved it explicitly. It must not become planned work by default |
+| 6 | **The Overtoad decision 5 is still open and still yours.** The call-site migration scope was deferred pending the analysis; the analysis was delivered and its recommendation overturned by measurement. **This roadmap schedules P6 but does not take the decision** | The design reserved it explicitly. It must not become planned work by default |
 | 7 | **§7.1's swallowed-pytest investigation** | Still unexplained, and P0.5 has surfaced a candidate mechanism (`conftest.py`'s session-scoped `_log_at_level` no-op). The design's protocol stands: reproduce the disappearance, then distinguish pytest capture, a `capsys`/`-s` interaction, the logger's `print`, and stream buffering — **and only then** propose a fix. **Explicitly not a blocker** on the rest |
 
 ### 13.1 Responses and Decisions
@@ -921,7 +921,7 @@ structurally, not cosmetically:
 | P6.1 called "free" — the always-on symbol-loss screen fires on it | P6-G3 with the `Allow-Symbol-Loss:` trailer requirement; "free" struck |
 | Seven per-record closures, not two | P2.2/P2.3 rewritten |
 | `test_logger_frame_resolution.py` is what P2.1 **breaks**, not what protects it | P2.1(c) specifies the one-hop-preserving implementation |
-| Owner decisions 4 and 5 had been dropped or converted to planned work | decision 4 restated in §1 scope item 1; decision 5 restored as §13 item 6 |
+| The Overtoad decisions 4 and 5 had been dropped or converted to planned work | decision 4 restated in §1 scope item 1; decision 5 restored as §13 item 6 |
 | Conversion hazards 2 and 3 (precision-as-parsing-change; tuple splat) dropped | restored to P6 Threats |
 | Cross-repo script paths unprefixed | path convention added at the head |
 

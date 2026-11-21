@@ -104,7 +104,7 @@ row per session: date, task, fact needed, followed Y/N, which pointer), a start
 marker (count from `500508b`), and a definition of "miss". Ladder, fixed in advance:
 *index row → CI gate or hook → path-scoped rule*. **Never re-inline** — that is how
 the file reached 170K. Caveat (plan §7.6): a path-scoped rule is **lost at
-compaction**. Owner decision #7 keeps Proposal A's Skills as an optional later probe
+compaction**. The Overtoad decision #7 keeps Proposal A's Skills as an optional later probe
 if the soak shows a real problem.
 
 **6. The level axis is not closed, and P0b is half-done.**

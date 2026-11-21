@@ -38,7 +38,7 @@ this morning, not seven.
 
 ### Remaining work
 
-1. **Owner merge decisions**: #139, #131, ml#1376, ml#1379, and the peer's four once open. Verify a
+1. **The Overtoad merge decisions**: #139, #131, ml#1376, ml#1379, and the peer's four once open. Verify a
    merge with `gh pr view N --repo … --json state,mergedAt` plus a marker grep on `origin/main` — a
    native auto-merge prints no `MERGED` line. Never merge to clear a queue.
 2. **After ml#1379 merges**, confirm it carries what my closed #1378 had — the peer committed (19:20)
@@ -64,7 +64,7 @@ this morning, not seven.
    `worktrees/juniper-cascor-client--feat--memory-budget-gate--20260825-1826--f5a90304` and
    `worktrees/juniper-recurrence--feat--memory-budget-gate--20260825-1848--d9688520`; the predecessor's
    canopy/cascor ones are merged and still present. **Never touch the peer's `…--1852--…` ones.**
-6. Owner decisions are unchanged from the predecessor (soak's null-experiment question; worktree
+6. The Overtoad decisions are unchanged from the predecessor (soak's null-experiment question; worktree
    convergence LEAVE IT; Skills deferred; the MEMORY.md cap is decided). Do not re-propose.
 
 ### Key context

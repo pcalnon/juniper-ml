@@ -208,7 +208,7 @@ licensing mechanism, which §2 says the rule set does not contain.
 
 **"Owner-issued" holds only for the merge, not the content.** The round-37 handoff's commit is an
 Overtoad-merged archive of a machine-generated document produced under the thread-handoff protocol —
-not an Overtoad instruction. Round 37's own **§3 "Owner rulings — do not re-litigate"** table has eight
+not an Overtoad instruction. Round 37's own **§3 "The Overtoad rulings — do not re-litigate"** table has eight
 dated rows and **not one concerns any of the four**.
 
 ### Per-row verdict, against the exact round-37 §0 text
@@ -228,7 +228,7 @@ declares false. **Circular; -012's licence should not stand on this.**
 **`APD-DATA-039` — NOT listed as remaining work at all. The weakest of the four.** Round 37 §0.9 is a
 hazard description with three consequence bullets; it proposes no fix, asks for no work, assigns no
 Overtoad, and is in neither §0.5's "still unbuilt" list nor §0.11's parked list. Worse, the round-38
-document's **own §0.4** places that very bullet under *"Owner decisions, each blocking a row — do not
+document's **own §0.4** places that very bullet under *"The Overtoad decisions, each blocking a row — do not
 action without a ruling."* **Unsupported, and self-contradicted by the shipping document.**
 
 **All four, additionally: round 37 could not have unparked rows that did not exist.** §0.11 says the

@@ -365,7 +365,7 @@ Per **CONSENSUS** §3, sized **high criticality** (a handoff misdirects a whole 
 **What the review changed, materially:**
 
 - **The first draft was a pointer document.** It carried RECON §6.1's baseline by reference — in a section whose own opening sentence says the numbers were inlined *because Phase 0's author may not open the upstream document*. §6 now inlines them.
-- **Owner decisions 1–6 were declared blocking and never stated**, and the pointer given landed on six empty bullets. §3 now states all six with what each gates.
+- **The Overtoad decisions 1–6 were declared blocking and never stated**, and the pointer given landed on six empty bullets. §3 now states all six with what each gates.
 - **Decision 6 was inverted** — "do not re-litigate the call-site migration" read as *settled* where ROADMAP reserves it explicitly.
 - **Two decision sets, both numbered 1–6, were conflated**; one sentence used DESIGN numbering with no marker. §3 disambiguates and PREFLIGHT 3 warns.
 - **`O_APPEND` was dropped** — the one constraint the consensus record shows was amputated once and restored. Amputated again; now in §8.

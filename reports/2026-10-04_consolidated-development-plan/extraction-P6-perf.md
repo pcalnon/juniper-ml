@@ -56,7 +56,7 @@ measured_at: 2026-10-04T20:53:43Z – 21:02:47Z (all probes). juniper-ml `origin
 | P6-18 | Optionally run PF-5/6/7 (report-only forever). | P2 plan 2.3 | Never executed [NOT RE-PROBED — host state] | WAIT-QUIET-WINDOW | serialize with P6-03 | juniper-ml | M | RESEARCH |
 | P6-19 | Decide whether PF-8 gets a committed parallel cascor suite under `suites/perf/`. | P2 plan 4.2 / §4 | README still says "Not checked in" [VERIFIED] | OWNER-DECISION | — | juniper-ml | S | RESEARCH |
 | P6-20 | Optional experiment-scoped alerts. | P2 plan 5.2 | [VERIFIED: deploy `prometheus/alert_rules.yml` has 0 positive `host-experiment` selectors and 82 exclusions] | OWNER-DECISION | — | juniper-deploy | S | HYGIENE |
-| P6-21 | Owner picks the title extraction rule. Any repair of the 91 artifacts is gated on `scan --check`. | tail re-probe §5; consolidated handoff §D | [NOT RE-PROBED — repo script]. Corpus and scanner unchanged since 10-03 [VERIFIED git log] | OWNER-DECISION | — | juniper-ml | M | DATA-INTEGRITY |
+| P6-21 | The Overtoad picks the title extraction rule. Any repair of the 91 artifacts is gated on `scan --check`. | tail re-probe §5; consolidated handoff §D | [NOT RE-PROBED — repo script]. Corpus and scanner unchanged since 10-03 [VERIFIED git log] | OWNER-DECISION | — | juniper-ml | M | DATA-INTEGRITY |
 | P6-22 | Scope the `JR-ML-OBS-003` Detail-selection defect. | tail re-probe §5 | [VERIFIED: `id_assignments.yaml:459-463`, status `designed`, priority P0]. No entry point in the sources | OWNER-DECISION | — | juniper-ml | S (scoping) | DATA-INTEGRITY |
 | P6-23 | R-1's second clause: cascor must not report `succeeded` when per-candidate allocation failures leave zero installable candidates. | tail re-probe §4 | [NOT RE-PROBED] | STARTABLE (no ruling recorded as needed) | — | juniper-cascor | M | DATA-INTEGRITY |
 | P6-24 | F-P4-7: why the noise-free spiral is harder. | tail re-probe §4 | Open, no entry point | OWNER-DECISION | — | cascor / ml | S (scoping) | RESEARCH |
@@ -78,7 +78,7 @@ measured_at: 2026-10-04T20:53:43Z – 21:02:47Z (all probes). juniper-ml `origin
 
 "P5-3", "P5-4" and "P7-P2.1" are P5 items 3 and 4 and P7 item P2.1.
 
-## 2. Owner decisions pending
+## 2. The Overtoad decisions pending
 
 | ID | Question | Options, and the source's recommendation | Blocks | Source |
 |---|---|---|---|---|

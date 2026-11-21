@@ -275,7 +275,7 @@ recorded here because the alternative is that they are recorded nowhere.
   pattern is coherent.
   The defect is the silence.
 
-### 0.6 Owner decisions still owed — NONE, as of 2026-09-21
+### 0.6 The Overtoad decisions still owed — NONE, as of 2026-09-21
 
 > **RULED 2026-09-21: `APD-DATA-047` is RATIFIED at `1e11`.** The Overtoad was given the three
 > options — ratify at `1e11`, remove the ceiling, ratify at some other value — together with the
@@ -404,7 +404,7 @@ Memory: `project_partial_data_contract_arc_2026-09-05.md`, `MEMORY.md`.
 | **juniper-data#404** | MERGED 2026-09-16T02:08:43Z, squash `1bbb6976` | The regression #395 shipped: a first- or second-filing scale typo survived the causal median. `generator_version` 5.0.0. **Amended twice before merge, both times by validation** — see §4 and §5.2 |
 | **juniper-ml#1947** | MERGED 2026-09-16T03:17:15Z | Eight closes, five new rows (`APD-DATA-047` … `-052`), and this document. *(Recorded 2026-09-21: this row read "juniper-ml (this PR) | — |" when the session ended. It carried `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`, this document, the three §7 lane reports under `reports/2026-09-15_round-39-consensus/`, and the ad-hoc scripts §2 lists.)* |
 
-## 3. Owner rulings — thirty, and where they live
+## 3. The Overtoad rulings — thirty, and where they live
 
 Taken interactively across two sessions. **The register is the record**, not this handoff:
 §4.9's rulings block in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` for the

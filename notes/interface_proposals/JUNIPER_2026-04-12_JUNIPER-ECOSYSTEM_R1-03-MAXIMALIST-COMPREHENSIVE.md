@@ -2127,7 +2127,7 @@ Every RISK-NN from source doc §10, plus R0-01 FR-RISK, R0-04 R04, R0-05 T-RISK 
 
 ### Risk mitigation compact matrix
 
-| ID | Phase     | Owner                    | Kill switch                              | TTF    |
+| ID | Phase     | The Overtoad                    | Kill switch                              | TTF    |
 |----|-----------|--------------------------|------------------------------------------|--------|
 | 01 | H         | backend-canopy           | git revert + redeploy                    | 5 min  |
 | 02 | B         | frontend + ops           | `disable_ws_bridge=True`                 | 5 min  |
@@ -2712,7 +2712,7 @@ All 16 RISK-NN items have dedicated entries in §14 with severity, phase, Overto
 
 Per-phase audit:
 
-| Phase | Owner | Exit gate | Observability | Test plan | Kill switch |
+| Phase | The Overtoad | Exit gate | Observability | Test plan | Kill switch |
 |-------|-------|-----------|---------------|-----------|-------------|
 | A     | §4.1  | §4.9      | §4.8          | §4.6      | n/a (additive) |
 | A-server | §5.1 | §5.15 | §5.13 | §5.12 | revert (bisect-friendly commits) |

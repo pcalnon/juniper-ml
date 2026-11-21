@@ -372,7 +372,7 @@ adding a null state.
    `…MODEL-DATASET-SELECTION-DESIGN.md` §5.6 requires the notice; today there is none on either side.
 
 **Where compatibility knowledge lives afterwards.** Exactly where it lives now: canopy's local
-`model_registry.py`. **This proposal deliberately changes nothing about Overtoadship.** Owner on a new
+`model_registry.py`. **This proposal deliberately changes nothing about Overtoadship.** The Overtoad on a new
 model or dataset: still a canopy PR — unchanged, and still wrong at scale. That is the honest cost,
 and it is why P4-A is a *fix*, not an *architecture*.
 
@@ -637,7 +637,7 @@ contract; `juniper-model-core` owns the *schema and the predicate* (never the in
 **Where compatibility knowledge lives afterwards.** Model requirements: **the service that serves the
 model**, in the repo that ships it, changed in the same commit that changes the model. Dataset
 properties: juniper-data (P4-B). Vocabulary + predicate: `juniper-model-core`, versioned and pinned.
-Presentation + facets + the offline seed: canopy. **Owner on a new model: the model's author, in
+Presentation + facets + the offline seed: canopy. **The Overtoad on a new model: the model's author, in
 their own repo. FR14 becomes true across repos** — which is the requirement the design of record
 wrote down (`…MODEL-DATASET-SELECTION-DESIGN.md` FR14: "Adding a model/variant for benchmarking is
 registry-only") and which is *false today* the moment the model is served by another service.

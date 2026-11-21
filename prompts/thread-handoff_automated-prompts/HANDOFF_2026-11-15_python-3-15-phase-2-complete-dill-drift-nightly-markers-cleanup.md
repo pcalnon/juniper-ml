@@ -12,7 +12,7 @@ and merged. The next step is **phase 3, making a 3.15 check required, which is t
 it unasked, and do not move `/usr/bin/python3` off 3.14 (phase 4).** Merge approval for this arc was granted in this
 session by the Overtoad; **it does not carry to a new session.**
 
-## Owner rulings this session (2026-11-15, from the dialog)
+## The Overtoad rulings this session (2026-11-15, from the dialog)
 
 1. dill on 3.15: **"safe=True in the helper"** (over pinning dill's `master` on the 3.15 legs, switching the helper to
    stdlib pickle, or waiting for dill 0.4.2).

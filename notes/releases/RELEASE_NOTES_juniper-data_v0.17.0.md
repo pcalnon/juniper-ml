@@ -251,7 +251,7 @@ This is a minor release of `juniper-data` that carries two security fixes. First
   bytes. So `validate` matches exactly when the strings are equal. `surrogateescape` raises on
   `"\ud800"` and maps `"\xe9"` and `"\udcc3\udca9"` to the same bytes. The keys stay in a `list`,
   and juniper-ml's `tests/test_service_fork_drift.py` markers (`blank-api-key-filter`,
-  `nonshortcircuit-key-compare`) are unchanged. Owner ruling "Fix everywhere now" (2026-09-24),
+  `nonshortcircuit-key-compare`) are unchanged. The Overtoad ruling "Fix everywhere now" (2026-09-24),
   landing the same compare in juniper-service-core and juniper-cascor.
   **Sentry:** juniper-data configures Sentry only through juniper-observability's
   `configure_sentry` (`juniper_data/api/app.py`), so there is no local setting to change. It

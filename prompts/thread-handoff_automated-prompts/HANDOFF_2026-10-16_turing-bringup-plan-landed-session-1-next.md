@@ -10,7 +10,7 @@
 - **Added an AGENTS.md hazard.** An unsigned commit makes a branch unmergeable, so turing lands work through `util/open_signed_pr.py`.
 - **Saved four session memories** covering the turing profile, the auth root cause, landing via the API, and the no-credential-probes rule.
 
-## Next: Owner block 0, then Session 1 (plan §7)
+## Next: The Overtoad block 0, then Session 1 (plan §7)
 
 0. **OWNER C8**, before any agent session. Put the git env (`GIT_CONFIG_COUNT=2`, which turns off commit and tag signing) and the deny list or PreToolUse hook in turing's `~/.claude/settings.json` (plan D11).
 1. **AGENT Session 1:**

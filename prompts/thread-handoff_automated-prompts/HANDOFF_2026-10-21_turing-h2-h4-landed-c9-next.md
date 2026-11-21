@@ -17,7 +17,7 @@
 | juniper-ml#2295 | `a005063e` | H4: `util/mcp_setup.bash`, with the pin in `conf/hosts/turing/mcp.json` (Serena v1.7.0 `949a27ef1e5fda1a6e7b561e777bcece345c6ffd`, claude-code context). `.serena/project.yml` excludes `execute_shell_command`, and `.gitignore` covers `.mcp.json.bak-*`. `tests/test_mcp_setup.py` has 35 tests, also on `host-tooling-macos`. 20 of 20 mutants killed (`util/ad-hoc/2026-10-21_turing_h4_mutation_check.py`) |
 | the record PR | — | plan v1.4.3, `util/ad-hoc/2026-10-21_turing_h2_h4_record.py`, and this file |
 
-## Owner decisions and steps
+## The Overtoad decisions and steps
 
 1. **E-H4-WHEEL: Serena does not start on turing yet.**
    - Serena v1.7.0 pins `cryptography==50.0.0` exactly, and cryptography has no Intel-macOS wheel from 49 on. Building it needs Rust 1.83; turing's rustup default is 1.71.0.
@@ -35,7 +35,7 @@
    - the network (F2, A6);
    - F3 node mode;
    - commit signing (§19): no YubiKey into turing until C8 and K12 are installed and K13 is done;
-   - the rest of Owner block 1.
+   - the rest of The Overtoad block 1.
 
    After each block, run `python3 util/host_state_check.py`; it read 0 of 7 on 2026-10-20.
 

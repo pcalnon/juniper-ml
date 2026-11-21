@@ -45,7 +45,7 @@ All three envs were created with `MAMBA_SSL_VERIFY=true` and validated against t
   leave demo mode's `_training_loop` thread running.
 - `validate_envs.py` gained `--env KEY=VALUE` for experiments; the summary JSON and lane logs record any override.
 
-## Owner steps
+## The Overtoad steps
 
 1. ~~**Little Snitch**~~: done; the env pythons reach PyPI.
 2. **Install the C8 guard, now that K12 is on `main`:** the "code signing" session's juniper-ml#2281 (`188e842e`, `claude_agent_guard` 1.1.0, which adds the signing-config rules) has merged. Fast-forward the primary checkout (`git pull --ff-only origin main`) and run `bash util/install_claude_agent_guard.bash --apply`, so that a single install carries those rules.
@@ -55,7 +55,7 @@ All three envs were created with `MAMBA_SSL_VERIFY=true` and validated against t
 6. **The network:** the open-security radio, roaming or `en7` (F2), and A6.
 7. **F3 node mode:** quit the desktop apps and Docker Desktop, with no VM running, then say so.
 8. **Commit signing (from §19):** K5 is applied, so the Overtoad's own commits under `~/Development/python/Juniper/` fail closed until B2/B3. Do not insert a YubiKey into turing until the guard is installed with K12's rules (step 2) and K13, the IDE agent approvals, is done.
-9. **The rest of Owner block 1:** C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
+9. **The rest of The Overtoad block 1:** C0, A2, A3, B2-B6, C1-C3, C5, C7, E4, A6, F1 and F2.
 
 ## Agent next
 

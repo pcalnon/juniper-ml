@@ -369,7 +369,7 @@ change — §6.1's neighbourhood.
   `[0.000, 0.561]` and does not. The blanket "no probe excludes 50%" was false and is
   withdrawn from `docs/REFERENCE.md` too.
 
-## 6. Owner decisions — DO NOT DECIDE THESE
+## 6. The Overtoad decisions — DO NOT DECIDE THESE
 
 1. Whether **index-recovery** becomes a scored outcome (registry change; read F′ first).
 2. Whether **BET-FAILING** feeds back into relocation policy.
