@@ -27,10 +27,16 @@ while read -r file < "${FILE_LIST_FILE}"; do
     fi
 
     # git checkout --ours "${file}"
+    echo "git checkout --theirs \"${file}\""
     git checkout --theirs "${file}"
+    echo "git add \"${file}\""
     git add "${file}"
 
-    git commit -m "Resolve conflict in ${file}"
+    echo "git commit -m \"Resolve conflict in ${file}\""
+    git commit -m "Resolve conflict in \"${file}\""
 
-    git push origin
+    echo "git push origin ${CURRENT_BRANCH}"
+    git push origin "${CURRENT_BRANCH}"
+
+    break
 done
