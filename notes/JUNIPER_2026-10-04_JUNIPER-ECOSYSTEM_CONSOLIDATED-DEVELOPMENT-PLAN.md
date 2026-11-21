@@ -132,11 +132,11 @@ Four things dominate. Everything else is a well-defined queue behind Overtoad de
    - Host state was not re-probed for this plan.
 2. **Three credential-safety gaps are open.**
    - **Sentry key capture.** An unhandled exception during a keyed request can record the caller's API key in Sentry.
-     - None of round 42's F-fixes is written. Three PRs are owed: juniper-ml with service-core, cascor, and data (P3).
-     - Consumer images install juniper-observability and juniper-service-core from their lockfiles. All four consumers' locks moved to 0.4.1 and 0.7.1 on 2026-10-10 (recurrence#199, data#478, cascor#711, canopy#739), which stop frame-local capture but not F2 (§5).
+     - Three PRs were owed for round 42's F-fixes (P3): juniper-ml with service-core (P3-07), cascor (P3-08) and data (P3-09). P3-07 merged on 2026-11-08 (ml#2523) and ships in R-OBS-SC-2 (v1.15.15); P3-08 and P3-09 have no PR, nor does P3-03, which P3-09 follows (2026-11-09).
+     - Consumer images install juniper-observability and juniper-service-core from their lockfiles. All four consumers' locks moved to 0.4.1 and 0.7.1 on 2026-10-10 (recurrence#199, data#478, cascor#711, canopy#739), which stop frame-local capture but not F2 (§5). The second lock round moved all five locks to 0.4.2 and 0.7.2 on 2026-11-09 (§5), which stop F2 and the header and cookie leaks found beside it, but not query strings, Sentry Logs or exception values (0.4.3; v1.15.15).
      - data's 0.17.1 image (GHCR, 2026-10-10 20:37Z) is the first cut from them, and cascor's 0.12.0 image (GHCR, 20:56Z; run 38085392650) the second; juniper-deploy still pins data 0.17.0, whose image locks 0.4.0 and 0.7.0, and cascor 0.11.0 (`EX/round14-laneA-reprobe.md` R14A-01). Since deploy#258 (2026-10-23) it pins data 0.17.1 and cascor 0.12.0 (re-probed 2026-10-25). deploy#266 pins cascor 0.13.0 from 2026-10-30, whose lock pins the same 0.4.1 and 0.7.1 (v1.15.9; §5).
      - The stack trio runs from conda environments. It has been stopped since 2026-10-30 (§4 Wave 1's trio route; v1.15.9).
-     - So a running service stays exposed until its image lock or its environment moves to R-OBS-SC-2 and it restarts.
+     - So a running service stays exposed to F2 until it runs an environment holding R-OBS-SC-2, or an image built from a lock on it, and restarts; an image also needs a release and juniper-deploy's pin, and no consumer has cut a release from the new locks. Even then, 0.4.2 leaves query strings, Sentry Logs and exception values to 0.4.3, so XC-SENTRY's (a) and (b) stay in force (§4 Wave 1; §5; v1.15.15).
      - The shell exports `SENTRY_SDK_DSN` (`~/.bashrc:152`).
    - **The data client's error text can carry the data API key (P12 F-S10, widened by validation).**
      - Suppose `JUNIPER_DATA_API_KEY` is set through an environment variable and has leading whitespace or a line break. `requests` then refuses the header, and the client's error message quotes the key.
@@ -276,7 +276,7 @@ Three coordination facts matter now:
 1. **Loss exposure**: irrecoverable loss, credential exposure, or a published defect.
 2. **Decay**: cost grows with time. Bases move, transcripts expire, and stale budgets refuse healthy merges.
 3. **Leverage**: how many items and paths it unblocks.
-4. **Owner-time efficiency**: anything that needs the Overtoad is batched. The Overtoad time is the binding resource.
+4. **Overtoad-time efficiency**: anything that needs the Overtoad is batched. The Overtoad time is the binding resource.
 5. **Cost**: S before M before L, when all else is equal.
 
 ### 1.3 Constraints that override the order
@@ -488,10 +488,15 @@ Its job summary also links each hit as a public `blob/<sha>/<file>#L<line>` URL 
 
 Releases reach running services only through Overtoad action. Images move with their lock PRs; the trio's conda environments move only when upgraded and restarted. Until then, the Overtoad chooses one or both:
 
-- **(a)** a Sentry-side scrubbing rule for the key pattern, which must cover Sentry Logs as well as events (observability 0.4.0 and 0.4.1 send log records: `enable_logs=True`, `sentry.py` L135);
+- **(a)** a Sentry-side scrubbing rule for the key pattern, which must cover Sentry Logs as well as events (observability 0.4.0 to 0.4.2 send log records: `enable_logs=True`, `sentry.py` L135 in 0.4.1 and L186 in 0.4.2);
 - **(b)** blank Sentry DSNs on the running services at their next restart, decided together with O13 (the trio).
 
 After R-OBS-SC-2: the Overtoad's environment upgrade, the session's recorded test pass, then the Overtoad's restart (§4 Wave 1, Security step 5; `EX/round12-laneB2-schedule.md` R12B2-13). That step drives the "running services" metric. R-OBS-SC's 0.4.1 and 0.7.1 (on PyPI since 2026-10-10) stop frame-local capture, not F2; whether the trio takes them now as well is the Overtoad's (mid-wave sitting).
+
+**R-OBS-SC-2 is on PyPI since 2026-11-09** (v1.15.15) and in every consumer lock, so the 0.4.1-first choice is moot, but it does not end this item. 0.4.2 leaves query strings (canopy's `?api_key=`, sent under the default `send_pii=False`), Sentry Logs and exception values to 0.4.3 (R-OBS-SC-3), so (a) and (b) stay in force.
+
+- The trio's environments differ: `JuniperData` and `JuniperCanopy1` hold observability 0.4.0 and service-core 0.5.0 and need the upgrade, while `JuniperCascor1` imports 0.4.2's and 0.7.2's code from the juniper-ml primary (§4 Wave 1, Security step 5).
+- Whether the per-lock probe may stand in for S0.11's relay run at the restart is the Overtoad's (§6, mid-wave sitting).
 
 **Every session**, for every service launch and suite run, sets these six variables to `""` and never unsets them: `SENTRY_SDK_DSN`, `SENTRY_DSN`, `JUNIPER_CASCOR_SENTRY_DSN`, `JUNIPER_DATA_SENTRY_DSN`, `CANOPY_SENTRY_DSN` and `JUNIPER_CANOPY_SENTRY_DSN` (`…round-42-consolidated.md` L126; H-14). Whether the running services actually send to Sentry was not probed.
 
@@ -624,7 +629,7 @@ There is no standing grant: each path session asks the Overtoad in its own first
 **The Overtoad's rulings of 2026-11-06** (v1.15.12; session `ff40b833`), with what followed the 2026-11-03 rulings:
 
 - **The data-client cap width: `<0.8.0`.** Before P5's W5 Release (data-client 0.7.0), canopy's `juniper-data` extra and recurrence's dependency widen from `<0.7.0` to `<0.8.0`, which admits W5 (0.7.0) and W11 (0.7.1) and nothing later (`…PARTITION-PROVENANCE-SPEC.md` §11.2 and §16, its v0.2.2). Until this ruling the width was an agent's inference (v1.15.11).
-- **R-DATA-2's lock gate stands**: data's second image lock PR follows R-OBS-SC-2, so 0.18.0 waits for observability 0.4.2 and service-core 0.7.2 on PyPI (§5).
+- **R-DATA-2's lock gate stands**: data's second image lock PR follows R-OBS-SC-2, so 0.18.0 waits for observability 0.4.2 and service-core 0.7.2 on PyPI (§5). **Met 2026-11-09** (v1.15.15): both are on PyPI, and data#525 merged.
 - **P3 D-07: a retro-note.** #437 (`equities_seq` 6.0.0, `task_type` `regression`) shipped unmarked in 0.17.0. 0.18.0's release notes carry a correction naming it a contract break, and juniper-data's `CHANGELOG.md` `[0.17.0]` entry gains a BREAKING tag. Neither the 0.17.0 Release body nor its artifacts change (§5).
 - **P3 D-12: answered** by the 2026-11-03 ruling. A session cuts 0.18.0 once its gates clear, and the Overtoad approves the `pypi` gate as for every release (§5).
 - **W0.1 ran on 2026-11-04** (~14:40Z, at the Overtoad's word), no listening service or live process importing `JuniperCascor1`: six editable `--no-deps` reinstalls, preflight and `pip check` clean. The recurrence bench then failed 4 of 41: the env held juniper-model-core **0.2.0**, and recurrence 0.8.0's `_folds.py` passes `walk_forward_folds(groups=)`, which model-core has only from **0.3.0**, so every `POST /v1/crossval` answered 500. 0.8.0's floor (`>=0.2.0`) admitted it and `pip check` could not see it. On the Overtoad's word, model-core 0.3.2 went into the env (bench 41 of 41).
@@ -672,7 +677,7 @@ There is no standing grant: each path session asks the Overtoad in its own first
    - juniper-cascor 0.13.0 carries cascor#731: its image is on GHCR, and PyPI serves its wheel from 2026-10-28 11:43:24Z (run 40608671287; §5). `test_accuracy` fills once a cascor carrying cascor#731 serves a run with a test split. juniper-deploy pins 0.13.0 from 2026-10-30 (deploy#266; v1.15.9), and the experiment stack's default (the cascor primary's `src/`, for the canonical checkout) carries cascor#731 from 2026-10-29 20:48:58Z (v1.15.8). ml#2381 left the register row's close to the Overtoad.
    - **Filled 2026-10-30** (v1.15.9): `util/ad-hoc/2026-10-30_test_accuracy_731_smoke_suite.yaml`, one spiral-smoke cell on the cascor primary's `src/` at `e8e8bf4d`, ran as `20261030T084056Z-0ac7` (index row 484). Its final evaluation is on `test` with `accuracy` 0.575, and the suite's `aggregate.csv` carries it as `test_accuracy`. So the register row's close condition, "until that column exists", is met by a run. The five-touch close is the Overtoad's.
    - **Closed 2026-11-01** (v1.15.10), on the Overtoad's word: register row APD-ML-002 is FIXED (ml#2145, ml#2369, cascor#731, ml#2381), with a §5.1 verification row on run `20261030T084056Z-0ac7`. `util/ad-hoc/register_open_set.py` reads 35 open, and `util/ad-hoc/register_status_crosscheck.py` AGREE.
-5. **W0.1's service-core half**, the environment swap of the shared `JuniperCascor1`, is an OWNER-ACTION. The `:8202` cascor that imported from it stopped with the trio on 2026-10-30, and no listening service runs from it, though short-lived processes do: it is this host's `python3` and the experiment stack's default cascor env (§4 Wave 1; §8; v1.15.9). Ruled 2026-10-18: the Overtoad runs it at the next cascor restart on the original host, and M0 closes on its date (2026-10-24) with it as an Overtoad follow-up.
+5. **W0.1's service-core half**, the environment swap of the shared `JuniperCascor1`, is an OVERTOAD-ACTION. The `:8202` cascor that imported from it stopped with the trio on 2026-10-30, and no listening service runs from it, though short-lived processes do: it is this host's `python3` and the experiment stack's default cascor env (§4 Wave 1; §8; v1.15.9). Ruled 2026-10-18: the Overtoad runs it at the next cascor restart on the original host, and M0 closes on its date (2026-10-24) with it as an Overtoad follow-up.
    - **Widened 2026-11-03** (v1.15.11): the Overtoad runs a widened refresh, editable `--no-deps` reinstalls of juniper-service-core, juniper-observability, juniper-recurrence-model, juniper-recurrence, juniper-recurrence-client and juniper-data-client, and then a session re-runs `util/recurrence_env_preflight.bash`. It had not run as of 2026-11-04.
    - `util/ad-hoc/2026-11-01_simulate_w0_1_env_refresh_pip_check.py` predicts one preflight finding before the refresh (recurrence 0.5.0's metadata requires juniper-service-core `>=0.6.0`, and the environment holds 0.5.0) and none after. Re-run on 2026-11-04, it gives the same.
    - **Ran 2026-11-04** (~14:40Z, at the Overtoad's word; v1.15.12): it exposed the model-core floor bug that juniper-recurrence 0.8.1 fixes (the 2026-11-06 block above). v1.15.11's "had not run" was written earlier that day.
@@ -766,7 +771,7 @@ One session item comes before **sitting item 6**: S0.14, the count-only search f
     - Run the gate, `--names` and `--all` over its added hunks with ten context lines, built with `git diff -U10 959748c5 1da05a92`, since the API omits `docs/REFERENCE.md`'s patch, and over its commit message, title and PR body (`EX/round13-laneB1-safety.md` R13B1-15; `EX/round13-laneB2-schedule.md` R13B2-10). Record keys and counts the same way (`EX/round12-laneB2-schedule.md` R12B2-12).
   - **And ml#2199 and ml#2201**, which merged before the gate reached `main` (ml#2214), ml#2199's body recording no pre-push scan: ml#2199's 63 files as merged (2,824 new lines of verbatim backup-arc reports), its head commits `fa5bd8f8` and `6c5c94e4`, its message and its body; and ml#2201's handoff, `…phase-b-merged-b9-next.md`. Same reads; keys and counts only.
 - **S0.4 — P3's Sentry F-PRs**, one at a time, each validated before it reaches a branch, with H-14 applied:
-  1. P3-07: juniper-ml F2 `before_send_transaction`, F6, F9 and F10, plus service-core F3 and F5.
+  1. P3-07: juniper-ml F2 `before_send_transaction`, F6, F9 and F10, plus service-core F3 and F5. **Merged 2026-11-08** as ml#2523, after rounds short of §7.1's top cell (v1.15.15; §5, the note on R-OBS-SC-2).
   2. Then P3-08: cascor F3, F4 (the conftest DSNs), F5, F7 and F9.
 - **S0.5 — P3-06.** The validation round on canopy#685 runs now, from a fresh tree, sized as §7.1 sets out. The fix-forward, and its own round, wait for A1 (call (a)) and A4 (calls (b) and (c)) to set the scope (P3 D-04 "can change scope"). canopy#702 has since changed related detail handling, and canopy#721 (merged 2026-10-08) ships the `outbound_errors` module that #685 added but left out of the wheel; the round covers both.
 - **S0.6 — P3-11.** The closes PR files APD-ECO-013, APD-ECO-014 and APD-CASCOR-014 as OPEN, with note 1's residue from `EX/extraction-P3-defect-register.md`. It also takes in the open defects of `…CURSOR-FLOOD-3-DISPOSITION.md`'s §4, the five fixed on 2026-10-08 excluded (XC-FLEET), or names the register PR that will (`EX/round12-laneB2-schedule.md` R12B2-16).
@@ -820,10 +825,13 @@ One session item comes before **sitting item 6**: S0.14, the count-only search f
 2. Mid-wave sitting: P3 D-03. D-02's version is set by the Overtoad's ruling of 2026-10-10: a patch, which every consumer cap admits, so no cap PR comes first.
 3. **R-OBS-SC-2**: observability 0.4.2 and service-core 0.7.2 (§5).
 4. The second lock round: each consumer's **image** lock PR (P3-18), each carrying S0.11's relay run. Cascor moves both `requirements.lock` and `requirements-cpu.lock`.
-5. Owner: upgrade the trio's environments (XC-SENTRY), from R-OBS-SC-2, or from 0.4.1 and 0.7.1 now and again after R-OBS-SC-2 (the Overtoad's choice, at the mid-wave sitting). A session then runs S0.11's relay tests in each upgraded environment, with the six Sentry DSNs set to empty, and records FastAPI's telemetry setting; then the Overtoad restarts. Step 4's image lock PRs carry the same run (`EX/round11-laneB2-schedule.md` R11B2-07).
+5. The Overtoad: upgrade the trio's environments (XC-SENTRY), from R-OBS-SC-2, or from 0.4.1 and 0.7.1 now and again after R-OBS-SC-2 (the Overtoad's choice, at the mid-wave sitting). A session then runs S0.11's relay tests in each upgraded environment, with the six Sentry DSNs set to empty, and records FastAPI's telemetry setting; then the Overtoad restarts. Step 4's image lock PRs carry the same run (`EX/round11-laneB2-schedule.md` R11B2-07).
    - Each environment's package versions are recorded before the upgrade, and the restart waits for a recorded pass. A failure holds the restart: under stop-first, the Overtoad reinstalls the recorded versions before any restart; under the clone option, a smoke import and the relay test's fast subset run in the live environment after its upgrade and before the restart (`EX/round13-laneB2-schedule.md` R13B2-06).
    - Name the interpreter per environment. `JuniperData`'s `pytest` runs a `python3.14` that lacks FastAPI and sentry-sdk, which sit in its `python3.14t`; any test-only install there is the Overtoad's, inside the upgrade (§8).
    - The trio keeps serving from the environment being changed, so stop it before the upgrade, or run the session's tests in a clone of each environment and upgrade the live one at the restart (`EX/round12-laneB2-schedule.md` R12B2-06). The trio has been stopped since 2026-10-30 (the trio route below; v1.15.9), so this applies again only if it restarts before the upgrade.
+   - **2026-11-09** (v1.15.15): R-OBS-SC-2 is on PyPI, so the 0.4.1-first option is moot, and step 4's PRs carried the per-lock probe, not S0.11's run. The environments differ: `JuniperData` (its `python3.14t`) and `JuniperCanopy1` hold observability 0.4.0 and service-core 0.5.0 from PyPI, and need the upgrade.
+   - `JuniperCascor1` holds both as editable installs of the juniper-ml primary (W0.1, 2026-11-04; XC-P12). On 2026-11-09 that checkout, on another session's feature branch, held 0.4.2's and 0.7.2's code, while pip reported 0.4.1 and 0.7.1. So its input is that checkout, not PyPI: record the commit it runs, not pip's version. O13 does not name the juniper-ml primary, so who may move it is open (§6).
+   - The restart waits for a recorded pass of S0.11's relay tests, which are unwritten: canopy's needs no A1 ruling, while the data-client and cascor parts wait on A1's open limbs. A pass for cascor and canopy may also need those fixes or 0.4.3, since 0.4.2 does not scrub exception values. Whether the per-lock probe may stand in is the Overtoad's (§6).
 
 **F-S10 delivery** (for the fixes accepted at A1). Every route starts with the fixes validated (§7.1 item 3) and merged. After that the three routes are independent.
 
@@ -845,7 +853,7 @@ The routes:
     - The logs are kept in `juniper-ml/tmp/2026-10-30-trio-stop/`. Who pulls the cascor, data, data-client and recurrence primaries stayed open under O13 until 2026-11-03, when the Overtoad ruled guarded session pulls (XC-P12). Who may pull the canopy primary stays open (the Overtoad's answer of 2026-11-06; v1.15.13).
     - The cascor primary is cascor `main` whole (§5), which this route pulls only after P3-05, with #683's deployment note applied, and a later `--up` runs it as it stands.
     - The four canopy legs of 2026-10-10 (`:8052`, `:8053`, `:8058`, `:8059`) stay up; `:8052` and `:8053` have no cascor or data behind them now.
-- **Images**: R-DC-PATCH, then the consumers' lock PRs. Cascor moves both locks, which pinned `juniper-data-client==0.5.0` (they pin 0.6.0 since the lock moves in cascor 0.13.0, and 0.6.0 carries F-S10 too); its image installs `requirements-cpu.lock`. Then R-CASCOR, which also carries a cascor fix, then juniper-deploy's image pins and a restart. The second lock round (Security step 4) picks up R-DC-PATCH only if it is on PyPI before its PRs open; otherwise another lock PR follows.
+- **Images**: R-DC-PATCH, then the consumers' lock PRs. Cascor moves both locks, which pinned `juniper-data-client==0.5.0` (they pin 0.6.0 since the lock moves in cascor 0.13.0, and 0.6.0 carries F-S10 too); its image installs `requirements-cpu.lock`. Then R-CASCOR, which also carries a cascor fix, then juniper-deploy's image pins and a restart. The second lock round (Security step 4) picks up R-DC-PATCH only if it is on PyPI before its PRs open; otherwise another lock PR follows. It was not (v1.15.15).
 - **Recurrence**: W1.14, then the vehicle ruled at A1. Its image builds at that Release, and a deployed stack also needs juniper-deploy's image pin moved, and a restart. `JuniperCascor1` also holds recurrence as an editable install of its primary checkout, and the launchers start recurrence legs from it, so a host leg needs that primary to hold the fix first (`EX/round7-laneB1-safety.md` R7B1-12).
   - **Done for PyPI and the image** (v1.15.0): vehicle (b), recurrence 0.6.0 and every later release; juniper-deploy pins 0.8.0 (deploy#257). Whether the recurrence primary in `JuniperCascor1` holds W1.14 was not re-probed, so host legs follow the bullets below.
   - Under vehicle (a), apply W1.14 to the primary's own commit on a local branch (`be081fae` in `…p1-wave1-in-flight.md`), and never sync the primary to the 0.5.1 tag's branch. The primary is 19 commits past the `v0.5.0` tag, among them #172's snapshot routes, #177's bench fix and #176's credential exclusions, so that branch would roll it back (`EX/round9-laneB2-schedule.md` R9B2-03).
@@ -863,7 +871,7 @@ The routes:
 5. Data's image lock PR: the first is done (data#478); the second follows R-OBS-SC-2 (Security step 4), and gates R-DATA-2 (Overtoad ruling 2026-11-06).
 6. **R-DATA-2**: data **0.18.0** (Overtoad ruling 2026-11-03), a minor, because W5.7 changes a default; cut once its gates clear (P3-03, P3-09). Before its Release, recurrence's `[bench]` and `[bench-equities]` caps (`<0.18.0`, item 3) are widened (§5).
 
-**Cascor**: P3-05 validates cascor#690, and P3-08 merges; neither waits on the other (`EX/extraction-P3-defect-register.md`, P3-08's row). **R-CASCOR** follows both. Cascor's image lock PR is Security step 4's: the first merged as cascor#711, and the second follows R-OBS-SC-2 and waits on neither (`EX/round7-laneB2-schedule.md` R7B2-08).
+**Cascor**: P3-05 validates cascor#690, and P3-08 merges; neither waits on the other (`EX/extraction-P3-defect-register.md`, P3-08's row). **R-CASCOR** follows both. Cascor's image lock PR is Security step 4's: the first merged as cascor#711, and the second as cascor#748 (2026-11-09, both locks), which waited on neither (`EX/round7-laneB2-schedule.md` R7B2-08).
 
 - By the final census (2026-10-10T21:30Z), juniper-cascor 0.12.0 was cut ahead of P3-05 and P3-08: cascor#712, then Release v0.12.0 at 20:51:38Z, whose PyPI publish waits at the gate (run 38085392643; §5). Whether a fix-forward is owed for it is the Overtoad's (mid-wave sitting).
 
@@ -876,7 +884,7 @@ The routes:
 1. **Done by ml#2199 (2026-10-09)**: P1-05..07 (the fold-in, R3B's DEFECT-1..4 among it, DEFECT-1 by the Overtoad's ruling of 2026-10-08), P1-08 (rounds 4–7, run at 3, 2, 1 and 1 lanes, short of §7.1's top cell), P1-09 (the record, `…PHASE-B-CONSENSUS-RECORD.md`) and P1-10 (`…INTEGRATED-DESIGN.md`'s §8 STOP cleared).
    - It merged with O-12 open and with no gate run; S0.3 runs the reads after the fact. It did not touch the `docs/REFERENCE.md` section ml#2184 carried from ml#2177, which gets its own PR (XC-FLEET). XC-PRESERVE row k was never P1-10's: it has its own archive PR.
    - P1-12 (B11) is not in it (`…RECOVERY-PLAN.md` L240: "not yet written (open)"): if Phase C step 5's count is non-zero, B11 needs its own validated PR before Phase D.
-2. Owner: P1-18 (Phase D, about 2 h), after O-1, O-2, O-7, O-13 and O-14 are ruled at the first sitting (`…RECOVERY-PLAN.md` §6.6). If Phase C step 5's count is non-zero, P1-12 must exist by then, in its own validated PR: Phase D step 7's key probe needs the candidates it extracts (`…RECOVERY-PLAN.md` L240, L296 on `main`, L229 and L272 before ml#2199; `EX/round14-laneA-reprobe.md` R14A-04).
+2. The Overtoad: P1-18 (Phase D, about 2 h), after O-1, O-2, O-7, O-13 and O-14 are ruled at the first sitting (`…RECOVERY-PLAN.md` §6.6). If Phase C step 5's count is non-zero, P1-12 must exist by then, in its own validated PR: Phase D step 7's key probe needs the candidates it extracts (`…RECOVERY-PLAN.md` L240, L296 on `main`, L229 and L272 before ml#2199; `EX/round14-laneA-reprobe.md` R14A-04).
    - The remedy for R3B DEFECT-1 is folded in. H-23 now covers the time before P0 step 10's restart, step 11's restore and Procedure B's Repair (v1.14.0; R14B-13, R14B-15).
 
 **P2 ledger** (`…E2E-VALIDATION-EVIDENCE.md`): P2-01 is done, and so is P2-02 except its M-REPLAY reconciliation (the rows of `…E2E-CLICK-BY-CLICK-TEST-MATRIX.md`), which joins Wave 2's P2 lane (ml#2157, 2026-10-05, after five consensus rounds). The ledger records F-061/062 as FIXED by canopy#685 before P3-06 has validated that PR, so if P3-06 refutes the fix, it reopens them.
@@ -902,8 +910,8 @@ P4-14 and R-ML-a's floor were also P12's W1.11 code half (`…EQUITIES-END-TO-EN
   - if A1 accepts the data-client fix: R-DC-PATCH cut, and the fix forward-ported to data-client `main` with its exception-chain test;
   - if it accepts the data-client or the cascor fix: the trio restarted on it (a maintenance-branch sync or the wheel; the cascor fix in the cascor primary, after P3-05 or as a validated port on the primary's own commit);
   - if A1 chose vehicle (a) (it chose (b) on 2026-10-17): the recurrence fix released; under either vehicle, host recurrence legs run from a validated port, or are named as unfixed until wave 1 is taken everywhere;
-- R-OBS-SC-2 cut, and its second lock round merged;
-- R-DATA-2 and R-CANOPY-A cut;
+- R-OBS-SC-2 cut, and its second lock round merged: done (2026-11-09; v1.15.15);
+- R-DATA-2 and R-CANOPY-A cut (R-CANOPY-A shipped as canopy 0.9.0 on 2026-10-17, before R-OBS-SC-2; §5);
 - P1-10 merged: done (ml#2199).
 
 ### Wave 2 — in-flight work by lane (T2)
@@ -988,6 +996,37 @@ Fold each into a nearby PR. Appendix A lists every hygiene row.
 | **R-ML-SERVERS** (shipped as juniper-ml 0.11.2, 2026-10-26; note below) | The `[servers]` floors `juniper-data>=0.17.1` and `juniper-cascor>=0.12.0` (ml#2326). Its security content is cascor 0.12.0's own fixes (note below). Rated as 0.11.1 (Overtoad, 2026-10-25) | Both on PyPI (met: data 2026-10-23, cascor 2026-10-25); proposal ml#2339, archive ml#2341; the Overtoad approved the gate (run 40247789317) | `[servers]` and `[all]` users whose upgrade kept cascor 0.11.0 |
 | **R-ML-RECURRENCE-FLOOR** (shipped as juniper-ml 0.11.4, 2026-11-07, cut on the Overtoad's ruling of 2026-11-06; note below) | `[recurrence]`'s `juniper-recurrence>=0.8.1,<0.9.0` (ml#2473), the release that floors `juniper-model-core[crossval]>=0.3.0` (juniper-recurrence#229); with it, the tooling changes in `[Unreleased]` since 0.11.3 | juniper-recurrence 0.8.1 on PyPI (met 2026-11-06); proposal ml#2482, archive ml#2497; the Overtoad approved the gate (run 42230617125) | `pip install -U juniper-ml[recurrence]` moves an environment off recurrence 0.8.0, and so off model-core 0.2.0 |
 
+**R-OBS-SC-2, shipped 2026-11-09** (v1.15.15; sessions `e97264c3`, `f58cf63e`, `b4208d23` and `e21d1414`). Each Overtoad answer is dated from its transcript's `tool_result` (`util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py`), and `util/ad-hoc/2026-11-09_r_obs_sc_2_record_reprobe.py` re-checked the other facts on 2026-11-09 (0 FAIL).
+
+- **The Overtoad's rulings of 2026-11-08** (session `e97264c3`, answered 08:59:56Z): 0.4.2 is "P3-07 + header names", so `Proxy-Authorization`, `Sec-WebSocket-Protocol`, `X-CSRF-Token` and `X-XSRF-Token` join the scrubbed headers; 0.7.2 is "Include ml#2514, then cut"; and P3 D-03, asked as who opens the second round's image lock PRs, is "This arc opens them".
+  - Who opens the floor PRs, D-03's third part, was not asked. At 14:42:17Z the Overtoad answered session `f58cf63e` "Approve both cuts", so a session cut both Releases, where D-02's options and §5's rules have the Overtoad cut.
+- **P3-07 is ml#2523** (merged 2026-11-08 15:38:46Z, `a67061bd`), after three rounds that its body records, of three, two and one agents, short of §7.1's top cell. Round 1 ran on the uncommitted draft:
+  - round 1: the security read found no leak in what P3-07 claimed (sentry-sdk 2.35.0, 2.73.0 and 2.74.0), but pre-existing channels outside it (the four header names, and the 0.4.3 list) and a false `sentry-sdk>=2.0.0` floor; the fact-check found two MAJORs, and the tests read one;
+  - round 2, on the fix pass: one MAJOR, `before_send` asserted only at the default sample rate, so a hook installed only above 0.0 leaked an error event's `x-csrf-token`; and five MINORs, among them that the spy proved `compare_digest` was called, not that its answer decides;
+  - round 3, one agent on round 2's fix delta only: no MAJOR; two MINORs and five NITs, all fixed. `util/ad-hoc/2026-11-08_p3_07_mutation_check.py` then read 76 of 76 rows as expected.
+- **ml#2514 was carried as ml#2524** (15:53:33Z, `93fa1f66`): `FailedAuthThrottle`'s `Retry-After` rounds up, keeping its floor of 1. ml#2514, a Cursor draft whose `[Unreleased]` hunk conflicted with ml#2523's, was closed with a pointer.
+- **The cuts**: proposals ml#2526 (service-core, `94208d86`) and ml#2525 (observability, `a93de292`, with a carrier commit for `tests/test_public_api.py`'s version pin and the README floor, which `propose.py` misses); Releases `juniper-service-core-v0.7.2` (published 2026-11-08 16:21:19Z) and `juniper-observability-v0.4.2` (16:35:52Z); archives ml#2527 and ml#2528.
+  - 0.4.2's CHANGELOG entry carries F10's correction, and 0.7.2's carries F9's. 0.4.2 also floors its `sentry` and `test` extras at `sentry-sdk[fastapi]>=2.35.0`, which does not reach data, cascor or canopy: each declares `sentry-sdk>=2.0.0` itself.
+- **Published 2026-11-09.** The Overtoad answered session `e21d1414` at 09:49:26Z ("Approving now: wait") and approved both gates. Observability's `pypi` deployment left `waiting` at 09:51:22Z (run 42500706778; `Publish to PyPI` 09:51:24Z–09:51:39Z), and service-core's at 09:52:23Z (run 42499466753; 09:52:25Z–09:52:50Z). PyPI serves both `py3-none-any` wheels from 09:51:35Z and 09:52:45Z, with the sha256 TestPyPI took.
+- **The second lock round** (Security step 4): in each consumer, one signed commit moving exactly the two pins, with a `CHANGELOG.md` `### Security` entry. recurrence#233 merged at 10:01:54Z (`857efbc5`; `juniper-recurrence/requirements.lock`, with a dated header paragraph), data#525 at 10:07:34Z (`272ff615`), cascor#748 at 10:14:23Z (`7640d420`; `requirements.lock` and `requirements-cpu.lock`) and canopy#806 at 10:21:36Z (`b4b01904`).
+  - No `pyproject.toml` moved: the floors stay at observability `>=0.4.1` and service-core `>=0.7.1`. The sessions planned to raise them in each consumer's release PR; recurrence#199 had moved recurrence's in its lock PR, and recurrence#233's body notes the departure. That plan is a session's, not a ruling (P3-17 stays open; §6).
+- **The per-lock probe** (the Overtoad's ruling of 2026-11-09 00:24:20Z to session `b4208d23`, "Per-lock probe"). S0.11's relay tests were never written: canopy's needs no A1 ruling, while the data-client and cascor parts wait on A1's open limbs. Each PR body says that its probe is not S0.11's relay run.
+  - Each probe ran from a venv built from the new lock, with the six Sentry DSNs empty: P3-07's wire probe, which sends secrets in request headers and cookies only; the consumer's Sentry and security suites (recurrence's whole `tests/`, W1.14's among them); and a record of FastAPI's telemetry setting.
+  - Before and after, on unchanged `main` SHAs: the wire probe went from LEAK (6 items) to CLEAN in data, cascor and canopy, and is N/A in recurrence, whose lock has no `sentry-sdk`; the suites passed 247, 290, 454 and 364 tests both times, and no pin drifted. Cascor's probe ran on `requirements-cpu.lock`, the lock its image installs.
+  - What the pins change: under 0.4.1, `Sec-WebSocket-Protocol`, `X-CSRF-Token` and `X-XSRF-Token` reached every event and transaction of data, cascor and canopy, and only data can turn `send_pii` on, so the `X-API-Key` and cookie paths were reachable there alone. service-core 0.7.2's round-up reaches recurrence only, whose `SecurityMiddleware` builds the default throttle; the other three import only `enforce_auth_posture` (canopy also `AuthPostureError` and `enforce_dependency_floors`).
+- **What it leaves open.** 0.4.2 leaves query strings (canopy's `?api_key=`, sent under the default `send_pii=False`), Sentry Logs (`enable_logs=True` has no `before_send_log`), request bodies, breadcrumbs and exception values to 0.4.3 (R-OBS-SC-3, above), so XC-SENTRY's (a) and (b) stay in force. P2-09's and P12-28's service-core halves did not ride 0.7.2, and wait for a later service-core release.
+- **No running image carries it yet.** Each consumer's newest Release predates its lock PR (data `v0.17.1`, cascor `v0.13.0`, canopy `v0.9.0`, recurrence `juniper-recurrence-v0.8.1`). The fix reaches a running image only through that repository's next release, juniper-deploy's pin and a restart (§9):
+  - R-DATA-2 (data 0.18.0): its lock gate is met (XC-P12, the 2026-11-06 rulings); P3-03 and P3-09 remain, and recurrence's two bench caps (`<0.18.0`) widen first;
+  - cascor: 0.12.0 and 0.13.0 shipped on locks pinning observability 0.4.1, so R-OBS-SC-2 needs a later cascor release; whether a fix-forward is owed is the Overtoad's (§6, mid-wave sitting);
+  - canopy: R-CANOPY-A shipped as canopy 0.9.0 before R-OBS-SC-2 existed, so R-OBS-SC-2 needs a later canopy release, the second cut P4 D-4 contemplates (§4 Wave 1, Canopy);
+  - recurrence: its next release carries the pins, though its image has no Sentry path (no `sentry-sdk` in its lock).
+  - The trio: `JuniperData` and `JuniperCanopy1` hold observability 0.4.0 and service-core 0.5.0, and `JuniperCascor1` imports 0.4.2's and 0.7.2's code from the juniper-ml primary (Security step 5).
+- **Follow-ups**, asked at §6's mid-wave sitting (none acted on):
+  - juniper-ml's `[tools]` floors `juniper-observability>=0.4.1`; raising it to `>=0.4.2` needs a meta-package release (0.11.5).
+  - The forks' `RateLimiter` still truncates with no floor (data `juniper_data/api/security.py:250` and `:254`, cascor `src/api/security.py:229` and `:233`, canopy `src/security.py:270` and `:274`), so APD-SVCCORE-004's `Retry-After: 0` is live in all three, with no register row. Data `:427` and cascor `:386` keep `FailedAuthThrottle`'s `max(1, int(...))`, the round-down 0.7.2 fixed only in service-core.
+  - cascor and canopy pass no `telemetry=` to `FastAPI()`, so they run FastAPI 0.162.0's default telemetry. It is inert while their locks hold `opentelemetry-api` and no SDK, but data#454's opt-out is missing in both.
+  - Separately, canopy legs `:8052` and `:8053` still write their logs to `/tmp/juniper-e2e/` (about 40 MB each on 2026-11-09), against the directive of 2026-10-26; not this arc's.
+
 **R-DC-PATCH's branch.** P12's W1.4 merged to data-client `main` on 2026-10-05 (data-client#222, a breaking contract change). So `main` cuts 0.6.0, past canopy's `<0.6.0` cap (`EX/round7-laneA-reprobe.md`, drift); recurrence's is `<0.7.0` since recurrence#196.
 
 - Carrying the fix in 0.6.0 instead would give the trio no route until the P12 chain, and would hand cascor's locks W1.4's contract, so it was not offered (`EX/round8-laneB2-schedule.md` R8B2-10).
@@ -1054,9 +1093,9 @@ Fold each into a nearby PR. Appendix A lists every hygiene row.
 
 **Recommended order.** R-OBS-SC and R-DATA were cut on 2026-10-08 ahead of this order's gates; the order now runs (Overtoad ruling 2026-10-10):
 
-1. R-OBS-SC-2, once P3-07 validates; and R-DC-PATCH, from its `v0.5.0` maintenance branch, as soon as its fix validates, with R-DC-PATCH-6 (0.6.1, numbered at A9 on 2026-11-03) from `main` as soon as the forward-port validates.
-2. The second lock round. It picks up R-DC-PATCH only if it is on PyPI before its PRs open; otherwise another lock PR follows (§4 Wave 1).
-3. R-DATA-2, R-CANOPY-A and R-CASCOR, each as soon as it is ready.
+1. R-OBS-SC-2, once P3-07 validates (**shipped 2026-11-09**; v1.15.15); and R-DC-PATCH, from its `v0.5.0` maintenance branch, as soon as its fix validates, with R-DC-PATCH-6 (0.6.1, numbered at A9 on 2026-11-03) from `main` as soon as the forward-port validates.
+2. The second lock round. It picks up R-DC-PATCH only if it is on PyPI before its PRs open; otherwise another lock PR follows (§4 Wave 1). **Merged 2026-11-09**, before any data-client fix; if A1 accepts one, another lock PR follows its release (R-DC-PATCH-6, for locks on 0.6.x).
+3. R-DATA-2, R-CANOPY-A and R-CASCOR, each as soon as it is ready. R-CANOPY-A shipped as canopy 0.9.0 (2026-10-17), so R-OBS-SC-2 needs a later canopy release too (§4 Wave 1, Canopy; v1.15.15).
 4. R-ML-a: shipped as juniper-ml 0.11.0 (2026-10-21), with R-ML-b.
 5. The P12 chain: done (2026-10-17), and carried on through recurrence 0.8.0 (2026-10-20).
 6. R-ML-b: shipped with R-ML-a. R-ML-TOOLS followed as 0.11.1 (2026-10-25).
@@ -1202,7 +1241,7 @@ The few that gate something are asked before what they gate: P7's D4 and D5, and
 
 Rounds run under the rule chosen at §6 A7; the proposed default is in §1.3. Every round, safety rounds included, counts against the account-wide agent cap. Freeze each artifact while its round runs. **S** marks a safety round, which only jumps the queue.
 
-1. P3-07 (pre-branch) **S**
+1. P3-07 (pre-branch) **S**: merged as ml#2523 (2026-11-08) after rounds of three, two and one agents, short of the top cell; round 1 ran on the uncommitted draft (v1.15.15)
 2. P3-08 (pre-branch) **S**
 3. F-S10's fixes, as one item (at least two rounds): W1.14 (merged and released on 2026-10-17 without these rounds; v1.15.0), plus the data-client and cascor fixes if accepted, and the data-client fix's forward-port to `main`, a second diff on another base, so that its PR opens validated; under vehicle (a), W1.14 on the tag's branch as well as on `main`. The local ports are validated by their own test runs (§4 Wave 1) **S**
 4. P3-06's validation of canopy#685, now; its fix-forward's own round waits for A1 and A4 (S0.5) **S**
@@ -1224,6 +1263,7 @@ Rounds run under the rule chosen at §6 A7; the proposed default is in §1.3. Ev
 **The arithmetic behind "three to five weeks" for Waves 0–1:**
 
 - **Rounds.** Items 1–8 less item 5 gate the Wave 1 exit: **9 items**, counting XC-LEAKS as three and F-S10 as one; item 5 is done (ml#2199), which took the count from 10 to 9. Item 9 (P3-05) gates R-CASCOR, which is not in the exit (`EX/round7-laneB2-schedule.md` R7B2-08). That count assumes the cascor fix goes on the primary's own commit; on the after-P3-05 route, item 9 joins the exit: 10 items, at least 20 rounds and 100 agent runs (`EX/round10-laneB2-schedule.md` R10B2-12).
+  - Item 1 (P3-07) has merged too (ml#2523, 2026-11-08), short of the top cell, which takes the count to 8 items, at least 16 rounds and 80 agent runs; the figures below are for 9 (v1.15.15).
 - **Size**, by `…CONSENSUS-PROCEDURE.md` §3 (L76–98), where each escalator moves an item up one cell:
   - **Base row**, all 9: **High** criticality, because each gates a release or closes a finding, at **Medium** uncertainty, because each fix is derived from a finding and not yet measured. That cell is 2 Lane A + 1–2 Lane B (`…CONSENSUS-PROCEDURE.md` L84).
   - **Escalator, all 9**: "a fix or revert hangs on it" (`…CONSENSUS-PROCEDURE.md` L93). One escalator from Medium reaches the top cell: 3+ Lane A, 2+ Lane B and at least two iterations (`…CONSENSUS-PROCEDURE.md` L85, L110). That is at least five agents per round.
@@ -1282,7 +1322,7 @@ P12-08 and P12-09 have already run (ml#2130).
 
 | Area | Items that edit it | Rule |
 | --- | --- | --- |
-| juniper-data `CHANGELOG.md` `[Unreleased]`, `routes/datasets.py` | P3-03, P3-09, P5-09, P3-24, P5-23 (W6), P12-18, P12-33, P12-55 | P3-03 first, then P3-09 and P5-09, then R-DATA-2, then the rest. `[0.17.0]` and `[0.17.1]` are cut, and `[0.17.1]` (data#479) took data#478's entry |
+| juniper-data `CHANGELOG.md` `[Unreleased]`, `routes/datasets.py` | P3-03, P3-09, P5-09, P3-24, P5-23 (W6), P12-18, P12-33, P12-55 | P3-03 first, then P3-09 and P5-09, then R-DATA-2, then the rest. `[0.17.0]` and `[0.17.1]` are cut, and `[0.17.1]` (data#479) took data#478's entry. data#525's `### Security` entry went in first (2026-11-09; v1.15.15), so P3-03 rebases over it |
 | juniper-ml `util/experiments/run_suite.py` | ml#2145 (merged), ml#2182 (merged; its suites from #2136, #2144 and #2147 pin this file), ml#2195 (merged 2026-10-09; its suites pin this file), ml#2369 (merged 2026-10-27; P6-08's train / val half), ml#2381 (merged 2026-10-28; P5-11, with P6-08's `test_*` columns), P6-07, P12-52 | One PR at a time; each keeps those suites green |
 | juniper-ml `util/experiments/stats_summary.py`, `plots_cascor.py` | ml#2381 (merged 2026-10-28; P5-11), P6-10, P6-11, P12-53 | P5-11 went first (ml#2381); then one PR at a time |
 | juniper-ml `util/experiments/run_experiment.py` | ml#2182 (merged; its suites from #2136, #2144, #2147, #2166 and #2169 pin this file), ml#2195 (merged 2026-10-09; its suites pin this file), ml#2381 (merged 2026-10-28; P5-11), P6-09, P6-12, P12-19, P12-31 | One PR at a time; each keeps those suites green |
@@ -1290,12 +1330,12 @@ P12-08 and P12-09 have already run (ml#2130).
 | juniper-ml `docs/REFERENCE.md`, `.github/workflows/ci.yml`, `AGENTS.md`, `CHANGELOG.md` | P1-10 (merged as ml#2199), ml#2182 and ml#2184 (merged 2026-10-08; ml#2184: `docs/REFERENCE.md` +996/−28, to 0.6.62), the three corrections XC-FLEET schedules (below), P3-14, P5-30, P6-07 (REFERENCE's exit-code table), P6-17, P12 ml PRs (test wiring), XC-LEAKS | Rebuild from `origin/main` just before a whole-file upload; one open PR per file; the gate finding below |
 | `…DEFECT-REGISTER.md` and the API primer, `notes/JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md` | P3-10..P3-16, P3-33, P3-35 | One register or primer PR open at a time, built from a fresh `main`; edit the primer in place only |
 | juniper-ml `pyproject.toml` extras | R-ML-a, R-ML-b, P5-27, P12's W1.11 code half (= R-ML-a's floor) | One release PR at a time, opened by the P4 session once PyPI serves the release; W10 waits for W5/W6. The floor merged (ml#2190); the `[recurrence]` caps and floors followed (ml#2232, #2243, #2260, #2292), with the `[tools]` floors (ml#2314), released as 0.11.0 and 0.11.1, and the `[servers]` floors (ml#2326), released as 0.11.2 (R-ML-SERVERS, §5) |
-| cascor `logger.py`, `manager.py`, `src/tests/conftest.py`, `src/api/routes/training.py`, `src/api/secrets.py`, `src/api/app.py`, `CHANGELOG.md` `[Unreleased]` | P3-08, F-S10's cascor fix (if accepted), P6-01, P6-23, P7-16/18/19/24, P5-24, P2-10, P2-17 | One PR per file in flight. P3-08 goes first on any file it shares with another item; F-S10's cascor fix waits on P3-08 only where the two edit the same file, which includes `CHANGELOG.md` (P3-08's F9 edits it) |
+| cascor `logger.py`, `manager.py`, `src/tests/conftest.py`, `src/api/routes/training.py`, `src/api/secrets.py`, `src/api/app.py`, `CHANGELOG.md` `[Unreleased]` | P3-08, F-S10's cascor fix (if accepted), P6-01, P6-23, P7-16/18/19/24, P5-24, P2-10, P2-17 | One PR per file in flight. P3-08 goes first on any file it shares with another item; F-S10's cascor fix waits on P3-08 only where the two edit the same file, which includes `CHANGELOG.md` (P3-08's F9 edits it). cascor#748's entry came first (2026-11-09) |
 | canopy `dashboard_manager.py` and the service adapters | P2-03/06/12/13, P3-21, P10-03, P12-12/16/17/25, P5-25 | canopy#731–#733 landed first (2026-10-09), and P2-03 builds on them |
 | recurrence `routers/_common.py`, `routers/training.py`, `routers/predict.py`, `routers/crossval.py`, `data.py`, `schemas.py`, settings | W1.14 (F-S10), P5-16, P5-26, P12-15, P12-24..30 | W1.14 first: merged 2026-10-17 (recurrence#203) |
 | juniper-data-client `juniper_data_client/client.py` | F-S10's source fix (if accepted), on a `v0.5.0` maintenance branch and forward-ported to `main` for a 0.6.x patch (0.6.0 is cut); P12's later data-client PRs (W1.4 merged on 2026-10-05, editing `contract.py`) | One PR per branch at a time; the forward-port follows the branch fix |
 | `.gitleaks.toml` and secret-scan steps (data, canopy, deploy, recurrence; ml done by ml#2203) | XC-LEAKS, P1-11 | One PR per repository |
-| conda env `JuniperCascor1` (shared by cascor and P12), and the primary checkouts its editable installs map | P12-01 (W0.1 service-core half); the XC-SENTRY environment upgrade; F-S10's trio route (a wheel swap or a data-client branch sync; a cascor fix after P3-05, or as a validated port on the primary's own commit); recurrence host legs, which need the fix in the recurrence primary (§4 Wave 1) | Owner-only changes, made outside §7.2's windows, and coordinated so that one restart can serve several |
+| conda env `JuniperCascor1` (shared by cascor and P12), and the primary checkouts its editable installs map | P12-01 (W0.1 service-core half); the XC-SENTRY environment upgrade; F-S10's trio route (a wheel swap or a data-client branch sync; a cascor fix after P3-05, or as a validated port on the primary's own commit); recurrence host legs, which need the fix in the recurrence primary (§4 Wave 1) | Overtoad-only changes, made outside §7.2's windows, and coordinated so that one restart can serve several |
 | juniper-deploy `docker-compose.yml`; `publish-image.yml` in five repos | P4-14 (= P12's W1.11 compose pins), P12-22 (= Y2 2b), P4-10 (P4's Wave 4) | The pin PR is opened once GHCR serves the image; P4's Wave 4 never runs during an image publication. P4-14's data pin merged (deploy#243); the recurrence and canopy pins followed W1.13 (deploy#249; recurrence 0.8.0 since deploy#257), and deploy#258 pins data 0.17.1 and cascor 0.12.0; deploy#266 pins cascor 0.13.0 (2026-10-30; §5) |
 | `MEMORY.md` (the auto-memory index) | Every path | XC-MEM |
 | The `HO/` archive | P9-04/15, P10-01, P2-27 | Use the post-ml#2117 paths |
@@ -1525,7 +1565,7 @@ Path-specific hazards are in each extraction report's §4.
 
 ## Appendix A — every ID, placed
 
-"→" marks a row merged into another item: a cross-cutting item, a release, §6, or the release steps (Appendix B lists each merge). Owner-decision IDs are in §6. IDs added by validation are marked *(v)*. "Done" with a PR named means merged; where an Overtoad ruling is pending, that is said.
+"→" marks a row merged into another item: a cross-cutting item, a release, §6, or the release steps (Appendix B lists each merge). Overtoad-decision IDs are in §6. IDs added by validation are marked *(v)*. "Done" with a PR named means merged; where an Overtoad ruling is pending, that is said.
 
 - **P1** (`EX/extraction-P1-backup.md`):
   - **Done**: P1-01, P1-02, P1-03, P1-04 (ml#2134); P1-05..P1-10 (ml#2199, 2026-10-09: the fold-in, rounds 4–7, the record and the STOP cleared; its reads after the fact are S0.3's); P1-13 →XC-FLEET (the Overtoad's disposition, 2026-10-08; `EX/round12-laneB2-schedule.md` R12B2-14)
@@ -1550,15 +1590,15 @@ Path-specific hazards are in each extraction report's §4.
     - P2-R11: `…WS-MIGRATION-PLAN-JR-CAN-PERF-004.md` still gates on the shipped F-036 decision;
     - P2-R12: canopy#552 is still OPEN while main-verify is green.
 - **P3** (`EX/extraction-P3-defect-register.md`; 37 IDs, P3-00..P3-36):
-  - **T0**: P3-06, P3-07, P3-08, P3-11; P3-00 →XC-GRANT (a rule)
-  - **Done**: P3-20 (= P2-01, ml#2157)
-  - **T1**: P3-01, P3-02, P3-03, P3-05, P3-09, P3-17, P3-18 →R-OBS-SC + image lock PRs (the first lock round is done, four PRs on 2026-10-10; the second follows R-OBS-SC-2), P3-19 →R-DATA, P3-21 (= P2-03)
+  - **T0**: P3-06, P3-08, P3-11; P3-00 →XC-GRANT (a rule)
+  - **Done**: P3-20 (= P2-01, ml#2157); P3-07 (ml#2523, 2026-11-08; v1.15.15)
+  - **T1**: P3-01, P3-02, P3-03, P3-05, P3-09, P3-17 (D-02 ruled 2026-10-10; D-03 ruled 2026-11-08 for the lock PRs, its floor part unasked), P3-18 →R-OBS-SC + image lock PRs (both lock rounds are done, four PRs each on 2026-10-10 and 2026-11-09; the floors are open), P3-19 →R-DATA, P3-21 (= P2-03)
   - **T2**: P3-04, P3-10, P3-12, P3-13, P3-14, P3-15, P3-16, P3-33 (= P6-33), P3-35
   - **T3**: P3-22, P3-23, P3-28, P3-31, P3-32, P3-36 (= P6-06)
   - **T5**: P3-24, P3-25, P3-26, P3-27, P3-34
   - **T6**: P3-29 →XC-CLEAN, P3-30 →XC-MEM
 - **P4 and P11** (`EX/extraction-P4-release-P11-k8s.md`):
-  - **T1**: P4-01, P4-02, P4-03, P4-04, P4-06 (ran on 0.17.0's publish; its read remains), P4-12 →R-DATA (shipped as 0.17.0; R-DATA-2 is owed), P4-13, P4-14 (done for data, deploy#243), P4-15 →R-CANOPY-A, P4-16 →R-CASCOR, P4-17 →R-OBS-SC, P4-18 →P12 chain, P4-19 →R-CASCOR-MODEL, P4-20 →R-ML-a/b, P4-21
+  - **T1**: P4-01, P4-02, P4-03, P4-04, P4-06 (ran on 0.17.0's publish; its read remains), P4-12 →R-DATA (shipped as 0.17.0; R-DATA-2 is owed), P4-13, P4-14 (done for data, deploy#243), P4-15 →R-CANOPY-A, P4-16 →R-CASCOR, P4-17 →R-OBS-SC (shipped as R-OBS-SC-2, 2026-11-09), P4-18 →P12 chain, P4-19 →R-CASCOR-MODEL, P4-20 →R-ML-a/b, P4-21
   - **T2**: P4-22, P4-45
   - **T3**: P4-05, P4-07, P4-11, P4-24..P4-26, P4-28, P4-29, P4-30..P4-32 (the Overtoad questions on data#409, cascor#582 and data#423; Appendix B row 17), P4-41, P4-42, P11-01
   - **T5**: P4-08, P4-09, P4-10, P4-27 (hand to the Overtoad or a juniper-k8s issue), P4-34, P4-36, P4-37, P4-38, P4-43, P4-44, P11-03
@@ -2202,15 +2242,19 @@ From round 13 (Overtoad ruling 2026-10-10), a round whose only MAJORs are the li
     - with v1.15.11's, `2026-11-01_simulate_w0_1_env_refresh_pip_check.py` and `2026-11-04_p12_worktree_cleanup_check.bash`;
     - with v1.15.12's, `2026-11-06_plan_v1_15_12_spec_v0_2_2_Overtoad_rulings.py`, `2026-11-04_dirty_worktree_files_landed_check.py` and `2026-11-04_p12_force_remove_landed_worktrees.bash`;
     - with v1.15.13's, `2026-11-06_consolidated_plan_v1_15_13_floor_0_11_4_o13_narrowed.py`; the floor's `2026-11-06_raise_recurrence_floor_0_8_1.py` and the cut's `2026-11-06_juniper_ml_0_11_4_cut_cochanges.py` landed with ml#2473 and ml#2482;
-    - and with v1.15.14's, `2026-11-07_consolidated_plan_v1_15_14_juniper_ml_0_11_4_published.py`, `2026-11-07_parent_agents_released_paragraph_reprobe.py` and `2026-11-07_parent_agents_md_juniper_ml_0_11_4.py`; the publish check `2026-11-07_verify_juniper_ml_0_11_4_published.py` landed with ml#2510;
+    - with v1.15.14's, `2026-11-07_consolidated_plan_v1_15_14_juniper_ml_0_11_4_published.py`, `2026-11-07_parent_agents_released_paragraph_reprobe.py` and `2026-11-07_parent_agents_md_juniper_ml_0_11_4.py`; the publish check `2026-11-07_verify_juniper_ml_0_11_4_published.py` landed with ml#2510;
+    - and with v1.15.15's, `2026-11-09_consolidated_plan_v1_15_15_r_obs_sc_2_shipped.py`, `2026-11-09_r_obs_sc_2_record_reprobe.py`, `2026-11-09_r_obs_sc_2_owner_answers.py` and `2026-11-09_wait_for_pypi_gates.py`; P3-07's `2026-11-08_p3_07_sentry_wire_probe.py` and `2026-11-08_p3_07_mutation_check.py` landed with ml#2523;
+      - and the second lock round's eight, each named `2026-11-09_lock_round_2_` and then `fetch_consumers.py`, `facts.py`, `env_record.py`, `probe.py`, `run_probes.py`, `refresh.py`, `changelog_insert.py` or `tested_section.py`;
   - the arc's five mid-arc handoffs, each consumed:
     - `HO/HANDOFF_2026-10-04_consolidated-development-plan-round-2-reconcile-then-pr.md`, `HO/HANDOFF_2026-10-05_consolidated-development-plan-finish-v1.6-round-7-then-pr.md` and `HO/HANDOFF_2026-10-08_consolidated-development-plan-finish-round-10-reconcile-then-round-11-and-pr.md`, by the session that wrote them;
     - `HO/HANDOFF_2026-10-08_consolidated-development-plan-reconcile-round-12-then-round-13-and-pr.md`, by the session that reconciled round 12;
     - `HO/HANDOFF_2026-10-10_consolidated-development-plan-reconcile-round-13-rebaseline-drift-then-pr.md`, by session `560c1ec5`.
   - with v1.15.0's PR, the recurrence × equities arc's handoff `HO/HANDOFF_2026-10-25_recurrence-equities-juniper-ml-0-11-1-published-servers-floors-next.md` (P12's, not this plan's).
+  - with v1.15.15's PR, R-OBS-SC-2's handoffs `HO/HANDOFF_2026-11-08_r-obs-sc-2-cut-pypi-gates-lock-round-next.md`, `HO/HANDOFF_2026-11-09_r-obs-sc-2-lock-round-prepped-probe-ruled-gates-pending.md` and `HO/HANDOFF_2026-11-09_r-obs-sc-2-published-lock-round-merged-plan-v1-15-15-next.md`, and the session's own, `HO/HANDOFF_2026-11-09_r-obs-sc-2-recorded-plan-v1-15-15-owner-items-next.md` (not this plan's).
 - **Created outside the repository**:
   - the auto-memory file `reference_a_vanished_finding_is_a_narrowing_until_explained.md` (diff finding keys across gate versions on a fixed corpus; a finding that vanishes is a narrowing until explained);
   - by session `560c1ec5` (2026-10-10), the auto-memory file `reference_ci_parity_gitleaks_local_scan.md`.
+  - by session `f58cf63e` (2026-11-08), recorded with v1.15.15, the auto-memory file `reference_host_grep_is_ugrep_honouring_ignore_files.md` (the host's `grep` is ugrep, which honours `.gitignore`).
 - **Modified outside the repository**:
   - the auto-memory index `MEMORY.md`: one line, replaced at net −25 bytes; and on 2026-10-08 the verification hub's count on its line, 26 → 27;
   - `reference_verification_discipline_hub.md`: one line added, pointing to the new file;
@@ -2230,3 +2274,5 @@ From round 13 (Overtoad ruling 2026-10-10), a round whose only MAJORs are the li
   - by session `ff40b833` (2026-11-04), recorded with v1.15.11: `MEMORY.md` (21,218 → 19,608 bytes, closed arcs' lines retired into the new hub `project_closed_arcs_hub.md`) and `juniper-ml/tmp/worktree-cleanup-2026-11-03-p12/` (new: six worktrees' `tmp/`).
   - by session `61859b4a` (2026-11-06), recorded with v1.15.13: `project_recurrence_equities_p0_arc_2026-10-04.md` (a new state block and its description); this session did not change `MEMORY.md`.
   - by session `a02ac3a2` (2026-11-07), recorded with v1.15.14: the parent `Juniper/AGENTS.md` (juniper-ml 0.11.4, recurrence 0.8.1, the re-probe date and Last Updated; both versions in `juniper-ml/tmp/2026-11-07-parent-agents-md-backup/`) and `project_recurrence_equities_p0_arc_2026-10-04.md` (a new state block and its description); this session did not change `MEMORY.md`.
+  - by sessions `e97264c3` and `f58cf63e` (2026-11-08) and `b4208d23` and `e21d1414` (2026-11-09), recorded with v1.15.15: `project_recurrence_equities_p0_arc_2026-10-04.md` (a state block each; `b4208d23`'s handoff says it changed nothing outside the repository, but its transcript records the write); and by `f58cf63e`, `MEMORY.md` (the new file's pointer, in the verification-hub line).
+  - by session `09366253` (2026-11-09), with v1.15.15: `project_recurrence_equities_p0_arc_2026-10-04.md` (a new state block and its description); this session did not change `MEMORY.md`.
