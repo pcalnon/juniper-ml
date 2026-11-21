@@ -572,7 +572,7 @@ jobs:
           python3 -m unittest -v tests/test_ci_quality_gate.py
           # tests/test_publish_subpackage_workflows.py: structural + hermetic
           # YAML-extraction gate for the six publish-*.yml shared-package workflows
-          # (tag-prefix guard, no push:tags #555 race, skip-existing, --no-deps
+          # (tag-prefix guard, no push:tags #555 race, no skip-existing, --no-deps
           # without PyPI fallback, subdirectory working-directory / artifact path).
           python3 -m unittest -v tests/test_publish_subpackage_workflows.py
           # tests/test_subpackage_py_typed.py: asserts all six published sub-packages
@@ -688,6 +688,16 @@ jobs:
           # step under `if: github.event_name == 'push'` that could NEVER run, dead code
           # shaped like a guard. Discovery is a glob, so a new publisher cannot dodge it.
           python3 -m unittest -v tests/test_publish_release_only_trigger.py
+          # tests/test_publish_one_artifact.py: the one-artifact publish (the port of
+          # juniper-cascor#763 / #767; the owner's directive of 2026-11-15). All 7 publishers
+          # build once and hand both publish jobs one artifact (dist + SHA256SUMS, 90 days),
+          # reused on a re-run; the dist is checked against SHA256SUMS before every upload,
+          # TestPyPI's JSON after the TestPyPI upload and again before the PyPI one, and
+          # PyPI's after; no skip-existing; id-token only on the uploading jobs; and the
+          # republish job, rung 1 of the recovery ladder. Every template step is byte-identical
+          # to the others and to juniper-cascor's; the rehearsals run each step's own Python
+          # against a stand-in index and GitHub API on 127.0.0.1. PyYAML (installed above).
+          python3 -m unittest -v tests/test_publish_one_artifact.py
           # tests/test_memory_budget_check.py: the gate for util/memory_budget_check.py
           # (P2 of the shared-session-memory plan). util/ is outside every pre-commit
           # Python hook's scope, so this suite IS the gate -- the same gap that left

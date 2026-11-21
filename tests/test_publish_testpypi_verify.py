@@ -25,7 +25,7 @@ This unittest:
   1. Structurally pins both phases: the download phase's TestPyPI-only index +
      ``--no-deps`` + exact ``==${VERSION}``, the three install phases' PyPI-only index
      + local-wheel target + extras + absence of ``--no-deps``, the tomllib version read,
-     TestPyPI upload ``skip-existing`` (PyPI stays strict), the ``pypi needs: testpypi``
+     no ``skip-existing`` on either upload (the one-artifact publish), the ``pypi needs: testpypi``
      gate, and the ``v*`` release-tag guard.
   2. Enforces the anti-regression invariant: NO verify command may carry
      ``--extra-index-url``, and no single command may name both index URLs (the merged
@@ -235,24 +235,36 @@ class PublishTestPyPIVerifyStructuralTest(unittest.TestCase):
         self.assertIn("importlib.metadata", self.script)
 
     def test_testpypi_environment_and_oidc(self) -> None:
-        """Environments are declared, and OIDC is scoped to the publish jobs only.
+        """Environments are declared, and OIDC is scoped to the jobs that upload.
 
         P4 (juniper-ml#357) moved ``id-token: write`` off the workflow block and
-        onto the two publish jobs.  The build job compiles the tree and must not
-        be able to mint a PyPI credential; job-level ``permissions`` REPLACE the
-        workflow block rather than merging with it, so each publish job restates
-        ``contents: read`` for its checkout.
+        onto the publish jobs.  The build job compiles the tree and must not be
+        able to mint a PyPI credential; job-level ``permissions`` REPLACE the
+        workflow block rather than merging with it.  Since the one-artifact
+        publish (2026-11-15) the workflow block is ``{}`` and each job states its
+        own: the build ``contents: read`` and ``actions: read`` (its reuse step
+        lists the run's artifacts), the TestPyPI job ``contents: read`` for its
+        checkout, the PyPI job, which checks nothing out, ``id-token: write``
+        alone, and the republish job ``actions: read`` for the release run's
+        artifact.
         """
         self.assertEqual(self.doc["jobs"]["testpypi"].get("environment"), "testpypi")
         self.assertEqual(self.doc["jobs"]["pypi"].get("environment"), "pypi")
+        self.assertEqual(self.doc["jobs"]["republish"].get("environment"), "pypi")
 
-        self.assertEqual(self.doc.get("permissions"), {"contents": "read"}, "workflow-level permissions must NOT grant id-token; scope it to the publish jobs")
+        self.assertEqual(self.doc.get("permissions"), {}, "workflow-level permissions must grant nothing; each job states its own")
 
-        for job in ("testpypi", "pypi"):
+        expected = {
+            "build": {"contents": "read", "actions": "read"},
+            "testpypi": {"id-token": "write", "contents": "read"},
+            "pypi": {"id-token": "write"},
+            "republish": {"actions": "read", "id-token": "write"},
+        }
+        for job, permissions in expected.items():
             with self.subTest(job=job):
-                self.assertEqual(self.doc["jobs"][job].get("permissions"), {"id-token": "write", "contents": "read"})
+                self.assertEqual(self.doc["jobs"][job].get("permissions"), permissions)
 
-        self.assertNotIn("permissions", self.doc["jobs"]["build"], "the build job must not be granted OIDC minting rights")
+        self.assertNotIn("id-token", self.doc["jobs"]["build"].get("permissions") or {}, "the build job must not be granted OIDC minting rights")
 
     def test_build_asserts_release_tag_matches_built_version(self) -> None:
         """P3: the build job proves it is building a tag whose version it actually built."""
@@ -266,15 +278,17 @@ class PublishTestPyPIVerifyStructuralTest(unittest.TestCase):
         self.assertIn("github.ref }}", run_bodies, "the check must be fed the real github.ref, not a hardcoded value")
         self.assertNotIn("github.ref_name", run_bodies)
 
-    def test_testpypi_upload_skips_existing_but_pypi_stays_strict(self) -> None:
-        # A re-cut Release republishes a version TestPyPI already holds (immutable upload).
-        # TestPyPI tolerates it; production PyPI must NOT silently swallow a duplicate.
+    def test_neither_upload_skips_existing(self) -> None:
+        # Until 2026-11-15 the TestPyPI upload set skip-existing so a re-cut Release was a no-op. It kept an earlier
+        # build under the same file name silently, and Gate 1 then verified that file rather than the one PyPI would
+        # receive. The one-artifact publish dropped it: both uploads take the build job's artifact, and a re-cut that
+        # builds new files for a version TestPyPI holds now fails at the upload. Production PyPI stays STRICT, as before.
         tp_steps = self.doc["jobs"]["testpypi"]["steps"]
         tp_pub = next(s for s in tp_steps if str(s.get("uses", "")).startswith("pypa/gh-action-pypi-publish"))
-        self.assertIs(
-            (tp_pub.get("with") or {}).get("skip-existing"),
-            True,
-            "TestPyPI upload must set skip-existing: true so a Release recut is a no-op, not a 400.",
+        self.assertNotIn(
+            "skip-existing",
+            (tp_pub.get("with") or {}),
+            "TestPyPI upload must not skip an existing file: the install check would then test an earlier build.",
         )
         self.assertEqual((tp_pub.get("with") or {}).get("repository-url"), "https://test.pypi.org/legacy/")
 

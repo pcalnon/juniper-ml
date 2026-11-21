@@ -4,8 +4,8 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.2.6
-**Last Updated**: 2026-11-15
+**Version**: 1.2.7
+**Last Updated**: 2026-11-16
 
 ---
 
@@ -792,8 +792,8 @@ invocation error (`ceremony.py:71-72`).
 | `archive-too-large` | the rendered archive, base64-encoded, exceeds the one-request signed-commit cap (default 1,000,000 B since 2026-10-26; `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides). Checked in the planner after the re-entry checks and **before** `create_branch`, so no empty `release-notes/<pkg>-v<ver>` branch is left behind (juniper-ml#2227). The cap is the GraphQL request body: a `FileAddition` replaces the whole file, so a large archive cannot be split across mutations | `ceremony.py` (`plan_ceremony` step 4b; `archive_b64_max`) | Condense the notes (`util/ad-hoc/2026-10-17_condense_release_notes_section.py`, the juniper-canopy 0.9.0 precedent) and re-run, or raise the env var. The default was 125,000 B, the figure measured from turing, until the runner-side measurement of 2026-10-26: a GitHub-hosted runner had every GraphQL body up to 16 MiB accepted (run 40410086979; `reports/2026-10-26_graphql-body-cap-probe/`), so the turing figure was that host's weak link (GitHub's GraphQL frontend drops a request that runs past about 7-10 s). The Overtoad then ruled the default up to 1,000,000 B. Never invent an archive body. |
 | `missing-declared-version` | manifest has no `declared_version` for a `BUMPED_NOT_RELEASED` pkg | `ceremony.py:711` | A malformed manifest — re-run detection (`report` mode) to regenerate it. |
 | `not-in-registry` | package is `BUMPED_NOT_RELEASED` in the manifest but absent from `registry.yaml` | `ceremony.py` (`_plans_for` / `ceremony.py:1152`) | Add the package to `util/release_train/registry.yaml` (registry lint gates it). Propose's parallel for `UNRELEASED_CHANGES` is a **skip stub** (`skipped_reason="package not in registry.yaml"`, §3.2) — not a HALT. |
-| `testpypi-verify-failed` | (during the monitor) a job of the publish workflow whose name holds `testpypi` failed before Gate 2; its failed step names the cause (a publisher with no separate build job builds inside that job) | `execute_ceremony` (`ceremony.py`) | The run is not healthy — inspect the publish run's TestPyPI job; fix and re-cut is idempotent. |
-| `build-failed` | (during the monitor) the publish workflow's separate `Build and Validate` job failed, so that attempt published nothing (added 2026-11-15, juniper-ml#2592). 13 of the 18 publishers had that job before juniper-cascor#763 (canopy, juniper-ml's 7, recurrence's 3, cascor's protocol and model), and their build failures were a note with no issue until then; #763 gave cascor's main publisher one, and its ports give the last 4 one | `execute_ceremony` (`ceremony.py`) | The run is not healthy — inspect the build job; fix and re-cut is idempotent. |
+| `testpypi-verify-failed` | (during the monitor) a job of the publish workflow whose name holds `testpypi` failed before Gate 2; its failed step names the cause (a publisher with no separate build job builds inside that job) | `execute_ceremony` (`ceremony.py`) | The run is not healthy — open the publish run's TestPyPI job and read its failed step. Transient (TestPyPI not yet serving the upload, a network error): "Re-run failed jobs" on the run, within 30 days, never "Re-run all jobs". A broken package (a real install-check failure): fix it and cut a new patch version, never the republish dispatch, which would copy the broken files to PyPI. Do not re-cut the Release ([PyPI publish procedure §11.8](JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi)). |
+| `build-failed` | (during the monitor) the publish workflow's separate `Build and Validate` job failed, so that attempt published nothing (added 2026-11-15, juniper-ml#2592). 13 of the 18 publishers had that job before juniper-cascor#763 (canopy, juniper-ml's 7, recurrence's 3, cascor's protocol and model), and their build failures were a note with no issue until then; #763 gave cascor's main publisher one, and its ports give the last 4 one | `execute_ceremony` (`ceremony.py`) | The run is not healthy — open the build job and read its failed step. Transient (a network or runner error): "Re-run failed jobs" on the run, within 30 days. Otherwise fix it and cut a new patch version. |
 
 ### 4.1 Monitor terminals after the Release is cut
 
@@ -813,8 +813,8 @@ copies TestPyPI's files to PyPI) skips the build and both publish jobs and runs 
 
 | Terminal | Classifier trigger | Dedup issue? | Operator response |
 |---|---|---|---|
-| `HALT_BUILD` | the job named `Build and Validate` has `conclusion=failure` (read first: it leaves the TestPyPI job skipped, not failed) | **Yes** — `reason_key=build-failed` via `upsert_halt_issue` | Inspect the build job; fix; re-cut (idempotent). |
-| `HALT_TESTPYPI` | any `*testpypi*` job `conclusion=failure` (the build job did not fail) | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue` | Inspect the TestPyPI job's failed step; fix; re-cut (idempotent). |
+| `HALT_BUILD` | the job named `Build and Validate` has `conclusion=failure` (read first: it leaves the TestPyPI job skipped, not failed) | **Yes** — `reason_key=build-failed` via `upsert_halt_issue` | Inspect the build job's failed step. Transient: "Re-run failed jobs" on the run, within 30 days. Otherwise fix it and cut a new patch version. |
+| `HALT_TESTPYPI` | any `*testpypi*` job `conclusion=failure` (the build job did not fail) | **Yes** — `reason_key=testpypi-verify-failed` via `upsert_halt_issue` | Inspect the TestPyPI job's failed step. Transient (TestPyPI not yet serving the upload): "Re-run failed jobs" on the run, within 30 days. A broken package (a real install-check failure): fix it and cut a new patch version, never the republish dispatch (procedure §11.8). |
 | `HALT_PUBLISH` | run `status=completed` and `conclusion` in `{failure, cancelled, timed_out}` **and** no build or TestPyPI job has `conclusion=failure` (a cancelled build lands here too, as does a failed republish run) | **No** — note only: `"the publish run failed, was cancelled or timed out, with no failed build or TestPyPI job: open the run (no issue is filed for this class)."` | Open the publish run UI; diagnose the failure (cancelled deploy, timed-out job, a failed PyPI or republish job, etc.). Do **not** wait for a GitHub issue. Archive + Release were already cut — re-entry resumes at the monitor and must not re-cut. |
 | `PENDING_PYPI_APPROVAL` | run `waiting` / TestPyPI ok + pypi job parked | n/a (success for the train) | Approve Gate 2 when ready (§3.3). |
 | `RELEASED` | run completed `success` (both gates done) | n/a | The Overtoad already approved; nothing to do. |
@@ -870,8 +870,11 @@ git push --delete origin <tag>            # e.g. juniper-observability-v0.5.0
   create it; the ceremony deliberately passes no `--verify-tag` (and `ceremony.py:_assert_gh_allowed`
   forbids `--verify-tag`, `ceremony.py:201-202`). A pre-existing tag changes what the tag-triggered
   publish workflow checks out (the tag-ref gotcha; §8).
-- Deleting the Release + tag also lets a corrected re-run start clean: the ceremony is idempotent and
-  re-computes state from PyPI/Release truth (plan §8 last row; `ceremony.py:53-56`).
+- Deleting the Release + tag lets a corrected re-run start clean only while TestPyPI does not hold the
+  version: the ceremony is idempotent and re-computes state from PyPI/Release truth (plan §8 last row;
+  `ceremony.py:plan_ceremony`). Once TestPyPI holds it, a rebuild under the same file names is refused there
+  (or, where a publisher still skips existing files, never uploaded), so the correction ships as a new patch
+  version ([PyPI publish procedure §11.8](JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi)).
 
 ### 5.4 Close a bad proposal PR
 
@@ -881,8 +884,16 @@ branch); the dup-guard means a corrected re-dispatch will open a fresh one rathe
 
 ### 5.5 The immutable-index recovery stance (§11)
 
-**PyPI and TestPyPI files are immutable**, and the publish steps use `skip-existing: true`
-(plan §8 "Idempotent re-entry", citing `publish-service-core.yml:139,185`). Consequences for recovery:
+**PyPI and TestPyPI files are immutable.** The publish steps used `skip-existing: true`
+(plan §8 "Idempotent re-entry", citing `publish-service-core.yml:139,185`) until the one-artifact publish dropped
+it: in juniper-ml's seven publishers on 2026-11-15, and in each other repository's as its port lands. juniper-cascor's
+publishers, whose #763 / #767 are the template, never set it. A TestPyPI upload that skips an existing file lets the
+install check test an earlier build than the one PyPI takes. A release that did not reach PyPI follows the owner's
+recovery ladder: the republish dispatch, then (within 30 days) "Re-run failed jobs", then a new patch version. The
+first two rungs apply only when the release run's TestPyPI job, install check included, succeeded or failed only for
+a transient index lag; a real install-check failure is a broken package, which ships fixed as a new patch version and
+is never republished ([PyPI publish procedure §11.8](JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi)).
+Consequences for recovery:
 
 - A **partial run is safe to re-enter**: a re-run re-computes state from PyPI/Release truth
   (`ceremony.py:plan_ceremony`). Operator-visible plan states:
