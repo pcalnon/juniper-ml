@@ -6,11 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (validator session, flood-4 round 2, n1 r2 code lens)
 Created: 2026-11-09
 Status: ad-hoc — investigation
-<<<<<<< HEAD
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
-=======
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
->>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 Related: tmp/flood4/session4/BRIEF_S4_ADDENDUM.txt (TRAPS: CodeQL raises alerts the prescreen does not model)
 
 Usage: python3 <this> FILE [FILE ...]

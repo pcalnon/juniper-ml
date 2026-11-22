@@ -1,22 +1,13 @@
 """
-<<<<<<< HEAD
 Mutation and revert checks for the Overtoad-ruling-17 fix in juniper-canopy's lockfile-update.yml.
-=======
-Mutation and revert checks for the Overtoad-ruling-17 fix in juniper-canopy's lockfile-update.yml.
->>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
-<<<<<<< HEAD
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4, Overtoad ruling 17 ("canopy: dead error path"); juniper-canopy
-=======
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
-Related: Cursor flood-4, Overtoad ruling 17 ("canopy: dead error path"); juniper-canopy
->>>>>>> 9063ebf3 (docs(handoff): flood-4 session 4 handoff, session 3's handoff, and session 4's provenance helpers (#2545))
          src/tests/regression/test_lockfile_regen_empty_payload.py
 
 For each mutant, the workflow file in the canopy worktree is rewritten with ONE exact

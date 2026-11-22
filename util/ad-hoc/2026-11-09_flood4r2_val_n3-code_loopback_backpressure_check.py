@@ -25,14 +25,11 @@ SRC = sys.argv[1]
 sys.path.insert(0, SRC)
 
 import uvicorn  # noqa: E402
-from fastapi import FastAPI  # noqa: E402
-from websockets.asyncio.client import connect  # noqa: E402
-
+import websockets.legacy.protocol as _wlp
 from api.websocket.manager import WebSocketManager  # noqa: E402
 from api.websocket.training_stream import training_stream_handler  # noqa: E402
-
-
-import websockets.legacy.protocol as _wlp
+from fastapi import FastAPI  # noqa: E402
+from websockets.asyncio.client import connect  # noqa: E402
 
 PAUSES = []
 _orig_pause = _wlp.WebSocketCommonProtocol.pause_writing

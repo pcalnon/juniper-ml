@@ -16,13 +16,14 @@ import asyncio
 import json
 import random
 import types
-from typing import Callable, List
+from collections.abc import Callable
+from typing import List
 
 import pytest
-from fastapi import WebSocketDisconnect
-
 from api.websocket.manager import WebSocketManager
 from api.websocket.training_stream import training_stream_handler
+from fastapi import WebSocketDisconnect
+
 
 class Sock:
     _n = 0

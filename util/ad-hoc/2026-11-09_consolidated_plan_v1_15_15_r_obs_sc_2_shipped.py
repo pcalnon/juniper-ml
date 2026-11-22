@@ -77,39 +77,20 @@ _STATUS_NEW = (
 
 # --- Overview 2 (Sentry key capture) and 3 (the release train) --------------------------------------------------------
 _OV_PRS_OLD = "     - None of round 42's F-fixes is written. Three PRs are owed: juniper-ml with service-core, cascor, and data (P3).\n"
-_OV_PRS_NEW = (
-    "     - Three PRs were owed for round 42's F-fixes (P3): juniper-ml with service-core (P3-07), cascor (P3-08) and data (P3-09). "
-    "P3-07 merged on 2026-11-08 (ml#2523) and ships in R-OBS-SC-2 (v1.15.15); P3-08 and P3-09 have no PR, nor does P3-03, which P3-09 follows (2026-11-09).\n"
-)
+_OV_PRS_NEW = "     - Three PRs were owed for round 42's F-fixes (P3): juniper-ml with service-core (P3-07), cascor (P3-08) and data (P3-09). " "P3-07 merged on 2026-11-08 (ml#2523) and ships in R-OBS-SC-2 (v1.15.15); P3-08 and P3-09 have no PR, nor does P3-03, which P3-09 follows (2026-11-09).\n"
 
 _OV_LOCKS_OLD = "which stop frame-local capture but not F2 (§5).\n"
-_OV_LOCKS_NEW = (
-    "which stop frame-local capture but not F2 (§5). "
-    "The second lock round moved all five locks to 0.4.2 and 0.7.2 on 2026-11-09 (§5), which stop F2 and the header and cookie leaks found beside it, "
-    "but not query strings, Sentry Logs or exception values (0.4.3; v1.15.15).\n"
-)
+_OV_LOCKS_NEW = "which stop frame-local capture but not F2 (§5). " "The second lock round moved all five locks to 0.4.2 and 0.7.2 on 2026-11-09 (§5), which stop F2 and the header and cookie leaks found beside it, " "but not query strings, Sentry Logs or exception values (0.4.3; v1.15.15).\n"
 
 _OV_EXPOSED_OLD = "     - So a running service stays exposed until its image lock or its environment moves to R-OBS-SC-2 and it restarts.\n"
-_OV_EXPOSED_NEW = (
-    "     - So a running service stays exposed to F2 until it runs an environment holding R-OBS-SC-2, or an image built from a lock on it, and restarts; an image also needs a release and juniper-deploy's pin, "
-    "and no consumer has cut a release from the new locks. Even then, 0.4.2 leaves query strings, Sentry Logs and exception values to 0.4.3, so XC-SENTRY's (a) and (b) stay in force (§4 Wave 1; §5; v1.15.15).\n"
-)
+_OV_EXPOSED_NEW = "     - So a running service stays exposed to F2 until it runs an environment holding R-OBS-SC-2, or an image built from a lock on it, and restarts; an image also needs a release and juniper-deploy's pin, " "and no consumer has cut a release from the new locks. Even then, 0.4.2 leaves query strings, Sentry Logs and exception values to 0.4.3, so XC-SENTRY's (a) and (b) stay in force (§4 Wave 1; §5; v1.15.15).\n"
 
 _OV_TRAIN_OLD = "The fix-forwards are still owed: PyPI has no observability 0.4.2, service-core 0.7.2 or data fix-forward (R-DATA-2, which the Overtoad ruled 0.18.0 on 2026-11-03; §5).\n"
-_OV_TRAIN_NEW = (
-    "PyPI serves R-OBS-SC-2's fix-forwards, observability 0.4.2 and service-core 0.7.2, since 2026-11-09 (v1.15.15); "
-    "the data fix-forward is still owed (R-DATA-2, which the Overtoad ruled 0.18.0 on 2026-11-03; §5).\n"
-)
+_OV_TRAIN_NEW = "PyPI serves R-OBS-SC-2's fix-forwards, observability 0.4.2 and service-core 0.7.2, since 2026-11-09 (v1.15.15); " "the data fix-forward is still owed (R-DATA-2, which the Overtoad ruled 0.18.0 on 2026-11-03; §5).\n"
 
 # --- §2 ------------------------------------------------------------------------------------------------------------
-_P3_OLD = (
-    "| P3 defect register | None of the round-42 F-fixes is written. observability 0.4.1, service-core 0.7.1 and data 0.17.0 shipped without P3-07, P3-03 and P3-09, "
-    "and the fix-forwards are owed (Overtoad ruling 2026-10-10; §5)."
-)
-_P3_NEW = (
-    "| P3 defect register | P3-07 merged on 11-08 (ml#2523) and shipped in R-OBS-SC-2 (observability 0.4.2, service-core 0.7.2; 11-09). "
-    "data 0.17.0 shipped without P3-03 and P3-09, and R-DATA-2 is owed (Overtoad ruling 2026-10-10; §5)."
-)
+_P3_OLD = "| P3 defect register | None of the round-42 F-fixes is written. observability 0.4.1, service-core 0.7.1 and data 0.17.0 shipped without P3-07, P3-03 and P3-09, " "and the fix-forwards are owed (Overtoad ruling 2026-10-10; §5)."
+_P3_NEW = "| P3 defect register | P3-07 merged on 11-08 (ml#2523) and shipped in R-OBS-SC-2 (observability 0.4.2, service-core 0.7.2; 11-09). " "data 0.17.0 shipped without P3-03 and P3-09, and R-DATA-2 is owed (Overtoad ruling 2026-10-10; §5)."
 
 #: §2's P4 row sits at 508 characters, so the sentence grows by 10 and the "Next item" cell shrinks by 12.
 _P4_OLD = "R-OBS-SC-2 and R-DATA-2 are owed. P4's Wave 4 waits on Docker Hub secrets (10-10). | §5 (the fix-forwards) | T1 |"
@@ -117,10 +98,7 @@ _P4_NEW = "R-OBS-SC-2 shipped 11-09; R-DATA-2 is owed. P4's Wave 4 waits on Dock
 
 # --- XC-SENTRY and XC-P12 ------------------------------------------------------------------------------------------------
 _PATH_OLD = "Images move with their lock PRs; the trio's conda environments move only when upgraded and restarted."
-_PATH_NEW = (
-    "Images move with their lock PRs, then a release cut from them and juniper-deploy's pin; the trio's conda environments move only when upgraded and restarted "
-    "(`JuniperCascor1`'s observability and service-core move with the juniper-ml primary's checkout, being editable installs of it since W0.1; XC-P12)."
-)
+_PATH_NEW = "Images move with their lock PRs, then a release cut from them and juniper-deploy's pin; the trio's conda environments move only when upgraded and restarted " "(`JuniperCascor1`'s observability and service-core move with the juniper-ml primary's checkout, being editable installs of it since W0.1; XC-P12)."
 
 _LOGS_OLD = "(observability 0.4.0 and 0.4.1 send log records: `enable_logs=True`, `sentry.py` L135);"
 _LOGS_NEW = "(observability 0.4.0 to 0.4.2 send log records: `enable_logs=True`, `sentry.py` L135 in 0.4.1 and L186 in 0.4.2);"
@@ -137,45 +115,24 @@ _SENTRY_NEW = (
 )
 
 _LOCKGATE_OLD = "- **R-DATA-2's lock gate stands**: data's second image lock PR follows R-OBS-SC-2, so 0.18.0 waits for observability 0.4.2 and service-core 0.7.2 on PyPI (§5).\n"
-_LOCKGATE_NEW = (
-    "- **R-DATA-2's lock gate stands**: data's second image lock PR follows R-OBS-SC-2, so 0.18.0 waits for observability 0.4.2 and service-core 0.7.2 on PyPI (§5). "
-    "**Met 2026-11-09** (v1.15.15): both are on PyPI, and data#525 merged.\n"
-)
+_LOCKGATE_NEW = "- **R-DATA-2's lock gate stands**: data's second image lock PR follows R-OBS-SC-2, so 0.18.0 waits for observability 0.4.2 and service-core 0.7.2 on PyPI (§5). " "**Met 2026-11-09** (v1.15.15): both are on PyPI, and data#525 merged.\n"
 
 # --- §4 Wave 0: S0.4 ------------------------------------------------------------------------------------------------------
 _S04_OLD = "  1. P3-07: juniper-ml F2 `before_send_transaction`, F6, F9 and F10, plus service-core F3 and F5.\n"
-_S04_NEW = (
-    "  1. P3-07: juniper-ml F2 `before_send_transaction`, F6, F9 and F10, plus service-core F3 and F5. "
-    "**Merged 2026-11-08** as ml#2523, after rounds short of §7.1's top cell (v1.15.15; " + _NOTE + ").\n"
-)
+_S04_NEW = "  1. P3-07: juniper-ml F2 `before_send_transaction`, F6, F9 and F10, plus service-core F3 and F5. " "**Merged 2026-11-08** as ml#2523, after rounds short of §7.1's top cell (v1.15.15; " + _NOTE + ").\n"
 
 # --- §4 Wave 1: Security delivery ----------------------------------------------------------------------------------------
 _STEP1_OLD = "1. P3-07 validated and merged.\n"
 _STEP1_NEW = "1. P3-07 validated and merged. **Merged 2026-11-08**: ml#2523 (`a67061bd`), after rounds of three, two and one agents, short of §7.1's top cell (" + _NOTE + ").\n"
 
 _STEP2_OLD = "2. Mid-wave sitting: P3 D-03. D-02's version is set by the Overtoad's ruling of 2026-10-10: a patch, which every consumer cap admits, so no cap PR comes first.\n"
-_STEP2_NEW = (
-    "2. Mid-wave sitting: P3 D-03. D-02's version is set by the Overtoad's ruling of 2026-10-10: a patch, which every consumer cap admits, so no cap PR comes first. "
-    '**Ruled 2026-11-08 for the lock PRs**: "This arc opens them" (step 4). Who opens the floor PRs was not asked (' + _NOTE + ").\n"
-)
+_STEP2_NEW = "2. Mid-wave sitting: P3 D-03. D-02's version is set by the Overtoad's ruling of 2026-10-10: a patch, which every consumer cap admits, so no cap PR comes first. " '**Ruled 2026-11-08 for the lock PRs**: "This arc opens them" (step 4). Who opens the floor PRs was not asked (' + _NOTE + ").\n"
 
 _STEP3_OLD = "3. **R-OBS-SC-2**: observability 0.4.2 and service-core 0.7.2 (§5).\n"
-_STEP3_NEW = (
-    "3. **R-OBS-SC-2**: observability 0.4.2 and service-core 0.7.2 (§5). "
-    '**Shipped 2026-11-09**: a session cut both on 2026-11-08 on the owner\'s "Approve both cuts", where §5\'s rules have the Overtoad cut, '
-    "and they were published when the Overtoad approved both `pypi` gates.\n"
-)
+_STEP3_NEW = "3. **R-OBS-SC-2**: observability 0.4.2 and service-core 0.7.2 (§5). " "**Shipped 2026-11-09**: a session cut both on 2026-11-08 on the owner's \"Approve both cuts\", where §5's rules have the Overtoad cut, " "and they were published when the Overtoad approved both `pypi` gates.\n"
 
-_STEP4_OLD = (
-    "4. The second lock round: each consumer's **image** lock PR (P3-18), each carrying S0.11's relay run. "
-    "Cascor moves both `requirements.lock` and `requirements-cpu.lock`.\n"
-)
-_STEP4_NEW = (
-    "4. The second lock round: each consumer's **image** lock PR (P3-18), each carrying S0.11's relay run. "
-    "Cascor moves both `requirements.lock` and `requirements-cpu.lock`. "
-    "**Merged 2026-11-09**: data#525, cascor#748, canopy#806 and recurrence#233, each carrying the per-lock probe the Overtoad ruled in place of S0.11's relay run, whose tests are unwritten (§5). "
-    "It came before any data-client fix; if A1 accepts one, another lock PR follows its release.\n"
-)
+_STEP4_OLD = "4. The second lock round: each consumer's **image** lock PR (P3-18), each carrying S0.11's relay run. " "Cascor moves both `requirements.lock` and `requirements-cpu.lock`.\n"
+_STEP4_NEW = "4. The second lock round: each consumer's **image** lock PR (P3-18), each carrying S0.11's relay run. " "Cascor moves both `requirements.lock` and `requirements-cpu.lock`. " "**Merged 2026-11-09**: data#525, cascor#748, canopy#806 and recurrence#233, each carrying the per-lock probe the Overtoad ruled in place of S0.11's relay run, whose tests are unwritten (§5). " "It came before any data-client fix; if A1 accepts one, another lock PR follows its release.\n"
 
 _STEP5_ANCHOR = "so this applies again only if it restarts before the upgrade.\n"
 _STEP5_NEW = (
@@ -199,28 +156,16 @@ _CASCOR_OLD = "and the second follows R-OBS-SC-2 and waits on neither"
 _CASCOR_NEW = "and the second as cascor#748 (2026-11-09, both locks), which waited on neither"
 
 _CASCOR_ANCHOR = "Whether a fix-forward is owed for it is the Overtoad's (mid-wave sitting).\n\n**Canopy**"
-_CASCOR_BULLET = (
-    "Whether a fix-forward is owed for it is the Overtoad's (mid-wave sitting).\n"
-    "- cascor 0.12.0 and 0.13.0 shipped on locks that pin observability 0.4.1 and service-core 0.7.1, so a cascor image carries R-OBS-SC-2 only from a later cascor release; "
-    "whether a fix-forward is owed stays the Overtoad's (v1.15.15).\n\n"
-    "**Canopy**"
-)
+_CASCOR_BULLET = "Whether a fix-forward is owed for it is the Overtoad's (mid-wave sitting).\n" "- cascor 0.12.0 and 0.13.0 shipped on locks that pin observability 0.4.1 and service-core 0.7.1, so a cascor image carries R-OBS-SC-2 only from a later cascor release; " "whether a fix-forward is owed stays the Overtoad's (v1.15.15).\n\n" "**Canopy**"
 
 _CANOPY_OLD = "(the first merged as canopy#739; the second follows R-OBS-SC-2)"
 _CANOPY_NEW = "(the first merged as canopy#739; the second as canopy#806, 2026-11-09)"
 
 _CANOPY_ANCHOR = "At the final census (2026-10-10T21:30Z), canopy#740 proposed canopy 0.9.0, open (§5).\n"
-_CANOPY_BULLET = (
-    "At the final census (2026-10-10T21:30Z), canopy#740 proposed canopy 0.9.0, open (§5).\n\n"
-    "- That earlier cut happened: R-CANOPY-A shipped as canopy 0.9.0 (2026-10-17) on canopy#739's lock, so R-OBS-SC-2 (canopy#806, 2026-11-09) reaches a canopy image only through a later canopy release, "
-    "the second cut P4 D-4 contemplates. D-4 is not ruled (v1.15.15).\n"
-)
+_CANOPY_BULLET = "At the final census (2026-10-10T21:30Z), canopy#740 proposed canopy 0.9.0, open (§5).\n\n" "- That earlier cut happened: R-CANOPY-A shipped as canopy 0.9.0 (2026-10-17) on canopy#739's lock, so R-OBS-SC-2 (canopy#806, 2026-11-09) reaches a canopy image only through a later canopy release, " "the second cut P4 D-4 contemplates. D-4 is not ruled (v1.15.15).\n"
 
 _EXIT_OLD = "- R-OBS-SC-2 cut, and its second lock round merged;\n- R-DATA-2 and R-CANOPY-A cut;\n"
-_EXIT_NEW = (
-    "- R-OBS-SC-2 cut, and its second lock round merged: done (2026-11-09; v1.15.15);\n"
-    "- R-DATA-2 and R-CANOPY-A cut (R-CANOPY-A shipped as canopy 0.9.0 on 2026-10-17, before R-OBS-SC-2; §5);\n"
-)
+_EXIT_NEW = "- R-OBS-SC-2 cut, and its second lock round merged: done (2026-11-09; v1.15.15);\n" "- R-DATA-2 and R-CANOPY-A cut (R-CANOPY-A shipped as canopy 0.9.0 on 2026-10-17, before R-OBS-SC-2; §5);\n"
 
 # --- §5: rows ----------------------------------------------------------------------------------------------------------
 _ROW_OLD = (
@@ -256,8 +201,8 @@ _NOTE_NEW = (
     "\n**R-OBS-SC-2, shipped 2026-11-09** (v1.15.15; sessions `e97264c3`, `f58cf63e`, `b4208d23` and `e21d1414`). "
     "Each Overtoad answer is dated from its transcript's `tool_result` (`util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py`), "
     "and `util/ad-hoc/2026-11-09_r_obs_sc_2_record_reprobe.py` re-checked the other facts on 2026-11-09 (0 FAIL).\n\n"
-    "- **The Overtoad's rulings of 2026-11-08** (session `e97264c3`, answered 08:59:56Z): 0.4.2 is \"P3-07 + header names\", so `Proxy-Authorization`, `Sec-WebSocket-Protocol`, `X-CSRF-Token` and `X-XSRF-Token` join the scrubbed headers; "
-    "0.7.2 is \"Include ml#2514, then cut\"; and P3 D-03, asked as who opens the second round's image lock PRs, is \"This arc opens them\".\n"
+    '- **The Overtoad\'s rulings of 2026-11-08** (session `e97264c3`, answered 08:59:56Z): 0.4.2 is "P3-07 + header names", so `Proxy-Authorization`, `Sec-WebSocket-Protocol`, `X-CSRF-Token` and `X-XSRF-Token` join the scrubbed headers; '
+    '0.7.2 is "Include ml#2514, then cut"; and P3 D-03, asked as who opens the second round\'s image lock PRs, is "This arc opens them".\n'
     "  - Who opens the floor PRs, D-03's third part, was not asked. At 14:42:17Z the Overtoad answered session `f58cf63e` \"Approve both cuts\", so a session cut both Releases, where D-02's options and §5's rules have the Overtoad cut.\n"
     "- **P3-07 is ml#2523** (merged 2026-11-08 15:38:46Z, `a67061bd`), after three rounds that its body records, of three, two and one agents, short of §7.1's top cell. Round 1 ran on the uncommitted draft:\n"
     "  - round 1: the security read found no leak in what P3-07 claimed (sentry-sdk 2.35.0, 2.73.0 and 2.74.0), but pre-existing channels outside it (the four header names, and the 0.4.3 list) "
@@ -271,7 +216,7 @@ _NOTE_NEW = (
     "Releases `juniper-service-core-v0.7.2` (published 2026-11-08 16:21:19Z) and `juniper-observability-v0.4.2` (16:35:52Z); archives ml#2527 and ml#2528.\n"
     "  - 0.4.2's CHANGELOG entry carries F10's correction, and 0.7.2's carries F9's. 0.4.2 also floors its `sentry` and `test` extras at `sentry-sdk[fastapi]>=2.35.0`, "
     "which does not reach data, cascor or canopy: each declares `sentry-sdk>=2.0.0` itself.\n"
-    "- **Published 2026-11-09.** The Overtoad answered session `e21d1414` at 09:49:26Z (\"Approving now: wait\") and approved both gates. "
+    '- **Published 2026-11-09.** The Overtoad answered session `e21d1414` at 09:49:26Z ("Approving now: wait") and approved both gates. '
     "Observability's `pypi` deployment left `waiting` at 09:51:22Z (run 42500706778; `Publish to PyPI` 09:51:24Z–09:51:39Z), and service-core's at 09:52:23Z (run 42499466753; 09:52:25Z–09:52:50Z). "
     "PyPI serves both `py3-none-any` wheels from 09:51:35Z and 09:52:45Z, with the sha256 TestPyPI took.\n"
     "- **The second lock round** (Security step 4): in each consumer, one signed commit moving exactly the two pins, with a `CHANGELOG.md` `### Security` entry. "
@@ -316,32 +261,20 @@ _RCASCOR_NEW = (
 )
 
 _P12_CANOPY_OLD = "whether P3-06, the O3 wording and A4 were met is not re-probed.\n"
-_P12_CANOPY_NEW = (
-    "whether P3-06, the O3 wording and A4 were met is not re-probed. "
-    "Its lock pins observability 0.4.1 (canopy#739), so R-OBS-SC-2 reaches a canopy image only from a later release (canopy#806; v1.15.15).\n"
-)
+_P12_CANOPY_NEW = "whether P3-06, the O3 wording and A4 were met is not re-probed. " "Its lock pins observability 0.4.1 (canopy#739), so R-OBS-SC-2 reaches a canopy image only from a later release (canopy#806; v1.15.15).\n"
 
 _ORDER1_OLD = "1. R-OBS-SC-2, once P3-07 validates; and R-DC-PATCH,"
 _ORDER1_NEW = "1. R-OBS-SC-2, once P3-07 validates (**shipped 2026-11-09**; v1.15.15); and R-DC-PATCH,"
 
 _ORDER2_OLD = "2. The second lock round. It picks up R-DC-PATCH only if it is on PyPI before its PRs open; otherwise another lock PR follows (§4 Wave 1).\n"
-_ORDER2_NEW = (
-    "2. The second lock round. It picks up R-DC-PATCH only if it is on PyPI before its PRs open; otherwise another lock PR follows (§4 Wave 1). "
-    "**Merged 2026-11-09**, before any data-client fix; if A1 accepts one, another lock PR follows its release (R-DC-PATCH-6, for locks on 0.6.x).\n"
-)
+_ORDER2_NEW = "2. The second lock round. It picks up R-DC-PATCH only if it is on PyPI before its PRs open; otherwise another lock PR follows (§4 Wave 1). " "**Merged 2026-11-09**, before any data-client fix; if A1 accepts one, another lock PR follows its release (R-DC-PATCH-6, for locks on 0.6.x).\n"
 
 _ORDER3_OLD = "3. R-DATA-2, R-CANOPY-A and R-CASCOR, each as soon as it is ready.\n"
-_ORDER3_NEW = (
-    "3. R-DATA-2, R-CANOPY-A and R-CASCOR, each as soon as it is ready. "
-    "R-CANOPY-A shipped as canopy 0.9.0 (2026-10-17), so R-OBS-SC-2 needs a later canopy release too (§4 Wave 1, Canopy; v1.15.15).\n"
-)
+_ORDER3_NEW = "3. R-DATA-2, R-CANOPY-A and R-CASCOR, each as soon as it is ready. " "R-CANOPY-A shipped as canopy 0.9.0 (2026-10-17), so R-OBS-SC-2 needs a later canopy release too (§4 Wave 1, Canopy; v1.15.15).\n"
 
 # --- §6 mid-wave sitting -------------------------------------------------------------------------------------------------
 _D03_OLD = "- P3 D-03 (= P4 D-3), for R-OBS-SC-2, once P3-07 validates. D-02's version is set by the Overtoad's ruling of 2026-10-10: R-OBS-SC-2 is a patch.\n"
-_D03_NEW = (
-    "- P3 D-03 (= P4 D-3), for R-OBS-SC-2, once P3-07 validates. D-02's version is set by the Overtoad's ruling of 2026-10-10: R-OBS-SC-2 is a patch. "
-    '**Ruled 2026-11-08 for the lock PRs**: "This arc opens them". Who opens the floor PRs was not asked (' + _NOTE + ").\n"
-)
+_D03_NEW = "- P3 D-03 (= P4 D-3), for R-OBS-SC-2, once P3-07 validates. D-02's version is set by the Overtoad's ruling of 2026-10-10: R-OBS-SC-2 is a patch. " '**Ruled 2026-11-08 for the lock PRs**: "This arc opens them". Who opens the floor PRs was not asked (' + _NOTE + ").\n"
 
 _TRIO_OLD = "- The trio's Sentry upgrade: 0.4.1 and 0.7.1 now and R-OBS-SC-2 later, or R-OBS-SC-2 only (Wave 1's Security step 5).\n"
 _TRIO_NEW = (
@@ -359,10 +292,7 @@ _CAL_OLD = "1. P3-07 (pre-branch) **S**\n"
 _CAL_NEW = "1. P3-07 (pre-branch) **S**: merged as ml#2523 (2026-11-08) after rounds of three, two and one agents, short of the top cell; round 1 ran on the uncommitted draft (v1.15.15)\n"
 
 _ARITH_ANCHOR = "on the after-P3-05 route, item 9 joins the exit: 10 items, at least 20 rounds and 100 agent runs (`EX/round10-laneB2-schedule.md` R10B2-12).\n"
-_ARITH_NEW = (
-    "on the after-P3-05 route, item 9 joins the exit: 10 items, at least 20 rounds and 100 agent runs (`EX/round10-laneB2-schedule.md` R10B2-12).\n"
-    "  - Item 1 (P3-07) has merged too (ml#2523, 2026-11-08), short of the top cell, which takes the count to 8 items, at least 16 rounds and 80 agent runs; the figures below are for 9 (v1.15.15).\n"
-)
+_ARITH_NEW = "on the after-P3-05 route, item 9 joins the exit: 10 items, at least 20 rounds and 100 agent runs (`EX/round10-laneB2-schedule.md` R10B2-12).\n" "  - Item 1 (P3-07) has merged too (ml#2523, 2026-11-08), short of the top cell, which takes the count to 8 items, at least 16 rounds and 80 agent runs; the figures below are for 9 (v1.15.15).\n"
 
 _DATA_SER_OLD = "`[0.17.0]` and `[0.17.1]` are cut, and `[0.17.1]` (data#479) took data#478's entry |"
 _DATA_SER_NEW = "`[0.17.0]` and `[0.17.1]` are cut, and `[0.17.1]` (data#479) took data#478's entry. data#525's `### Security` entry went in first (2026-11-09; v1.15.15), so P3-03 rebases over it |"
@@ -371,16 +301,10 @@ _CASCOR_SER_OLD = "which includes `CHANGELOG.md` (P3-08's F9 edits it) |"
 _CASCOR_SER_NEW = "which includes `CHANGELOG.md` (P3-08's F9 edits it). cascor#748's entry came first (2026-11-09) |"
 
 _DEP_IMAGE_OLD = "| Hard for the fix to reach a running image; otherwise a second cut. Wheels pick up the patch within their caps |\n"
-_DEP_IMAGE_NEW = (
-    "| Hard for the fix to reach a running image; otherwise a second cut. Wheels pick up the patch within their caps. "
-    "The lock half is met (2026-11-09; v1.15.15); the fix reaches a running image only with each repository's next release, juniper-deploy's pin and a restart, and canopy's after R-CANOPY-A's 0.9.0 |\n"
-)
+_DEP_IMAGE_NEW = "| Hard for the fix to reach a running image; otherwise a second cut. Wheels pick up the patch within their caps. " "The lock half is met (2026-11-09; v1.15.15); the fix reaches a running image only with each repository's next release, juniper-deploy's pin and a restart, and canopy's after R-CANOPY-A's 0.9.0 |\n"
 
 _DEP_TRIO_OLD = "the session's recorded test pass, and the Overtoad's restart (§4 Wave 1, Security step 5) | Hard for the fix to reach the trio |\n"
-_DEP_TRIO_NEW = (
-    "the session's recorded test pass, and the Overtoad's restart (§4 Wave 1, Security step 5) | Hard for the fix to reach the trio. "
-    "R-OBS-SC-2 is on PyPI (2026-11-09; v1.15.15); `JuniperCascor1` already imports its code from the juniper-ml primary, and the other two need the upgrade |\n"
-)
+_DEP_TRIO_NEW = "the session's recorded test pass, and the Overtoad's restart (§4 Wave 1, Security step 5) | Hard for the fix to reach the trio. " "R-OBS-SC-2 is on PyPI (2026-11-09; v1.15.15); `JuniperCascor1` already imports its code from the juniper-ml primary, and the other two need the upgrade |\n"
 
 _DEP_ROW_OLD = "| R-OBS-SC-2 | P3-07 merged and validated; P3 D-03 | Hard |\n"
 _DEP_ROW_NEW = "| R-OBS-SC-2 | P3-07 merged and validated; P3 D-03 | Hard. Met 2026-11-08 (ml#2523, short of §7.1's top cell; D-03 ruled for the lock PRs), and shipped 2026-11-09 (v1.15.15) |\n"
@@ -395,10 +319,7 @@ _DONE_OLD = "  - **Done**: P3-20 (= P2-01, ml#2157)\n"
 _DONE_NEW = "  - **Done**: P3-20 (= P2-01, ml#2157); P3-07 (ml#2523, 2026-11-08; v1.15.15)\n"
 
 _T1_OLD = "P3-09, P3-17, P3-18 →R-OBS-SC + image lock PRs (the first lock round is done, four PRs on 2026-10-10; the second follows R-OBS-SC-2)"
-_T1_NEW = (
-    "P3-09, P3-17 (D-02 ruled 2026-10-10; D-03 ruled 2026-11-08 for the lock PRs, its floor part unasked), "
-    "P3-18 →R-OBS-SC + image lock PRs (both lock rounds are done, four PRs each on 2026-10-10 and 2026-11-09; the floors are open)"
-)
+_T1_NEW = "P3-09, P3-17 (D-02 ruled 2026-10-10; D-03 ruled 2026-11-08 for the lock PRs, its floor part unasked), " "P3-18 →R-OBS-SC + image lock PRs (both lock rounds are done, four PRs each on 2026-10-10 and 2026-11-09; the floors are open)"
 
 _P4_17_OLD = "P4-17 →R-OBS-SC, "
 _P4_17_NEW = "P4-17 →R-OBS-SC (shipped as R-OBS-SC-2, 2026-11-09), "
@@ -418,10 +339,7 @@ _VALIDATION_NEW = (
     "They found 1 BLOCKER (the draft read as if 0.4.2 ended the Sentry exposure), 8 MAJORs, 9 MINORs and 7 NITs, some found by both; this version applies them.\n"
 )
 
-_SCRIPTS_OLD = (
-    "    - and with v1.15.14's, `2026-11-07_consolidated_plan_v1_15_14_juniper_ml_0_11_4_published.py`, `2026-11-07_parent_agents_released_paragraph_reprobe.py` "
-    "and `2026-11-07_parent_agents_md_juniper_ml_0_11_4.py`; the publish check `2026-11-07_verify_juniper_ml_0_11_4_published.py` landed with ml#2510;\n"
-)
+_SCRIPTS_OLD = "    - and with v1.15.14's, `2026-11-07_consolidated_plan_v1_15_14_juniper_ml_0_11_4_published.py`, `2026-11-07_parent_agents_released_paragraph_reprobe.py` " "and `2026-11-07_parent_agents_md_juniper_ml_0_11_4.py`; the publish check `2026-11-07_verify_juniper_ml_0_11_4_published.py` landed with ml#2510;\n"
 _SCRIPTS_NEW = (
     "    - with v1.15.14's, `2026-11-07_consolidated_plan_v1_15_14_juniper_ml_0_11_4_published.py`, `2026-11-07_parent_agents_released_paragraph_reprobe.py` "
     "and `2026-11-07_parent_agents_md_juniper_ml_0_11_4.py`; the publish check `2026-11-07_verify_juniper_ml_0_11_4_published.py` landed with ml#2510;\n"
@@ -431,28 +349,15 @@ _SCRIPTS_NEW = (
     "`refresh.py`, `changelog_insert.py` or `tested_section.py`;\n"
 )
 
-_HANDOFFS_ANCHOR = (
-    "  - with v1.15.0's PR, the recurrence × equities arc's handoff `HO/HANDOFF_2026-10-25_recurrence-equities-juniper-ml-0-11-1-published-servers-floors-next.md` (P12's, not this plan's).\n"
-)
-_HANDOFFS_NEW = (
-    _HANDOFFS_ANCHOR
-    + "  - with v1.15.15's PR, R-OBS-SC-2's handoffs `HO/HANDOFF_2026-11-08_r-obs-sc-2-cut-pypi-gates-lock-round-next.md`, `HO/HANDOFF_2026-11-09_r-obs-sc-2-lock-round-prepped-probe-ruled-gates-pending.md` "
-    "and `HO/HANDOFF_2026-11-09_r-obs-sc-2-published-lock-round-merged-plan-v1-15-15-next.md`, and the session's own, `HO/HANDOFF_2026-11-09_r-obs-sc-2-recorded-plan-v1-15-15-owner-items-next.md` (not this plan's).\n"
-)
+_HANDOFFS_ANCHOR = "  - with v1.15.0's PR, the recurrence × equities arc's handoff `HO/HANDOFF_2026-10-25_recurrence-equities-juniper-ml-0-11-1-published-servers-floors-next.md` (P12's, not this plan's).\n"
+_HANDOFFS_NEW = _HANDOFFS_ANCHOR + "  - with v1.15.15's PR, R-OBS-SC-2's handoffs `HO/HANDOFF_2026-11-08_r-obs-sc-2-cut-pypi-gates-lock-round-next.md`, `HO/HANDOFF_2026-11-09_r-obs-sc-2-lock-round-prepped-probe-ruled-gates-pending.md` " "and `HO/HANDOFF_2026-11-09_r-obs-sc-2-published-lock-round-merged-plan-v1-15-15-next.md`, and the session's own, `HO/HANDOFF_2026-11-09_r-obs-sc-2-recorded-plan-v1-15-15-owner-items-next.md` (not this plan's).\n"
 
 _CREATED_ANCHOR = "  - by session `560c1ec5` (2026-10-10), the auto-memory file `reference_ci_parity_gitleaks_local_scan.md`.\n"
-_CREATED_NEW = (
-    _CREATED_ANCHOR
-    + "  - by session `f58cf63e` (2026-11-08), recorded with v1.15.15, the auto-memory file `reference_host_grep_is_ugrep_honouring_ignore_files.md` (the host's `grep` is ugrep, which honours `.gitignore`).\n"
-)
+_CREATED_NEW = _CREATED_ANCHOR + "  - by session `f58cf63e` (2026-11-08), recorded with v1.15.15, the auto-memory file `reference_host_grep_is_ugrep_honouring_ignore_files.md` (the host's `grep` is ugrep, which honours `.gitignore`).\n"
 
-_MEMORY_ANCHOR = (
-    "  - by session `a02ac3a2` (2026-11-07), recorded with v1.15.14: the parent `Juniper/AGENTS.md` (juniper-ml 0.11.4, recurrence 0.8.1, the re-probe date and Last Updated; "
-    "both versions in `juniper-ml/tmp/2026-11-07-parent-agents-md-backup/`) and `project_recurrence_equities_p0_arc_2026-10-04.md` (a new state block and its description); this session did not change `MEMORY.md`.\n"
-)
+_MEMORY_ANCHOR = "  - by session `a02ac3a2` (2026-11-07), recorded with v1.15.14: the parent `Juniper/AGENTS.md` (juniper-ml 0.11.4, recurrence 0.8.1, the re-probe date and Last Updated; " "both versions in `juniper-ml/tmp/2026-11-07-parent-agents-md-backup/`) and `project_recurrence_equities_p0_arc_2026-10-04.md` (a new state block and its description); this session did not change `MEMORY.md`.\n"
 _MEMORY_NEW = (
-    _MEMORY_ANCHOR
-    + "  - by sessions `e97264c3` and `f58cf63e` (2026-11-08) and `b4208d23` and `e21d1414` (2026-11-09), recorded with v1.15.15: `project_recurrence_equities_p0_arc_2026-10-04.md` (a state block each; "
+    _MEMORY_ANCHOR + "  - by sessions `e97264c3` and `f58cf63e` (2026-11-08) and `b4208d23` and `e21d1414` (2026-11-09), recorded with v1.15.15: `project_recurrence_equities_p0_arc_2026-10-04.md` (a state block each; "
     "`b4208d23`'s handoff says it changed nothing outside the repository, but its transcript records the write); and by `f58cf63e`, `MEMORY.md` (the new file's pointer, in the verification-hub line).\n"
     "  - by session `09366253` (2026-11-09), with v1.15.15: `project_recurrence_equities_p0_arc_2026-10-04.md` (a new state block and its description); this session did not change `MEMORY.md`.\n"
 )
