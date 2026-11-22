@@ -31,8 +31,6 @@ WHY THIS EXISTS
 
 WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 127.0.0.1:8300)
     AC-1      the /etc/systemd/system unit, active as `duplicati`, NeedDaemonReload=no, NRestarts=0, up for 24 h
-<<<<<<< HEAD
-<<<<<<< HEAD
     AC-2      server: job name, TargetURL, 5 sources, 76 filters (owner ruling 2026-11-15; 2 and 45 until then),
               schedule 1D at 13:00 UTC (07:00 CST; 14:00 UTC until the owner moved it on 2026-11-15),
               blocksize 1MB
@@ -42,25 +40,6 @@ WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 1
     AC-5      the watchdog log: three consecutive days whose every record reads OK and none reads RUNNING (owner
               ruling 2026-11-15: a check that found the job still running judged no result), and a JOB_MISSING
               record for a deliberate `--backup-id 999` on or after the recovery date
-=======
-    AC-2      server: job name, TargetURL, 2 sources, 45 filters, schedule 1D at 14:00 UTC, blocksize 1MB
-    AC-13     server: run-script-before-required is the installed guard and no other run-script option is set
-    OPTIONS   server: the job's option NAMES against the recorded set; retention suspended or restored as ruled;
-              keep-time and keep-versions absent; tempdir, aes-version and no-auto-compact as step 11 left them
-    AC-5      the watchdog log: three consecutive days whose every record reads OK, and a JOB_MISSING record for a
-              deliberate `--backup-id 999` on or after the recovery date
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-    AC-2      server: job name, TargetURL, 5 sources, 76 filters (owner ruling 2026-11-15; 2 and 45 until then),
-              schedule 1D at 13:00 UTC (07:00 CST; 14:00 UTC until the owner moved it on 2026-11-15),
-              blocksize 1MB
-    AC-13     server: run-script-before-required is the installed guard and no other run-script option is set
-    OPTIONS   server: the job's option NAMES against the recorded set; retention suspended or restored as ruled;
-              keep-time and keep-versions absent; tempdir, aes-version and no-auto-compact as step 11 left them
-    AC-5      the watchdog log: three consecutive days whose every record reads OK and none reads RUNNING (owner
-              ruling 2026-11-15: a check that found the job still running judged no result), and a JOB_MISSING
-              record for a deliberate `--backup-id 999` on or after the recovery date
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
     AC-6a     the snapshot lane: reads the service's data folder, one successful run per day, file mtime = newest run
     AC-6b     NOT judged here, and printed as INFO: "the snapshot appears in the next fileset" needs the dlist,
               which is root's and the passphrase's (util/ad-hoc/2026-11-11_phase_d_finish.bash ac6)
@@ -118,19 +97,7 @@ import urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import yamaguchi_server_api as api  # noqa: E402 -- sibling module; path fixed one line above
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 VERSION = "1.3.0"
-=======
-VERSION = "1.1.0"
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-VERSION = "1.2.0"
->>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
-=======
-VERSION = "1.3.0"
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 SCHEMA = "yamaguchi-acceptance/1"
 UTC = dt.timezone.utc
 
@@ -141,10 +108,6 @@ SERVICE_USER = "duplicati"
 SERVICE_GROUP = "duplicati"
 JOB_NAME = "Yamaguchi"
 EXPECTED_TARGET = "file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 # The owner changed the job's sources and filters on purpose (ruling 2026-11-15); the design fixed 2 and 45 until then.
 EXPECTED_SOURCES = 5
 EXPECTED_FILTERS = 76
@@ -155,29 +118,26 @@ GUARD_PATH = "/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash"
 # Owner ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
 # Under `2W:1D` an off-schedule run's fileset displaced the scheduled one beside it, and a daily fileset stamped one
 # second earlier than the last kept one was deleted. `U` is Duplicati's keep-all interval.
-RULED_RETENTION = "2W:U,6M:1W,2Y:1M,5Y:2M"
-=======
-EXPECTED_SOURCES = 2
-EXPECTED_FILTERS = 45
-EXPECTED_REPEAT = "1D"
-EXPECTED_TIME_OF_DAY = dt.time(14, 0, 0)
-GUARD_PATH = "/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash"
-<<<<<<< HEAD
 RULED_RETENTION = "2W:1D,6M:1W,2Y:1M,5Y:2M"  # owner ruling 2026-10-08
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-# Owner ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
-# Under `2W:1D` an off-schedule run's fileset displaced the scheduled one beside it, and a daily fileset stamped one
-# second earlier than the last kept one was deleted. `U` is Duplicati's keep-all interval.
-RULED_RETENTION = "2W:U,6M:1W,2Y:1M,5Y:2M"
->>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
 RETENTION_COMBINERS = ("keep-time", "keep-versions")  # never restored: they combine with the policy
 # The job's option names after step 11 (running record, 2026-11-07 B6 and 2026-11-08 "12 option names"): the nine
 # of B1 less retention-policy, plus the two the sitting set and the two the UI's save added.
-BASE_OPTION_NAMES = frozenset({
-    "allow-missing-source", "asynchronous-upload-limit", "blocksize", "compression-module", "dblock-size", "encryption-module",
-    "no-auto-compact", "tempdir", "run-script-before-required", "aes-version", "send-http-url", "http-report-status-url",
-})
+BASE_OPTION_NAMES = frozenset(
+    {
+        "allow-missing-source",
+        "asynchronous-upload-limit",
+        "blocksize",
+        "compression-module",
+        "dblock-size",
+        "encryption-module",
+        "no-auto-compact",
+        "tempdir",
+        "run-script-before-required",
+        "aes-version",
+        "send-http-url",
+        "http-report-status-url",
+    }
+)
 # Values step 11 set or AC-2 fixes. no-auto-compact is here because the retention plan depends on it: with it, a
 # retention pass deletes dlists only.
 EXPECTED_VALUES = {"blocksize": "1MB", "tempdir": "/home/duplicati/.cache/duplicati-tmp", "aes-version": "2", "no-auto-compact": "true"}
@@ -186,18 +146,9 @@ PRINTABLE_VALUES = frozenset({"blocksize", "tempdir", "aes-version", "no-auto-co
 TRUE_WORDS = frozenset({"true", "1", "on", "yes"})
 
 RECOVERY_DATE = dt.date(2026, 11, 7)  # the service's first start under the new unit; step 10
-<<<<<<< HEAD
-<<<<<<< HEAD
 # A run is judged against the slot in force on its own UTC date (slot_on); AC-2 judges the job against the newest.
 SCHEDULE_MOVED = dt.date(2026, 11, 15)
 SCHEDULE_SLOTS = ((RECOVERY_DATE, dt.time(14, 0, 0)), (SCHEDULE_MOVED, EXPECTED_TIME_OF_DAY))
-=======
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-# A run is judged against the slot in force on its own UTC date (slot_on); AC-2 judges the job against the newest.
-SCHEDULE_MOVED = dt.date(2026, 11, 15)
-SCHEDULE_SLOTS = ((RECOVERY_DATE, dt.time(14, 0, 0)), (SCHEDULE_MOVED, EXPECTED_TIME_OF_DAY))
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 WATCHDOG_LOG = "server-watchdog.log"
 WATCHDOG_LINE = re.compile(r"^(\S+) (OK|ALERT|UNDETERMINED) ([A-Z_]+) backup=(\S+)(?: (.*))?$")
 JOB_MISSING_PROBE_ID = "999"
@@ -207,17 +158,8 @@ SNAPSHOT_FILE = "~/.local/state/duplicati-server-db/Duplicati-server.sqlite"
 SNAPSHOT_SOURCE = "/home/duplicati/.config/Duplicati/Duplicati-server.sqlite"  # "the new data folder"
 SNAPSHOT_SOURCE_LINE = re.compile(r"^source\s*: (.+) \([^()]*\)$")  # yamaguchi_server_db_snapshot.py:110
 SNAPSHOT_ENABLED = dt.datetime(2026, 11, 8, 19, 57, 0, tzinfo=UTC)  # step 13's `enable --now`
-<<<<<<< HEAD
-<<<<<<< HEAD
 SNAPSHOT_FIRE = dt.time(12, 45, 0)  # the timer's OnCalendar, UTC: 15 min before the backup, since 2026-11-15
 SNAPSHOT_FIRES = ((SNAPSHOT_ENABLED.date(), dt.time(13, 45, 0)), (SCHEDULE_MOVED, SNAPSHOT_FIRE))  # 13:45 UTC until then
-=======
-SNAPSHOT_FIRE = dt.time(13, 45, 0)  # the timer's OnCalendar, UTC
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-SNAPSHOT_FIRE = dt.time(12, 45, 0)  # the timer's OnCalendar, UTC: 15 min before the backup, since 2026-11-15
-SNAPSHOT_FIRES = ((SNAPSHOT_ENABLED.date(), dt.time(13, 45, 0)), (SCHEDULE_MOVED, SNAPSHOT_FIRE))  # 13:45 UTC until then
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 
 KEYS_DIR = "/mnt/Backups/Ubuntu/_yamaguchi_keys"
 DROPBOX_INFO = "~/.dropbox/info.json"
@@ -225,11 +167,25 @@ DROPBOX_PIDFILE = "~/.dropbox/dropbox.pid"
 FILESTATUS_BATCH = 150
 
 # Note AC-12a's accepted set, as the design lists it.
-ACCEPTED_UNSET = frozenset({
-    "AmbientCapabilities=", "CapabilityBoundingSet=~CAP_(DAC_*|FOWNER|IPC_OWNER)", "SystemCallFilter=~@privileged", "SystemCallFilter=~@resources",
-    "RestrictAddressFamilies=~AF_UNIX", "RestrictAddressFamilies=~AF_(INET|INET6)", "PrivateNetwork=", "PrivateUsers=", "ProtectHome=",
-    "RootDirectory=/RootImage=", "RemoveIPC=", "MemoryDenyWriteExecute=", "DeviceAllow=", "IPAddressDeny=", "UMask=",
-})
+ACCEPTED_UNSET = frozenset(
+    {
+        "AmbientCapabilities=",
+        "CapabilityBoundingSet=~CAP_(DAC_*|FOWNER|IPC_OWNER)",
+        "SystemCallFilter=~@privileged",
+        "SystemCallFilter=~@resources",
+        "RestrictAddressFamilies=~AF_UNIX",
+        "RestrictAddressFamilies=~AF_(INET|INET6)",
+        "PrivateNetwork=",
+        "PrivateUsers=",
+        "ProtectHome=",
+        "RootDirectory=/RootImage=",
+        "RemoveIPC=",
+        "MemoryDenyWriteExecute=",
+        "DeviceAllow=",
+        "IPAddressDeny=",
+        "UMask=",
+    }
+)
 EXPOSURE_GATE = 2.0
 EXPOSURE_LINE = re.compile(r"Overall exposure level for \S+: ([0-9]+(?:\.[0-9]+)?)")
 MIN_SECURITY_ROWS = 40  # the unit reports 81; far fewer means the output was not what this parser expects
@@ -404,8 +360,7 @@ def judge_ac2(export):
     blocksize = options.get("blocksize")
     if blocksize is None or len(blocksize) != 1 or str(blocksize[0]).strip().upper() != EXPECTED_VALUES["blocksize"].upper():
         fails.append(f"blocksize is {blocksize} (want {EXPECTED_VALUES['blocksize']})")
-    facts = {"name_ok": backup.get("Name") == JOB_NAME, "target_ok": target_ok, "sources": n_sources, "filters": n_filters, "repeat": schedule.get("Repeat"),
-             "time_of_day_utc": str(time_of_day) if time_of_day else None, "schedule_anchor_date": anchor.astimezone(UTC).date().isoformat() if anchor else None, "blocksize": blocksize}
+    facts = {"name_ok": backup.get("Name") == JOB_NAME, "target_ok": target_ok, "sources": n_sources, "filters": n_filters, "repeat": schedule.get("Repeat"), "time_of_day_utc": str(time_of_day) if time_of_day else None, "schedule_anchor_date": anchor.astimezone(UTC).date().isoformat() if anchor else None, "blocksize": blocksize}
     if fails:
         return Finding("AC-2", "FAIL", "; ".join(fails), facts)
     return Finding("AC-2", "PASS", f"name={JOB_NAME} target=match sources={n_sources} filters={n_filters} repeat={EXPECTED_REPEAT} at {time_of_day}Z (anchor date {facts['schedule_anchor_date']}) blocksize={blocksize[0]}", facts)
@@ -470,8 +425,7 @@ def judge_options(export, expect_retention="either"):
             good = actual is not None and actual.lower() == expected.lower()
         if not good:
             fails.append(f"{shown(name, values)} (want {expected})")
-    facts = {"names": sorted(names), "retention": state, "unexpected": unexpected, "missing": missing, "duplicated": duplicated,
-             "values": {name: options[name] for name in sorted(names & PRINTABLE_VALUES)}}
+    facts = {"names": sorted(names), "retention": state, "unexpected": unexpected, "missing": missing, "duplicated": duplicated, "values": {name: options[name] for name in sorted(names & PRINTABLE_VALUES)}}
     if fails:
         return Finding("OPTIONS", "FAIL", "; ".join(fails), facts)
     tail = f"retention-policy={RULED_RETENTION}" if state == "restored" else "retention suspended (no retention-policy)"
@@ -511,10 +465,6 @@ def judge_ac5(log_text, backup_id, now, need_days=3, probe_id=JOB_MISSING_PROBE_
         by_day[when.date()].append((verdict, code))
     newest_when = max(r[0] for r in mine)
     newest_day = newest_when.date()
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 
     def all_ok(day):
         return all(verdict == "OK" for verdict, _code in by_day[day])
@@ -525,7 +475,6 @@ def judge_ac5(log_text, backup_id, now, need_days=3, probe_id=JOB_MISSING_PROBE_
     # A day counts only if every record reads OK and none reads RUNNING: a check that found the job still running
     # judged no result (owner ruling 2026-11-15, the sitting's question Q6). The days must be consecutive, so an
     # OK RUNNING day ends the streak; it is not a failure.
-<<<<<<< HEAD
     streak, days, day = 0, [], newest_day
     while day in by_day and all_ok(day) and not ran(day):
         streak += 1
@@ -535,29 +484,10 @@ def judge_ac5(log_text, backup_id, now, need_days=3, probe_id=JOB_MISSING_PROBE_
     while day in by_day and all_ok(day) and ran(day):
         discounted += 1
         day -= dt.timedelta(days=1)
-=======
-=======
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
-    streak, days, day = 0, [], newest_day
-    while day in by_day and all_ok(day) and not ran(day):
-        streak += 1
-        days.append(f"{day.isoformat()} {'+'.join(sorted({code for _verdict, code in by_day[day]}))}")
-        day -= dt.timedelta(days=1)
-<<<<<<< HEAD
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-    discounted = 0
-    while day in by_day and all_ok(day) and ran(day):
-        discounted += 1
-        day -= dt.timedelta(days=1)
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
     probe_seen = sorted(utc_stamp(when) for when, verdict, code, backup in records if verdict == "ALERT" and code == "JOB_MISSING" and backup == str(probe_id) and when.date() >= recovered_on)
     age_h = (now - newest_when).total_seconds() / 3600
     newest_codes = "+".join(sorted({f"{verdict} {code}" for verdict, code in by_day[newest_day]}))
-    facts = {"streak_days": streak, "days": days, "newest_record": utc_stamp(newest_when), "newest_reads": newest_codes, "job_missing_probe": probe_seen, "unparsed_lines": unparsed,
-<<<<<<< HEAD
-<<<<<<< HEAD
-             "running_days": discounted}
+    facts = {"streak_days": streak, "days": days, "newest_record": utc_stamp(newest_when), "newest_reads": newest_codes, "job_missing_probe": probe_seen, "unparsed_lines": unparsed, "running_days": discounted}
     fails, pending = [], []
     if age_h > max_gap_hours:
         fails.append(f"the newest record is {age_h:.1f} h old (> {max_gap_hours:g} h): the watchdog is not checking")
@@ -568,39 +498,11 @@ def judge_ac5(log_text, backup_id, now, need_days=3, probe_id=JOB_MISSING_PROBE_
         if discounted:
             counted += f"; the {discounted} day(s) before read OK RUNNING and do not count (owner ruling 2026-11-15)" if streak else f"; the newest check found the job running, and the {discounted} OK RUNNING day(s) do not count (owner ruling 2026-11-15)"
         pending.append(counted)
-=======
-             "running_days": sum(1 for d in days if "RUNNING" in d)}
-=======
-             "running_days": discounted}
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
-    fails, pending = [], []
-    if age_h > max_gap_hours:
-        fails.append(f"the newest record is {age_h:.1f} h old (> {max_gap_hours:g} h): the watchdog is not checking")
-    if not all_ok(newest_day):
-        fails.append(f"the newest check, {newest_day.isoformat()}, reads {newest_codes}")
-    elif streak < need_days:
-<<<<<<< HEAD
-        pending.append(f"OK on {streak} consecutive day(s) of {need_days}: {', '.join(reversed(days))}")
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-        counted = f"OK OK on {streak} consecutive day(s) of {need_days}" + (f": {', '.join(reversed(days))}" if days else "")
-        if discounted:
-            counted += f"; the {discounted} day(s) before read OK RUNNING and do not count (owner ruling 2026-11-15)" if streak else f"; the newest check found the job running, and the {discounted} OK RUNNING day(s) do not count (owner ruling 2026-11-15)"
-        pending.append(counted)
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
     if not probe_seen:
         pending.append(f"no JOB_MISSING record for a deliberate --backup-id {probe_id} since {recovered_on.isoformat()}")
     if fails or pending:
         return Finding("AC-5", settle(fails, pending=pending), "; ".join(fails + pending), facts)
-<<<<<<< HEAD
-<<<<<<< HEAD
     return Finding("AC-5", "PASS", f"OK OK on {streak} consecutive days ({', '.join(reversed(days[:need_days]))}); JOB_MISSING fired for --backup-id {probe_id} at {probe_seen[-1]}", facts)
-=======
-    return Finding("AC-5", "PASS", f"OK on {streak} consecutive days ({', '.join(reversed(days[:need_days]))}); JOB_MISSING fired for --backup-id {probe_id} at {probe_seen[-1]}", facts)
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-    return Finding("AC-5", "PASS", f"OK OK on {streak} consecutive days ({', '.join(reversed(days[:need_days]))}); JOB_MISSING fired for --backup-id {probe_id} at {probe_seen[-1]}", facts)
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 
 
 # --- AC-6a ----------------------------------------------------------------------------------------------------------
@@ -621,10 +523,6 @@ def parse_journal(text):
     return records, unparsed
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 def slot_on(day, slots):
     """The time of day in force on `day`, a UTC date: the newest entry of `slots` whose start is not after it."""
     chosen = slots[0][1]
@@ -645,15 +543,6 @@ def last_due_fire(now, fires=SNAPSHOT_FIRES, grace=dt.timedelta(minutes=15)):
         return today
     yesterday = day - dt.timedelta(days=1)
     return dt.datetime.combine(yesterday, slot_on(yesterday, fires), UTC)
-<<<<<<< HEAD
-=======
-def last_due_fire(now, fire=SNAPSHOT_FIRE, grace=dt.timedelta(minutes=15)):
-    """The newest daily fire that must have finished by `now`: today's once `grace` has passed, else yesterday's."""
-    today = dt.datetime.combine(now.astimezone(UTC).date(), fire, UTC)
-    return today if now >= today + grace else today - dt.timedelta(days=1)
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 
 
 def judge_ac6a(snapshot, journal_text, now, expected_source=SNAPSHOT_SOURCE, enabled=SNAPSHOT_ENABLED, min_days=2, mtime_slack=180.0, me=None):
@@ -689,8 +578,7 @@ def judge_ac6a(snapshot, journal_text, now, expected_source=SNAPSHOT_SOURCE, ena
             pending.append(f"{streak} consecutive day(s) with a successful run; `advances daily` needs {min_days}")
     if failed and (not done or failed[-1] > done[-1]):
         fails.append(f"the newest start job failed at {utc_stamp(failed[-1])}")
-    facts = {"successful_runs": [utc_stamp(w) for w in done[-10:]], "failed_runs": [utc_stamp(w) for w in failed[-10:]], "consecutive_days": streak,
-             "sources_seen": len(sources), "source_ok": bool(sources) and not wrong, "due": utc_stamp(due), "unparsed_lines": unparsed}
+    facts = {"successful_runs": [utc_stamp(w) for w in done[-10:]], "failed_runs": [utc_stamp(w) for w in failed[-10:]], "consecutive_days": streak, "sources_seen": len(sources), "source_ok": bool(sources) and not wrong, "due": utc_stamp(due), "unparsed_lines": unparsed}
     if snapshot is None:
         fails.append("the snapshot file does not exist")
     else:
@@ -868,7 +756,7 @@ def classify_warnings(warnings, actual_length, scope_paths):
         key = warning_key(text)
         label = key or "untagged"
         by_key[label] += 1
-        body = text[WARNING_TAG.match(text).end():] if key else ""
+        body = text[WARNING_TAG.match(text).end() :] if key else ""
         in_scope = any(re.search(r"(?<![\w./-])" + re.escape(scope), body) for scope in scope_paths)
         if key in ALLOWED_WARNING_TAGS and in_scope:
             allowed += 1
@@ -898,13 +786,27 @@ def summarize_entry(entry, scope_paths):
     n_deleted_sets = max(len(deleted_sets) if isinstance(deleted_sets, list) else 0, delete.get("DeletedSetsActualLength") if isinstance(delete.get("DeletedSetsActualLength"), int) else 0)
     test = message.get("TestResults") if isinstance(message.get("TestResults"), dict) else {}
     return {
-        "id": entry.get("ID"), "operation": message.get("MainOperation"), "result": message.get("ParsedResult"), "begin": begin, "end": end,
+        "id": entry.get("ID"),
+        "operation": message.get("MainOperation"),
+        "result": message.get("ParsedResult"),
+        "begin": begin,
+        "end": end,
         "seconds": (end - begin).total_seconds() if begin and end else None,
-        "examined": message.get("ExaminedFiles"), "examined_bytes": message.get("SizeOfExaminedFiles"), "added": message.get("AddedFiles"), "modified": message.get("ModifiedFiles"),
-        "deleted": message.get("DeletedFiles"), "not_processed": message.get("NotProcessedFiles"), "files_with_error": message.get("FilesWithError"),
-        "partial": message.get("PartialBackup"), "interrupted": message.get("Interrupted"),
-        "warnings": classify_warnings(message.get("Warnings"), message.get("WarningsActualLength"), scope_paths), "errors": n_errors, "deleted_sets": n_deleted_sets,
-        "compact": bool(message.get("CompactResults")) or bool(delete.get("CompactResults")), "test_result": test.get("ParsedResult"), "exception": raised,
+        "examined": message.get("ExaminedFiles"),
+        "examined_bytes": message.get("SizeOfExaminedFiles"),
+        "added": message.get("AddedFiles"),
+        "modified": message.get("ModifiedFiles"),
+        "deleted": message.get("DeletedFiles"),
+        "not_processed": message.get("NotProcessedFiles"),
+        "files_with_error": message.get("FilesWithError"),
+        "partial": message.get("PartialBackup"),
+        "interrupted": message.get("Interrupted"),
+        "warnings": classify_warnings(message.get("Warnings"), message.get("WarningsActualLength"), scope_paths),
+        "errors": n_errors,
+        "deleted_sets": n_deleted_sets,
+        "compact": bool(message.get("CompactResults")) or bool(delete.get("CompactResults")),
+        "test_result": test.get("ParsedResult"),
+        "exception": raised,
     }
 
 
@@ -985,10 +887,22 @@ def judge_run(backups, retention, active_task=None, unreadable_newer=0, baseline
         attn.append(f"examined files moved {drift:+.1%} against the previous run (provisional tolerance {count_tolerance:.0%}; question Q1 is unruled)")
     if size_drift is not None and abs(size_drift) > size_tolerance:
         attn.append(f"examined bytes are {size_drift:+.1%} against the 2026-11-08 baseline (AC-3's {size_tolerance:.0%}; question Q1 is unruled)")
-    facts = {"begin": utc_stamp(newest["begin"]), "duration": hours_minutes(newest["seconds"]), "result": newest["result"], "warnings": w, "errors": newest["errors"],
-             "examined": newest["examined"], "examined_bytes": newest["examined_bytes"], "count_drift": None if drift is None else round(drift, 4),
-             "size_vs_baseline": None if size_drift is None else round(size_drift, 4), "deleted_sets": newest["deleted_sets"], "test_result": newest["test_result"],
-             "active_task": active_task, "retention": retention, "age_hours": None if age_hours is None else round(age_hours, 2)}
+    facts = {
+        "begin": utc_stamp(newest["begin"]),
+        "duration": hours_minutes(newest["seconds"]),
+        "result": newest["result"],
+        "warnings": w,
+        "errors": newest["errors"],
+        "examined": newest["examined"],
+        "examined_bytes": newest["examined_bytes"],
+        "count_drift": None if drift is None else round(drift, 4),
+        "size_vs_baseline": None if size_drift is None else round(size_drift, 4),
+        "deleted_sets": newest["deleted_sets"],
+        "test_result": newest["test_result"],
+        "active_task": active_task,
+        "retention": retention,
+        "age_hours": None if age_hours is None else round(age_hours, 2),
+    }
     head = f"backup {utc_stamp(newest['begin'])} ({hours_minutes(newest['seconds'])}) ParsedResult={newest['result']}, examined {newest['examined']}"
     if drift is not None:
         head += f" ({drift:+.1%} vs the previous run)"
@@ -1004,81 +918,34 @@ def seconds_off_schedule(begin, time_of_day):
     return min(delta, 86400 - delta)
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 def judge_schedule(entries, slots=SCHEDULE_SLOTS, since=RECOVERY_DATE, slack=SCHEDULE_SLACK, window=PRECEDING_WINDOW):
     """Backups that began off their day's slot, each with the operations logged in the 15 minutes before it.
 
     `entries`: summarize_entry() results of EVERY operation examined, newest first. `slots`: (first UTC date, time of
     day) pairs, oldest first; a run is judged against the slot in force on its own UTC date.
-=======
-def judge_schedule(entries, time_of_day=EXPECTED_TIME_OF_DAY, since=RECOVERY_DATE, slack=SCHEDULE_SLACK, window=PRECEDING_WINDOW):
-    """Backups that began off the daily slot, each with the operations logged in the 15 minutes before it.
-
-    `entries`: summarize_entry() results of EVERY operation examined, newest first.
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-def judge_schedule(entries, slots=SCHEDULE_SLOTS, since=RECOVERY_DATE, slack=SCHEDULE_SLACK, window=PRECEDING_WINDOW):
-    """Backups that began off their day's slot, each with the operations logged in the 15 minutes before it.
-
-    `entries`: summarize_entry() results of EVERY operation examined, newest first. `slots`: (first UTC date, time of
-    day) pairs, oldest first; a run is judged against the slot in force on its own UTC date.
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
     """
     backups = [e for e in entries if e.get("operation") == "Backup" and e.get("begin") and e["begin"].date() >= since]
     if not backups:
         return Finding("OFFSCHED", "ERROR", f"no Backup since {since.isoformat()} among the job-log entries examined")
-<<<<<<< HEAD
-<<<<<<< HEAD
     off, used = [], []
     for run in backups:
         slot = slot_on(run["begin"].astimezone(UTC).date(), slots)
         if slot not in used:
             used.append(slot)
         if seconds_off_schedule(run["begin"], slot) <= slack.total_seconds():  # exactly the slack is on schedule
-=======
-    off = []
-    for run in backups:
-        if seconds_off_schedule(run["begin"], time_of_day) <= slack.total_seconds():  # exactly the slack is on schedule
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-    off, used = [], []
-    for run in backups:
-        slot = slot_on(run["begin"].astimezone(UTC).date(), slots)
-        if slot not in used:
-            used.append(slot)
-        if seconds_off_schedule(run["begin"], slot) <= slack.total_seconds():  # exactly the slack is on schedule
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
             continue
         before = collections.Counter(str(e.get("operation")) for e in entries if e is not run and e.get("begin") and run["begin"] - window <= e["begin"] <= run["begin"] and e.get("operation") != "Backup")
         off.append({"begin": utc_stamp(run["begin"]), "result": run["result"], "preceded_by": dict(sorted(before.items()))})
     facts = {"backups_examined": len(backups), "off_schedule": off}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
     if len(used) == 1:
         target, of_target = f"the {used[0]}Z slot", f"{used[0]}Z"
     else:
         which = ", ".join(f"{time_of_day}Z from {start.isoformat()}" for start, time_of_day in slots if time_of_day in used)
         target = of_target = f"their day's slot ({which})"
-<<<<<<< HEAD
     if not off:
         return Finding("OFFSCHED", "PASS", f"all {len(backups)} backups examined since {since.isoformat()} began within {int(slack.total_seconds() // 60)} min of {of_target}", facts)
     parts = [f"{o['begin']} (preceded by {', '.join(f'{k} x{n}' for k, n in o['preceded_by'].items()) or 'no logged operation'})" for o in off]
     return Finding("OFFSCHED", "ATTN", f"{len(off)} of {len(backups)} backups began off {target}: " + "; ".join(parts), facts)
-=======
-=======
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
-    if not off:
-        return Finding("OFFSCHED", "PASS", f"all {len(backups)} backups examined since {since.isoformat()} began within {int(slack.total_seconds() // 60)} min of {of_target}", facts)
-    parts = [f"{o['begin']} (preceded by {', '.join(f'{k} x{n}' for k, n in o['preceded_by'].items()) or 'no logged operation'})" for o in off]
-<<<<<<< HEAD
-    return Finding("OFFSCHED", "ATTN", f"{len(off)} of {len(backups)} backups began off the {time_of_day}Z slot: " + "; ".join(parts), facts)
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-    return Finding("OFFSCHED", "ATTN", f"{len(off)} of {len(backups)} backups began off {target}: " + "; ".join(parts), facts)
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 
 
 # --- CENSUS and MODES -----------------------------------------------------------------------------------------------
@@ -1230,7 +1097,7 @@ def collect_daemons():
 def collect_filestatus(dest, names):
     statuses = {}
     for start in range(0, len(names), FILESTATUS_BATCH):
-        paths = [os.path.join(dest, name) for name in names[start:start + FILESTATUS_BATCH]]
+        paths = [os.path.join(dest, name) for name in names[start : start + FILESTATUS_BATCH]]
         rc, out, _err = run_cmd([tool("dropbox"), "filestatus", *paths])
         if rc != 0:
             continue
@@ -1333,8 +1200,7 @@ def collect_server(base, backup_id, want_backups, scope_paths):
     active = state.get("ActiveTask")
     task = f"task {active.get('Item1')} for backup {active.get('Item2')}" if isinstance(active, dict) else (str(active) if active else None)
     target = cfg["Backup"].get("TargetURL")
-    return {"export": export, "entries": entries, "metadata": cfg["Backup"].get("Metadata") or {}, "active_task": task, "program_state": state.get("ProgramState"),
-            "dest": urllib.parse.unquote(urllib.parse.urlparse(target).path) if isinstance(target, str) and target.startswith("file://") else None}
+    return {"export": export, "entries": entries, "metadata": cfg["Backup"].get("Metadata") or {}, "active_task": task, "program_state": state.get("ProgramState"), "dest": urllib.parse.unquote(urllib.parse.urlparse(target).path) if isinstance(target, str) and target.startswith("file://") else None}
 
 
 # --- assembly -------------------------------------------------------------------------------------------------------
@@ -1379,15 +1245,7 @@ def run_table(backups, limit):
         drift = percent(run["examined"], older["examined"]) if older else None
         w = run["warnings"]
         warn = f"W={w['total']}" + (f" (allow-listed {w['allowed']})" if w["total"] else "")
-<<<<<<< HEAD
-<<<<<<< HEAD
         slot = "scheduled" if run["begin"] and seconds_off_schedule(run["begin"], slot_on(run["begin"].astimezone(UTC).date(), SCHEDULE_SLOTS)) <= SCHEDULE_SLACK.total_seconds() else "OFF-SCHEDULE"
-=======
-        slot = "scheduled" if run["begin"] and seconds_off_schedule(run["begin"], EXPECTED_TIME_OF_DAY) <= SCHEDULE_SLACK.total_seconds() else "OFF-SCHEDULE"
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
-        slot = "scheduled" if run["begin"] and seconds_off_schedule(run["begin"], slot_on(run["begin"].astimezone(UTC).date(), SCHEDULE_SLOTS)) <= SCHEDULE_SLACK.total_seconds() else "OFF-SCHEDULE"
->>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
         lines.append(f"  run {utc_stamp(run['begin'])}  {hours_minutes(run['seconds']):>7}  {str(run['result']):<8} {warn:<22} E={run['errors']}  examined={run['examined']}" + (f" ({drift:+.1%})" if drift is not None else "") + f"  {slot}")
     return lines
 
@@ -1474,14 +1332,17 @@ def main(argv=None):
     print(f"RESULT: {result} ({', '.join(f'{counts[v]} {v}' for v in VERDICTS if counts[v])})")
 
     if not args.no_write:
-        document = {"schema": SCHEMA, "version": VERSION, "generated": utc_stamp(now), "host": socket.gethostname(), "backup_id": str(args.backup_id), "result": result,
-                    "server": "skipped" if args.no_server else ("error" if "error" in server else "read"), "criteria": [f.as_dict() for f in findings]}
+        document = {"schema": SCHEMA, "version": VERSION, "generated": utc_stamp(now), "host": socket.gethostname(), "backup_id": str(args.backup_id), "result": result, "server": "skipped" if args.no_server else ("error" if "error" in server else "read"), "criteria": [f.as_dict() for f in findings]}
         newest = backups[0] if backups else None
-        history = {"generated": utc_stamp(now), "result": result, "verdicts": {f.criterion: f.verdict for f in findings},
-                   "snapshot": None if snapshot is None else {"size": snapshot["size"], "mtime": utc_stamp(dt.datetime.fromtimestamp(snapshot["mtime"], UTC))},
-                   "classes": dict(collections.Counter(f"{kind_of(e['name'])} {file_class(e)}" for e in entries)),
-                   "dlists": {e["name"]: file_class(e) for e in entries if kind_of(e["name"]) == "dlist"},
-                   "newest_backup": None if newest is None else {"begin": utc_stamp(newest["begin"]), "result": newest["result"], "examined": newest["examined"], "examined_bytes": newest["examined_bytes"], "seconds": newest["seconds"]}}
+        history = {
+            "generated": utc_stamp(now),
+            "result": result,
+            "verdicts": {f.criterion: f.verdict for f in findings},
+            "snapshot": None if snapshot is None else {"size": snapshot["size"], "mtime": utc_stamp(dt.datetime.fromtimestamp(snapshot["mtime"], UTC))},
+            "classes": dict(collections.Counter(f"{kind_of(e['name'])} {file_class(e)}" for e in entries)),
+            "dlists": {e["name"]: file_class(e) for e in entries if kind_of(e["name"]) == "dlist"},
+            "newest_backup": None if newest is None else {"begin": utc_stamp(newest["begin"]), "result": newest["result"], "examined": newest["examined"], "examined_bytes": newest["examined_bytes"], "seconds": newest["seconds"]},
+        }
         write_outputs(args.state_dir, document, history)
         print(f"wrote {os.path.join(args.state_dir, 'acceptance.json')} and one history line")
     return code

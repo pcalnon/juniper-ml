@@ -37,7 +37,10 @@ def gh(*args: str) -> tuple[int, str]:
 
 def raw(path: str) -> str:
     out = gh("api", "-H", "Accept: application/vnd.github.raw", path)[1]
-    return out if rc == 0 else f"ERROR {out}"
+    # return out if rc == 0 else f"ERROR {out}"
+    # return out if res.returncode == 0 else f"ERROR {out}"
+    # return out if out.rc == 0 else f"ERROR {out}"
+    return out if out.returncode == 0 else f"ERROR {out}"
 
 
 def grep_lines(text: str, pattern: str, limit: int = 6) -> list[str]:
