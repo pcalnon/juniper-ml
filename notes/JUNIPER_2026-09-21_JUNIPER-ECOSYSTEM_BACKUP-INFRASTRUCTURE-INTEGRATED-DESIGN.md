@@ -3146,6 +3146,9 @@ and what the STOP block at the top of §8 holds (note 10.1g).
     a restore of the 2026-10-08 string now reads `FAIL`. The finish tool (1.2.0) predicts with it, and the port
     `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py` reads `U` as Duplicati does.
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 - **(10.1i)** **AC-2's counts, AC-5's days and D-14's standing -- ruled 2026-11-15**, in the Phase D sitting.
   - **AC-2: 5 sources and 76 filters.** The owner changed the job's sources and filters on purpose after AC-2 had read
     2 and 45 on 2026-11-07/08. The acceptance probe (1.3.0) expects the new counts. It counts them only: what the lists
@@ -3169,8 +3172,11 @@ and what the STOP block at the top of §8 holds (note 10.1g).
   message still says "14:00Z daily", in the repo and on the host alike; it changes nothing it does.
   Install the new snapshot timer by copying that one file: `util/install_duplicati_service.bash` would also install
   the repo's `duplicati.service`, with `UMask=0027`, over the host's interim `0017` (note 10.1i).
+<<<<<<< HEAD
 =======
 >>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
+=======
+>>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
 
 ### 10.2 D-2 execution: confirm the scrub, rotate, re-encrypt — order of operations
 

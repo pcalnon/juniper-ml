@@ -78,6 +78,9 @@ MUTANTS = [
     (PROBE, "AC-2: a trailing slash on TargetURL fails", 'target.rstrip("/") == EXPECTED_TARGET', "target == EXPECTED_TARGET"),
     (PROBE, "AC-2: the schedule's time of day is not judged", "    if time_of_day != EXPECTED_TIME_OF_DAY:\n", "    if False:\n"),
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
     (PROBE, "AC-2: the old 14:00 slot is still expected", "EXPECTED_TIME_OF_DAY = dt.time(13, 0, 0)\n", "EXPECTED_TIME_OF_DAY = dt.time(14, 0, 0)\n"),
     (PROBE, "schedule: the move takes effect a day late", "SCHEDULE_MOVED = dt.date(2026, 11, 15)\n", "SCHEDULE_MOVED = dt.date(2026, 11, 16)\n"),
     (PROBE, "OFFSCHED: every run is judged against the newest slot", '        slot = slot_on(run["begin"].astimezone(UTC).date(), slots)\n', "        slot = EXPECTED_TIME_OF_DAY\n"),
@@ -109,11 +112,17 @@ MUTANTS = [
     (PROBE, "AC-5: other jobs' records count", "    mine = [r for r in records if r[3] == str(backup_id)]\n", "    mine = list(records)\n"),
     (PROBE, "AC-5: one OK record makes the day OK", 'all(verdict == "OK" for verdict, _code in by_day[day])', 'any(verdict == "OK" for verdict, _code in by_day[day])'),
 <<<<<<< HEAD
+<<<<<<< HEAD
     (PROBE, "AC-5: a RUNNING day counts", "    while day in by_day and all_ok(day) and not ran(day):\n", "    while day in by_day and all_ok(day):\n"),
     (PROBE, "AC-5: a newest RUNNING day fails", "    if not all_ok(newest_day):\n", "    if streak == 0:\n"),
     (PROBE, "AC-5: the RUNNING days that do not count go unreported", "        discounted += 1\n", "        discounted += 0\n"),
 =======
 >>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
+=======
+    (PROBE, "AC-5: a RUNNING day counts", "    while day in by_day and all_ok(day) and not ran(day):\n", "    while day in by_day and all_ok(day):\n"),
+    (PROBE, "AC-5: a newest RUNNING day fails", "    if not all_ok(newest_day):\n", "    if streak == 0:\n"),
+    (PROBE, "AC-5: the RUNNING days that do not count go unreported", "        discounted += 1\n", "        discounted += 0\n"),
+>>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
     (PROBE, "AC-5: a 999 record from before the recovery counts", ' and backup == str(probe_id) and when.date() >= recovered_on)', " and backup == str(probe_id))"),
     (PROBE, "AC-5: any ALERT for 999 counts, whatever its code", 'if verdict == "ALERT" and code == "JOB_MISSING" and backup == str(probe_id)', 'if verdict == "ALERT" and backup == str(probe_id)'),
     (PROBE, "AC-5: 36 h is already stale", "    if age_h > max_gap_hours:\n", "    if age_h >= max_gap_hours:\n"),
@@ -124,10 +133,14 @@ MUTANTS = [
     (PROBE, "AC-6a: another source passes", "    if wrong:\n", "    if False:\n"),
     (PROBE, "AC-6a: no source line is not an error", "    if not sources:\n", "    if False:\n"),
 <<<<<<< HEAD
+<<<<<<< HEAD
     (PROBE, "AC-6a: the grace is exclusive", "    if now >= today + grace:\n", "    if now > today + grace:\n"),
 =======
     (PROBE, "AC-6a: the grace is exclusive", "    return today if now >= today + grace else", "    return today if now > today + grace else"),
 >>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
+=======
+    (PROBE, "AC-6a: the grace is exclusive", "    if now >= today + grace:\n", "    if now > today + grace:\n"),
+>>>>>>> c4d69f81 (feat(backup): the probe follows the owner's 2026-11-15 rulings, and the job moves to 13:00 UTC with its snapshot and watchdog (#2583))
     (PROBE, "AC-6a: the mtime slack is exclusive", "> mtime_slack:  # exactly the slack still matches", ">= mtime_slack:  # exactly the slack still matches"),
     (PROBE, "AC-6a: one day is already daily", "min_days=2, mtime_slack=180.0", "min_days=1, mtime_slack=180.0"),
     (PROBE, "AC-6a: a stub snapshot passes", '        if snapshot["size"] <= 4096:\n', "        if False:\n"),
