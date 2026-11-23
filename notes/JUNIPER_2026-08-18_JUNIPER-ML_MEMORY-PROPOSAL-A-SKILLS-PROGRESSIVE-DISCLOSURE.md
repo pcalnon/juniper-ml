@@ -616,7 +616,7 @@ every one of them resident and unchanged.
 It also states plainly that keeping them resident is **not the same as enforcing them**
 (doc 2 §6). The `/tmp/` rule in particular guards against a permanent data loss that has already
 happened once (`AGENTS.md:915`), and it is a `Write`-tool path predicate that a `PreToolUse` hook
-could enforce exactly. That is [open question 3](#18-open-questions-for-the-Overtoad), and it is out
+could enforce exactly. That is [open question 3](#18-open-questions-for-the-overtoad), and it is out
 of scope here only because it is orthogonal to the Skills bet, not because it is unimportant.
 
 **Tier 2 — `paths:`-scoped rules (5 lines).** The `juniper-service-core` security invariants
