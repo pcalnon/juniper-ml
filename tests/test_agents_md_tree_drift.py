@@ -98,7 +98,7 @@ class AgentsMdTreeDriftTest(unittest.TestCase):
         self.assertEqual(
             absent,
             [],
-            f"AGENTS.md Repository-Structure tree is missing top-level dir(s): {absent}. " "Add each as a `├── <name>/` node (this is the G-3 drift guard).",
+            f"AGENTS.md Repository-Structure tree is missing top-level dir(s): {absent}. Add each as a `├── <name>/` node (this is the G-3 drift guard).",
         )
 
     def test_known_packaged_subdirs_present(self) -> None:

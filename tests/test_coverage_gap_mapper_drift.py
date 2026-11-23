@@ -181,7 +181,7 @@ class CoverageGapMapperDriftTest(unittest.TestCase):
         reading CI logs is not confused). Mirrors test_ci_tools_drift.py's
         environment sanity probe."""
         forced = os.environ.get("JUNIPER_DRIFT_TEST_FORCE_LOCAL")
-        print("INFO: coverage-gap-mapper drift gate is STRUCTURAL -- the real per-file " "coverage run is a manual-verify step (see module docstring); juniper-ml CI " f"cannot run it (meta-package; no target repo checked out). FORCE_LOCAL={forced!r}")
+        print(f"INFO: coverage-gap-mapper drift gate is STRUCTURAL -- the real per-file coverage run is a manual-verify step (see module docstring); juniper-ml CI cannot run it (meta-package; no target repo checked out). FORCE_LOCAL={forced!r}")
 
     def test_current_version_is_readable(self) -> None:
         self.assertIsNotNone(
@@ -280,12 +280,12 @@ class CoverageGapMapperDriftTest(unittest.TestCase):
         self.assertEqual(
             missing_json,
             [],
-            "Blocking per-file coverage gate workflow(s) do not produce coverage.json via " f"{_COVERAGE_JSON_REPORT_FLAG}: " + ", ".join(str(p.relative_to(self.juniper_ml_root)) for p in missing_json),
+            f"Blocking per-file coverage gate workflow(s) do not produce coverage.json via {_COVERAGE_JSON_REPORT_FLAG}: " + ", ".join(str(p.relative_to(self.juniper_ml_root)) for p in missing_json),
         )
         self.assertEqual(
             bad_pin,
             [],
-            "Blocking per-file coverage gate workflow(s) do not install a juniper-ci-tools range with lower bound >= " f"{_COVERAGE_GATE_MIN_VERSION} that admits current {self.current_version}: " + ", ".join(str(p.relative_to(self.juniper_ml_root)) for p in bad_pin),
+            f"Blocking per-file coverage gate workflow(s) do not install a juniper-ci-tools range with lower bound >= {_COVERAGE_GATE_MIN_VERSION} that admits current {self.current_version}: " + ", ".join(str(p.relative_to(self.juniper_ml_root)) for p in bad_pin),
         )
 
 

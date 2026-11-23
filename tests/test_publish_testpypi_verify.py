@@ -211,7 +211,7 @@ class PublishTestPyPIVerifyStructuralTest(unittest.TestCase):
         self.assertEqual(
             offenders,
             [],
-            "--extra-index-url reintroduces the merged index namespace that let a TestPyPI " "squatter (fastapi 1.0) outrank production fastapi 0.141.1 and kill the v0.7.0 " f"verify (run 31281873275). Offending command(s): {offenders}",
+            f"--extra-index-url reintroduces the merged index namespace that let a TestPyPI squatter (fastapi 1.0) outrank production fastapi 0.141.1 and kill the v0.7.0 verify (run 31281873275). Offending command(s): {offenders}",
         )
 
     def test_no_verify_command_merges_both_index_namespaces(self) -> None:
@@ -219,7 +219,7 @@ class PublishTestPyPIVerifyStructuralTest(unittest.TestCase):
         self.assertEqual(
             offenders,
             [],
-            "a single pip command names BOTH TestPyPI and production PyPI. pip has no index " "priority -- it picks the highest version across the merged namespace, so a " f"TestPyPI squatter wins. Split into download-then-install phases. Offenders: {offenders}",
+            f"a single pip command names BOTH TestPyPI and production PyPI. pip has no index priority -- it picks the highest version across the merged namespace, so a TestPyPI squatter wins. Split into download-then-install phases. Offenders: {offenders}",
         )
 
     def test_verify_does_not_install_heavy_extras(self) -> None:
@@ -350,18 +350,18 @@ class PublishTestPyPIVerifyRehearsalTest(unittest.TestCase):
         self._write_exec(bindir / "sleep", "#!/bin/bash\nexit 0\n")
 
         # mktemp stub: deterministic dir INSIDE the test tree (keeps the rehearsal hermetic).
-        self._write_exec(bindir / "mktemp", "#!/bin/bash\n" f'mkdir -p "{mktemp_dir}"\n' f'printf "%s\\n" "{mktemp_dir}"\n' "exit 0\n")
+        self._write_exec(bindir / "mktemp", f'#!/bin/bash\nmkdir -p "{mktemp_dir}"\nprintf "%s\\n" "{mktemp_dir}"\nexit 0\n')
 
         # pip stub: logs every invocation; on `download` optionally materializes the wheel
         # the workflow expects, so the download -> install handoff is genuinely exercised.
         wheel_name = WHEEL_TEMPLATE.format(version=version)
         make_wheel = "if [[ \"$1\" == 'download' ]]; then\n" '  dest=""; prev=""\n' '  for a in "$@"; do\n' '    if [[ "$prev" == "--dest" ]]; then dest="$a"; fi\n' '    prev="$a"\n' "  done\n" f'  if [[ -n "$dest" && "{int(create_wheel)}" == "1" ]]; then\n' '    mkdir -p "$dest"\n' f'    : > "$dest/{wheel_name}"\n' "  fi\n" "fi\n"
-        self._write_exec(bindir / "pip", "#!/bin/bash\n" f'printf "%s\\n" "$*" >> "{pip_log}"\n' f"{make_wheel}" "exit 0\n")
+        self._write_exec(bindir / "pip", f'#!/bin/bash\nprintf "%s\\n" "$*" >> "{pip_log}"\n{make_wheel}exit 0\n')
 
         # python stub: tomllib version probe prints VERSION; import probes succeed.
         self._write_exec(
             bindir / "python",
-            "#!/bin/bash\n" 'args="$*"\n' 'if [[ "$args" == *tomllib* ]]; then\n' f'  echo "{version}"\n' "  exit 0\n" "fi\n" "exit 0\n",
+            f'#!/bin/bash\nargs="$*"\nif [[ "$args" == *tomllib* ]]; then\n  echo "{version}"\n  exit 0\nfi\nexit 0\n',
         )
 
     def _run_verify(self, *, create_wheel: bool = True) -> tuple[int, list[str], str]:

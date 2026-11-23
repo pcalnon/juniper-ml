@@ -33,7 +33,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = REPO_ROOT / "util" / "ad-hoc" / "e2e_unfilled_rows.py"
 
 _HEAD = re.compile(
-    r"matrix rows   : (\d+)\n" r"verdicted     : (\d+)\n" r"UNFILLED      : (\d+)",
+    r"matrix rows   : (\d+)\nverdicted     : (\d+)\nUNFILLED      : (\d+)",
 )
 
 

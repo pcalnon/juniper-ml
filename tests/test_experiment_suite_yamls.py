@@ -397,7 +397,7 @@ class StallSecondsContractTest(unittest.TestCase):
                 declared = (doc.get("execution") or {}).get("stall_seconds")
                 self.assertIsNotNone(
                     declared,
-                    f"{path.name} sweeps {' and '.join(reasons)} but declares no execution.stall_seconds; " f"those cells will be recorded as 'stalled' at the {default}s driver default while healthy",
+                    f"{path.name} sweeps {' and '.join(reasons)} but declares no execution.stall_seconds; those cells will be recorded as 'stalled' at the {default}s driver default while healthy",
                 )
                 self.assertGreater(float(declared), default, f"{path.name} declares stall_seconds={declared}, at or below the {default}s driver default — no effect")
         self.assertGreater(checked, 0, "no oversize cascor suite was checked — the contract would pass vacuously")
@@ -494,7 +494,7 @@ class WallBudgetContractTest(unittest.TestCase):
             with self.subTest(suite=path.relative_to(REPO_ROOT).as_posix()):
                 self.assertTrue(
                     effective,
-                    f"{path.name} sweeps max_hidden_units up to {int(max(caps))} but no wall budget is pinned in the suite OR its base config, " f"so its cells fall back to the driver's {default}s default with no signal — " "set execution.max_wall_seconds, override outputs.max_wall_seconds, or pin it in the base config",
+                    f"{path.name} sweeps max_hidden_units up to {int(max(caps))} but no wall budget is pinned in the suite OR its base config, so its cells fall back to the driver's {default}s default with no signal — set execution.max_wall_seconds, override outputs.max_wall_seconds, or pin it in the base config",
                 )
                 self.assertGreater(min(effective), default, f"{path.name} pins wall budget {min(effective)}s, at or below the driver's {default}s default — no effect")
         self.assertGreater(checked, 0, f"no wide-cap cascor suite was decidable — the contract would pass vacuously (undecidable: {undecidable})")
@@ -528,7 +528,7 @@ class WallBudgetContractTest(unittest.TestCase):
         self.assertGreater(
             timeout,
             surveyed_budget,
-            f"{rel} dropped to per_run_timeout_seconds={timeout} against a surveyed {surveyed_budget}s worst-case driver budget; " "at or below it run_suite's subprocess kill destroys the driver's manifest",
+            f"{rel} dropped to per_run_timeout_seconds={timeout} against a surveyed {surveyed_budget}s worst-case driver budget; at or below it run_suite's subprocess kill destroys the driver's manifest",
         )
 
     def test_a_budget_pinned_only_in_base_config_counts(self) -> None:
@@ -762,7 +762,7 @@ class TimeoutOrderingContractTest(unittest.TestCase):
                 self.assertGreater(
                     timeout,
                     surveyed_budget,
-                    f"{rel} dropped to per_run_timeout_seconds={timeout} against a surveyed {surveyed_budget}s worst-case driver budget; " "at or below it run_suite's subprocess kill destroys the driver's manifest",
+                    f"{rel} dropped to per_run_timeout_seconds={timeout} against a surveyed {surveyed_budget}s worst-case driver budget; at or below it run_suite's subprocess kill destroys the driver's manifest",
                 )
 
     def test_a_cell_pinning_no_budget_anywhere_still_has_one(self) -> None:
@@ -807,7 +807,7 @@ class StallShimRetirementTest(unittest.TestCase):
         shim = REPO_ROOT / "util" / "ad-hoc" / "2026-08-10_driver_stall_shim.py"
         self.assertFalse(
             shim.exists(),
-            f"{shim.relative_to(REPO_ROOT)} is back — execution.stall_seconds (ml#1069) is the supported mechanism; " "a JUNIPER_SUITE_DRIVER shim silently applies one window to every cell of every suite",
+            f"{shim.relative_to(REPO_ROOT)} is back — execution.stall_seconds (ml#1069) is the supported mechanism; a JUNIPER_SUITE_DRIVER shim silently applies one window to every cell of every suite",
         )
 
 

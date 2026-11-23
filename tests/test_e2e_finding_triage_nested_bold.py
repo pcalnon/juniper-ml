@@ -41,7 +41,7 @@ SCRIPT = REPO_ROOT / "util" / "ad-hoc" / "e2e_finding_triage.py"
 # rather than optional: a disposition disappearing from the operator summary should fail
 # here. The `\s+` separators are this file's own style and are kept.
 _TOTAL = re.compile(
-    r"total findings\s*:\s*(\d+)\s+" r"fixed\s*:\s*(\d+)\s+" r"accepted\s*:\s*(\d+)\s+" r"withdrawn\s*:\s*\d+\s+" r"open\s*:\s*(\d+)",
+    r"total findings\s*:\s*(\d+)\s+fixed\s*:\s*(\d+)\s+accepted\s*:\s*(\d+)\s+withdrawn\s*:\s*\d+\s+open\s*:\s*(\d+)",
 )
 _OPEN_P0P1 = re.compile(r"open P0/P1\s*:\s*(\d+)")
 
@@ -84,7 +84,7 @@ class NestedBoldTruncatesTheHeader(unittest.TestCase):
 
     def test_f037_shape_mechanism_fixed_before_nested_closed_is_fixed(self) -> None:
         """Current close: FIXED sits before the inner ``**``, so the count drops."""
-        result = _run("**F-CANOPY-037 — graph race (P0/P1; mechanism FIXED canopy#531; " "**CLOSED 2026-09-04** on the owed re-drive).**\n")
+        result = _run("**F-CANOPY-037 — graph race (P0/P1; mechanism FIXED canopy#531; **CLOSED 2026-09-04** on the owed re-drive).**\n")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(_totals(result.stdout), (1, 1, 0, 0))
         self.assertRegex(result.stdout, r"(?m)^FIXED\s+P0/P1\s+F-CANOPY-037\b")
@@ -107,7 +107,7 @@ class NestedBoldTruncatesTheHeader(unittest.TestCase):
 
     def test_multiline_header_inner_bold_still_truncates(self) -> None:
         """``re.S`` lets the match cross a newline; the first ``**`` still wins."""
-        result = _run("**F-CANOPY-037 — graph race (P0/P1;\n" "mechanism still open; **CLOSED 2026-09-04** on the owed re-drive).**\n")
+        result = _run("**F-CANOPY-037 — graph race (P0/P1;\nmechanism still open; **CLOSED 2026-09-04** on the owed re-drive).**\n")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(_totals(result.stdout), (1, 0, 0, 1))
         self.assertRegex(result.stdout, r"(?m)^OPEN\s+P0/P1\s+F-CANOPY-037\b")

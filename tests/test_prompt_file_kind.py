@@ -38,7 +38,7 @@ class PromptFileKindTests(unittest.TestCase):
         invocations_log = temp_dir / "claude_invocations.log"
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
-            "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then\n' '  echo "claude-test-version"\n' "  exit 0\n" "fi\n" "{\n" '  echo "__CALL__"\n' '  echo "ARGC=$#"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$CLAUDE_ARGS_LOG"\n',
+            '#!/usr/bin/env bash\nif [[ "$1" == "--version" ]]; then\n  echo "claude-test-version"\n  exit 0\nfi\n{\n  echo "__CALL__"\n  echo "ARGC=$#"\n  for arg in "$@"; do\n    printf \'ARG=%s\\n\' "$arg"\n  done\n} >> "$CLAUDE_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)

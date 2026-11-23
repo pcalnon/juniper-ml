@@ -106,7 +106,7 @@ class _Harness:
             "  exit 0\n"
             "fi\n"
             # git/ref/heads/<name> lookups: base resolves, feature branch depends.
-            'case "$*" in\n' '  *"git/ref/heads/main"*)\n' f'    echo "{BASE_SHA}"; exit 0 ;;\n' '  *"git/refs"*)\n' '    echo "{}"; exit 0 ;;\n' '  *"git/ref/heads/"*)\n' f'    {"exit 0" if branch_exists else "exit 1"} ;;\n' "esac\n" "exit 0\n",
+            f'case "$*" in\n  *"git/ref/heads/main"*)\n    echo "{BASE_SHA}"; exit 0 ;;\n  *"git/refs"*)\n    echo "{{}}"; exit 0 ;;\n  *"git/ref/heads/"*)\n    {"exit 0" if branch_exists else "exit 1"} ;;\nesac\nexit 0\n',
             encoding="utf-8",
         )
         gh.chmod(gh.stat().st_mode | stat.S_IXUSR)

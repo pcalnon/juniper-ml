@@ -301,7 +301,7 @@ class TestPreflightFailureSmoke(unittest.TestCase):
 
             (conda_dir / "etc" / "profile.d").mkdir(parents=True, exist_ok=True)
             conda_sh = conda_dir / "etc" / "profile.d" / "conda.sh"
-            conda_sh.write_text("#!/usr/bin/env bash\n" "conda() { :; }\n" "export -f conda\n")
+            conda_sh.write_text("#!/usr/bin/env bash\nconda() { :; }\nexport -f conda\n")
 
             # Post-2026-05-07: JuniperCascor1 is the unified server+worker env
             # (legacy JuniperCascor deprecated). The worker binary is omitted
@@ -353,7 +353,7 @@ class TestPreflightFailureSmoke(unittest.TestCase):
 
             (conda_dir / "etc" / "profile.d").mkdir(parents=True, exist_ok=True)
             conda_sh = conda_dir / "etc" / "profile.d" / "conda.sh"
-            conda_sh.write_text("#!/usr/bin/env bash\n" "conda() { :; }\n" "export -f conda\n")
+            conda_sh.write_text("#!/usr/bin/env bash\nconda() { :; }\nexport -f conda\n")
 
             # Only JuniperData and JuniperCanopy1 exist; both cascor + worker
             # envs are absent.
@@ -397,7 +397,7 @@ class TestPreflightFailureSmoke(unittest.TestCase):
 
             (conda_dir / "etc" / "profile.d").mkdir(parents=True, exist_ok=True)
             conda_sh = conda_dir / "etc" / "profile.d" / "conda.sh"
-            conda_sh.write_text("#!/usr/bin/env bash\n" "conda() { :; }\n" "export -f conda\n")
+            conda_sh.write_text("#!/usr/bin/env bash\nconda() { :; }\nexport -f conda\n")
 
             # Stage a non-default worker env name; validate_conda_env passes
             # for it but no worker binary exists.
@@ -566,7 +566,7 @@ class TestSystemdModeBehavioral(unittest.TestCase):
         systemctl_log.write_text("")
 
         systemctl = stub_bin / "systemctl"
-        systemctl.write_text("#!/usr/bin/env bash\n" "set -euo pipefail\n" f'printf "%s\\n" "$*" >>"{systemctl_log}"\n' 'args=("$@")\n' 'if [[ "${1:-}" == "--user" ]]; then shift; fi\n' 'cmd="${1:-}"\n' 'case "${cmd}" in\n' "  start) exit 0 ;;\n" f"  is-active) exit {is_active_exit} ;;\n" "  status) exit 0 ;;\n" "  stop) exit 0 ;;\n" "  *) exit 0 ;;\n" "esac\n")
+        systemctl.write_text(f'#!/usr/bin/env bash\nset -euo pipefail\nprintf "%s\\n" "$*" >>"{systemctl_log}"\nargs=("$@")\nif [[ "${{1:-}}" == "--user" ]]; then shift; fi\ncmd="${{1:-}}"\ncase "${{cmd}}" in\n  start) exit 0 ;;\n  is-active) exit {is_active_exit} ;;\n  status) exit 0 ;;\n  stop) exit 0 ;;\n  *) exit 0 ;;\nesac\n')
         systemctl.chmod(0o755)
 
         sleep = stub_bin / "sleep"
@@ -757,7 +757,7 @@ class TestNohupModeBehavioral(unittest.TestCase):
         (conda_dir / "etc" / "profile.d").mkdir(parents=True)
         conda_sh = conda_dir / "etc" / "profile.d" / "conda.sh"
         # activate prepends the env's bin/; deactivate is a no-op.
-        conda_sh.write_text("#!/usr/bin/env bash\n" f'JUNIPER_CONDA_DIR_FOR_STUB="{conda_dir}"\n' "conda() {\n" '  case "${1:-}" in\n' "    activate)\n" '      export PATH="${JUNIPER_CONDA_DIR_FOR_STUB}/envs/${2}/bin:${PATH}"\n' '      export CONDA_DEFAULT_ENV="${2}"\n' "      ;;\n" "    deactivate) : ;;\n" "    *) : ;;\n" "  esac\n" "}\n" "export -f conda\n")
+        conda_sh.write_text(f'#!/usr/bin/env bash\nJUNIPER_CONDA_DIR_FOR_STUB="{conda_dir}"\nconda() {{\n  case "${{1:-}}" in\n    activate)\n      export PATH="${{JUNIPER_CONDA_DIR_FOR_STUB}}/envs/${{2}}/bin:${{PATH}}"\n      export CONDA_DEFAULT_ENV="${{2}}"\n      ;;\n    deactivate) : ;;\n    *) : ;;\n  esac\n}}\nexport -f conda\n')
 
         sleeper = "#!/usr/bin/env bash\nexec sleep 3600\n"
         for env_name in ("JuniperData", "JuniperCascor1", "JuniperCanopy1"):
@@ -793,7 +793,7 @@ class TestNohupModeBehavioral(unittest.TestCase):
             # the next service's health gate trips cleanup_on_failure.
             state = root / "curl_state"
             state.write_text("0")
-            curl.write_text("#!/usr/bin/env bash\n" "set -euo pipefail\n" f'state="{state}"\n' 'n="$(cat "$state")"\n' "n=$((n + 1))\n" 'printf "%s" "$n" >"$state"\n' f"if (( n >= {curl_fail_after} )); then exit 22; fi\n" "exit 0\n")
+            curl.write_text(f'#!/usr/bin/env bash\nset -euo pipefail\nstate="{state}"\nn="$(cat "$state")"\nn=$((n + 1))\nprintf "%s" "$n" >"$state"\nif (( n >= {curl_fail_after} )); then exit 22; fi\nexit 0\n')
         curl.chmod(0o755)
 
         return script_copy, conda_dir, project
@@ -1388,7 +1388,7 @@ class TestSafeCondaActivate(unittest.TestCase):
             bin_dir.mkdir()
             conda = bin_dir / "conda"
             # Mimic ADDR2LINE class: activate scripts reference unset vars.
-            conda.write_text("#!/bin/bash\n" 'if [[ "$1" == "activate" ]]; then\n' '  : "${ADDR2LINE}"\n' "fi\n")
+            conda.write_text('#!/bin/bash\nif [[ "$1" == "activate" ]]; then\n  : "${ADDR2LINE}"\nfi\n')
             conda.chmod(0o755)
             result = self._run_activate(bin_dir)
             self.assertEqual(result.returncode, 0, msg=result.stderr + result.stdout)
@@ -1407,7 +1407,7 @@ class TestSafeCondaActivate(unittest.TestCase):
             bin_dir = Path(tmp) / "bin"
             bin_dir.mkdir()
             conda = bin_dir / "conda"
-            conda.write_text("#!/bin/bash\n" 'if [[ "$1" == "activate" ]]; then\n' "  exit 1\n" "fi\n")
+            conda.write_text('#!/bin/bash\nif [[ "$1" == "activate" ]]; then\n  exit 1\nfi\n')
             conda.chmod(0o755)
             harness = "set -euo pipefail\n" f'export PATH="{bin_dir}:/usr/bin:/bin"\n' + _extract_safe_conda_activate() + "failed=0\n" + 'safe_conda_activate "JuniperCanopy1" || failed=1\n' + 'echo "failed=${failed}"\n' + "if (( failed != 1 )); then exit 2; fi\n"
             result = subprocess.run(
@@ -1467,7 +1467,7 @@ class TestSystemdCleanupLeavesNohupPidfile(unittest.TestCase):
         stub_bin = root / "path-stubs"
         stub_bin.mkdir(parents=True, exist_ok=True)
         systemctl = stub_bin / "systemctl"
-        systemctl.write_text("#!/usr/bin/env bash\n" 'if [[ "${1:-}" == "--user" ]]; then shift; fi\n' 'case "${1:-}" in\n' f"  start) exit {start_exit} ;;\n" "  *) exit 0 ;;\n" "esac\n")
+        systemctl.write_text(f'#!/usr/bin/env bash\nif [[ "${{1:-}}" == "--user" ]]; then shift; fi\ncase "${{1:-}}" in\n  start) exit {start_exit} ;;\n  *) exit 0 ;;\nesac\n')
         systemctl.chmod(0o755)
         for name in ("sleep", "curl"):
             stub = stub_bin / name

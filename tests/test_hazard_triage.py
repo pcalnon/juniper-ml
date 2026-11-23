@@ -153,7 +153,7 @@ class PositiveControlTest(unittest.TestCase):
         self.assertGreaterEqual(
             len(hazard_hits),
             3,
-            f"Hazards section produced {len(hazard_hits)} candidates (need >= 3); " "a regression to per-line scoring reprints the documented 0-of-4 vacuous pass",
+            f"Hazards section produced {len(hazard_hits)} candidates (need >= 3); a regression to per-line scoring reprints the documented 0-of-4 vacuous pass",
         )
         blob = " ".join(row[3] for row in hazard_hits)
         self.assertIn("KILL_WORKERS", blob)
