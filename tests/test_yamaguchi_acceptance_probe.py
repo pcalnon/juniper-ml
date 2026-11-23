@@ -313,12 +313,6 @@ class ExportTest(unittest.TestCase):
         self.assertIn("Repeat='1W'", probe.judge_ac2(repeat).summary)
         self.assertIn("time of day is 13:00:01", probe.judge_ac2(moved).summary)
 
-    # def test_ac2_tolerates_what_the_ui_changes_harmlessly(self) -> None:
-    #     doc = export(TargetURL=probe.EXPECTED_TARGET, extra={"blocksize": "1mb"})
-    #     doc["Schedule"]["Time"] = "2026-09-18T13:00:00Z"  # the B3 save moved the anchor DATE; the time of day is what runs
-    #     self.assertIn("Repeat='1W'", probe.judge_ac2(repeat).summary)
-    #     self.assertIn("time of day is 13:00:01", probe.judge_ac2(moved).summary)
-
     def test_ac2_tolerates_what_the_ui_changes_harmlessly(self) -> None:
         doc = export(TargetURL=probe.EXPECTED_TARGET, extra={"blocksize": "1mb"})
         doc["Schedule"]["Time"] = "2026-09-18T14:00:00Z"  # the B3 save moved the anchor DATE; the time of day is what runs
