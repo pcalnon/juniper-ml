@@ -640,21 +640,13 @@ def classify_publish_run(run: "dict | None") -> str:
     Returns: ``PENDING_PYPI_APPROVAL`` (TestPyPI verify passed; the pypi deploy job is parked at the env
     gate -- SUCCESS for the train), ``HALT_BUILD`` (the build job failed: this attempt published nothing),
     ``HALT_TESTPYPI`` (the TestPyPI job failed before Gate 2), ``HALT_PUBLISH`` (the run failed otherwise),
-<<<<<<< HEAD
     ``RELEASED`` (both gates done -- Overtoad already approved), ``IN_PROGRESS`` (still running -> keep
-=======
-    ``RELEASED`` (both gates done -- owner already approved), ``IN_PROGRESS`` (still running -> keep
->>>>>>> 6541b2cc (fix(release-train): a failed build files an issue, and the monitor sees a republish dispatch (#2592))
     polling), ``NOT_FOUND`` (no run yet).
 
     A publisher with a separate build job fails a bad build in ``Build and Validate``, which leaves the
     TestPyPI job SKIPPED rather than failed. Before ``HALT_BUILD`` that run read as ``HALT_PUBLISH`` (a note,
     no issue), where the same failure inside a TestPyPI job that built for itself had filed one. A republish
-<<<<<<< HEAD
     dispatch run (the Overtoad's recovery ladder, 2026-11-15) skips the build and both
-=======
-    dispatch run (the owner's recovery ladder, 2026-11-15) skips the build and both
->>>>>>> 6541b2cc (fix(release-train): a failed build files an issue, and the monitor sees a republish dispatch (#2592))
     publish jobs and runs ``Republish the tested files (dispatch only)``, whose name holds neither "testpypi"
     nor "pypi": it classifies by the run's own status (waiting -> PENDING_PYPI_APPROVAL, success -> RELEASED,
     failure -> HALT_PUBLISH)."""
@@ -859,11 +851,7 @@ def make_live_sources(Overtoad: str, repo_root: Path, ecosystem_root: Path, *, a
         # other Releases made since (juniper-ml fires seven publishers per Release; a repo-wide window of 20 runs held
         # fewer than three Releases). select_publish_run drops the image publisher's run on the same Release.
         fields = "databaseId,headBranch,displayTitle,status,conclusion,workflowDatabaseId,workflowName,startedAt"
-<<<<<<< HEAD
         out = _cgh(["run", "list", "--repo", f"{Overtoad}/{repo}", "--event", "release", "--json", fields, "--limit", "20"])
-=======
-        out = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--event", "release", "--branch", tag, "--json", fields, "--limit", "20"])
->>>>>>> 6541b2cc (fix(release-train): a failed build files an issue, and the monitor sees a republish dispatch (#2592))
         runs = json.loads(out) if out else []
         match = select_publish_run(runs, tag)
         if match is None:
@@ -875,17 +863,10 @@ def make_live_sources(Overtoad: str, repo_root: Path, ecosystem_root: Path, *, a
         # set, then the one whose latest attempt started last, so a release run re-run after a failed dispatch is read.
         workflow_id = match.get("workflowDatabaseId")
         if workflow_id:
-<<<<<<< HEAD
             out_d = _cgh(["run", "list", "--repo", f"{Overtoad}/{repo}", "--event", "workflow_dispatch", "--workflow", str(workflow_id), "--branch", tag, "--json", fields, "--limit", "20"])
             dispatched = [r for r in (json.loads(out_d) if out_d else []) if (r.get("headBranch") or "") == tag and r.get("workflowDatabaseId") == workflow_id]
             match = select_publish_run([match, *dispatched], tag) or match
         out2 = _cgh(["run", "view", str(match["databaseId"]), "--repo", f"{Overtoad}/{repo}", "--json", "status,conclusion,jobs"])
-=======
-            out_d = _cgh(["run", "list", "--repo", f"{owner}/{repo}", "--event", "workflow_dispatch", "--workflow", str(workflow_id), "--branch", tag, "--json", fields, "--limit", "20"])
-            dispatched = [r for r in (json.loads(out_d) if out_d else []) if (r.get("headBranch") or "") == tag and r.get("workflowDatabaseId") == workflow_id]
-            match = select_publish_run([match, *dispatched], tag) or match
-        out2 = _cgh(["run", "view", str(match["databaseId"]), "--repo", f"{owner}/{repo}", "--json", "status,conclusion,jobs"])
->>>>>>> 6541b2cc (fix(release-train): a failed build files an issue, and the monitor sees a republish dispatch (#2592))
         data = json.loads(out2) if out2 else {}
         return {
             "status": data.get("status"),

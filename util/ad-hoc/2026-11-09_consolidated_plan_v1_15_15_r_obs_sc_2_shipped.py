@@ -70,7 +70,6 @@ _STATUS_NEW = (
     "  - v1.15.15 (2026-11-09) records R-OBS-SC-2 from P3-07 to the second lock round: P3-07 merged after three validation rounds (ml#2523), ml#2514's `Retry-After` fix carried (ml#2524), "
     "observability 0.4.2 and service-core 0.7.2 cut on 2026-11-08 and published on 2026-11-09 when the Overtoad approved both `pypi` gates, "
     "and the second lock round merged in all four consumers (data#525, cascor#748, canopy#806, recurrence#233). Like v1.15.0, no round checks it.\n"
-    "    - It records the Overtoad's rulings of 2026-11-08 and 2026-11-09, and what R-OBS-SC-2 leaves: query strings, Sentry Logs and exception values wait for 0.4.3 (R-OBS-SC-3); "
     "no consumer has cut a release from the new locks; and the trio's environments differ (Overview; §2; XC-SENTRY; XC-P12; §4; §5; §6; §7; §8; §9; §12; Appendix A).\n"
     "  - Planning only: this plan changes no code,"
 )
@@ -156,7 +155,6 @@ _CASCOR_OLD = "and the second follows R-OBS-SC-2 and waits on neither"
 _CASCOR_NEW = "and the second as cascor#748 (2026-11-09, both locks), which waited on neither"
 
 _CASCOR_ANCHOR = "Whether a fix-forward is owed for it is the Overtoad's (mid-wave sitting).\n\n**Canopy**"
-_CASCOR_BULLET = "Whether a fix-forward is owed for it is the Overtoad's (mid-wave sitting).\n" "- cascor 0.12.0 and 0.13.0 shipped on locks that pin observability 0.4.1 and service-core 0.7.1, so a cascor image carries R-OBS-SC-2 only from a later cascor release; " "whether a fix-forward is owed stays the Overtoad's (v1.15.15).\n\n" "**Canopy**"
 
 _CANOPY_OLD = "(the first merged as canopy#739; the second follows R-OBS-SC-2)"
 _CANOPY_NEW = "(the first merged as canopy#739; the second as canopy#806, 2026-11-09)"

@@ -141,10 +141,10 @@ def sc_changelog(carrier: str, main: str) -> str:
         raise SystemExit("REFUSED: main's service-core [Unreleased] is not a lone ### Fixed block any more")
     if [h for h in re.findall(r"^### (\w+)$", c_body, re.M)] != ["Added", "Changed", "Fixed"]:
         raise SystemExit("REFUSED: the carrier's service-core [Unreleased] is not Added / Changed / Fixed")
-    added_changed = c_body[c_body.index("### Added\n"):c_body.index("### Fixed\n")]
-    carrier_fixed = c_body[c_body.index("### Fixed\n") + len("### Fixed\n"):]
-    main_head = m_body[:m_body.index("### Fixed\n")]
-    main_fixed = m_body[m_body.index("### Fixed\n") + len("### Fixed\n"):]
+    added_changed = c_body[c_body.index("### Added\n") : c_body.index("### Fixed\n")]
+    carrier_fixed = c_body[c_body.index("### Fixed\n") + len("### Fixed\n") :]
+    main_head = m_body[: m_body.index("### Fixed\n")]
+    main_fixed = m_body[m_body.index("### Fixed\n") + len("### Fixed\n") :]
     merged_body = main_head + added_changed + "### Fixed\n" + main_fixed.rstrip("\n") + "\n" + carrier_fixed
     return main[:m_start] + merged_body + main[m_end:]
 

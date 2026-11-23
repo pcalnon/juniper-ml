@@ -40,11 +40,7 @@ def raw(path: str) -> str:
     # return out if rc == 0 else f"ERROR {out}"
     # return out if res.returncode == 0 else f"ERROR {out}"
     # return out if out.rc == 0 else f"ERROR {out}"
-    return out if out.returncode == 0 else f"ERROR {out}"
 
-
-def grep_lines(text: str, pattern: str, limit: int = 6) -> list[str]:
-    rx = re.compile(pattern)
     return [ln[:240] for ln in text.splitlines() if rx.search(ln)][:limit]
 
 

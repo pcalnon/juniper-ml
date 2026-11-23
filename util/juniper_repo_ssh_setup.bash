@@ -21,7 +21,7 @@
 #      evaluated with `ssh -F <temp> -G` (so a file ssh cannot parse, or one whose earlier content
 #      overrides the block, is never installed), and then moved over the config with `mv`. An existing
 #      block is never touched; it is compared with the canonical form, and a difference is shown as a diff.
-#   3. Owner step. It prints the GitHub web-UI step: URL, title, write access, fingerprint. Deploy keys
+#   3. The Overtoad step. It prints the GitHub web-UI step: URL, title, write access, fingerprint. Deploy keys
 #      go in through the web UI, never `gh repo deploy-key add`. gh ties the keys it adds to its token,
 #      and they are deleted when that token is revoked (plan D2). The fixed title is what makes the
 #      lost-device runbook scriptable (plan §13).
@@ -459,7 +459,7 @@ if [[ "$NEED_BLOCK" -eq 1 ]]; then
 fi
 
 echo
-echo "Owner step: register the key as a deploy key in the GitHub web UI (this script does not)."
+echo "The Overtoad step: register the key as a deploy key in the GitHub web UI (this script does not)."
 echo "  1. Open   https://github.com/${OWNER}/${FULL}/settings/keys/new"
 echo "  2. Title  ${TITLE}"
 echo "  3. Key    paste the contents of ${PUB}"

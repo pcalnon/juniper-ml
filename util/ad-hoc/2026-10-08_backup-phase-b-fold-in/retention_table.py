@@ -38,10 +38,6 @@ only how many. And a partial fileset older than every frame is deleted with the 
 and it works in UTC where Duplicati compares its own `DateTime.Now`. For both reasons
 util/ad-hoc/2026-11-11_phase_d_finish.py copies EVERY dlist aside and uses this port for a prediction only.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
 Amendment, 2026-11-14 (the owner's ruling on the Phase D sitting's question Q7): the policy to restore is now
 `2W:U,6M:1W,2Y:1M,5Y:2M`, so the two-week frame keeps every fileset. An interval of `U` (any case) is Duplicati's
 keep-all: RetentionPolicyValue.CreateFromString makes it zero (Options.cs 2059-2061 at the tag), IsKeepAllVersions()
@@ -51,11 +47,6 @@ need a finite frame. NEW_POLICY stays the 2026-10-08 string. For the nine the tw
 a frame takes depends only on their dates, not on what a smaller frame kept, and the nine left the two-week frame on
 2026-10-02.
 
-<<<<<<< HEAD
-=======
->>>>>>> 76488449 (feat(backup): Phase D step 14 as tools -- an acceptance probe on a daily timer and root finish verbs, with three wired suites (#2548))
-=======
->>>>>>> e8c97956 (feat(backup): retention keeps every fileset of the last two weeks -- the owner's Q7 ruling for Phase D step 14 (#2569))
 Usage:  retention_table.py [--policy P] [--from YYYY-MM-DD] [--to YYYY-MM-DD] [--recovered-days N]
         Prints one row per run of dates with the same outcome for the nine. --check reproduces R3B's
         published table for the OLD policy and exits non-zero on a mismatch.

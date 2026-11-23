@@ -7,11 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — investigation (test-efficacy evidence)
-<<<<<<< HEAD
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
-=======
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
->>>>>>> f85fbc8b (fix(service-core): a /ws/training resume_ok now misses nothing before the socket goes live (new promote_to_active replayed_through) (#2534))
 Related: juniper-service-core/juniper_service_core/websocket/manager.py,
          juniper-service-core/juniper_service_core/websocket/training_stream.py,
          juniper-service-core/tests/test_websocket_resume_continuity.py,
