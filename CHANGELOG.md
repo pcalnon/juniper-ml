@@ -9,6 +9,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`util/run_tests.py` runs any subset of juniper-ml's tests locally, with the commands CI runs.** There was no local
+  wrapper: ci.yml's regression step is a hand-maintained list of 261 `python3 -m unittest` commands under `bash -e`,
+  each in-repo package has its own pytest workflow, and at least ten one-off runners in `util/ad-hoc/` re-ran those
+  lists by hand.
+  - It reads the lists from the workflows on every run:
+    - ci.yml's `Run Python regression tests` is the `unittest` lane: one job per suite, plus the step's other commands;
+    - its `Run bash regression tests` is the `bash` lane;
+    - the `test` job of every `ci-<package>.yml` is one lane per package: pytest with its coverage floor, then the
+      per-file gate.
+  - Selectors: `all` (the default), `regression`, `unittest`, `bash`, `packages`, a package, a suite by any spelling,
+    globs, `<suite>::<Class>::<test>`, a package test path or node id, `--changed` (the jobs a change touches, against
+    a merge base) and `--failed` (the last run's failures). Options include `-k`, `-x`, `--list`, `--dry-run`,
+    `--stream` and `--quiet`.
+  - How it runs them:
+    - It keeps going past failures, runs `-j auto` jobs at once (half the CPUs, at most 8), and re-runs a failed job
+      alone (`RERUN-PASS`).
+    - Each step runs in its own process group, which is killed on a timeout (900 s by default), on Ctrl-C or SIGTERM,
+      and when the step leaves processes behind.
+    - Children get a D-Bus guard (the juniper-ml#2559 class), no `DISPLAY` or `PYTHONPATH`, and a `TMPDIR` that is
+      never the system temp directory.
+  - Package lanes run with `PYTHONPATH` naming this checkout's editable directories, and the preflight refuses a lane
+    that would still import from elsewhere.
+    - Why: in `JuniperCascor1` on 2026-11-23, four of the six packages imported from releases in site-packages and two
+      from the primary checkout's editable installs, so a plain pytest in a worktree tested other code.
+    - Coverage files go to the run directory, because `coverage.json` is not gitignored.
+    - It installs nothing; the preflight prints the `pip install` command for whatever is missing.
+  - Records: each step's log, `summary.json` (schema 1) and `summary.txt` under the primary checkout's
+    `tmp/run-tests/<checkout name>/<UTC stamp>/`. Exit codes: 0 passed, 1 failed, 2 usage, 3 unavailable, 5 no test ran,
+    130 interrupted.
+  - First full run, 2026-11-23: 269 jobs in 5m32s at `-j 8`, with five local-only failures.
+    - Four come from `TMPDIR` sitting inside a checkout; a `--tmpdir` outside the tree made them pass.
+    - `tests/test_a0_restore_scripts.py`'s `install` stub refuses every `/home/` path, so it cannot pass on this host.
+    - docs/REFERENCE.md § Test Suite Reference, "Running tests locally", records all five; it is the operator
+      documentation (docs version 0.6.79).
+  - `tests/test_run_tests.py` is wired into ci.yml (262 suites). It checks that the real workflows parse the way CI runs
+    them, and drives the script end to end on a fake checkout. Mutation-checked: eight deliberate breaks of the runner
+    each fail their test.
+  - `tests/test_release_train_registry.py`'s `pyproject.toml` walk now skips every `tmp/` directory, with a negative
+    control.
+    - Section 11 of `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md` listed it as owed
+      under the counting-scope ruling.
+    - The second full run (270 jobs, 6m20s) caught it: run alongside the new suite, it counted that suite's fixture
+      package and failed, then passed alone.
+    - A full-tree copy kept in the primary's `tmp/` broke it the same way.
+
 - **Local Python-version checks: `util/python_version_check.py` runs a repo's own tests under Python 3.15 (or any
   listed version) in a venv kept at a fixed path, and reports without blocking.** The local half of phase 1 of the
   Python 3.15 migration (the owner's request and ruling of 2026-11-14; juniper-ml#2567 was the CI half).
