@@ -1708,6 +1708,15 @@ jobs:
           # installs exactly the requirements of this job's "Install test dependencies" step. Negative controls for each
           # violating shape. PyYAML only.
           python3 -m unittest -v tests/test_python_version_matrix_drift.py
+          # tests/test_run_tests.py: util/run_tests.py, the local test runner, which reads this step, the bash step
+          # below and every ci-<pkg>.yml test job on each run. Against the real workflows it pins that every suite
+          # invoked here is a job in this order, that each other command of both steps is a job, and that each
+          # package lane has a pytest step, a coverage gate and a PYTHONPATH inside the checkout, so a workflow
+          # change the runner cannot read fails in the PR that makes it. A fake checkout under the repo's tmp/
+          # (the runner refuses the system temp directory as a log root) runs it end to end: selection, timeouts
+          # and process-group kills, the parallel re-run, -k, --failed, --changed, the child environment, the
+          # coverage-path rewrite and the exit codes. docs/REFERENCE.md must document every option. PyYAML only.
+          python3 -m unittest -v tests/test_run_tests.py
 
       - name: Run bash regression tests
         id: run-bash-regression-tests
