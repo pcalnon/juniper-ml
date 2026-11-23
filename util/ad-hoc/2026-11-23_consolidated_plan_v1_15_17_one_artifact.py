@@ -94,8 +94,8 @@ _STATUS_NEW = (
     "juniper-cascor#763 and #767 fixed cascor's three on 2026-11-15, and seven ports and a release-train fix (ml#2592) merged by 2026-11-16. No Release has run them yet. Like v1.15.0, no round checks it.\n"
     "    - It records the {W}'s rulings of 2026-11-15 (the directive, the fix's scope and the recovery ladder) and of 2026-11-16 (the template sweep's two questions), the audit, each PR's review, "
     "the identity check, the findings, and the sweep's 27 items with their dispositions.\n"
-    "    - On 2026-11-23 the sweep's order was set around the PRs that rename \"owner\" to \"Overtoad\": juniper-cascor#772 first, then the cascor sweep PR, then the ports. Three client rename PRs merged at 12:30Z, touching no publish file. "
-    "The rename's substitution had also rewritten files on disk in sibling worktrees; the arc's 26 uncommitted scripts were restored, proved against their sha256 manifests, and land with this version.\n"
+    "    - On 2026-11-23 the sweep's order was set around the PRs that rename \"owner\" to \"Overtoad\": juniper-cascor#772 first, then the cascor sweep PR, then the ports. Three client rename PRs merged at 12:30Z, touching no publish file; recurrence's, #237, had already rewritten comments in its three publishers on 2026-11-20.\n"
+    "    - The rename's substitution had also rewritten files on disk in sibling worktrees; the arc's 26 uncommitted scripts were restored, proved against their sha256 manifests, and land with this version.\n"
     "    - `docs/REFERENCE.md` moves to 0.6.78 for ml#2592's edit, which had no version row (SWEEP item 18). What stays with the {W} is in " + _ONOTE + " and in §6's mid-wave sitting.\n"
     "  - Planning only: this plan changes no code,"
 )
@@ -134,7 +134,8 @@ _N_RULINGS = (
     "Past that, cut a new patch version. skip-existing and the dispatch-from-tag recovery are removed, and the publish procedure doc says so. Simplest, and every upload is the tested build.\"\n"
     "    2. \"Dispatch that republishes TestPyPI's files\": \"Keep a dispatch from the tag, but instead of building, it downloads TestPyPI's exact files, checks them against TestPyPI's sha256, and uploads those to PyPI. "
     "Recovery then works past 30 days without a new version, at the cost of more workflow code to write and test in both repos.\"\n"
-    "    - The answer, typed rather than chosen: " + _LADDER + ". The template calls these rung 1 (the republish dispatch), rung 2 (\"Re-run failed jobs\") and rung 3 (a new patch version).\n"
+    "    - The answer, typed rather than chosen: " + _LADDER + ". cascor's `docs/ci_cd/MANUAL.md` calls these rung 1 (the republish dispatch), rung 2 (\"Re-run failed jobs\") and rung 3 (a new patch version); "
+    "the workflows call the republish job step 1 of the recovery ladder (cascor's `publish.yml:21-22` and `:524`).\n"
 )
 _N_CASCOR = (
     "- **juniper-cascor#763** (opened 06:11:13Z; merged 11:26:51Z as `a1b0409d`, head `4d69a4c1`, under the {W}'s account, with its first commit only), "
@@ -175,8 +176,9 @@ _N_PRS = (
     "the pinned template digests named as cascor `675884888f5a`'s, a merge-order section, and doc nits.\n"
     "  - juniper-cascor-client#199 (08:31:25Z; `217e9a68`; `fe962b7b`), juniper-data-client#264 (08:36:20Z; `47f5df62`; `61d6b44b`) and juniper-cascor-worker#232 (08:49:11Z; `efb4a2c7`; `a0b5e363`), under one review of the three. "
     "No BLOCKER or MAJOR; the fixes: rung 1 applies only after a TestPyPI job that succeeded or failed on index lag alone, a `TestExactly` class pinning each job's steps, the install check's script and both uploads' inputs, and each doc's version and date.\n"
-    "  - juniper-ml#2593, the seven publishers (08:47:08Z; `9d9ec797`; `67e9aab1`). Its review's MAJOR, the ladder's precondition (a real install-check failure is a new patch version, never rung 1), and its MINORs are fixed in `acc5c262`: "
-    "the runbook's responses, the cheatsheet's retry row, and tests pinning each job's steps, the 90-day retention and the \"… to PyPI\" names. `docs/REFERENCE.md` became 0.6.77.\n"
+    "  - juniper-ml#2593, the seven publishers (08:47:08Z; `9d9ec797`; `67e9aab1`). Its review found 1 MAJOR, 4 MINORs and 2 NITs. `acc5c262` fixes the MAJOR, the ladder's precondition (a real install-check failure is a new patch version, never rung 1), "
+    "three MINORs and the NITs: the runbook's responses, the cheatsheet's retry row, and tests pinning each job's steps, the 90-day retention and the \"… to PyPI\" names. `docs/REFERENCE.md` became 0.6.77.\n"
+    "    - The fourth MINOR, a sub-package republish that accepts the meta-package's `v<version>` tag, is template text that #2593 deferred to the sweep (its body's \"Known and deferred\"; SWEEP items 3 and 22).\n"
     "  - Session `d67643b8` merged recurrence#236 and ml#2592 with `util/safe_merge.py` (ml#2592 through the auto-merge net it armed at 23:22:09Z). "
     "The other six merged under the {W}'s account, each at the head carrying its review's fixes, the four that add a build job (data, data-client, cascor-client, cascor-worker) after ml#2592, as SWEEP item 16 required.\n"
     "    - GitHub records auto-merge armed on four of the six (" + _MERGES + ") and none on canopy#823 or data#543, which were merged directly. "
@@ -184,9 +186,10 @@ _N_PRS = (
     "    - ml#2593's and cascor-worker#232's heads are update-branch merges on top of their reviewed `acc5c262` and `41933886`.\n"
 )
 _N_IDENTITY = (
-    "- **The identity check** (`util/ad-hoc/2026-11-15_publish_port_template_identity.py`, which lands with v1.15.17): each of the 15 ported workflows matches cascor `main`'s `publish.yml`, the template. "
+    "- **The identity check** (`util/ad-hoc/2026-11-15_publish_port_template_identity.py`, which lands with v1.15.17): each of the 15 ported workflows matches cascor `main`'s `publish.yml`, the template, as parsed YAML. "
     "\"15 of 15 pass\" on 2026-11-16 at 15:29:40Z (session `85756bf1`; its log is `tmp/ports/verify_all_mains.log` in `.claude/worktrees/sparkling-percolating-meadow`), "
     "and on 2026-11-23 at 11:47:45Z (session `e71d3e`) and again at 12:16:54Z, with cascor `main` at `802399ab`.\n"
+    "  - Comments drop out of parsed YAML. That is why 15 of 15 still pass while two template comment lines in each of recurrence's publishers read \"Overtoad\" where cascor's read \"owner\" (juniper-recurrence#237, below).\n"
 )
 _N_FIND = (
     "- **Findings**, open unless a line says otherwise:\n"
@@ -196,7 +199,7 @@ _N_FIND = (
     "    - juniper-cascor, every release (11, from 0.3.17 to 0.14.0), its 0.13.0 and 0.14.0 wheels `eda26e26…` and `b70f3d39…` on PyPI against `f5dbc1b6…` and `c5c9a5dc…` on TestPyPI; juniper-canopy 0.3.0 only (0.5.0 to 0.10.0 match);\n"
     "    - juniper-ci-tools 0.9.1, `1dc8e01e…` on PyPI against `ade363e8…` on TestPyPI, because run 38045867684's attempt 2 re-ran its build on 2026-10-21 after attempt 1's PyPI job failed; "
     "and juniper-service-core 0.3.0, which the handoffs do not name (found 2026-11-23).\n"
-    "    - All 26 recurrence releases match, as do juniper-ml's other packages, cascor's model and protocol packages, canopy's other seven, ci-tools' other ten and service-core's other nine. "
+    "    - All 26 recurrence releases match (juniper-recurrence 11, juniper-recurrence-model 11, juniper-recurrence-client 4), as do juniper-ml's other packages, cascor's model and protocol packages, canopy's other seven, ci-tools' other ten and service-core's other nine. "
     "An index never takes a second file under a name it holds, so the differing releases keep their files; no release has been cut since (canopy `v0.10.0`, 2026-11-15 01:41:30Z, is the newest).\n"
     "  - **Fixed**: before ml#2592 the monitor could read `Publish Container Image`'s run (above).\n"
     "  - **Provenance** (re-read 2026-11-23): canopy 0.10.0's TestPyPI files carry `environment: null` where its PyPI files carry `pypi` (SWEEP item 13). "
@@ -216,8 +219,12 @@ _N_1116 = (
 )
 _N_PROBES = (
     "- **Two probes of 2026-11-23** (session `e71d3e`):\n"
-    "  - Whether `GET actions/runs/{id}/jobs?filter=latest` lists the jobs that a \"Re-run failed jobs\" attempt carried over is UNVERIFIED: `util/ad-hoc/2026-11-23_jobs_filter_latest_after_rerun_failed_probe.py` "
-    "found no run with a carried job among the 12 re-run runs its two logs read (2 in juniper-cascor, 10 in juniper-ml). So the sweep's gate for ruling 1 is to read `filter=all` and take each job name's latest attempt, which holds under either behaviour.\n"
+    "  - `GET actions/runs/{id}/jobs?filter=latest` does list the jobs that a \"Re-run failed jobs\" attempt carried over: GitHub copies them into the new attempt. "
+    "juniper-canopy run 43135960676 (CI/CD Pipeline, `pull_request`, created 2026-11-12 01:39:08Z), re-run that way to attempt 2, lists 19 job records in each attempt, 19 under `filter=latest` and 38 under `filter=all`.\n"
+    "    - Twelve of attempt 2's records are copies of attempt-1 jobs (a new id, `run_attempt` 2, attempt 1's start time and conclusion); the two failed jobs (Quality Gate, Unit Tests on Python 3.13) and the dependents skipped in attempt 1 re-ran. "
+    "The sweep's workflow review of 2026-11-23 found it; `tmp/arc/attempt_compare.py juniper-canopy 43135960676` in `ethereal-munching-peacock` shows it (re-run here on 2026-11-23).\n"
+    "    - So `filter=latest` returns the whole latest set, and ruling 1's rule, each job name's latest attempt over `filter=all`, is equivalent and right. "
+    "`util/ad-hoc/2026-11-23_jobs_filter_latest_after_rerun_failed_probe.py` had found no such run among the 12 re-run runs its two logs read (2 in juniper-cascor, 10 in juniper-ml).\n"
     "  - Ruling 2's claim holds: `classify_publish_run` (`util/release_train/ceremony.py:637`) reads a failed `Verify the TestPyPI install` as `HALT_TESTPYPI`, a running one as `IN_PROGRESS`, "
     "and both TestPyPI-named jobs green with PyPI parked as `PENDING_PYPI_APPROVAL`: 6 of 6 cases of `util/ad-hoc/2026-11-23_ceremony_install_job_simulation.py`, on `main` at `81b8eaf7`.\n"
     "    - The job's name must keep \"TestPyPI\": named with neither \"TestPyPI\" nor \"PyPI\", the same cases read a failed install check as `HALT_PUBLISH` and a running one as `PENDING_PYPI_APPROVAL` (2 of 6 fail).\n"
@@ -232,13 +239,16 @@ _N_SWEEP = (
 )
 _N_RENAME = (
     "- **2026-11-23: the rename and the sweep's order.**\n"
-    "  - Eight PRs that rename \"owner\" to \"Overtoad\" in the publishing repositories were open at 12:03Z: juniper-ml#2605 and #2606, juniper-cascor#772, juniper-canopy#830, juniper-data#547, juniper-data-client#267, "
-    "juniper-cascor-client#201 and juniper-cascor-worker#234. A ninth, juniper-harcot#28, is outside them. The rename-repair session (worktree `crispy-forging-falcon`, [5da5c3]) repairs them.\n"
+    "  - Eleven PRs rename \"owner\" to \"Overtoad\". Two merged on 2026-11-20: juniper-recurrence#237 (22:31:29Z, `93a28202`) and juniper-deploy#281 (22:43:41Z, `552756a1`), which touched no publish file.\n"
+    "    - #237 rewrote three comment lines in each of recurrence's three publish workflows, two of them inside template steps (`publish-recurrence-app.yml:204` and `:598` now read \"Overtoad\" where cascor's read \"owner\"), "
+    "and the docstring of `juniper-recurrence/tests/test_publish_one_artifact.py`.\n"
+    "  - Eight were open at 12:03Z on 2026-11-23: juniper-ml#2605 and #2606, juniper-cascor#772, juniper-canopy#830, juniper-data#547, juniper-data-client#267, juniper-cascor-client#201 and juniper-cascor-worker#234. "
+    "The eleventh, juniper-harcot#28, is open outside the publishing repositories. The rename-repair session (worktree `crispy-forging-falcon`, [5da5c3]) repairs the open ones.\n"
     "  - Its dialog (transcript `0f9a729e`, asked 11:39:29Z, answered 11:46:13Z): \"Template\", **\"Propagate via cascor re-pin\"**: \"Merge cascor#772 first, then update each client's pinned commit and SHA constants to the new template. "
     "Ordered merges are required.\" And \"Records\", **\"Revert edits to records (Recommended)\"**: \"Records keep their original text; the rename applies only to living docs, code comments and config. "
     "This greens harcot's tests and the archive guard without waivers.\"\n"
     "    - The same dialog chose \"Fix #2606 only\" for juniper-ml's two rename PRs, and, on a lint question, \"Merge the literals (Recommended)\" for flake8-bugbear 26.11.22's new rule B914.\n"
-    "    - Its fifth question, \"Symlinks\" (asked 12:26:19Z), was unanswered at 12:58Z: how cascor#772, data#547 and canopy#830, which turned symlinks into regular files, should land, since GitHub's signed-commit API cannot write a symlink. "
+    "    - Its fifth question, \"Symlinks\" (asked 12:26:19Z), was unanswered at 13:53Z: how cascor#772, data#547 and canopy#830, which turned symlinks into regular files, should land, since GitHub's signed-commit API cannot write a symlink. "
     "Its answer gates cascor#772.\n"
     "  - The agreed order: juniper-cascor#772 merges first, and the {W} merges it; then the cascor sweep PR, built on cascor `main` after #772; then the ports, one PR per repository.\n"
     "    - Three client rename PRs merged at 12:30Z by the auto-merge armed on them on 2026-11-20: juniper-data-client#267 (12:30:10Z, `246b3a4d`), juniper-cascor-client#201 (12:30:16Z, `a17109c2`) "
@@ -256,7 +266,7 @@ _N_NEXT = (
     "- **What remains**:\n"
     "  - the {W}'s answer to the rename-repair session's \"Symlinks\" question, which gates juniper-cascor#772;\n"
     "  - the cascor sweep PR, built and reviewed locally while juniper-cascor#772 waits, and opened once #772 merges;\n"
-    "  - the ports, one PR per repository, each moving its pinned template digests;\n"
+    "  - the ports, one PR per repository; the five that pin the template blocks' digests (data, data-client, cascor-client, cascor-worker and juniper-ml) move them, and canopy and recurrence pin none;\n"
     "  - plan v1.15.18, which records them;\n"
     "  - with the {W}: the juniper-deploy stack's restart, the trio's environment upgrade and juniper-deploy's `juniper-recurrence:0.8.0` (`docker-compose.yml:598`, still there on deploy `main` on 2026-11-23), "
     "which " + _HO_LANDED + " lists as still open, and the trusted-publisher check, which it lists as unverified (above; §6, mid-wave sitting).\n"
@@ -284,10 +294,13 @@ _VALIDATION_NEW = (
     + "  - v1.15.17 is a record of the one-artifact publish (2026-11-15 to 2026-11-23). No round checks it ({W} ruling 2026-10-24). "
     "Its rulings are dated from three sessions' transcripts, `b9dfa450`, `85756bf1` and `0f9a729e` (session `crispy-forging-falcon`), each question read with its options, and the directive from `b9dfa450`'s.\n"
     "    - Its facts were re-read on 2026-11-23: from `gh`, the PRs' states, merge and head commits, auto-merge events and bodies, the Releases, and run 38045867684's jobs; "
-    "from PyPI's and TestPyPI's JSON, every PyPI release of the 18 publishers' packages, and two releases' provenance; and the logs and files it names.\n"
+    "from PyPI's and TestPyPI's JSON, every PyPI release of the 18 publishers' packages; six releases' provenance, canopy 0.10.0's and cascor 0.14.0's at 12:09Z, "
+    "and juniper-data 0.17.1's, juniper-ml 0.11.5's, juniper-recurrence 0.8.1's and juniper-observability 0.4.2's at 12:57Z; and the logs and files it names.\n"
     "    - The audit and the identity check were re-run on every `main`, and the simulation on `main` at `81b8eaf7`. Their outputs are kept in " + _EVIDENCE + ".\n"
     "    - An independent fact-check (an Opus agent of this record's session) read the draft before its PR: 1 MAJOR (three rename PRs merged at 12:30Z, after the draft's read), 8 MINORs and 7 NITs, no BLOCKER. "
     "Each was re-checked at its source and applied; none is declined. Its report and scripts are kept in " + _EVIDENCE + " too.\n"
+    "    - A second independent fact-check, of ml#2610's text, found 1 MAJOR (the rename census missed juniper-recurrence#237 and juniper-deploy#281), 3 MINORs and 2 NITs, and the sweep's workflow review settled `filter=latest`. "
+    "Each was re-checked at its source and applied in ml#2610's second commit.\n"
 )
 
 _SCRIPTS_OLD = "    - and with v1.15.16's, `2026-11-15_consolidated_plan_v1_15_16_r_obs_sc_2_followups.py` (the writer)"
