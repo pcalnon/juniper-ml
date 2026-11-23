@@ -468,6 +468,7 @@ jobs:
           python3 -m unittest -v tests/test_subpackage_ci_workflows.py
           python3 -m unittest -v tests/test_model_core_drift.py
           python3 -m unittest -v tests/test_service_core_drift.py
+          python3 -m unittest -v tests/test_ws_resume_answer_table_drift.py
           python3 -m unittest -v tests/test_pyproject_extras.py
           python3 -m unittest -v tests/test_template_library_drift.py
           python3 -m unittest -v tests/test_template_selection.py
