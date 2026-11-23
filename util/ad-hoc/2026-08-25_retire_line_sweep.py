@@ -10,7 +10,7 @@ Status: ad-hoc — one-off (retention-policy sweep)
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/README.md Lifecycle table; the 2026-08-24 determinism arc's close-out report
 
-Owner decision 2026-08-25: util/ad-hoc scripts are retained as the provenance of how
+The Overtoad decision 2026-08-25: util/ad-hoc scripts are retained as the provenance of how
 evidence, migrations, and one-off analyses were produced — no script carries a retirement
 deadline. This sweep rewrites each existing `Retire when: <condition>` line, in place, to:
 

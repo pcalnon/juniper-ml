@@ -83,7 +83,7 @@ def main() -> int:
                     + " was only RUN here, as the check that a proposal stays green"
                 ],
                 "outcome": "not-carried",
-                "reason": "Owner ruling 'Carry + extend propose.py': this carrier is the propose.py extension that keeps proposals green under #2507's tests; it carries none of the draft's content.",
+                "reason": "The Overtoad ruling 'Carry + extend propose.py': this carrier is the propose.py extension that keeps proposals green under #2507's tests; it carries none of the draft's content.",
             }
         ],
         "checks": _load(scratch / "checks.json"),

@@ -152,7 +152,7 @@ exactly like a detector with nothing to report.**
 So a breach with no webhook configured emits a `::warning::` annotation instead, visible on the
 run and in the Actions tab. The run still does not fail.
 
-## Owner follow-up
+## The Overtoad follow-up
 
 This repository has **no `SLACK_WEBHOOK_URL` secret**, so until one is added the alarm reports
 to the Actions tab only. Adding the secret is what makes it reachable; nothing else is needed.

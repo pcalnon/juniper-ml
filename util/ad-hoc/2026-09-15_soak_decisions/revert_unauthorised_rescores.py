@@ -19,7 +19,7 @@ re-score "is a schema change, not a data edit". On 2026-09-15 the Overtoad ruled
 (MECHANISM-CHECKED). I made the schema change AND the data edit on that authority. Only the
 schema change was authorised.
 
-Owner ruling 2026-09-16: keep the widening (the standard stays expressible and prospectively
+The Overtoad ruling 2026-09-16: keep the widening (the standard stays expressible and prospectively
 binding), revert the two edits pending an explicit item-2 ruling.
 
 Why a line removal rather than an append. `rescore` is append-only by design, and there is no

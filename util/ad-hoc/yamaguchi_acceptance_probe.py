@@ -115,7 +115,7 @@ EXPECTED_REPEAT = "1D"
 # The job's daily start, UTC: 13:00 since the Overtoad moved it on 2026-11-15 (07:00 CST); 14:00 until then.
 EXPECTED_TIME_OF_DAY = dt.time(13, 0, 0)
 GUARD_PATH = "/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash"
-# Owner ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
+# The Overtoad ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
 # Under `2W:1D` an off-schedule run's fileset displaced the scheduled one beside it, and a daily fileset stamped one
 # second earlier than the last kept one was deleted. `U` is Duplicati's keep-all interval.
 RULED_RETENTION = "2W:U,6M:1W,2Y:1M,5Y:2M"
@@ -164,7 +164,7 @@ EXPOSURE_GATE = 2.0
 EXPOSURE_LINE = re.compile(r"Overall exposure level for \S+: ([0-9]+(?:\.[0-9]+)?)")
 MIN_SECURITY_ROWS = 40  # the unit reports 81; far fewer means the output was not what this parser expects
 
-# Owner ruling 2026-11-08 (AC-3): "the Firefox-profile PathNotFound / MetadataProcessFailed class allow-listed".
+# The Overtoad ruling 2026-11-08 (AC-3): "the Firefox-profile PathNotFound / MetadataProcessFailed class allow-listed".
 # A key is the last two dotted segments of the log tag plus the message id, as the sitting's record names them.
 ALLOWED_WARNING_TAGS = frozenset({"FilePreFilterProcess.FileEntry-PathNotFound", "MetadataGenerator.Metadata-MetadataProcessFailed", "FileBlockProcessor.FileEntry-PathNotFound"})
 ALLOWED_WARNING_SCOPE = ".mozilla/firefox/"  # relative to the backup Source's home

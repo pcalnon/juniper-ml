@@ -247,10 +247,10 @@ SUBS = [
     ),
     (
         "F1: the Overtoad question covers the later actions",
-        """    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account. **Owner question**: was that pass
+        """    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account. **The Overtoad question**: was that pass
       his? (Still owed, item 15.)""",
         """    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account, and it is not Claude Code on this
-      host. **Owner question**: were that pass and the later actions his? (Still owed, item 15.)""",
+      host. **The Overtoad question**: were that pass and the later actions his? (Still owed, item 15.)""",
     ),
     (
         "N45: #677 overlaps nothing",

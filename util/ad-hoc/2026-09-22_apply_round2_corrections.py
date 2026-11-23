@@ -593,13 +593,13 @@ edit(
 
 edit(
     "r2-p0-step0-p05-pointer",
-    """**0. Owner gates — none of these is a session's to decide.**""",
+    """**0. The Overtoad gates — none of these is a session's to decide.**""",
     """**Run P0.5 items 1 and 2 before anything in P0.** They take minutes, depend on nothing in the recovery, and
 item 1 closes the path by which the service user controls the very binaries steps 0(c), 3, 4 and 7 execute.
 P0.5 is printed *after* P0 only because it also carries work that follows the recovery; an operator working
 top to bottom would otherwise run the recovery with that path open.
 
-**0. Owner gates — none of these is a session's to decide.**""",
+**0. The Overtoad gates — none of these is a session's to decide.**""",
 )
 
 # --- D6: place the recovered database ------------------------------------------------

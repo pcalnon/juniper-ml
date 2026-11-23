@@ -127,7 +127,7 @@ def trim_line(line: str, keep_under: int) -> "tuple[str, int, list[str]]":
             continue
         m = TAIL.match(text)
         if m and HAZARD.search(m.group(2)):
-            # Owner rule: never strip a hook that names a hazard. Length is irrelevant here.
+            # The Overtoad rule: never strip a hook that names a hazard. Length is irrelevant here.
             kept_hazards.append(m.group(2).strip()[:60])
             out.append(text)
             continue

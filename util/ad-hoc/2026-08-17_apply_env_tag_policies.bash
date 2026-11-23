@@ -8,7 +8,7 @@
 # Status:      ad-hoc — migration
 # Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: all publish environments carry the policy set and a drift gate enforces it.
 # Related:     notes/JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md §6 Option A / §7 P1
-#              Owner decisions D2 (patterns) + D3 (tag-only, main NOT allowed), 2026-08-17.
+#              The Overtoad decisions D2 (patterns) + D3 (tag-only, main NOT allowed), 2026-08-17.
 #
 # Applies ONLY tag policies -- deliberately no branch policy, so a workflow_dispatch from a branch
 # (including main) is refused at the environment gate before any OIDC credential is minted. That

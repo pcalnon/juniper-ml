@@ -271,7 +271,7 @@ def step_10(page, ctx):
         log("  W6-15 !! #restart-cancel-button absent")
 
     log("  >>> STOPPING BEFORE step 16 (#restart-confirm-button): POST /api/train/restart")
-    log("  >>> carries reset=True and would wipe the live 10-unit segment-6/7 network. Owner call.")
+    log("  >>> carries reset=True and would wipe the live 10-unit segment-6/7 network. The Overtoad call.")
 
 
 def step_11b(page, ctx):

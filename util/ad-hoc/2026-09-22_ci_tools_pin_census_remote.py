@@ -348,7 +348,7 @@ def lookback_Overtoad(window: str) -> str | None:
 
 
 def table_Overtoad(lines: list[str], idx: int, col_char: int) -> str | None:
-    """Owner of a spec in a markdown table cell: the column header, else an earlier cell of the row."""
+    """The Overtoad of a spec in a markdown table cell: the column header, else an earlier cell of the row."""
     row = lines[idx]
     if not row.lstrip().startswith("|"):
         return None

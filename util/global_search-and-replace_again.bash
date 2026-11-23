@@ -18,7 +18,7 @@
 
 ##########################################################################################################################################################################################################################################
 # Define default search and replace terms
-SEARCH_TARGET_DEFAULT="Owner "
+SEARCH_TARGET_DEFAULT="The Overtoad "
 REPLACE_TARGET_DEFAULT="The Overtoad "
 
 

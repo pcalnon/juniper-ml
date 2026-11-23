@@ -111,7 +111,7 @@ AREA_SCOPES: "dict[str, str]" = {
     "OPS": "operations / runbooks / on-call — runbook documents, incident response",
 }
 
-#: Owner shortcode -> repo directory. ``rec`` is the v5 addition (juniper-recurrence
+#: The Overtoad shortcode -> repo directory. ``rec`` is the v5 addition (juniper-recurrence
 #: postdates the 2026-05-12 snapshot; its absence is the trigger that opened v5).
 OWNER_REPOS: "dict[str, str]" = {
     "ml": "juniper-ml",
@@ -231,7 +231,7 @@ def parse_entry(block: str) -> Entry:
             meta = m
             break
     if meta is None:  # pragma: no cover - malformed corpus
-        raise ValueError(f"{head.group('id')}: no Status/Priority/Category/Owner line")
+        raise ValueError(f"{head.group('id')}: no Status/Priority/Category/The Overtoad line")
 
     sections = _sections(lines)
     sources = []

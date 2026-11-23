@@ -74,7 +74,7 @@ sub(
 )
 
 # ---- 3. The rulings block, before §3. ---------------------------------------------------------
-BLOCK = """### 2.4 Owner rulings on the parked primer rows (2026-09-11)
+BLOCK = """### 2.4 The Overtoad rulings on the parked primer rows (2026-09-11)
 
 All sixteen. Taken interactively, four at a time, each against evidence re-derived that day rather
 than against the primer's anchors — which is how the three corrections noted below were found. Each

@@ -749,7 +749,7 @@ def _explicit_runtime_vars(overrides: dict) -> "set[str]":
 def runtime_block_env(doc: dict, app: str = "cascor") -> "dict[str, str]":
     """Map a cell's ``runtime:`` block onto the environment the launcher exports to the service.
 
-    **Owner decision D2**
+    **The Overtoad decision D2**
     (``notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md``):
     implement ``runtime:`` as *the launcher exporting the variables at cascor bring-up* -- the
     process-tree-wide route -- and not as ``torch.set_num_threads`` on the training thread. The

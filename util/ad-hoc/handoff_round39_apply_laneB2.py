@@ -331,9 +331,9 @@ sub(
     "restore the two orphan open items as a new §0.4",
 )
 sub(
-    "### 0.5 Owner decisions still owed",
-    "### 0.6 Owner decisions still owed",
-    "renumber Owner decisions -> §0.6",
+    "### 0.5 The Overtoad decisions still owed",
+    "### 0.6 The Overtoad decisions still owed",
+    "renumber The Overtoad decisions -> §0.6",
 )
 sub(
     "Only one: **`APD-DATA-047`**, whether the absolute share-count ceiling stays, and at what value.",

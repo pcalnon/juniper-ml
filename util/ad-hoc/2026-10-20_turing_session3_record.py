@@ -74,7 +74,7 @@ SECTION = f"""## 18. Session 3 record (v1.3.0, 2026-10-20)
 
 Session 3 ran on turing on 2026-10-19/20 (EDT; 2026-10-20 UTC). It continued from `{PREV_HANDOFF}`, and its own handoff is `{HANDOFF}`.
 
-### 18.1 Owner rulings
+### 18.1 The Overtoad rulings
 
 - **Merging.** Approval is granted for every PR in the session's work arc, merging only after green, as in §16.1. It does not cover the `pypi` deployment gate.
 - No new decision ruling. The E2-first order of §17.1 stood. E2 went first, and the G-arc ran while E2 waited on the Overtoad's Little Snitch approval.

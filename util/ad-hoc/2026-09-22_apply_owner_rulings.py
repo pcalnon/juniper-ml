@@ -225,10 +225,10 @@ discarded. Step 0 verifies the artifacts match §10.1 instead of asking for a de
 
 edit(
     "P0 step 0 Overtoad gates",
-    """**0. Owner gates — none of these is a session's to decide.** (a) Rule D-1, D-4, D-6, D-9 **and D-14**, decide whether
+    """**0. The Overtoad gates — none of these is a session's to decide.** (a) Rule D-1, D-4, D-6, D-9 **and D-14**, decide whether
 D-2 is re-decided before or after the first run, or record that P0 applies their recommendations
 provisionally. (b)""",
-    """**0. Owner gates — RULED 2026-09-22 (§10.1); this step is now a verification, not a decision.** (a) Confirm the
+    """**0. The Overtoad gates — RULED 2026-09-22 (§10.1); this step is now a verification, not a decision.** (a) Confirm the
 installed artifacts match the rulings: `UMask=0027` in the unit (D-14), `AmbientCapabilities=CAP_DAC_READ_SEARCH`
 with the §7.3.2 confinement set (D-4), `--webservice-interface=loopback` (D-9),
 `--require-db-encryption-key` (D-1), and a `.blessed.sha256` written by the installer (D-6). D-2's rotation is
@@ -279,7 +279,7 @@ edit(
 # --------------------------------------------------------------------------------------------
 
 RULINGS = """
-### 10.1 Owner rulings — 2026-09-22
+### 10.1 The Overtoad rulings — 2026-09-22
 
 All seven open gates were ruled by the Overtoad in one interactive session on 2026-09-22. **The Ruling
 column below is binding and the Recommendation column above is historical.** D-3, D-5, D-7, D-10, D-11,

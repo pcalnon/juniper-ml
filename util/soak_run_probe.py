@@ -275,11 +275,11 @@ def force_scope_refusal(probe_id: str | None, reason: str | None, *, force: bool
     if not force or dry_run:
         return None
     if not probe_id:
-        return ("--force requires --probe-id. Owner decision D1 authorises a NAMED probe "
+        return ("--force requires --probe-id. The Overtoad decision D1 authorises a NAMED probe "
                 "on request, not a campaign; without an id this would resume the default "
                 "least-covered dispatch that D1 declined")
     if not (reason or "").strip():
-        return ("--force requires --reason. Owner decision D3 admits the override only "
+        return ("--force requires --reason. The Overtoad decision D3 admits the override only "
                 "with the reason recorded, so the run dir says why the session was spent")
     return None
 
@@ -568,7 +568,7 @@ def _own_repo_occurrence(tool_inputs: list, doc: str) -> bool:
 def contamination_screen(log: Path) -> dict:
     """Run the contamination screen over a transcript. REPORT-ONLY, never a gate.
 
-    Owner ruling 2026-09-15 on item F. `conf/soak_probes.json`'s _README says scoring
+    The Overtoad ruling 2026-09-15 on item F. `conf/soak_probes.json`'s _README says scoring
     MUST run this screen; nothing did, since the pilot.
 
     WHY REPORT-ONLY RATHER THAN A GATE. The screen's own retrieval verdict

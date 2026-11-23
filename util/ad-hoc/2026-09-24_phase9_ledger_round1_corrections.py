@@ -266,7 +266,7 @@ SUBS = [
       held before the ready: every successful or skipped check on `4b4cfb16` had finished by 20:59:25Z. The
       ledger-first order and round 3 appeared only in the PR body. So the ready met the comment's literal
       condition; the arm, which the comment asked no one to do, did not.
-    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account. **Owner question**: was that pass
+    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account. **The Overtoad question**: was that pass
       his? (Still owed, item 15.)""",
     ),
     (

@@ -176,7 +176,7 @@ AGENTS_OLD = "  `git log -1 --format=%G?` (`N` = unsigned). Plan:\n  `notes/JUNI
 AGENTS_NEW = (
     "  `git log -1 --format=%G?` (`N` = unsigned). An IDE agent (Cursor, Copilot, Amp) must\n"
     "  never answer a signing failure with `--no-gpg-sign` or `-c commit.gpgsign=false`: stop\n"
-    "  and ask the Overtoad, who approves the run and touches the key. Owner signing for the\n"
+    "  and ask the Overtoad, who approves the run and touches the key. The Overtoad signing for the\n"
     "  Juniper tree: `util/configure_commit_signing.py`. Plans:\n"
     "  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`,\n"
     "  `notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`.\n"

@@ -80,7 +80,7 @@ SUBS = [
     (
         "B1: the Overtoad has answered",
         """    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account, and it is not Claude Code on this
-      host. **Owner question**: were that pass and the later actions his? (Still owed, item 15.)""",
+      host. **The Overtoad question**: were that pass and the later actions his? (Still owed, item 15.)""",
         """    - **The Overtoad has answered: the sweeper is the Overtoad's.** It acts as `pcalnon` and is not Claude Code on
       this host. On 2026-09-24 at 07:32:48Z, four minutes after round 5's artifact was frozen, session
       `bc31e993` asked whether the sweeper that took four PRs out of draft and armed them 4–7 s later as

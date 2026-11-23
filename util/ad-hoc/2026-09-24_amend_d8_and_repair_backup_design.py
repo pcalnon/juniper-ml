@@ -636,10 +636,10 @@ edit(
 
 edit(
     "section 10: preface",
-    """## 10. Owner decisions
+    """## 10. The Overtoad decisions
 
 | ID | Decision | Recommendation |""",
-    """## 10. Owner decisions
+    """## 10. The Overtoad decisions
 
 **Seven of the fourteen are RULED — on 2026-09-22, with D-8's timing amended on 2026-09-24 — and §10.1 is
 binding.** This table keeps the question each ruling answered and the recommendation it was made against, so a

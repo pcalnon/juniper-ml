@@ -1177,7 +1177,7 @@ edit(
 3. **Procedure A — identify the 09-18 key on a copy.** For each candidate (§5.4 order), as root:""",
     """### P0 — freeze and recover the job (target: same day)
 
-**0. Owner gates — none of these is a session's to decide.** (a) Rule D-1, D-4, D-6, D-9, or record that P0
+**0. The Overtoad gates — none of these is a session's to decide.** (a) Rule D-1, D-4, D-6, D-9, or record that P0
 applies their recommendations provisionally. (b) Have the escrowed `PASSPHRASE` to hand, from the printed
 sheet or the password manager — **not** from the Dropbox-synced copy, which is the thing S-4 is about. (c)
 Confirm Procedure A0's premise with one read-only command, in a subshell so nothing reaches the shell history

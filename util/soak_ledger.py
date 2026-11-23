@@ -642,7 +642,7 @@ def cmd_rescore(args: argparse.Namespace) -> int:
     standing INCONCLUSIVE verdict into a pass by redefinition.
 
     SOURCE WIDENED 2026-09-15: ``follow`` may now be re-scored, not only ``miss``.
-    Owner ruling on handoff section 6 item 7 -- the binding retrieval standard is
+    The Overtoad ruling on handoff section 6 item 7 -- the binding retrieval standard is
     MECHANISM-CHECKED: apply the protocol's own section 4 definition (inputs union
     results), then discard hits that are not the destination document at all.
     Expressing that requires moving a ``follow`` DOWN, which the previous
@@ -874,7 +874,7 @@ def cmd_status(args: argparse.Namespace) -> int:
             # operator to redo completed work -- which is the friction that left
             # the instruction unactioned for ten days in the first place. The
             # second half is unconditional and survives the ruling.
-            print("  -> the relocation bet is failing. Owner decision 7 was RULED "
+            print("  -> the relocation bet is failing. The Overtoad decision 7 was RULED "
                   "2026-09-17: closed, no skills probe -- see "
                   "notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md. "
                   "NEVER re-inline.")
