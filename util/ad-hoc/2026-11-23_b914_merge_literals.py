@@ -423,7 +423,6 @@ def self_test() -> int:
     ]
     fails = 0
     for src, want in ok_cases:
-        line = src.index("[") if "[" in src else src.index("(")
         tree = ast.parse(src)
         nodes = string_nodes(tree)
         sites = [(n.lineno, n.col_offset + 1) for n in nodes]
