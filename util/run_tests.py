@@ -1195,11 +1195,13 @@ def plan_job(job: Job, lane: Lane, base_env: _Env, opts: Options, suffix: str = 
 # ---------------------------------------------------------------------------------------------------------------
 
 
-def _signal_group(pgid: int, sig: int) -> None:
+def _signal_group(pgid: int, sig: int) -> bool:
+    """Signal a step's process group. False when there was nothing to signal: the group is gone, or not ours."""
     try:
         os.killpg(pgid, sig)
     except (ProcessLookupError, PermissionError):
-        pass
+        return False
+    return True
 
 
 def _group_alive(pgid: int) -> bool:
@@ -1213,14 +1215,18 @@ def _group_alive(pgid: int) -> bool:
 
 
 def _pump(source: Any, log: Any) -> None:
-    """Copy a step's output to the terminal and its log as it arrives (stream mode)."""
+    """Copy a step's output to the terminal and its log as it arrives (stream mode).
+
+    Stops at end of output, or when either end is closed under it (the step's log is closed once the step has ended,
+    and a process the step left behind may still hold the pipe until sweep_group() kills it).
+    """
     try:
         for chunk in iter(lambda: source.read1(65536), b""):
             sys.stdout.buffer.write(chunk)
             sys.stdout.flush()
             log.write(chunk)
     except (OSError, ValueError):
-        pass
+        return  # a closed pipe, terminal or log: the step is over, so there is nothing left to copy
 
 
 def sweep_group(pgid: int) -> bool:
@@ -1781,7 +1787,9 @@ def write_summary(path: Path, doc: dict) -> None:
     os.replace(temporary, path)
 
 
-def point_latest(log_root: Path, run_dir: Path) -> None:
+def point_latest(log_root: Path, run_dir: Path) -> bool:
+    """Point ``<log_root>/latest`` at the run directory. False when the filesystem refuses (no symlinks there): only
+    the convenience link is missing, and --failed reads the newest summary.json, never the link."""
     link = log_root / "latest"
     temporary = log_root / f".latest-{os.getpid()}"
     try:
@@ -1790,7 +1798,8 @@ def point_latest(log_root: Path, run_dir: Path) -> None:
         os.symlink(run_dir.name, temporary)
         os.replace(temporary, link)
     except OSError:
-        pass
+        return False
+    return True
 
 
 def make_run_dir(log_root: Path) -> Path:
