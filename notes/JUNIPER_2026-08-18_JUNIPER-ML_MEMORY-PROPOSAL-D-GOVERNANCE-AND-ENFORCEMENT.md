@@ -50,7 +50,7 @@ the fact goes the other way.
 - [§8 Migration path](#8-migration-path)
 - [§9 What this proposal does NOT solve](#9-what-this-proposal-does-not-solve)
 - [§10 Dependencies on companion proposals](#10-dependencies-on-companion-proposals)
-- [§11 The Overtoad decisions and open questions](#11-overtoad-decisions-and-open-questions)
+- [§11 The Overtoad decisions and open questions](#11-the-overtoad-decisions-and-open-questions)
 - [§12 Facts this design needs that MECH leaves unverified](#12-facts-this-design-needs-that-mech-leaves-unverified)
 - [§13 Verification strategy](#13-verification-strategy)
 - [Appendix A — measurement commands](#appendix-a--measurement-commands)
@@ -1525,7 +1525,7 @@ worse than 290 KB later; if the Overtoad adopts exactly one *and* expects it to 
 
 ---
 
-## 11. The Overtoad decisions and open questions
+[##](##) 11. The Overtoad decisions and open questions
 
 Marked as decisions, not guessed at.
 

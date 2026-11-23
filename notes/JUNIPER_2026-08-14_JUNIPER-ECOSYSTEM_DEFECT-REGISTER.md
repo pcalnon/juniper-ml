@@ -141,7 +141,7 @@ been worked, not an obstacle to route around.
 > the hazard and proposed no fix, and that same handoff's own §0.4 parks it under "do not action
 > without a ruling". And a document written 2026-09-07 cannot authorise rows filed 2026-09-09.
 > **The set of rows a session may action without asking the Overtoad first was still empty when this
-> note was written. It is not any more** — see [§2.4](#24-overtoad-rulings-on-the-parked-primer-rows-2026-09-11),
+> note was written. It is not any more** — see [§2.4](#24-the-overtoad-rulings-on-the-parked-primer-rows-2026-09-11),
 > which rules on all sixteen remaining parked rows. What that block does NOT do is weaken the rule
 > above: the rows became actionable because the Overtoad ruled on them one at a time, which is exactly
 > what §2 requires, and not because a document asserted they were.)*

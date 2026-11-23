@@ -1,7 +1,7 @@
 # HANDOFF 2026-08-19 — snapshot arc closed; R3 resume is next
 
 Successor to
-[`HANDOFF_2026-08-15_q6-resolved-and-Overtoad-decision-register.md`](HANDOFF_2026-08-15_q6-resolved-and-overtoad-decision-register.md).
+[`HANDOFF_2026-08-15_q6-resolved-and-the-Overtoad-decision-register.md`](HANDOFF_2026-08-15_q6-resolved-and-the-overtoad-decision-register.md).
 
 **Nothing from this arc is in flight.** Fourteen PRs merged (9 juniper-ml, 3 juniper-cascor,
 2 juniper-deploy) plus one direct-to-main cascor commit. This document is the only deliverable
