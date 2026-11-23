@@ -69,14 +69,14 @@ class FloorParsingTest(unittest.TestCase):
     def test_declared_floors_dedup_keeps_highest(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             py = Path(d) / "pyproject.toml"
-            py.write_text('[project]\nname = "juniper-x"\n' "[project.optional-dependencies]\n" 'a = ["juniper-data>=0.5.0"]\n' 'b = ["juniper-data>=0.6.0"]\n')
+            py.write_text('[project]\nname = "juniper-x"\n[project.optional-dependencies]\na = ["juniper-data>=0.5.0"]\nb = ["juniper-data>=0.6.0"]\n')
             floors = mod.declared_floors(py)
             self.assertEqual(floors["juniper-data"], "0.6.0")  # most restrictive wins
 
     def test_declared_floors_skips_self_package(self) -> None:
         with tempfile.TemporaryDirectory() as d:
             py = Path(d) / "pyproject.toml"
-            py.write_text('[project]\nname = "juniper-ml"\n' "[project.optional-dependencies]\n" 'all = ["juniper-ml[clients]"]\n' 'clients = ["juniper-data-client>=0.4.1"]\n')
+            py.write_text('[project]\nname = "juniper-ml"\n[project.optional-dependencies]\nall = ["juniper-ml[clients]"]\nclients = ["juniper-data-client>=0.4.1"]\n')
             floors = mod.declared_floors(py)
             self.assertIn("juniper-data-client", floors)
             self.assertNotIn("juniper-ml", floors)

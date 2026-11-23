@@ -34,7 +34,7 @@ class EmptyVersionOutputTests(unittest.TestCase):
         bin_dir.mkdir()
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
-            "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then\n' '  printf %s "$VERSION_STDOUT"\n' '  exit "$VERSION_STATUS"\n' "fi\n" '{ echo "__CALL__"; } >> "$CLAUDE_ARGS_LOG"\n',
+            '#!/usr/bin/env bash\nif [[ "$1" == "--version" ]]; then\n  printf %s "$VERSION_STDOUT"\n  exit "$VERSION_STATUS"\nfi\n{ echo "__CALL__"; } >> "$CLAUDE_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
@@ -97,7 +97,7 @@ class ClaudeyVersionDebugTests(unittest.TestCase):
             bin_dir.mkdir()
             fake_claude = bin_dir / "claude"
             fake_claude.write_text(
-                "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then echo "claude-test-version"; exit 0; fi\n' '{ echo "__CALL__"; } >> "$CLAUDE_ARGS_LOG"\n',
+                '#!/usr/bin/env bash\nif [[ "$1" == "--version" ]]; then echo "claude-test-version"; exit 0; fi\n{ echo "__CALL__"; } >> "$CLAUDE_ARGS_LOG"\n',
                 encoding="utf-8",
             )
             fake_claude.chmod(0o755)

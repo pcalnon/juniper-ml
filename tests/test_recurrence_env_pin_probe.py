@@ -187,7 +187,7 @@ class TestPinProbeEvaluation(unittest.TestCase):
         result = _run_preflight(python)
         self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
         self.assertIn(
-            "FINDING: version pin: juniper-recurrence-model not-a-version is not a PEP 440 version, " "so juniper-recurrence 0.5.0's juniper-recurrence-model<0.4.0,>=0.3.0 cannot be checked\n",
+            "FINDING: version pin: juniper-recurrence-model not-a-version is not a PEP 440 version, so juniper-recurrence 0.5.0's juniper-recurrence-model<0.4.0,>=0.3.0 cannot be checked\n",
             result.stdout,
         )
         self.assertNotIn("version-pin probe failed", result.stdout)

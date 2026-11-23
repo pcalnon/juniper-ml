@@ -165,21 +165,21 @@ class SecurityScanRehearsalTest(unittest.TestCase):
         # Avoid f-strings that embed bash `${…}` expansions (3.12 parse hazards).
         python = bindir / "python"
         python.write_text(
-            "#!/usr/bin/env bash\n" "set -euo pipefail\n" 'if [ "${1-}" = "-m" ] && [ "${2-}" = "pip" ]; then\n' '  printf "python-m-pip %s\\n" "${*:3}" >> "' + str(pip_log) + '"\n' "  exit 0\n" "fi\n" 'echo "unexpected python argv: $*" >&2\n' "exit 2\n",
+            '#!/usr/bin/env bash\nset -euo pipefail\nif [ "${1-}" = "-m" ] && [ "${2-}" = "pip" ]; then\n  printf "python-m-pip %s\\n" "${*:3}" >> "' + str(pip_log) + '"\n  exit 0\nfi\necho "unexpected python argv: $*" >&2\nexit 2\n',
             encoding="utf-8",
         )
         python.chmod(python.stat().st_mode | stat.S_IXUSR)
 
         pip = bindir / "pip"
         pip.write_text(
-            "#!/usr/bin/env bash\n" "set -euo pipefail\n" 'printf "pip %s\\n" "$*" >> "' + str(pip_log) + '"\n' "exit 0\n",
+            '#!/usr/bin/env bash\nset -euo pipefail\nprintf "pip %s\\n" "$*" >> "' + str(pip_log) + '"\nexit 0\n',
             encoding="utf-8",
         )
         pip.chmod(pip.stat().st_mode | stat.S_IXUSR)
 
         audit = bindir / "pip-audit"
         audit.write_text(
-            "#!/usr/bin/env bash\n" "set -euo pipefail\n" 'printf "%s\\n" "$*" >> "' + str(audit_log) + '"\n' "exit 0\n",
+            '#!/usr/bin/env bash\nset -euo pipefail\nprintf "%s\\n" "$*" >> "' + str(audit_log) + '"\nexit 0\n',
             encoding="utf-8",
         )
         audit.chmod(audit.stat().st_mode | stat.S_IXUSR)

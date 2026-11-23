@@ -221,7 +221,7 @@ class JuniperCiToolsDriftTest(unittest.TestCase):
         are valid; we just need to know which mode we're in so the
         operator reading CI logs is not confused."""
         if self.ecosystem_root is None:
-            print("INFO: ecosystem siblings not present on disk -- drift " "check is skipping (run is not weekly cross-repo).")
+            print("INFO: ecosystem siblings not present on disk -- drift check is skipping (run is not weekly cross-repo).")
         else:
             print(f"INFO: ecosystem root = {self.ecosystem_root}")
 
@@ -245,7 +245,7 @@ class JuniperCiToolsDriftTest(unittest.TestCase):
                 self.assertGreater(
                     len(pins),
                     0,
-                    f"{rel} no longer pins juniper-ci-tools; did Wave 4 " "get reverted by accident?",
+                    f"{rel} no longer pins juniper-ci-tools; did Wave 4 get reverted by accident?",
                 )
 
     def test_juniper_ml_own_workflows_pin_current_version(self):
@@ -300,7 +300,7 @@ class JuniperCiToolsDriftTest(unittest.TestCase):
         if self.current_version is None:
             self.skipTest("no current version available")
         if os.environ.get("GITHUB_ACTIONS") != "true" and not os.environ.get("JUNIPER_DRIFT_TEST_FORCE_LOCAL"):
-            self.skipTest("skipping local cross-repo lint (set " "JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 to override; siblings " "must be `git pull`ed to origin/main first)")
+            self.skipTest("skipping local cross-repo lint (set JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 to override; siblings must be `git pull`ed to origin/main first)")
 
         current_tuple = _parse_version(self.current_version)
         warnings: list[str] = []
@@ -311,7 +311,7 @@ class JuniperCiToolsDriftTest(unittest.TestCase):
                 continue
             pins = _pins_in_repo(repo_root)
             if not pins:
-                self.fail(f"{repo} has no juniper-ci-tools pin in any workflow -- " "Wave 2 did not run here (or was reverted).")
+                self.fail(f"{repo} has no juniper-ci-tools pin in any workflow -- Wave 2 did not run here (or was reverted).")
             for wf_name, lower, upper in pins:
                 with self.subTest(repo=repo, workflow=wf_name, pin=f">={lower},<{upper}"):
                     where = f"{repo}/.github/workflows/{wf_name}"
@@ -327,11 +327,11 @@ class JuniperCiToolsDriftTest(unittest.TestCase):
                     # still admits current. Plan §5.1 specifies this as
                     # a soft warning, not a hard fail.
                     if upper_tuple[0] == current_tuple[0] and upper_tuple[1] - current_tuple[1] - 1 > _SUPPORTED_MINORS_BACK:
-                        warnings.append(f"{where}: pin {lower}..{upper} is more than " f"{_SUPPORTED_MINORS_BACK} minors behind current " f"{self.current_version}; consider widening.")
+                        warnings.append(f"{where}: pin {lower}..{upper} is more than {_SUPPORTED_MINORS_BACK} minors behind current {self.current_version}; consider widening.")
                     self.assertLess(
                         current_tuple,
                         upper_tuple,
-                        f"{where} pin upper bound {upper} excludes current " f"{self.current_version} -- bump the pin in {repo}.",
+                        f"{where} pin upper bound {upper} excludes current {self.current_version} -- bump the pin in {repo}.",
                     )
 
         if warnings:
@@ -432,7 +432,7 @@ class RepoWidePinScanTest(unittest.TestCase):
         guard fails on documentation."""
         self._write(
             "ci.yml",
-            "      # script in ``juniper-ci-tools>=0.2.0,<0.3.0``; the inline copy\n" '          pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n',
+            '      # script in ``juniper-ci-tools>=0.2.0,<0.3.0``; the inline copy\n          pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n',
         )
         self.assertEqual(_pins_in_repo(self.tmp), [("ci.yml", "0.9.0", "0.10.0")])
 
@@ -440,7 +440,7 @@ class RepoWidePinScanTest(unittest.TestCase):
         """canopy's main-verify.yml / sequence-safety.yml shape."""
         self._write(
             "main-verify.yml",
-            "env:\n" '  CI_TOOLS_PIN: "juniper-ci-tools>=0.9.0,<0.10.0"\n' "jobs:\n" "  x:\n" "    steps:\n" '      - run: pip install "$CI_TOOLS_PIN"\n',
+            'env:\n  CI_TOOLS_PIN: "juniper-ci-tools>=0.9.0,<0.10.0"\njobs:\n  x:\n    steps:\n      - run: pip install "$CI_TOOLS_PIN"\n',
         )
         self.assertEqual(_pins_in_repo(self.tmp), [("main-verify.yml", "0.9.0", "0.10.0")])
 
@@ -472,7 +472,7 @@ class SequenceSafetyPackageMigrationTest(unittest.TestCase):
         self.assertEqual(
             stragglers,
             [],
-            "the sequence-safety screens are migrated to the juniper-ci-tools package " "(rollout W3); delete the resurrected inline copy / moved test(s): " + ", ".join(stragglers),
+            "the sequence-safety screens are migrated to the juniper-ci-tools package (rollout W3); delete the resurrected inline copy / moved test(s): " + ", ".join(stragglers),
         )
 
     def test_resurrection_guard_bites_on_synthetic_tree(self):

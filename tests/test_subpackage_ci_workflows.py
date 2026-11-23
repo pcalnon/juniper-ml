@@ -157,7 +157,7 @@ class SubpackageCiStructuralTest(unittest.TestCase):
                     self.assertIn(
                         wf_self,
                         paths,
-                        f"{subdir}: {event} must include self-path {wf_self} " "so workflow edits still run CI",
+                        f"{subdir}: {event} must include self-path {wf_self} so workflow edits still run CI",
                     )
                     branches = (on.get(event) or {}).get("branches") or []
                     self.assertIn("main", branches)

@@ -299,7 +299,7 @@ class TestPortsJsonRecord(unittest.TestCase):
 
 def _write_argv_launcher(path: Path, marker_dir: Path) -> None:
     """A stub launcher that records every ``--up`` argv and prints the RUN_ID banner the suite parses."""
-    path.write_text("#!/usr/bin/env bash\n" f"MARKERS={marker_dir}\n" 'if [[ "$1" == "--up" ]]; then\n' '  printf "%s\\n" "$@" >"$MARKERS/up-$$-$RANDOM.args"\n' '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then touch "$MARKERS/down-$2"; exit 0; fi\n' "exit 2\n")
+    path.write_text(f'#!/usr/bin/env bash\nMARKERS={marker_dir}\nif [[ "$1" == "--up" ]]; then\n  printf "%s\\n" "$@" >"$MARKERS/up-$$-$RANDOM.args"\n  echo "=== Experiment run stub-run-$$ is up ==="\n  exit 0\nfi\nif [[ "$1" == "--down" ]]; then touch "$MARKERS/down-$2"; exit 0; fi\nexit 2\n')
     path.chmod(0o755)
 
 

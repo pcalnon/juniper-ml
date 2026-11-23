@@ -559,7 +559,7 @@ class NoMutationTest(_RepoCase):
             _publish_main(self.repo)
         broken = self.tmp / "broken-lfs.gitconfig"
         broken.write_text(
-            '[filter "lfs"]\n\trequired = true\n\tclean = no-such-git-lfs clean -- %f\n' "\tsmudge = no-such-git-lfs smudge -- %f\n\tprocess = no-such-git-lfs filter-process\n",
+            '[filter "lfs"]\n\trequired = true\n\tclean = no-such-git-lfs clean -- %f\n\tsmudge = no-such-git-lfs smudge -- %f\n\tprocess = no-such-git-lfs filter-process\n',
             encoding="utf-8",
         )
         with mock.patch.dict(os.environ, {"GIT_CONFIG_GLOBAL": str(broken), "GIT_CONFIG_NOSYSTEM": "1"}):

@@ -817,7 +817,7 @@ class IdeSettingsTest(SigningHarness):
         profiles = self.write_json(self.tmp / "Profiles" / "User" / "settings.json", json.dumps({"terminal.integrated.profiles.osx": {"bash": {"path": "bash", "env": {"HOME": "/elsewhere"}}}, "chat.tools.terminal.terminalProfile.linux": {"path": "sh", "env": {"GIT_CONFIG_GLOBAL": "/dev/null"}}}))
         jsonc = self.write_json(
             self.tmp / "Code" / "User" / "settings.json",
-            '{\n  // a comment, with a "quote" in it\n  "workbench.startupEditor": "none", /* block, */\n' '  "http.proxy": "http://example.invalid//not-a-comment",\n  "files.exclude": {"/* not a comment */": true},\n' '  "terminal.integrated.env.linux": {"GNUPGHOME": null},\n  "git.enableCommitSigning": true,\n}\n',
+            '{\n  // a comment, with a "quote" in it\n  "workbench.startupEditor": "none", /* block, */\n  "http.proxy": "http://example.invalid//not-a-comment",\n  "files.exclude": {"/* not a comment */": true},\n  "terminal.integrated.env.linux": {"GNUPGHOME": null},\n  "git.enableCommitSigning": true,\n}\n',
         )
         by_id = self.ide(bad, profiles, jsonc)
         self.assertEqual(by_id["ide:Cursor"]["status"], "fail")

@@ -112,7 +112,7 @@ def _find_repo_root(start: Path) -> Path:
     for parent in [start, *start.parents]:
         if (parent / ".github" / "workflows").is_dir():
             return parent
-    raise RuntimeError(f"Could not locate repo root: no .github/workflows/ directory " f"found in any ancestor of {start}")
+    raise RuntimeError(f"Could not locate repo root: no .github/workflows/ directory found in any ancestor of {start}")
 
 
 class WorkflowScriptPathsTest(unittest.TestCase):
@@ -149,7 +149,7 @@ class WorkflowScriptPathsTest(unittest.TestCase):
 
         if missing:
             report = "\n".join(f"  {wf.relative_to(self.repo_root)}: references missing path '{p}'" for wf, p in missing)
-            self.fail("CI workflow(s) reference script paths that do not exist:\n" + report + "\n\nThis is the failure class that broke 3 juniper-X CIs on " "2026-05-18 (script rename without workflow update).\n" "Either restore the missing path or update the workflow.")
+            self.fail("CI workflow(s) reference script paths that do not exist:\n" + report + "\n\nThis is the failure class that broke 3 juniper-X CIs on 2026-05-18 (script rename without workflow update).\nEither restore the missing path or update the workflow.")
 
     def test_no_deps_testpypi_verify_does_not_fall_back_to_pypi(self):
         # Security policy (generalized from the original cascor-core-only check):
@@ -171,7 +171,7 @@ class WorkflowScriptPathsTest(unittest.TestCase):
         self.assertEqual(
             offenders,
             [],
-            "publish workflow(s) combine --no-deps with an --extra-index-url PyPI fallback in " "TestPyPI verification: " + ", ".join(offenders) + ". Drop the fallback (the retry " "loop already covers TestPyPI index lag) so a squatted package on production PyPI " "cannot be installed.",
+            "publish workflow(s) combine --no-deps with an --extra-index-url PyPI fallback in TestPyPI verification: " + ", ".join(offenders) + ". Drop the fallback (the retry loop already covers TestPyPI index lag) so a squatted package on production PyPI cannot be installed.",
         )
 
 

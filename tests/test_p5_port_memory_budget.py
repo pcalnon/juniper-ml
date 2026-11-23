@@ -240,7 +240,7 @@ class RenderTest(unittest.TestCase):
         with TemporaryDirectory() as td:
             wf = Path(td) / "ci.yml"
             wf.write_text(
-                "name: CI\non: [pull_request]\njobs:\n  unit-tests:\n    runs-on: ubuntu-latest\n    steps: []\n\n" "  # ═══════════════\n  # Required Checks Aggregator: Final quality gate\n  # ═══════════════\n" "  required-checks:\n    name: Quality Gate\n    runs-on: ubuntu-latest\n    needs: [unit-tests]\n    steps: []\n",
+                "name: CI\non: [pull_request]\njobs:\n  unit-tests:\n    runs-on: ubuntu-latest\n    steps: []\n\n  # ═══════════════\n  # Required Checks Aggregator: Final quality gate\n  # ═══════════════\n  required-checks:\n    name: Quality Gate\n    runs-on: ubuntu-latest\n    needs: [unit-tests]\n    steps: []\n",
                 encoding="utf-8",
             )
             job_file = Path(td) / "job.yml"

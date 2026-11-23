@@ -732,7 +732,7 @@ class RecoveryHelperGates(_Scratch):
     def _stub_server(self, exit_code: int) -> Path:
         """A stand-in for duplicati-server: records that the parameters file existed and was 0600, then exits as told."""
         stub = self.tmp / f"server-{exit_code}"
-        stub.write_text("#!/usr/bin/env bash\n" 'for a in "$@"; do case "$a" in --parameters-file=*) f="${a#--parameters-file=}";; esac; done\n' f"stat -c '%a' \"$f\" > {self.tmp}/seen-mode\n" f'wc -l < "$f" > {self.tmp}/seen-lines\n' f"exit {exit_code}\n")
+        stub.write_text(f'#!/usr/bin/env bash\nfor a in "$@"; do case "$a" in --parameters-file=*) f="${{a#--parameters-file=}}";; esac; done\nstat -c \'%a\' "$f" > {self.tmp}/seen-mode\nwc -l < "$f" > {self.tmp}/seen-lines\nexit {exit_code}\n')
         stub.chmod(0o700)
         return stub
 
@@ -755,7 +755,7 @@ class RecoveryHelperGates(_Scratch):
         three are removed from the test's own environment first, so an inherited value cannot pass for the script's."""
         stub = self.tmp / "server-env"
         report = self.tmp / "seen-env"
-        stub.write_text("#!/usr/bin/env bash\n" 'printf "%s\\n" "DO_NOT_TRACK=${DO_NOT_TRACK:-}" "USAGEREPORTER_Duplicati_LEVEL=${USAGEREPORTER_Duplicati_LEVEL:-}" ' '"AUTOUPDATER_Duplicati_SKIP_UPDATE=${AUTOUPDATER_Duplicati_SKIP_UPDATE:-}" "TMPDIR=${TMPDIR:-}" > "$STUB_REPORT"\n' "exit 102\n")
+        stub.write_text('#!/usr/bin/env bash\nprintf "%s\\n" "DO_NOT_TRACK=${DO_NOT_TRACK:-}" "USAGEREPORTER_Duplicati_LEVEL=${USAGEREPORTER_Duplicati_LEVEL:-}" "AUTOUPDATER_Duplicati_SKIP_UPDATE=${AUTOUPDATER_Duplicati_SKIP_UPDATE:-}" "TMPDIR=${TMPDIR:-}" > "$STUB_REPORT"\nexit 102\n')
         stub.chmod(0o700)
         env = RedactedEnv(os.environ, DUPLICATI_RUN_AS=self.me, DUPLICATI_SERVER=str(stub), STUB_REPORT=str(report), TMPDIR=str(self.tmp))
         for name in ("DO_NOT_TRACK", "USAGEREPORTER_Duplicati_LEVEL", "AUTOUPDATER_Duplicati_SKIP_UPDATE"):
@@ -775,10 +775,10 @@ class RecoveryHelperGates(_Scratch):
         fakebin = self.tmp / "fakebin"
         fakebin.mkdir()
         (fakebin / "id").write_text('#!/bin/sh\ncase "$*" in\n  -un) echo root ;;\n  -u) echo 0 ;;\n  *) exec /usr/bin/id "$@" ;;\nesac\n')
-        (fakebin / "sudo").write_text("#!/bin/sh\n" '[ "$1" = -u ] && [ "$3" = -- ] || { echo "stub sudo: unexpected argv" >&2; exit 99; }\n' "shift 3\n" 'exec /usr/bin/env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin STUB_REPORT="$STUB_REPORT" "$@"\n')
+        (fakebin / "sudo").write_text('#!/bin/sh\n[ "$1" = -u ] && [ "$3" = -- ] || { echo "stub sudo: unexpected argv" >&2; exit 99; }\nshift 3\nexec /usr/bin/env -i PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin STUB_REPORT="$STUB_REPORT" "$@"\n')
         stub = self.tmp / "server-env"
         report = self.tmp / "seen-env"
-        stub.write_text("#!/bin/sh\n" 'printf "%s\\n" "DO_NOT_TRACK=${DO_NOT_TRACK:-}" "USAGEREPORTER_Duplicati_LEVEL=${USAGEREPORTER_Duplicati_LEVEL:-}" ' '"AUTOUPDATER_Duplicati_SKIP_UPDATE=${AUTOUPDATER_Duplicati_SKIP_UPDATE:-}" "TMPDIR=${TMPDIR:-}" > "$STUB_REPORT"\n' "exit 102\n")
+        stub.write_text('#!/bin/sh\nprintf "%s\\n" "DO_NOT_TRACK=${DO_NOT_TRACK:-}" "USAGEREPORTER_Duplicati_LEVEL=${USAGEREPORTER_Duplicati_LEVEL:-}" "AUTOUPDATER_Duplicati_SKIP_UPDATE=${AUTOUPDATER_Duplicati_SKIP_UPDATE:-}" "TMPDIR=${TMPDIR:-}" > "$STUB_REPORT"\nexit 102\n')
         for f in (fakebin / "id", fakebin / "sudo", stub):
             f.chmod(0o755)
         env = RedactedEnv(os.environ, PATH=f"{fakebin}:{os.environ['PATH']}", DUPLICATI_RUN_AS=self.me, DUPLICATI_SERVER=str(stub), STUB_REPORT=str(report), TMPDIR=str(self.tmp))
@@ -901,7 +901,7 @@ class RekeyGate(unittest.TestCase):
     def database(self, flag="True", option_key=K1, backup_key=K1, source_key=K1, conn_key=K1, bturl_key=K1, blobs=True) -> Path:
         db = self.tmp / f"db-{len(list(self.tmp.iterdir()))}.sqlite"
         con = sqlite3.connect(db)
-        con.executescript('CREATE TABLE "Option" ("BackupID" INTEGER, "Filter" TEXT, "Name" TEXT, "Value" TEXT);' 'CREATE TABLE "Backup" ("ID" INTEGER, "Name" TEXT, "TargetURL" TEXT, "DBPath" TEXT);' 'CREATE TABLE "Source" ("BackupID" INTEGER, "Path" TEXT);' 'CREATE TABLE "ConnectionString" ("ID" INTEGER, "BaseUrl" TEXT);' 'CREATE TABLE "BackupTargetUrl" ("ID" INTEGER, "BackupID" INTEGER, "TargetURL" TEXT);')
+        con.executescript('CREATE TABLE "Option" ("BackupID" INTEGER, "Filter" TEXT, "Name" TEXT, "Value" TEXT);CREATE TABLE "Backup" ("ID" INTEGER, "Name" TEXT, "TargetURL" TEXT, "DBPath" TEXT);CREATE TABLE "Source" ("BackupID" INTEGER, "Path" TEXT);CREATE TABLE "ConnectionString" ("ID" INTEGER, "BaseUrl" TEXT);CREATE TABLE "BackupTargetUrl" ("ID" INTEGER, "BackupID" INTEGER, "TargetURL" TEXT);')
         if flag is not None:
             con.execute('INSERT INTO "Option" VALUES (-2, "", "encrypted-fields", ?)', (flag,))
         con.execute('INSERT INTO "Option" VALUES (-2, "", "startup-delay", "0")')

@@ -881,7 +881,7 @@ class RescoreSourceRecovered(unittest.TestCase):
         self.assertGreaterEqual(
             len(distinct),
             sl.MIN_DISTINCT_PROBES,
-            f"distinct live probes {len(distinct)} < MIN_DISTINCT_PROBES " f"{sl.MIN_DISTINCT_PROBES}: the verdict has fallen back to IN-PROGRESS and " "the spend control no longer refuses terminal runs",
+            f"distinct live probes {len(distinct)} < MIN_DISTINCT_PROBES {sl.MIN_DISTINCT_PROBES}: the verdict has fallen back to IN-PROGRESS and the spend control no longer refuses terminal runs",
         )
 
     def test_an_invalidate_that_would_reopen_spending_is_refused(self) -> None:

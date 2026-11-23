@@ -1788,7 +1788,7 @@ class RecurrencePathTest(_StubTestCase):
         capture.mkdir()
         stub = bindir / "juniper-recurrence"
         stub.write_text(
-            "#!/bin/bash\n" f"printf '%s\\n' \"$*\" > '{capture}/cmd.txt'\n" f"printf '%s\\n' \"$JUNIPER_DATA_URL\" > '{capture}/env.txt'\n" f"printf '%s\\n' \"${{LD_LIBRARY_PATH-<unset>}}\" > '{capture}/ld.txt'\n" "prev=''\nout=''\n" 'for a in "$@"; do [ "$prev" = "--out" ] && out="$a"; prev="$a"; done\n' '[ -n "$out" ] && : > "$out"\n' "exit 0\n",
+            f'#!/bin/bash\nprintf \'%s\\n\' "$*" > \'{capture}/cmd.txt\'\nprintf \'%s\\n\' "$JUNIPER_DATA_URL" > \'{capture}/env.txt\'\nprintf \'%s\\n\' "${{LD_LIBRARY_PATH-<unset>}}" > \'{capture}/ld.txt\'\nprev=\'\'\nout=\'\'\nfor a in "$@"; do [ "$prev" = "--out" ] && out="$a"; prev="$a"; done\n[ -n "$out" ] && : > "$out"\nexit 0\n',
             encoding="utf-8",
         )
         stub.chmod(0o755)
@@ -1881,7 +1881,7 @@ class DegradedOutcomeTest(_StubTestCase):
         bindir = self.tmp / "bin"
         bindir.mkdir()
         stub = bindir / "juniper-recurrence"
-        stub.write_text("#!/bin/bash\n" "prev=''\nout=''\n" 'for a in "$@"; do [ "$prev" = "--out" ] && out="$a"; prev="$a"; done\n' '[ -n "$out" ] && : > "$out"\n' "exit 0\n", encoding="utf-8")
+        stub.write_text('#!/bin/bash\nprev=\'\'\nout=\'\'\nfor a in "$@"; do [ "$prev" = "--out" ] && out="$a"; prev="$a"; done\n[ -n "$out" ] && : > "$out"\nexit 0\n', encoding="utf-8")
         stub.chmod(0o755)
         return bindir
 
@@ -2018,11 +2018,11 @@ def _fake_env(root: Path, name: str, *, model_version: "str | None" = "0.3.2", i
     bindir.mkdir(parents=True)
     python = bindir / "python3"
     probe_arm = "exit 1" if model_version is None else f"printf '%s\\n' {shlex.quote(model_version)}; exit 0"
-    python.write_text("#!/bin/bash\n" f'if [[ "${{1-}}" == "-c" ]]; then {probe_arm}; fi\n' 'exec /bin/bash "$@"\n', encoding="utf-8")
+    python.write_text(f'#!/bin/bash\nif [[ "${{1-}}" == "-c" ]]; then {probe_arm}; fi\nexec /bin/bash "$@"\n', encoding="utf-8")
     python.chmod(0o755)
     cli = bindir / "juniper-recurrence"
     argv_file = root / name / "argv.txt"
-    cli.write_text(f"#!{interpreter or python}\n" f"printf '%s\\n' \"$*\" > '{argv_file}'\n" "prev=''\nout=''\n" 'for a in "$@"; do [ "$prev" = "--out" ] && out="$a"; prev="$a"; done\n' '[ -n "$out" ] && : > "$out"\n' "exit 0\n", encoding="utf-8")
+    cli.write_text(f'#!{interpreter or python}\nprintf \'%s\\n\' "$*" > \'{argv_file}\'\nprev=\'\'\nout=\'\'\nfor a in "$@"; do [ "$prev" = "--out" ] && out="$a"; prev="$a"; done\n[ -n "$out" ] && : > "$out"\nexit 0\n', encoding="utf-8")
     cli.chmod(0o755)
     return cli, python
 
