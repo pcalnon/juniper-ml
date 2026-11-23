@@ -189,7 +189,7 @@ class JuniperDocToolsDriftTest(unittest.TestCase):
         are valid; we just need to know which mode we're in so the
         operator reading CI logs is not confused."""
         if self.ecosystem_root is None:
-            print("INFO: ecosystem siblings not present on disk -- drift " "check is skipping (run is not weekly cross-repo).")
+            print("INFO: ecosystem siblings not present on disk -- drift check is skipping (run is not weekly cross-repo).")
         else:
             print(f"INFO: ecosystem root = {self.ecosystem_root}")
 
@@ -217,7 +217,7 @@ class JuniperDocToolsDriftTest(unittest.TestCase):
                 self.assertGreater(
                     len(pins),
                     0,
-                    f"{rel} no longer pins juniper-doc-tools; did Wave 4 " "get reverted by accident?",
+                    f"{rel} no longer pins juniper-doc-tools; did Wave 4 get reverted by accident?",
                 )
                 for lower, upper in pins:
                     lower_tuple = _parse_version(lower)
@@ -250,7 +250,7 @@ class JuniperDocToolsDriftTest(unittest.TestCase):
         if self.current_version is None:
             self.skipTest("no current version available")
         if os.environ.get("GITHUB_ACTIONS") != "true" and not os.environ.get("JUNIPER_DRIFT_TEST_FORCE_LOCAL"):
-            self.skipTest("skipping local cross-repo lint (set " "JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 to override; siblings " "must be `git pull`ed to origin/main first)")
+            self.skipTest("skipping local cross-repo lint (set JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 to override; siblings must be `git pull`ed to origin/main first)")
 
         current_tuple = _parse_version(self.current_version)
         warnings: list[str] = []
@@ -262,7 +262,7 @@ class JuniperDocToolsDriftTest(unittest.TestCase):
                     continue
                 pins = _extract_pins_from_repo(repo_root)
                 if not pins:
-                    self.fail(f"{repo}/.github/workflows/ has no juniper-doc-tools pin -- " "Wave 2 did not run here (or was reverted).")
+                    self.fail(f"{repo}/.github/workflows/ has no juniper-doc-tools pin -- Wave 2 did not run here (or was reverted).")
                 for lower, upper, rel in pins:
                     lower_tuple = _parse_version(lower)
                     upper_tuple = _parse_version(upper)
@@ -276,11 +276,11 @@ class JuniperDocToolsDriftTest(unittest.TestCase):
                     # still admits current. Plan §5.1 specifies this as
                     # a soft warning, not a hard fail.
                     if upper_tuple[0] == current_tuple[0] and upper_tuple[1] - current_tuple[1] - 1 > _SUPPORTED_MINORS_BACK:
-                        warnings.append(f"{repo} ({rel}): pin {lower}..{upper} is more than " f"{_SUPPORTED_MINORS_BACK} minors behind current " f"{self.current_version}; consider widening.")
+                        warnings.append(f"{repo} ({rel}): pin {lower}..{upper} is more than {_SUPPORTED_MINORS_BACK} minors behind current {self.current_version}; consider widening.")
                     self.assertLess(
                         current_tuple,
                         upper_tuple,
-                        f"{repo} ({rel}) pin upper bound {upper} excludes current " f"{self.current_version} -- bump the pin in {repo}.",
+                        f"{repo} ({rel}) pin upper bound {upper} excludes current {self.current_version} -- bump the pin in {repo}.",
                     )
 
         if warnings:

@@ -88,7 +88,7 @@ class ScoreWindowTest(unittest.TestCase):
         self.assertLess(
             max(window_scores),
             block_n,
-            f"a 2-sentence window already equals the block ({max(window_scores)} vs {block_n}); " "fixture is not the documented miss",
+            f"a 2-sentence window already equals the block ({max(window_scores)} vs {block_n}); fixture is not the documented miss",
         )
 
     def test_log_level_warning_demotes_hazard_noun_only(self):

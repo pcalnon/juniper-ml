@@ -36,7 +36,7 @@ SCRIPT = REPO_ROOT / "util" / "ad-hoc" / "e2e_finding_triage.py"
 # the line (not making it optional) means a disposition vanishing from the operator summary
 # fails here, which is what this suite is for.
 _TOTAL = re.compile(
-    r"total findings : (\d+)\n" r"  fixed        : (\d+)\n" r"  accepted     : (\d+)\n" r"  withdrawn    : \d+\n" r"  open         : (\d+)",
+    r"total findings : (\d+)\n  fixed        : (\d+)\n  accepted     : (\d+)\n  withdrawn    : \d+\n  open         : (\d+)",
 )
 
 

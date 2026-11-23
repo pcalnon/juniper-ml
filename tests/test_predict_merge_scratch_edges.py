@@ -238,7 +238,7 @@ class ScratchBorrowEdgesTest(unittest.TestCase):
         self._without_inherited_smudge_skip()
         smudge = self.tmp / "smudge.sh"
         smudge.write_text(
-            "#!/bin/sh\n" 'if [ "$GIT_LFS_SKIP_SMUDGE" = "1" ]; then\n' "  cat\n" "  exit 0\n" "fi\n" 'echo "smudge refused" >&2\n' "exit 1\n",
+            '#!/bin/sh\nif [ "$GIT_LFS_SKIP_SMUDGE" = "1" ]; then\n  cat\n  exit 0\nfi\necho "smudge refused" >&2\nexit 1\n',
             encoding="utf-8",
         )
         smudge.chmod(0o755)

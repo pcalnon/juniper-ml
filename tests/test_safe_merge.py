@@ -358,7 +358,7 @@ class HeadMovedTest(SafeMergeTestBase):
     def test_head_branch_was_modified_is_a_refusal(self):
         def gh(args, timeout=120):
             if list(args[:2]) == ["pr", "merge"]:
-                raise safe_merge.HardError("gh pr merge 1… failed: GraphQL: Head branch was modified. " "Review and try the merge again. (mergePullRequest)")
+                raise safe_merge.HardError("gh pr merge 1… failed: GraphQL: Head branch was modified. Review and try the merge again. (mergePullRequest)")
             return ""
 
         self.monkey(safe_merge, "pr_state", lambda *a, **k: _state())
@@ -648,7 +648,7 @@ class KillResilienceTest(SafeMergeTestBase):
                 self.assertGreater(
                     budget,
                     observed_max,
-                    f"{repo} budget {budget}s does not clear its observed max {observed_max}s -- " f"a healthy PR at its worst is refused",
+                    f"{repo} budget {budget}s does not clear its observed max {observed_max}s -- a healthy PR at its worst is refused",
                 )
                 self.assertLessEqual(budget, 4 * p90, f"{repo} budget is so loose a stuck run looks slow")
         self.assertGreaterEqual(safe_merge.DEFAULT_TIMEOUT, 600)

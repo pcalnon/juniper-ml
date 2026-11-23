@@ -95,7 +95,7 @@ def _write_fake_pgrep(bin_dir: Path, lines: list[str]) -> None:
     payload = bin_dir / "pgrep_lines.txt"
     payload.write_text("\n".join(lines) + ("\n" if lines else ""))
     pgrep_path = bin_dir / "pgrep"
-    pgrep_path.write_text("#!/bin/bash\n" "set -euo pipefail\n" f'cat -- "{payload}"\n')
+    pgrep_path.write_text(f'#!/bin/bash\nset -euo pipefail\ncat -- "{payload}"\n')
     pgrep_path.chmod(0o755)
 
 
@@ -221,7 +221,7 @@ class TestSystemdModeBehavioral(unittest.TestCase):
         systemctl_log.write_text("")
         fail_list = " ".join(sorted(fail_units or ()))
         systemctl = stub_bin / "systemctl"
-        systemctl.write_text("#!/usr/bin/env bash\n" "set -euo pipefail\n" f'printf "%s\\n" "$*" >>"{systemctl_log}"\n' 'if [[ "${1:-}" == "--user" ]]; then shift; fi\n' 'cmd="${1:-}"\n' 'unit="${2:-}"\n' f'fail_units="{fail_list}"\n' 'case "${cmd}" in\n' "  stop)\n" "    for bad in ${fail_units}; do\n" '      if [[ "${unit}" == "${bad}" ]]; then exit 1; fi\n' "    done\n" "    exit 0\n" "    ;;\n" "  *) exit 0 ;;\n" "esac\n")
+        systemctl.write_text(f'#!/usr/bin/env bash\nset -euo pipefail\nprintf "%s\\n" "$*" >>"{systemctl_log}"\nif [[ "${{1:-}}" == "--user" ]]; then shift; fi\ncmd="${{1:-}}"\nunit="${{2:-}}"\nfail_units="{fail_list}"\ncase "${{cmd}}" in\n  stop)\n    for bad in ${{fail_units}}; do\n      if [[ "${{unit}}" == "${{bad}}" ]]; then exit 1; fi\n    done\n    exit 0\n    ;;\n  *) exit 0 ;;\nesac\n')
         systemctl.chmod(0o755)
         return stub_bin, systemctl_log
 

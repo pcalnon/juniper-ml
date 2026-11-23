@@ -347,7 +347,7 @@ class PublishSubpackageVerifyRehearsalTest(unittest.TestCase):
 
         pip = bindir / "pip"
         pip.write_text(
-            "#!/bin/bash\n" f'printf "%s\\n" "$*" >> "{pip_log}"\n' "exit 0\n",
+            f'#!/bin/bash\nprintf "%s\\n" "$*" >> "{pip_log}"\nexit 0\n',
             encoding="utf-8",
         )
         pip.chmod(pip.stat().st_mode | stat.S_IXUSR)
@@ -355,7 +355,7 @@ class PublishSubpackageVerifyRehearsalTest(unittest.TestCase):
         # python stub: -c importlib.metadata / import / -m <pkg> --version all succeed.
         python = bindir / "python"
         python.write_text(
-            "#!/bin/bash\n" 'args="$*"\n' 'if [[ "$args" == *importlib.metadata* ]]; then\n' f'  echo "TestPyPI install OK {version}"\n' "  exit 0\n" "fi\n" 'if [[ "$args" == *-m* ]]; then\n' f'  echo "{version}"\n' "  exit 0\n" "fi\n" f'echo "TestPyPI install OK {version}"\n' "exit 0\n",
+            f'#!/bin/bash\nargs="$*"\nif [[ "$args" == *importlib.metadata* ]]; then\n  echo "TestPyPI install OK {version}"\n  exit 0\nfi\nif [[ "$args" == *-m* ]]; then\n  echo "{version}"\n  exit 0\nfi\necho "TestPyPI install OK {version}"\nexit 0\n',
             encoding="utf-8",
         )
         python.chmod(python.stat().st_mode | stat.S_IXUSR)

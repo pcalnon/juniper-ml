@@ -60,9 +60,9 @@ class AgentsMdVersionDriftTest(unittest.TestCase):
         text = _AGENTS_MD.read_text(encoding="utf-8")
         matches = _HEADER_RE.findall(text)
         if not matches:
-            raise unittest.SkipTest(f"{_AGENTS_MD} has no `**Version**: X.Y.Z` header; " "this lint only applies to AGENTS.md files that opt in " "by including the canonical header.")
+            raise unittest.SkipTest(f"{_AGENTS_MD} has no `**Version**: X.Y.Z` header; this lint only applies to AGENTS.md files that opt in by including the canonical header.")
         if len(matches) > 1:
-            raise AssertionError(f"{_AGENTS_MD} has multiple `**Version**:` headers: {matches!r}. " "Expected exactly one canonical header at the top of the file.")
+            raise AssertionError(f"{_AGENTS_MD} has multiple `**Version**:` headers: {matches!r}. Expected exactly one canonical header at the top of the file.")
         cls.agents_md_version = matches[0]
 
     def test_versions_match(self) -> None:

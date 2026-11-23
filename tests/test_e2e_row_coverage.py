@@ -128,7 +128,7 @@ class FirstFieldOnly(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="e2e-row-coverage-") as tmp:
             path = Path(tmp) / "statuses.tsv"
             path.write_text(
-                "row_id\tstatus\n" "C2.1-01\tPASS see also C2.1-02 and M-TOPOLOGY-01\n",
+                "row_id\tstatus\nC2.1-01\tPASS see also C2.1-02 and M-TOPOLOGY-01\n",
                 encoding="utf-8",
             )
             hit, unknown = mod.verdicted([path], self.KNOWN)
@@ -139,7 +139,7 @@ class FirstFieldOnly(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="e2e-row-coverage-") as tmp:
             path = Path(tmp) / "rowlog.md"
             path.write_text(
-                "| row_id | notes |\n" "| C2.1-01 | also C2.1-02 |\n",
+                "| row_id | notes |\n| C2.1-01 | also C2.1-02 |\n",
                 encoding="utf-8",
             )
             hit, unknown = mod.verdicted([path], self.KNOWN)
@@ -180,7 +180,7 @@ class PendingOverCredit(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="e2e-row-coverage-") as tmp:
             path = Path(tmp) / "statuses.tsv"
             path.write_text(
-                "row_id\tstatus\n" "C2.1-01\tPASS\n" "C2.1-02\tpending ...\n",
+                "row_id\tstatus\nC2.1-01\tPASS\nC2.1-02\tpending ...\n",
                 encoding="utf-8",
             )
             hit, unknown = mod.verdicted([path], {"C2.1-01", "C2.1-02", "C2.1-03"})

@@ -507,7 +507,7 @@ class LedgerVerdictsAreAllClassified(unittest.TestCase):
                 self.assertEqual(
                     len(classes),
                     1,
-                    f"{verdict!r} is classified {classes or 'NOT AT ALL'}; it must be " f"exactly one of terminal / unusable / runnable. An unclassified " f"verdict FAILS OPEN and spends a session.",
+                    f"{verdict!r} is classified {classes or 'NOT AT ALL'}; it must be exactly one of terminal / unusable / runnable. An unclassified verdict FAILS OPEN and spends a session.",
                 )
 
 

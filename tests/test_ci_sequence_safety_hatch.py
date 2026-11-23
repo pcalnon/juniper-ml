@@ -160,7 +160,7 @@ class SequenceSafetyHatchRehearsalTest(unittest.TestCase):
             ):
                 stub = stub_bin / cmd_name
                 stub.write_text(
-                    "#!/usr/bin/env bash\n" "set -euo pipefail\n" f'printf "{cmd_name} %s\\n" "$*" >>"{cmd_log}"\n' 'args="$*"\n' 'if [[ "$args" == *"--json"* ]]; then\n' '  printf "%s\\n" "{}"\n' "  exit 0\n" "fi\n" f"exit {exit_code}\n",
+                    f'#!/usr/bin/env bash\nset -euo pipefail\nprintf "{cmd_name} %s\\n" "$*" >>"{cmd_log}"\nargs="$*"\nif [[ "$args" == *"--json"* ]]; then\n  printf "%s\\n" "{{}}"\n  exit 0\nfi\nexit {exit_code}\n',
                     encoding="utf-8",
                 )
                 stub.chmod(0o755)
@@ -170,14 +170,14 @@ class SequenceSafetyHatchRehearsalTest(unittest.TestCase):
             labels_file.write_text("".join(f"{name}\n" for name in (labels or [])), encoding="utf-8")
             gh = stub_bin / "gh"
             gh.write_text(
-                "#!/usr/bin/env bash\n" "set -euo pipefail\n" 'if [ "${1:-}" = "pr" ] && [ "${2:-}" = "view" ]; then\n' f'  cat "{labels_file}"\n' "  exit 0\n" "fi\n" 'echo "unexpected gh argv: $*" >&2\n' "exit 99\n",
+                f'#!/usr/bin/env bash\nset -euo pipefail\nif [ "${{1:-}}" = "pr" ] && [ "${{2:-}}" = "view" ]; then\n  cat "{labels_file}"\n  exit 0\nfi\necho "unexpected gh argv: $*" >&2\nexit 99\n',
                 encoding="utf-8",
             )
             gh.chmod(0o755)
 
             git = stub_bin / "git"
             git.write_text(
-                "#!/usr/bin/env bash\n" "set -euo pipefail\n" 'if [ "${1:-}" = "cat-file" ]; then exit 0; fi\n' 'if [ "${1:-}" = "fetch" ]; then exit 0; fi\n' 'echo "unexpected git argv: $*" >&2\n' "exit 99\n",
+                '#!/usr/bin/env bash\nset -euo pipefail\nif [ "${1:-}" = "cat-file" ]; then exit 0; fi\nif [ "${1:-}" = "fetch" ]; then exit 0; fi\necho "unexpected git argv: $*" >&2\nexit 99\n',
                 encoding="utf-8",
             )
             git.chmod(0o755)

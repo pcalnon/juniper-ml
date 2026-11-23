@@ -167,7 +167,7 @@ def _stage_stub_bin(root: Path, *, busy_ports: "list[int] | None" = None) -> Pat
     # echo a LISTEN line only for a port in the fixture's busy list.
     _write_stub(
         stub_bin / "ss",
-        "#!/usr/bin/env bash\n" f'busy="{busy}"\n' 'want=""\n' 'for arg in "$@"; do\n' '  case "$arg" in\n' '    *sport*) want="${arg##*:}" ;;\n' "  esac\n" "done\n" "for port in $busy; do\n" '  if [[ "$port" == "$want" ]]; then\n' '    echo "LISTEN 0 128 127.0.0.1:${port} 0.0.0.0:* users:((\\"python\\",pid=424242,fd=3))"\n' "    exit 0\n" "  fi\n" "done\n" "exit 0\n",
+        f'#!/usr/bin/env bash\nbusy="{busy}"\nwant=""\nfor arg in "$@"; do\n  case "$arg" in\n    *sport*) want="${{arg##*:}}" ;;\n  esac\ndone\nfor port in $busy; do\n  if [[ "$port" == "$want" ]]; then\n    echo "LISTEN 0 128 127.0.0.1:${{port}} 0.0.0.0:* users:((\\"python\\",pid=424242,fd=3))"\n    exit 0\n  fi\ndone\nexit 0\n',
     )
     _write_stub(stub_bin / "curl", "#!/usr/bin/env bash\nexit 0\n")
     _write_stub(stub_bin / "docker", "#!/usr/bin/env bash\nexit 0\n")
@@ -187,7 +187,7 @@ def _stage_conda_fixture(root: Path) -> Path:
         for bin_name in bins:
             # ``-c`` answers ``data_up``'s free-threading probe (1 = free-threaded); without
             # it the probe's command substitution would block on the sleep below.
-            _write_stub(bin_dir / bin_name, "#!/usr/bin/env bash\n" 'if [[ "${1-}" == "-c" ]]; then echo 1; exit 0; fi\n' "exec sleep 60\n")
+            _write_stub(bin_dir / bin_name, '#!/usr/bin/env bash\nif [[ "${1-}" == "-c" ]]; then echo 1; exit 0; fi\nexec sleep 60\n')
     return conda_dir
 
 
@@ -1398,7 +1398,7 @@ class TestTeardownBehaviour(unittest.TestCase):
                 # port_in_use does not false-alarm a still-bound listener.
                 _write_stub(
                     stub_bin / "ss",
-                    "#!/usr/bin/env bash\n" f'pid="{pid}"\n' 'want=""\n' 'for arg in "$@"; do\n' '  case "$arg" in\n' '    *sport*) want="${arg##*:}" ;;\n' "  esac\n" "done\n" 'if [[ "$want" == "8260" ]] && kill -0 "$pid" 2>/dev/null; then\n' '  echo "LISTEN 0 128 127.0.0.1:8260 0.0.0.0:* users:((\\"python\\",pid=${pid},fd=3))"\n' "fi\n" "exit 0\n",
+                    f'#!/usr/bin/env bash\npid="{pid}"\nwant=""\nfor arg in "$@"; do\n  case "$arg" in\n    *sport*) want="${{arg##*:}}" ;;\n  esac\ndone\nif [[ "$want" == "8260" ]] && kill -0 "$pid" 2>/dev/null; then\n  echo "LISTEN 0 128 127.0.0.1:8260 0.0.0.0:* users:((\\"python\\",pid=${{pid}},fd=3))"\nfi\nexit 0\n',
                 )
                 _write_stub(stub_bin / "curl", "#!/usr/bin/env bash\nexit 0\n")
                 _write_stub(stub_bin / "docker", "#!/usr/bin/env bash\nexit 0\n")
@@ -1744,7 +1744,7 @@ class TestActivateCondaOrList(unittest.TestCase):
     def test_conda_activate_failure_propagates_under_or_list(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             conda_sh = Path(tmp) / "conda.sh"
-            conda_sh.write_text("#!/usr/bin/env bash\n" "conda() {\n" '  if [[ "$1" == "activate" ]]; then\n' "    return 1\n" "  fi\n" "}\n")
+            conda_sh.write_text('#!/usr/bin/env bash\nconda() {\n  if [[ "$1" == "activate" ]]; then\n    return 1\n  fi\n}\n')
             harness = "set -euo pipefail\n" 'log() { echo "$*"; }\n' f'CONDA_SH="{conda_sh}"\n' + _extract_experiment_fn("activate_conda") + "failed=0\n" + 'activate_conda "JuniperCascor1" || failed=1\n' + 'echo "failed=${failed}"\n' + "if (( failed != 1 )); then exit 2; fi\n"
             result = subprocess.run(
                 ["/bin/bash", "-c", harness],
@@ -1784,9 +1784,9 @@ class TestDoUpFailClosedTeardown(unittest.TestCase):
             data_bin.mkdir(parents=True)
             _write_stub(
                 data_bin / "python",
-                "#!/usr/bin/env bash\n" "set -euo pipefail\n"
+                "#!/usr/bin/env bash\nset -euo pipefail\n"
                 # Answer data_up's free-threading probe (free-threaded) without sleeping.
-                'if [[ "${1-}" == "-c" ]]; then echo 1; exit 0; fi\n' 'port=""\n' "while [[ $# -gt 0 ]]; do\n" '  case "$1" in\n' '    --port) port="$2"; shift 2 ;;\n' "    *) shift ;;\n" "  esac\n" "done\n" f'printf "%s\\n" "$$" >"{listeners_dir}/$port.pid"\n'
+                f'if [[ "${{1-}}" == "-c" ]]; then echo 1; exit 0; fi\nport=""\nwhile [[ $# -gt 0 ]]; do\n  case "$1" in\n    --port) port="$2"; shift 2 ;;\n    *) shift ;;\n  esac\ndone\nprintf "%s\\n" "$$" >"{listeners_dir}/$port.pid"\n'
                 # No ``exec``: keep this bash pid's cmdline stable for kill_verified_pid.
                 "sleep 60\n",
             )
@@ -1799,7 +1799,7 @@ class TestDoUpFailClosedTeardown(unittest.TestCase):
             _write_stub(stub_bin / "curl", "#!/usr/bin/env bash\nexit 1\n")
             _write_stub(
                 stub_bin / "ss",
-                "#!/usr/bin/env bash\n" "set -euo pipefail\n" 'port=""\n' 'for a in "$@"; do\n' '  case "$a" in\n' '    sport\\ =\\ :*) port="${a##*:}" ;;\n' "  esac\n" "done\n" f'listener="{listeners_dir}/$port.pid"\n' 'if [[ -n "$port" && -f "$listener" ]]; then\n' '  pid="$(cat "$listener")"\n' '  echo "LISTEN 0 128 127.0.0.1:${port} 0.0.0.0:* users:((\\"python\\",pid=${pid},fd=3))"\n' "fi\n" "exit 0\n",
+                f'#!/usr/bin/env bash\nset -euo pipefail\nport=""\nfor a in "$@"; do\n  case "$a" in\n    sport\\ =\\ :*) port="${{a##*:}}" ;;\n  esac\ndone\nlistener="{listeners_dir}/$port.pid"\nif [[ -n "$port" && -f "$listener" ]]; then\n  pid="$(cat "$listener")"\n  echo "LISTEN 0 128 127.0.0.1:${{port}} 0.0.0.0:* users:((\\"python\\",pid=${{pid}},fd=3))"\nfi\nexit 0\n',
             )
             _write_stub(stub_bin / "docker", "#!/usr/bin/env bash\nexit 0\n")
             _write_stub(stub_bin / "socat", "#!/usr/bin/env bash\nexec sleep 60\n")
@@ -1904,11 +1904,11 @@ class TestDoUpFailClosedTeardown(unittest.TestCase):
             # record_listener_pid cannot race the stub's pidfile write; socat absent.
             _write_stub(
                 stub_bin / "curl",
-                "#!/usr/bin/env bash\n" 'url="${!#}"\n' 'port="${url##*:}"\n' 'port="${port%%/*}"\n' f'[[ -n "$port" && -f "{listeners_dir}/$port.pid" ]] || exit 1\n' "exit 0\n",
+                f'#!/usr/bin/env bash\nurl="${{!#}}"\nport="${{url##*:}}"\nport="${{port%%/*}}"\n[[ -n "$port" && -f "{listeners_dir}/$port.pid" ]] || exit 1\nexit 0\n',
             )
             _write_stub(
                 stub_bin / "ss",
-                "#!/usr/bin/env bash\n" "set -euo pipefail\n" 'port=""\n' 'for a in "$@"; do\n' '  case "$a" in\n' '    sport\\ =\\ :*) port="${a##*:}" ;;\n' "  esac\n" "done\n" f'listener="{listeners_dir}/$port.pid"\n' 'if [[ -n "$port" && -f "$listener" ]]; then\n' '  pid="$(cat "$listener")"\n' '  echo "LISTEN 0 128 127.0.0.1:${port} 0.0.0.0:* users:((\\"python\\",pid=${pid},fd=3))"\n' "fi\n" "exit 0\n",
+                f'#!/usr/bin/env bash\nset -euo pipefail\nport=""\nfor a in "$@"; do\n  case "$a" in\n    sport\\ =\\ :*) port="${{a##*:}}" ;;\n  esac\ndone\nlistener="{listeners_dir}/$port.pid"\nif [[ -n "$port" && -f "$listener" ]]; then\n  pid="$(cat "$listener")"\n  echo "LISTEN 0 128 127.0.0.1:${{port}} 0.0.0.0:* users:((\\"python\\",pid=${{pid}},fd=3))"\nfi\nexit 0\n',
             )
             # docker reports no networks at all → discover_gateway_ip must return 1.
             _write_stub(stub_bin / "docker", "#!/usr/bin/env bash\nexit 0\n")
@@ -2387,7 +2387,7 @@ class TestRecurrenceUpLaunchRecord(_LiveUpHarness):
         probe_arm = "exit 1" if probe_answer is None else f"printf '%s\\n' {shlex.quote(probe_answer)}; exit 0"
         _write_stub(
             paths["env_bin"] / "python",
-            "#!/usr/bin/env bash\n" 'if [[ "${1-}" == "-c" && "${2-}" == *\'version("juniper-recurrence-model")\'* ]]; then\n' f"    printf 'argv1=%s cwd=%s\\n' \"$1\" \"$PWD\" >>'{paths['probe_log']}'\n" f"    {probe_arm}\n" "fi\n" f"exec '{preflight_fake}' \"$@\"\n",
+            f"#!/usr/bin/env bash\nif [[ \"${{1-}}\" == \"-c\" && \"${{2-}}\" == *'version(\"juniper-recurrence-model\")'* ]]; then\n    printf 'argv1=%s cwd=%s\\n' \"$1\" \"$PWD\" >>'{paths['probe_log']}'\n    {probe_arm}\nfi\nexec '{preflight_fake}' \"$@\"\n",
         )
         self.addCleanup(self._reap, paths)
         return paths

@@ -105,7 +105,7 @@ def _suite_yaml(base: Path, suite_dir: Path, *, row_bands: Any = None, suite_ban
 
 
 def _write_stub_launcher(path: Path, marker_dir: Path) -> None:
-    path.write_text("#!/usr/bin/env bash\n" f"MARKERS={marker_dir}\n" 'if [[ "$1" == "--up" ]]; then\n' '  touch "$MARKERS/up-$$"\n' '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then touch "$MARKERS/down-$2"; exit 0; fi\n' "exit 2\n")
+    path.write_text(f'#!/usr/bin/env bash\nMARKERS={marker_dir}\nif [[ "$1" == "--up" ]]; then\n  touch "$MARKERS/up-$$"\n  echo "=== Experiment run stub-run-$$ is up ==="\n  exit 0\nfi\nif [[ "$1" == "--down" ]]; then touch "$MARKERS/down-$2"; exit 0; fi\nexit 2\n')
     path.chmod(path.stat().st_mode | stat.S_IEXEC)
 
 
