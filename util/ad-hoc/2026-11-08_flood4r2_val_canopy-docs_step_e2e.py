@@ -13,8 +13,8 @@ The canopy-docs carrier says a GraphQL error never reaches the step's own
 ``createCommitOnBranch failed`` branch, because ``gh api graphql`` exits 1 on an
 ``errors`` body and ``set -euo pipefail`` ends the step at the ``gh`` line. This
 re-derives that end to end. The step's ``run:`` text is taken from the workflow
-file (PyYAML), its two ``/ tmp`` paths relocated under the scratch directory (this
-host never writes under / tmp), and it runs in a throwaway git repo whose
+file (PyYAML), its two ``_/_tmp`` paths relocated under the scratch directory (this
+host never writes under _/_tmp), and it runs in a throwaway git repo whose
 ``requirements.lock`` is dirty, with the real ``base64`` and ``jq``.
 
 ``gh`` on PATH is a wrapper. It NEVER sends the step's mutation: it ignores its
@@ -54,7 +54,6 @@ STEP_NAME = "Commit updated lockfile (GitHub-signed, via API)"
 # nosec B108 - the workflow's own text, relocated before running
 CI_BODY = "tmp/lockfile-commit.json"    # tmp-path-literal: allow
 
-# CI_RESULT = "/tmp/lockfile-commit-result.json"
 # nosec B108 - the workflow's own text, relocated before running
 CI_RESULT = "tmp/lockfile-commit-result.json"  # tmp-path-literal: allow
 
