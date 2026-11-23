@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.77
+**Version:** 0.6.78
 **Status:** Active
-**Last Updated:** 2026-11-16
+**Last Updated:** 2026-11-23
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -9761,6 +9761,7 @@ Source: `juniper-service-core/juniper_service_core/workers/registry.py` (`record
 | 0.6.75  | 2026-11-15 | Cursor flood-4 round-2 docs carrier (each claim re-derived from `main`): Local Claude Code Launchers (entry points, effort, version flags, stderr with the debug log off, prompt files); the symbol-loss `WEAKENED` bounds; Lane A3 `checks` and the Actions outage re-run; GnuPG long-option abbreviations at the guard's two-letter floor; the `predict_merge` scratch repository. Stale fleet-triage text corrected: since juniper-ml#1004 the docs screen has `juniper-docs-additions-check`'s thresholds (the console script since #1024), not an inline any-removed-line counter, and `_is_heal` reads branch and title prefixes; the hook battery includes `ruff` and `ruff-format` |
 | 0.6.76  | 2026-11-15 | The pull-request secret scan (ruling 10 in section 8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, the port of juniper-data#530): the Main CI `security` entry describes the action on `push` / `workflow_dispatch` (and `merge_group`, which it rejects), the pull-request install and `base..head` scan with `--remerge-diff`, the `gitleaks-report` artifact and the two real-engine self-tests; `tests/test_gitleaks_pr_scan.py` joins the Test Suite Reference and "Running every suite" (**260**). |
 | 0.6.77  | 2026-11-16 | The one-artifact publish (the port of juniper-cascor#763 / #767; the owner's directive and recovery ruling of 2026-11-15): § Meta-Package Publish Pipeline and § Independent Sibling Package Publish Pipelines describe the one artifact, its sha256 checks, the reuse step, no `skip-existing`, the per-job permissions and the recovery ladder, with its precondition (rungs 1 and 2 only after a TestPyPI job, install check included, that succeeded or failed only for a transient index lag; a broken package is a new patch version) and each workflow's republish command; the CI/CD inventory, § Publishing (`publish.yml`) and the `tests/test_publish_one_artifact.py` entry (261 suites) follow, and the sibling pipeline's step 3 names model-core's `_version.py` |
+| 0.6.78  | 2026-11-23 | juniper-ml#2592's edits, which merged without a version row (2026-11-15, `6541b2cc`): the Test Suite Reference's `tests/test_release_train_ceremony.py` entry covers the monitor's `HALT_BUILD`, and the Utility Script Reference's `util/release_train/ceremony.py` entry says the monitor reads only workflows named `... to PyPI`, orders finished runs by their latest attempt, lists the Release's runs with `--branch <tag>` and adds the publisher's `workflow_dispatch` runs on the tag |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -10338,6 +10339,6 @@ Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordi
 
 ---
 
-**Last Updated:** 2026-11-16
-**Version:** 0.6.77
+**Last Updated:** 2026-11-23
+**Version:** 0.6.78
 **Maintainer:** Paul Calnon
