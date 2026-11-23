@@ -873,6 +873,12 @@ jobs:
           # service-core sibling added with juniper-service-core 0.1.0.)
           python3 -m unittest -v tests/test_model_core_drift.py
           python3 -m unittest -v tests/test_service_core_drift.py
+          # tests/test_ws_resume_answer_table_drift.py: the shared /ws/training resume
+          # answer table (juniper-service-core/tests/fixtures/ws_resume_answers.json) must be
+          # byte-identical to juniper-cascor's copy (src/tests/fixtures/ws_resume_answers.json).
+          # The structure checks and the verdict's controls always run; the comparison skips
+          # here (no sibling is cloned) and runs weekly via docs-full-check.yml.
+          python3 -m unittest -v tests/test_ws_resume_answer_table_drift.py
           # tests/test_pyproject_extras.py: pins the
           # [project.optional-dependencies] surface so accidental edits
           # to extras (drop, mistype, fail to roll up into [all]) fail

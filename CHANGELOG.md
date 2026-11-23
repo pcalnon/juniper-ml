@@ -208,6 +208,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The integrated design's note 10.1h records the ruling. The recovery plan's §6.0 item 5 and §6.4
     step 14 point to it.
 
+- **`juniper-service-core`: `/ws/training` answers a resume frame as juniper-cascor does, and one shared table of
+  frames and answers pins both** (juniper-cascor#754's four cursor rules; the owner's rulings of 2026-11-12 and
+  2026-11-13). A `data` that is not an object, and a `last_seq` that is not a plain integer, are `resume_failed`
+  `malformed_resume`, checked before `server_instance_id`; a negative `last_seq` is read as `0`; and
+  `WebSocketManager.replay_since` raises `ReplayOutOfRange` for a `last_seq` above the last seq numbered, where, with
+  seqs buffered, it returned `[]`, so such a resume is `out_of_range` instead of `resume_ok`. Driven over a real WebSocket, the two
+  services answered 131 of 240 (frame, state) cases differently; now none do.
+  - Unreleased: no published juniper-service-core carries it (0.7.2 is the latest). Details are in
+    `juniper-service-core/CHANGELOG.md`.
+  - The table, `juniper-service-core/tests/fixtures/ws_resume_answers.json`, is byte-identical to juniper-cascor's
+    `src/tests/fixtures/ws_resume_answers.json`. Each repository's own test drives its own app against every row,
+    and `tests/test_ws_resume_answer_table_drift.py` (new; ci.yml, main-verify.yml, and a `docs-full-check.yml`
+    step) compares the two copies. The comparison runs where juniper-cascor is cloned: weekly in
+    `docs-full-check`, or locally with `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`.
+  - `docs/REFERENCE.md` (0.6.79) and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (1.0.72) describe the new answers.
+    REFERENCE's sentence that a future seq "is trusted, not checked against `current_seq`" no longer holds and is
+    replaced.
+
 ### Fixed
 
 - **The release-train monitor reads the PyPI publisher's run, files an issue for a failed build, and sees a

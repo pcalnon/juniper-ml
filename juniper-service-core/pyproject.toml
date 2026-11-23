@@ -48,6 +48,11 @@ test = [
     # workers/metrics tests exercise it. Without this pin those tests skip in CI
     # (workers/metrics.py under-measures). Floor mirrors juniper-observability.
     "prometheus-client>=0.20.0",
+    # tests/test_websocket_resume_answer_table.py serves the app with uvicorn on a loopback port and
+    # drives /ws/training with the websockets sync client, so the shared resume table is checked on
+    # the wire. Test-only: neither is a runtime dependency of the package.
+    "uvicorn>=0.29",
+    "websockets>=12.0",
 ]
 
 [project.urls]
