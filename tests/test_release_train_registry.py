@@ -558,7 +558,7 @@ class RegistryCrossRepoResolutionTest(unittest.TestCase):
                 self.assertEqual(
                     missing,
                     [],
-                    f"{pkg['pypi_name']}: {pyproject} declares {missing} as a runtime dependency but registry depends_on omits it -- " f"propose.py would not generate a D6 ceiling-bump follow-on for it, stranding it below the next minor",
+                    f"{pkg['pypi_name']}: {pyproject} declares {missing} as a runtime dependency but registry depends_on omits it -- propose.py would not generate a D6 ceiling-bump follow-on for it, stranding it below the next minor",
                 )
         self.assertGreater(checked, 0, "no pyprojects were read -- the guard would pass vacuously")
 

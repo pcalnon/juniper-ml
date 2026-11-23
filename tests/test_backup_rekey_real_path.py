@@ -258,7 +258,7 @@ class _RekeyRun(unittest.TestCase):
 
     def make_db(self, connection_string: bool = False, orphan_target: bool = False, orphan_option: bool = False, orphan_source: bool = False) -> None:
         con = sqlite3.connect(self.db)
-        con.executescript('CREATE TABLE "Option" ("BackupID" INTEGER, "Filter" TEXT, "Name" TEXT, "Value" TEXT);' 'CREATE TABLE "Backup" ("ID" INTEGER, "Name" TEXT, "TargetURL" TEXT, "DBPath" TEXT);' 'CREATE TABLE "Source" ("BackupID" INTEGER, "Path" TEXT);' 'CREATE TABLE "ConnectionString" ("ID" INTEGER, "BaseUrl" TEXT);' 'CREATE TABLE "BackupTargetUrl" ("ID" INTEGER, "BackupID" INTEGER, "TargetURL" TEXT);')
+        con.executescript('CREATE TABLE "Option" ("BackupID" INTEGER, "Filter" TEXT, "Name" TEXT, "Value" TEXT);CREATE TABLE "Backup" ("ID" INTEGER, "Name" TEXT, "TargetURL" TEXT, "DBPath" TEXT);CREATE TABLE "Source" ("BackupID" INTEGER, "Path" TEXT);CREATE TABLE "ConnectionString" ("ID" INTEGER, "BaseUrl" TEXT);CREATE TABLE "BackupTargetUrl" ("ID" INTEGER, "BackupID" INTEGER, "TargetURL" TEXT);')
         con.execute("INSERT INTO \"Option\" VALUES (-2, '', ?, ?)", ("encrypted-fields", "True"))
         con.execute("INSERT INTO \"Option\" VALUES (-2, '', ?, ?)", ("pbkdf-config", blob(OLD, "pbkdf")))
         con.execute("INSERT INTO \"Option\" VALUES (-1, '', ?, ?)", ("passphrase", blob(OLD, "anybackup")))  # ANY_BACKUP_ID: rewritten, not an orphan

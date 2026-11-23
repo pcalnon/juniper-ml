@@ -104,12 +104,12 @@ class PrBudgetAlarmRehearsalTest(unittest.TestCase):
             gh = stub_bin / "gh"
             if gh_fails:
                 gh.write_text(
-                    "#!/usr/bin/env bash\n" "echo 'API rate limit' >&2\n" "exit 1\n",
+                    "#!/usr/bin/env bash\necho 'API rate limit' >&2\nexit 1\n",
                     encoding="utf-8",
                 )
             else:
                 gh.write_text(
-                    "#!/usr/bin/env bash\n" "set -euo pipefail\n" f'cat "{payload}"\n',
+                    f'#!/usr/bin/env bash\nset -euo pipefail\ncat "{payload}"\n',
                     encoding="utf-8",
                 )
             gh.chmod(gh.stat().st_mode | stat.S_IXUSR)

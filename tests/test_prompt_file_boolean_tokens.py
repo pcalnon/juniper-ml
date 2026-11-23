@@ -44,7 +44,7 @@ class PromptFileBooleanTokenTests(unittest.TestCase):
         argv_log = root / "claude_argv.nul"
         fake = bin_dir / "claude"
         fake.write_text(
-            "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then echo "claude-test-version"; exit 0; fi\n' 'printf \'%s\\0\' "$@" >> "$CLAUDE_ARGV_NUL_LOG"\n',
+            '#!/usr/bin/env bash\nif [[ "$1" == "--version" ]]; then echo "claude-test-version"; exit 0; fi\nprintf \'%s\\0\' "$@" >> "$CLAUDE_ARGV_NUL_LOG"\n',
             encoding="utf-8",
         )
         fake.chmod(0o755)

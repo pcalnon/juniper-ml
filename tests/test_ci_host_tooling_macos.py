@@ -189,7 +189,7 @@ class DetectionRehearsalTest(unittest.TestCase):
             (tmp / "changed.txt").write_text("".join(f"{rel}\n" for rel in changed), encoding="utf-8")
             git = tmp / "bin" / "git"
             git.write_text(
-                "#!/bin/bash\n" f'printf "%s\\n" "$*" >> "{log}"\n' 'case "$1" in\n' f"  cat-file) exit {0 if have_base else 1} ;;\n" "  fetch) exit 0 ;;\n" f'  diff) cat "{tmp / "changed.txt"}" ;;\n' '  *) echo "unexpected git argv: $*" >&2; exit 99 ;;\n' "esac\n",
+                f'#!/bin/bash\nprintf "%s\\n" "$*" >> "{log}"\ncase "$1" in\n  cat-file) exit {0 if have_base else 1} ;;\n  fetch) exit 0 ;;\n  diff) cat "{tmp / "changed.txt"}" ;;\n  *) echo "unexpected git argv: $*" >&2; exit 99 ;;\nesac\n',
                 encoding="utf-8",
             )
             git.chmod(0o700)

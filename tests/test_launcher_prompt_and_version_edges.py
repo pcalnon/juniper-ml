@@ -62,7 +62,7 @@ class WakePromptFilePrecedenceTests(unittest.TestCase):
         argv_log.unlink(missing_ok=True)
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
-            "#!/usr/bin/env bash\n" 'printf \'%s\\0\' "$@" >> "$CLAUDE_ARGV_NUL_LOG"\n',
+            '#!/usr/bin/env bash\nprintf \'%s\\0\' "$@" >> "$CLAUDE_ARGV_NUL_LOG"\n',
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
@@ -149,7 +149,7 @@ class ClaudeyPromptFileAndVersionEdgesTests(unittest.TestCase):
         args_log = Path(temp_dir) / "wake_args.log"
         fake_wake = scripts_dir / "wake_the_claude.bash"
         fake_wake.write_text(
-            "#!/usr/bin/env bash\n" "{\n" '  echo "__CALL__"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$WTC_WRAPPER_ARGS_LOG"\n',
+            '#!/usr/bin/env bash\n{\n  echo "__CALL__"\n  for arg in "$@"; do\n    printf \'ARG=%s\\n\' "$arg"\n  done\n} >> "$WTC_WRAPPER_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_wake.chmod(0o755)

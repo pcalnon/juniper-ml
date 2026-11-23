@@ -1323,17 +1323,17 @@ class TestDataUpLive(unittest.TestCase):
             # the stub would create — data_up must NOT call python3.14 -m venv.
             data_venv = run_dir / ".venv-data"
             (data_venv / "bin").mkdir(parents=True)
-            (data_venv / "bin" / "activate").write_text('_OLD_VIRTUAL_PATH="$PATH"\n' f'VIRTUAL_ENV="{data_venv}"\n' "export VIRTUAL_ENV\n" 'PATH="$VIRTUAL_ENV/bin:$PATH"\n' "export PATH\n" "deactivate() {\n" '  PATH="$_OLD_VIRTUAL_PATH"\n' "  export PATH\n" "  unset VIRTUAL_ENV\n" "  unset -f deactivate 2>/dev/null || true\n" "}\n")
-            (data_venv / "bin" / "pip").write_text("#!/usr/bin/env bash\n" f'printf "%s\\n" "$@" >>"{marker_dir}/pip.log"\n' "exit 0\n")
+            (data_venv / "bin" / "activate").write_text(f'_OLD_VIRTUAL_PATH="$PATH"\nVIRTUAL_ENV="{data_venv}"\nexport VIRTUAL_ENV\nPATH="$VIRTUAL_ENV/bin:$PATH"\nexport PATH\ndeactivate() {{\n  PATH="$_OLD_VIRTUAL_PATH"\n  export PATH\n  unset VIRTUAL_ENV\n  unset -f deactivate 2>/dev/null || true\n}}\n')
+            (data_venv / "bin" / "pip").write_text(f'#!/usr/bin/env bash\nprintf "%s\\n" "$@" >>"{marker_dir}/pip.log"\nexit 0\n')
             (data_venv / "bin" / "pip").chmod(0o755)
             # The two markers are published ATOMICALLY (.partial then mv) -- see
             # _read_marker_when_written. A direct write is observable mid-record.
             (data_venv / "bin" / "python").write_text(
-                "#!/usr/bin/env bash\n" 'if [[ "${1-}" == "-c" ]]; then\n' f'  if [[ -f "{marker_dir}/gil_probe_answer" ]]; then cat "{marker_dir}/gil_probe_answer"; else echo 1; fi\n' "  exit 0\n" "fi\n" f'printf "PYTHON_GIL=%s\\n" "${{PYTHON_GIL-}}" >"{marker_dir}/python.env.partial"\n' f'mv -f "{marker_dir}/python.env.partial" "{marker_dir}/python.env"\n' f'printf "%s\\n" "$@" >"{marker_dir}/python.args.partial"\n' f'mv -f "{marker_dir}/python.args.partial" "{marker_dir}/python.args"\n' "exec sleep 60\n"
+                f'#!/usr/bin/env bash\nif [[ "${{1-}}" == "-c" ]]; then\n  if [[ -f "{marker_dir}/gil_probe_answer" ]]; then cat "{marker_dir}/gil_probe_answer"; else echo 1; fi\n  exit 0\nfi\nprintf "PYTHON_GIL=%s\\n" "${{PYTHON_GIL-}}" >"{marker_dir}/python.env.partial"\nmv -f "{marker_dir}/python.env.partial" "{marker_dir}/python.env"\nprintf "%s\\n" "$@" >"{marker_dir}/python.args.partial"\nmv -f "{marker_dir}/python.args.partial" "{marker_dir}/python.args"\nexec sleep 60\n'
             )
             (data_venv / "bin" / "python").chmod(0o755)
             # python3.14 stub that FAILS if -m venv is invoked (proves skip).
-            (bin_dir / "python3.14").write_text("#!/usr/bin/env bash\n" f'echo "VENV_SHOULD_NOT_RUN" >>"{marker_dir}/venv.log"\n' "exit 99\n")
+            (bin_dir / "python3.14").write_text(f'#!/usr/bin/env bash\necho "VENV_SHOULD_NOT_RUN" >>"{marker_dir}/venv.log"\nexit 99\n')
             (bin_dir / "python3.14").chmod(0o755)
             self._write_curl_ok(bin_dir)
 
@@ -1418,16 +1418,16 @@ class TestDataUpLive(unittest.TestCase):
             (marker_dir / "gil_probe_answer").write_text("0\n")
             data_venv = run_dir / ".venv-data"
             (data_venv / "bin").mkdir(parents=True)
-            (data_venv / "bin" / "activate").write_text('_OLD_VIRTUAL_PATH="$PATH"\n' f'VIRTUAL_ENV="{data_venv}"\n' "export VIRTUAL_ENV\n" 'PATH="$VIRTUAL_ENV/bin:$PATH"\n' "export PATH\n" "deactivate() {\n" '  PATH="$_OLD_VIRTUAL_PATH"\n' "  export PATH\n" "  unset VIRTUAL_ENV\n" "  unset -f deactivate 2>/dev/null || true\n" "}\n")
-            (data_venv / "bin" / "pip").write_text("#!/usr/bin/env bash\n" f'printf "%s\\n" "$@" >>"{marker_dir}/pip.log"\n' "exit 0\n")
+            (data_venv / "bin" / "activate").write_text(f'_OLD_VIRTUAL_PATH="$PATH"\nVIRTUAL_ENV="{data_venv}"\nexport VIRTUAL_ENV\nPATH="$VIRTUAL_ENV/bin:$PATH"\nexport PATH\ndeactivate() {{\n  PATH="$_OLD_VIRTUAL_PATH"\n  export PATH\n  unset VIRTUAL_ENV\n  unset -f deactivate 2>/dev/null || true\n}}\n')
+            (data_venv / "bin" / "pip").write_text(f'#!/usr/bin/env bash\nprintf "%s\\n" "$@" >>"{marker_dir}/pip.log"\nexit 0\n')
             (data_venv / "bin" / "pip").chmod(0o755)
             # The two markers are published ATOMICALLY (.partial then mv) -- see
             # _read_marker_when_written. A direct write is observable mid-record.
             (data_venv / "bin" / "python").write_text(
-                "#!/usr/bin/env bash\n" 'if [[ "${1-}" == "-c" ]]; then\n' f'  if [[ -f "{marker_dir}/gil_probe_answer" ]]; then cat "{marker_dir}/gil_probe_answer"; else echo 1; fi\n' "  exit 0\n" "fi\n" f'printf "PYTHON_GIL=%s\\n" "${{PYTHON_GIL-}}" >"{marker_dir}/python.env.partial"\n' f'mv -f "{marker_dir}/python.env.partial" "{marker_dir}/python.env"\n' f'printf "%s\\n" "$@" >"{marker_dir}/python.args.partial"\n' f'mv -f "{marker_dir}/python.args.partial" "{marker_dir}/python.args"\n' "exec sleep 60\n"
+                f'#!/usr/bin/env bash\nif [[ "${{1-}}" == "-c" ]]; then\n  if [[ -f "{marker_dir}/gil_probe_answer" ]]; then cat "{marker_dir}/gil_probe_answer"; else echo 1; fi\n  exit 0\nfi\nprintf "PYTHON_GIL=%s\\n" "${{PYTHON_GIL-}}" >"{marker_dir}/python.env.partial"\nmv -f "{marker_dir}/python.env.partial" "{marker_dir}/python.env"\nprintf "%s\\n" "$@" >"{marker_dir}/python.args.partial"\nmv -f "{marker_dir}/python.args.partial" "{marker_dir}/python.args"\nexec sleep 60\n'
             )
             (data_venv / "bin" / "python").chmod(0o755)
-            (bin_dir / "python3.14").write_text("#!/usr/bin/env bash\n" f'echo "VENV_SHOULD_NOT_RUN" >>"{marker_dir}/venv.log"\n' "exit 99\n")
+            (bin_dir / "python3.14").write_text(f'#!/usr/bin/env bash\necho "VENV_SHOULD_NOT_RUN" >>"{marker_dir}/venv.log"\nexit 99\n')
             (bin_dir / "python3.14").chmod(0o755)
             self._write_curl_ok(bin_dir)
 
@@ -1536,7 +1536,7 @@ class TestActivateCondaNounset(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             conda_sh = Path(tmp) / "conda.sh"
             # Mimic plant's ADDR2LINE class: activate scripts reference unset vars.
-            conda_sh.write_text("#!/usr/bin/env bash\n" "conda() {\n" '  if [[ "$1" == "activate" ]]; then\n' '    : "${ADDR2LINE}"\n' "  fi\n" "}\n")
+            conda_sh.write_text('#!/usr/bin/env bash\nconda() {\n  if [[ "$1" == "activate" ]]; then\n    : "${ADDR2LINE}"\n  fi\n}\n')
             result = self._run_activate(conda_sh)
             self.assertEqual(result.returncode, 0, msg=result.stderr + result.stdout)
             self.assertIn("NOUNSET_ON", result.stdout)
@@ -1564,7 +1564,7 @@ class TestActivateCondaNounset(unittest.TestCase):
         """
         with tempfile.TemporaryDirectory() as tmp:
             conda_sh = Path(tmp) / "conda.sh"
-            conda_sh.write_text("#!/usr/bin/env bash\n" "conda() {\n" '  if [[ "$1" == "activate" ]]; then\n' "    return 1\n" "  fi\n" "}\n")
+            conda_sh.write_text('#!/usr/bin/env bash\nconda() {\n  if [[ "$1" == "activate" ]]; then\n    return 1\n  fi\n}\n')
             harness = "set -euo pipefail\n" 'log() { echo "$*"; }\n' f'CONDA_SH="{conda_sh}"\n' + _extract_activate_conda_function() + "failed=0\n" + 'activate_conda "JuniperCascor1" || failed=1\n' + 'echo "failed=${failed}"\n' + "if (( failed != 1 )); then exit 2; fi\n"
             result = subprocess.run(
                 ["/bin/bash", "-c", harness],
@@ -1800,7 +1800,7 @@ class TestLiveDown(unittest.TestCase):
             # and the service-tier name (snapshot_<ISO>Z.h5) is exactly what the old glob matched.
             self.assertTrue(
                 (project_dir / "juniper-cascor/cascor-snapshots/snapshot_20260809T000002Z.h5").exists(),
-                "the SHARED snapshot root must survive teardown -- it is a project asset store, " "not run scratch (storage-convention ruling 2026-08-20)",
+                "the SHARED snapshot root must survive teardown -- it is a project asset store, not run scratch (storage-convention ruling 2026-08-20)",
             )
             self.assertTrue(
                 (project_dir / "juniper-cascor/cascor-snapshots/cascor_snapshot_20260813_010101_abc.h5").exists(),
@@ -2171,7 +2171,7 @@ class TestDoUpPartialFailureTeardown(unittest.TestCase):
             (stub_bin / "curl").write_text("#!/usr/bin/env bash\nexit 0\n")
             (stub_bin / "curl").chmod(0o755)
             # ss → report whichever listener file matches the queried sport port.
-            (stub_bin / "ss").write_text("#!/usr/bin/env bash\n" "set -euo pipefail\n" 'port=""\n' 'for a in "$@"; do\n' '  case "$a" in\n' '    sport\\ =\\ :*) port="${a##*:}" ;;\n' "  esac\n" "done\n" f'listener="{listeners_dir}/$port.pid"\n' 'if [[ -n "$port" && -f "$listener" ]]; then\n' '  pid="$(cat "$listener")"\n' '  echo "LISTEN 0 128 127.0.0.1:${port} 0.0.0.0:* users:((\\"python\\",pid=${pid},fd=3))"\n' "fi\n" "exit 0\n")
+            (stub_bin / "ss").write_text(f'#!/usr/bin/env bash\nset -euo pipefail\nport=""\nfor a in "$@"; do\n  case "$a" in\n    sport\\ =\\ :*) port="${{a##*:}}" ;;\n  esac\ndone\nlistener="{listeners_dir}/$port.pid"\nif [[ -n "$port" && -f "$listener" ]]; then\n  pid="$(cat "$listener")"\n  echo "LISTEN 0 128 127.0.0.1:${{port}} 0.0.0.0:* users:((\\"python\\",pid=${{pid}},fd=3))"\nfi\nexit 0\n')
             (stub_bin / "ss").chmod(0o755)
 
             env = RedactedEnv(os.environ)
@@ -2275,7 +2275,7 @@ class TestStubMarkersArePublishedAtomically(unittest.TestCase):
         self.assertEqual(
             offenders,
             [],
-            "these stubs redirect an async marker straight to its final path; stage to " f"'<marker>.partial' and 'mv -f' it into place instead: {offenders}",
+            f"these stubs redirect an async marker straight to its final path; stage to '<marker>.partial' and 'mv -f' it into place instead: {offenders}",
         )
 
     def test_every_async_marker_shape_is_actually_present_in_the_source(self) -> None:

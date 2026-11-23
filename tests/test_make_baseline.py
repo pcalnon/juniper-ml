@@ -78,7 +78,7 @@ def _write_suite(root: Path, cells, name="suite", workload="A") -> Path:
         # `experiment.description` differs per cell and is COSMETIC -- the fingerprint must ignore
         # it, exactly as PF-1's five repeats do in the field.
         (suite_dir / "cells" / cell_id / "experiment.yaml").write_text(
-            f"experiment:\n  description: repeat {idx}\n  name: cell-{cell_id}\n  seed: 42\n" f"training:\n  params:\n    max_epochs: {4000 if cell_workload == 'A' else 500}\n",
+            f"experiment:\n  description: repeat {idx}\n  name: cell-{cell_id}\n  seed: 42\ntraining:\n  params:\n    max_epochs: {4000 if cell_workload == 'A' else 500}\n",
             encoding="utf-8",
         )
         lines.append(json.dumps({"cell_id": cell_id, "run_dir": str(run_dir), "overrides": {"training.params.max_epochs": 4000}, "config_sha256": f"sha-{cell_id}"}))

@@ -148,9 +148,9 @@ class _Harness:
         bin_dir.mkdir()
         gh = bin_dir / "gh"
         gh.write_text(
-            "#!/usr/bin/env bash\n" f'LOG="{self.log}"\n' f'SEQ="{seq_dir}"\n' f'CNT="{self.counter}"\n' f"LAST={self.last_index}\n" 'printf "%s\\n" "$*" >>"$LOG"\n'
+            f'#!/usr/bin/env bash\nLOG="{self.log}"\nSEQ="{seq_dir}"\nCNT="{self.counter}"\nLAST={self.last_index}\nprintf "%s\\n" "$*" >>"$LOG"\n'
             # Optional forced failure, to prove a bad probe is a hard error.
-            f'if [ -n "{fail_on or ""}" ]; then\n' f'  case "$*" in *"{fail_on or "@@never@@"}"*) echo "boom" >&2; exit 1 ;; esac\n' "fi\n"
+            f'if [ -n "{fail_on or ""}" ]; then\n  case "$*" in *"{fail_on or "@@never@@"}"*) echo "boom" >&2; exit 1 ;; esac\nfi\n'
             # Optional FLAKY failure: fail the first N matching calls, then succeed.
             # Models the transient TLS/EOF errors seen in live use.
             f'if [ -n "{flaky_on or ""}" ]; then\n'
