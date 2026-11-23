@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.11.5
-**Last Updated**: 2026-11-16
+**Last Updated**: 2026-11-23
 
 ---
 
@@ -67,7 +67,12 @@ PR rather than waiving the budget gate.
 ```bash
 # Install locally: pip install -e ".[<extra>]" -- extras are in pyproject.toml; ".[all]" is multi-GB (pulls torch via worker)
 
-# Run all tests -- the full ordered list of 261 `python3 -m unittest`
+# Run tests: any subset, CI's own commands, past failures (--help; docs/REFERENCE.md
+# § Test Suite Reference, "Running tests locally")
+python3 util/run_tests.py            # all: every suite and package lane, -j auto
+python3 util/run_tests.py --failed   # the last run's failures again
+
+# Run all tests -- the full ordered list of 262 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
 # § Test Suite Reference. It is generated from ci.yml's regression step, which is
 # the authoritative list; tests/test_ci_test_wiring_drift.py gates that every suite
