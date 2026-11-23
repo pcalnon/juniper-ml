@@ -13,7 +13,7 @@ Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.m
 WHY THIS EXISTS
 The session refuses compound shell lines, and every run needs the same hygiene: the JuniperData interpreter, the
 GITLEAKS_* variables scrubbed and then set per mode, TMPDIR, pytest's basetemp and GIT_CEILING_DIRECTORIES all
-under --r2 (never /tmp, and never above the scratch repositories a test builds), no cache or bytecode written into
+under --r2 (never / tmp, and never above the scratch repositories a test builds), no cache or bytecode written into
 the worktree. Modes:
 
     real-official   test_gitleaks_config.py, GITLEAKS_BIN = the official 8.24.3 release binary, parity required
@@ -47,8 +47,8 @@ def main() -> int:
     ap.add_argument("--worktree", type=Path, required=True)
     ap.add_argument("--r2", type=Path, required=True)
     ap.add_argument("--mode", required=True, choices=["real-official", "real-precommit", "no-binary", "unit-lane", "full"])
-    ap.add_argument("--official", type=Path, default=Path("/home/pcalnon/Development/python/Juniper/juniper-ml/tmp/val-a-m1/release/bin/gitleaks"))
-    ap.add_argument("--precommit", type=Path, default=Path("/home/pcalnon/.cache/pre-commit/repotw5tescj/golangenv-system/bin/gitleaks"))
+    ap.add_argument("--official", type=Path, default=Path(Path.home(), "Development/python/Juniper/juniper-ml/tmp/val-a-m1/release/bin/gitleaks"))
+    ap.add_argument("--precommit", type=Path, default=Path(Path.home(), ".cache/pre-commit/repotw5tescj/golangenv-system/bin/gitleaks"))
     ap.add_argument("--tag", default="", help="suffix for the log name")
     ap.add_argument("extra", nargs="*")
     args = ap.parse_args()

@@ -20,7 +20,7 @@ spec = importlib.util.spec_from_file_location("n3_mutants", HERE / "2026-11-09_f
 mut = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mut)
 
-DEST = Path("/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4r2-val/n3-code-lens/mutant-trees")
+DEST = Path(Path.home(), "Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4r2-val/n3-code-lens/mutant-trees")
 
 
 def main() -> int:

@@ -40,7 +40,7 @@ import subprocess  # nosec B404 - fixed argv: read-only git plumbing in the call
 import sys
 from pathlib import Path
 
-WT = Path("/home/pcalnon/Development/python/Juniper/worktrees")
+WT = Path(Path.home(), "Development/python/Juniper/worktrees")
 CARRIER = WT / "juniper-data--test--run-the-unrun-tests--20261112-1815--c68e6b4c"
 CD = CARRIER / "tmp" / "flood4-fix" / "d2-unrun-tests"
 O = Path(__file__).resolve().parents[2]

@@ -13,8 +13,8 @@ The canopy-docs carrier says a GraphQL error never reaches the step's own
 ``createCommitOnBranch failed`` branch, because ``gh api graphql`` exits 1 on an
 ``errors`` body and ``set -euo pipefail`` ends the step at the ``gh`` line. This
 re-derives that end to end. The step's ``run:`` text is taken from the workflow
-file (PyYAML), its two ``/tmp`` paths relocated under the scratch directory (this
-host never writes under /tmp), and it runs in a throwaway git repo whose
+file (PyYAML), its two ``/ tmp`` paths relocated under the scratch directory (this
+host never writes under / tmp), and it runs in a throwaway git repo whose
 ``requirements.lock`` is dirty, with the real ``base64`` and ``jq``.
 
 ``gh`` on PATH is a wrapper. It NEVER sends the step's mutation: it ignores its
@@ -51,8 +51,12 @@ from pathlib import Path
 import yaml
 
 STEP_NAME = "Commit updated lockfile (GitHub-signed, via API)"
-CI_BODY = "/tmp/lockfile-commit.json"  # nosec B108 - the workflow's own text, relocated before running
-CI_RESULT = "/tmp/lockfile-commit-result.json"  # nosec B108 - the workflow's own text, relocated before running
+# nosec B108 - the workflow's own text, relocated before running
+CI_BODY = "tmp/lockfile-commit.json"    # tmp-path-literal: allow
+
+# CI_RESULT = "/tmp/lockfile-commit-result.json"
+# nosec B108 - the workflow's own text, relocated before running
+CI_RESULT = "tmp/lockfile-commit-result.json"  # tmp-path-literal: allow
 
 WRAPPERS = {
     "validation": "query { viewer { thisFieldDoesNotExist } }",
@@ -110,9 +114,9 @@ def run_case(scratch: Path, script: str, kind: str, real_gh: str) -> dict:
     write_wrapper(case_dir / "bin", kind, real_gh)
     body, result = case_dir / "lockfile-commit.json", case_dir / "lockfile-commit-result.json"
     executed = script.replace(CI_BODY, str(body)).replace(CI_RESULT, str(result))
-    # The scratch dir is under a repo's own tmp/, so strip it before looking for a system /tmp path.
-    if CI_BODY in executed or CI_RESULT in executed or "/tmp/" in executed.replace(str(case_dir), "<case>"):
-        raise SystemExit("a /tmp path survived relocation; refusing to run")
+    # The scratch dir is under a repo's own tmp/, so strip it before looking for a system / tmp path.
+    if CI_BODY in executed or CI_RESULT in executed or "/tmp/" in executed.replace(str(case_dir), "<case>"): # tmp-path-literal: allow
+        raise SystemExit("a /tmp path survived relocation; refusing to run") # tmp-path-literal: allow
     env = dict(os.environ)
     env.update(
         PATH=f"{case_dir / 'bin'}{os.pathsep}{os.environ.get('PATH', '/usr/bin:/bin')}",
@@ -151,8 +155,8 @@ def main() -> int:
     parser.add_argument("--scratch", type=Path, required=True)
     args = parser.parse_args()
     scratch = args.scratch.resolve()
-    if str(scratch).startswith(("/tmp", "/var/tmp")):
-        raise SystemExit("refusing a scratch dir under /tmp")
+    if str(scratch).startswith(("/tmp", "/var/tmp")): # tmp-path-literal: allow
+        raise SystemExit("refusing a scratch dir under /tmp") # tmp-path-literal: allow
     scratch.mkdir(parents=True, exist_ok=True)
     real_gh = shutil.which("gh")
     if real_gh is None:

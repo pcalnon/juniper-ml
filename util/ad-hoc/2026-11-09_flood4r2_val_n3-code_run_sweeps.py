@@ -17,10 +17,10 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO = Path("/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert")
+REPO = Path(Path.home(), "Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert")
 S = REPO / "tmp/flood4r2-val/n3-code-lens"
 PY = "/opt/miniforge3/envs/JuniperCascor1/bin/python"
-FIX_SRC = "/home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--validate--ws-resume-losses-n3-code--20261109-0324--f3dfee8c/src"
+FIX_SRC = Path(Path.home(), "Development/python/Juniper/worktrees/juniper-cascor--validate--ws-resume-losses-n3-code--20261109-0324--f3dfee8c/src")
 MAIN_SRC = str(S / "main-tree/src")
 
 

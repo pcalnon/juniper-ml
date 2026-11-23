@@ -42,7 +42,7 @@ import sys
 from pathlib import Path
 
 O = Path(__file__).resolve().parents[2]
-CARRIER = Path("/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/agent-a211deee35ec85ad3")
+CARRIER = Path(Path.home(), "Development/python/Juniper/juniper-ml/.claude/worktrees/agent-a211deee35ec85ad3")
 LAND = CARRIER / "util/ad-hoc/2026-11-12_flood4r2_ml-propose-r3b_land.py"
 CHANGELOG_HELPER = O / "util/ad-hoc/2026-11-14_flood4r2_s8_changelog_into_unreleased_group.py"
 CHECK = O / "util/ad-hoc/2026-11-12_flood4r2_val_ml-propose-r3b_landing_check.py"

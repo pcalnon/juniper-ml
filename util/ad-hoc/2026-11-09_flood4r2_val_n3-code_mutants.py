@@ -23,9 +23,9 @@ import sys
 import time
 from pathlib import Path
 
-WT = Path("/home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--validate--ws-resume-losses-n3-code--20261109-0324--f3dfee8c")
-FROZEN = Path("/home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--fix--ws-resume-losses--20261108-1816--f3dfee8c")
-OUT = Path("/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4r2-val/n3-code-lens/mutants")
+WT = Path(Path.home(), "Development/python/Juniper/worktrees/juniper-cascor--validate--ws-resume-losses-n3-code--20261109-0324--f3dfee8c")
+FROZEN = Path(Path.home(), "Development/python/Juniper/worktrees/juniper-cascor--fix--ws-resume-losses--20261108-1816--f3dfee8c")
+OUT = Path(Path.home(), "Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4r2-val/n3-code-lens/mutants")
 PY = "/opt/miniforge3/envs/JuniperCascor1/bin/python"
 MANAGER = "src/api/websocket/manager.py"
 STREAM = "src/api/websocket/training_stream.py"

@@ -21,8 +21,8 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-WT = Path("/home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--validate--ws-resume-losses-n3-code--20261109-0324--f3dfee8c")
-OUT = Path("/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4r2-val/n3-code-lens")
+WT =  Path(Path.home(), "Development/python/Juniper/worktrees/juniper-cascor--validate--ws-resume-losses-n3-code--20261109-0324--f3dfee8c")
+OUT = Path(Path.home(), "Development/python/Juniper/juniper-ml/.claude/worktrees/humming-stargazing-papert/tmp/flood4r2-val/n3-code-lens")
 PY = "/opt/miniforge3/envs/JuniperCascor1/bin/python"
 NEW = "src/tests/unit/api/test_websocket_resume_continuity.py"
 EXTRA = "src/tests/unit/api/test_n3_validator_extra.py"
@@ -41,7 +41,7 @@ def env() -> dict:
 def assert_fix_intact() -> None:
     import hashlib
 
-    frozen = Path("/home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--fix--ws-resume-losses--20261108-1816--f3dfee8c")
+    frozen = Path(Path.home(), "Development/python/Juniper/worktrees/juniper-cascor--fix--ws-resume-losses--20261108-1816--f3dfee8c")
     for rel in ("src/api/websocket/manager.py", "src/api/websocket/training_stream.py", "src/api/observability.py", NEW):
         a = hashlib.sha256((WT / rel).read_bytes()).hexdigest()
         b = hashlib.sha256((frozen / rel).read_bytes()).hexdigest()

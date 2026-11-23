@@ -1525,7 +1525,7 @@ worse than 290 KB later; if the Overtoad adopts exactly one *and* expects it to 
 
 ---
 
-[##](##) 11. The Overtoad decisions and open questions
+## 11. The Overtoad decisions and open questions
 
 Marked as decisions, not guessed at.
 
