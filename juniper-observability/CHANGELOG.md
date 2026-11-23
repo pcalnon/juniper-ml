@@ -8,6 +8,14 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`sentry-sdk` is capped below 3** in the `sentry` and `test` extras (`>=2.35.0,<3`). sentry-sdk
+  3.0.0 (PyPI, 2026-11-23 09:30Z) removed the `send_default_pii` option and the `sentry_sdk.scrubber`
+  module, so `configure_sentry` raised `TypeError: Unknown option 'send_default_pii'` and 20 tests in
+  `tests/test_sentry.py` failed on any fresh install. The published 0.4.2 still admits 3.x; a
+  release carrying this cap is what protects consumers. Moving to 3.x needs a port of `sentry.py`.
+
 ## [0.4.2] - 2026-11-08
 
 ### Security
