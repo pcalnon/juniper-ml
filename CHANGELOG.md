@@ -419,6 +419,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     §4.1 and §5.3, which said to fix and re-cut: a transient failure is "Re-run failed jobs", a broken package a new
     patch version), and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (the ladder replaces its plain re-fire row).
 
+- **The agent guard also reads each Bash command as bash 5.3 builds its words, and quoted text no longer counts
+  against the brace cap (`util/claude_agent_guard.py` 1.4.0)** (the owner's rulings 16 and 18 (2026-11-09; the
+  record's next update adds them to its section 8), the owner's ruling of 2026-11-12 and the owner's ruling of
+  2026-11-15).
+  - **A second reading.** 1.3.0 brace-expanded each word after quote removal, so it could not tell `\}` from `}`,
+    counted quoted lists against `MAX_BRACE_ALTERNATIVES`, read a substitution's body as brace syntax and never
+    expanded an option word. Each command is now also read as bash 5.3 reads it: the parser's end for `${...}` (its
+    first unquoted `}`) and for `$( )` (a `case` pattern's `)`, a here-document and a comment do not end it),
+    extglob groups, then every word brace-expanded as written (`bash_brace_expand`, a port of bash's brace scan's
+    quoting, with its `{}` rule) and quote-removed. Every rule runs on those words, and again on the words a computed
+    part inside a word makes when it prints nothing or takes its `${x:-WORD}` default (`sud"$(:)"o id` is
+    `sudo id`). A call is denied when either reading trips a rule, so nothing 1.3.0 denies passes.
+  - **Path readings.** A substitution or parameter is one part that may hold any text or none (`.ss$(:)h`,
+    `.ss$(printf h)`), wherever its path component also holds a literal character other than a leading dot, for the credential directories, Claude's settings, the MCP files and the
+    signing paths alike. `~`, `$HOME`, `${HOME}`, `~+` and `~-` words are normalised (`~/X/../.ssh` is `~/.ssh`),
+    and on those readings `~/.gitconfig`, `~/.config/git`, git's system gitconfig and a `.git/hooks` path count as
+    the signing paths they are. When the command names `dotglob` or `GLOBIGNORE`, a glob directly under a home can
+    match a dot-name, and an `alias` value is judged as the command it names.
+  - **Closed** (each passed 1.3.0 and reaches the path, or runs the command, in bash 5.3.9, measured printf-only in a
+    scratch home): the escape gap `cat ~/.ss{h,b\}c}/config` and `su{do,x\}y} id`; behind an `X/..` hop,
+    `cat ~/X/../.ss{h,$(:{)}/config` and `cat ~/X/../.ss$(:)h/config` with their backtick, `<( )` and `${x}` forms;
+    `: ${x:-{}; sudo id; : }`; hops before `.claude/settings.json`, `.gitconfig`, `.claude.json` and `.???`;
+    `cat ~/.s@(s)h/config` after `shopt -s extglob`; `cat ~/X/../'$'{Y/../.ss,z}h/config`;
+    `cat ~/.ss{h,$'\x7d'c}/config`; `cat ~+/.claude/settings.json` from home; a `case` or a here-document inside
+    `$( )` in a brace list, and a `case` inside `$( )` in an expanded here-document, whose command runs; brace
+    lists in option words (`gh api --{method=POST,paginate}`, `gh {api,-XPOST}`, `git commit --{gpg-sign,quiet}`);
+    in a path word, the lists bash expands inside a quoted backtick body or `${x:-"..."}`; an empty substitution or a `${x:-WORD}`
+    default inside a command or option word (`sud"$(:)"o id`, `gh api --meth$(:)od=POST repos/o/r`,
+    `git commit --gpg-$(:)sign -m x`, `{pke${x:-x}ec,Q} id`, `claude mcp a$(:)dd x y`); a substitution, parameter
+    or glob in a signing path (`cp hook .git/ho$(:)oks/post-commit`, `cp x ~/.gitc?nfig`,
+    `cat ~/.config/gi?/config`); `shopt -s dotglob; cat ~/*/config` and `GLOBIGNORE=x; cat ~/*/config`; and
+    `alias s=sudo`, then `s id` on a later line.
+  - **Quoted text is text.** Of the 44,678 Bash commands in the newest 200 session transcripts on 2026-11-16
+    (aggregates only), 1.3.0 refuses 33. 1.4.0 refuses 2 (a brace sequence with an operand past 2**61), passes 24
+    of the 33, and denies 7 others (`CRED-PATH-BASH` or `GH-API-WRITE`). It denies one command 1.3.0 passed: a
+    recursive command in a `for` loop, through the rule for a recursive tool rooted at home or above, on the second
+    reading. A list bash itself expands past 64 alternatives is still refused,
+    and so is a command whose expansions make more than `BRACE_SCAN_BUDGET` characters of words in all (the second
+    reading quote-removes and judges each). `brace_expand`, which Glob, Grep and Serena patterns use, is unchanged.
+  - **Bounded cost.** A command whose `cd` targets make more than `MAX_CD_BASES` (64) directories to resolve
+    relative words against, or whose analysis takes more than `ANALYSIS_TIME_BUDGET` (3 s), is refused (exit 2),
+    well inside the hook's 10 s timeout, and each reading's nested texts get that reading's own directories.
+    Measured as the hook on 2026-11-16: each of 33 adversarial shapes finishes in under 4 s (1.3.0 runs past
+    60 s on seven of them), and the census's slowest commands take 0.10-0.26 s (1.3.0: 0.08-0.13 s).
+  - **Still open**, by spelling: a substitution that prints part of a command or option word
+    (`d$(printf %s o)as id`, `gh api repos/o/r --$(printf %s i)nput f`); a parameter expansion whose operator is
+    quoted (`s"${x$':'-"{u,Q}"}" id`); a glob with no literal character as a whole signing-path component
+    (`cat ~/.config/*/config`); a substitution, or a parameter with no `:-` default, that makes up a whole path component or follows a lone dot, anywhere but the first component under a home or inside `~/.claude` (`cp hook .git/$(printf %s hoo ks)/post-commit`, `cp x ~/.config/$d/config`, `cat /x/$(printf %s .s sh)/config`, `cat /x/.$d/config`); aliases and functions from the shell's profile; a variable that
+    holds `..` or `/`, even in the same command (gap 2: `d=~/.ss; cat ${d}h/config`);
+    a program that hands its argument to a shell the guard does not model (gap 1: `script -c`, `flock -c`,
+    `npx -c`, `tmux`, `ssh-agent`, a git `!` alias), in which a quoted brace list is no longer refused; and the rules
+    of shells other than bash 5.3.
+  - `tests/test_claude_agent_guard.py` gains a row for each closed spelling and allowed rows that must stay allowed;
+    `tests/test_claude_agent_guard_brace_cap.py` gains `BashWordTest` (the words bash 5.3.9 printed for 29 words, and
+    the quoted cases of the cap) and `AnalysisBoundTest` (the two bounds); the self-test runs 66 checks. The owner
+    re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` to install it.
+
 ## [0.11.5] - 2026-11-13
 
 ### Security
