@@ -32,13 +32,14 @@
 # THE FALSE NEGATIVE
 #
 # Do NOT use "server-watchdog.status LAST is after the boot time" as the
-# criterion. The watchdog timer is OnCalendar=*-*-* 12:00:00 with
-# Persistent=true: it catches up only if a 12:00 elapse point was crossed while
-# the machine was down. Reboot at any other hour and LAST legitimately stays
-# pre-boot for up to ~23 h -- a HEALTHY reboot scored as a failure. Waiting for
-# the 09:00 backup does not help either; it is three hours BEFORE the 12:00
-# watchdog. Hence the explicit `start` below: the unit is Type=oneshot, safe to
-# trigger on demand, and it refreshes the artifact immediately.
+# criterion. The watchdog timer is OnCalendar=*-*-* 20:00:00 (local time; 12:00
+# until 2026-11-15) with Persistent=true: it catches up only if a 20:00 elapse
+# point was crossed while the machine was down. Reboot at any other hour and
+# LAST legitimately stays pre-boot for up to ~23 h -- a HEALTHY reboot scored as
+# a failure. Waiting for the backup does not help either: it starts at 13:00Z
+# (07:00 CST, 08:00 CDT; 14:00Z until 2026-11-15), 12 to 13 hours BEFORE the
+# 20:00 watchdog. Hence the explicit `start` below: the unit is Type=oneshot,
+# safe to trigger on demand, and it refreshes the artifact immediately.
 #
 # ALSO
 #   * server-watchdog.status has NO freshness component -- it would read "OK"
@@ -120,7 +121,7 @@ post)
 
     echo
     echo "[3/4] force a watchdog run now (Type=oneshot, safe on demand)"
-    echo "      NOT waiting for 12:00 -- see the false-negative note in this file."
+    echo "      NOT waiting for 20:00 -- see the false-negative note in this file."
     if systemctl --user start yamaguchi-watchdog.service 2>&1 | sed 's/^/      /'; then
         echo "  ran   yamaguchi-watchdog.service"
     else
@@ -153,7 +154,7 @@ post)
     hr
     if (( rc == 0 )); then
         echo "RESULT: PASS -- the lane survives reboot without a graphical login."
-        echo "Now let one full SCHEDULED run complete (14:00Z daily) before closing"
+        echo "Now let one full SCHEDULED run complete (13:00Z daily) before closing"
         echo "criterion 5. Remember startup-delay=30m: for the first 30 minutes"
         echo "after boot the ProposedSchedule may read empty or shifted, and that"
         echo "is not a fault."
