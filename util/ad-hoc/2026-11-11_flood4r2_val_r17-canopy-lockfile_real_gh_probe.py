@@ -29,7 +29,7 @@ PROBES: list[dict[str, object]] = [
     {"id": "malformed_field", "query": "query { viewer { loginx } }", "fake_token": False},
     {"id": "syntax_error", "query": "query { viewer { ", "fake_token": False},
     {"id": "ok_typename", "query": "query { __typename }", "fake_token": False},
-    {"id": "partial_data_with_errors", "query": 'query { __typename repository(Overtoad: "cli", name: "no-such-repo-flood4-val-probe") { id } }', "fake_token": False},
+    {"id": "partial_data_with_errors", "query": 'query { __typename repository(owner: "cli", name: "no-such-repo-flood4-val-probe") { id } }', "fake_token": False},
     {"id": "fake_token_401", "query": "query { __typename }", "fake_token": True},
 ]
 

@@ -116,7 +116,7 @@ def main() -> int:
     try:
         in_proc = secret_from_pid(pid, args.env_var)
     except PermissionError:
-        print(f"UNDETERMINED: /proc/{pid}/environ not readable (need Overtoad or root)")
+        print(f"UNDETERMINED: /proc/{pid}/environ not readable (need owner or root)")
         return 2
     except FileNotFoundError:
         print(f"UNDETERMINED: pid {pid} is gone")

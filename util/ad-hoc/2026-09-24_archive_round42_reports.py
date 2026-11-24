@@ -221,7 +221,7 @@ def main(argv: "list[str]") -> int:
         target = OUT / name
         text = last_report(transcript(session, aid))
         # Name the Overtoad's address by a label, never by its pattern: the pattern IS the address.
-        hits = ["Overtoad-email" if p is _OWNER else p.pattern for p in SECRET_PATTERNS if p.search(text)]
+        hits = ["owner-email" if p is _OWNER else p.pattern for p in SECRET_PATTERNS if p.search(text)]
         if hits:
             print(f"  REFUSE {name}: credential-shaped text ({', '.join(hits)})")
             failed = True

@@ -244,12 +244,12 @@ CONSENSUS_ROUND2 = """- **Round 2** (2026-10-21): Lane 15-B, the adversarial lan
     land after the second render, behind a screenshot; nothing holds the writer); item 31b's new manual sentence is
     wrong for the three 1-D patch targets; the handoff omitted ledger items 18–21, two of the four open P1s among
     them; item 33's recipe would not upgrade dash; item 27's drive never opens the Live Switch modal, so F-CANOPY-069's
-    gated click-through had no Overtoad, and the recipe's leg would have stamped `571743db`.
+    gated click-through had no owner, and the recipe's leg would have stamped `571743db`.
   - MINOR: wordings in F-CANOPY-069's blockquote (the alert's add time; response times read as alert lives; two of
     three new run dependencies; the floor's counter-position); F-CANOPY-028's stale-input example (a four-key analogue,
     not `early#2`'s 22-box body) and its M-PARAMETERS-06 claim (that row runs only in the `settled` arm); the eviction
     residual the fix leaves; the provenance sentence; the round-1 record's wording; statements true only at landing;
-    `--expected-head`'s Overtoad; the screenshots; the driver's forced arm, whose timing changed between the passes;
+    `--expected-head`'s owner; the screenshots; the driver's forced arm, whose timing changed between the passes;
     M-PARAMETERS-04's Expected cell; and an erratum to Phase 14's F-CANOPY-069 text: two callback pairs and three ids,
     not three pairs, and no registration overwritten (`callback_map` is keyed by each callback's whole output
     string; canopy#760's own `test_callback_map_and_served_list_agree` passes on `571743db`).

@@ -15,7 +15,7 @@ Related: notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSME
 What it reads (nothing is written, the server is not contacted, nothing under the backup destination is opened)
 -------------
 1. The acceptance probe's history, ``~/.local/state/duplicati/acceptance-history.jsonl``: per probe run, the dlist
-   count, the dlists added and removed since the previous run, the volume classes (type, mode, Overtoad) and the RUN,
+   count, the dlists added and removed since the previous run, the volume classes (type, mode, owner) and the RUN,
    AC-5, AC-7 and CENSUS verdicts.
 2. The watchdog's log, ``~/.local/state/duplicati/server-watchdog.log``, from ``--since`` on.
 3. sysstat's daily files ``/var/log/sysstat/saDD``: per day, the average %iowait, %idle, swap used, 15-minute load

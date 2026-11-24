@@ -43,7 +43,7 @@ from collections import Counter
 
 QUERY = """
 query($owner: String!, $name: String!, $after: String) {
-  repository(Overtoad: $owner, name: $name) {
+  repository(owner: $owner, name: $name) {
     pullRequests(states: OPEN, first: 25, after: $after, orderBy: {field: CREATED_AT, direction: ASC}) {
       pageInfo { hasNextPage endCursor }
       nodes {

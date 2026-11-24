@@ -135,7 +135,7 @@ message and PR body as files; never on a home directory or on transcripts. Run i
 each upload publishes at once. It cannot scan git history: for that, run ``gitleaks git`` yourself on a fresh
 ``--mirror`` clone, once per config (``defaults.toml`` and ``b9.toml``, written to --workdir, and the exact config the
 repository will ship), with ``--redact``, ``--ignore-gitleaks-allow``, an empty ``--gitleaks-ignore-path``, an
-explicit ``--exit-code``, and a report path only the Overtoad can read.
+explicit ``--exit-code``, and a report path only the owner can read.
 
 Exit codes
 ----------

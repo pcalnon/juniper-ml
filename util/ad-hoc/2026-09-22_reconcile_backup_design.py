@@ -781,7 +781,7 @@ The T2 lane needs its own installer and does not have one: `util/install_duplica
 edit(
     "s735-mode",
     """# file: home/duplicati/.config/Duplicati/.env
-# Duplicati server: local overrides. Mode 0600, Overtoad duplicati:duplicati.""",
+# Duplicati server: local overrides. Mode 0600, owner duplicati:duplicati.""",
     """# file: home/duplicati/.config/Duplicati/.env
 # Duplicati server: local overrides.
 # MODE IS AN OPEN OWNER DECISION (recorded as dissent in the design's section 11):
@@ -1424,7 +1424,7 @@ echo "restored under ${OUT}; verify it with the forensics script before installi
    `enc-v1:` prefix). Only `LastBackupDate` is one day stale. Then install it as the data folder per step 8.
 5. **Procedure A — re-use the whole data folder (only if step 3 found a key).** `sudo cp -a /usr/lib/duplicati/data /home/duplicati/.config/Duplicati`; `sudo chown -R duplicati:duplicati /home/duplicati/.config/Duplicati`; `chmod 0700` on the folder and `0600` on its files (§7.3.2); write the accepted key to `/etc/credstore/duplicati-settings-key` (0600 root) **and leave it there until P0.5's re-key replaces it** — the earlier "for the first start only" would
    re-create the 09-18 `SettingsEncryptionKeyMissingException` loop on the very next restart. Then step 8.
-6. **Procedure A2 — wipe the encrypted fields, keep everything else.** On the **copy** from step 1, as the copy's Overtoad, in a 0700 directory:
+6. **Procedure A2 — wipe the encrypted fields, keep everything else.** On the **copy** from step 1, as the copy's owner, in a 0700 directory:
    `duplicati-database-tool wipe-encryption --server-datafolder <copydir> --dry-run <copydir>/Duplicati-server.sqlite` first (expect `version 11 … Server database … 9 encrypted field(s) would be wiped`), then the same without `--dry-run`. Two traps: `--server-datafolder <dir>` **is** an option of the *subcommand* (`duplicati-database-tool help wipe-encryption`) even though the top-level `help` does not list it, and it defaults to
    `$HOME/.config/Duplicati` — i.e. the orphaned pcalnon profile when run as `pcalnon`, so **always name the copy's folder**; and `--dry-run` is **not read-only** — it flips the copy's header to WAL mode and changes its sha256, so hash the copy before, or re-copy after. What is cleared: `Backup.TargetURL`, `Source.Path`, `ConnectionString.BaseUrl`, `BackupTargetUrl.TargetURL` and password-typed `Option.Value` (the job `passphrase`, `jwt-config`, `pbkdf-config`,
    `remote-control-config`, ssl cert fields, `client-license-key`). The tool leaves a `-<ts>.bak` beside the database (delete it — it still holds the encrypted values) and refuses a non-server database. `Source` rows in the snapshot are cleartext, so sources survive; `server-passphrase`/`-salt` are **hashes** and not in the wipe list, so the **UI password survives** and "set the UI password afresh" is optional, not required.

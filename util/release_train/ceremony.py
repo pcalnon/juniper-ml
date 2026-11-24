@@ -978,7 +978,7 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         # already rode the exempt archive PR into juniper-ml's central notes/releases/ (``notes_relpath``,
         # kept for the record/log); writing it into the OWNING checkout here left a stray untracked file
         # that dirtied the tree (07-19 live run). --notes-file takes the temp path. ``latest`` is the
-        # registry's per-repo badge Overtoad (procedure S11.4): --latest for it, --latest=false for every other
+        # registry's per-repo badge owner (procedure S11.4): --latest for it, --latest=false for every other
         # package, so a sub-package Release never steals its repo's badge. The default is the badge-safe
         # --latest=false; until 2026-09-23 that was the ONLY value, and every repo's badge went stale. NO
         # --verify-tag: the Release CREATES the tag. The cross-repo Release is cut on the owning repo via
