@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Status**: Living register — verified against working copies on 2026-08-14
-**Last Updated**: 2026-11-15
+**Last Updated**: 2026-11-24
 **Source**: [`JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md`](JUNIPER_2026-08-13_JUNIPER-ECOSYSTEM_API-DESIGN-AND-IMPLEMENTATION-PRIMER.md)
 
 ---
@@ -276,7 +276,7 @@ Twenty-one entries share one shape *(fifteen originally; the non-short-circuitin
 | Pre-auth throttle (`juniper-ml#1082`) †     | `juniper-service-core`                        | ~~`juniper-data`, `juniper-cascor`~~ — **both fixed** (`APD-DATA-001` † data#266, `APD-CASCOR-004` † cascor#524); `juniper-canopy` — **open** (`APD-ECO-010`), not a site | `ENFORCED` (data, cascor) |
 | CORS outside auth (was: `OPTIONS` bypass)   | *(nowhere)*                                   | ~~`juniper-cascor`, `juniper-data`~~ — **both fixed** (`APD-CASCOR-001b` cascor#540, `APD-DATA-035` † data#273); `juniper-canopy` — **open**, latent (`APD-ECO-012`), not a site | `ENFORCED`                          |
 | Narrow serialisation-error handling         | *(nowhere)*                                   | ~~`juniper-cascor`, `juniper-data`~~ — **both fixed** (`APD-CASCOR-002` cascor#516, `APD-DATA-034` † data#262)   | `ENFORCED`                          |
-| Non-short-circuiting key compare            | `juniper-data`                                | ~~`juniper-cascor`, `juniper-service-core`, `juniper-canopy`~~ — **all fixed** (`APD-CASCOR-005` cascor#659, ml#1974; `APD-ECO-008` canopy#660). service-core's fix is on `main` only: its latest published wheel, 0.7.0, which juniper-recurrence pins, still short-circuits | `ENFORCED` (canopy and service-core sites since ml#2059) |
+| Non-short-circuiting key compare            | `juniper-data`                                | ~~`juniper-cascor`, `juniper-service-core`, `juniper-canopy`~~ — **all fixed** (`APD-CASCOR-005` cascor#659, ml#1974; `APD-ECO-008` canopy#660). service-core's fix shipped in 0.7.1 (PyPI 2026-10-10), and juniper-recurrence floors `juniper-service-core>=0.7.1` (0.8.1, and `main`, which locks 0.7.2, the latest wheel) | `ENFORCED` (canopy and service-core sites since ml#2059) |
 | `Retry-After` rounds up, never below 1      | `juniper-service-core` (limiter ml#1300, throttle ml#2524) | ~~`juniper-data`, `juniper-cascor`, `juniper-canopy`~~ — **all fixed** (`APD-ECO-016` data#537, cascor#757, canopy#817; canopy has a limiter and no throttle) | `ENFORCED` (all four copies, scoped, since 2026-11-15) |
 
 The pre-auth-throttle row is `†`: the pairing of the shared fix against the two unpatched copies is register-original, not a primer claim.
