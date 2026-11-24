@@ -40,7 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     130 interrupted.
   - First full run, 2026-11-23: 269 jobs in 5m32s at `-j 8`, with five local-only failures.
     - Four come from `TMPDIR` sitting inside a checkout; a `--tmpdir` outside the tree made them pass.
-    - `tests/test_a0_restore_scripts.py`'s `install` stub refuses every `/home/` path, so it cannot pass on this host.
+    - `tests/test_a0_restore_scripts.py`'s `install` stub refused every `/home/` path, so it could not pass on this
+      host. Fixed since (see Fixed).
     - docs/REFERENCE.md § Test Suite Reference, "Running tests locally", records all five; it is the operator
       documentation (docs version 0.6.81).
   - `tests/test_run_tests.py` is wired into ci.yml (263 suites). It checks that the real workflows parse the way CI runs
@@ -235,6 +236,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`conf/python_versions.yaml`'s juniper-ml recipe runs `util/run_tests.py regression`.**
+  - It ran `util/ad-hoc/2026-11-15_run_ci_regression_list_locally.py`, which ran the `python3 -m unittest` commands of
+    ci.yml's `Run Python regression tests` step one at a time.
+  - `util/python_version_check.py --repo juniper-ml` now runs all of ci.yml's `tests` job, as a CI matrix leg does:
+    every command of that step (its non-unittest checks too) and `Run bash regression tests`. They run at `-j auto`,
+    each step in its own process group with a timeout, a failed job is re-run alone, and the run is recorded under the
+    primary checkout's `tmp/run-tests/`.
+  - `--python "$VIRTUAL_ENV/bin/python"` keeps every command on the venv's interpreter. docs/REFERENCE.md 0.6.83
+    follows.
+
+- **Backup Phase D: the watchdog can accept the warning classes the Overtoad names (Q6's other half, ruled
+  2026-11-23).** A `Warning` run whose every warning is of an accepted class reads `OK WARNINGS_ACCEPTED`, which the
+  acceptance probe's AC-5 counts as it counts `OK OK`; any other warning still alerts and ends the streak. The list,
+  `ACCEPTED_WARNING_CLASSES` in `util/ad-hoc/yamaguchi_watchdog.py`, is empty until the Overtoad reads the warnings and
+  names classes, so until then every `Warning` run still alerts.
+  - A warning is classified by its `[Warning-<tag>]` tag with the acceptance probe's own rule, never by its text (the
+    recovery plan's finding 35), and a class may carry a path scope under the backup Source's home. A run with an
+    untagged warning, a warning the result counts but does not list, or an error is never accepted.
+  - `NOT_SUCCESS` now counts a run's warnings by tag (`warnings by tag: FilePreFilterProcess.FileEntry-PathNotFound
+    x2, …`), never their text, so an alert says which classes the Overtoad would be accepting.
+  - `tests/test_yamaguchi_watchdog.py`: 7 new tests, among them the tag rule pinned to the probe's and the accepted
+    record counted by the probe's AC-5. `util/ad-hoc/2026-10-03_b2_mutation_check.py` seeds 11 new defects; all 49
+    are killed.
+  - The watchdog runs the primary checkout's copy (the recovery plan's finding 44), so this reaches it only when the
+    primary checkout holds it.
+
 - **Backup Phase D: the acceptance probe follows two Overtoad rulings of 2026-11-15.** AC-2 expects the job's 5
   sources and 76 filters: the Overtoad changed them on purpose, and the design fixed 2 and 45 before. AC-5 no longer
   counts a day whose watchdog check found the job still running (`OK RUNNING`). Such a day ends the three-day
@@ -285,7 +312,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     REFERENCE's sentence that a future seq "is trusted, not checked against `current_seq`" no longer holds and is
     replaced.
 
+- **The Cursor flood-4 disposition record runs to 2026-11-24: the Overtoad's rulings 15–48 and what each produced.**
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` §8 stopped at ruling 14 (2026-11-09).
+  - §8 adds rulings 15–48 (2026-11-09 to 2026-11-24), each dated from its session's transcript, with its option labels
+    verbatim and its pull requests and merge commits. Ruling 17 is one ruling over its four fixes (juniper-data#529,
+    juniper-cascor#756, juniper-canopy#814 and #815), as R54 of
+    `notes/JUNIPER_2026-11-23_JUNIPER-ECOSYSTEM_R-OBS-SC-2-FOLLOW-UPS-REMAINING-TASKS.md` asks.
+  - Rulings 1–14's later outcomes: §4's four open rows now read fixed (juniper-ml#2531, #2534 and #2554, juniper-data#530),
+    ruling 10's seven Gitleaks ports and ruling 11's four fixes are named, rounds 2 and 3 are closed (all 50 drafts),
+    and no Cursor pull request has been opened in any of the nine repositories since 2026-11-08 00:51Z.
+  - Ruling 48's paragraph check landed as juniper-ml#2631, and the first Dependabot pull request after each of ruling
+    10's ports was read from its scan log. "Still open" lists what is left on 2026-11-24: the 2026-11-12 rulings'
+    follow-ups (two service-core PRs; five lockfile-print ports and a canopy docs line, built and in validation; two
+    canopy test PRs), juniper-data#536, the agent guard's open spellings, a docs-carrier link, `JuniperCanopy1`'s
+    upgrade and ruling 7's worktree cleanup.
+  - Every merged citation of a ruling number or date agrees with §8's numbering: juniper-cascor's and juniper-canopy's CHANGELOGs
+    (also at `v0.14.0` and `v0.10.0`), juniper-ml's `docs/REFERENCE.md` and the consolidated plan. §6 and §7 gain the
+    traps and tools a later reader needs; §5's tables are unchanged.
+  - Provenance helpers (new): session 10's sixteen, `util/ad-hoc/2026-11-23_flood4_s10_*.py` and
+    `util/ad-hoc/2026-11-23_flood4r2_val_s10-guard-claims_*.py` (three edited only to clear CodeQL alerts), and
+    session 11's `util/ad-hoc/2026-11-24_flood4_s11_record_{dialogs,census,prs,rulings_json,apply,pathcheck}.py`,
+    `util/ad-hoc/2026-11-24_flood4_s11_{dependabot_scan_read,apply_fixes}.py`,
+    `util/ad-hoc/2026-11-24_flood4_s11_val_claims_{dialogs,prs,timecheck,fixcheck}.py` and
+    `util/ad-hoc/2026-11-24_flood4_s11_val_doc_{checks,fixcheck}.py`.
+
 ### Fixed
+
+- **Backup: three tools named the job's old times after the Overtoad moved it on 2026-11-15** (14:00Z to 13:00Z, and
+  the watchdog's check from 12:00 to 20:00 local). Text only; nothing any of them does has changed.
+  - `util/ad-hoc/yamaguchi_server_db_snapshot.py` 1.2.1 closes with "13:00Z daily". The installed copy under
+    `/usr/local/lib/duplicati/` keeps saying 14:00Z until the Overtoad copies the new file there.
+  - `util/ad-hoc/yamaguchi_reboot_verify.bash`: the closing message says 13:00Z, and the false-negative note and step 3
+    name the 20:00 watchdog.
+  - `util/systemd/yamaguchi-acceptance-probe.timer`'s comment: the job starts at 13:00 UTC, ten and a half hours before
+    the probe. The probe's next deploy installs it.
+
+- **`tests/test_a0_restore_scripts.py` passes on a host whose `TMPDIR` is under `/home`.** Its PATH `install` stub, a
+  safety net against a regressed refusal, refused every argument under `/home/`. The 2026-10-26 rule puts `TMPDIR` in
+  the repo's `tmp/`, under `/home` on the Linux workstation, so 10 of its 17 tests failed there.
+  - The stub canonicalises each absolute argument (`realpath -m`), then refuses one under `/home` or the real home
+    unless it is inside the test's own scratch directory.
+  - The production-default test's "path elsewhere" was a scratch path. On such a host every scratch directory is inside
+    the default backup Source, `/home/pcalnon`, so the restore script rightly refused it. It is now
+    `/nonexistent/juniper-a0-r7-elsewhere/out`, which the stub records instead of creating.
+  - `InstallStubSafetyNet` (4 tests) pins the net itself; the suite has 21 tests.
+  - `util/ad-hoc/2026-11-24_a0_install_stub_mutation_check.py` kills six mutants. With the restore script's own
+    refusal removed, the net refuses the real-home path and nothing is created.
+  - docs/REFERENCE.md 0.6.83: "Known local-only failures" marks it fixed, and its Test Suite Reference entry describes
+    the net.
+
+- **Backup Phase D: the acceptance probe judges a day on which a backup is still running.** While a run of the job is
+  in progress the server refuses the job log with HTTP 400. On 11-19, 11-21 and 11-22 that made all six server
+  criteria read `ERROR` (AC-2, AC-13, `OPTIONS`, `RUN`, `OFFSCHED`, `CENSUS`): the recovery plan's finding 42.
+  - `util/ad-hoc/yamaguchi_acceptance_probe.py` 1.4.0 still judges AC-2, AC-13, `OPTIONS` and `CENSUS`, which need no
+    log, and `OFFSCHED` reads `SKIP`. `RUN` names the run and reads `SKIP`, or `FAIL` when the newest finished backup
+    began more than 50 h earlier; it reads that start from the job's metadata (`LastBackupStarted`). Any other refusal
+    of the log still reads `ERROR`, and the active task is named by its ids alone.
+  - `tests/test_yamaguchi_acceptance_probe.py` (115 tests). The mutation harness seeds 13 new defects in the probe,
+    and the probe's suite kills them and all of the probe's other mutants.
+  - The recovery plan's finding 42 records the change and the census values the metadata stamp is pinned against.
 
 - **"owner" is back wherever juniper-ml#2606 renamed a technical owner to "Overtoad": 340 tokens in 112 files.**
   #2606 kept the rename only where "owner" means the person, judged one word on each side of the token, and it

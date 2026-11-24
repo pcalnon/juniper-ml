@@ -4,7 +4,7 @@ Project     : Juniper
 Sub-Project : juniper-ml
 Application : Yamaguchi backup -- server DB snapshot
 Author      : Paul Calnon
-Version     : 1.2.0 (2026-10-08: no -wal/-shm residue in the destination; see HISTORY)
+Version     : 1.2.1 (2026-11-24: the closing message names the 13:00Z slot; see HISTORY)
 License     : MIT License
 
 Capture a consistent copy of the Duplicati *server* database into a path the
@@ -57,6 +57,8 @@ HISTORY
                      now switched to journal_mode=DELETE before it is closed -- a self-contained
                      single file -- and residue of earlier runs is removed. A restored copy in
                      DELETE mode is an ordinary SQLite database; the server sets its own mode.
+  1.2.1  2026-11-24  the closing message says "13:00Z daily". It said 14:00Z, the job's slot until
+                     the Overtoad moved it on 2026-11-15. Nothing the script does has changed.
 """
 
 from __future__ import annotations
@@ -171,7 +173,7 @@ def main():
 
     print(f"integrity   : ok ({tables} tables)")
     print(f"wrote       : {dest} ({human(os.path.getsize(dest))}, mode 0600, owner {args.owner})")
-    print("this snapshot rides along in the next Yamaguchi backup (14:00Z daily).")
+    print("this snapshot rides along in the next Yamaguchi backup (13:00Z daily).")
     return 0
 
 
