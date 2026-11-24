@@ -235,6 +235,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Backup Phase D: the watchdog can accept the warning classes the Overtoad names (Q6's other half, ruled
+  2026-11-23).** A `Warning` run whose every warning is of an accepted class reads `OK WARNINGS_ACCEPTED`, which the
+  acceptance probe's AC-5 counts as it counts `OK OK`; any other warning still alerts and ends the streak. The list,
+  `ACCEPTED_WARNING_CLASSES` in `util/ad-hoc/yamaguchi_watchdog.py`, is empty until the Overtoad reads the warnings and
+  names classes, so until then every `Warning` run still alerts.
+  - A warning is classified by its `[Warning-<tag>]` tag with the acceptance probe's own rule, never by its text (the
+    recovery plan's finding 35), and a class may carry a path scope under the backup Source's home. A run with an
+    untagged warning, a warning the result counts but does not list, or an error is never accepted.
+  - `NOT_SUCCESS` now counts a run's warnings by tag (`warnings by tag: FilePreFilterProcess.FileEntry-PathNotFound
+    x2, …`), never their text, so an alert says which classes the Overtoad would be accepting.
+  - `tests/test_yamaguchi_watchdog.py`: 7 new tests, among them the tag rule pinned to the probe's and the accepted
+    record counted by the probe's AC-5. `util/ad-hoc/2026-10-03_b2_mutation_check.py` seeds 11 new defects; all 49
+    are killed.
+  - The watchdog runs the primary checkout's copy (the recovery plan's finding 44), so this reaches it only when the
+    primary checkout holds it.
+
 - **Backup Phase D: the acceptance probe follows two Overtoad rulings of 2026-11-15.** AC-2 expects the job's 5
   sources and 76 filters: the Overtoad changed them on purpose, and the design fixed 2 and 45 before. AC-5 no longer
   counts a day whose watchdog check found the job still running (`OK RUNNING`). Such a day ends the three-day
