@@ -9,7 +9,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 docs carrier, validator round 5)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md; juniper-ml#2519 docs carrier, validation round 5 (findings: tmp/flood4/ml-docs/val-round5/)
 
 Usage: python3 -I 2026-11-07_flood4_val_round5_pypi_wheels.py <out_dir>

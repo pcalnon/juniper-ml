@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Close register row APD-ML-002 (the owner's word, 2026-11-01): the register's close touches, as one idempotent edit.
+"""Close register row APD-ML-002 (the Overtoad's word, 2026-11-01): the register's close touches, as one idempotent edit.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-01
 Status: ad-hoc — one-off (one close in notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/register_open_set.py and util/ad-hoc/register_status_crosscheck.py (the two counters the close is checked with);
          util/ad-hoc/2026-11-01_consolidated_plan_v1_15_10_apd_ml_002_closed.py (the plan revision that records it)
 
@@ -16,7 +16,7 @@ APD-ML-002 was open only on ``test_accuracy``: "the row is open until that colum
 ``20261030T084056Z-0ac7`` (suite ``test-accuracy-731-smoke-20261030T084056Z``, 2026-10-30) wrote ``eval_metrics.final`` on
 ``test`` with ``accuracy`` 0.575 to ``metrics_final.json``; ``stats.json`` carries it as ``cascor.eval_scalars`` (``held_out``
 true); and the suite's ``aggregate.csv`` has ``test_accuracy`` 0.575 beside ``train_accuracy`` 0.515 and ``val_accuracy``
-0.50625. The owner chose "Close it (signed PR)" when asked (session ``856140dc``).
+0.50625. The Overtoad chose "Close it (signed PR)" when asked (session ``856140dc``).
 
 The row has no §3 detail entry, so the register's protocol is four touches: the §4 row's ``**FIXED`` marker, a §5.1
 verification row, the §2 status line (the enumeration and the open count, 36 -> 35, post-primer 21 -> 20) and the header
@@ -69,7 +69,7 @@ _S2_HISTORY_NEW = "canopy's CORS ordering and juniper-data's unlocked batch-tags
 # Touch 1: the §4 row's status, and its stale "in no juniper-cascor release yet".
 _ROW_HEAD_OLD = "| APD-ML-002 | *(Partly fixed, and still OPEN on `test_accuracy`. The recurrence half by"
 _ROW_HEAD_NEW = (
-    f"| APD-ML-002 | **FIXED ({_FIXED_BY}; closed 2026-11-01 on the owner's word)** — "
+    f"| APD-ML-002 | **FIXED ({_FIXED_BY}; closed 2026-11-01 on the Overtoad's word)** — "
     "*(Fixed in three parts, the last of them `test_accuracy`, which kept the row open until 2026-11-01. The recurrence half by"
 )
 _ROW_TAIL_OLD = (
@@ -88,7 +88,7 @@ _RULING_UNRELEASED_OLD = "(juniper-cascor#731, merged 2026-10-27 00:11Z, unrelea
 _RULING_UNRELEASED_NEW = "(juniper-cascor#731, merged 2026-10-27 00:11Z, released in 0.13.0 on 2026-10-28) and #2064 carries into `stats.json`;"
 _RULING_END_OLD = "  > asks for; the row stays open on `test_accuracy`.\n"
 _RULING_END_NEW = (
-    "  > asks for; the row stays open on `test_accuracy`. **Closed 2026-11-01**, on the owner's word: run\n"
+    "  > asks for; the row stays open on `test_accuracy`. **Closed 2026-11-01**, on the Overtoad's word: run\n"
     "  > `20261030T084056Z-0ac7` filled `test_accuracy`, after juniper-cascor#731 (in 0.13.0) and juniper-ml#2381 (§5.1).\n"
 )
 
@@ -96,7 +96,7 @@ _RULING_END_NEW = (
 _V51_AFTER_PREFIX = "| APD-ECO-015 | `FailedAuthThrottle.check()` inserted an entry per unseen source IP"
 _V51_ROW = (
     "| APD-ML-002 | `_headline_metrics` read its metric names off the top of `stats.json`'s blocks, where none of them lives, so `aggregate.csv` carried no metric "
-    f"| {_FIXED_BY} | **Closed 2026-11-01 on the owner's word**; `test_accuracy` was the last open part. Verified on run `20261030T084056Z-0ac7` "
+    f"| {_FIXED_BY} | **Closed 2026-11-01 on the Overtoad's word**; `test_accuracy` was the last open part. Verified on run `20261030T084056Z-0ac7` "
     "(suite `test-accuracy-731-smoke-20261030T084056Z`, 2026-10-30; one spiral-smoke cell on the cascor primary's `src/`, which carries juniper-cascor#731): "
     "`metrics_final.json`'s `eval_metrics.final` is on `test` with `accuracy` 0.575; `stats.json` (`juniper-experiment-stats/2`) carries it as "
     "`cascor.eval_scalars`, `held_out` true; and the suite's `aggregate.csv` has `test_accuracy` 0.575, with `train_accuracy` 0.515 and `val_accuracy` "

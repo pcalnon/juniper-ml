@@ -6,14 +6,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-01
 Status: ad-hoc — one-off (a record revision of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-30_consolidated_plan_v1_15_9_deploy_pin_test_accuracy_trio_stopped.py (the revision this follows, and the pattern);
          util/ad-hoc/2026-11-01_register_close_apd_ml_002.py (the close this records)
 
 Why
 ---
-v1.15.9 says in five places that APD-ML-002's close is the owner's, and that the parent ``Juniper/AGENTS.md`` edit needs the
-owner's approval. The owner answered both when session ``856140dc`` asked: "Close it (signed PR)" and "Edit it".
+v1.15.9 says in five places that APD-ML-002's close is the Overtoad's, and that the parent ``Juniper/AGENTS.md`` edit needs the
+Overtoad's approval. The Overtoad answered both when session ``856140dc`` asked: "Close it (signed PR)" and "Edit it".
 ``util/ad-hoc/2026-11-01_register_close_apd_ml_002.py`` makes the register's close touches. Afterwards
 ``util/ad-hoc/register_open_set.py`` reads 137 rows, 102 fixed, 35 open, and ``util/ad-hoc/register_status_crosscheck.py``
 reads AGREE (102 / 102 / 102). The parent file's diff against its backup is two hunks: Last Updated, and the cascor 0.13.0
@@ -42,16 +42,16 @@ MAX_LINE = 512
 # Multi-line texts are bound to names here rather than written inside the REPLACEMENTS display: adjacent literals inside
 # a list or tuple trip CodeQL's py/implicit-string-concatenation-in-list, whose unresolved thread blocks a merge.
 _STATUS_ANCHOR = (
-    "  - v1.15.9 (2026-10-30) records the owner's answers of 2026-10-29 and 2026-10-30 and what followed: juniper-deploy pins cascor 0.13.0 (deploy#266), "
-    "a run on the cascor primary's `src/` filled `test_accuracy`, so APD-ML-002's close condition is met (the close is the owner's), the trio is stopped, "
+    "  - v1.15.9 (2026-10-30) records the Overtoad's answers of 2026-10-29 and 2026-10-30 and what followed: juniper-deploy pins cascor 0.13.0 (deploy#266), "
+    "a run on the cascor primary's `src/` filled `test_accuracy`, so APD-ML-002's close condition is met (the close is the Overtoad's), the trio is stopped, "
     "juniper-data#501 adds juniper-canopy to the notify matrix, and index row 483 says `failed` (Overview; §2; XC-P12; §4; §5; §8; Appendix A). Like v1.15.0, no round checks it.\n"
 )
 _STATUS_ADD = (
-    "  - v1.15.10 (2026-11-01) records register row APD-ML-002's close on the owner's word (35 rows open), and the parent `Juniper/AGENTS.md` edit the owner approved, "
+    "  - v1.15.10 (2026-11-01) records register row APD-ML-002's close on the Overtoad's word (35 rows open), and the parent `Juniper/AGENTS.md` edit the Overtoad approved, "
     "which names juniper-deploy#266's cascor 0.13.0 pin (§2; XC-P12; §4; §5; Appendices A and B). Like v1.15.0, no round checks it.\n"
 )
 
-_S2_OLD = "a run filled `test_accuracy` on 10-30, and the register row's close is the owner's (XC-P12);"
+_S2_OLD = "a run filled `test_accuracy` on 10-30, and the register row's close is the Overtoad's (XC-P12);"
 _S2_NEW = "a run filled `test_accuracy` on 10-30, and the register row closed 11-01 (XC-P12);"
 
 _FILLED_ANCHOR = (
@@ -60,17 +60,17 @@ _FILLED_ANCHOR = (
     'So the register row\'s close condition, "until that column exists", is met by a run. The five-touch close is the owner\'s.\n'
 )
 _CLOSED_ADD = (
-    "   - **Closed 2026-11-01** (v1.15.10), on the owner's word: register row APD-ML-002 is FIXED (ml#2145, ml#2369, cascor#731, ml#2381), with a §5.1 verification row on run `20261030T084056Z-0ac7`. "
+    "   - **Closed 2026-11-01** (v1.15.10), on the Overtoad's word: register row APD-ML-002 is FIXED (ml#2145, ml#2369, cascor#731, ml#2381), with a §5.1 verification row on run `20261030T084056Z-0ac7`. "
     "`util/ad-hoc/register_open_set.py` reads 35 open, and `util/ad-hoc/register_status_crosscheck.py` AGREE.\n"
 )
 
-_P6_OLD = "juniper-deploy pins 0.13.0 from 2026-10-30, and the register row's close is the owner's (§5; XC-P12 action 4).\n"
+_P6_OLD = "juniper-deploy pins 0.13.0 from 2026-10-30, and the register row's close is the Overtoad's (§5; XC-P12 action 4).\n"
 _P6_NEW = "juniper-deploy pins 0.13.0 from 2026-10-30, and the register row closed on 2026-11-01 (§5; XC-P12 action 4).\n"
 
-_AGENTS_OLD = "    - The unversioned parent `Juniper/AGENTS.md` still says juniper-deploy pins the 0.12.0 image; its edit needs the owner's approval.\n"
-_AGENTS_NEW = "    - The unversioned parent `Juniper/AGENTS.md` said juniper-deploy pins the 0.12.0 image until 2026-11-01, when it was edited with the owner's approval (v1.15.10).\n"
+_AGENTS_OLD = "    - The unversioned parent `Juniper/AGENTS.md` still says juniper-deploy pins the 0.12.0 image; its edit needs the Overtoad's approval.\n"
+_AGENTS_NEW = "    - The unversioned parent `Juniper/AGENTS.md` said juniper-deploy pins the 0.12.0 image until 2026-11-01, when it was edited with the Overtoad's approval (v1.15.10).\n"
 
-_T5_OLD = "(v1.15.9), and the register row's close is the owner's;"
+_T5_OLD = "(v1.15.9), and the register row's close is the Overtoad's;"
 _T5_NEW = "(v1.15.9), and the register row closed on 2026-11-01 (v1.15.10);"
 
 _B11_OLD = "and its `test_*` columns, ml#2381) |"
@@ -81,8 +81,8 @@ _VALIDATION_ANCHOR = (
     "its MAJORs a `/proc` claim and the Overview's cascor 0.12.0 pin; all are applied.\n"
 )
 _VALIDATION_ADD = (
-    "  - v1.15.10 is a record of APD-ML-002's close and the parent `AGENTS.md` edit (2026-11-01). No round checks it (owner ruling 2026-10-24); its facts cite the register's §2 line, §4 row and §5.1 row, "
-    "`util/ad-hoc/register_open_set.py`, `util/ad-hoc/register_status_crosscheck.py`, the parent file's diff against its backup, and the owner's answers to session `856140dc`'s questions.\n"
+    "  - v1.15.10 is a record of APD-ML-002's close and the parent `AGENTS.md` edit (2026-11-01). No round checks it (Overtoad ruling 2026-10-24); its facts cite the register's §2 line, §4 row and §5.1 row, "
+    "`util/ad-hoc/register_open_set.py`, `util/ad-hoc/register_status_crosscheck.py`, the parent file's diff against its backup, and the Overtoad's answers to session `856140dc`'s questions.\n"
 )
 
 _SCRIPTS_OLD = (

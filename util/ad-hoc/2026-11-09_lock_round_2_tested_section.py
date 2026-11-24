@@ -8,11 +8,11 @@ Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Created:     2026-11-09
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Every number in the section is read from ``<runs>/<repo>-{before,after}/summary.json`` and the
 two ``record.json`` files written by ``2026-11-09_lock_round_2_probe.py``, so a PR body cannot
-quote a result the artifacts do not hold. The section carries the owner's ruling and the
+quote a result the artifacts do not hold. The section carries the Overtoad's ruling and the
 sentence that this probe is NOT S0.11's relay run.
 
 Usage:
@@ -28,10 +28,10 @@ import sys
 from pathlib import Path
 
 RULING = (
-    "**The per-lock probe** (owner ruling, 2026-11-09T00:24:20Z: \"Per-lock probe (Recommended)\"). **This is NOT "
+    "**The per-lock probe** (Overtoad ruling, 2026-11-09T00:24:20Z: \"Per-lock probe (Recommended)\"). **This is NOT "
     "S0.11's relay run.** The consolidated plan's Security step 4 asks each image lock PR to carry S0.11's relay run, "
     "but S0.11's relay tests (a planted fake key driven through every relay) do not exist yet for juniper-data, "
-    "juniper-cascor or juniper-canopy, because A1's F-S10 rulings are open; the owner ruled this probe in its place."
+    "juniper-cascor or juniper-canopy, because A1's F-S10 rulings are open; the Overtoad ruled this probe in its place."
 )
 
 

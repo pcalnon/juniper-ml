@@ -11,7 +11,7 @@ License:     MIT License
 Drives one FastAPI app through the REAL sentry-sdk, initialised by the INSTALLED
 ``juniper_observability.configure_sentry``, into a capturing transport (nothing leaves the
 host). Each request carries one marker secret in ``X-API-Key``, ``Authorization``, ``Cookie``
-and, since the owner's ruling of 2026-11-08 widened the hook's header set,
+and, since the Overtoad's ruling of 2026-11-08 widened the hook's header set,
 ``Proxy-Authorization``, ``Sec-WebSocket-Protocol``, ``X-CSRF-Token`` and ``X-XSRF-Token``.
 For each ``send_pii`` value it prints, per envelope item (``transaction`` / ``event``),
 whether the marker is in the serialised item, and the JSON paths that hold it.

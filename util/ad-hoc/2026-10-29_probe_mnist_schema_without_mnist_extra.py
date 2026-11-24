@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-29
 Status: ad-hoc — investigation (follow-up 3.4 of the recurrence x equities handoff; juniper-canopy#778)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-28_recurrence-equities-cascor-0-13-0-published-plan-v1-15-7.md
          (item 3.4, the question this answers); juniper-canopy#776 ("Left out, deliberately": mnist keeps the
          modal's Noise field); juniper-canopy#777 (the drift job); juniper-canopy#778 (the change this evidence supports);

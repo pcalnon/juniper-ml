@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4 consolidation (canopy #789 #792 #794 #795); BRIEF_COMMON rule 11; flood-3 record §6
 
 Usage: 2026-11-07_flood4_canopy_tests_mutation_check.py <tests worktree> <out dir>

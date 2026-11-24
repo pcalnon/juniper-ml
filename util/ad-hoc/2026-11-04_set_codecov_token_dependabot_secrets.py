@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Copy the owner's ``CODECOV_TOKEN`` into each Juniper repository's Dependabot secret store, so a Dependabot PR's Codecov upload is authenticated like any other PR's.
+Copy the Overtoad's ``CODECOV_TOKEN`` into each Juniper repository's Dependabot secret store, so a Dependabot PR's Codecov upload is authenticated like any other PR's.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-04
-Status: ad-hoc — one-off (flood-3: owner ruling 2026-11-04, "add CODECOV_TOKEN to all active repos' dependabot secrets")
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (flood-3: Overtoad ruling 2026-11-04, "add CODECOV_TOKEN to all active repos' dependabot secrets")
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§4 Codecov row, §6); util/ad-hoc/2026-10-29_codecov_token_secret_census.py
 
 The OWNER runs this, in a real terminal (it needs a TTY for the hidden prompt):
@@ -22,7 +22,7 @@ on stdin only. A value that is not a 36-character UUID (the shape every Codecov 
 is refused before anything is set. Afterwards each store is re-read with a ``gh api`` GET and its ``updated_at`` printed.
 Exit 0 when every repository holds the secret, 1 otherwise.
 
-The owner's run of record (2026-11-04, all nine SET at 11:18:42Z-11:18:49Z) used the first version. On a failure it printed
+The Overtoad's run of record (2026-11-04, all nine SET at 11:18:42Z-11:18:49Z) used the first version. On a failure it printed
 ``gh``'s stderr, and its refusal message gave the value's length; neither happened, as every set succeeded. juniper-ml#2423's
 CodeQL flagged that stderr print as clear-text logging of the secret (the process had received it on stdin), so the set call
 is now ``put()``, which keeps only the exit status. CodeQL then flagged the SET line's ``updated_at``, which ``stored()`` read

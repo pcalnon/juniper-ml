@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (builder session, flood-4 round 2, fix N-1 round 3)
 Created: 2026-11-09
 Status: ad-hoc — investigation (adapted from 2026-11-09_flood4r2_val_n1-r2-code_codeql_shapes.py, adding the fourth shape)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tmp/flood4/session4/BRIEF_S4_ADDENDUM.txt (TRAPS: CodeQL raises alerts the prescreen does not model)
 
 Usage: python3 <this> FILE [FILE ...]

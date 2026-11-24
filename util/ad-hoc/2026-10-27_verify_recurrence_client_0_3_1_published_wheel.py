@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-27
 Status: ad-hoc — one-off (post-publication check of juniper-recurrence-client 0.3.1)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/releases/RELEASE_NOTES_juniper-recurrence-client_v0.3.1.md (the fix this checks);
          notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md
          (W5.2 made one look-back per entity the service's default embargo; v1.7.23 records this probe);

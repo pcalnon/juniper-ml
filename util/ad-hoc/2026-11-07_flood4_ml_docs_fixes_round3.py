@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 docs carrier, validator round 3)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-07_flood4_ml_docs_fixes.py (rounds 1-2, applied on 303ccc0b before the rebase);
          util/ad-hoc/2026-11-07_flood4_ml_docs_rebase_merge.py (the rebase onto bbdeb758)
 

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4 consolidation, canopy docs carrier (#790 Gitleaks, #791 Codecov / lane wiring, #793 AGENTS.md date check, #796 mnist)
 
 Usage: 2026-11-07_flood4_canopy_docs_rederive.py <docs worktree> <juniper-ml checkout>

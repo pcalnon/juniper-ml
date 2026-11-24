@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-30
 Status: ad-hoc — landing helper (turing bring-up, erratum E-H3: the host check's wording)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (erratum E-H3 of §18.3);
          util/host_state_check.py; tests/test_host_state_check.py;
          util/ad-hoc/2026-10-30_turing_check_wording_mutation_check.py;
@@ -51,7 +51,7 @@ CHANGELOG_ENTRY = (
     "  from task H3's `macos-host-sme` report). Neither changes a verdict.\n"
     "  - `util/host_state_check.py`'s kubectl fix said only \"task D4\". Docker Desktop installs its own\n"
     "    `/usr/local/bin/kubectl` (decision D7), and turing's v1.22.4 client is that link, so the fix now puts the\n"
-    "    owner's Docker Desktop upgrade (task D3) first, then D4, which still needs re-planning under the D6 ruling\n"
+    "    Overtoad's Docker Desktop upgrade (task D3) first, then D4, which still needs re-planning under the D6 ruling\n"
     "    (erratum E-D6).\n"
     "  - The memory message said \"free + inactive\", but the figure also adds vm_stat's speculative pages, as\n"
     "    `util/macvm_ctl.bash` does (88 MiB of turing's 6161 MiB on 2026-10-27). It now reads \"free + speculative +\n"

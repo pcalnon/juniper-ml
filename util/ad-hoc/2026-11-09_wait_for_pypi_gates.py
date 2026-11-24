@@ -8,13 +8,13 @@ Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Created:     2026-11-09
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Why
 ---
 The second lock round needs juniper-observability 0.4.2 and juniper-service-core 0.7.2 on PyPI.
-Both sat at the owner's ``pypi`` gate. This polls, and never approves anything: approval is the
-owner's alone. "Done" is two facts per release, because either alone misleads: the run's
+Both sat at the Overtoad's ``pypi`` gate. This polls, and never approves anything: approval is the
+Overtoad's alone. "Done" is two facts per release, because either alone misleads: the run's
 ``Publish to PyPI`` job concluded ``success``, and ``/pypi/<pkg>/<ver>/json`` answers 200 (the
 per-version endpoint; the aggregate ``/pypi/<pkg>/json`` lags behind the CDN).
 

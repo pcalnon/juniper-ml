@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-29
 Status: ad-hoc — investigation (Phase D round-2 fold-in: lane R2-A's H2 and H3 survived the SAME_USER-only test)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-03_password_init_hand_start.bash 1.4.0; tests/test_duplicati_wrapper_contract.py
 
 Each mutant is applied to a COPY of the helper inside a private copy of the files the test class reads, never to

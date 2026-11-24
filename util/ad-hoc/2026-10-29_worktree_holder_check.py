@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-29
 Status: ad-hoc — one-off (flood-3 cleanup of 2026-10-29)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§6: the cleanup's gates);
          util/ad-hoc/2026-08-20_worktree_liveness_probe.py (cwd only; this widens it);
          util/ad-hoc/2026-10-26_worktree_blob_classify.py and 2026-10-26_worktree_preserve_unique.py (the other two gates)

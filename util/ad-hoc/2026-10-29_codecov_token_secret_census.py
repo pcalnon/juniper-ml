@@ -7,12 +7,12 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-29
 Status: ad-hoc — investigation (flood-3 record, ninth update)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§4, the Codecov row)
 
 Why this exists
 ---------------
-The owner added ``CODECOV_TOKEN`` "to all repos via the GitHub GUI" on 2026-10-29. A Dependabot-triggered
+The Overtoad added ``CODECOV_TOKEN`` "to all repos via the GitHub GUI" on 2026-10-29. A Dependabot-triggered
 run reads the Dependabot store, not the Actions one, so the two are reported separately. ``gh secret list``
 returns names and update times only; a secret's value is never readable, and this prints none.
 

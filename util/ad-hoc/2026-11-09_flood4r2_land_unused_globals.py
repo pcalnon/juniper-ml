@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (Cursor flood-4 session 4: screening the session's helpers before they ship)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tmp/flood4/session4/BRIEF_S4_ADDENDUM.txt (the four CodeQL shapes the prescreen misses)
 
 Usage:

@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-11-07
 # Status:     ad-hoc — remediation validation
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md (§3, §5)
 #             notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md
 #             util/ad-hoc/2026-11-08_remount_validate_baseline_gate_check.py (checks the baseline gate below)

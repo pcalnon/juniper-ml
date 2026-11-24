@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (generated with Claude Code)
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 consolidation, juniper-data tests carrier VALIDATION)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#512 #513 #514 #516 #517; flood-4 validation brief (fidelity lens)
 
 Reads only git objects (the carrier worktree's INDEX, the drafts' head commits, origin/main); writes

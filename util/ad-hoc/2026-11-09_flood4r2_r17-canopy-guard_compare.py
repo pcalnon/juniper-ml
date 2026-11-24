@@ -1,7 +1,7 @@
 """
 Compare a guarded ruling-17 census run against the base run: outcomes, arming, and connects past the guard.
 
-Builder helper for the owner's ruling 17 ("canopy: tests hit :8050"). Reads two merged census JSONs (the base
+Builder helper for the Overtoad's ruling 17 ("canopy: tests hit :8050"). Reads two merged census JSONs (the base
 tree's and the guarded tree's, from util/ad-hoc/2026-11-09_flood4r2_r17-canopy-guard_run_groups.py) and prints:
 the failures of each and the difference; the tests the guard was NOT armed for (``--probe-guard`` runs); every
 connect to a guarded service port that reached the census fence, i.e. got PAST the guard (must be none); the
@@ -16,8 +16,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: owner ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Overtoad ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
 """
 
 from __future__ import annotations

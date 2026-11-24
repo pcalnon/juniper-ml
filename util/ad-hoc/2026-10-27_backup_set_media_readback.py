@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-27
 Status: ad-hoc -- backup arc, Tier 2 acceptance (AC-10) step 3; reusable for Tier 3 (AC-11)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/juniper-backup.bash (verify_archive);
          notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §7.8, §7.9;
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-26_backup-phase-c-lines-0-8-done-drives-then-phase-d.md

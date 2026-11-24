@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 docs-carrier build)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-07_flood4_ml_docs_apply.py (consumes the JSON this writes via --fixes)
 
 Each entry replaces text that a draft added (or, for pr 0, adds the carrier's own Version History row).
@@ -167,7 +167,7 @@ FIXES += [
     _fx(2426, REF, "When `--getblockall` produced stdout, its first line is included. A capture that failed before stdout (missing binary, non-zero exit) leaves only the global-state line.", "When the `--getblockall` capture ran and exited 0, its first line is included, even a sentence the gate does not classify. A missing key, a missing binary, a timeout or a non-zero exit adds no block-all line, even when the command printed one. A successful stealth capture's line follows either way.", "host_state_check.py:522-533,721-732 (probe: State 0 + failed blockall + stealth)"),
     _fx(2426, REF, "State 1 is `Firewall is enabled. (State = 1)`.", "State 1's sentence, as the suite's fixture spells it, is `Firewall is enabled. (State = 1)`.", "only tests/test_host_state_check.py:196 shows it; the code reads only State = N (:719)"),
     # ---- #2428 safe_merge MERGED line ----
-    _fx(2428, REF, "Passing `pcalnon/juniper-ml` as `--repo` asks GitHub for a repository that does not exist under that owner.", "Passing `pcalnon/juniper-ml` as `--repo` hands gh `pcalnon/pcalnon/juniper-ml`, which gh reads as HOST/OWNER/REPO: the first `gh pr view` fails (`error connecting to pcalnon`) and the run exits 3.", "measured; safe_merge.py:453,463,1217-1219"),
+    _fx(2428, REF, "Passing `pcalnon/juniper-ml` as `--repo` asks GitHub for a repository that does not exist under that Overtoad.", "Passing `pcalnon/juniper-ml` as `--repo` hands gh `pcalnon/pcalnon/juniper-ml`, which gh reads as HOST/OWNER/REPO: the first `gh pr view` fails (`error connecting to pcalnon`) and the run exits 3.", "measured; safe_merge.py:453,463,1217-1219"),
     _fx(2428, REF, "Exit 3. `PR #<pr> is MERGED at <other8>, but this run verified and tried to merge <head8>`", "Exit 3, on stderr: `ERROR: PR #<pr> is MERGED at <other8>, but this run verified and tried to merge <head8>`", "safe_merge.py:1129-1133,1218 print it to stderr"),
     _fx(2428, CHEAT, "Expected. The line prints the verified `headRefOid`.", "Expected for a squash (the default). The line prints the verified `headRefOid`.", "with --merge-method merge the head is in main's history"),
     _fx(2428, REF, "| The armed net merged before that call |", "| This run armed a net, and the PR was already merged before that call (the net is the likely merger) |", "the wording depends on _ARMED, not on who merged (safe_merge.py:804-817)"),
