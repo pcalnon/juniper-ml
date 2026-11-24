@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lane A: find the owner-ruling answers in two session transcripts (read-only).
+"""Lane A: find the Overtoad-ruling answers in two session transcripts (read-only).
 Records are split on "\\n" (never splitlines()). Prints only question/answer text around the target
 timestamp, or around the quoted strings, truncated."""
 from __future__ import annotations

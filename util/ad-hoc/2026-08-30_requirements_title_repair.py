@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-30
 Status: ad-hoc -- migration (corpus title-artifact repair)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-08-29_requirements_title_artifact_scan.py (the detector this repairs
          against); ml#1475 §5 (the 172-entry measurement); ml#1467 (the five-entry repair whose
          idiom this follows)

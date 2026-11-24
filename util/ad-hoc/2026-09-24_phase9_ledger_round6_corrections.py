@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round-6 fix pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9;
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round6.md;
          util/ad-hoc/2026-09-24_phase9_ledger_round5_corrections.py (the pass this corrects)
@@ -15,7 +15,7 @@ Exact substitutions, each matching exactly once, or the script refuses and write
 pass is applied to the LEDGER by hand; the answer extractor's and the launch scan's secret shapes and the
 ad-hoc README were edited directly. Labels: A = R6-A, B = R6-B.
 
-The pass's centre is the scope of the owner's answer, which round 5 stated three different ways: it names
+The pass's centre is the scope of the Overtoad's answer, which round 5 stated three different ways: it names
 four PRs, three of which were drafts, and reaches the pass's other drafts, #676 included, only through their
 shared pattern. It is now stated once, in "Who", and the other two places defer to it.
 
@@ -35,28 +35,28 @@ SUBS = [
     # --- "Who" ---------------------------------------------------------------------------------------------------
     (
         "A1, B1, B2: the answer's time, its three drafts, and its scope, stated once",
-        """    - **The owner has answered: the sweeper is the owner's.** It acts as `pcalnon` and is not Claude Code on
+        """    - **The Overtoad has answered: the sweeper is the Overtoad's.** It acts as `pcalnon` and is not Claude Code on
       this host. On 2026-09-24 at 07:32:48Z, four minutes after round 5's artifact was frozen, session
       `bc31e993` asked whether the sweeper that took four PRs out of draft and armed them 4–7 s later as
-      `pcalnon` was the owner's. It named data#428, ml#2032, ml#2059 and canopy#678, all four in the pass above
-      (canopy#678 merged there with no arm event), and cascor#678's morning arm. The owner chose "Mine: fix
-      forward", an option whose text says the sweeper is the owner's and its merges intended, with validation
+      `pcalnon` was the Overtoad's. It named data#428, ml#2032, ml#2059 and canopy#678, all four in the pass above
+      (canopy#678 merged there with no arm event), and cascor#678's morning arm. The Overtoad chose "Mine: fix
+      forward", an option whose text says the sweeper is the Overtoad's and its merges intended, with validation
       continuing after the merge and fixes going forward in follow-up PRs. The question did not name #676, the
-      account's later actions or ml#2045's next morning, so those remain the owner's to confirm (Still owed,
+      account's later actions or ml#2045's next morning, so those remain the Overtoad's to confirm (Still owed,
       item 15). Lane R5-B found the exchange; `util/ad-hoc/2026-09-24_owner_answer_extract.py` prints it,
       redacted, from lines 4227 and 4260 of that session's transcript.""",
-        """    - **The owner has answered: the sweeper is the owner's.** It acts as `pcalnon` and is not Claude Code on
-      this host. Session `bc31e993` asked at 03:34:45Z on 2026-09-24, and the owner answered at 07:32:48Z, four
+        """    - **The Overtoad has answered: the sweeper is the Overtoad's.** It acts as `pcalnon` and is not Claude Code on
+      this host. Session `bc31e993` asked at 03:34:45Z on 2026-09-24, and the Overtoad answered at 07:32:48Z, four
       minutes after round 5's artifact was frozen. The question named four PRs of the pass above (data#428,
       ml#2032, ml#2059 and canopy#678) as taken out of draft and armed 4–7 s later as `pcalnon`, which three
       were; canopy#678 was never a draft and merged directly, with no arm event. It added that cascor#678 was
-      armed the same way that morning, and asked whether that sweeper was the owner's. The owner chose "Mine:
-      fix forward", an option whose text says the sweeper is the owner's and "the merges", those PRs', are
+      armed the same way that morning, and asked whether that sweeper was the Overtoad's. The Overtoad chose "Mine:
+      fix forward", an option whose text says the sweeper is the Overtoad's and "the merges", those PRs', are
       intended, with validation continuing after the merge and fixes going forward in follow-up PRs.
       - **Its scope.** It names none of the pass's other five PRs. It reaches three of them, #676, data#431 and
         data#434, only through the shared pattern (a draft readied, then armed 4–8 s later), and ml#2066's arm
         and data-client#212's direct merge not even that way. It does not cover #676's CI re-run, the account's
-        other later actions or ml#2045's next morning, which remain the owner's to confirm (Still owed, item
+        other later actions or ml#2045's next morning, which remain the Overtoad's to confirm (Still owed, item
         15).
       - Lane R5-B found the exchange; `util/ad-hoc/2026-09-24_owner_answer_extract.py` prints it, redacted,
         from lines 4227 and 4260 of that session's transcript.""",
@@ -83,10 +83,10 @@ SUBS = [
     (
         "B3: the widened secret shapes, and their check",
         """  - `2026-09-24_owner_answer_extract.py`: prints chosen records of a session transcript, redacted; round 5
-    used it for the owner's answer ("Who", above).
+    used it for the Overtoad's answer ("Who", above).
 """,
         """  - `2026-09-24_owner_answer_extract.py`: prints chosen records of a session transcript, redacted; round 5
-    used it for the owner's answer ("Who", above). Round 6 widened its secret shapes, and the launch scan's and
+    used it for the Overtoad's answer ("Who", above). Round 6 widened its secret shapes, and the launch scan's and
     the archive tool's, after Lane R6-B found `sk-ant-…` keys passing it; `2026-09-24_secret_shape_check.py`
     tests all three against constructed fake values, both ways.
 """,
@@ -101,9 +101,9 @@ SUBS = [
     # --- Consensus record ----------------------------------------------------------------------------------------
     (
         "B1: round 5's record of the answer",
-        """    - the owner question, answered for the pass's sweeper four minutes after the freeze (R5-B): "Who", item 15
+        """    - the Overtoad question, answered for the pass's sweeper four minutes after the freeze (R5-B): "Who", item 15
       and "What the evidence cannot support" record the answer and its scope;""",
-        """    - the owner question, answered four minutes after the freeze for the sweeper that readied and armed the
+        """    - the Overtoad question, answered four minutes after the freeze for the sweeper that readied and armed the
       drafts it named (R5-B): "Who", item 15 and "What the evidence cannot support" record the answer and its
       scope;""",
     ),
@@ -132,7 +132,7 @@ SUBS = [
     resumed with their context and returned SOUND-WITH-FIXES. The replay of round 5's script is exact, and every
     count, time and source line round 5 added held, including the signing key of the 03:00Z commits.
   - **What round 6 changed:**
-    - the owner's answer: the question's time (03:34:45Z; 07:32:48Z is the answer), the three of its four PRs
+    - the Overtoad's answer: the question's time (03:34:45Z; 07:32:48Z is the answer), the three of its four PRs
       that were drafts, and one statement of its scope, in "Who", which item 15 and "What the evidence cannot
       support" now follow;
     - "whatever cascor reports": F-CANOPY-055 freezes the bar only on a page slower than its tick, and the bar
@@ -155,9 +155,9 @@ SUBS = [
     ),
     (
         "B1: what the evidence cannot support, one scope",
-        """by an unnamed path escapes): the owner's answer covers the sweeper that readied and armed the pass's PRs
+        """by an unnamed path escapes): the Overtoad's answer covers the sweeper that readied and armed the pass's PRs
     and names neither, and it covers #676's own ready and arm by the pass's pattern, not by name;""",
-        """by an unnamed path escapes): the owner's answer covers the sweeper that readied and armed the drafts it
+        """by an unnamed path escapes): the Overtoad's answer covers the sweeper that readied and armed the drafts it
     named, and names neither; #676's own ready and arm are tied to that sweeper by the pass's pattern, not by
     the answer;""",
     ),
@@ -172,12 +172,12 @@ SUBS = [
     ),
     (
         "B1: item 15, one scope",
-        """    - **Answered for the sweeper (2026-09-24):** the pass over nine PRs, 21:47–22:51Z, was the owner's sweeper
-      ("Who", above), whose merges the owner calls intended. Still the owner's to confirm, because the question
+        """    - **Answered for the sweeper (2026-09-24):** the pass over nine PRs, 21:47–22:51Z, was the Overtoad's sweeper
+      ("Who", above), whose merges the Overtoad calls intended. Still the Overtoad's to confirm, because the question
       did not name them:""",
         """    - **Answered for the sweeper (2026-09-24):** the sweeper that readied and armed the drafts the question
-      named is the owner's, and the owner called their merges intended; the pass's other drafts, #676 included,
-      share its pattern but were not named ("Who", above, gives the answer's scope). Still the owner's to
+      named is the Overtoad's, and the Overtoad called their merges intended; the pass's other drafts, #676 included,
+      share its pattern but were not named ("Who", above, gives the answer's scope). Still the Overtoad's to
       confirm, because the question did not name them:""",
     ),
     (

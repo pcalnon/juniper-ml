@@ -65,7 +65,7 @@ MESSAGE = """ci(sequence-safety): the header calls a REQUIRED check advisory
 
 `Sequence Safety` is a required status check in {repo}'s branch ruleset ({rid}), and
 this workflow's header says it is "ADVISORY, NOT a required check" that "never blocks a
-merge", with promotion described as a future owner decision. The promotion happened;
+merge", with promotion described as a future Overtoad decision. The promotion happened;
 nobody edited the header. A reader who trusts it takes a red Sequence Safety for
 non-blocking and waits for a merge that cannot happen -- which is how the juniper-ml
 instance was found, on ml#1837.

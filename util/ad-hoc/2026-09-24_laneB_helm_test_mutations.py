@@ -5,7 +5,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (written by validation lane B, container-registry session, 2026-09-24)
 Created: 2026-09-24
 Status: ad-hoc — investigation (provenance copy of a validation-lane probe)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-deploy#232's render tests against strictly broader egress rules (lane B finding M2;
          fixed in juniper-deploy#233, whose strengthened tests util/ad-hoc/2026-09-24_helm_data_egress_mutation_check.py
          proves against the same nine shapes)

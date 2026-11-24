@@ -10,7 +10,7 @@ Version:     0.2.0  (0.2.0 changed ONLY the active-control pairing + added --rea
              was measured with 0.1.0 -- identical measurement code -- and its record reanalysed with 0.2.0)
 License:     MIT License
 Status:      ad-hoc -- investigation (one-off Lane A measurement re-creation)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md section 2 (Lane A)
 
 THE CLAIM UNDER TEST (a claim, not a fact). On canopy (default http://127.0.0.1:8051), during a

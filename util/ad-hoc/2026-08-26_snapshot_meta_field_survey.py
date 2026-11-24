@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/snapshot_classify.py SS ITERATIONS, NOT EPOCHS; tests/test_snapshot_classify.py
          IterationsNotEpochsTest; docs/REFERENCE.md snapshot_classify.py entry
 

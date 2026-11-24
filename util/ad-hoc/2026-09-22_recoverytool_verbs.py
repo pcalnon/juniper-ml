@@ -6,7 +6,7 @@ Sub-Project: backup infrastructure
 Author:      Paul Calnon
 Created:     2026-09-22
 Status:      ad-hoc -- product capability probe
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-09-22_duplicati_literal_scan.py (found `reencrypt` in this assembly)
 
 WHY NOT JUST RUN IT WITH `help`. On this host a Duplicati binary invoked for information has

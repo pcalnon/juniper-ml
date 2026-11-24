@@ -11,7 +11,7 @@ WHAT IS WRONG
 
 Every sibling's `.github/workflows/sequence-safety.yml` states that the job is "ADVISORY,
 NOT a required check", that it "never blocks a merge", and that "Promotion to a required
-context, if ever desired, is an owner-only branch-ruleset decision". The promotion HAS
+context, if ever desired, is an Overtoad-only branch-ruleset decision". The promotion HAS
 happened: `util/ad-hoc/2026-09-11_fleet_required_context_probe.py` reads each repo's live
 ruleset and finds `Sequence Safety` among the required contexts in all nine repos --
 juniper-ml (17 contexts), cascor (24), canopy (21), data (22), data-client (20),
@@ -155,7 +155,7 @@ def _paragraph(pre: str, repo: str, ruleset_id) -> str:
         "REQUIRED in the branch ruleset, and deliberately ABSENT from the CI Quality Gate",
         "`needs:`. Those are two different things and this comment used to conflate them: it",
         'opened "ADVISORY, NOT a required check" and promised that promotion "if ever desired"',
-        "would be a future owner-only decision. The promotion HAPPENED; nobody edited the",
+        "would be a future Overtoad-only decision. The promotion HAPPENED; nobody edited the",
         "header. A reader who trusts it takes a red Sequence Safety for non-blocking; it",
         "blocks. Verified against the live ruleset, which this command prints:",
         "",

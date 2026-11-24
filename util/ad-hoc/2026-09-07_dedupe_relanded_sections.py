@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-07
 Status: ad-hoc -- one-off (cursor-fleet PR disposition, #1799 re-land repair)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-07_duplicate_section_census.py`, which measured the damage
 
 #1799 re-landed six PRs #1797 had already carried -- 367 of its 391 added lines were already on

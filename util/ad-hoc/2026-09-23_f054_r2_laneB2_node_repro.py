@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- investigation (independent-agent consensus, round 2, Lane B2)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy fix/f054-replay-block-clientside (canopy#670) v2 = local commit 85415f3c;
          util/ad-hoc/2026-09-23_f054_r2_laneB2_double_apply_cleanroom.py (the live-renderer half)
 

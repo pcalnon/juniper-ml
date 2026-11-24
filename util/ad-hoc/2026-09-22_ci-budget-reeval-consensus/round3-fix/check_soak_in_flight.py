@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling (consensus round 3 fix pass)
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- single-use verification; hermetic (every GitHub read is stubbed; no network)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Feeds probe_soak one queued check-run and one completed check-run whose log examined a file.
 PASS = no Unmeasurable, one in-flight job listed, one completed run scored. A copy of the probe

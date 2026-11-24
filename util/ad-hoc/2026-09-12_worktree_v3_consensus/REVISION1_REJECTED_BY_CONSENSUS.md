@@ -66,7 +66,7 @@ DIES."*
 2. **Archive before delete; reversibility before safety.** The loss tail is unbounded; the
    disk pressure is 0.65% (§7.1). Ordering follows from that asymmetry, not from taste.
 3. **Consent is declared, not inferred.** The owning session publishes `git worktree lock`.
-   A sweeper's inference about liveness is strictly weaker than the owner's declaration.
+   A sweeper's inference about liveness is strictly weaker than the Overtoad's declaration.
 4. **Every gate must be able to return UNKNOWN, and UNKNOWN must refuse.** Five instrument
    defects in this arc were checks that could not separate the two cases they existed to
    separate (§8.1). A conjunct that cannot be evaluated is a coin flip whose bias was chosen
@@ -103,7 +103,7 @@ locked tree, and so does a *single* `--force`.
 **Why this replaces "worktree no longer active".** Process inspection is fail-open: the
 in-use probe's own header states that other users' `/proc` entries are unreadable and skipped,
 and a session between turns, or one that will be `--resume`d, holds no matching cwd at all.
-The lock is the owner saying so at the moment the owner knows.
+The lock is the Overtoad saying so at the moment the Overtoad knows.
 
 **Known limits, stated rather than assumed.** (a) A session that crashes before locking leaves
 no lock — but that degrades *safe*: no lock plus no live cwd is also no work in flight, and
@@ -295,7 +295,7 @@ to load. That argues for a conservative gated sweep, not an aggressive one, and 
 27 distinct live cwds under `Juniper/`, 53 `claude` processes, 12 juniper-ml worktrees held
 live. **Every gate is TOCTOU**: a read-only census of 140 trees takes minutes; a serial sweep
 of 128 removals is a far wider window, and session S cannot know that session T is three tool
-calls from writing. G1 is the only non-TOCTOU signal because the *owner* publishes it.
+calls from writing. G1 is the only non-TOCTOU signal because the *Overtoad* publishes it.
 
 **Rule: a sweeper takes only the unlocked residue.** The owning session unlocks at exit. A
 peer session never overrides a lock, and `--force --force` (which defeats a lock) is forbidden
@@ -367,7 +367,7 @@ ships with a negative control proving it can fail**, or it does not ship.
 
 ---
 
-## 10. Open questions for the owner
+## 10. Open questions for the Overtoad
 
 | # | question | why it blocks |
 |---|---|---|
@@ -376,7 +376,7 @@ ships with a negative control proving it can fail**, or it does not ship.
 | **Q3** | Delete `remove_stale_worktrees.bash`, or rename it? | Deleting touches its CI test in two workflows; renaming keeps a footgun with an honest name |
 | **Q4** | Adopt §5 option A (harvest into a backed-up path), or C (narrow the exclusion)? | Decides whether backup scales with risk or with tree count |
 | **Q5** | Is the 14-day quarantine right? | Must exceed `gc.pruneExpire` (2 weeks default); longer costs only disk |
-| **Q6** | Should a peer session ever sweep, or only the owner plus a scheduled reaper? | §7.2 argues for owner-plus-reaper; this is a policy call |
+| **Q6** | Should a peer session ever sweep, or only the Overtoad plus a scheduled reaper? | §7.2 argues for Overtoad-plus-reaper; this is a policy call |
 
 ---
 

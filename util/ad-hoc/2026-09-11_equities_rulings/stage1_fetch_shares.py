@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Stage 1 of the equities owner-rulings implementation: `_fetch_shares` becomes causal.
+Stage 1 of the equities Overtoad-rulings implementation: `_fetch_shares` becomes causal.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-11
 Status: ad-hoc — one-off (applied once to the juniper-data worktree named below)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: register rows APD-DATA-040 / -043 / -044 / -039 / -045 and their owner rulings of
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: register rows APD-DATA-040 / -043 / -044 / -039 / -045 and their Overtoad rulings of
          2026-09-09 (register §4.9 rulings block)
 
 Three rulings land here, all inside one method:
@@ -62,7 +62,7 @@ def sub(old: str, new: str, label: str) -> None:
 sub(
     "_SHARES_OUTLIER_FACTOR = 100.0\n",
     "_SHARES_OUTLIER_FACTOR = 100.0\n"
-    "# Absolute plausibility floor for a share count, in shares. Owner ruling 2026-09-09\n"
+    "# Absolute plausibility floor for a share count, in shares. The Overtoad ruling 2026-09-09\n"
     "# (register APD-DATA-043 / -044). A listed issuer cannot have 1,000 shares outstanding; the\n"
     "# six unusable series in the bundled universe deliver 0, 1 or 1,000. Sited deliberately\n"
     "# between those and the smallest GENUINE count in the same cache -- Berkshire's Class-A\n"
@@ -75,7 +75,7 @@ sub(
     "# outlier.\n"
     "_SHARES_ABSOLUTE_FLOOR = 100_000.0\n"
     "# A share count older than this is reported but marked degraded rather than silently\n"
-    "# forward-filled for years. Owner ruling 2026-09-09 (register APD-DATA-039 / -045), chosen\n"
+    "# forward-filled for years. The Overtoad ruling 2026-09-09 (register APD-DATA-039 / -045), chosen\n"
     "# against the measured distribution of the 485-payload cache: median last-as-of age 138 days,\n"
     "# p90 180, and the count of flagged series is flat from 270d (28) through 365d (27) to 730d\n"
     "# (24), so the exact figure is not load-bearing. Anything under ~200 days measures cache age\n"

@@ -2,7 +2,7 @@
 """
 Project:     Juniper
 Sub-Project: juniper-ml
-Application: Performance lane -- owner decisions D1 and D2
+Application: Performance lane -- Overtoad decisions D1 and D2
 Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
@@ -17,7 +17,7 @@ cascor's constructor formula `max(2, worker_thread_count * 2)` happens to produc
 to be pathological; **that does not establish 2 as optimal**. Sweep 2/4/6/8/10/16 and look at the
 LATER passes, which are the ones that actually run at the re-pinned width.
 
-**D2**: the owner ruled the `runtime:` block should be implemented by exporting the BLAS
+**D2**: the Overtoad ruled the `runtime:` block should be implemented by exporting the BLAS
 variables. cascor#531 measured that route costing the candidate phase **1.52x** — but BOTH of its
 channels shrink as the budget rises (throughput 1.26x -> 1.14x, epoch count 1.21x -> 1.03x), so
 1.52x is the worst case at a TIGHT cap, not a flat tax. The question is therefore *at which cap

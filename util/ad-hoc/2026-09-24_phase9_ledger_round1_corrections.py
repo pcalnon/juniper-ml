@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round-1 fix pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9;
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round1.md
 
@@ -241,7 +241,7 @@ SUBS = [
       match was juniper-cascor#676.
     - The ready-then-arm pair, 8 s apart, fits the same night's sweep of drafted PRs: ml#2059 at 21:47:22Z, ml#2032
       at 22:27:20Z and data#428 at 22:29:55Z, each readied and armed 4–7 s apart.
-    - The actor is unidentified. It acts as `pcalnon`, so GitHub cannot tell it from the owner or any session.""",
+    - The actor is unidentified. It acts as `pcalnon`, so GitHub cannot tell it from the Overtoad or any session.""",
         """  - **Who.**
     - **No Claude Code session on this host could have done it.** Every session active before 21:41Z hit the
       weekly rate limit between 21:30:11Z and 21:41:01Z. From 21:41:02Z to 01:40Z no session on this host made a
@@ -266,7 +266,7 @@ SUBS = [
       held before the ready: every successful or skipped check on `4b4cfb16` had finished by 20:59:25Z. The
       ledger-first order and round 3 appeared only in the PR body. So the ready met the comment's literal
       condition; the arm, which the comment asked no one to do, did not.
-    - The actor is unidentified. It acts as `pcalnon`, the owner's account. **Owner question**: was that pass
+    - The actor is unidentified. It acts as `pcalnon`, the Overtoad's account. **The Overtoad question**: was that pass
       his? (Still owed, item 15.)""",
     ),
     (
@@ -719,7 +719,7 @@ SUBS = [
       cannot, since every response after the first is a 204; count evictions.
     - Size the window, and any verdict floor, to the lane's cadence, fixed before the run. The census's "≥ 10
       responses" assumed a 1 Hz lane and VOIDed a fix that self-clocks at ~7.5 s.
-15. **New: owner questions and loose ends from #676's merge.**
+15. **New: Overtoad questions and loose ends from #676's merge.**
     - Was the 21:47–22:51Z pass over nine PRs his? If not, nothing held a PR that night: not a disarm, a draft
       or a comment. Only a PR that does not yet exist is held.
     - F-CANOPY-056's re-rating to P1, on plan §6.3's rule.

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author:      Paul Calnon
 Created:     2026-08-26
 Status:      ad-hoc -- one-off (cascor#579: is the post-#563 worker still dominated by `inspect`?)
-Retire when: RETAINED (owner policy 2026-08-25 -- no retirement deadline). Previously: cascor#579 is
+Retire when: RETAINED (Overtoad policy 2026-08-25 -- no retirement deadline). Previously: cascor#579 is
              closed with the share posted; delete then.
 Related:     util/ad-hoc/2026-08-23_h2h_worker_profile_diff.py (per-function A/B diff of two corpora);
              JUNIPER_CASCOR_WORKER_PROFILE (cascor#567) writes the .prof files this reads.

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register maintenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use editor; all-or-nothing, refuses to run twice
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 juniper-ml#2080 (round 42's register fix-forward) and #2075 v3 (the API primer's correction) were validated
 after merge by two independent lanes, archived verbatim in
@@ -195,8 +195,8 @@ REG_SUBS: list[tuple[str, str, str, int]] = [
     ),
     (
         "ruling quote 1 is an opening (N5)",
-        "whose description, which the owner was shown, reads \"The fetch's",
-        "whose description, which the owner was shown, begins \"The fetch's",
+        "whose description, which the Overtoad was shown, reads \"The fetch's",
+        "whose description, which the Overtoad was shown, begins \"The fetch's",
         1,
     ),
     (

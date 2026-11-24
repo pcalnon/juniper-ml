@@ -11,7 +11,7 @@
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 # Status:        ad-hoc -- investigation
-# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:       juniper-canopy#646, juniper-canopy#650
 #
 # Description:

@@ -7,11 +7,11 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use; wraps util/open_signed_pr.py
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Session 2fba4397 (worktree `fizzy-hugging-dream`) wrote two handoffs on 2026-09-24/25: its own
 (`…ml2088-merged-data-fixforward-refuted-and-fixing-closes-pr-owed.md`) and the consolidated one the
-owner asked for (`…consolidated-both-lanes-validations-and-closes-pr-owed.md`), which merges it with the
+Overtoad asked for (`…consolidated-both-lanes-validations-and-closes-pr-owed.md`), which merges it with the
 follow-up lane's (juniper-ml#2097) and their predecessor (juniper-ml#2084). Both, their validation
 reports, and the rest of the lane's uncommitted evidence ship together here.
 

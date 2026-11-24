@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc — tooling
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/open_signed_pr.py (the tool this drives); util/ad-hoc/2026-09-23_lfs_pointers_for_api_commit.py
          (writes the pointer files this substitutes)
 

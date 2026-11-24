@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-09-23
 # Status:     ad-hoc -- merge shepherding (a `Monitor` event source)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/ad-hoc/2026-09-22_shepherd_automerge.bash (syncs ONE PR whenever it goes BEHIND)
 #
 # WHY NOT THE SHEPHERD. With several armed PRs in one strict-checks repo, running one shepherd per

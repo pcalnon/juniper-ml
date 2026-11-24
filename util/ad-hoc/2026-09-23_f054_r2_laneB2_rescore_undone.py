@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- investigation (independent-agent consensus, round 2, Lane B2)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-09-23_f054_pdup_cleanroom_v1_v2.py (the transcript's producer)
 
 WHY. The producer scores HELD on the FIRST ``paused`` record after the pause click and reads the

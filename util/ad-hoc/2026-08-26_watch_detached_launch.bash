@@ -6,7 +6,7 @@
 # Author:      Paul Calnon
 # Created:     2026-08-26
 # Status:      ad-hoc -- one-off (perf-lane re-measure watches, post-#587/#588/#589)
-# Retire when: RETAINED (owner policy 2026-08-25 -- no retirement deadline). Previously: the
+# Retire when: RETAINED (Overtoad policy 2026-08-25 -- no retirement deadline). Previously: the
 #              perf-lane re-measure evidence is posted (cascor#571 / #570); delete then.
 # Related:     util/ad-hoc/2026-08-21_detach_campaign.bash (writes the <LOG>.pid this reads);
 #              util/ad-hoc/2026-08-21_h2h_paired_campaign.bash (terminal marker `paired: done ->`).

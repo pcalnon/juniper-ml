@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (cascor#573 logging arc, P0.2 instrument adequacy)
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc — investigation (reconciles Lane A3 of the 2026-09-22 handoff validation)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-09-22_p02_logging_share_decompose.py (the instrument under test);
          notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md §13.1 decision 1
 

@@ -7,7 +7,7 @@
 # Author: Paul Calnon
 # Created: 2026-08-28
 # Status: ad-hoc -- campaign launcher (E-C noise-robustness re-run at cap 64)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related: util/experiments/suites/p4/e-c-cascor-noise-robustness.yaml (ml#1409, the cap-64 definition);
 #          util/experiment_stack.bash JUNIPER_EXP_CASCOR_SRC_DIR (ml#1412, what makes pinning possible);
 #          util/ad-hoc/2026-08-26_cascor_import_provenance.py (the non-vacuous pin check)

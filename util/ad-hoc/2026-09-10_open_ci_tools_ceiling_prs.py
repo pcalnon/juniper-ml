@@ -79,7 +79,7 @@ That makes this **part 1 of an ordered two-part change**, and part 1 must land *
 cut or the artefact is uninstallable:
 
 1. **widen the ceilings** ← this PR
-2. cut the Release (owner-only)
+2. cut the Release (Overtoad-only)
 3. raise the **floors** to `>=0.9.0` — only *after* the wheel is on PyPI, because a floor pinned at an
    unpublished version resolves nothing. Separate pass.
 

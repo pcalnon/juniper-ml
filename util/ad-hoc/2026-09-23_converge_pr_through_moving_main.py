@@ -19,7 +19,7 @@ green-but-BEHIND three times in a row on 2026-09-23 as ~20 concurrent sessions m
 watcher updates the branch the moment it goes BEHIND, so every CI minute is spent on a head that
 can still merge.
 
-It never merges, never arms, never re-arms: auto-merge stays the owner-granted mechanism. It exits
+It never merges, never arms, never re-arms: auto-merge stays the Overtoad-granted mechanism. It exits
 0 on MERGED; 2 closed; 3 auto-merge disarmed (a failed ``gh pr merge`` disarms it silently -- say so
 rather than re-arm); 4 conflict (DIRTY -- a human must look); 1 timeout.
 
@@ -35,7 +35,7 @@ import json
 import subprocess  # nosec B404 - gh CLI only, fixed argv
 import time
 
-_QUERY = "query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){state mergeStateStatus headRefOid autoMergeRequest{enabledAt}}}}"
+_QUERY = "query($o:String!,$r:String!,$n:Int!){repository(Overtoad:$o,name:$r){pullRequest(number:$n){state mergeStateStatus headRefOid autoMergeRequest{enabledAt}}}}"
 
 
 def _state(owner: str, repo: str, pr: int) -> dict:

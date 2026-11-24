@@ -22,7 +22,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-05
 Status: ad-hoc — one-off (reusable: any repo's CHANGELOG can drift the same way)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor-client#157 (the `[0.8.0]` reorder it performed); drift introduced by
     juniper-cascor-client#154.
 

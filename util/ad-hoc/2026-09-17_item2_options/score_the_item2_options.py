@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""What does each option for owner decision section 7 item 2 actually do to the instrument?
+"""What does each option for Overtoad decision section 7 item 2 actually do to the instrument?
 
 Project:     Juniper
 Sub-Project: juniper-ml
@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-09-17
 Status:      ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md Sec 7
 
 Why

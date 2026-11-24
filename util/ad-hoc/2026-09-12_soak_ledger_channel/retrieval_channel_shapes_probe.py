@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-09-12
 Status:      ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md Sec 10
 
 Why
@@ -16,7 +16,7 @@ Why
 Sec 10 of that note says the three false-positive mechanisms are code defects in
 `util/soak_run_probe.py`'s `retrieval_channel` and in the ad-hoc screen's `scan()`, and that
 hardening them "belongs in its own PR". `foreign` is already fixed. `filename` is explicitly an
-owner decision (the retrieval standard). That leaves `ledger`.
+Overtoad decision (the retrieval standard). That leaves `ledger`.
 
 MEASURE BEFORE CLAIMING. This does not assert a defect -- it feeds `retrieval_channel` a set of
 realistic tool-input shapes and prints what it actually returns, so the defect (if any) is a
@@ -82,9 +82,9 @@ SHAPES: list[tuple[str, list, bool, str]] = [
         "bare grep PATTERN, no file read at all",
         [{"command": "grep -rn 'docs/REFERENCE.md' ."}],
         # DELIBERATELY LEFT TRUE. Whether merely NAMING the path counts is the
-        # retrieval standard -- owner decision, pinned by
+        # retrieval standard -- Overtoad decision, pinned by
         # test_pointer_path_in_a_command_arg_currently_counts_as_a_hit.
-        True, "owner-gated: naming != reading, but that is not ours to decide",
+        True, "Overtoad-gated: naming != reading, but that is not ours to decide",
     ),
     (
         "NEGATIVE CONTROL -- ledger read AND a qualified read of OURS, one command",

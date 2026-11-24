@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md
          (its "want 0 and 0" pin check), juniper-cascor#646, juniper-ml#1909, juniper-cascor-worker#193
 
@@ -45,7 +45,7 @@ reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/.
 
 DROPPED with no output at all (not even AMBIGUOUS):
 
-* Owner-drop shapes.
+* The Overtoad-drop shapes.
   - A range whose nearest name is a repo or another package, even in ci-tools context:
     "the sequence-safety workflows in juniper-cascor pin ``>=0.8.0,<0.9.0``".
   - A table whose header names a repo (``| package | pin in juniper-ml |``); the row's own
@@ -110,7 +110,7 @@ AMBIGUOUS    a range the attribution could not assign, in text whose section nam
              screen pin or sequence-safety. One that admits a different set of releases than
              --expect FAILS the census until someone fixes the line or records a verdict in
              ADJUDICATED below. One that matches --expect passes; the run lists it under its
-             own heading, because its owner is a guess. ``docs/REFERENCE.md`` once described
+             own heading, because its Overtoad is a guess. ``docs/REFERENCE.md`` once described
              "the two new ``>=0.8.0,<0.9.0`` screen pins" without naming the package; no regex
              attributes that.
 
@@ -961,12 +961,12 @@ def main(argv: list[str] | None = None) -> int:
         bad.insert(0, lag)
     print(f"\n--- STALE (fails the census) against {args.expect} ---")
     print("\n".join("  " + b for b in bad) if bad else "  (none)")
-    # An AMBIGUOUS range that admits the same releases as --expect passes, but its owner is a
+    # An AMBIGUOUS range that admits the same releases as --expect passes, but its Overtoad is a
     # guess. List it, so "passes" is never mistaken for "was read".
     failing = {b.split("  (")[0] for b in bad}
     unread = [h for h in all_hits if h.cls == "AMBIGUOUS" and f"{h.repo}/{h.path}:{h.line}  {h.spec}  [{h.cls}]" not in failing]
     if unread:
-        print(f"\n--- AMBIGUOUS, matching {args.expect}: passes, but the owner is unproven -- read each ---")
+        print(f"\n--- AMBIGUOUS, matching {args.expect}: passes, but the Overtoad is unproven -- read each ---")
         print("\n".join(f"  {h.repo}/{h.path}:{h.line}  {h.spec}" for h in unread))
     adjudicated = [h for h in all_hits if h.cls == "ADJUDICATED"]
     print(f"\n({len(adjudicated)} adjudicated ranges not listed; see ADJUDICATED in this script for each verdict)")
