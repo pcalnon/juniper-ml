@@ -4,7 +4,7 @@
 - **Author**: Paul Calnon (audit via the Claude Code `auditor` agent on turing)
 - **Date**: 2026-10-21
 - **Version**: 1.0.0
-- **Status**: FINAL. The decision to enable, keep disabled or remove each server is the owner's (§8). The audit changed nothing: not the server trees, not any configuration.
+- **Status**: FINAL. The decision to enable, keep disabled or remove each server is the Overtoad's (§8). The audit changed nothing: not the server trees, not any configuration.
 - **Scope**: `~/.claude/mcp-servers/adaptive-graph-of-thoughts` and `~/.claude/mcp-servers/agi-mcp-server`, by static analysis only. Lenses: provenance, permissions, egress, plus host exposure.
 - **Plan task**: H5 of [`JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`](JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md), §6 Arc H :480 (acceptance: "audit note in `notes/`; enable or remove").
   - The plan is cited as v1.4.3 (main, juniper-ml#2297). Its lines 1-923 are identical to the v1.4.2 copy in this worktree, apart from the Version line. Lines in §18 are v1.4.3's.
@@ -16,7 +16,7 @@
 
 ## 1. Summary
 
-- **Recommendation for both servers: REMOVE.** The decision is the owner's (§8).
+- **Recommendation for both servers: REMOVE.** The decision is the Overtoad's (§8).
 - **Findings: 25.** 3 blocker, 9 major, 13 minor (§7.1). Every finding carries a `file:line`, a command and its output, or a fetched URL.
 - **adaptive-graph-of-thoughts (AGoT)**
   - The DXT Node server is the only AGoT entry point a standard MCP client can use, and it fabricates its results. Every tool builds its "evidence" from `Math.random()` and never calls any backend (AGOT-A1).
@@ -68,7 +68,7 @@
 
 | ID | Item | Pass means | adaptive-graph-of-thoughts | agi-mcp-server |
 | --- | --- | --- | --- | --- |
-| C-P1 | Upstream identity and health | known owner, maintained, licensed, signed history | FAIL: single user, agent-written history, MIT versus Apache-2.0 (AGOT-P3) | FAIL: squatted origin (AGI-P1); no LICENSE file (AGI-P2); unsigned (AGI-P4) |
+| C-P1 | Upstream identity and health | known Overtoad, maintained, licensed, signed history | FAIL: single user, agent-written history, MIT versus Apache-2.0 (AGOT-P3) | FAIL: squatted origin (AGI-P1); no LICENSE file (AGI-P2); unsigned (AGI-P4) |
 | C-P2 | Local tree against upstream at HEAD | every tracked blob identical; local-only files explained | PASS: 305 identical, 0 modified; 2 `.pyc` (AGOT-H1) | PASS: 33 identical, 0 modified; local `package-lock.json` (AGI-P3) |
 | C-P3 | Newer upstream commits | none, or none security-relevant | FAIL: 6, dependency bumps, 3 security-relevant (AGOT-P2) | FAIL: 1, the namespace fix (AGI-P1) |
 | C-P4 | Repository advisories and security issues | 0 advisories; no open security issue | PASS: 0 advisories; dependabot PRs #159, #160 open since 2026-03-24 (AGOT-P2) | PASS: 0 advisories; 2 issues or PRs in all |
@@ -228,7 +228,7 @@ $ gh api --paginate "advisories?ecosystem=npm&per_page=100&affects=<99 pins from
 - **Severity**: minor
 - **Location**: upstream `SaptaDey/Adaptive-Graph-of-Thoughts-MCP-server`; `LICENSE:1`; `pyproject.toml:8`, `:14`; `manifest.json:13`; `package.json:14`
 - **Problem**
-  - **Owner and activity**: a personal account created 2023-08-15, with 41 public repositories. The repository has 32 stars and 9 forks and no security advisory.
+  - **The Overtoad and activity**: a personal account created 2023-08-15, with 41 public repositories. The repository has 32 stars and 9 forks and no security advisory.
   - **HEAD signature**: HEAD `1f7c6cee` merges PR #158, written by the Copilot coding agent. Its `verified: true` is GitHub's own web-flow signature on the merge (committer `GitHub`, reason `valid`), not the author's key. One of the six newer commits, `07b97361c130`, is unsigned.
   - **Security-titled PRs**: a burst landed on 2025-06-20 to 2025-06-22, among them "Fix authentication bypass in verify_token" (#101), "Fix token verification bypass" (#121), "Fix Cypher injection in Neo4j utilities" (#122) and "Fix credential exposure in Neo4j debug logs" (#100). The fail-open Basic authentication of AGOT-A3 survived them all.
   - **A regressed bump**: PR #136 raised the Inspector to 0.14.3 and merged on 2025-06-22, yet HEAD's root `package.json:14` declares `^0.1.0`. PR #158's 15 files do not include it; the reverting commit was not traced.
@@ -325,7 +325,7 @@ server/index.js:510:      const response = await axios.post(`${this.baseUrl}${en
     - read the Neo4j password from the `/setup` form, prefilled from the environment or from the hard-coded default (`app_setup.py:208-213`);
     - make the server open a Bolt connection to any URI they name (`:243`, `:74-80`), and write `.env` in its working directory (`:261-269`);
     - rewrite `config/settings.yaml`, including `host` and `port` (`:326-338`, `:365-385`);
-    - spend the owner's LLM key through `/chat` (`:395-410`);
+    - spend the Overtoad's LLM key through `/chat` (`:395-410`);
     - read the last five prompts and responses at `/debug`, which renders them into HTML unescaped (`:463-470`);
     - drive the pipeline through `asr_got.query`, with its Neo4j writes and deletes (AGOT-A5).
   - **The correct default**: the bearer-token routes fail closed when no token is set (`api/routes/mcp.py:45-47`).
@@ -611,7 +611,7 @@ $ gh api --paginate "advisories?ecosystem=npm&per_page=100&affects=<174 name@ver
 - **Severity**: minor
 - **Location**: upstream `QuixiAI/agi-mcp-server`
 - **Problem**
-  - **Owner and activity**: the owner is an organization (QuixiAI, created 2024-01-02, 90 public repositories). The repository was created 2025-06-21 and has 6 stars and 4 forks.
+  - **The Overtoad and activity**: the Overtoad is an organization (QuixiAI, created 2024-01-02, 90 public repositories). The repository was created 2025-06-21 and has 6 stars and 4 forks.
   - **Unsigned commits**: HEAD `9eceac9e` (2025-06-21, "update README.md") is unsigned (`verification.reason: unsigned`), and so is the one later commit.
   - **Security and issue history**: no security advisory. The whole issue and PR history is two items: an open "ChatGPT official integration / app?" issue and a closed badge PR.
   - **Test runner**: `package.json:52` pins a beta, vitest 4.0.0-beta.1.
@@ -750,7 +750,7 @@ node_modules/esbuild/bin/esbuild: Mach-O 64-bit executable x86_64
 - **Processes**: none for either server, Neo4j or Postgres (`ps -axo pid,user,command`, filtered).
 - **Listeners**: none on 8000, 7474, 7687 or 5432 (`lsof -nP -iTCP -sTCP:LISTEN`). Without sudo, `lsof` shows only this user's sockets.
 - **Docker**: no image, container or volume for Neo4j, Postgres, pgvector, AGoT, AGI or Hexis (`docker images`; `docker ps -a`; `docker volume ls`, which is empty). These commands talk to the local daemon only.
-- **File modes**: in both trees, no file is world- or group-writable, none has a setuid or setgid bit, and every file belongs to the owner (`find -perm -o+w -o -perm -g+w`, `find -perm -4000 -o -perm -2000`, `find -not -user`: no output).
+- **File modes**: in both trees, no file is world- or group-writable, none has a setuid or setgid bit, and every file belongs to the Overtoad (`find -perm -o+w -o -perm -g+w`, `find -perm -4000 -o -perm -2000`, `find -not -user`: no output).
   - Outside `.git` and `node_modules`, the only executable file is `agi-mcp-server/mcp.js`. AGoT's shell scripts have no execute bit; AGOT-A2's allow list includes `chmod`.
   - Directories are mode 755.
 - **Secret-bearing files**: none. AGoT has no `.env`; `.gitignore:35` ignores it. agi-mcp-server holds only `.env.example` and `config/.env.example`, both templates with default placeholder credentials, not quoted here.
@@ -768,10 +768,10 @@ node_modules/esbuild/bin/esbuild: Mach-O 64-bit executable x86_64
     - agi-mcp-server's 10 writer tools write to Postgres. Its runtime code has no filesystem or process primitive.
   - **C9 does not attach**: H5's row says "A server it would enable with file-writing tools falls under C9" (§18.2 :945). Neither server has such a tool.
   - **Still unguarded**: the database-writing, deleting and network tools would run with no guard at all. C9's path rule could not judge them, since they take no path.
-  - **Full user rights**: the server processes run with the owner's full user rights; AGoT's DXT manifest declares `"sandbox": false` (`manifest.json:138`).
+  - **Full user rights**: the server processes run with the Overtoad's full user rights; AGoT's DXT manifest declares `"sandbox": false` (`manifest.json:138`).
   - **Later versions**: a file-writing or command tool added in a later upstream version would fall under C9, which would need extending to that server's tool names, or a `permissions.deny` rule.
 - **Evidence**: as cited.
-- **Fix**: removal. An enable would need a `permissions.deny` rule for each writer tool (§8.3). If the owner wants a log or a prompt, a PreToolUse hook on `mcp__<server>__.*` would provide it.
+- **Fix**: removal. An enable would need a `permissions.deny` rule for each writer tool (§8.3). If the Overtoad wants a log or a prompt, a PreToolUse hook on `mcp__<server>__.*` would provide it.
 
 ## 7. Summary of findings
 
@@ -801,9 +801,9 @@ node_modules/esbuild/bin/esbuild: Mach-O 64-bit executable x86_64
 - **The commit that reverted PR #136's Inspector bump** (AGOT-P3).
 - **Listeners owned by other users**: `lsof` was run without sudo.
 
-## 8. Decision: the owner's
+## 8. Decision: the Overtoad's
 
-These recommendations are the auditor's; **the decision is the owner's**. This audit changed neither tree and no configuration, and every command below is for the owner to run. The plan rows this decision closes are `JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` §6 Arc H :480 and v1.4.3 §18.2 :945, and D10 (:330-339). D10 keeps both servers disabled until audited. The vetted set stays Serena plus Context7 (§10 :620-627).
+These recommendations are the auditor's; **the decision is the Overtoad's**. This audit changed neither tree and no configuration, and every command below is for the Overtoad to run. The plan rows this decision closes are `JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` §6 Arc H :480 and v1.4.3 §18.2 :945, and D10 (:330-339). D10 keeps both servers disabled until audited. The vetted set stays Serena plus Context7 (§10 :620-627).
 
 ### 8.1 adaptive-graph-of-thoughts
 
@@ -815,7 +815,7 @@ These recommendations are the auditor's; **the decision is the owner's**. This a
 | What enabling a tool would require | Under C9 (§18.2 :944), which covers Serena first, each of those four tools would need C9 extended to its name, or a `permissions.deny` rule for `mcp__adaptive-graph-of-thoughts__<tool>` (§18.2 :945). `graph_reasoning` writes no file but writes to and deletes from Neo4j, so it would need a deny rule. |
 | Docker artifacts | None: no image, container or volume (§6.1) |
 
-Owner commands:
+The Overtoad commands:
 
 ```bash
 # 1. Before removal: confirm the server is still unconfigured (keys and booleans only; --offline skips the GitHub reads)
@@ -831,10 +831,10 @@ rm -rf ~/.claude/mcp-servers/adaptive-graph-of-thoughts
 | Recommendation | **REMOVE** |
 | Rationale | The clone's origin and its documented launch configuration point into a squatted namespace (AGI-P1). The server's purpose is a persistent store that re-injects text into future sessions, and it ships with a persona prompt (AGI-A1, AGI-A2). Its install drifted from the upstream lock and carries 89 active advisories (AGI-P3). It cannot run without a database stack nobody has audited (AGI-A4). It offers nothing the plan needs. |
 | File-writing or command-running MCP tools | None: no filesystem, process, dynamic-code or network primitive in `mcp.js`, `src/` or `config/` (§5.1). |
-| What enabling a tool would require | No tool falls under C9's path rule (§18.2 :944-945). The 10 Postgres writers would each need a `permissions.deny` rule for `mcp__agi-memory__<tool>`, or the owner's explicit acceptance (§8.3): `create_memory`, `create_memory_cluster`, `create_memory_relationship`, `create_working_memory`, `consolidate_working_memory`, `get_memory`, `activate_cluster`, `archive_old_memories`, `prune_memories` and `cleanup_expired_working_memory`. |
+| What enabling a tool would require | No tool falls under C9's path rule (§18.2 :944-945). The 10 Postgres writers would each need a `permissions.deny` rule for `mcp__agi-memory__<tool>`, or the Overtoad's explicit acceptance (§8.3): `create_memory`, `create_memory_cluster`, `create_memory_relationship`, `create_working_memory`, `consolidate_working_memory`, `get_memory`, `activate_cluster`, `archive_old_memories`, `prune_memories` and `cleanup_expired_working_memory`. |
 | Docker artifacts | None: no image, container or volume, and the `QuixiAI/Hexis` stack was never deployed (§6.1) |
 
-Owner commands:
+The Overtoad commands:
 
 ```bash
 # 1. Remove the tree, including node_modules and the three esbuild binaries
@@ -843,7 +843,7 @@ rm -rf ~/.claude/mcp-servers/agi-mcp-server
 rmdir ~/.claude/mcp-servers
 ```
 
-### 8.3 If the owner overrides and enables
+### 8.3 If the Overtoad overrides and enables
 
 **adaptive-graph-of-thoughts: no enable path is offered.**
 

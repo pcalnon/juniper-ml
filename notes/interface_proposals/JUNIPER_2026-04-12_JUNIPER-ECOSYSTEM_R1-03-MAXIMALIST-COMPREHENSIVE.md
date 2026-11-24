@@ -67,7 +67,7 @@ This proposal is the single document an engineering team needs to execute the mi
 - **Kill switch**: config-only lever to disable the phase's new behavior, with TTF (time-to-flip) target.
 - **Feature flag**: default state per environment.
 - **Rollout gate criteria**: what must be true for the phase to exit staging and enter production.
-- **Owner-class**: which team (backend-cascor, backend-canopy, frontend, sdk, security, ops).
+- **The Overtoad-class**: which team (backend-cascor, backend-canopy, frontend, sdk, security, ops).
 - **Risk mitigations**: which RISK-NN items are addressed.
 
 Phases covered in full detail: A, A-server, B-pre-a, B-pre-b, B, C, D, E, F, G, H, I. Plus:
@@ -152,7 +152,7 @@ Fully cross-referenced in §14 below. For quick scan: all 16 RISK-NN items (01-1
 
 **Source**: R0-04 §4-§10 (primary). R0-05 §4.2, §9.1 (test plan). R0-06 §3.1 (ordering). R0-02 §6.11 IMPL-SEC-44 (regression guard on `X-API-Key`).
 
-**Owner-class**: sdk.
+**The Overtoad-class**: sdk.
 
 **Dependencies**: none. Phase A can start immediately, in parallel with A-server and B-pre-a.
 
@@ -324,7 +324,7 @@ R0-04 says 0.5 day per source doc §9.1, but realistically 1 day with the correl
 
 **Source**: R0-03 §7.1 (primary). R0-05 §4.1 (tests). R0-06 §3.1 (phasing — adopts R0-03's carve-out).
 
-**Owner-class**: backend-cascor.
+**The Overtoad-class**: backend-cascor.
 
 **Dependencies**: none. Phase A-server can start immediately in parallel with Phase A (SDK) and Phase B-pre-a (frame-size guards).
 
@@ -605,7 +605,7 @@ This proposal splits Phase B-pre into **B-pre-a** (frame-size guards, a Phase B 
 
 **Source**: R0-02 (primary). R0-05 §7 (security tests). R0-06 §3.2, §13.1 (phasing).
 
-**Owner-class**: security + backend-cascor + backend-canopy.
+**The Overtoad-class**: security + backend-cascor + backend-canopy.
 
 ### 6.1 Phase B-pre-a — frame-size guards (M-SEC-03, must land with or before Phase B)
 
@@ -981,7 +981,7 @@ This section was reserved in the outline for Phase A-server. Content is in §5 a
 
 **Source**: R0-01 (primary). R0-03 §3-§6 (cascor-side cooperation, already landed via Phase A-server). R0-05 §4.3, §6 (tests). R0-06 §3.3, §6 (observability, gates).
 
-**Owner-class**: frontend + backend-canopy + backend-cascor (the cascor work is in Phase A-server; canopy Phase B is the browser-side consumer).
+**The Overtoad-class**: frontend + backend-canopy + backend-cascor (the cascor work is in Phase A-server; canopy Phase B is the browser-side consumer).
 
 **Dependencies**:
 - **Hard**: Phase A-server (so cascor emits `seq` and handles `resume`). Phase B-pre-a (so frame-size guards are in place before traffic volume increases).
@@ -1439,7 +1439,7 @@ Error budget: 99.9% of events meet p95 over 7-day rolling window.
 
 **Source**: R0-04 (primary). R0-05 §4.3, §6.1, §9.4. R0-06 §3.4, §5.1.
 
-**Owner-class**: backend-canopy.
+**The Overtoad-class**: backend-canopy.
 
 **Dependencies**:
 - **Hard**: Phase A (SDK `set_params`) merged and on PyPI.
@@ -1674,7 +1674,7 @@ To flip flag default (Stage 5):
 
 **Source**: R0-05 §4.3, §9.5. R0-06 §3.5.
 
-**Owner-class**: frontend + backend-canopy.
+**The Overtoad-class**: frontend + backend-canopy.
 
 **Dependencies**:
 - **Hard**: Phase B (browser bridge exists; `window.cascorControlWS` cleaned up).
@@ -1739,7 +1739,7 @@ Consolidates source doc Phase E (backpressure) and Phase F (heartbeat + jitter) 
 
 **Source**: R0-03 §5.2, §7.2. R0-02 (heartbeat security). R0-05 §4.1, §9.6, §9.7. R0-06 §3.6, §13.2.
 
-**Owner-class**: backend-cascor (backpressure) + frontend (jitter) + both (heartbeat).
+**The Overtoad-class**: backend-cascor (backpressure) + frontend (jitter) + both (heartbeat).
 
 **Dependencies**: Phase B in production (real workload exposes slow-client patterns).
 
@@ -1871,7 +1871,7 @@ Phase E: 1 day. Phase F: 0.5 day. Total: 1.5 days.
 
 **Source**: R0-03 §6.3, §7.1 commit 9. R0-02 §6.10 IMPL-SEC-39 (security test cases). R0-05 §4.1 "Phase G", §9.8.
 
-**Owner-class**: backend-cascor.
+**The Overtoad-class**: backend-cascor.
 
 **Dependencies**: ships with Phase A-server (the source doc envelope changes are already in place).
 
@@ -1908,7 +1908,7 @@ Add integration tests that exercise cascor's `/ws/control` set_params handler vi
 
 **Source**: R0-01 §3.6 (the wire-format regression test). R0-05 §4.3, §9.9. R0-06 §3.6, §13.7.
 
-**Owner-class**: backend-canopy.
+**The Overtoad-class**: backend-canopy.
 
 **Dependencies**: **regression test MUST land before the audit begins** (source doc §9.9).
 
@@ -1974,7 +1974,7 @@ Add a CODEOWNERS entry: any PR touching `_normalize_metric` requires explicit ap
 
 ## 14. Consolidated risk register
 
-Every RISK-NN from source doc §10, plus R0-01 FR-RISK, R0-04 R04, R0-05 T-RISK variants, folded into a single register. Each entry has: severity, likelihood, phase, owner-class, primary mitigation, monitoring signal, kill switch, TTF, validation hook.
+Every RISK-NN from source doc §10, plus R0-01 FR-RISK, R0-04 R04, R0-05 T-RISK variants, folded into a single register. Each entry has: severity, likelihood, phase, Overtoad-class, primary mitigation, monitoring signal, kill switch, TTF, validation hook.
 
 ### RISK-01 — Dual metric format removed too aggressively
 
@@ -2704,11 +2704,11 @@ Walked through all 33 GAP-WS items:
 
 ### 20.3 Coverage check — RISK
 
-All 16 RISK-NN items have dedicated entries in §14 with severity, phase, owner, mitigation, signal, kill switch, TTF, and validation hook.
+All 16 RISK-NN items have dedicated entries in §14 with severity, phase, Overtoad, mitigation, signal, kill switch, TTF, and validation hook.
 
 - [x] RISK-01 through RISK-16 — all covered in §14.
 
-### 20.4 Coverage check — phases have owner, acceptance criteria, observability, test plan, kill switch
+### 20.4 Coverage check — phases have Overtoad, acceptance criteria, observability, test plan, kill switch
 
 Per-phase audit:
 
@@ -2776,7 +2776,7 @@ All 12 phases have all 5 coverage dimensions.
 - All section numbers cross-reference valid R0 sources.
 - All GAP-WS, M-SEC, RISK identifiers used are traceable.
 - All disagreements in §18 and §19 have a pick + rationale.
-- Every phase has its exit gate, kill switch, TTF, owner, test list.
+- Every phase has its exit gate, kill switch, TTF, Overtoad, test list.
 - Consolidated risk register in §14 is pairwise-consistent with per-phase mentions.
 - Observability plan in §16 is pairwise-consistent with per-phase metrics lists.
 - Cross-repo coordination in §17 is pairwise-consistent with per-phase dependency notes.

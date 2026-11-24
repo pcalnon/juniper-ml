@@ -21,7 +21,7 @@ This proposal is the operational wrapper around the WebSocket migration spelled 
 It DOES design:
 
 - **Phase ordering rationale** and the hard gates between phases.
-- **Risk mitigations** for every RISK-NN in §10 with owner-class and kill-switch mapping.
+- **Risk mitigations** for every RISK-NN in §10 with Overtoad-class and kill-switch mapping.
 - **Feature-flag strategy** for Phase C and any other phase that needs a ramp.
 - **Observability / SLO commitments** for each phase (what must be in place before the phase is allowed to ship).
 - **Deployment strategy**: dev → staging → production with canary cohorts.
@@ -178,23 +178,23 @@ Phase D depends on Phase B (browser bridge exists) AND Phase B-pre (security gat
 
 ## 4. Risk register mitigation map (RISK-01..16)
 
-Every risk from §10 is mapped to: severity, phase ownership, owner-class (team), monitoring signal, kill-switch, and rollback time. Owner-classes are: **backend-cascor**, **backend-canopy**, **frontend**, **sdk**, **ops** (release engineering / SRE), **security**.
+Every risk from §10 is mapped to: severity, phase ownership, Overtoad-class (team), monitoring signal, kill-switch, and rollback time. The Overtoad-classes are: **backend-cascor**, **backend-canopy**, **frontend**, **sdk**, **ops** (release engineering / SRE), **security**.
 
 ### RISK-01 — Dual nested+flat metric format removed too aggressively
 
 - **Severity / Likelihood**: High / Medium
 - **Phase**: H
-- **Owner-class**: backend-canopy
+- **The Overtoad-class**: backend-canopy
 - **Mitigation**: §4.4 phased plan; lock-in regression test `test_normalize_metric_produces_dual_format` in Phase H BEFORE audit; ban any removal PR until audit document is published.
 - **Monitoring signal**: canopy `/api/metrics` access-log + optional response-schema fingerprinting (hash the response shape for 24 hours, alert on drift).
 - **Kill switch**: git revert on the normalize_metric change; canopy is stateless so a rollback is equivalent to a redeploy. **TTF (time-to-flip)**: ~5 minutes (blue/green or rolling redeploy).
-- **Open owner decision**: who on backend-canopy runs the consumer audit (§9.9 deliverable).
+- **Open Overtoad decision**: who on backend-canopy runs the consumer audit (§9.9 deliverable).
 
 ### RISK-02 — Phase B clientside_callback wiring hard to debug remotely
 
 - **Severity / Likelihood**: Medium / High
 - **Phase**: B
-- **Owner-class**: frontend + ops
+- **The Overtoad-class**: frontend + ops
 - **Mitigation**: Playwright trace viewer + `dash_duo` store assertions + verification matrix in §8.8; the §1.3 Option B Interval drain pattern is the foundation. Runbook must document how to capture a browser trace in staging.
 - **Monitoring signal**: `canopy_ws_delivery_latency_ms` (§5.6), drain callback error rate, browser JS console error rate (via Sentry-style reporter).
 - **Kill switch**: `Settings.disable_ws_bridge=True` — forces fallback to pre-Phase-B REST polling even when a WebSocket is available. **TTF**: ~5 minutes (config flip + restart).
@@ -204,7 +204,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Medium / Low (hot/cold disjoint; `update_params` uses keyed merges, verified at `lifecycle/manager.py:702-723`)
 - **Phase**: C
-- **Owner-class**: backend-canopy
+- **The Overtoad-class**: backend-canopy
 - **Mitigation**: Per-param routing in the `apply_params` delegating wrapper; ship behind `use_websocket_set_params` flag; Phase C tests enforce the routing (`test_learning_rate_change_uses_websocket_set_params`, etc.); the shared `_training_lock` on the cascor side linearizes merges.
 - **Monitoring signal**: lifecycle `set_params_latency_histogram` (tagged by transport: `ws` vs `rest`); a "set_params order-violation" log event if a WS response arrives after a REST response for the same key.
 - **Kill switch**: `Settings.use_websocket_set_params=False`. **TTF**: ~5 minutes.
@@ -213,7 +213,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Medium / Medium (a hung dev-tools tab serially blocks all broadcasts)
 - **Phase**: E
-- **Owner-class**: backend-cascor
+- **The Overtoad-class**: backend-cascor
 - **Mitigation**: Phase E full backpressure; quick-fix `asyncio.wait_for(send_json, timeout=0.5)` is hotfixable on its own (single-line patch, hours to deploy).
 - **Monitoring signal**: cascor `ws_broadcast_send_duration_seconds` histogram; alert when p95 > 500 ms. Per-client send-queue depth.
 - **Kill switch**: `Settings.ws_backpressure_policy=close_slow` (drops the misbehaving tab). **TTF**: ~5 minutes.
@@ -222,7 +222,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Medium / Medium
 - **Phase**: B, D
-- **Owner-class**: ops
+- **The Overtoad-class**: ops
 - **Mitigation**: nightly (or hourly) smoke test against a real cascor instance in staging, separate from the fast E2E suite; alert on diff with fake-cascor results.
 - **Monitoring signal**: smoke-test job success/failure over 7-day rolling window.
 - **Kill switch**: none — this risk is about coverage, not runtime behavior. If it triggers, the response is to fix the test and re-validate.
@@ -231,7 +231,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Low / Medium (raised — current backoff has no jitter, causes synchronized reconnect waves)
 - **Phase**: F
-- **Owner-class**: frontend
+- **The Overtoad-class**: frontend
 - **Mitigation**: Phase F adds jitter (3-line change) to the exponential backoff schedule. Implementation note: full jitter (`delay = random(0, base * 2**attempt)`) not decorrelated jitter, for simplicity.
 - **Monitoring signal**: cascor `ws_connections_total` derivative (connections/sec); alert on spikes > 5× baseline. Alternatively: cascor CPU % at restart time.
 - **Kill switch**: client-side: if a reconnect storm is observed, ops can temporarily disable the browser-side reconnect via `Settings.disable_ws_auto_reconnect` and ask users to hard-refresh. **TTF**: ~10 minutes (config + redeploy + user comms).
@@ -240,7 +240,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Low / Low
 - **Phase**: tangential to Phase E; addressed via `Settings.ws_max_connections` (already configurable) + M-SEC-04 per-IP cap.
-- **Owner-class**: backend-cascor + ops
+- **The Overtoad-class**: backend-cascor + ops
 - **Mitigation**: operator-tunable config. Document in the deployment runbook.
 - **Monitoring signal**: cascor `ws_active_connections_total` gauge; alert at 80% of cap.
 - **Kill switch**: raise `Settings.ws_max_connections` (requires restart). **TTF**: ~10 minutes.
@@ -250,7 +250,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Low / Medium
 - **Phase**: B (explicit test in the §9.3 test plan)
-- **Owner-class**: backend-canopy
+- **The Overtoad-class**: backend-canopy
 - **Mitigation**: `test_demo_mode_metrics_parity` required in Phase B test plan (already in §9.3). The test is a blocker, not a warning.
 - **Monitoring signal**: demo-mode smoke test; manual spot-check by developers running canopy in demo mode.
 - **Kill switch**: if demo mode breaks after a merge, revert the specific PR. TTF: ~10 minutes.
@@ -259,7 +259,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Low / Medium
 - **Phase**: C
-- **Owner-class**: backend-canopy + frontend
+- **The Overtoad-class**: backend-canopy + frontend
 - **Mitigation**: **Phase C ships behind `Settings.use_websocket_set_params=False` feature flag**; §5.6 instrumentation is the arbiter. Canary cohort (§7.2) tests the flag-enabled path before rollout.
 - **Monitoring signal**: `canopy_ws_delivery_latency_ms{type=set_params_ack}` histogram; ratio of WS ack to REST ack latency; user-study qualitative signal (if run).
 - **Kill switch**: `Settings.use_websocket_set_params=False`. **TTF**: ~5 minutes.
@@ -268,7 +268,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Medium / High (overnight runs accumulate millions of points)
 - **Phase**: B
-- **Owner-class**: frontend
+- **The Overtoad-class**: frontend
 - **Mitigation**: GAP-WS-14 mandates `Plotly.extendTraces(maxPoints=5000)`; ring buffer in `ws-metrics-buffer` (last 1000 events); JS handler enforces buffer cap (**not** the drain callback, which is throttled in background tabs).
 - **Monitoring signal**: browser `performance.memory.usedJSHeapSize` sampled every 60 s by the JS health module, POSTed along with the latency histogram to the canopy `/api/ws_latency` endpoint. Alert on p95 heap > 500 MB.
 - **Kill switch**: `Settings.disable_ws_bridge=True` (falls back to polling, which has its own bounded memory).
@@ -278,7 +278,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: High / Low (only under sustained slow-client load)
 - **Phase**: E
-- **Owner-class**: backend-cascor
+- **The Overtoad-class**: backend-cascor
 - **Mitigation**: Phase E policy — **close slow client (1008) for state-bearing events**; drop-oldest only for coalesceable progress events with separate per-type queue.
 - **Monitoring signal**: cascor `ws_dropped_messages_total{reason, type}` counter; alert on any non-zero `state_dropped`.
 - **Kill switch**: revert to `ws_backpressure_policy=block` (the old behavior). Known trade-off: block restores RISK-04. This is an intentional knob.
@@ -287,7 +287,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Low / Medium
 - **Phase**: B
-- **Owner-class**: frontend
+- **The Overtoad-class**: frontend
 - **Mitigation**: JS-side ring buffer enforcement (not drain-callback enforcement) — see RISK-10.
 - **Monitoring signal**: same as RISK-10 (browser heap reporter).
 - **Kill switch**: same.
@@ -296,7 +296,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Medium / Medium
 - **Phase**: B, C (per-command timeouts), D
-- **Owner-class**: frontend + backend-canopy
+- **The Overtoad-class**: frontend + backend-canopy
 - **Mitigation**: GAP-WS-32 per-command correlation IDs + `pending verification` UI state; the client resolves pending commands via matching `command_response` OR a `state` event that reflects the change.
 - **Monitoring signal**: `canopy_orphaned_commands_total` counter; alert on rate > 1/min.
 - **Kill switch**: reduce per-command timeouts (but this increases false-positive orphaned reports); or `Settings.use_websocket_set_params=False` to avoid the WS codepath.
@@ -305,7 +305,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Low / Low
 - **Phase**: B (server-start-time change in the replay protocol)
-- **Owner-class**: backend-cascor
+- **The Overtoad-class**: backend-cascor
 - **Mitigation**: GAP-WS-13 reconnect+replay protocol — `server_start_time` change forces all clients to do a full REST resync on reconnect.
 - **Monitoring signal**: cascor `server_start_time` change events should correspond to client resync events observed in `/api/metrics/history` access log.
 - **Kill switch**: rolling-restart the canopy server (which bounces all browser WS connections and forces reconnect).
@@ -314,7 +314,7 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: **High / Medium** (any web page visited during canopy session)
 - **Phase**: B-pre
-- **Owner-class**: security + backend-canopy + backend-cascor
+- **The Overtoad-class**: security + backend-canopy + backend-cascor
 - **Mitigation**: M-SEC-01 + M-SEC-01b + M-SEC-02 in §2.9. Phase B-pre is a hard prerequisite for Phase D.
 - **Monitoring signal**: canopy `ws_auth_rejections_total{reason}` counter — alert on any non-zero `origin_mismatch` from an unknown origin (indicates an active attack attempt).
 - **Kill switch**: `Settings.disable_ws_control_endpoint=True` — hard-disables `/ws/control` and forces all control commands through REST (which has its own CSRF story). **TTF**: ~5 minutes.
@@ -324,14 +324,14 @@ Every risk from §10 is mapped to: severity, phase ownership, owner-class (team)
 
 - **Severity / Likelihood**: Medium / **Medium** (any network with >50-100 hidden units)
 - **Phase**: B-pre (max_size guards surface the issue) + follow-up work
-- **Owner-class**: backend-cascor
+- **The Overtoad-class**: backend-cascor
 - **Mitigation**: GAP-WS-18 chunking or REST fallback; document the threshold; add a server-side size guard that emits a structured error rather than a silent truncation.
 - **Monitoring signal**: cascor `ws_oversized_frame_total{endpoint, type}` counter; log warning on any truncated topology.
 - **Kill switch**: fall back to REST `/api/topology` if the WS frame is oversized (client-side already has this as a fallback path).
 
 ### Risk mitigation matrix (compact)
 
-| ID   | Phase   | Owner-class                   | Kill switch                         | TTF     |
+| ID   | Phase   | The Overtoad-class                   | Kill switch                         | TTF     |
 |------|---------|-------------------------------|-------------------------------------|---------|
 | 01   | H       | backend-canopy                | git revert + redeploy               | 5 min   |
 | 02   | B       | frontend + ops                | `disable_ws_bridge=True`            | 5 min   |
