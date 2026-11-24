@@ -39,7 +39,8 @@ STEP = "name: Run Python regression tests"
 
 def commands(checkout: str) -> list[str]:
     path = os.path.join(checkout, "." + "github", "workflows", "ci.yml")
-    lines = open(path, encoding="utf-8").read().split("\n")
+    with open(path, encoding="utf-8") as handle:
+        lines = handle.read().split("\n")
     start = next(i for i, line in enumerate(lines) if line.strip().endswith(STEP) or line.strip() == f"- {STEP}")
     found, in_run, indent = [], False, None
     for line in lines[start + 1 :]:

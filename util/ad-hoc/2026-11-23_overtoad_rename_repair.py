@@ -127,7 +127,9 @@ def name_token_spans(src: str) -> dict[int, list[tuple[int, int]]]:
             if tok.type == tokenize.NAME and tok.start[0] == tok.end[0]:
                 spans.setdefault(tok.start[0], []).append((tok.start[1], tok.end[1]))
     except (tokenize.TokenError, IndentationError, SyntaxError):
-        pass
+        # not tokenizable as a whole (a fragment, a template): keep the spans read before the error; every other
+        # occurrence is classified as prose, which only means "restore" when the context says technical
+        return spans
     return spans
 
 
@@ -237,7 +239,8 @@ def main() -> int:
         if base_mode is None:
             # a file the PR added: report technical-looking Overtoad
             try:
-                txt = open(full, encoding="utf-8").read()
+                with open(full, encoding="utf-8") as handle:
+                    txt = handle.read()
             except (UnicodeDecodeError, IsADirectoryError, FileNotFoundError):
                 continue
             for i, ln in enumerate(txt.splitlines(), 1):
@@ -246,7 +249,8 @@ def main() -> int:
             continue
         try:
             base_txt = git(repo, "show", f"{a.base}:{path}").stdout
-            head_txt = open(full, encoding="utf-8").read()
+            with open(full, encoding="utf-8") as handle:
+                head_txt = handle.read()
         except (UnicodeDecodeError, IsADirectoryError):
             note("BINARY", path)
             continue

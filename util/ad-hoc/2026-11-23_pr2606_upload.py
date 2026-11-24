@@ -73,7 +73,9 @@ def upload_set(wt: str, report: str, extra: list[str]) -> list[str]:
         if code != " M":
             raise SystemExit(f"REFUSED: unexpected status {code!r} for {path} (staged, deleted or renamed)")
         paths.append(path)
-    for row in open(report, encoding="utf-8"):
+    with open(report, encoding="utf-8") as handle:
+        rows = list(handle)
+    for row in rows:
         kind, _, rest = row.partition("\t")
         if kind in ("NEW-SCRIPT", "NEW-RECORD-RECONSTRUCTED"):
             paths.append(rest.split("\t", 1)[0])

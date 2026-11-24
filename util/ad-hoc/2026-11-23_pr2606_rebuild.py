@@ -313,7 +313,9 @@ def main(argv: list[str]) -> int:
     wt = os.path.abspath(args.worktree)
     if args.reset:
         removed = 0
-        for row in open(args.reset, encoding="utf-8"):
+        with open(args.reset, encoding="utf-8") as handle:
+            rows = list(handle)
+        for row in rows:
             kind, _, rest = row.partition("\t")
             if kind.startswith("NEW-") and kind != "NEW-DROPPED":
                 target = os.path.join(wt, rest.split("\t", 1)[0])
@@ -423,7 +425,8 @@ def main(argv: list[str]) -> int:
                 continue
             # an older version from the transcripts: every line it shares with the reconstruction is
             # checked, and where the two differ only in an owner token its text wins ("The owner" cases)
-            ref_lines = open(originals[path], encoding="utf-8").read().split("\n")
+            with open(originals[path], encoding="utf-8") as handle:
+                ref_lines = handle.read().split("\n")
             rec_lines = recon.split("\n")
             verified = corrected = 0
             for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(None, ref_lines, rec_lines, autojunk=False).get_opcodes():
