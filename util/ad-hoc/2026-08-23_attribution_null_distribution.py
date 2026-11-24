@@ -6,12 +6,12 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-23
 Status: ad-hoc — methodology check for handoff item 2
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: the attribution design is settled.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: the attribution design is settled.
 Related: 2026-08-23_dataset_attribution_signal_probe.py,
          2026-08-23_attribution_untrained_control.py
 
 THE PROBLEM THIS MEASURES
-    The owner's design (§3.2) scores each snapshot against every 2-in -> 2-out dataset and
+    The Overtoad's design (§3.2) scores each snapshot against every 2-in -> 2-out dataset and
     treats better-than-chance as evidence of provenance, picking the largest margin over
     chance. The untrained control showed that cannot work as stated: a network that has
     NEVER been trained already beats chance on ``gaussian`` by **+0.408 on average, up to

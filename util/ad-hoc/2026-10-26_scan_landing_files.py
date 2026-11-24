@@ -23,7 +23,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — one-off (landing hygiene)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2330 (the first landing scanned with it); juniper-ml#2279 / #2280 (the finding a fix-up commit could not clear)
 """
 

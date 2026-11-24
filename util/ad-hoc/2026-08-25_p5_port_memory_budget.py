@@ -8,7 +8,7 @@ Version:     0.1.1
 License:     MIT License
 Created:     2026-08-25
 Status:      ad-hoc -- migration (P5 fleet rollout)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25).
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25).
 
 P5 porting helper: adapt juniper-ml's ``test_memory_budget_check.py`` for a sibling
 repo, and splice the ``memory-budget`` job into that repo's ``ci.yml``.
@@ -441,7 +441,7 @@ WORKFLOW_TEMPLATE = """\
 #    tracking issue juniper-ml#1326). This repo has no single ci.yml -- each package lane carries
 #    its own required-checks aggregate -- so the job ships as a STANDALONE workflow, the same shape
 #    as sequence-safety.yml here: never wired into any required-checks aggregate, never blocking.
-#    Promotion to a required context, if ever desired, is an owner-only branch-protection decision
+#    Promotion to a required context, if ever desired, is an Overtoad-only branch-protection decision
 #    taken only after `--advisory` is removed and the three negative controls pass in this repo.
 #
 # Security Notes:

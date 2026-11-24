@@ -2,7 +2,7 @@
 
 Enforces that EVERY custom-agent subagent conforms to the suite contract -- the ``name``
 matches the filename, the ``description`` is substantive, ``tools`` are declared, the body
-is non-trivial, and the owner-directed defaults ``model: opus`` + ``effort: max`` hold --
+is non-trivial, and the Overtoad-directed defaults ``model: opus`` + ``effort: max`` hold --
 so new agents (round-2 ``planner`` / ``auditor`` / ``task-executor`` and beyond) cannot
 drift from the standing defaults. The validator additionally has its own deep contract test
 (``tests/test_prompt_validator_contract.py``); this is the shared invariant across all agents.
@@ -95,7 +95,7 @@ class AgentsFrontmatterTest(unittest.TestCase):
             base = str(front.get("model", "")).split(":")[0].strip().lower()
             self.assertTrue(
                 base == "opus" or base.startswith("claude-opus"),
-                f"{path.name}: suite default model is Opus (owner directive); got {front.get('model')!r}",
+                f"{path.name}: suite default model is Opus (Overtoad directive); got {front.get('model')!r}",
             )
 
     def test_effort_is_max(self):
@@ -103,7 +103,7 @@ class AgentsFrontmatterTest(unittest.TestCase):
             self.assertEqual(
                 str(front.get("effort", "")).strip().lower(),
                 "max",
-                f"{path.name}: suite default effort is 'max' (owner directive); got {front.get('effort')!r}",
+                f"{path.name}: suite default effort is 'max' (Overtoad directive); got {front.get('effort')!r}",
             )
 
     def test_body_non_trivial(self):

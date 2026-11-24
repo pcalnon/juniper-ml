@@ -12,7 +12,7 @@
 ## 0. What this document is, and what it is not
 
 This is **one of four independent, competing proposals** for the `AGENTS.md` size problem. It
-argues a single architectural thesis to its limit so the owner can compare it fairly against the
+argues a single architectural thesis to its limit so the Overtoad can compare it fairly against the
 other three. It is **not** a consensus plan and it is **not** ratified.
 
 Its assigned thesis: **content should live next to the code it describes**, exploiting the two
@@ -372,7 +372,7 @@ does **not** reach 200 lines, and the residual 28 lines are irreducible *within 
 because they are genre-A directives that §7.4 shows must not be path-conditional.
 
 Two honest routes to 200, both explicitly outside this proposal's thesis and both offered as
-owner options rather than smuggled in:
+Overtoad options rather than smuggled in:
 
 - **B-lite (recommended if 200 is a hard requirement):** move the Worktree and Thread-Handoff
   *procedures* to Skills. MECH §4a sanctions exactly this — "Create a skill when… a section of
@@ -430,12 +430,12 @@ Reasoning:
    Total dedup against already-eager ancestors: **~6,120 chars**, more than half of what excluding
    the parent would have saved, with none of the risk and no loss of any fact from any session.
 
-4. **The one exclusion worth considering is scoped and reversible.** If the owner later wants the
+4. **The one exclusion worth considering is scoped and reversible.** If the Overtoad later wants the
    parent's 1,550-char `## Parent Directory Structure` gone (it is a directory listing — precisely
    what MECH §4d says `/doctor` cuts as derivable), the correct fix is to prune the parent file,
    not to exclude it. Excluding is all-or-nothing at file granularity.
 
-**Owner decision D-1 (§12):** whether to adopt `claudeMdExcludes` for the parent. My recommendation
+**The Overtoad decision D-1 (§12):** whether to adopt `claudeMdExcludes` for the parent. My recommendation
 is no; the dedup in point 3 is the better trade and is a prerequisite for the §4.3 line budget
 either way.
 
@@ -602,7 +602,7 @@ A second, sharper one:
 
 - **The `paths:` list is a second source of truth about the codebase, and it drifts.** Rename
   `util/fleet_triage/` and the glob silently stops matching. Nothing errors; the rule just never
-  fires again. This is the classic *vacuous-pass* class the owner has flagged repeatedly — a check
+  fires again. This is the classic *vacuous-pass* class the Overtoad has flagged repeatedly — a check
   whose machinery breaks and reports success.
 - **Read-triggered, exactly like E1** — same discovery gap, same `Write`-without-`Read` hole.
 - **Component boundaries are a judgement call and will be wrong at the margins.** Is
@@ -719,7 +719,7 @@ A second, sharper one:
 |------|-----------|-----------|
 | Parent-file dedup silently breaks | **New** `tests/test_ancestor_dedup.py`: for each directive juniper-ml deleted on the strength of the parent, assert the parent still contains a marker string. Runs under the same cross-repo gating as the existing drift tests (`GITHUB_ACTIONS=true` **or** `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`; skips loudly when the sibling is absent). It bites weekly in `docs-full-check.yml`, the only job that clones siblings. | `tests/test_doc_tools_drift.py` / `tests/test_service_fork_drift.py` — identical gating idiom |
 | A deleted directive matters more than the gate | Keep a **three-line restatement** in the root for the two highest-consequence rules (script placement, handoff triggers) rather than a pure pointer. Deliberate, costed redundancy — 400 chars against an irrecoverable-work incident. | `AGENTS.md:904-917` exists today for the same reason |
-| `claudeMdExcludes` adopted later without review | Record it as owner decision **D-1** (§12) with the 6% figure attached, so it is decided rather than drifted into. | — |
+| `claudeMdExcludes` adopted later without review | Record it as Overtoad decision **D-1** (§12) with the 6% figure attached, so it is decided rather than drifted into. | — |
 
 ---
 
@@ -1201,14 +1201,14 @@ What actually helps, none of which is Proposal B:
    90%. It cannot run in CI — the file is outside the repo — but it can run from
    `util/agent_suite_doctor.py`, which is already the read-only health check.
 
-**Recommendation: treat `MEMORY.md` as a separate work item with its own owner and its own
+**Recommendation: treat `MEMORY.md` as a separate work item with its own Overtoad and its own
 deadline.** MECH §9 item 6 says the same. It is the *more urgent* of the two problems — `AGENTS.md`
 costs tokens, `MEMORY.md` costs data — and folding it into an `AGENTS.md` proposal, including this
 one, is how it gets deferred again.
 
 ---
 
-## 12. Owner decisions and open questions
+## 12. The Overtoad decisions and open questions
 
 | # | Decision | Recommendation | Consequence if reversed |
 |---|----------|----------------|-------------------------|
@@ -1306,7 +1306,7 @@ predicted table, including where the prediction was wrong.
 
 ## 14. Recommendation to the reviewer
 
-Proposal B is the right answer **if** the owner's priority is (a) cutting always-on tokens hard and
+Proposal B is the right answer **if** the Overtoad's priority is (a) cutting always-on tokens hard and
 immediately, and (b) reducing merge contention in a repo running ~23 concurrent session worktrees at
 ≈1.3 merges/day into one file.
 
@@ -1321,7 +1321,7 @@ worst case is parity).
    probe settles it; nothing else will.
 2. **§2.3 U2** — the worktree ancestor question. If it resolves to H-a and the Phase 1 ordering is
    not followed, the first migration PR looks like a regression.
-3. **§7.5's re-accretion answer is a cap, not a cure.** If the owner does not want to add four CI
+3. **§7.5's re-accretion answer is a cap, not a cure.** If the Overtoad does not want to add four CI
    gates, Phase 5 does not land, and the whole thing regresses in ten weeks. **Phases 1-4 without
    Phase 5 are worse than doing nothing**, because they add 26 files and buy only temporary relief.
 

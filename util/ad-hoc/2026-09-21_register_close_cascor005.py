@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-21
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor#659 (MERGED, squash 435d6069), juniper-ml#1974 (MERGED, squash 968b9e9e)
 
 STATUS IS VERIFIED, NOT INHERITED. This close was withheld until both halves were confirmed by
@@ -100,7 +100,7 @@ T_S2C_NEW = "— and seven are open — **23 open in all**, 16 primer + 7 post-p
 
 T_ROUTING_OLD = "**Do not unify the three copies unilaterally.**"
 T_ROUTING_NEW = (
-    "**SUPERSEDED 2026-09-21.** The routing below was correct while the row awaited a ruling. The owner "
+    "**SUPERSEDED 2026-09-21.** The routing below was correct while the row awaited a ruling. The Overtoad "
     "ruled on 2026-09-09 (port the `matched`-flag loop; rejected: accept and document the residual leak) "
     "and it shipped as [juniper-cascor#659](https://github.com/pcalnon/juniper-cascor/pull/659) + "
     "[juniper-ml#1974](https://github.com/pcalnon/juniper-ml/pull/1974). Note also that \"the three copies\" "

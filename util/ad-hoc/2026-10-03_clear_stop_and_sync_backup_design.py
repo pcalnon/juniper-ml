@@ -6,7 +6,7 @@ Sub-Project: backup infrastructure
 Author:      Paul Calnon
 Created:     2026-10-03
 Status:      ad-hoc -- document-of-record edit (Phase B of the 2026-10-03 assessment, its B7)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md
              notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md (section 6.2)
              util/ad-hoc/2026-09-24_amend_d8_and_repair_backup_design.py (the STOP this clears; same guards)
@@ -56,7 +56,7 @@ What the prose edits record, each from a validated source:
    section 7.6, section 7.9, P3 and AC-6/AC-10 record what ml#2114 and ml#2115 built.
 
 7. ROUND 3 ON THE FOLD-IN, FOLDED IN (2026-10-08; reports util/ad-hoc/2026-10-04_backup-phase-b-round3/R3A.md,
-   R3B.md, R3C.md). The owner's ruling on R3B DEFECT-1: step 10's edits REMOVE the job's `retention-policy`, so
+   R3B.md, R3C.md). The Overtoad's ruling on R3B DEFECT-1: step 10's edits REMOVE the job's `retention-policy`, so
    the first backup after recovery deletes nothing, and step 11 restores it -- as the NEW policy
    2W:1D,6M:1W,2Y:1M,5Y:2M -- only after AC-4's first drill has passed; every "nothing under
    /mnt/Backups/Ubuntu/ is deleted" sentence names that second exception, and step 11 states what the first
@@ -132,7 +132,7 @@ RECORD = "JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.m
 # refused, and only once it had reached the text).
 FIXFWD = os.environ.get("FIXFWD_PR", "ml#2134")
 FIXFWD_FORM = re.compile(r"ml#[0-9]+")
-# The retention policy step 11 restores (the owner's ruling of 2026-10-08) and the one step 10 removes.
+# The retention policy step 11 restores (the Overtoad's ruling of 2026-10-08) and the one step 10 removes.
 NEW_RETENTION, OLD_RETENTION = "2W:1D,6M:1W,2Y:1M,5Y:2M", "1W:1D,1M:1W,1Y:1M,3Y:2M"
 RETENTION_TOOL = "util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py"
 WRAP_HELPER = Path("util/ad-hoc/2026-09-21_wrap_long_markdown_lines.py")
@@ -174,7 +174,7 @@ STALE = (
     "Land the client changes (the credential path **and** the new `pause`/`resume` subcommands)",
     "(extended with `pause`/`resume`)",
     "becomes provable only when the snapshot lane is re-pointed",
-    "Expect 97 directories to change owner",
+    "Expect 97 directories to change Overtoad",
     "and the census goes through the second",
     "**The deployed watchdog unit takes no `--backup-id`**",
     "observe one SKIPPED (unplugged) and one OK (plugged) run",
@@ -193,7 +193,7 @@ STALE = (
     "| `home/duplicati/.config/Duplicati/.env` | `.env` contract |",
     # round 3 on the fold-in (2026-10-08)
     "is deleted or moved except the in-tree escrow",
-    "with exactly one exception, and it needs owner sign-off",
+    "with exactly one exception, and it needs Overtoad sign-off",
     "this is the single exception to the",
     "is deleted or moved.\n2. **The local database",
     "so it will start on its own once the startup pause lapses",
@@ -251,18 +251,18 @@ def fence_edit(tag: str, old: str, new: str) -> None:
 
 edit(
     "front matter: status",
-    "- **Status**: HELD, except what note 10.1g releases — §8 is behind a STOP (rounds 4–8, 2026-09-24). Rounds 1 and 2 are reconciled; round 3 found 15 defects and 13 were applied, D13 is open (note 12a); rounds 4–8 found defects in §8's procedure, which are open (§11). The owner's rulings are in §10.1.",
+    "- **Status**: HELD, except what note 10.1g releases — §8 is behind a STOP (rounds 4–8, 2026-09-24). Rounds 1 and 2 are reconciled; round 3 found 15 defects and 13 were applied, D13 is open (note 12a); rounds 4–8 found defects in §8's procedure, which are open (§11). The Overtoad's rulings are in §10.1.",
     "- **Status**: EXECUTABLE in the order below, since 2026-10-03 — the STOP of 2026-09-24 is cleared: its five procedure defects, and the findings beneath them, "
     "are fixed in the artifacts §8 installs (note 8a); what is not fixed is listed there as residue. Rounds 1 and 2 are reconciled; round 3's D13 is closed "
-    "(the env contract lives at `/etc/duplicati/env`); rounds 4–8's §8 defects are closed (§11). The owner's rulings are in §10.1. "
+    "(the env contract lives at `/etc/duplicati/env`); rounds 4–8's §8 defects are closed (§11). The Overtoad's rulings are in §10.1. "
     f"The execution plan — who does what, in which sitting — is `{ASSESS}` §6.",
 )
 
 edit(
     "front matter: STOP bullet becomes the clearing",
-    "- **STOP — §8 is held, except what the owner released on 2026-09-24.** Rounds 4–8 found defects in the procedure that can re-lock the recovered database, pass the pre-backup guard without its `TargetURL` check, or copy a cleartext database into the backup Source. The STOP block at the top of §8 lists them and what may run now — P0.5a items 1, 5, 6 and 7, P3's tier-2 fix, §6's sink checklist, S-4's "
+    "- **STOP — §8 is held, except what the Overtoad released on 2026-09-24.** Rounds 4–8 found defects in the procedure that can re-lock the recovered database, pass the pre-backup guard without its `TargetURL` check, or copy a cleartext database into the backup Source. The STOP block at the top of §8 lists them and what may run now — P0.5a items 1, 5, 6 and 7, P3's tier-2 fix, §6's sink checklist, S-4's "
     "`chmod 0600` and the reads it names — within its two limits (note 10.1g); the rest waits until it is gone.",
-    "- **The STOP of 2026-09-24 is cleared (2026-10-03, note 8a).** The owner's release of that day (note 10.1g) stands as history: its two limits still bind — no history file is wiped before P0 step 3 has tested the key candidates it may hold, and the transcript limit is discharged, every round of this arc being archived on `main` — and everything it held is now runnable in the order below.",
+    "- **The STOP of 2026-09-24 is cleared (2026-10-03, note 8a).** The Overtoad's release of that day (note 10.1g) stands as history: its two limits still bind — no history file is wiped before P0 step 3 has tested the key candidates it may hold, and the transcript limit is discharged, every round of this arc being archived on `main` — and everything it held is now runnable in the order below.",
 )
 
 edit(
@@ -437,7 +437,7 @@ CLEARED = f"""> **The STOP of 2026-09-24 is cleared — 2026-10-03 (note 8a).** 
 >    rewritten (`Connection.cs:145`; `ServerSettings.cs:851-855` → `SetSettings(-2)`), and so are a live
 >    backup's rows. It refuses if there is one, or if the count itself fails, because such a blob would stay
 >    under the old key and fail the exit gate only after the key swap (lane A D-5, lane C D-2; round 4, lane
->    C DEFECT-2). Remedy, the owner's: saved connection strings are deleted through the web UI and re-created
+>    C DEFECT-2). Remedy, the Overtoad's: saved connection strings are deleted through the web UI and re-created
 >    after the re-key; an orphaned row, which the UI cannot reach, is deleted with sqlite3 while the unit is
 >    stopped (it comes up Paused again), a copy of the database first kept in a root-only 0700 directory outside
 >    `/home/pcalnon` and shredded (`shred -u`) once the exit gate has passed — on Procedure A that copy holds
@@ -476,7 +476,7 @@ CLEARED = f"""> **The STOP of 2026-09-24 is cleared — 2026-10-03 (note 8a).** 
 > argv), `--webservice-enable-forever-token`, `--webservice-cors-origins` and the alias
 > `--webservice-allowedhostnames`; and the installer (1.3.0; 1.5.1 now) judges the contract — and any existing
 > `/etc/duplicati/env` — by running the wrapper itself, so both apply one grammar. Since 1.4.0 the installer also
-> checks an existing `/etc/duplicati/env`'s owner and mode, and since 1.5.0 it accepts exactly O-12's two forms —
+> checks an existing `/etc/duplicati/env`'s Overtoad and mode, and since 1.5.0 it accepts exactly O-12's two forms —
 > `root:duplicati` 0640 or `duplicati:duplicati` 0600, a regular file, never other-readable — so the grammar check
 > (run as root) and the service's read (as `duplicati`) agree on the file itself; it does not settle O-12 (§11;
 > P1 step 2). A first install copies a
@@ -491,7 +491,7 @@ CLEARED = f"""> **The STOP of 2026-09-24 is cleared — 2026-10-03 (note 8a).** 
 > server's real name, and both lists are now pinned against a vendored copy of the product's option table
 > (`tests/fixtures/duplicati_2.4.0.0_server_options.txt`); every trailing CR is stripped and a NUL in the key
 > refused. Installer 1.4.0 (1.5.1 now) refuses an unblessed differing file without `--update-backup-behavior`, checks an
-> existing env file's owner and mode, says where it copied a file aside, and prints step 8's prerequisites
+> existing env file's Overtoad and mode, says where it copied a file aside, and prints step 8's prerequisites
 > and step 10's guard block verbatim; since round 5 the hint also says to stop the unit (never `pause`) if the
 > first start reads Running, includes step 10's restart, and names Procedure A's `…-key.new`. The re-key (1.3.0) and its gate (1.2.0) also refuse orphaned `Option`
 > and `Source` blobs, and the gate and the hand start (1.3.0) refuse a NUL in a key file.
@@ -504,7 +504,7 @@ CLEARED = f"""> **The STOP of 2026-09-24 is cleared — 2026-10-03 (note 8a).** 
 > "P0.5 closes 0777 `.config`"; the no-print key-candidate extractor for P0 step 3 (built only if Phase C's
 > history counts are non-zero); round-4 B11, B13, B15, B22 (AC-8's undefined "hardening timestamp"), B24, B27,
 > U1, U3 and U4; from the record's round-5 disposition, P0 step 8's own over-broad file-mode sentence; from its
-> round-6 disposition, the frozen 811-volume copy and `PASSPHRASE_OLD`, which have no route (the owner's O-9),
+> round-6 disposition, the frozen 811-volume copy and `PASSPHRASE_OLD`, which have no route (the Overtoad's O-9),
 > and what §10.2 step 7's swap does with the local pre-rotation set; from its round-8 disposition, note
 > sink-c's counting method; Appendix C's corrections other than item 4; wrapper v2's `die` path with an
 > `=`-less word; the sign-in URL logged whatever the token flag says (round 5); the sdc4 read-only loop probe
@@ -734,7 +734,7 @@ edit(
     "lower(ltrim(\"Name\", '-')) IN ('retention-policy', 'keep-time', 'keep-versions');` (any case — Phase B round 6, NIT-1) — record what it returns in the validation record "
     "(the values are retention strings, not secrets) — then delete exactly those rows (`DELETE FROM \"Option\"` with the same "
     "`WHERE`) and run the `SELECT` again: it must return nothing. `keep-time` and `keep-versions` defaults are never restored (step "
-    "11); a `retention-policy` default only if the owner wants one. The ruling's home is the job's own `retention-policy`.",
+    "11); a `retention-policy` default only if the Overtoad wants one. The ruling's home is the job's own `retention-policy`.",
 )
 
 edit(
@@ -860,8 +860,8 @@ edit(
 
 edit(
     "P0.5a item 1: 96 directories, not 97 (the Phase B round)",
-    "Expect 97 directories to change owner and 21 (the `runtimes/` subtree and ten `licenses/<package>/`",
-    "Expect 96 directories to change owner (95 below the top and the top itself; this said 97 until 2026-10-04, counting `data/` and its "
+    "Expect 97 directories to change Overtoad and 21 (the `runtimes/` subtree and ten `licenses/<package>/`",
+    "Expect 96 directories to change Overtoad (95 below the top and the top itself; this said 97 until 2026-10-04, counting `data/` and its "
     "subdirectory, which the command excludes) and 21 (the `runtimes/` subtree and ten `licenses/<package>/`",
 )
 
@@ -923,7 +923,7 @@ and any in an `Option`, `Source` or `BackupTargetUrl` row whose BackupID names n
 have no foreign key (`Schema.sql:44-45, 72-73`), so a deleted job's rows can outlive it. The settings rows at -1
 and -2 are rewritten (`Connection.cs:145`; `ServerSettings.cs:851-855` → `SetSettings(-2)`), and so are a live
 backup's rows. It refuses if there is one, or if the count itself fails, because such a blob would stay under the
-old key and fail the exit gate only after the key swap (Phase B round 3, lanes A and C; round 4, lane C DEFECT-2). Remedy, the owner's:
+old key and fail the exit gate only after the key swap (Phase B round 3, lanes A and C; round 4, lane C DEFECT-2). Remedy, the Overtoad's:
 saved connection strings are deleted through the web UI and re-created after the re-key; an orphaned row, which
 the UI cannot reach, is deleted with sqlite3 while the unit is stopped (it comes up Paused again), a copy of the
 database first kept in a root-only 0700 directory outside `/home/pcalnon` and shredded (`shred -u`) once the exit
@@ -953,7 +953,7 @@ edit(
 
 edit(
     "P1 step 2: the contract file is /etc/duplicati/env",
-    "2. Delete the five commented lines from `.env`; set it to the §7.3.5 contract. **Mode: `0640 root:duplicati` as recommended, or `0600 duplicati:duplicati` — this is the open dissent recorded in §11**; install the stricter form until the owner rules.",
+    "2. Delete the five commented lines from `.env`; set it to the §7.3.5 contract. **Mode: `0640 root:duplicati` as recommended, or `0600 duplicati:duplicati` — this is the open dissent recorded in §11**; install the stricter form until the Overtoad rules.",
     "2. The contract file is `/etc/duplicati/env`, installed by P0 step 8's installer from `util/systemd/duplicati-env.contract` (§7.3.5, D13 closed): confirm it carries no key line and no commented assignment, and `shred -u` the old `.env` in the moved-aside folder `Duplicati.empty-2026-09-20/` (P0 step 9 of the assessment does this; it held both keys and the five commented secrets). **Mode: `0640 "
     "root:duplicati` as installed, or `0600 duplicati:duplicati` — the open dissent recorded in §11 (O-12 of the assessment)**.",
 )
@@ -1039,17 +1039,17 @@ edit(
 )
 
 # --------------------------------------------------------------------------------------------
-# Round 3 on the fold-in (2026-10-08): R3B DEFECT-1..4 under the owner's ruling, and the cheap NITs
+# Round 3 on the fold-in (2026-10-08): R3B DEFECT-1..4 under the Overtoad's ruling, and the cheap NITs
 # --------------------------------------------------------------------------------------------
 
 edit(
-    "front matter: the second exception -- the job's own retention, restored after AC-4 (R3B DEFECT-1; owner ruling 2026-10-08)",
+    "front matter: the second exception -- the job's own retention, restored after AC-4 (R3B DEFECT-1; Overtoad ruling 2026-10-08)",
     "  - Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the in-tree escrow `…/Dropbox/Backups/_yamaguchi_keys/`, which only "
     "P1 step 4 deletes, once P0.5a item 5 or P1 step 4 has copied it out.",
     "  - Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except (1) the in-tree escrow `…/Dropbox/Backups/_yamaguchi_keys/`, which "
     "only P1 step 4 deletes, once P0.5a item 5 or P1 step 4 has copied it out, and (2) the old filesets the job's own retention pass deletes "
     f"once P0 step 11 restores `retention-policy` — as `{NEW_RETENTION}`, after AC-4's first drill has passed, and after the five dlists it will delete are copied out of the Dropbox root; P0 step 10 "
-    "removes it and restarts the unit, so the first backup after the recovery runs from the edited job and deletes nothing (owner "
+    "removes it and restarts the unit, so the first backup after the recovery runs from the edited job and deletes nothing (Overtoad "
     "ruling 2026-10-08); and (3), on Procedure B only and only if Verify finds the index inconsistent, the remote files a Repair "
     "deletes — volumes the index does not know, the index's own temporary, deleting or incompletely uploaded files, and empty or "
     "replaced index files — which P0 "
@@ -1058,7 +1058,7 @@ edit(
 
 edit(
     "section 8 preamble: two exceptions (R3B DEFECT-1)",
-    "**Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved by\nany step below, with exactly one exception, and it needs owner "
+    "**Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved by\nany step below, with exactly one exception, and it needs Overtoad "
     "sign-off**: the passphrase escrow copy at",
     "**Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved by\nany step below, with two exceptions and one conditional third.** The "
     "third applies only if Procedure B's Verify finds the index inconsistent: a Repair deletes remote files — volumes the index does not know (`RepairHandler.cs:299`, `:397`), files the index itself holds as temporary, deleting or incompletely uploaded (`FilelistProcessor.cs`, `VerifyAndClean`, `:384-400`, `:469-480`), and empty or replaced index files (`RepairHandler.cs:599-609`, `:1050-1053`) — "
@@ -1066,15 +1066,15 @@ edit(
     "own retention pass: step 10 removes `retention-policy` and restarts the unit, so the first backup runs from the edited job and "
     f"deletes nothing, and step 11 restores it, as `{NEW_RETENTION}`, only after AC-4's first drill has passed — its first pass then "
     "deletes five of the nine pre-recovery filesets, which step 11 first copies to a root-only directory outside the Dropbox root, and "
-    "the deletions reach Dropbox (step 11; owner ruling 2026-10-08). Until 2026-10-08 this paragraph named only the second, and the "
+    "the deletions reach Dropbox (step 11; Overtoad ruling 2026-10-08). Until 2026-10-08 this paragraph named only the second, and the "
     "first backup's pass under the old policy would have deleted six to eight of the nine, AC-4's drill target among them (Phase B "
-    "round 3, lane B DEFECT-1). The second needs owner sign-off: the passphrase escrow copy at",
+    "round 3, lane B DEFECT-1). The second needs Overtoad sign-off: the passphrase escrow copy at",
 )
 
 edit(
     "P1 step 4: no longer the single exception (R3B DEFECT-1)",
     "(this is the single exception to the \"nothing under `/mnt/Backups/Ubuntu/` is moved\" rule; the preamble names it)",
-    "(this is the one exception to the \"nothing under `/mnt/Backups/Ubuntu/` is moved\" rule that needs owner sign-off; the preamble "
+    "(this is the one exception to the \"nothing under `/mnt/Backups/Ubuntu/` is moved\" rule that needs Overtoad sign-off; the preamble "
     "names it and the others: the job's own retention pass after P0 step 11, and on Procedure B the remote files a Repair deletes, copied aside first)",
 )
 
@@ -1085,10 +1085,10 @@ edit(
 )
 
 edit(
-    "section 7.5: retention suspended, then the new policy (owner ruling 2026-10-08)",
+    "section 7.5: retention suspended, then the new policy (Overtoad ruling 2026-10-08)",
     f"`--no-auto-compact=true`, `retention-policy={OLD_RETENTION}`, `--asynchronous-upload-limit=1`,",
     f"`--no-auto-compact=true`, `retention-policy` (removed by P0 step 10 and restored by step 11, after AC-4's first drill, as "
-    f"`{NEW_RETENTION}` — replacing the snapshot's `{OLD_RETENTION}`; owner ruling 2026-10-08), `--asynchronous-upload-limit=1`,",
+    f"`{NEW_RETENTION}` — replacing the snapshot's `{OLD_RETENTION}`; Overtoad ruling 2026-10-08), `--asynchronous-upload-limit=1`,",
 )
 
 edit(
@@ -1160,24 +1160,24 @@ edit(
     f"add `--run-script-before-required` (§7.5), **pin `--aes-version`** (§7.5; `{ASSESS}` O-14 recommends 2) and **remove "
     "`retention-policy`** — and any `keep-time` or `keep-versions` — from the job's options (only the legacy UI's **Keep all backups** "
     "removes all three) — "
-    "the owner's 2026-10-08 ruling suspends retention until AC-4's first drill has passed (step 11): left in place, the first backup's "
+    "the Overtoad's 2026-10-08 ruling suspends retention until AC-4's first drill has passed (step 11): left in place, the first backup's "
     "retention pass would delete six to eight of the nine pre-recovery filesets, the 2026-09-18 one AC-4 drills among them, and the "
     "deletions reach Dropbox (Phase B round 3, lane B DEFECT-1) — then the guard dry-run and the restart below, then `resume`, and "
     "**sample `serverstate` again** (the credential this needs exists since step 8).",
 )
 
 edit(
-    "P0 step 11: retention restored after AC-4's first drill, as the new policy, and what its first pass deletes (owner ruling 2026-10-08)",
+    "P0 step 11: retention restored after AC-4's first drill, as the new policy, and what its first pass deletes (Overtoad ruling 2026-10-08)",
     "then `AC-12` and `AC-13`. `AC-6` cannot be proved here:",
     "then `AC-12` and `AC-13`. "
-    f"**Restore `retention-policy` only after AC-4's first drill has passed**, and as the new policy `{NEW_RETENTION}` (owner ruling "
+    f"**Restore `retention-policy` only after AC-4's first drill has passed**, and as the new policy `{NEW_RETENTION}` (Overtoad ruling "
     f"2026-10-08; it replaces `{OLD_RETENTION}`, which step 10 removed) — the web UI's retention setting, custom — and record the date "
     "and the string in the validation record. Of the server-wide defaults step 8 deleted, **`keep-time` and `keep-versions` are never "
     "restored**: the removers combine — `DeleteHandler.cs:82-87` takes the union of `KeepTimeRemover` and `RetentionPolicyRemover`, "
     "then applies `KeepVersionsRemover` to what is left — so either default would delete beyond the table below and the aside list, "
     "and could take some of the four filesets it keeps, the sole copy (Phase B round 6, DEFECT-3). A `retention-policy` default may "
-    "come back only if the owner wants one, and only after the table and the aside copy are recomputed against it "
-    f"(`{RETENTION_TOOL} --policy …`). The owner's ruling — the job's own `{NEW_RETENTION}` — is unchanged. Its first pass runs at the end of the next backup. For a first pass on any date from "
+    "come back only if the Overtoad wants one, and only after the table and the aside copy are recomputed against it "
+    f"(`{RETENTION_TOOL} --policy …`). The Overtoad's ruling — the job's own `{NEW_RETENTION}` — is unchanged. Its first pass runs at the end of the next backup. For a first pass on any date from "
     "2026-10-08 to 2027-02-27 it **keeps four** of the nine pre-recovery filesets — `20260825T102739Z`, `20260901T140000Z`, "
     "`20260908T140000Z` and `20260915T204850Z` — and **deletes five**: `20260912T140000Z`, `20260915T085649Z`, `20260916T183346Z`, "
     "`20260917T221344Z` and `20260918T140000Z`, the fileset AC-4's first drill restored and Procedure A0's source; from 2027-02-28 it "
@@ -1289,8 +1289,8 @@ edit(
 
 edit(
     "R-6: the STOP's question is settled (R4C NIT-2)",
-    "(owner ruling, note 10.1f; the STOP at the top of §8 asks whether Procedure B's step-7 start must come first)",
-    "(owner ruling, note 10.1f; the 2026-09-24 STOP asked whether Procedure B's step-7 start must come first — note 8a: it follows step "
+    "(Overtoad ruling, note 10.1f; the STOP at the top of §8 asks whether Procedure B's step-7 start must come first)",
+    "(Overtoad ruling, note 10.1f; the 2026-09-24 STOP asked whether Procedure B's step-7 start must come first — note 8a: it follows step "
     "8's installer)",
 )
 

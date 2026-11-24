@@ -7,14 +7,14 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — one-off (flood-4 disposition record PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (sec 6, sec 7);
          util/home_path_literal_check.py (gate G-PATH, decision D12); .gitleaksignore:78-80 (the same nonce on main);
          util/ad-hoc/2026-11-08_flood4_gtmp_pragma_pass.py (the G-TMP equivalent)
 
 WHY THIS EXISTS
 The record PR's validator (round 1, artifacts lens) found two blockers in the harvested scripts:
-- G-PATH: eight lines in seven scripts spell the owner's home directory, and a file the gate's baseline does not
+- G-PATH: eight lines in seven scripts spell the Overtoad's home directory, and a file the gate's baseline does not
   list may carry none. The gate asks for the path to be derived from $HOME, and keeps its allow pragma for a
   line that must carry the literal. So six code paths now come from os.path.expanduser / Path.home(), which on
   this host give the same strings; a docstring usage line says ~/; and the one line that is recorded findings

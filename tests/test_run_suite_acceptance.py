@@ -461,7 +461,7 @@ class SuiteLoopAcceptanceTest(unittest.TestCase):
 
 
 class CascorBandMetricsTest(unittest.TestCase):
-    """APD-ML-002 (owner rulings 1 and 2, 2026-10-26): which names a band may use, now that cascor has columns.
+    """APD-ML-002 (Overtoad rulings 1 and 2, 2026-10-26): which names a band may use, now that cascor has columns.
 
     ``val_accuracy`` became a column (from ``stats["cascor"]["final"]``), so a band on it judges a number
     instead of reading ``absent`` on every cascor cell; ``train_accuracy`` joined it. ``test_accuracy`` stayed

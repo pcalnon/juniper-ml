@@ -108,7 +108,7 @@ the five cascor pairs.
 
 ### 4.3 The design cannot deliver one of its own accepted decisions
 
-**`⊥`-at-mount (OQ-N2) is ACCEPTED by the owner and has no delivery vehicle.** Making `⊥` the mount
+**`⊥`-at-mount (OQ-N2) is ACCEPTED by the Overtoad and has no delivery vehicle.** Making `⊥` the mount
 state means editing `dashboard_manager.py:1333` (`value=DEFAULT_DATASET_TYPE`). That line, and the
 constant, appear **nowhere** in either document, and no §7 row contains the change. PR 2's entire
 stated rationale is "prerequisite for `⊥`-at-mount" — so **PR 2 gated nothing**.

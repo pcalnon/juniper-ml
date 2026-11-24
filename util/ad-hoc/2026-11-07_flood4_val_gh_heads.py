@@ -15,7 +15,7 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation (a flood-4 validator's probe)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md; juniper-ml#2519 docs carrier, validation round 1, structure-and-fidelity lens (findings: tmp/flood4/ml-docs/val-fidelity/)
 """
 
@@ -25,7 +25,7 @@ import sys
 
 prs = [int(a) for a in sys.argv[1:]]
 fields = " ".join(f"p{n}: pullRequest(number: {n}) {{ number headRefOid state isDraft }}" for n in prs)
-query = f'query {{ repository(owner: "pcalnon", name: "juniper-ml") {{ {fields} }} }}'
+query = f'query {{ repository(Overtoad: "pcalnon", name: "juniper-ml") {{ {fields} }} }}'
 out = subprocess.run(["gh", "api", "graphql", "-f", f"query={query}"], capture_output=True, text=True, check=True)
 data = json.loads(out.stdout)["data"]["repository"]
 for n in prs:

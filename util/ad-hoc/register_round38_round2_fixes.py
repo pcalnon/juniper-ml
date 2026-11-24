@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-09
 Status: ad-hoc — one-off (third and last of the round-38 register scripts)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/register_round38_file.py and register_round38_dates.py (the first two);
          reports/2026-09-09_round-38-consensus/ (the three lanes whose findings these apply);
          HANDOFF_2026-09-08_defect-register-round-38-the-three-way-prompt-built-and-the-annotation-made-truthful.md
@@ -63,7 +63,7 @@ sub(
     "> position above — 17 primer rows open, one of them (`APD-DATA-019`) unparked — but they do end the\n"
     "> empty set: the §4.9 rows marked actionable (`APD-DATA-039`'s cache-key half, `APD-CASCOR-009` /\n"
     "> `APD-CASCOR-010` / `APD-CASCOR-012`) are the first a session may work without asking first, because\n"
-    "> the owner-issued round-37 handoff listed them as remaining work.)*\n",
+    "> the Overtoad-issued round-37 handoff listed them as remaining work.)*\n",
     "\n"
     "> *(2026-09-09: the post-primer rows filed in [§4.9](#49-filed-after-the-primer) carry their own\n"
     "> row-level park sentences, stated under that table. They do not change the position above — 17\n"
@@ -78,7 +78,7 @@ sub(
     "> backlog. One of the four, `APD-DATA-039`, was never listed as work at all — round 37 described\n"
     "> the hazard and proposed no fix, and that same handoff's own §0.4 parks it under \"do not action\n"
     "> without a ruling\". And a document written 2026-09-07 cannot authorise rows filed 2026-09-09.\n"
-    "> **The set of rows a session may action without asking the owner first is still empty.**)*\n",
+    "> **The set of rows a session may action without asking the Overtoad first is still empty.**)*\n",
     "1. §2 licensing clause deleted",
 )
 
@@ -158,9 +158,9 @@ sub(
     "  a truncatable generator); file, do not silently remove.\n",
     "- `APD-CASCOR-011` — **parked: design question** (drop the flag from `main.py`, or make that path reach\n"
     "  a truncatable generator); file, do not silently remove.\n"
-    "- `APD-DATA-045` — **parked: owner decision**, with `APD-DATA-039`, whose cache-key half is its\n"
-    "  mechanism: a staleness bound is exactly the refresh-horizon question the owner has not ruled on.\n"
-    "- `APD-CASCOR-013` — **parked: owner decision.** Clearing the annotation is one line, but *when* it\n"
+    "- `APD-DATA-045` — **parked: Overtoad decision**, with `APD-DATA-039`, whose cache-key half is its\n"
+    "  mechanism: a staleness bound is exactly the refresh-horizon question the Overtoad has not ruled on.\n"
+    "- `APD-CASCOR-013` — **parked: Overtoad decision.** Clearing the annotation is one line, but *when* it\n"
     "  clears is a contract question (at every start, or only when a new dataset is fetched), and the\n"
     "  answer changes what a client polling `/v1/training/status` sees between runs.\n",
     "10b. park sentences for the new rows",

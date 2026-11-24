@@ -10,10 +10,10 @@
 
 ## 0. What this document is
 
-The measurement owner decision **D1** was gated on when it was ruled a second time, on
+The measurement Overtoad decision **D1** was gated on when it was ruled a second time, on
 2026-09-23. The first ruling said "the process-wide default". The session then found that
 mechanism already existed as `configure_blas_threads()`, defaulting to "do nothing" for
-cascor#531's reason, and put the question again. The owner ruled **"pay the debt, then flip"**:
+cascor#531's reason, and put the question again. The Overtoad ruled **"pay the debt, then flip"**:
 change the default to a cap of 2 only if an epoch-count measurement shows the cap does not move
 the count. The ruling is recorded in §5 and §5.2 of
 [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md).
@@ -65,7 +65,7 @@ whatever the environment says:
 | `thread16` | `torch.set_num_threads(16)` on the training thread, which keeps it at 16 for the whole run |
 | `seed` | `none` with the network's `random_seed` changed (42 to 7): the **positive control** |
 
-**Compared on COUNTS**: the owner's criterion. A second **numerics** column (the winning candidate
+**Compared on COUNTS**: the Overtoad's criterion. A second **numerics** column (the winning candidate
 of every phase, best correlations, final loss) explains the counts. Identical numerics is a
 stronger statement than identical counts. Wall clock is recorded and never compared. The order
 is shuffled each repeat from a recorded seed (20260923); the repeats test determinism. Every

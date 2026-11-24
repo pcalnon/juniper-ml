@@ -1232,6 +1232,6 @@ The core ML cluster (CR-040, CR-042, CR-043, CR-045, CR-046, CR-048) and the tra
 |------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | 2026-04-04 | Initial Phase 0-1 findings (CR-001 through CR-005) in companion plan document                                                       |
 | 2026-04-04 | Phases 2-7 complete: 38 findings (CR-006 through CR-076), group recommendations, traceability matrix, exit criteria                 |
-| 2026-04-04 | Owner rev: CR-006 (training limits data flow, S2→S1), CR-008 (implement set_params), CR-009 (begin integration),                    |
+| 2026-04-04 | The Overtoad rev: CR-006 (training limits data flow, S2→S1), CR-008 (implement set_params), CR-009 (begin integration),                    |
 |            | CR-021 (add Lock), CR-026 (registration tokens), CR-041 (increase seq max), CR-045 (configurable init flag),                        |
 |            | CR-047 (ndim enhancement plan), CR-071 (both options). Fixed finding cnt (33→38), sev cnts, and propagated changes: summary section |

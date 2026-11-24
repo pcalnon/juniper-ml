@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-26
 Status: ad-hoc — investigation (the evidence behind erratum E-H6-APPLY)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18.3, erratum E-H6-APPLY);
          util/ad-hoc/2026-10-26_turing_h6_apply_vscode_mcp_decisions.py (what was applied, and its --check)
 

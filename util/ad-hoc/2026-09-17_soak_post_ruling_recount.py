@@ -8,7 +8,7 @@ Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 
-Owner decision D5 (ruled 2026-09-17, implemented by ml#1952) invalidated one row
+The Overtoad decision D5 (ruled 2026-09-17, implemented by ml#1952) invalidated one row
 -- the single run that demonstrably READ the ledger it was being scored against.
 That moved the corpus 43 -> 42 and every derived figure with it.
 

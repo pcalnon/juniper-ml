@@ -1,13 +1,13 @@
 """
-Mutation and revert checks for the owner-ruling-17 fix in juniper-canopy's lockfile-update.yml.
+Mutation and revert checks for the Overtoad-ruling-17 fix in juniper-canopy's lockfile-update.yml.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: Cursor flood-4, owner ruling 17 ("canopy: dead error path"); juniper-canopy
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Cursor flood-4, Overtoad ruling 17 ("canopy: dead error path"); juniper-canopy
          src/tests/regression/test_lockfile_regen_empty_payload.py
 
 For each mutant, the workflow file in the canopy worktree is rewritten with ONE exact

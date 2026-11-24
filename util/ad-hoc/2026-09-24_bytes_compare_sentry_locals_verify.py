@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: juniper-canopy#683 (the validation that found it); owner ruling "Fix everywhere now"
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: juniper-canopy#683 (the validation that found it); Overtoad ruling "Fix everywhere now"
     (2026-09-24); the three PRs "fix(security): a non-ASCII API key is a 401, not a 500 that
     hands Sentry the real key" in juniper-ml, juniper-data and juniper-cascor.
 

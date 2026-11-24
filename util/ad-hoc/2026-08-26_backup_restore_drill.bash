@@ -6,7 +6,7 @@
 # Author:      Paul Calnon
 # Created:     2026-08-26
 # Status:      ad-hoc -- investigation
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:     notes/JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_SNAPSHOT-LIFECYCLE-MANAGEMENT-DESIGN.md
 #              SS6.4.2 q3 / SS6.4.3 (the drill this answers); util/juniper-backup.bash:173
 #
@@ -24,11 +24,11 @@
 #
 #       1. PIPELINE  -- does `tar -cjf - | gpg -e` round-trip a tree byte-for-byte, and do
 #                       the script's two verifications actually fire?   <-- THIS SCRIPT
-#       2. KEY       -- can the owner's YubiKey-backed private key decrypt a REAL archive?
-#                       Owner-gated: the recipients are YubiKey-backed, so this needs the
+#       2. KEY       -- can the Overtoad's YubiKey-backed private key decrypt a REAL archive?
+#                       The Overtoad-gated: the recipients are YubiKey-backed, so this needs the
 #                       hardware and cannot be run unattended. NOT covered here.
 #
-#     Retiring (1) leaves a precisely-scoped owner action instead of an open-ended "no drill
+#     Retiring (1) leaves a precisely-scoped Overtoad action instead of an open-ended "no drill
 #     has ever been run".
 #
 # SAFETY

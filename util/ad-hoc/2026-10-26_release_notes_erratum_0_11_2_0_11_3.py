@@ -9,7 +9,7 @@
 # License:       MIT License
 #
 # Description:
-#   Applies the owner-approved (2026-10-26) erratum to the juniper-ml 0.11.2
+#   Applies the Overtoad-approved (2026-10-26) erratum to the juniper-ml 0.11.2
 #   security notes and the clarification to the 0.11.3 notes, in every copy:
 #     - notes/releases/RELEASE_NOTES_v0.11.2.md and the Release v0.11.2 body:
 #       the Priority line corrected in place, plus a dated erratum block;

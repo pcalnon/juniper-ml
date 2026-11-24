@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-21
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md
          (the consensus procedure requires code snippets to be validated, not merely read)
 
@@ -176,7 +176,7 @@ def main() -> int:
         with open(out, "w", encoding="utf-8") as fh:
             fh.write(body)
         if out.endswith((".bash", ".sh", ".py")):
-            os.chmod(out, 0o700)  # owner-only: systemd-analyze verify wants Exec targets executable; the scratch tree is private
+            os.chmod(out, 0o700)  # Overtoad-only: systemd-analyze verify wants Exec targets executable; the scratch tree is private
         written.append((rel, lang, line, body, out))
     # Phase 2: lint.
     for rel, lang, line, body, out in written:

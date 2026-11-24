@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-08
 Status: ad-hoc — one-off (applied once on 2026-09-08; re-runnable with --dry-run as the statement of what changed)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: HANDOFF_2026-09-08_defect-register-round-38-the-three-way-prompt-built-and-the-annotation-made-truthful.md;
          reports/2026-09-08_round-37-consensus/ (the six lanes whose findings these rows file);
          util/ad-hoc/register_open_set.py and register_status_crosscheck.py (run on the result before writing)
@@ -98,11 +98,11 @@ def main() -> int:
     # 3. The stale §2 operating-rule paragraph (ml#1813 edited only the §4.1 bullet).
     replace_once(
         "Both unparked rows still\n"
-        "require an owner decision before any code can be written — `-018`'s cap is a rejection-vs-truncation\n"
+        "require an Overtoad decision before any code can be written — `-018`'s cap is a rejection-vs-truncation\n"
         "and rows-vs-bytes question, `-019`'s remedy needs `total` estimated, cached or absent, and the last\n"
         "is a response-shape change for existing clients.",
         "The one unparked primer row, `APD-DATA-019`, still\n"
-        "requires an owner decision before any code can be written — its remedy, re-scoped 2026-09-07 onto\n"
+        "requires an Overtoad decision before any code can be written — its remedy, re-scoped 2026-09-07 onto\n"
         "`list_all_metadata()`, is a per-store filter/sort/limit pushdown or sidecar index, and which stores get\n"
         "one is the decision (`total` was the wrong target and is no longer part of it; `-018` closed 2026-09-04).",
     )
@@ -115,7 +115,7 @@ def main() -> int:
         "> position above — 17 primer rows open, one of them (`APD-DATA-019`) unparked — but they do end the\n"
         "> empty set: the §4.9 rows marked actionable (`APD-DATA-039`'s cache-key half, `APD-CASCOR-009` /\n"
         "> `APD-CASCOR-010` / `APD-CASCOR-012`) are the first a session may work without asking first, because\n"
-        "> the owner-issued round-37 handoff listed them as remaining work.)*\n",
+        "> the Overtoad-issued round-37 handoff listed them as remaining work.)*\n",
     )
 
     # 4. The §2 status line: the three post-primer closes, on the SAME line the crosscheck reads.
@@ -164,14 +164,14 @@ defect and the `val_ratio` / `INFRASTRUCTURE_FIELDS` drift are recorded in
 or unparks its row and nothing else):
 
 - `APD-DATA-039` — **actionable** for the versioned key + TTL; **the refresh horizon (how far back to
-  regenerate) is an owner decision.**
-- `APD-DATA-040`, `APD-DATA-041`, `APD-DATA-042`, `APD-DATA-043` — **parked: owner decision.** Each changes
+  regenerate) is an Overtoad decision.**
+- `APD-DATA-040`, `APD-DATA-041`, `APD-DATA-042`, `APD-DATA-043` — **parked: Overtoad decision.** Each changes
   the artifact's content and needs a `generator_version` bump; first-publication vs latest-filed
   (`-040`) is a design choice, not a bug fix.
-- `APD-DATA-044` — **parked: owner decision**, in the same batch as `-040`…`-043`: treating an all-zero or
+- `APD-DATA-044` — **parked: Overtoad decision**, in the same batch as `-040`…`-043`: treating an all-zero or
   placeholder series as `unrescued` (like the empty-units case) is the obvious remedy, but it changes which
   universes pass the default `fail` policy, so it ships with the same `generator_version` bump.
-- `APD-CASCOR-008` — **parked: owner decision** (derive the set from juniper-data's `/v1/generators`, or
+- `APD-CASCOR-008` — **parked: Overtoad decision** (derive the set from juniper-data's `/v1/generators`, or
   keep the list and narrow it to the reachable member).
 - `APD-CASCOR-009`, `APD-CASCOR-010`, `APD-CASCOR-012` — **actionable**; one PR, the cascor#624 follow-ups.
 - `APD-CASCOR-011` — **parked: design question** (drop the flag from `main.py`, or make that path reach

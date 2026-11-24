@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-10
 Status: ad-hoc — investigation (perf lane P2 item 2.4 follow-up: the quieter re-cut `0003` against the two loaded cuts `0001` / `0002`)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md
 
 WHY THIS EXISTS
@@ -16,7 +16,7 @@ WHY THIS EXISTS
 ~40 s of load on the host and produces a FOURTH run to explain. The saved JSON already holds every
 statistic; this reads two of them and prints the per-benchmark ratio of medians, its distribution,
 and how many benchmarks moved outside the run tier's 20.5% quiet band — a report, never a gate
-(owner decision 2026-09-07, P2 item 2.5).
+(Overtoad decision 2026-09-07, P2 item 2.5).
 
     python3 util/ad-hoc/2026-09-10_micro_reference_compare.py --base PATH/0002_*.json --other PATH/0003_*.json
 """

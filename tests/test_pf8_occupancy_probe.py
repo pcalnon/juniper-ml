@@ -11,7 +11,7 @@ Gate for the PF-8 occupancy probe pair — ``util/ad-hoc/2026-09-10_pf8_occupanc
 and ``util/ad-hoc/2026-09-10_pf8_occupancy_analyse.py`` (perf lane P2 item 4.1 residue).
 
 ``util/ad-hoc`` sits outside every pre-commit Python hook, and the probe's output is the number
-that decides whether a two-arm PF-8 pair is worth an owner's host time, so the arithmetic that
+that decides whether a two-arm PF-8 pair is worth an Overtoad's host time, so the arithmetic that
 turns ``/proc`` jiffies into cores (read as sweep workers only by a stated assumption) is pinned
 here rather than trusted.
 

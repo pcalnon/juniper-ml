@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md §2 (Lane A);
          juniper-canopy src/frontend/components/candidate_metrics_panel.py ``fetch_training_state``
 
@@ -413,8 +413,8 @@ JS_INSTALL = r"""(args) => {
       const comp = A.isComp(v);
       if (comp) { nComp++; const id = v.props.id; if (typeof id === 'string') (byId[id] = byId[id] || []).push(i); }
       else if (hasOwn.call(v, 'candidate_pool_status') && typeof v.timestamp === 'number') apiState.push(i);
-      const owner = comp ? i : C[i];
-      for (const k in v) { if (!hasOwn.call(v, k)) continue; const c = v[k]; if (c !== null && typeof c === 'object') { V.push(c); P.push(i); K.push(k); C.push(owner); } }
+      const Overtoad = comp ? i : C[i];
+      for (const k in v) { if (!hasOwn.call(v, k)) continue; const c = v[k]; if (c !== null && typeof c === 'object') { V.push(c); P.push(i); K.push(k); C.push(Overtoad); } }
     }
     const pathOf = (i) => { const out = []; while (i > 0) { out.push(K[i]); i = P[i]; } return out.reverse(); };
     const ownerOf = (i) => { const o = C[i]; if (o < 0) return null; const id = V[o].props.id; return typeof id === 'string' ? id : JSON.stringify(id); };
@@ -507,7 +507,7 @@ JS_INSTALL = r"""(args) => {
     for (const id in W.byId) { for (const i of W.byId[id]) { const n = W.V[i]; if (n.type === 'Store') (stores[id] = stores[id] || []).push({ts: A.tsOf(n.props.data), h: A.hv(n.props.data)}); } }
     const tok = {};
     for (const t of tokens || []) { const [id, prop] = A.splitTok(t); const idx = W.byId[id]; tok[t] = idx ? idx.map((i) => A.hv(W.V[i].props[prop])) : null; }
-    const api = W.apiState.map((i) => ({path: W.pathOf(i).join('/'), owner: W.ownerOf(i), ts: W.V[i].timestamp}));
+    const api = W.apiState.map((i) => ({path: W.pathOf(i).join('/'), Overtoad: W.ownerOf(i), ts: W.V[i].timestamp}));
     const q = {}; const cbs = st.callbacks || {};
     for (const k in cbs) { if (Array.isArray(cbs[k])) { q[k] = cbs[k].length; if (cbs[k].some(A.hasSubject)) (q.subject_in = q.subject_in || []).push(k); } }
     const t1 = performance.now();

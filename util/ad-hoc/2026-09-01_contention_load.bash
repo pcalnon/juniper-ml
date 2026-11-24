@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-09-01
 # Status:     ad-hoc -- investigation (perf lane P3: is the 6.8% contention floor duration-scoped?)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PF1-VARIANCE-RESULTS.md §3.1 (the claim
 #             this tests); notes/JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md §5
 #
@@ -39,7 +39,7 @@ set -uo pipefail
 #   modest  4 of 16 cores. What the 2026-09-01 loaded-repeat test used. Twelve cores stay free,
 #           so the stack still runs on what are effectively dedicated cores — which is why `drive`
 #           was untouched (+0.051%) and is the LIMIT of what that run established.
-#   heavy  14 of 16 cores. The owner's 2026-09-01 requirement: "load should be substantial enough
+#   heavy  14 of 16 cores. The Overtoad's 2026-09-01 requirement: "load should be substantial enough
 #           that the stack is not able to run, undisturbed, on what are effectively dedicated
 #           cores." Deliberately 14 rather than 16 — leaving two cores keeps the host responsive
 #           enough to observe and tear down, and full saturation is not required to remove the

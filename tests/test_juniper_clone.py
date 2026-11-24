@@ -284,13 +284,13 @@ class UsageTest(_Fixture):
             "unknown option": ["--frobnicate", "k8s"],
             "two repos": ["k8s", "ml"],
             "dest without value": ["k8s", "--dest"],
-            "owner without value": ["k8s", "--owner"],
+            "Overtoad without value": ["k8s", "--owner"],
             "path traversal": ["../evil"],
             "uppercase": ["K8s"],
             "shell syntax": ["k8s;id"],
             "empty short name": ["juniper-"],
             "leading dash": ["-k8s"],
-            "bad owner": ["--owner", "a/b", "k8s"],
+            "bad Overtoad": ["--owner", "a/b", "k8s"],
         }
         for label, argv in cases.items():
             with self.subTest(label):

@@ -5,8 +5,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-25
-Status: ad-hoc — landing helper (turing bring-up task C2's gate follow-up, owner ruling 2026-10-25)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — landing helper (turing bring-up task C2's gate follow-up, Overtoad ruling 2026-10-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18.2 C2 row; gate G-SEC);
          util/host_state_probe.bash; util/host_state_check.py; tests/test_host_state_check.py;
          util/ad-hoc/2026-10-25_turing_h4_usage_report_doc_edits.py (the shape this follows)
@@ -52,18 +52,18 @@ REF_SUITE_TAIL_OLD = "with `conf/hosts/turing/conda-envs/` on the envs.\n"
 REF_PROBE_OLD = "power, security, tools, env, alias"
 REF_PROBE_NEW = "power, security (with `socketfilterfw --getblockall` since 2026-10-25, for task C2), tools, env, alias"
 REF_CHECK_OLD = "G-SEC; G-TOOLS (erratum E-D6"
-REF_CHECK_NEW = "G-SEC (its firewall condition needs the firewall on and blocking all incoming connections: task C2's block-all form, owner ruling 2026-10-25); G-TOOLS (erratum E-D6"
+REF_CHECK_NEW = "G-SEC (its firewall condition needs the firewall on and blocking all incoming connections: task C2's block-all form, Overtoad ruling 2026-10-25); G-TOOLS (erratum E-D6"
 
 CHANGELOG_MARKER = "**G-SEC's firewall condition follows C2's block-all form**"
 CHANGELOG_ENTRY = (
     f"- {CHANGELOG_MARKER} (turing bring-up task C2, the §18.2 C2 row of\n"
-    f"  `{PLAN}`; owner ruling 2026-10-25).\n"
-    "  The owner chose to block all incoming connections while nothing inbound is needed, over per-app inbound\n"
+    f"  `{PLAN}`; Overtoad ruling 2026-10-25).\n"
+    "  The Overtoad chose to block all incoming connections while nothing inbound is needed, over per-app inbound\n"
     f"  denies (RR-11 of `{ANALYSIS}`).\n"
     "  The condition passed at `State = 1`, and its fix still said \"allowing signed software\".\n"
     "  - `util/host_state_probe.bash` also captures `socketfilterfw --getblockall` (`blockall` in the security section).\n"
     "  - `util/host_state_check.py` passes the firewall only when it is on and `--getblockall` reports block all. It\n"
-    "    accepts both block-all sentences in the binary's strings, since turning block all on needs the owner's sudo.\n"
+    "    accepts both block-all sentences in the binary's strings, since turning block all on needs the Overtoad's sudo.\n"
     "    An unknown or undefined state, or a probe without the capture, cannot be judged (exit 2 under `--check`),\n"
     "    unless the firewall is off, which fails anyway. The fix names only the missing `socketfilterfw` steps.\n"
     "    Stealth mode stays reported, not gated, as G1 designed it.\n"
@@ -126,7 +126,7 @@ def main(argv: list[str]) -> int:
     names = ("docs/REFERENCE.md", "CHANGELOG.md")
     texts = {name: (base / name).read_text(encoding="utf-8") for name in names}
     suite_tail = (
-        "with `conf/hosts/turing/conda-envs/` on the envs. G-SEC's firewall condition follows task C2's block-all form (owner ruling"
+        "with `conf/hosts/turing/conda-envs/` on the envs. G-SEC's firewall condition follows task C2's block-all form (Overtoad ruling"
         " 2026-10-25): it passes only when the firewall is on and `socketfilterfw --getblockall` reports block all, in either of the"
         " binary's two sentences. An unknown block-all state, or a probe without the capture, cannot be judged unless the firewall is"
         " off, which fails anyway; the fix names only the missing steps; stealth mode is reported, not gated (`FirewallTest`)."

@@ -45,7 +45,7 @@ BODY = """## Summary
 Part 3 — the last step — of the ordered sequence from the 2026-09-05 SemVer ruling:
 
 1. ✅ widen the ceilings to `<0.10.0` (2026-09-10)
-2. ✅ cut the Release, owner-approved the `pypi` environment gate (2026-09-11)
+2. ✅ cut the Release, Overtoad-approved the `pypi` environment gate (2026-09-11)
 3. ✅ raise the floors ← this PR
 
 The order is strict in that direction: a floor pinned at a version PyPI does not serve makes every
@@ -99,7 +99,7 @@ juniper-ci-tools-v0.9.0 Release). Raises {lines} pin line(s) across {files}
 file(s) from >=X to >=0.9.0, keeping the <0.10.0 ceiling already in place.
 
 Part 3 of the ordered sequence from the 2026-09-05 SemVer ruling: ceilings
-widened 2026-09-10, Release cut and the pypi gate owner-approved 2026-09-11,
+widened 2026-09-10, Release cut and the pypi gate Overtoad-approved 2026-09-11,
 floors last. A floor at an unpublished version makes every pin unsatisfiable,
 so the script that made this edit queries PyPI and refuses if 0.9.0 is absent.
 

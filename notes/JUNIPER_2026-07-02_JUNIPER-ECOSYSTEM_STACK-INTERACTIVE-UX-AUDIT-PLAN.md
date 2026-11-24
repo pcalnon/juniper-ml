@@ -255,7 +255,7 @@ Anything that cannot be independently reproduced is downgraded to "unverified" o
 | P2        | Full scripted walk-through §6 under `make monitor` (auth) and `make demo` (auto-train)       | raw evidence log   |
 | P3        | Author findings report from evidence; tag requirements; set dispositions                     | audit report doc   |
 | P4        | Validate the report (§9); integrate corrections                                              | final report       |
-| P5        | (owner) triage → issues/PRs; hand security-adjacent notes to the separate Opus security pass | tracked follow-ups |
+| P5        | (Overtoad) triage → issues/PRs; hand security-adjacent notes to the separate Opus security pass | tracked follow-ups |
 
 ## 11. Pilot Walk-Through Observations (live, 2026-07-02 ~02:23–02:41 UTC)
 

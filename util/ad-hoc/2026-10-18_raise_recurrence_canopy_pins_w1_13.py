@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-18
 Status: ad-hoc — migration
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: W1.13 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md;
          util/ad-hoc/2026-10-08_raise_data_floor_0_17_0.py (the W1.11 raise this follows, ml#2190)
 
@@ -16,7 +16,7 @@ The P1 release train (W1.13) published juniper-recurrence-model 0.4.0 (2026-10-1
 0.6.0 and juniper-canopy 0.9.0 (both 2026-10-17). ``juniper-ml[recurrence]`` capped
 ``juniper-recurrence-model<0.4.0`` and ``juniper-recurrence<0.6.0``, so the meta-package could install
 neither recurrence release. The release train's propagation records this edge as ``escaped -> deferred
-(juniper-ml meta stays manual per Q-META)``, so it is done by hand. The owner also ruled (2026-10-18 UTC)
+(juniper-ml meta stays manual per Q-META)``, so it is done by hand. The Overtoad also ruled (2026-10-18 UTC)
 to raise two floors, each to its security release: ``juniper-canopy>=0.9.0`` (High) and
 ``juniper-recurrence>=0.6.0`` (Medium, W1.14).
 
@@ -79,7 +79,7 @@ _CL_ENTRY = f"""- **BREAKING (resolution): {_ENTRY_MARKER}, and `[recurrence]` a
   escaped: model 0.4.0 was published on 2026-10-13, and recurrence 0.6.0 and canopy 0.9.0 on
   2026-10-17.
   - **The two ceilings rise to the next minor**: `<0.5.0` for the model, `<0.7.0` for the app.
-  - **Two floors rise, each to a security release** (owner ruling, 2026-10-18 UTC).
+  - **Two floors rise, each to a security release** (Overtoad ruling, 2026-10-18 UTC).
     - `juniper-canopy>=0.9.0`, up from `>=0.8.1`. 0.9.0 is rated High. It refuses an outbound key
       with padding, a line break or a non-ASCII character where the key is read. It keeps a
       padded `CANOPY_API_KEY` out of the logs and Sentry, compares every API key without

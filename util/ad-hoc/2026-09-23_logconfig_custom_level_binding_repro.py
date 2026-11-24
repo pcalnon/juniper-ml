@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (cascor#573 logging arc; found while building roadma
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: cascor src/log_config/log_config.py (the setattr/__get__ loop in LogConfig.__init__),
          src/log_config/logger/logger.py (_init_log_method's log_for_level closure)
 

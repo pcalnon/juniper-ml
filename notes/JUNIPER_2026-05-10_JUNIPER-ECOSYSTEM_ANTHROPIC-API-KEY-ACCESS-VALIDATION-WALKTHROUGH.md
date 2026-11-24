@@ -42,7 +42,7 @@ gh api -H "Accept: application/vnd.github+json" \
   /orgs/pcalnon/actions/secrets 2>&1 | jq -r '.secrets[]?.name' || echo "(not an org / no access)"
 ```
 
-For `pcalnon/juniper-*` the owner is a personal account, not an org, so there are no org-scoped Actions secrets. The key is therefore a **repository secret** on each repo that uses `claude.yml`.
+For `pcalnon/juniper-*` the Overtoad is a personal account, not an org, so there are no org-scoped Actions secrets. The key is therefore a **repository secret** on each repo that uses `claude.yml`.
 
 ```bash
 # Per-repo secrets — list each

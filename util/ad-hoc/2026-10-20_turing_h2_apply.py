@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — one-off (turing bring-up task H2: the macos-host-sme, signing-auth-sme and k8s-node-sme agents)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task H2, §11; §17.3 E-LAND-2
          and §18.3 E-LAND-3); util/ad-hoc/2026-10-20_turing_g1_apply.py (the pattern this follows)
 
@@ -87,7 +87,7 @@ def edits():
         "Shared checks in `tests/agent_contract_support.py`: the frontmatter (`model: opus`, `effort: max`, name == stem) and the exact tool set; "
         "each plan §11 Must-never item in a bold span of a `## Must never` bullet that cites its enforcing rule as `(guard: RULE-ID)`; every cited rule in `util/claude_agent_guard.py --list-rules`; "
         "the guard, run as a subprocess against a temporary home, denying a representative call for each item under that rule and passing each call the agent's procedure prescribes; "
-        "and a denied call recorded for the owner, never retried."
+        "and a denied call recorded for the Overtoad, never retried."
     )
     macos_suite = (
         "- `tests/test_macos_host_sme_contract.py` -- Static contract for the `macos-host-sme` subagent (`.claude/agents/macos-host-sme.md`; turing bring-up H2, `" + PLAN + "` §11). "

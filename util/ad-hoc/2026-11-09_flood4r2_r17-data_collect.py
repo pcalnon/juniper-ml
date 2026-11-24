@@ -3,11 +3,11 @@
 Collect juniper-data's tests per CI lane (--collect-only) and name the ones no lane runs.
 
 Project: juniper-ml
-Sub-Project: ad-hoc tooling (Cursor-fleet flood-4, owner ruling 17: "data: 44 unrun tests")
+Sub-Project: ad-hoc tooling (Cursor-fleet flood-4, Overtoad ruling 17: "data: 44 unrun tests")
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation (re-derive the defect before the fix, prove the delta after it)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (ruling 17 is recorded in the record-update PR)
 
 WHAT IT DOES

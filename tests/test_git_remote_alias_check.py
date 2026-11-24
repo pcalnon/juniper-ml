@@ -1280,7 +1280,7 @@ class SourceContractTest(unittest.TestCase):
         constants = self.string_constants()
         self.assertIn("-G", constants)
         for probe in ("-T", "ssh-add", "ssh-keygen", "gh", "gpg", "gpg2", "--card-status", "-K"):
-            self.assertNotIn(probe, constants, "credential probes belong to the owner's checklist (plan §14.1)")
+            self.assertNotIn(probe, constants, "credential probes belong to the Overtoad's checklist (plan §14.1)")
 
     def test_the_origin_is_read_from_config_not_get_url(self) -> None:
         self.assertIn('"config", "--get", "remote.origin.url"', self.text)

@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-08-25
 # Status:     ad-hoc -- one-off (T6 re-baseline launch coordination)
-# Retire when: RETAINED (owner policy 2026-08-25 -- no retirement deadline)
+# Retire when: RETAINED (Overtoad policy 2026-08-25 -- no retirement deadline)
 # Related:    HANDOFF_2026-08-25_t6-rebaseline-window-held-not-launched.md SS2 step 5;
 #             util/ad-hoc/2026-08-23_t6_rebaseline_campaign.bash
 #

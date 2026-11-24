@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-25
 Status: ad-hoc -- investigation (evidence for the APD-DATA-021 remedy decision)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md (APD-DATA-021), the juniper-data fix PR named in its §5.1 row
 
 ``juniper_data.core.models.DatasetListFilter`` is declared and never used, while

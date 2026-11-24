@@ -5,7 +5,7 @@ Given a package + version + the CHANGELOG ``[Unreleased]`` bullets, render a wel
 release-notes DRAFT from ``notes/templates/TEMPLATE_RELEASE_NOTES.md`` (or the security
 template when the ``[Unreleased]`` block carries a ``Security`` category, plan S10.1 /
 Q-SEVERITY). The draft is what the standard-gated proposal PR (``propose.py``, plan S5.4)
-shows the owner; it is **not** archived to ``notes/releases/`` here -- archival is the later
+shows the Overtoad; it is **not** archived to ``notes/releases/`` here -- archival is the later
 exempt ceremony step (plan S7/S10.2). The central archive filename convention is surfaced
 (``archive_name`` / ``archive_relpath``) so the proposal body can name the eventual home.
 
@@ -18,7 +18,7 @@ pre-commit-lint-gated, so ``tests/test_release_train_propose.py`` IS the gate (t
 The renderer is deliberately conservative: it fills the metadata block, an Overview, a
 Release Summary, and the Keep-a-Changelog change groups sourced from the CHANGELOG, then
 lists the remaining template sections as a to-complete scaffold. It never invents test
-counts, coverage numbers, or issue IDs -- those are owner-authored during review.
+counts, coverage numbers, or issue IDs -- those are Overtoad-authored during review.
 
 Project: juniper-ml
 Sub-Project: automated PyPI release-train

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-30
 Status: ad-hoc -- one-off (CLI-experimentation plan §12.2 item 3)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md (§4, the
          item); plan §12.2 item 3 ("No cross-app comparison surface"); juniper-deploy#167 (the
          dashboard this edits), #171 (the PF row it is inserted before)

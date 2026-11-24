@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-25
 Status: ad-hoc — migration
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: juniper-ml#2062 (the defect, and options (a) / (b) / (c)); the owner chose (a+) on 2026-10-25,
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: juniper-ml#2062 (the defect, and options (a) / (b) / (c)); the Overtoad chose (a+) on 2026-10-25,
          which is (a) plus `[api]` for cascor and data; juniper-ml#2326 (the floors this keeps);
          util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py (the edit pattern)
 
@@ -20,7 +20,7 @@ cross-service call. cascor and data also keep their web runtime -- fastapi, star
 pydantic-settings -- behind ``[api]``, which arrived only because canopy's base dependencies carry
 it. data's ``[api]`` also holds its two security floors.
 
-This is a script, not a hand edit, so the change can be replayed on a newer ``main``: the owner ruled
+This is a script, not a hand edit, so the change can be replayed on a newer ``main``: the Overtoad ruled
 that it must not ride juniper-ml 0.11.2, so the PR is re-cut on top of the 0.11.2 proposal before it
 merges. Every edit asserts its exact old text and must match exactly once. A site already at its
 target is skipped, so a re-run is a no-op. ``AGENTS.md``'s ``**Last Updated**:`` is set to the run's
@@ -240,7 +240,7 @@ _NEW_INLINE = ", ".join(f"`{new}`" for _, new in _PINS)
 _REFERENCE_CELLS = [(f"`{old.split('>=')[0]}`", f"`{new.split('>=')[0]}`", f"`>={old.split('>=')[1]}`") for old, new in _PINS]
 
 _ENTRY_MARKER = "`[servers]` installs what each server needs to run as a service"
-_CL_ENTRY = f"""- **{_ENTRY_MARKER}** (juniper-ml#2062; option (a+), owner ruling 2026-10-25).
+_CL_ENTRY = f"""- **{_ENTRY_MARKER}** (juniper-ml#2062; option (a+), Overtoad ruling 2026-10-25).
   `[servers]` installed `juniper-canopy`, `juniper-cascor` and `juniper-data` bare, but canopy declares both clients and
   cascor its data client only as extras. So the three services started and failed at their first cross-service call:
   canopy's service mode on `ModuleNotFoundError: No module named 'juniper_cascor_client'`, and cascor's dataset fetch on

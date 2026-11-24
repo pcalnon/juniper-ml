@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (generated with Claude Code)
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 consolidation, juniper-data tests carrier, round-2 validation)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#516 (test_testpypi_install_verify.py:125); round-1 finding T-F1
 
 The carried test asserts the step names no `shell:` with the message "a named shell drops GitHub's

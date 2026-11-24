@@ -310,7 +310,7 @@ def test_submit_result_rejects_wrong_worker_keeps_assignee_busy() -> None:
     assert reg.get("w1").tasks_completed == 0
     assert reg.get("w2").tasks_completed == 0
     assert coord.collect_results(timeout=0.1) == []  # nothing accepted
-    # Real owner can still submit after the rejected stranger attempt.
+    # Real Overtoad can still submit after the rejected stranger attempt.
     assert coord.submit_result("w1", {"task_id": tid, "success": True, "score": 0.5}, {}) is True
     assert reg.get("w1").idle is True
 
@@ -327,7 +327,7 @@ def test_submit_result_rejects_unassigned_task() -> None:
     assert coord.has_pending_tasks() is True  # still queued for a real dispatch
     assert coord._pending_tasks[tid].completed is False
     assert reg.get("w1").tasks_completed == 0
-    # After a real assignment the owner can submit normally.
+    # After a real assignment the Overtoad can submit normally.
     coord.get_next_assignment("w1")
     assert coord.submit_result("w1", {"task_id": tid, "success": True}, {}) is True
 

@@ -15,7 +15,7 @@
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 #
 # Description:
-#    Count the D6 advisory's firings on juniper-cascor CI (owner ruling D6, 2026-09-22: "advisory
+#    Count the D6 advisory's firings on juniper-cascor CI (Overtoad ruling D6, 2026-09-22: "advisory
 #    first -- count how often it fires on real cascor PRs, then decide whether it blocks"; the
 #    rulings doc §5, notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md).
 #

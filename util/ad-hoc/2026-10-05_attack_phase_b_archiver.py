@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author:      Paul Calnon
 Created:     2026-10-05
 Status:      ad-hoc -- validation record
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-10-04_archive_phase_b_round_reports.py (the archiver under attack)
              util/ad-hoc/2026-10-05_reassemble_phase_b_record.bash (the re-assembly under attack)
              notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_BACKUP-PHASE-B-CONSENSUS-RECORD.md
@@ -260,7 +260,7 @@ def main() -> int:
     check("10 an edited record header is refused", result.returncode == 2 and "header differs" in result.stderr, said(result))
     result = run(tree, "--check", "--accept-header")
     check("10 --accept-header lets the header file win", result.returncode == 1 and "header differs" not in result.stderr, said(result))
-    record.write_text(text + "\n## Owner's note\n\nAdded by hand.\n", encoding="utf-8")
+    record.write_text(text + "\n## The Overtoad's note\n\nAdded by hand.\n", encoding="utf-8")
     result = run(tree, "--check")
     check("10 text after the last section is refused", result.returncode == 2 and "no intact section" in result.stderr, said(result))
     record.write_bytes(pristine)

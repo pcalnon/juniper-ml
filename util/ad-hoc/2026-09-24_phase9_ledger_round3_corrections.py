@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round-3 fix pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9;
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round3.md;
          util/ad-hoc/2026-09-24_phase9_ledger_round2_corrections.py (the pass this corrects)
@@ -99,11 +99,11 @@ SUBS = [
         "A2, B8: the account's locally signed commits, and the morning's arms",
         """      background shepherd can update a branch, but none of the day's launches names ml#2066 or data#434.""",
         """      background shepherd can update a branch, but none of the day's launches names ml#2066 or data#434.
-    - **Commits signed locally with the owner's key landed in that window** (Lanes R2-B and R3-A; re-derived
+    - **Commits signed locally with the Overtoad's key landed in that window** (Lanes R2-B and R3-A; re-derived
       from the commits API). `4c496443` on ml#2058 (committed 21:45:22Z, two minutes before the pass's first
       ready) and `c666403b` on ml#2045 (23:47:30Z, a minute before that PR's disarm and re-arm) are committed
       by "Paul Calnon", not by GitHub's web-flow, with valid PGP signatures. On this host a locally signed
-      commit needs a touch of the owner's hardware key (`util/push_signed_commit.py`'s docstring), and no Claude
+      commit needs a touch of the Overtoad's hardware key (`util/push_signed_commit.py`'s docstring), and no Claude
       Code session made a tool call then. R3-A also reads a rebase force-push to ml#2045 at 00:00:39Z from the
       push events. ml#2045 was drafted and readied again at 03:04:45Z and 03:05:02Z (its timeline).
     - **The same arming pattern that morning** (Lane R3-B; re-derived from the timelines). `pcalnon` armed
@@ -210,7 +210,7 @@ SUBS = [
   F-CANOPY-056, whose controls it keeps off screen, and it leaves cascor refusing training. F-CANOPY-014, which
   disabled the same controls through a different fault (an empty base URL), was rated P1 and is fixed. This one
   is worse, since no session view appears at all, and §6.3's words give P0; which rating replay findings take
-  is an owner question (Still owed, item 15).""",
+  is an Overtoad question (Still owed, item 15).""",
     ),
     # --- Instruments -----------------------------------------------------------------------------------------------
     (
@@ -277,7 +277,7 @@ SUBS = [
       precedent;
     - the launch scan's pattern and counts (44 background launches on 09-23 and 40 naming one PR, where 38
       and 34 stood), after it missed the converge driver; the conclusion held;
-    - the owner question's evidence: commits signed locally with the owner's key inside the quiet window, and
+    - the Overtoad question's evidence: commits signed locally with the Overtoad's key inside the quiet window, and
       the same arming pattern that morning;
     - F-CANOPY-057's history: cascor#184 reached `main` through its retarget, #189;
     - the per-request ranges (3–5 s and 7–8 s, not "±"), two merge dates now in UTC, two line numbers, the
@@ -333,7 +333,7 @@ SUBS = [
         """      (01:21:37Z) and #676's CI re-run (01:22:32Z), without which its armed merge could not fire. No Claude Code
       process on this host did any of them ("Who", above).""",
         """      (01:21:37Z) and #676's CI re-run (01:22:32Z), without which its armed merge could not fire. No Claude Code
-      process on this host did any of them ("Who", above), while commits signed locally with the owner's key
+      process on this host did any of them ("Who", above), while commits signed locally with the Overtoad's key
       landed at 21:45:22Z and 23:47:30Z, and the same arming pattern ran that morning at 13:23–13:29Z.""",
     ),
     (

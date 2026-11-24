@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: flood-4 juniper-ml docs carrier validation, claims lens slice A (draft #2409, paired tests draft #2410)
 
 Usage: python3 -I 2026-11-07_flood4_val_ml_docs_claims_a_pypi.py <out_dir>

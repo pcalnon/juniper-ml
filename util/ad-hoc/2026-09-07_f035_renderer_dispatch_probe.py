@@ -221,7 +221,7 @@ _HOOK = r"""
 def _verdict(res: dict) -> dict:
     """The reading rule, fixed before the run.
 
-    Four outcomes, each with a different owner. Written here rather than composed
+    Four outcomes, each with a different Overtoad. Written here rather than composed
     from the numbers afterwards, so a surprising result cannot be reinterpreted into
     whichever finding is most convenient -- the failure mode this arc has already
     paid for once.

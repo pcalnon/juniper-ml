@@ -6,8 +6,8 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-19
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
-# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
+# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : ledger Phase 13 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);
 #               HANDOFF_2026-10-19_canopy-phase13-manual-sweep-five-p2s-now-p1-item-30-owed.md
 # ---------------------------------------------------------------------------
@@ -49,14 +49,14 @@ AUDIT_NAME = "JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md"
 # ---------------------------------------------------------------------------
 
 LEDGER_SUBS = [
-    # --- Summary: the owner's question (B1, MAJOR) ---
+    # --- Summary: the Overtoad's question (B1, MAJOR) ---
     (
-        "- **The owner's question narrows.** Of the four findings Phase 11 placed within the first limb's reach, three\n"
+        "- **The Overtoad's question narrows.** Of the four findings Phase 11 placed within the first limb's reach, three\n"
         "  (F-CANOPY-012, -013, -018) are P1 by the manual without any ruling, and the fourth (F-CANOPY-057) is no longer\n"
         "  promised by the design note once corrected. The first limb now decides F-CANOPY-065 alone, as Phase 10 first put\n"
         "  it; the second limb still decides F-CANOPY-068's rating of record and moves no count. Item 26's second step, the\n"
         "  CHANGELOG and the design plans for every open finding, still waits on the ruling.",
-        "- **The owner's question narrows.** Of the three findings Phase 11 placed within the first limb's reach\n"
+        "- **The Overtoad's question narrows.** Of the three findings Phase 11 placed within the first limb's reach\n"
         "  (F-CANOPY-057, -018, -012) and F-CANOPY-013, which it left unsettled, three (F-CANOPY-012, -013, -018) are P1 by\n"
         "  the manual without any ruling. F-CANOPY-057 was still recorded as shipped by two documents the design note's\n"
         "  correction does not touch: the V7 roadmap's §28.1 and CAN-015 row\n"
@@ -180,18 +180,18 @@ LEDGER_SUBS = [
     ),
     # --- F-065 status bullet line cite (A1) ---
     (
-        "  (`docs/USER_MANUAL.md:266-269`); no sentence describes what the toast reports. The rating stays with the owner's\n"
+        "  (`docs/USER_MANUAL.md:266-269`); no sentence describes what the toast reports. The rating stays with the Overtoad's\n"
         "  first limb, which after Phase 13 decides this entry alone (Phase 13, Matrix effect and counts).",
-        "  (`docs/USER_MANUAL.md:267-269`); no sentence describes what the toast reports. The rating stays with the owner's\n"
+        "  (`docs/USER_MANUAL.md:267-269`); no sentence describes what the toast reports. The rating stays with the Overtoad's\n"
         "  first limb, which after Phase 13 decides this entry, and F-CANOPY-057 only through a dated audit's activity line\n"
         "  (Phase 13, Matrix effect and counts).",
     ),
     # --- F-057 status bullet (B1) ---
     (
         "  correction item 26 required: g-3 never reached `main`. With that it no longer records the stream as shipped, and\n"
-        "  the owner's first limb (O17) does not reach this entry through it (Phase 13).",
+        "  the Overtoad's first limb (O17) does not reach this entry through it (Phase 13).",
         "  correction item 26 required: g-3 never reached `main`. With that it no longer records the stream as shipped, and\n"
-        "  the owner's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1\n"
+        "  the Overtoad's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1\n"
         "  (`" + ROADMAP_NAME + "`) carries the same correction since Phase 13's round 1; the 2026-05-05 audit's activity line\n"
         "  (`" + AUDIT_NAME + ":112`) still reads \"CAN-015g replay V2 wired\" and is left as a dated snapshot, the one document\n"
         "  through which the first limb could still reach this entry.",
@@ -200,11 +200,11 @@ LEDGER_SUBS = [
     (
         "in the note was re-verified; the correction is scoped to g-3 and to the \"decision-boundary animation with\n"
         "per-unit weight evolution\" its summary describes, which has not shipped. With that, the note no longer records\n"
-        "the weight stream as implemented, and F-CANOPY-057 is not within reach of the owner's first limb through it; its\n"
+        "the weight stream as implemented, and F-CANOPY-057 is not within reach of the Overtoad's first limb through it; its\n"
         "P2 rests on the manual's and the FAQ's current text, as since Phase 10.",
         "in the note was re-verified; the correction is scoped to g-3 and to the \"decision-boundary animation with\n"
         "per-unit weight evolution\" its summary describes, which has not shipped. With that, the note no longer records\n"
-        "the weight stream as implemented, and F-CANOPY-057 is not within reach of the owner's first limb through it; its\n"
+        "the weight stream as implemented, and F-CANOPY-057 is not within reach of the Overtoad's first limb through it; its\n"
         "P2 rests on the manual's and the FAQ's current text, as since Phase 10 (the FAQ's status note of 2026-09-24 was\n"
         "re-read at `571743db` in round 1, Lane 13-B).\n"
         "\n"
@@ -215,7 +215,7 @@ LEDGER_SUBS = [
         "commit table, \"CAN-015g replay V2 wired\" under juniper-canopy (`" + AUDIT_NAME + ":112`). Round 1 gave §28.1 the\n"
         "same dated correction, a note under its heading and the g-3 row annotated; the CAN-015 row points to §28.1 and is\n"
         "left. The audit is a dated snapshot of commit themes since 2026-04-23, not a plan's promise, and is left as\n"
-        "history. Until the owner rules, the first limb reaches F-CANOPY-057 only through that audit line.",
+        "history. Until the Overtoad rules, the first limb reaches F-CANOPY-057 only through that audit line.",
     ),
     # --- What this phase cannot support (B3, B dissent) ---
     (
@@ -239,13 +239,13 @@ LEDGER_SUBS = [
         "  F-CANOPY-012); F-CANOPY-028's rows, M-PARAMETERS-04/-05/-06, read PASS, -05 with its value \"pending an Apply\",\n"
         "  and Phase 4 named them for its re-drive.",
     ),
-    # --- Matrix effect: the owner's question (B1, B dissent) ---
+    # --- Matrix effect: the Overtoad's question (B1, B dissent) ---
     (
-        "  - **The owner's question** (O17): the first limb now decides F-CANOPY-065 alone: 9 open P1 and 11 open P2 if a\n"
+        "  - **The Overtoad's question** (O17): the first limb now decides F-CANOPY-065 alone: 9 open P1 and 11 open P2 if a\n"
         "    shipped CHANGELOG or design-plan promise counts as documented, as the triage counts them, else 8 and 12. The\n"
         "    second limb decides F-CANOPY-068's rating of record and moves no count. F-CANOPY-028 is the one re-rating a\n"
         "    different reading of the manual would reverse (above), which would make those 8 and 12, or 7 and 13.",
-        "  - **The owner's question** (O17): the first limb decides F-CANOPY-065, and F-CANOPY-057 only if the 2026-05-05\n"
+        "  - **The Overtoad's question** (O17): the first limb decides F-CANOPY-065, and F-CANOPY-057 only if the 2026-05-05\n"
         "    audit's activity line counts as a design-plan promise: 9 open P1 and 11 open P2 if a shipped CHANGELOG or\n"
         "    design-plan promise counts as documented, as the triage counts them; 8 and 12 if not; 10 and 10 by the\n"
         "    broadest reading. The second limb decides F-CANOPY-068's rating of record and moves no count. F-CANOPY-028 is\n"
@@ -257,13 +257,13 @@ LEDGER_SUBS = [
     # --- Still owed: item 26's second step (B1, B dissent leads, C2) ---
     (
         "- **Item 26's first step is DONE**: every open finding has been checked against canopy's manual. Its second step\n"
-        "  stays, and narrows: once the owner rules, check each open finding not yet rated on canopy's CHANGELOG and the\n"
+        "  stays, and narrows: once the Overtoad rules, check each open finding not yet rated on canopy's CHANGELOG and the\n"
         "  design plans for a promise, or, if the ruling counts it, a description of an internal mechanism, of the\n"
         "  behaviour it breaks; of the four findings Phase 11 named, F-CANOPY-065 is the only one the ruling can still\n"
         "  move, and the CAN-015g/h design note's correction is applied.\n"
         "- **Item 18** is unchanged; F-CANOPY-064's P1 stands.",
         "- **Item 26's first step is DONE**: every open finding has been checked against canopy's manual. Its second step\n"
-        "  stays: once the owner rules, check each open finding not yet rated on canopy's CHANGELOG and the design plans\n"
+        "  stays: once the Overtoad rules, check each open finding not yet rated on canopy's CHANGELOG and the design plans\n"
         "  for a promise, or, if the ruling counts it, a description of an internal mechanism, of the behaviour it breaks.\n"
         "  Of the findings Phase 11 named, F-CANOPY-065 is the one the ruling moves, and F-CANOPY-057 only through the\n"
         "  2026-05-05 audit's line, the design note and the V7 roadmap's §28.1 carrying the dated correction. Two leads a\n"
@@ -318,7 +318,7 @@ ROUND1_RECORD = """- **Round 1**: three lanes on the frozen `566cb72a`, briefed 
   - Lane 13-A rated the twenty open findings from the manual first, with the entries read at `main` `ad6013f4` so
     the phase's ratings could not leak, then compared, then re-derived every manual, GitHub, source, triage, matrix
     and ledger fact. Its twenty ratings equal the phase's, and every fact held.
-  - Lane 13-B was adversarial on the re-ratings: each of the five, the ten not reached, the owner's question, the
+  - Lane 13-B was adversarial on the re-ratings: each of the five, the ten not reached, the Overtoad's question, the
     counts, item 30, and what was stated that was inferred.
   - Lane 13-C replayed the apply pass from `ad6013f4` (all six files byte-identical, no hand edit), checked the seven
     files against each other, the rest of the ledger, the matrix, the repo's tests and conventions and GitHub, and
@@ -333,7 +333,7 @@ ROUND1_RECORD = """- **Round 1**: three lanes on the frozen `566cb72a`, briefed 
   requires round 2. No lane refuted a re-rating, the triage's counts or any entry's disposition; one lane dissents
   on F-CANOPY-028 and on F-CANOPY-067 (below).
 - **What round 1 changed:**
-  - the owner's question: the V7 roadmap's §28.1 and CAN-015 row and the 2026-05-05 audit's activity line still
+  - the Overtoad's question: the V7 roadmap's §28.1 and CAN-015 row and the 2026-05-05 audit's activity line still
     recorded g-3 as shipped (Lane 13-B, MAJOR). §28.1 now carries the same dated correction as the design note
     (`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`: a note under
     the heading and the g-3 row annotated), the audit is left as a dated snapshot, and the ruling's alternatives are
@@ -425,9 +425,9 @@ HANDOFF_SUBS = [
     ),
     (
         "    F-ML-002); F-CASCOR-001/-002 P1 already; F-CANOPY-064 P1 on the manual already; F-CANOPY-065 not reached (its rating\n"
-        "    stays with the owner's first limb, which now decides it alone); F-CANOPY-067 \"P2 pending a live drive\", unchanged.",
+        "    stays with the Overtoad's first limb, which now decides it alone); F-CANOPY-067 \"P2 pending a live drive\", unchanged.",
         "    F-ML-002); F-CASCOR-001/-002 P1 already; F-CANOPY-064 P1 on the manual already; F-CANOPY-065 not reached (its rating\n"
-        "    stays with the owner's first limb, which now decides it, and F-CANOPY-057 only through the 2026-05-05 audit's\n"
+        "    stays with the Overtoad's first limb, which now decides it, and F-CANOPY-057 only through the 2026-05-05 audit's\n"
         "    activity line); F-CANOPY-067 \"P2 pending a live drive\", unchanged. One round-1 lane dissents on F-CANOPY-028 (P2)\n"
         "    and on F-CANOPY-067 (P1 by source); both are recorded in the ledger's consensus record.",
     ),
@@ -543,10 +543,10 @@ PHASE12_SUBS = [
 
 APPLY_SCRIPT_SUBS = [
     (
-        "# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (owner policy 2026-08-25)\n"
+        "# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (Overtoad policy 2026-08-25)\n"
         "# ---------------------------------------------------------------------------\n",
-        "# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (owner policy 2026-08-25)\n"
-        "# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)\n"
+        "# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (Overtoad policy 2026-08-25)\n"
+        "# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)\n"
         "# Related     : ledger Phase 13 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);\n"
         "#               HANDOFF_2026-10-19_canopy-phase13-manual-sweep-five-p2s-now-p1-item-30-owed.md\n"
         "# ---------------------------------------------------------------------------\n",

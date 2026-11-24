@@ -6,7 +6,7 @@
 # Author:      Paul Calnon
 # Created:     2026-10-08
 # Status:      ad-hoc -- evidence for the round-3 fold-in (R3B NIT-7: `<id>` pasted unsubstituted)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:     util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py (fence_edit, P0 step 10)
 #
 # Usage: guard_fence_probe.bash <file-holding-the-block-body>

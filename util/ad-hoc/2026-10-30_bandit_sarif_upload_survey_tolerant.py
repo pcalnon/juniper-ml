@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-30
 Status: ad-hoc — investigation (flood-3 record, tenth update: the SARIF rule in five more repositories)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor util/ad-hoc/2026-10-27_bandit_sarif_upload_survey.py (the survey this wraps, unchanged);
          notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§4, §8)
 

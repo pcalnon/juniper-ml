@@ -128,11 +128,11 @@ class PromptValidatorAgentTest(unittest.TestCase):
         self.assertIsNotNone(model, "validator model must be pinned (resolves OQ-4)")
         base = str(model).split(":")[0].strip().lower()
         is_opus = base == "opus" or base.startswith("claude-opus")
-        self.assertTrue(is_opus, f"suite default model is latest Opus (owner directive 2026-06-24); got {model!r}")
+        self.assertTrue(is_opus, f"suite default model is latest Opus (Overtoad directive 2026-06-24); got {model!r}")
 
     def test_effort_is_max(self):
         effort = self.front.get("effort")
-        self.assertEqual(str(effort).strip().lower(), "max", f"suite default effort is 'max' (owner directive 2026-06-24); got {effort!r}")
+        self.assertEqual(str(effort).strip().lower(), "max", f"suite default effort is 'max' (Overtoad directive 2026-06-24); got {effort!r}")
 
     def test_body_cites_only_real_rubric_ids(self):
         self.assertTrue(self.rubric_path.exists(), "RUBRIC.md must be present (ships in PR 2b-i)")

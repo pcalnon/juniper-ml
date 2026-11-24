@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: Cursor flood-4, owner ruling 17 ("canopy: dead error path"); juniper-canopy lockfile-update.yml
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Cursor flood-4, Overtoad ruling 17 ("canopy: dead error path"); juniper-canopy lockfile-update.yml
 
 juniper-canopy's regression test runs the commit step's own ``run:`` block with ``bash``
 on CI's required macOS leg, whose image (macos-26-arm64 20261102.0473.1) ships Bash

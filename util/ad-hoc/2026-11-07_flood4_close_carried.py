@@ -7,12 +7,12 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — one-off (flood-4 draft closes)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md; flood-3 record sec 6
          ("A named carrier slot that resolves to nothing must block a close")
 
 WHY THIS EXISTS
-The owner's ruling (2026-11-06, re-granted 2026-11-07): a carried draft is closed, with a comment naming its
+The Overtoad's ruling (2026-11-06, re-granted 2026-11-07): a carried draft is closed, with a comment naming its
 carrier, ONLY after that carrier merges. This refuses unless the carrier PR is MERGED, skips any draft that is
 no longer open, and skips (reporting it) any draft whose head moved after the builder carried it -- new
 content on a draft would otherwise be closed away unread. Default is a dry run that prints every comment.
@@ -89,7 +89,7 @@ def main():
             rc_all = 2
             continue
         outcome = c.get("outcome", "carried")
-        lines = ["Closing: this draft's content was evaluated under the owner's flood-4 consolidation ruling (2026-11-06) and %s **#%d** (squash-merged as `%s`)." % ("is carried by" if outcome != "not-carried" else "was considered for", a.carrier_pr, sha)]
+        lines = ["Closing: this draft's content was evaluated under the Overtoad's flood-4 consolidation ruling (2026-11-06) and %s **#%d** (squash-merged as `%s`)." % ("is carried by" if outcome != "not-carried" else "was considered for", a.carrier_pr, sha)]
         if outcome == "not-carried":
             lines.append("")
             lines.append("**Not carried:** %s" % (c.get("reason") or "see the carrier's PR body"))

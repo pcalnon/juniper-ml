@@ -6,7 +6,7 @@ alarm counts total open PRs + ``cursor/``-headed open PRs against repo variables
 ``PR_BUDGET_WARN`` (default 15) / ``PR_BUDGET_ALARM`` (default 30), always writes a
 step-summary table, and posts Slack only on WARN/ALARM. Report-only by construction —
 a budget breach stays green, and a hard ``gh`` failure is downgraded to ``::warning::``
-+ ``level=OK`` so a transient API blip cannot page the owner.
++ ``level=OK`` so a transient API blip cannot page the Overtoad.
 
 This unittest extracts the workflow's OWN ``Count open PRs and evaluate the budget``
 shell (not a reimplementation) and drives it over a hermetic stub ``gh`` + ``jq`` —

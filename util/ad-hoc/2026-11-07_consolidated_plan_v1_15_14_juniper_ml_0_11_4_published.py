@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — one-off (a record revision of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: publish run 42230617125 (juniper-ml 0.11.4); ml#2482 / ml#2497 (its proposal and archive); ml#2510 (the
          docs/QUICK_START.md refresh, which landed util/ad-hoc/2026-11-07_verify_juniper_ml_0_11_4_published.py);
          util/ad-hoc/2026-11-07_parent_agents_md_juniper_ml_0_11_4.py (the parent AGENTS.md edit this records);
@@ -14,14 +14,14 @@ Related: publish run 42230617125 (juniper-ml 0.11.4); ml#2482 / ml#2497 (its pro
 
 Why
 ---
-v1.15.13 left juniper-ml 0.11.4 at the owner's `pypi` gate: the 2026-11-06 block and §5's R-ML-RECURRENCE-FLOOR row
-say publish run 42230617125 waits. The owner approved the gate on 2026-11-07, and PyPI serves 0.11.4 from 22:59:23Z,
+v1.15.13 left juniper-ml 0.11.4 at the Overtoad's `pypi` gate: the 2026-11-06 block and §5's R-ML-RECURRENCE-FLOOR row
+say publish run 42230617125 waits. The Overtoad approved the gate on 2026-11-07, and PyPI serves 0.11.4 from 22:59:23Z,
 probed here against PyPI's and TestPyPI's version JSON and files, the run's jobs and approvals, and dry-run resolves.
-The owner then approved two edits in session a02ac3a2 (asked 23:08:12Z, answered 23:56:36Z; its transcript's
+The Overtoad then approved two edits in session a02ac3a2 (asked 23:08:12Z, answered 23:56:36Z; its transcript's
 lines 547 and 558): the parent ``Juniper/AGENTS.md`` RELEASED paragraph, and ``docs/QUICK_START.md``'s sample (ml#2510).
 
 Three statements had gone stale before this revision, and it brings them up to date from the plan's own records:
-§2's P4 row stopped at recurrence 0.8.0 and juniper-ml 0.11.3; §2's P12 row left W0.1 to the owner, and XC-P12's
+§2's P4 row stopped at recurrence 0.8.0 and juniper-ml 0.11.3; §2's P12 row left W0.1 to the Overtoad, and XC-P12's
 action 5 said W0.1 had not run, though the 2026-11-06 block records its run of 2026-11-04 (v1.15.12).
 
 Usage
@@ -51,8 +51,8 @@ _DATE_NEW = "the `[recurrence]` floor, juniper-recurrence#230 and juniper-ml 0.1
 
 _STATUS_ANCHOR = "  - Planning only: this plan changes no code,"
 _STATUS_NEW = (
-    "  - v1.15.14 (2026-11-07) records juniper-ml 0.11.4's publish, with `[recurrence]` floored at `juniper-recurrence>=0.8.1`: the owner approved its `pypi` gate, and PyPI serves the build TestPyPI took (R-ML-RECURRENCE-FLOOR shipped). "
-    "It also records two edits the owner approved that day, the parent `Juniper/AGENTS.md` and `docs/QUICK_START.md`'s sample (ml#2510), and brings §2's P4 and P12 rows and XC-P12's action 5 up to date (§2; XC-P12; §5). Like v1.15.0, no round checks it.\n"
+    "  - v1.15.14 (2026-11-07) records juniper-ml 0.11.4's publish, with `[recurrence]` floored at `juniper-recurrence>=0.8.1`: the Overtoad approved its `pypi` gate, and PyPI serves the build TestPyPI took (R-ML-RECURRENCE-FLOOR shipped). "
+    "It also records two edits the Overtoad approved that day, the parent `Juniper/AGENTS.md` and `docs/QUICK_START.md`'s sample (ml#2510), and brings §2's P4 and P12 rows and XC-P12's action 5 up to date (§2; XC-P12; §5). Like v1.15.0, no round checks it.\n"
     "  - Planning only: this plan changes no code,"
 )
 
@@ -60,19 +60,19 @@ _STATUS_NEW = (
 _P4_OLD = "P12 added canopy 0.9.0, recurrence 0.6.0–0.8.0, model 0.5.0–0.6.0, juniper-ml 0.11.0–0.11.3 (10-21 to 10-26) and recurrence-client 0.3.1 (10-27)."
 _P4_NEW = "P12 added canopy 0.9.0, recurrence 0.6.0–0.8.1, model 0.5.0–0.6.0, juniper-ml 0.11.0–0.11.4 (10-21 to 11-07) and recurrence-client 0.3.1 (10-27)."
 
-_P12_OLD = "juniper-ml 0.11.0–0.11.3 carry the floors; client 0.3.1 served (10-27). W0.1's service-core half: owner (XC-P12)."
+_P12_OLD = "juniper-ml 0.11.0–0.11.3 carry the floors; client 0.3.1 served (10-27). W0.1's service-core half: Overtoad (XC-P12)."
 _P12_NEW = "juniper-ml 0.11.0–0.11.4 carry the floors; client 0.3.1 served (10-27). W0.1 ran 11-04 (XC-P12)."
 
-_GATE_OLD = "its archive is ml#2497, and publish run 42230617125 waits at the owner's `pypi` gate (§5, R-ML-RECURRENCE-FLOOR).\n"
+_GATE_OLD = "its archive is ml#2497, and publish run 42230617125 waits at the Overtoad's `pypi` gate (§5, R-ML-RECURRENCE-FLOOR).\n"
 _GATE_NEW = (
-    "its archive is ml#2497, and publish run 42230617125 waited at the owner's `pypi` gate (§5, R-ML-RECURRENCE-FLOOR).\n"
-    "  - **Published 2026-11-07** (v1.15.14): the owner approved the gate, and PyPI serves 0.11.4 from 22:59:23Z, with the sha256 TestPyPI took. ml#2497 merged on 2026-11-06 as `d5152008` (§5).\n"
+    "its archive is ml#2497, and publish run 42230617125 waited at the Overtoad's `pypi` gate (§5, R-ML-RECURRENCE-FLOOR).\n"
+    "  - **Published 2026-11-07** (v1.15.14): the Overtoad approved the gate, and PyPI serves 0.11.4 from 22:59:23Z, with the sha256 TestPyPI took. ml#2497 merged on 2026-11-06 as `d5152008` (§5).\n"
 )
 
 _BLOCK_ANCHOR = "v1.15.11 and v1.15.12 recorded the ruling as covering every primary.\n\n**Actions:**\n"
 _BLOCK_NEW = (
     "v1.15.11 and v1.15.12 recorded the ruling as covering every primary.\n\n"
-    "**What followed 0.11.4's publish** (v1.15.14; session `a02ac3a2`, on the owner's answers of 2026-11-07 23:56:36Z to its question of 23:08:12Z):\n\n"
+    "**What followed 0.11.4's publish** (v1.15.14; session `a02ac3a2`, on the Overtoad's answers of 2026-11-07 23:56:36Z to its question of 23:08:12Z):\n\n"
     "- **The parent `Juniper/AGENTS.md`** (unversioned) now names juniper-ml 0.11.4 as the latest on PyPI, with its `[recurrence]` floor, and juniper-recurrence 0.8.1's model-core floor. "
     "Its re-probe date moved to 2026-11-07 only after `util/ad-hoc/2026-11-07_parent_agents_released_paragraph_reprobe.py` re-read all eleven packages the paragraph names: exactly those two had moved.\n"
     "  - `util/ad-hoc/2026-11-07_parent_agents_md_juniper_ml_0_11_4.py` made the edit and refuses any input but the approved one (sha256 `29e375ff…`, unchanged since 2026-11-01). "
@@ -86,21 +86,21 @@ _BLOCK_NEW = (
 _W01_ANCHOR = "Re-run on 2026-11-04, it gives the same.\n"
 _W01_NEW = (
     "Re-run on 2026-11-04, it gives the same.\n"
-    "   - **Ran 2026-11-04** (~14:40Z, at the owner's word; v1.15.12): it exposed the model-core floor bug that juniper-recurrence 0.8.1 fixes (the 2026-11-06 block above). v1.15.11's \"had not run\" was written earlier that day.\n"
+    "   - **Ran 2026-11-04** (~14:40Z, at the Overtoad's word; v1.15.12): it exposed the model-core floor bug that juniper-recurrence 0.8.1 fixes (the 2026-11-06 block above). v1.15.11's \"had not run\" was written earlier that day.\n"
 )
 
 _ACTION6_OLD = "0.11.3 and recurrence-client 0.3.1 are published (§5; v1.15.4, v1.15.5),"
 _ACTION6_NEW = "0.11.3, recurrence-client 0.3.1 and 0.11.4 are published (§5; v1.15.4, v1.15.5, v1.15.14),"
 
-_ROW_OLD = "| **R-ML-RECURRENCE-FLOOR** (cut as juniper-ml 0.11.4, 2026-11-06, on the owner's ruling of that day; at the owner's `pypi` gate, run 42230617125) |"
-_ROW_NEW = "| **R-ML-RECURRENCE-FLOOR** (shipped as juniper-ml 0.11.4, 2026-11-07, cut on the owner's ruling of 2026-11-06; note below) |"
+_ROW_OLD = "| **R-ML-RECURRENCE-FLOOR** (cut as juniper-ml 0.11.4, 2026-11-06, on the Overtoad's ruling of that day; at the Overtoad's `pypi` gate, run 42230617125) |"
+_ROW_NEW = "| **R-ML-RECURRENCE-FLOOR** (shipped as juniper-ml 0.11.4, 2026-11-07, cut on the Overtoad's ruling of 2026-11-06; note below) |"
 _ROW_GATE_OLD = "| juniper-recurrence 0.8.1 on PyPI (2026-11-06) |"
-_ROW_GATE_NEW = "| juniper-recurrence 0.8.1 on PyPI (met 2026-11-06); proposal ml#2482, archive ml#2497; the owner approved the gate (run 42230617125) |"
+_ROW_GATE_NEW = "| juniper-recurrence 0.8.1 on PyPI (met 2026-11-06); proposal ml#2482, archive ml#2497; the Overtoad approved the gate (run 42230617125) |"
 
 _NOTES_ANCHOR = "`util/ad-hoc/2026-10-27_verify_recurrence_client_0_3_1_published_wheel.py` passes on the wheel from PyPI, and its 0.3.0 control fails.\n"
 _NOTES_NEW = (
     "`util/ad-hoc/2026-10-27_verify_recurrence_client_0_3_1_published_wheel.py` passes on the wheel from PyPI, and its 0.3.0 control fails.\n"
-    "- juniper-ml 0.11.4 is published (R-ML-RECURRENCE-FLOOR). Release v0.11.4 was cut at 2026-11-06 14:03:58Z (tag at `957f0e94`; proposal ml#2482, archive ml#2497), and the owner approved the `pypi` gate of publish run 42230617125: "
+    "- juniper-ml 0.11.4 is published (R-ML-RECURRENCE-FLOOR). Release v0.11.4 was cut at 2026-11-06 14:03:58Z (tag at `957f0e94`; proposal ml#2482, archive ml#2497), and the Overtoad approved the `pypi` gate of publish run 42230617125: "
     "PyPI serves its wheel from 2026-11-07 22:59:23Z, with the sha256 TestPyPI took (v1.15.14).\n"
     "  - Its `requires_dist` carries `juniper-recurrence<0.9.0,>=0.8.1; extra == \"recurrence\"`, and the wheel's own `METADATA` lists the same 17 requirements. "
     "`util/ad-hoc/2026-11-07_verify_juniper_ml_0_11_4_published.py` (ml#2510) passes on the files PyPI serves, and its 0.11.3 control fails on the floor.\n"
@@ -111,7 +111,7 @@ _NOTES_NEW = (
 _VALIDATION_ANCHOR = "and session `0b8fa86a`'s transcript lines 2029 and 2033.\n"
 _VALIDATION_NEW = (
     "and session `0b8fa86a`'s transcript lines 2029 and 2033.\n"
-    "  - v1.15.14 is a record of juniper-ml 0.11.4's publish and the two edits the owner approved on 2026-11-07. No round checks it (owner ruling 2026-10-24); "
+    "  - v1.15.14 is a record of juniper-ml 0.11.4's publish and the two edits the Overtoad approved on 2026-11-07. No round checks it (Overtoad ruling 2026-10-24); "
     "its facts cite PyPI's and TestPyPI's 0.11.4 metadata and files, run 42230617125's jobs and approvals, Release `v0.11.4`, ml#2497's merge, the dry-run resolutions, "
     "PyPI's newest release of each package the parent paragraph names, and session `a02ac3a2`'s transcript (lines 547 and 558).\n"
 )

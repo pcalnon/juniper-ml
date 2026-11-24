@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — recovery (Phase D sitting, step 14, and the acceptance window after it)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (section 9: AC-1, AC-2, AC-5, AC-6, AC-7, AC-12, AC-13),
          notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md (section 6.4 step 14),
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-11_backup-phase-d-sitting-steps-11-13-done-ac4-drill-next.md ("Process change"),
@@ -31,13 +31,13 @@ WHY THIS EXISTS
 
 WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 127.0.0.1:8300)
     AC-1      the /etc/systemd/system unit, active as `duplicati`, NeedDaemonReload=no, NRestarts=0, up for 24 h
-    AC-2      server: job name, TargetURL, 5 sources, 76 filters (owner ruling 2026-11-15; 2 and 45 until then),
-              schedule 1D at 13:00 UTC (07:00 CST; 14:00 UTC until the owner moved it on 2026-11-15),
+    AC-2      server: job name, TargetURL, 5 sources, 76 filters (Overtoad ruling 2026-11-15; 2 and 45 until then),
+              schedule 1D at 13:00 UTC (07:00 CST; 14:00 UTC until the Overtoad moved it on 2026-11-15),
               blocksize 1MB
     AC-13     server: run-script-before-required is the installed guard and no other run-script option is set
     OPTIONS   server: the job's option NAMES against the recorded set; retention suspended or restored as ruled;
               keep-time and keep-versions absent; tempdir, aes-version and no-auto-compact as step 11 left them
-    AC-5      the watchdog log: three consecutive days whose every record reads OK and none reads RUNNING (owner
+    AC-5      the watchdog log: three consecutive days whose every record reads OK and none reads RUNNING (Overtoad
               ruling 2026-11-15: a check that found the job still running judged no result), and a JOB_MISSING
               record for a deliberate `--backup-id 999` on or after the recovery date
     AC-6a     the snapshot lane: reads the service's data folder, one successful run per day, file mtime = newest run
@@ -50,9 +50,9 @@ WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 1
               active), its result, its warnings by tag against the 2026-11-08 allow-list, its counts against the
               previous run -- and every backup that began off the schedule
     CENSUS    server: the destination's file count and bytes against the job's own metadata (AGREE or DIVERGE)
-    MODES     the destination's (kind, mode, owner) classes, and which dlists changed class since the last run
+    MODES     the destination's (kind, mode, Overtoad) classes, and which dlists changed class since the last run
 
-    Verdicts: PASS, FAIL, PENDING (cannot be proven yet -- it needs more days), ATTN (outside a tolerance the owner has
+    Verdicts: PASS, FAIL, PENDING (cannot be proven yet -- it needs more days), ATTN (outside a tolerance the Overtoad has
     not ruled, or an unexplained observation), SKIP (not judged in this run), ERROR (the evidence could not be read),
     INFO. RESULT is FAIL on any FAIL, UNDETERMINED on any ERROR, INCOMPLETE on any PENDING, ATTN or SKIP, else PASS.
     Exit 0 = no FAIL and no ERROR, 1 = at least one FAIL, 2 = at least one ERROR and no FAIL, 64 = usage error.
@@ -66,7 +66,7 @@ WHAT IT NEVER PRINTS OR STORES
 WHAT IT WRITES (unless --no-write)
     <state-dir>/acceptance.json            the verdicts of this run, replaced atomically
     <state-dir>/acceptance-history.jsonl   one line per run: the snapshot's mtime, the destination's classes, each
-                                           dlist's mode and owner, the newest backup's counts
+                                           dlist's mode and Overtoad, the newest backup's counts
     Nothing else changes anywhere. It starts no unit, runs no Duplicati binary and sends the server only GET requests
     plus the login and the export-token POSTs the read-only export needs.
 
@@ -108,14 +108,14 @@ SERVICE_USER = "duplicati"
 SERVICE_GROUP = "duplicati"
 JOB_NAME = "Yamaguchi"
 EXPECTED_TARGET = "file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi"
-# The owner changed the job's sources and filters on purpose (ruling 2026-11-15); the design fixed 2 and 45 until then.
+# The Overtoad changed the job's sources and filters on purpose (ruling 2026-11-15); the design fixed 2 and 45 until then.
 EXPECTED_SOURCES = 5
 EXPECTED_FILTERS = 76
 EXPECTED_REPEAT = "1D"
-# The job's daily start, UTC: 13:00 since the owner moved it on 2026-11-15 (07:00 CST); 14:00 until then.
+# The job's daily start, UTC: 13:00 since the Overtoad moved it on 2026-11-15 (07:00 CST); 14:00 until then.
 EXPECTED_TIME_OF_DAY = dt.time(13, 0, 0)
 GUARD_PATH = "/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash"
-# Owner ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
+# The Overtoad ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
 # Under `2W:1D` an off-schedule run's fileset displaced the scheduled one beside it, and a daily fileset stamped one
 # second earlier than the last kept one was deleted. `U` is Duplicati's keep-all interval.
 RULED_RETENTION = "2W:U,6M:1W,2Y:1M,5Y:2M"
@@ -164,14 +164,14 @@ EXPOSURE_GATE = 2.0
 EXPOSURE_LINE = re.compile(r"Overall exposure level for \S+: ([0-9]+(?:\.[0-9]+)?)")
 MIN_SECURITY_ROWS = 40  # the unit reports 81; far fewer means the output was not what this parser expects
 
-# Owner ruling 2026-11-08 (AC-3): "the Firefox-profile PathNotFound / MetadataProcessFailed class allow-listed".
+# The Overtoad ruling 2026-11-08 (AC-3): "the Firefox-profile PathNotFound / MetadataProcessFailed class allow-listed".
 # A key is the last two dotted segments of the log tag plus the message id, as the sitting's record names them.
 ALLOWED_WARNING_TAGS = frozenset({"FilePreFilterProcess.FileEntry-PathNotFound", "MetadataGenerator.Metadata-MetadataProcessFailed", "FileBlockProcessor.FileEntry-PathNotFound"})
 ALLOWED_WARNING_SCOPE = ".mozilla/firefox/"  # relative to the backup Source's home
 # Duplicati writes "<yyyy-MM-dd HH:mm:ss zz> - [<Level>-<tag>-<id>]: <message>". The tag is accepted only where no `[`
 # and no `/` precedes it, so a bracket inside a path (which follows the tag and starts with `/`) is never the tag.
 WARNING_TAG = re.compile(r"^[^\[/]*\[Warning-([^\]\s]+)\]:")
-BASELINE_BYTES = 301_072_989_629  # run 20261107T212908Z, the AC-3 rebaseline (owner ruling 2026-11-08)
+BASELINE_BYTES = 301_072_989_629  # run 20261107T212908Z, the AC-3 rebaseline (Overtoad ruling 2026-11-08)
 COUNT_TOLERANCE = 0.10  # per run, against the previous run -- open question Q1, not yet ruled
 SIZE_TOLERANCE = 0.05  # against the baseline -- AC-3's own size tolerance
 MAX_RUN_AGE_HOURS = 26.0  # the watchdog's --max-age-hours default: a daily job plus slack
@@ -449,7 +449,7 @@ def judge_ac5(log_text, backup_id, now, need_days=3, probe_id=JOB_MISSING_PROBE_
         return any(code == "RUNNING" for _verdict, code in by_day[day])
 
     # A day counts only if every record reads OK and none reads RUNNING: a check that found the job still running
-    # judged no result (owner ruling 2026-11-15, the sitting's question Q6). The days must be consecutive, so an
+    # judged no result (Overtoad ruling 2026-11-15, the sitting's question Q6). The days must be consecutive, so an
     # OK RUNNING day ends the streak; it is not a failure.
     streak, days, day = 0, [], newest_day
     while day in by_day and all_ok(day) and not ran(day):
@@ -473,7 +473,7 @@ def judge_ac5(log_text, backup_id, now, need_days=3, probe_id=JOB_MISSING_PROBE_
     elif streak < need_days:
         counted = f"OK OK on {streak} consecutive day(s) of {need_days}" + (f": {', '.join(reversed(days))}" if days else "")
         if discounted:
-            counted += f"; the {discounted} day(s) before read OK RUNNING and do not count (owner ruling 2026-11-15)" if streak else f"; the newest check found the job running, and the {discounted} OK RUNNING day(s) do not count (owner ruling 2026-11-15)"
+            counted += f"; the {discounted} day(s) before read OK RUNNING and do not count (Overtoad ruling 2026-11-15)" if streak else f"; the newest check found the job running, and the {discounted} OK RUNNING day(s) do not count (Overtoad ruling 2026-11-15)"
         pending.append(counted)
     if not probe_seen:
         pending.append(f"no JOB_MISSING record for a deliberate --backup-id {probe_id} since {recovered_on.isoformat()}")
@@ -523,7 +523,7 @@ def last_due_fire(now, fires=SNAPSHOT_FIRES, grace=dt.timedelta(minutes=15)):
 
 
 def judge_ac6a(snapshot, journal_text, now, expected_source=SNAPSHOT_SOURCE, enabled=SNAPSHOT_ENABLED, min_days=2, mtime_slack=180.0, me=None):
-    """`snapshot` is None (no file) or a dict: size, mtime (epoch), mode, owner."""
+    """`snapshot` is None (no file) or a dict: size, mtime (epoch), mode, Overtoad."""
     if journal_text is None:
         return Finding("AC-6a", "ERROR", f"the journal of {SNAPSHOT_UNIT} could not be read")
     records, unparsed = parse_journal(journal_text)
@@ -567,7 +567,7 @@ def judge_ac6a(snapshot, journal_text, now, expected_source=SNAPSHOT_SOURCE, ena
         if snapshot["size"] <= 4096:
             fails.append(f"the snapshot is {snapshot['size']} bytes -- a stub, not a database")
         if snapshot["mode"] != 0o600 or (me is not None and snapshot["owner"] != me):
-            fails.append(f"the snapshot is mode {snapshot['mode']:04o} owner {snapshot['owner']} (the lane writes 0600, owner {me})")
+            fails.append(f"the snapshot is mode {snapshot['mode']:04o} Overtoad {snapshot['owner']} (the lane writes 0600, Overtoad {me})")
     if fails or errors or pending:
         return Finding("AC-6a", settle(fails, errors, pending), "; ".join(fails + errors + pending), facts)
     snap = facts["snapshot"]
@@ -623,7 +623,7 @@ def newest_dlist(entries):
 
 
 def judge_ac7(daemons, service_gid, entries, statuses, now, keys_dir_real, dropbox_roots, service_user=SERVICE_USER, grace_hours=24.0):
-    """`daemons`: [{pid, gids, groups}]; `entries`: destination files (name, mtime, owner); `statuses`: {name: status}."""
+    """`daemons`: [{pid, gids, groups}]; `entries`: destination files (name, mtime, Overtoad); `statuses`: {name: status}."""
     fails, errors, pending = [], [], []
     facts = {"daemons": [{"pid": d["pid"], "via": "primary" if service_gid in d["gids"] else ("supplementary" if service_gid in d["groups"] else "absent")} for d in daemons]}
     if not daemons:
@@ -1115,7 +1115,7 @@ def fetch_log(tok, backup_id, want_backups, scope_paths, page_size=LOG_PAGE_SIZE
 def refusal_reason(exc):
     """Why the API client stopped, without anything the SERVER wrote.
 
-    A credential refusal is the client's own sentence -- a path, a mode, an owner, never the file's content -- and is
+    A credential refusal is the client's own sentence -- a path, a mode, an Overtoad, never the file's content -- and is
     kept. A failed login carries the server's answer after the status; that answer is dropped, like every other
     error text this probe meets.
     """

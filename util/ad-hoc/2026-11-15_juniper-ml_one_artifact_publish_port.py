@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (port juniper-cascor#763 / #767's one-artifact publish to juniper-ml)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_cascor_one_artifact_publish_edits.py (the cascor edits, whose template_blocks(),
          republish_job() and DISPATCH_NEW this imports, so every copied step is byte-identical);
          util/ad-hoc/2026-11-15_publish_port_template_identity.py (the cross-repo identity check);
@@ -31,7 +31,7 @@ reverts whatever merged in between. Every edit here is therefore an exact-once a
   ``tests/test_publish_subpackage_workflows.py`` and ``tests/test_publish_testpypi_verify.py`` are updated;
   ``ci.yml`` and the ``main-verify.yml`` battery invoke the new suite.
 - ``CHANGELOG.md``, ``AGENTS.md`` (suite count and date), ``docs/REFERENCE.md``, ``docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md``,
-  the PyPI publish procedure and the release-train runbook state the contract and the owner's recovery ladder.
+  the PyPI publish procedure and the release-train runbook state the contract and the Overtoad's recovery ladder.
 
 The review of juniper-ml#2593 (2026-11-15) moved the base to ``main`` at 6541b2cc (juniper-ml#2592 merged) and added:
 the ladder's precondition (rungs 1 and 2 only after a TestPyPI job, install check included, that succeeded or failed
@@ -212,7 +212,7 @@ def meta_workflow(text: str, cascor, blocks: dict[str, str], republish: str, dat
         "#    The steps marked \"one-artifact publish template\", and the republish\n"
         "#    job, are juniper-cascor's publish.yml copied verbatim (juniper-cascor#763\n"
         "#    and #767): they read nothing from this repository but the two `env`\n"
-        "#    values below. The republish job is step 1 of the owner's recovery ladder\n"
+        "#    values below. The republish job is step 1 of the Overtoad's recovery ladder\n"
         "#    for a release that never reached PyPI (docs/REFERENCE.md § Independent\n"
         "#    Sibling Package Publish Pipelines).\n",
         where,
@@ -293,7 +293,7 @@ def meta_workflow(text: str, cascor, blocks: dict[str, str], republish: str, dat
         "          # verify failure). Tolerate it so the rehearsal leg is a no-op instead of an\n"
         "          # immutable-upload 400 — matching the sibling publish-*.yml contract. The PyPI\n"
         "          # leg below deliberately stays STRICT: a duplicate production upload is a real\n"
-        "          # error the owner must see.\n"
+        "          # error the Overtoad must see.\n"
         "          skip-existing: true\n\n"
         "      - name: Verify TestPyPI install\n"
     )
@@ -458,7 +458,7 @@ def check_workflow(rel: str, text: str, blocks: dict[str, str], republish: str) 
 # ─────────────────────────────────────────────────────────────────────────────────────────────
 CI_SUITE = (
     "          # tests/test_publish_one_artifact.py: the one-artifact publish (the port of\n"
-    "          # juniper-cascor#763 / #767; the owner's directive of 2026-11-15). All 7 publishers\n"
+    "          # juniper-cascor#763 / #767; the Overtoad's directive of 2026-11-15). All 7 publishers\n"
     "          # build once and hand both publish jobs one artifact (dist + SHA256SUMS, 90 days),\n"
     "          # reused on a re-run; the dist is checked against SHA256SUMS before every upload,\n"
     "          # TestPyPI's JSON after the TestPyPI upload and again before the PyPI one, and\n"
@@ -739,7 +739,7 @@ def meta_test(text: str) -> str:
 # ─────────────────────────────────────────────────────────────────────────────────────────────
 CHANGELOG_ENTRY = """\
 - **PyPI now receives the files TestPyPI took, checked by sha256, in all seven publishers** (`publish.yml` and the six
-  `publish-<pkg>.yml`; the port of juniper-cascor#763 and #767). The owner's directive of 2026-11-15: "deploy to pypi
+  `publish-<pkg>.yml`; the port of juniper-cascor#763 and #767). The Overtoad's directive of 2026-11-15: "deploy to pypi
   should send the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after
   testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks
   again." Each publisher handed both publish jobs one artifact, but nothing checked it, and a re-run broke it:
@@ -764,7 +764,7 @@ CHANGELOG_ENTRY = """\
     sub-packages' stays `contents: read`. The build holds `contents: read` and `actions: read`, the TestPyPI job
     `contents: read` and `id-token: write`, every PyPI job `id-token: write` alone (none checks out; `publish.yml`'s
     no longer checks out or sets up Python), and the republish job `actions: read` and `id-token: write`.
-  - **The owner's recovery ladder (2026-11-15)** for a release that did not reach PyPI: (1) dispatch its workflow from
+  - **The Overtoad's recovery ladder (2026-11-15)** for a release that did not reach PyPI: (1) dispatch its workflow from
     the release tag with `-f republish_from_testpypi=true`, which runs only `Republish the tested files (dispatch
     only)`: behind the same `pypi` gate it copies TestPyPI's files for the version to PyPI, checked against TestPyPI's
     JSON and the release run's `SHA256SUMS`, and builds nothing; (2) if that fails, within 30 days of the release run,
@@ -837,7 +837,7 @@ LADDER_COMMANDS = """\
 REFERENCE_LADDER = (
     "#### One artifact, and recovering a release that did not reach PyPI\n"
     "\n"
-    "All seven publishers carry juniper-cascor's one-artifact template (juniper-cascor#763 and #767, ported 2026-11-15; the owner's directive of 2026-11-15: " + OWNER_DIRECTIVE + "). "
+    "All seven publishers carry juniper-cascor's one-artifact template (juniper-cascor#763 and #767, ported 2026-11-15; the Overtoad's directive of 2026-11-15: " + OWNER_DIRECTIVE + "). "
     "The steps marked `One-artifact publish template` and the whole `republish` job are byte-identical to juniper-cascor's `publish.yml`, and read only the workflow `env` values `PUBLISH_PACKAGE` and `PUBLISH_DIST_DIR`. "
     f"The contract: [juniper-cascor `MANUAL.md` § One Artifact, Checked Against TestPyPI]({CASCOR_MANUAL}#one-artifact-checked-against-testpypi).\n"
     "\n"
@@ -847,7 +847,7 @@ REFERENCE_LADDER = (
     "\n"
     "Why: juniper-ci-tools 0.9.1's run 38045867684. Its 7-day artifact expired before the `pypi` gate was approved on day 11, so `Publish to PyPI` failed at its download; \"Re-run all jobs\" then built again, the `skip-existing` TestPyPI upload kept the first build, and PyPI took the second (`1dc8e01e…` on PyPI, `ade363e8…` on TestPyPI).\n"
     "\n"
-    f"A release that did not reach PyPI is recovered by the owner's ladder (ruling of 2026-11-15; [juniper-cascor `MANUAL.md` § Recovering a Release That Did Not Reach PyPI]({CASCOR_MANUAL}#recovering-a-release-that-did-not-reach-pypi)). **" + LADDER_PRECONDITION + "** " + LADDER_BROKEN + " The ladder, in this order:\n"
+    f"A release that did not reach PyPI is recovered by the Overtoad's ladder (ruling of 2026-11-15; [juniper-cascor `MANUAL.md` § Recovering a Release That Did Not Reach PyPI]({CASCOR_MANUAL}#recovering-a-release-that-did-not-reach-pypi)). **" + LADDER_PRECONDITION + "** " + LADDER_BROKEN + " The ladder, in this order:\n"
     "\n"
     "1. **Republish TestPyPI's files.** Dispatch the release's own workflow from its tag with `republish_from_testpypi`. Only `Republish the tested files (dispatch only)` runs: it waits at the `pypi` gate (a fresh approval, then the 5-minute timer), builds nothing, downloads the version's files from TestPyPI, checks each against TestPyPI's JSON and, while the release run's artifact exists, its `SHA256SUMS`, uploads them, and checks PyPI's JSON. It needs a tag cut after this change merged.\n"
     "\n" + LADDER_COMMANDS + "\n"
@@ -858,7 +858,7 @@ REFERENCE_LADDER = (
 )
 
 REFERENCE_SUITE = (
-    "- `tests/test_publish_one_artifact.py` -- The one-artifact publish in all seven publishers (the port of juniper-cascor#763 / #767; the owner's directive of 2026-11-15): PyPI takes exactly the files TestPyPI took, checked by sha256.\n"
+    "- `tests/test_publish_one_artifact.py` -- The one-artifact publish in all seven publishers (the port of juniper-cascor#763 / #767; the Overtoad's directive of 2026-11-15): PyPI takes exactly the files TestPyPI took, checked by sha256.\n"
     "  - Static cases pin, in every workflow: one build, in `Build and Validate`, with no environment and no `id-token`; the job chain, and the workflow name (`... to PyPI`) and two job names `util/release_train/ceremony.py` reads; per-job permissions (only the uploading jobs mint OIDC; no PyPI job checks out); the reuse step first, and every later build step skipped when it reuses; the dist check before every upload; TestPyPI's JSON after the TestPyPI upload and before the install check, again before the PyPI upload, and PyPI's after; no `skip-existing`; the `<pkg>-dist` artifact (dist directory and `SHA256SUMS`, kept 90 days, longer than the 30-day gate); each job's exact steps, with no `if:` beyond the template's and no `continue-on-error` on any job or step; and the republish job's trigger, gate, steps and name, which carries no \"pypi\". Every `publish*.yml`, and every workflow that uploads to an index, must be one of the seven, so an eighth publisher cannot go unchecked.\n"
     "  - `TestUnchanged` pins what each workflow kept: triggers, tag guards (a plain dispatch still re-fires the whole publish), build commands and the tag assertion, `publish.yml`'s checkout before the download, two-phase install check and `attestations: true`, and the sub-packages' concurrency, environment URLs, `verbose` uploads and sparse-checkout install check.\n"
     "  - `TestTemplate` holds every copy of a template step byte-identical to the others and, by sha256, to juniper-cascor's `publish.yml` at `675884888f5a`: a fix to the template is made there and copied here.\n"
@@ -932,7 +932,7 @@ def reference(text: str, suites: int, date: str, mutations: str) -> str:
     text = replace_once(
         text,
         "4. **Publish to PyPI** (`needs: testpypi`) -- runs only after Gate 1 succeeds and publishes the same artifact with OIDC trusted publishing and attestations enabled.\n",
-        "4. **Publish to PyPI** (`needs: testpypi`) -- runs only after Gate 1 succeeds and the owner approves the `pypi` environment. It checks out nothing: it downloads the same artifact, checks it against `SHA256SUMS` and TestPyPI's JSON again, publishes it with OIDC trusted publishing and attestations, and then requires PyPI's JSON to list exactly those files with those sha256.\n",
+        "4. **Publish to PyPI** (`needs: testpypi`) -- runs only after Gate 1 succeeds and the Overtoad approves the `pypi` environment. It checks out nothing: it downloads the same artifact, checks it against `SHA256SUMS` and TestPyPI's JSON again, publishes it with OIDC trusted publishing and attestations, and then requires PyPI's JSON to list exactly those files with those sha256.\n",
         where,
     )
     text = replace_once(
@@ -985,7 +985,7 @@ def reference(text: str, suites: int, date: str, mutations: str) -> str:
         "4. **Publish to PyPI** -- runs only after TestPyPI install verification and the `pypi` approval. It checks the same artifact against `SHA256SUMS` and TestPyPI's JSON again, publishes it with `packages-dir: ${{ env.PUBLISH_DIST_DIR }}/` and `verbose: true`, and then checks PyPI's JSON.\n",
         where,
     )
-    row = f"| {new_version:<7} | {date} | The one-artifact publish (the port of juniper-cascor#763 / #767; the owner's directive and recovery ruling of 2026-11-15): § Meta-Package Publish Pipeline and § Independent Sibling Package Publish Pipelines describe the one artifact, its sha256 checks, the reuse step, no `skip-existing`, the per-job permissions and the recovery ladder, with its precondition (rungs 1 and 2 only after a TestPyPI job, install check included, that succeeded or failed only for a transient index lag; a broken package is a new patch version) and each workflow's republish command; the CI/CD inventory, § Publishing (`publish.yml`) and the `tests/test_publish_one_artifact.py` entry ({suites} suites) follow, and the sibling pipeline's step 3 names model-core's `_version.py` |\n"
+    row = f"| {new_version:<7} | {date} | The one-artifact publish (the port of juniper-cascor#763 / #767; the Overtoad's directive and recovery ruling of 2026-11-15): § Meta-Package Publish Pipeline and § Independent Sibling Package Publish Pipelines describe the one artifact, its sha256 checks, the reuse step, no `skip-existing`, the per-job permissions and the recovery ladder, with its precondition (rungs 1 and 2 only after a TestPyPI job, install check included, that succeeded or failed only for a transient index lag; a broken package is a new patch version) and each workflow's republish command; the CI/CD inventory, § Publishing (`publish.yml`) and the `tests/test_publish_one_artifact.py` entry ({suites} suites) follow, and the sibling pipeline's step 3 names model-core's `_version.py` |\n"
     return insert_after_line(text, f"| {old_version:<7} | ", row, where)
 
 
@@ -1023,13 +1023,13 @@ def cheatsheet(text: str, date: str) -> str:
 
 PROCEDURE_AMENDMENT = (
     "\n"
-    "> **2026-11-15 amendment (the one-artifact publish).** PyPI must receive exactly the files TestPyPI took, and the run proves it by sha256: the build runs once, both publish jobs upload its one artifact, and TestPyPI's and PyPI's JSON are checked against it. The contract, every repository's port and the owner's recovery ladder are in [§11.8](#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi).\n"
+    "> **2026-11-15 amendment (the one-artifact publish).** PyPI must receive exactly the files TestPyPI took, and the run proves it by sha256: the build runs once, both publish jobs upload its one artifact, and TestPyPI's and PyPI's JSON are checked against it. The contract, every repository's port and the Overtoad's recovery ladder are in [§11.8](#118-one-artifact-and-recovering-a-release-that-did-not-reach-pypi).\n"
 )
 PROCEDURE_SECTION = (
     "\n"
     "### 11.8 One artifact, and recovering a release that did not reach PyPI\n"
     "\n"
-    "**The one-artifact contract (2026-11-15).** The owner's directive: " + OWNER_DIRECTIVE + " Every Juniper publish workflow is to carry juniper-cascor's one-artifact template ([juniper-cascor#763](https://github.com/pcalnon/juniper-cascor/pull/763) and [#767](https://github.com/pcalnon/juniper-cascor/pull/767)), copied verbatim:\n"
+    "**The one-artifact contract (2026-11-15).** The Overtoad's directive: " + OWNER_DIRECTIVE + " Every Juniper publish workflow is to carry juniper-cascor's one-artifact template ([juniper-cascor#763](https://github.com/pcalnon/juniper-cascor/pull/763) and [#767](https://github.com/pcalnon/juniper-cascor/pull/767)), copied verbatim:\n"
     "\n"
     "- the build job builds once, records `SHA256SUMS`, and uploads the dist directory and `SHA256SUMS` as one artifact, `<package>-dist`, kept 90 days, longer than the `pypi` gate's 30-day cap and the 30-day re-run window; on a re-run attempt its first step reuses that artifact instead of building again;\n"
     "- each publish job checks the files against `SHA256SUMS` before it uploads them;\n"
@@ -1040,7 +1040,7 @@ PROCEDURE_SECTION = (
     "\n"
     "Why: juniper-cascor 0.13.0's and 0.14.0's wheels differ between PyPI and TestPyPI (`eda26e26…` against `f5dbc1b6…`, and `b70f3d39…` against `c5c9a5dc…`), because its PyPI job built again. juniper-ci-tools 0.9.1's do too (`1dc8e01e…` on PyPI, `ade363e8…` on TestPyPI): run 38045867684's PyPI job failed at its download on day 11, after the 7-day artifact expired, and its second attempt (\"Re-run all jobs\") built again, while the `skip-existing` TestPyPI upload kept the first build.\n"
     "\n"
-    f"**Recovering a release that did not reach PyPI.** The owner's ladder (ruling of 2026-11-15). Every rung publishes the files TestPyPI took, or nothing ([juniper-cascor `docs/ci_cd/MANUAL.md` § Recovering a Release That Did Not Reach PyPI]({CASCOR_MANUAL}#recovering-a-release-that-did-not-reach-pypi)). **" + LADDER_PRECONDITION + "** " + LADDER_BROKEN + " The ladder, in this order:\n"
+    f"**Recovering a release that did not reach PyPI.** The Overtoad's ladder (ruling of 2026-11-15). Every rung publishes the files TestPyPI took, or nothing ([juniper-cascor `docs/ci_cd/MANUAL.md` § Recovering a Release That Did Not Reach PyPI]({CASCOR_MANUAL}#recovering-a-release-that-did-not-reach-pypi)). **" + LADDER_PRECONDITION + "** " + LADDER_BROKEN + " The ladder, in this order:\n"
     "\n"
     "1. **Republish TestPyPI's files.** Dispatch the release's own publish workflow from its release tag:\n"
     "\n"
@@ -1136,7 +1136,7 @@ def runbook(text: str, date: str) -> str:
         "(plan §8 \"Idempotent re-entry\", citing `publish-service-core.yml:139,185`) until the one-artifact publish dropped\n"
         "it: in juniper-ml's seven publishers on 2026-11-15, and in each other repository's as its port lands. juniper-cascor's\n"
         "publishers, whose #763 / #767 are the template, never set it. A TestPyPI upload that skips an existing file lets the\n"
-        "install check test an earlier build than the one PyPI takes. A release that did not reach PyPI follows the owner's\n"
+        "install check test an earlier build than the one PyPI takes. A release that did not reach PyPI follows the Overtoad's\n"
         "recovery ladder: the republish dispatch, then (within 30 days) \"Re-run failed jobs\", then a new patch version. The\n"
         "first two rungs apply only when the release run's TestPyPI job, install check included, succeeded or failed only for\n"
         "a transient index lag; a real install-check failure is a broken package, which ships fixed as a new patch version and\n"

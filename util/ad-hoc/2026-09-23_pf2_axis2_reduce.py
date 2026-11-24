@@ -7,12 +7,12 @@ Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Status:      ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml
 
 Reduce a PF-2 axis 2 suite: wall time against ``n_points_per_spiral``.
 
-Two quantities, because they answer different halves of the owner's question:
+Two quantities, because they answer different halves of the Overtoad's question:
   * ``wall_seconds`` (end to end, from ``aggregate.csv``). This includes juniper-data generating and
     staging the dataset, which genuinely scales with size. The lane DE-RATIFIED it as a GATE input
     because it absorbs plot rendering and bring-up. Here that is part of what is characterised,
@@ -23,7 +23,7 @@ Two quantities, because they answer different halves of the owner's question:
 
 Per size it prints the three passes' median / min / max, the growth factor against the smallest
 size, and the local log-log slope between neighbouring sizes. Slope 1 is linear scaling. A slope
-that jumps between neighbours is the "knee" that triggers the owner's in-process follow-up (the
+that jumps between neighbours is the "knee" that triggers the Overtoad's in-process follow-up (the
 rulings doc §5, D4). ``step_count`` is printed so a reader can see it is budget-bound, and it is
 never compared.
 

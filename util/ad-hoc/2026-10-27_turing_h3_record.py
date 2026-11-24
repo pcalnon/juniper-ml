@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Record H3's pass and the owner's C8 install in the turing plan (v1.4.10).
+Record H3's pass and the Overtoad's C8 install in the turing plan (v1.4.10).
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-27
 Status: ad-hoc — one-off (the record PR of the "cached-enchanting-cosmos-84" session)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18, §18.2, §18.3);
          reports/2026-10-27_turing-bringup/README.md (H3's record); util/ad-hoc/2026-10-26_turing_c2_applied_record.py (the pattern)
 
@@ -48,23 +48,23 @@ COMPARE = "util/ad-hoc/2026-10-27_turing_h3_compare.py"
 # ---------------------------------------------------------------------------------------------- the plan
 
 VERSION_OLD = "- **Version**: 1.4.9 — v1.4.8 plus"
-VERSION_NEW = "- **Version**: 1.4.10 — v1.4.9 plus H3's pass and the owner's C8 install: the three SME agents' live runs agree with " "independent probes, and every negative test was denied (§18's opening; §18.2's H2, C9, C8 and H3 rows; erratum E-H3 in " "§18.3; 2026-10-27). v1.4.9 was v1.4.8 plus"
+VERSION_NEW = "- **Version**: 1.4.10 — v1.4.9 plus H3's pass and the Overtoad's C8 install: the three SME agents' live runs agree with " "independent probes, and every negative test was denied (§18's opening; §18.2's H2, C9, C8 and H3 rows; erratum E-H3 in " "§18.3; 2026-10-27). v1.4.9 was v1.4.8 plus"
 
 INTRO_OLD = f"The latter's handoff, `{PREV_HANDOFF}`, is now the arc's main handoff."
-INTRO_NEW = f"The latter's handoff is `{PREV_HANDOFF}`. The former ran H3 (v1.4.10) once the owner had installed C8; its handoff, " f"`{THIS_HANDOFF}`, is now the arc's main handoff."
+INTRO_NEW = f"The latter's handoff is `{PREV_HANDOFF}`. The former ran H3 (v1.4.10) once the Overtoad had installed C8; its handoff, " f"`{THIS_HANDOFF}`, is now the arc's main handoff."
 
-H2_OLD = "G-AGENT's static half holds; its H3 denials wait on C8 and C9. **Install pending:** the primary checkout still has 6 " "agents, so `bash util/install_agents.bash` (9 links) follows the owner's C8 step 1 fast-forward |"
-H2_NEW = "G-AGENT's static half holds, and its H3 denials hold since 2026-10-27 (the H3 row). **Installed** by the owner on " "2026-10-26: after C8's step 1 fast-forwarded the primary checkout (about 22:30Z), `bash util/install_agents.bash` linked " "the three agents at 22:32Z, so `~/.claude/agents/` holds 9 links |"
+H2_OLD = "G-AGENT's static half holds; its H3 denials wait on C8 and C9. **Install pending:** the primary checkout still has 6 " "agents, so `bash util/install_agents.bash` (9 links) follows the Overtoad's C8 step 1 fast-forward |"
+H2_NEW = "G-AGENT's static half holds, and its H3 denials hold since 2026-10-27 (the H3 row). **Installed** by the Overtoad on " "2026-10-26: after C8's step 1 fast-forwarded the primary checkout (about 22:30Z), `bash util/install_agents.bash` linked " "the three agents at 22:32Z, so `~/.claude/agents/` holds 9 links |"
 
 C9_CELL_OLD = "| C9 | **landed** (AGENT); **install OWNER** (C8's step) |"
 C9_CELL_NEW = "| C9 | **landed** (AGENT); **installed** (OWNER, 2026-10-26, with C8) |"
 
-C9_TAIL_OLD = "**It takes effect** when the owner re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` " "(C8); H3's C9 dependency is met then |"
-C9_TAIL_NEW = "**It took effect** on 2026-10-26, when the owner ran `bash util/install_claude_agent_guard.bash --apply` from an " "up-to-date `main` (C8). At 2026-10-27T00:22Z a Bash command naming `.mcp.json` was denied under MCP-REGISTER-BASH, a " "1.2.0 rule, so the installed guard carries C9's rules and H3's C9 dependency is met |"
+C9_TAIL_OLD = "**It takes effect** when the Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` " "(C8); H3's C9 dependency is met then |"
+C9_TAIL_NEW = "**It took effect** on 2026-10-26, when the Overtoad ran `bash util/install_claude_agent_guard.bash --apply` from an " "up-to-date `main` (C8). At 2026-10-27T00:22Z a Bash command naming `.mcp.json` was denied under MCP-REGISTER-BASH, a " "1.2.0 rule, so the installed guard carries C9's rules and H3's C9 dependency is met |"
 
 TABLE_END_OLD = "\n\n### 18.3 Errata\n"
 C8_ROW = (
-    "| C8 | **done: installed** (OWNER, 2026-10-26) | The owner ran C8's step 1 from a terminal at about 22:30Z: `git pull "
+    "| C8 | **done: installed** (OWNER, 2026-10-26) | The Overtoad ran C8's step 1 from a terminal at about 22:30Z: `git pull "
     "--ff-only origin main` in the primary checkout, `bash util/install_claude_agent_guard.bash --apply` (guard 1.2.0, so "
     "K12's signing rules and C9's MCP rules came with it) and `bash util/install_agents.bash` (22:32Z; the H2 row). "
     "**Acceptance** (§6's C8 row), checked by the H3 session at 2026-10-27T00:22Z: `git config commit.gpgsign` prints "
@@ -81,7 +81,7 @@ H3_ROW = (
     "(none has landed). **3 of 3 denials**, read from each agent's transcript: `cat ~/.ssh/config` (CRED-PATH-BASH), "
     "`gh api -X POST markdown …` (GH-API-WRITE) and a `Read` of a `~/.ssh` sentinel path (the settings deny rule "
     f"`Read(~/.ssh/**)`), D11 item 4's forms. `{COMPARE}` makes the comparison. The record is `{RECORD}`, beside the two "
-    f"agents' reports; the k8s audit is `{AUDIT}` (14 findings: 6 major and 8 minor; 10 questions for the owner). G-AGENT "
+    f"agents' reports; the k8s audit is `{AUDIT}` (14 findings: 6 major and 8 minor; 10 questions for the Overtoad). G-AGENT "
     "holds (E-H3) |"
 )
 TABLE_END_NEW = "\n" + C8_ROW + "\n" + H3_ROW + TABLE_END_OLD
@@ -112,7 +112,7 @@ E_H3 = (
     "  - **What prompt validation caught**, each a blocker or major finding in rounds 1 and 2: an agent with no clock (no "
     "Bash) must be given the UTC date; a prompt must not say what `origin/main` points at, because a fetch moves it; and D11 "
     "item 4 names H3's two Bash negative-test forms.\n"
-    "  - **The k8s audit's majors** wait on the owner: no reservation values exist for the 6 GiB node; no join step applies "
+    "  - **The k8s audit's majors** wait on the Overtoad: no reservation values exist for the 6 GiB node; no join step applies "
     'the taint, and F6\'s "nd-* macvm" script does not exist; the VM, as written, has no route out and no admin path; the '
     "primer's autostart (its :409) bypasses G-MEM; and X1-X5 are open (E5, which waits on A6). Its questions bear on F1, F4, "
     "F6, F7, D1, D4, E5, C2 and H3.\n"
@@ -123,7 +123,7 @@ ERRATA_END_NEW = "\n" + E_H3 + ERRATA_END_OLD
 # ---------------------------------------------------------------------------------------------- the handoff
 
 PREV_OLD = '\n\n- **From:** the 2026-10-26 session on turing named "c9-landed-h6-audited-owner-decides"'
-PREV_NEW = '\n\n- **Continued (2026-10-27, plan v1.4.10).** "cached-enchanting-cosmos-84" ran H3, which passed (juniper-ml#@H3_PR@), ' f"once the owner had installed C8. The arc's main handoff is now `{THIS_HANDOFF}`, which carries this file's owner steps " "forward." + PREV_OLD
+PREV_NEW = '\n\n- **Continued (2026-10-27, plan v1.4.10).** "cached-enchanting-cosmos-84" ran H3, which passed (juniper-ml#@H3_PR@), ' f"once the Overtoad had installed C8. The arc's main handoff is now `{THIS_HANDOFF}`, which carries this file's Overtoad steps " "forward." + PREV_OLD
 
 
 def edit(text: str, old: str, new: str, done_mark: str, label: str, report: list) -> str:

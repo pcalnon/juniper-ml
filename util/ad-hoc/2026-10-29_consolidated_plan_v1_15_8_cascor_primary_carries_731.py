@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-29
 Status: ad-hoc — one-off (a record revision of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-28_consolidated_plan_v1_15_7_cascor_0_13_0_published.py (the revision this follows, and the pattern);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-29_recurrence-equities-mnist-schema-probe-canopy-778-parent-agents-cascor-0-13-0.md
          (the handoff that lands with it)
@@ -32,7 +32,7 @@ scripts list, changed-by). v1.15.7's own status line, the third place, stays as 
 ``--no-cache-dir --ignore-installed``, on 2026-10-29).
 
 Register row ``APD-ML-002`` (``notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md``) is not edited: juniper-ml#2381
-left its close to the owner, and its close condition, "until that column exists", is met by a run, not by a checkout.
+left its close to the Overtoad, and its close condition, "until that column exists", is met by a run, not by a checkout.
 
 Every line stays within 512 characters, and the script refuses if any line is over.
 
@@ -67,7 +67,7 @@ _DATE_OLD = "ml#2064's close and juniper-cascor 0.13.0's gate probed 2026-10-28,
 _DATE_NEW = "ml#2064's close and juniper-cascor 0.13.0's gate probed 2026-10-28, 0.13.0's publish later that day, and the cascor primary 2026-10-29)\n"
 
 _STATUS_ANCHOR = (
-    "  - v1.15.7 (2026-10-28) records juniper-cascor 0.13.0's publish: the owner approved its `pypi` gate, and PyPI serves the wheel, which carries cascor#731's `compute_classification_accuracy`. "
+    "  - v1.15.7 (2026-10-28) records juniper-cascor 0.13.0's publish: the Overtoad approved its `pypi` gate, and PyPI serves the wheel, which carries cascor#731's `compute_classification_accuracy`. "
     "juniper-deploy and the experiment stack's default `src/` do not carry cascor#731 yet, so `test_accuracy` is not filled by default (XC-P12; §4; §5). Like v1.15.0, no round checks it.\n"
 )
 _STATUS_ADD = (
@@ -78,12 +78,12 @@ _STATUS_ADD = (
 _GATE_OLD = (
     "`test_accuracy` fills once a cascor carrying cascor#731 serves a run with a test split, "
     "and neither default does yet: juniper-deploy pins 0.12.0, and the experiment stack runs the cascor primary's `src/`, which lacks cascor#731, unless `JUNIPER_EXP_CASCOR_SRC_DIR` or `JUNIPER_EXP_PROJECT_DIR` points elsewhere. "
-    "ml#2381 left the register row's close to the owner.\n"
+    "ml#2381 left the register row's close to the Overtoad.\n"
 )
 _GATE_NEW = (
     "`test_accuracy` fills once a cascor carrying cascor#731 serves a run with a test split. "
     "juniper-deploy pins 0.12.0, but the experiment stack's default (the cascor primary's `src/`, for the canonical checkout) carries cascor#731 from 2026-10-29 20:48:58Z (v1.15.8). "
-    "ml#2381 left the register row's close to the owner.\n"
+    "ml#2381 left the register row's close to the Overtoad.\n"
 )
 
 _W4_OLD = "juniper-deploy still pins 0.12.0, and the experiment stack's default `src/` lacks cascor#731 (§5; XC-P12 action 4).\n"
@@ -97,12 +97,12 @@ _CASCOR_ADD = (
     "  - **2026-10-29** (v1.15.8): the cascor primary was fast-forwarded `5b7d10dc` → `e8e8bf4d` (cascor `main`, 8 commits past cascor#731's `752a797f`) at 20:48:58Z, "
     "so `util/experiment_stack.bash`'s default `src/` serves cascor#731 for the canonical checkout. "
     "A fresh `juniper-ml[servers]==0.11.3` install resolves 0.13.0 too (floor `>=0.12.0`, uncapped; a pip dry-run). juniper-deploy still pins 0.12.0.\n"
-    "    - The pull landed while a stack on `:8202` runs from that `src/`, and its actor is unrecorded. O13 governs a pull of the trio's primaries (§4 Wave 1), so whether it was intended is the owner's to say.\n"
+    "    - The pull landed while a stack on `:8202` runs from that `src/`, and its actor is unrecorded. O13 governs a pull of the trio's primaries (§4 Wave 1), so whether it was intended is the Overtoad's to say.\n"
 )
 
 _VALIDATION_ANCHOR = "    - Also the cascor primary's `classification_metrics.py`, `util/ad-hoc/2026-10-28_verify_cascor_0_13_0_published_wheel.py` and `util/ad-hoc/2026-10-28_consolidated_plan_v1_15_7_cascor_0_13_0_published.py`.\n"
 _VALIDATION_ADD = (
-    "  - v1.15.8 is a record of the cascor primary's move onto cascor#731 (2026-10-29). No round checks it (owner ruling 2026-10-24); its facts cite the primary's `main` reflog, the `752a797f...e8e8bf4d` compare, "
+    "  - v1.15.8 is a record of the cascor primary's move onto cascor#731 (2026-10-29). No round checks it (Overtoad ruling 2026-10-24); its facts cite the primary's `main` reflog, the `752a797f...e8e8bf4d` compare, "
     "the primary's `classification_metrics.py` and `manager.py`, juniper-deploy's compose file and helm values, PyPI's juniper-ml 0.11.3 and juniper-cascor 0.12.0 / 0.13.0 metadata, and a `[servers]` pip dry-run.\n"
 )
 

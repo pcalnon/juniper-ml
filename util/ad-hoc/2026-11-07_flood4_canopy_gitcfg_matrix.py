@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4 consolidation, canopy#794 (validator finding T-F2: color.ui=always and a refusing core.hooksPath)
 
 Usage: 2026-11-07_flood4_canopy_gitcfg_matrix.py <tests worktree> <out dir> <label>

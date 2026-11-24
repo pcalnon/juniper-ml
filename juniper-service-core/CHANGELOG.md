@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   None of the shipped handlers registers a socket with `connect()`.
 
 - **`/ws/training` answers a resume frame as juniper-cascor does: juniper-cascor#754's four cursor rules**
-  (the owner's rulings of 2026-11-12, "Match cascor's resume answers", and of 2026-11-13, "Four rules + shared
+  (the Overtoad's rulings of 2026-11-12, "Match cascor's resume answers", and of 2026-11-13, "Four rules + shared
   table" and, for a negative cursor, "Read as 0"). Driven over a real WebSocket, the two copies answered 131 of
   240 (frame, state) cases differently; now none do.
   - A `data` that is not an object is `resume_failed` `malformed_resume`. It raised `AttributeError`, which the
@@ -105,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **A `fit` that returns while the run is paused settles `COMPLETED` instead of wedging the
   lifecycle** (the "paused-fit wedge" in §4 of
-  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`; owner ruling "Fix
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`; Overtoad ruling "Fix
   now", 2026-11-08). Pause is cooperative: `ServiceLifecycleManager`'s event sink waits at the
   model's next event. A pause that arrives after the model's last event, or during a `fit` that
   emits none, is never waited on, so `fit` returns while the machine is still `PAUSED`.
@@ -145,7 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `monitor.status` `ended` while the new run trains. The pause gate is shared too, so the release
   on a paused completion or failure also wakes a stopped run's `fit` that is waiting at it, and a
   start is then accepted beside that `fit`; after a paused completion, 0.7.2's wedge had kept it
-  waiting. The owner has ruled that the stop-then-start race behind both gets
+  waiting. The Overtoad has ruled that the stop-then-start race behind both gets
   its own fix, in its own PR (§8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
 - **Tests**: `tests/test_lifecycle_paused_fit_return.py` (11 tests) pins both entries. With
@@ -158,7 +158,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stop** (the stop-then-start race; §8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, "Fix all four now").
   The ruling names the defect, not a mechanism; the refusal is this change's choice, and the
-  owner's ruling of 2026-11-12 accepts it (that record's next update adds it to its §8). A stop is
+  Overtoad's ruling of 2026-11-12 accepts it (that record's next update adds it to its §8). A stop is
   seen at `fit`'s next event, and a `fit` that emits no events runs until it returns.
   `start_training` cleared the stop, so a start sent before then cancelled it: the stopped run's
   `fit` ran on beside the new run, on the same model, and its events went through the shared sink
@@ -215,7 +215,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **A `resume_ok` on `/ws/training` now means the client missed nothing up to the moment its socket
   goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
   juniper-ml `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix
-  now" by the owner on 2026-11-08. A resumed client could be answered `resume_ok` and still have
+  now" by the Overtoad on 2026-11-08. A resumed client could be answered `resume_ok` and still have
   missed broadcasts, two ways:
   - **A broadcast with no socket active was never sequenced or buffered.**
     `WebSocketManager.broadcast` returned at once when no socket was active, including while a
@@ -287,7 +287,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - juniper-cascor carries its own copies of the manager and handler, with both defects. They are
     not changed here.
 
-- **A socket a broadcast drops is closed 1011 instead of being left open on a dead stream** (owner
+- **A socket a broadcast drops is closed 1011 instead of being left open on a dead stream** (Overtoad
   ruling 11 in §8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`,
   "Fix all four now"). `WebSocketManager.broadcast` dropped a socket whose send raised or timed out
   with `disconnect()` alone, which forgets a socket but never closes it. The `/ws/training`
@@ -457,7 +457,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   value, say) encodes instead of raising, and no two distinct strings share bytes. So `validate`
   matches exactly when the strings are equal. `surrogateescape` fails on both counts: it raises on
   `"\ud800"`, and it maps `"\xe9"` and `"\udcc3\udca9"` to the same bytes. The
-  `blank-api-key-filter` and `nonshortcircuit-key-compare` drift-gate markers are unchanged. Owner
+  `blank-api-key-filter` and `nonshortcircuit-key-compare` drift-gate markers are unchanged. The Overtoad
   ruling "Fix everywhere now" (2026-09-24). juniper-observability stops Sentry capturing locals in
   the same change, and juniper-data and juniper-cascor carry the same compare in their forks.
   Pinned by 64 new tests: `tests/test_security.py` covers the non-ASCII mismatch and a 7x7

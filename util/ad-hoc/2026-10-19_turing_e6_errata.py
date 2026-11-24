@@ -6,14 +6,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-19
 Status: ad-hoc — one-off (turing bring-up task E6: errata X6 and X10)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§3 errata X6 and X10, §16);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-19_turing-session-1-six-code-prs-landed-owner-steps-next.md
 
 Why:
 - X6. Eight archived handoffs (2026-09-11 to 2026-10-03) and the P4-27 row of
   reports/2026-10-04_consolidated-development-plan/extraction-P4-release-P11-k8s.md call turing down, or
-  the only Pi-pull candidate. turing is the owner's Intel MacBook Pro, a laptop in active use away from
+  the only Pi-pull candidate. turing is the Overtoad's Intel MacBook Pro, a laptop in active use away from
   yamaguchi, and it was probed at a stale address. Each file gets one dated correction under its first
   such statement, the archived-handoff idiom (HANDOFF_2026-09/HANDOFF_2026-09-12_…:310). The original
   text stays.
@@ -52,7 +52,7 @@ ONE_OFF = "util/ad-hoc/2026-10-18_codeql_import_and_import_from_screen.py"
 def correction(prefix: str, whole_file: bool) -> str:
     lines = [
         f"**Correction, 2026-10-19 (erratum X6 of `{PLAN}`).**",
-        "`turing` was not down, and it was never a Pi-pull candidate. It is the owner's 15-inch 2018 Intel",
+        "`turing` was not down, and it was never a Pi-pull candidate. It is the Overtoad's 15-inch 2018 Intel",
         "MacBook Pro (x86_64, macOS), a development laptop in active use away from yamaguchi",
         "(`notes/JUNIPER_2026-08-22_JUNIPER-ECOSYSTEM_BYPASS-CANDIDATE-DETERMINATION.md:174`), so it cannot",
         "meet the pull's 64-bit Pi OS precondition. `192.168.50.222` comes from",

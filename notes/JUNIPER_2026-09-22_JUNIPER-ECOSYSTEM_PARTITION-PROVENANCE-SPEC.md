@@ -7,8 +7,8 @@
 **Version**: 0.2.2
 **Document Type**: SPECIFICATION
 **Last Updated**: 2026-11-06
-**Status**: SPEC v2 — DRAFT, **not ratifiable**. v1 (0.1.0, merged in juniper-ml#2043) was rated **UNSOUND** by consensus review round 1 in its identity, versioning and legality layers. v2 folds all fourteen of that round's findings into §1–§13; §14 records where each one went. **Review round 2 (§15, 2026-09-23) found v2 not ready for ratification**: round 1's blockers are fixed, but ten clusters of MAJOR findings remain, in versioning, identity, the OQ-1 dependency and the release plan. §1–§13 below are v2 as that round reviewed them, left unedited except for two changes: v0.2.1 (2026-11-04) renumbers the data-client releases, W5 to 0.7.0 and W11 to 0.7.1, by the owner's ruling of 2026-11-03 (§11.2, §16), and §14 and §15 still quote the numbers as reviewed; v0.2.2 (2026-11-06) records the owner's ruling that the consumer caps widen to `<0.8.0` (§11.2, §16). v3 folds §15's findings, and a round 3 reviews it before the owner rules on anything.
-**History**: Decision 12 was ruled on 2026-09-03. On 2026-09-22 the owner asked for it to be **specified before it is built**. No producer or gate code has moved. §12 lists six questions: OQ-4 is answered by a fix, and the other five belong to the owner. This document recommends an answer to each and decides none of them. §8.3 and §9.4 are written for both answers to OQ-2.
+**Status**: SPEC v2 — DRAFT, **not ratifiable**. v1 (0.1.0, merged in juniper-ml#2043) was rated **UNSOUND** by consensus review round 1 in its identity, versioning and legality layers. v2 folds all fourteen of that round's findings into §1–§13; §14 records where each one went. **Review round 2 (§15, 2026-09-23) found v2 not ready for ratification**: round 1's blockers are fixed, but ten clusters of MAJOR findings remain, in versioning, identity, the OQ-1 dependency and the release plan. §1–§13 below are v2 as that round reviewed them, left unedited except for two changes: v0.2.1 (2026-11-04) renumbers the data-client releases, W5 to 0.7.0 and W11 to 0.7.1, by the Overtoad's ruling of 2026-11-03 (§11.2, §16), and §14 and §15 still quote the numbers as reviewed; v0.2.2 (2026-11-06) records the Overtoad's ruling that the consumer caps widen to `<0.8.0` (§11.2, §16). v3 folds §15's findings, and a round 3 reviews it before the Overtoad rules on anything.
+**History**: Decision 12 was ruled on 2026-09-03. On 2026-09-22 the Overtoad asked for it to be **specified before it is built**. No producer or gate code has moved. §12 lists six questions: OQ-4 is answered by a fix, and the other five belong to the Overtoad. This document recommends an answer to each and decides none of them. §8.3 and §9.4 are written for both answers to OQ-2.
 
 **Tracks**: [juniper-data#423](https://github.com/pcalnon/juniper-data/issues/423)
 **Ruling of record**: [`JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md`](JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md) §9.6.3 and §9.6.6, which build on its §9.4.1 (Proposal B), §9.4.4 and §9.4.5
@@ -400,7 +400,7 @@ Some counts are closed-form in `params` and the verified row counts:
 
 - `validate_npz_contract`'s tabular path returns before any check (`contract.py:74`);
 - cascor never calls it;
-- canopy does not gate on it: the owner ruled on 2026-09-22 (canopy#559) that canopy runs it **advisory-only**, and juniper-canopy#663 (merged 2026-09-23, `cc3588a8`) implements that. A helper that canopy may only warn on cannot host a gate canopy must enforce.
+- canopy does not gate on it: the Overtoad ruled on 2026-09-22 (canopy#559) that canopy runs it **advisory-only**, and juniper-canopy#663 (merged 2026-09-23, `cc3588a8`) implements that. A helper that canopy may only warn on cannot host a gate canopy must enforce.
 
 Hosting provenance there would reach only one of the three consumers.
 
@@ -525,9 +525,9 @@ Either order is safe for today's consumers, because none of them breaks on an ex
 ### 11.2 Versions, floors and caps
 
 - **juniper-data-client 0.6.x → 0.7.0 (W5).** A MINOR bump, because it adds public API.
-  - **Renumbered in v0.2.1** by the owner's ruling of 2026-11-03 (`JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` §6 A9). v0.2.0 numbered W5 0.6.0 and W11 0.6.1, but P12's W1.13 took 0.6.0 (cut 2026-10-10), and R-DC-PATCH-6, the forward-ported F-S10 fix, takes 0.6.1.
+  - **Renumbered in v0.2.1** by the Overtoad's ruling of 2026-11-03 (`JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` §6 A9). v0.2.0 numbered W5 0.6.0 and W11 0.6.1, but P12's W1.13 took 0.6.0 (cut 2026-10-10), and R-DC-PATCH-6, the forward-ported F-S10 fix, takes 0.6.1.
   - Both consumer caps were `<0.6.0` at the pins: canopy (`juniper-canopy/pyproject.toml:192`) and recurrence (`juniper-recurrence/pyproject.toml:54`). P12 widened both to `<0.7.0` for its 0.6.0: on `main` on 2026-11-04, canopy's `juniper-data` extra reads `>=0.5.0,<0.7.0` and recurrence's dependency `>=0.6.0,<0.7.0`.
-  - Both are widened to `<0.8.0` **before** the Release (owner ruling 2026-11-06; until then this width was an inference). The owner ruled on 2026-09-05 that a downstream cap never lowers a SemVer bump (juniper-cascor-client#155, juniper-canopy#584).
+  - Both are widened to `<0.8.0` **before** the Release (Overtoad ruling 2026-11-06; until then this width was an inference). The Overtoad ruled on 2026-09-05 that a downstream cap never lowers a SemVer bump (juniper-cascor-client#155, juniper-canopy#584).
   - The release train proposes those ceiling PRs for any pre-1.0 MINOR bump (`util/release_train/propose.py:930`).
   - Floors rise only once the wheel is on PyPI.
 - **juniper-data-client 0.7.0 → 0.7.1 (W11).** A PATCH: filling `FIRST_EMITTING_VERSION` refuses only artifacts whose block was stripped, and a genuine artifact at or above its generator's first emitting version always carries one (W6's fleet test). The `<0.8.0` caps admit it.
@@ -569,7 +569,7 @@ W6 (juniper-data) covers:
 
 W7–W9 and W12 can merge before W6, because they are no-ops until blocks exist.
 
-## 12. Open questions for the owner
+## 12. Open questions for the Overtoad
 
 **OQ-1. Should generator `VERSION` be bumped when producers start emitting the block?**
 
@@ -588,12 +588,12 @@ W7–W9 and W12 can merge before W6, because they are no-ops until blocks exist.
 
 **OQ-4. The external stores normalised before they carved (F-2). Fix them first, or let them emit `all_rows` and be refused?** **Answered by the fix: the stores were fixed first.**
 
-- **Resolution**: juniper-data#422 (`ce436819`) fits the stores' statistics on `X_train` after the carve, under the owner's 2026-09-22 ruling to conform the stores. No ruling is needed.
+- **Resolution**: juniper-data#422 (`ce436819`) fits the stores' statistics on `X_train` after the carve, under the Overtoad's 2026-09-22 ruling to conform the stores. No ruling is needed.
 
 **OQ-5. Should canopy call the provenance gate?**
 
 - **Recommendation**: yes, at both download sites (§9.5).
-- **Evidence**: on 2026-09-22 the owner ruled that canopy runs `validate_npz_contract` as an **advisory** check only (canopy#559, implemented by juniper-canopy#663). The reason was that the helper fails closed on a legacy artifact that canopy must still load. This gate tolerates an absent block by construction, so that objection does not apply to it. Whether its *legality* refusals should be advisory in canopy is part of OQ-2.
+- **Evidence**: on 2026-09-22 the Overtoad ruled that canopy runs `validate_npz_contract` as an **advisory** check only (canopy#559, implemented by juniper-canopy#663). The reason was that the helper fails closed on a legacy artifact that canopy must still load. This gate tolerates an absent block by construction, so that objection does not apply to it. Whether its *legality* refusals should be advisory in canopy is part of OQ-2.
 
 **OQ-6. Enforce from the first release, or ship one release in report-only mode?**
 
@@ -684,22 +684,22 @@ Consensus review round 2 ran on 2026-09-23 against v2 as committed (juniper-ml#2
 | **R2-6** release | juniper-data **0.16.0 is already taken**: #433 merged five minutes before `8c9d65f` and ships without a block. A `>=0.16.0` floor would admit a producer that emits none | S1-F1, S4-D13 | The block ships in 0.17.0, and every floor and sentence that names 0.16.0 moves |
 | **R2-7** release | W10 makes `juniper-ml[all]` unresolvable. The only published juniper-recurrence (0.5.0) requires `juniper-data-client<0.6.0`, and `publish.yml` checks only `[clients]` and `[tools]` | S1-F2, S3-F1 | Make a recurrence release carrying W4's widened cap a precondition of W10, and add an `[all]` dry-run resolve |
 | **R2-8** release | juniper-data's CI installs the client from git `main`, not the published release, so a gate fix merged but unreleased passes the producer while consumers still refuse | S3-F2 | A W6 CI job that tests against the published client |
-| **R2-9** release | "0.6.1 is a PATCH" conflicts with the owner rule of juniper-cascor-client#155: W11 turns a tolerated `absent` into a non-overridable refusal, a behaviour change | S3-F4 | Drop the caps argument, and either release 0.7.0 or put the question in §16 |
+| **R2-9** release | "0.6.1 is a PATCH" conflicts with the Overtoad rule of juniper-cascor-client#155: W11 turns a tolerated `absent` into a non-overridable refusal, a behaviour change | S3-F4 | Drop the caps argument, and either release 0.7.0 or put the question in §16 |
 | **R2-10** consumers | The status and override surfaces are unnamed. The caveat W7 is told to copy (`_validation_warning`) is written but never read in cascor | S3-F5 | For each consumer and both OQ-2 answers, name the status field, the setting and a caveat slot that something reads, and add a canopy line to §16 |
 
 **MINOR findings, recorded here and folded in v3:**
 - **Integrity.** `fit_scope` is derivable for 16 of 18 sources but is trusted, so §13 item 2 is false (S2-F5). Legality can be switched off by editing two integers (S2-F4). Two decode failures escape G0 as the wrong exception type (S2-F7). Unknown nested keys are unspecified, and the gate treats them inconsistently (S2-F8).
 - **Figures and citations.** §4.2's sizes are v1's block, not v2's (S1-F4). §7.3's 511 s is a defective run (S1-F5). §5.3 overstates what `test_normaliser_fit_scope.py:172` pins (S1-F6). The stores emit `<f4` only, so "parity with the stores" does not justify `<f8`, `<i8` and `|b1` (S4-D5, S1-F7). recurrence's `[bench]` caps `juniper-data<0.16.0` (S1-F3).
-- **Consumers.** The fake depends on uuid ids in more places than `:417` (S3-F6). Wiring the gate into cascor breaks about 20 tests (S3-F7). The nonce and store-id interfaces are loose (S3-F8). Floors conflict with `==0.5.0` lock pins, and nothing adopts 0.6.1 (S3-F9). Two of the owner's possible answers have no plan (S3-F10). The document omits AGENTS/README edits, CHANGELOGs, image tags and operator notes (S3-F11).
+- **Consumers.** The fake depends on uuid ids in more places than `:417` (S3-F6). Wiring the gate into cascor breaks about 20 tests (S3-F7). The nonce and store-id interfaces are loose (S3-F8). Floors conflict with `==0.5.0` lock pins, and nothing adopts 0.6.1 (S3-F9). Two of the Overtoad's possible answers have no plan (S3-F10). The document omits AGENTS/README edits, CHANGELOGs, image tags and operator notes (S3-F11).
 - **Fold record.** §14 leaves two departures from round 1's proposals unlabelled (S4-D4, S1-F11). The census re-run has no recorded method (S4-D6). §9.1 went stale when W12 was added (S4-D7), and §4.3's reader list is incomplete (S4-D8). The vector coverage is overstated (S4-D9). §9.3 omits the stripped-block refusal (S4-D10). OQ-6 argues against the kind of switch W11 adds (S4-D11). §5.3 contradicts §3.1 note 4 (S4-D12). v1's pins were amputated (S4-D14).
 
 **NITs** (S1-F7 to F13, S2-F9 to F11, S3-F12, S4-D15) are listed in the reports and folded with the rest.
 
-**Disposition.** v3 folds every finding above into §1–§13, and a new §14-style table maps each id to where it went. A **round 3** then reviews v3's corrections, again with the text frozen, before the owner rules on anything (§16).
+**Disposition.** v3 folds every finding above into §1–§13, and a new §14-style table maps each id to where it went. A **round 3** then reviews v3's corrections, again with the text frozen, before the Overtoad rules on anything (§16).
 
 ## 16. Ruling record
 
-**Empty until the owner rules.** Each line records a ruling, its date and where it was given. W3 is complete when every question below has a line, and this section is mirrored as a comment on juniper-data#423.
+**Empty until the Overtoad rules.** Each line records a ruling, its date and where it was given. W3 is complete when every question below has a line, and this section is mirrored as a comment on juniper-data#423.
 
 | question | ruling | date | where |
 | --- | --- | --- | --- |

@@ -2,7 +2,7 @@
 
 **Project**: juniper-ml
 **Date**: 2026-09-08
-**Status**: evidence recovered; the standard question stays with the owner
+**Status**: evidence recovered; the standard question stays with the Overtoad
 **Scope**: item E of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-07_soak-arc-outstanding-work.md`
 
 ---
@@ -27,7 +27,7 @@ rather than putting it back in play.
 
 This document does **not** re-score the ledger. Whether a filename-only hit or a
 sibling-repo hit counts as a follow is precisely the standard question item E puts to
-the owner, and `reports/soak/pointer_follow_soak.jsonl` is unmodified.
+the Overtoad, and `reports/soak/pointer_follow_soak.jsonl` is unmodified.
 
 ## 2. Both blockers were tractable
 
@@ -201,7 +201,7 @@ handoff anticipated: recovering this evidence does not put the bet back in play.
 `p̂` and the CI are unchanged for the input-only floor, so §4.7's warning stands: 95.3%
 retention remains a one-way artefact and none of the three rows above rehabilitates it.
 
-## 7. What is still the owner's call
+## 7. What is still the Overtoad's call
 
 Unchanged, and this document deliberately decides none of them:
 
@@ -219,7 +219,7 @@ Unchanged, and this document deliberately decides none of them:
    run of the same shape — see §1.2 of
    [`JUNIPER_2026-09-16_JUNIPER-ML_SOAK-OWNER-RULINGS-AND-WHAT-THEY-CHANGED.md`](JUNIPER_2026-09-16_JUNIPER-ML_SOAK-OWNER-RULINGS-AND-WHAT-THEY-CHANGED.md).
 3. Whether the ledger leak (§5) invalidates its 8 runs, as the pilot's 8 registry-leak
-   runs were once discarded. This is owner decision §7.1's neighbourhood.
+   runs were once discarded. This is Overtoad decision §7.1's neighbourhood.
 
 ## 8. Reproduce
 
@@ -244,7 +244,7 @@ python3 -m unittest tests.test_soak_probe_evidence
 
 **Not changed**: `reports/soak/pointer_follow_soak.jsonl`. No probe was run.
 
-## 10a. CORRECTION 2026-09-12 — §10's follow-up is NOT a code task. It is owner decision 7.
+## 10a. CORRECTION 2026-09-12 — §10's follow-up is NOT a code task. It is Overtoad decision 7.
 
 **§10 below told the next session that hardening `retrieval_channel` "belongs in its own PR".
 That was attempted on 2026-09-12 and REFUTED by consensus. §10 is wrong, and it is wrong in a
@@ -253,10 +253,10 @@ way that reads as an invitation, so this correction sits above it.**
 The attempt added a guard suppressing the pointer hit whenever the ledger's path appeared in the
 same tool input. Four measured reasons it was withdrawn:
 
-1. **It decided an owner question.** §3's table defines the `ledger` class as *"the match is
+1. **It decided an Overtoad question.** §3's table defines the `ledger` class as *"the match is
    **inside the soak ledger's own JSON**"*. In `grep -n "docs/REFERENCE.md" <ledger>` the match is
    inside a **shell command**, so that occurrence is §3's **`filename`** class — the row this
-   document's §7 and the 09-09 handoff's §6 item 7 both list as **the owner's call**. The guard
+   document's §7 and the 09-09 handoff's §6 item 7 both list as **the Overtoad's call**. The guard
    took a `filename` shape, relabelled it `ledger` on the strength of what the *other* token in
    the command was, and shipped the `filename` answer.
 2. **The selector was one hard-coded path, not a principle.** Measured: the identical shape aimed
@@ -290,7 +290,7 @@ way §3 defines it, and the way the withdrawn guard did not.
 |---|---|
 | `foreign` | **fixed on the WIRED path** (§4, ml#1855 + the re-fix). **NOT ported to the screen** — see below |
 | `ledger` | **reported, not screened.** `ledger_exposure()` is three-valued and wired into both `scan()` branches (ml#1894), and is deliberately not folded into `contaminated` |
-| `filename` | **owner decision 7.** Cannot be implemented without ruling it |
+| `filename` | **Overtoad decision 7.** Cannot be implemented without ruling it |
 
 **Correction to an earlier claim in this session: "the screen's half is done" is only half true.**
 `ledger_exposure()` *reports* exposure, but `scan()`'s own **retrieval verdict** (`dest_hits`,
@@ -300,7 +300,7 @@ path-token walk-back and no filename/content gating. So the screen's `retrieved`
 live today.
 
 **And "simply not ported" is wrong — measured 2026-09-12, before writing any change.** The `foreign`
-half looked like the one piece of §10 that is not owner-gated: document identity, already ratified
+half looked like the one piece of §10 that is not Overtoad-gated: document identity, already ratified
 on the wired path. It is not portable, for a structural reason:
 
 | blob, as `scan()` actually receives it | wired guard says |

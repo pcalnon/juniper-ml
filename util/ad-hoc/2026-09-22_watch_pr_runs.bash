@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-09-22
 # Status:     ad-hoc -- CI observation
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/ad-hoc/2026-09-22_watch_pr_regression_checks.bash (the check-level form, and why it is wrong)
 #
 # WHY RUNS AND NOT CHECKS. A check entry appears only once its job starts reporting, so a queued

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register maintenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- read-only
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 Section 4.9 of `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` counts the post-primer
 rows whose provenance differs from the round-37 handoff validation, and several rows state no

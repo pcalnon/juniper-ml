@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (generated with Claude Code)
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 consolidation, juniper-canopy DOCS carrier VALIDATION)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy#790 #791 #793 #796; flood-4 validation brief (fidelity lens)
 
 Reads git objects from the canopy primary (the drafts' heads and their PR base SHAs) and the carrier's working-tree

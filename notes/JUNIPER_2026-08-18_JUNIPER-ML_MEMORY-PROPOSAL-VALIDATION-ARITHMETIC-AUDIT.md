@@ -45,7 +45,7 @@ none was copied from a proposal and checked for plausibility. Reproduction comma
 
 | Verdict | Meaning |
 |---------|---------|
-| **CRITICAL** | The claimed saving is not mechanically real, or the arithmetic is wrong in a way that changes what the owner should do. |
+| **CRITICAL** | The claimed saving is not mechanically real, or the arithmetic is wrong in a way that changes what the Overtoad should do. |
 | **MAJOR** | A materially wrong number, or a phase that cannot ship as written. |
 | **MINOR** | An error too small to change a decision, but real. |
 | **CONFIRMED** | I recomputed it independently and it is correct. Reported because a validation that only reports faults is not a validation. |

@@ -2,19 +2,19 @@
 """
 Project:     Juniper
 Sub-Project: juniper-ml
-Application: Performance lane -- owner decision D1 (the epoch-count debt)
+Application: Performance lane -- Overtoad decision D1 (the epoch-count debt)
 Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Status:      ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md §5.2
 
 Does a BLAS thread cap move cascor's EPOCH COUNTS? This is the debt the D1 flip is gated on.
 
 WHY THIS EXISTS
 ---------------
-The owner ruled D1's repair on 2026-09-23 as "pay the debt, then flip": change
+The Overtoad ruled D1's repair on 2026-09-23 as "pay the debt, then flip": change
 ``configure_blas_threads()``'s default from "do nothing" to 2, but ONLY IF the cap does not move
 the epoch count. Both the D1 and D2 gates asked for **epoch counts per phase**. The 09-16 arm
 (``2026-09-16_thread_width_arm.py``, left untouched as the provenance of its evidence) emitted
@@ -259,7 +259,7 @@ def run_arm(args: argparse.Namespace) -> int:
 # The driver
 # ------------------------------------------------------------------------------------------------
 def signature(record: dict) -> dict:
-    """The COUNTS an arm is compared on -- the owner's criterion. Wall clock is deliberately absent."""
+    """The COUNTS an arm is compared on -- the Overtoad's criterion. Wall clock is deliberately absent."""
     return {
         "hidden_units": record.get("hidden_units"),
         "candidate_epochs": [p["epochs_completed"] for p in record.get("candidate_phases", [])],

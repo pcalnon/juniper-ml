@@ -26,7 +26,7 @@
 > **DP-3 P2 fully shipped** (data #203, rec #44/#45, findings ml #511; capacity gap +0.83). Accordingly the
 > §1 "WS-6 B3 NOT STARTED" / "A-phase BLOCKED on publish" / "WS-5 A1 NOT STARTED" rows and the §3 register's
 > WS-6-B3 / WS-5-A1 / OUT-11-publish items are **superseded**. The WS-6 A-phase is now gated on **B4 + three
-> owner decisions** (DR-1 / soak-OQ-17 / manager-appetite) — see `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md`.
+> Overtoad decisions** (DR-1 / soak-OQ-17 / manager-appetite) — see `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md`.
 
 ## §1. Verified current reality (2026-06-21)
 
@@ -59,7 +59,7 @@
 | `JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` (canonical Status Tracker) | WS-6 cells pre-B-phase; WS-5 = PLANNED | B-phase shipped; WS-5 A0 shipped | **WS-6 + WS-5 cells refreshed** |
 | `JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md` | §3 WS-5/WS-6/OUT-13 cells (self-disclaimed point-in-time) | as §1 above | **"verified 2026-06-21 → see this audit" pointer added** |
 
-### Flagged for owner refresh (concurrent-session-owned — NOT edited here, to avoid conflicts)
+### Flagged for Overtoad refresh (concurrent-session-owned — NOT edited here, to avoid conflicts)
 
 These docs are stale on *execution framing* but are owned/maintained by active concurrent sessions; their
 staleness is captured here rather than edited in-place:
@@ -72,7 +72,7 @@ staleness is captured here rather than edited in-place:
   `JUNIPER_2026-06-20_JUNIPER-RECURRENCE_DP3-READOUT-SPECTRUM-DESIGN.md` is "design/ratification" but Rung-2a/2 are
   already shipping (sequencing inversion, not a contradiction; DP-3 P2-remaining = ml #501 handoff).
 - **service-core**: `JUNIPER_2026-06-19_JUNIPER-ML_SERVICE-CORE-T2-SURFACE-DESIGN-AND-AUDIT.md` (T2 merged; publish
-  #502 open) — owner session active.
+  #502 open) — Overtoad session active.
 - **canopy**: `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md` + `..._A1_ENABLER_SCOPE_2026-06-18.md`
   read as pre-implementation; reality = A0 + 3-D viz shipped, A1 training-integration not started. The
   `..._REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md` and `..._3D_DATASET_VISUALIZATION_DESIGN_2026-06-19.md`
@@ -86,7 +86,7 @@ staleness is captured here rather than edited in-place:
 
 ## §3. Genuinely incomplete / not-started work register
 
-| # | Item | Status | Blocked by | Owner / next |
+| # | Item | Status | Blocked by | The Overtoad / next |
 | --- | --- | --- | --- | --- |
 | 1 | **WS-6 B3** — replace monkey-patch monitoring with `CascorModel.fit(on_event=…)` sink (retain drain side-channel for the 50 Hz `/ws/training` stream) | **NOT STARTED** (spike done; OQ-B1 = proceed) | — | **next thread** (handoff `HANDOFF_2026-06-21_ws6-bphase-b3-on-event-sink.md`) |
 | 2 | **WS-6 B4** — point native conformance at production `CascorModel`; retire the test-only adapter | NOT STARTED | B3 decision | follows B3 |

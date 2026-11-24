@@ -2,7 +2,7 @@
 # total wall-clock under an unchanged config (compute nondeterminism, not config variance).
 # Thresholds unratified as of writing (§12); this file is the instrument, not the verdict.
 #
-# CELL DURATION IS LOAD-BEARING (owner decision 2, 2026-09-01). The original cells inherited
+# CELL DURATION IS LOAD-BEARING (Overtoad decision 2, 2026-09-01). The original cells inherited
 # spiral-smoke's max_iterations/max_hidden_units of 2 and ran ~20 s of `drive`. At that length the
 # run was NEVER SCRAPED: the host-experiments job discovers targets by file_sd every 15 s and
 # scrapes every 15 s, while the target file is written at bring-up and deleted at teardown — so the
@@ -11,7 +11,7 @@
 #
 # Calibrated 2026-09-01: (6, 6) -> 40.17 s drive, at which a run yields 255 series including the
 # full juniper_cascor_training_step_duration_seconds histogram (measured p50 25.1 ms, p95 47.7 ms).
-# (10, 10) targets ~60 s for margin, the owner's first choice, with ~120 s the sanctioned ceiling.
+# (10, 10) targets ~60 s for margin, the Overtoad's first choice, with ~120 s the sanctioned ceiling.
 #
 # THE REPEATS ARE A MATRIX AXIS, NOT `include` ENTRIES. `include` cells carry only their own
 # overrides and do NOT inherit the matrix, so expressing repeats as includes while putting the
@@ -34,7 +34,7 @@ execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds
 # output pass while every later pass used the `output_epochs` default of 10000.
 #
 # That correction dropped this suite's cell from 65-126 s to 15.1 s. So the ~60 s cell length these
-# repeats were calibrated to (owner decision 2, 2026-09-01) was NEVER a property of the config -- it
+# repeats were calibrated to (Overtoad decision 2, 2026-09-01) was NEVER a property of the config -- it
 # came entirely from the 10000-epoch fallback the config never asked for. The duration requirement
 # belongs HERE, in PF-1's override, not in a smoke config; hence an explicit budget rather than
 # reverting the fix.

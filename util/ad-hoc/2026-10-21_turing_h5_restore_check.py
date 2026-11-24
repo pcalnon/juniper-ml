@@ -7,13 +7,13 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-21
 Status: ad-hoc — investigation (the evidence behind the restored-state risk analysis)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md;
          notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-UNVETTED-MCP-SERVERS-AUDIT.md;
          util/ad-hoc/2026-10-21_turing_h5_mcp_server_inventory.py (whose provenance functions this reuses);
          reports/2026-10-21_turing-h5-restore/ (the March baselines)
 
-On 2026-10-21 both trees were removed at the owner's choice, then restored at the owner's reconsideration:
+On 2026-10-21 both trees were removed at the Overtoad's choice, then restored at the Overtoad's reconsideration:
 `git clone --revision=<audited commit>` for each, and for agi-mcp-server an offline `npm ci --ignore-scripts`
 from npm's own cache, resolved with `--before` the March install. This script checks that state. Like the
 inventory script it never runs code from the trees and never runs git inside them; the network use is
@@ -31,7 +31,7 @@ Checks:
                whether it sets hooks or disableAllHooks (reported; the file is upstream's and stays a hazard)
   configured   neither server is named in, or pointed at by, a known MCP client config, and every config that
                exists parses. Project .mcp.json files are searched under ~/Development/python/Juniper only. It reads
-               ~/.claude.json by key name, so only the owner's account can reproduce it
+               ~/.claude.json by key name, so only the Overtoad's account can reproduce it
   processes    no running process names either tree, and none holds a file or working directory under the root
                (lsof +D)
   advisories   active GitHub advisories for the installed npm set, by severity (reported, not judged)

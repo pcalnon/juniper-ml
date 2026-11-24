@@ -1,4 +1,4 @@
-# Ad-hoc one-cell suite (2026-10-30, recurrence x equities arc; the owner asked for the run that day):
+# Ad-hoc one-cell suite (2026-10-30, recurrence x equities arc; the Overtoad asked for the run that day):
 # does a cascor that serves juniper-cascor#731 fill the suite's `test_accuracy` column (juniper-ml#2381;
 # register row APD-ML-002, notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md)?
 #
@@ -10,7 +10,7 @@
 #   JUNIPER_EXP_PROJECT_DIR=/home/pcalnon/Development/python/Juniper \
 #     python3 util/experiments/run_suite.py --suite util/ad-hoc/2026-10-30_test_accuracy_731_smoke_suite.yaml
 #
-# Retained as provenance (owner policy 2026-08-25).
+# Retained as provenance (Overtoad policy 2026-08-25).
 schema_version: 1
 suite:
   name: test-accuracy-731-smoke

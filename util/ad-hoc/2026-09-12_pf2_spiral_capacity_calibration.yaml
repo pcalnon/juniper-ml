@@ -1,4 +1,4 @@
-# PF-2 axis 3 CAPACITY CALIBRATION (owner decision D4; spec:
+# PF-2 axis 3 CAPACITY CALIBRATION (Overtoad decision D4; spec:
 # notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md §4).
 #
 # THE QUESTION THIS ANSWERS, AND WHY IT MUST RUN FIRST
@@ -45,7 +45,7 @@ execution:
   per_run_timeout_seconds: 1800
   max_wall_seconds: 900
 matrix:
-  # Short axis on purpose: 2 is the floor, 6 is the owner's expected practical ceiling, 10 is
+  # Short axis on purpose: 2 is the floor, 6 is the Overtoad's expected practical ceiling, 10 is
   # MAX_SPIRALS. Three points are enough to see whether the outcomes separate at all.
   dataset.params.n_spirals: [2, 6, 10]
   # Two budgets: the smoke default (known too small -- it is the negative control) and one with

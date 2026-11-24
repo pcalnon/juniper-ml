@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-21
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.14 -> v1.7.15);
          juniper-ml#2313 (the propose.py fix it records), util/ad-hoc/2026-10-21_simulate_release_proposal.py;
          util/ad-hoc/2026-10-21_plan_v1_7_14_juniper_ml_0_11_0_cut.py (the revision this follows)
@@ -16,7 +16,7 @@ Usage
     python3 util/ad-hoc/2026-10-21_plan_v1_7_15_juniper_ml_0_11_0_published.py \
         --publish-run <id> --archive-sha <8+ hex> --recheck-sha <8+ hex> [--fix-pr <N> [--fix-sha <8+ hex>]] [--plan PATH] [--check]
 
-``--publish-run`` is the ``publish.yml`` run the owner approved, ``--archive-sha`` the archive PR's squash merge,
+``--publish-run`` is the ``publish.yml`` run the Overtoad approved, ``--archive-sha`` the archive PR's squash merge,
 ``--recheck-sha`` the ``main`` commit the post-merge re-check of juniper-ml#2306's co-changes ran on, ``--fix-pr``
 the concurrent session's ``propose.py`` PR and ``--fix-sha`` its squash merge. Without ``--fix-pr`` the fix is recorded
 as in flight, with it alone as open, and with both as landed (juniper-ml#2313, ``8357ca50``, is what v1.7.15 records).
@@ -34,7 +34,7 @@ _REPO = Path(__file__).resolve().parents[2]
 _PLAN = _REPO / "notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md"
 
 PUBLISHED = (
-    "the owner approved the `pypi` gate: `publish.yml` run PUBLISH_RUN is green (Publish to PyPI 21:08:22Z-21:08:55Z), and the "
+    "the Overtoad approved the `pypi` gate: `publish.yml` run PUBLISH_RUN is green (Publish to PyPI 21:08:22Z-21:08:55Z), and the "
     "index serves the 0.11.0 wheel and sdist with `requires_dist` carrying `juniper-recurrence<0.9.0,>=0.8.0`, "
     "`juniper-recurrence-model<0.7.0,>=0.6.0`, `juniper-data>=0.17.0` and `juniper-canopy>=0.9.0`; Release `v0.11.0` is the "
     "repo's latest. The archive PR juniper-ml#2307 merged as `ARCHIVE_SHA`. The post-merge re-check of juniper-ml#2306's "
@@ -74,7 +74,7 @@ def _published(publish_run: str, archive_sha: str, recheck_sha: str, fix_pr: "st
 
 def _fix_next(fix_pr: "str | None", fix_sha: "str | None") -> str:
     if fix_pr and fix_sha:
-        return "A juniper-config-tools 0.2.0 cut (the owner's call) no longer needs a hand co-change; its `[Unreleased]` needs backfilling first. "
+        return "A juniper-config-tools 0.2.0 cut (the Overtoad's call) no longer needs a hand co-change; its `[Unreleased]` needs backfilling first. "
     return f"The `propose.py` fix for README's lead-in and compatibility rows lands from {f'juniper-ml#{fix_pr}' if fix_pr else 'a concurrent turing session'}. "
 
 
@@ -85,20 +85,20 @@ def edits(publish_run: str, archive_sha: str, recheck_sha: str, fix_pr: "str | N
         ("- **Version**: 1.7.14", "- **Version**: 1.7.15"),
         # Status line: the v1.7.15 clause, after the v1.7.14 one.
         (
-            "is parked at the owner's `pypi` gate). The v1.4.0 plan edits follow that record",
-            f"is parked at the owner's `pypi` gate); **juniper-ml 0.11.0 published** (v1.7.15: {published}). The v1.4.0 plan edits follow that record",
+            "is parked at the Overtoad's `pypi` gate). The v1.4.0 plan edits follow that record",
+            f"is parked at the Overtoad's `pypi` gate); **juniper-ml 0.11.0 published** (v1.7.15: {published}). The v1.4.0 plan edits follow that record",
         ),
         # Progress block: the session bullet before the Next bullet, and the Next bullet rewritten.
         (
-            "  - **Next**: the owner approves the juniper-ml 0.11.0 `pypi` gate (run 39577119562); after the publish, the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; "
+            "  - **Next**: the Overtoad approves the juniper-ml 0.11.0 `pypi` gate (run 39577119562); after the publish, the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; "
             "that file is not on turing). `util/release_train/propose.py` should co-update README's compatibility lead-in when it bumps juniper-ml (the gap juniper-ml#2306 met). The juniper-recurrence-client 0.3.1 "
-            "release (owner's cut) carries the embargo fix. juniper-data's next release carries W5.7 (owner's cut). The W0.1 service-core half and the W1.12 / W1.11 smokes (owed on the 0.8.0 image, on a host whose "
+            "release (Overtoad's cut) carries the embargo fix. juniper-data's next release carries W5.7 (Overtoad's cut). The W0.1 service-core half and the W1.12 / W1.11 smokes (owed on the 0.8.0 image, on a host whose "
             "Docker reaches GHCR) stay open.",
             f"  - **juniper-ml 0.11.0 published (turing session 9, 2026-10-21)**: {published}.\n"
-            "  - **Next**: the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; the owner's, since that file is not on turing). "
+            "  - **Next**: the parent `Juniper/AGENTS.md` RELEASED paragraph (juniper-ml 0.11.0, recurrence 0.8.0, model 0.6.0; the Overtoad's, since that file is not on turing). "
             f"{fix_next}The driver follow-ups are juniper-ml#2211 (`save_model` persists the scored model through `POST /v1/model/snapshots` with "
-            "`expect_operation_id`, juniper-recurrence#192) and juniper-ml#2210 (`per_run_timeout_seconds` against the summed driver budgets). The juniper-recurrence-client 0.3.1 release (owner's cut) carries the "
-            "embargo fix. juniper-data's next release carries W5.7 (owner's cut). The W0.1 service-core half and the W1.12 / W1.11 smokes (owed on the 0.8.0 image, on a host whose Docker reaches GHCR) stay open.",
+            "`expect_operation_id`, juniper-recurrence#192) and juniper-ml#2210 (`per_run_timeout_seconds` against the summed driver budgets). The juniper-recurrence-client 0.3.1 release (Overtoad's cut) carries the "
+            "embargo fix. juniper-data's next release carries W5.7 (Overtoad's cut). The W0.1 service-core half and the W1.12 / W1.11 smokes (owed on the 0.8.0 image, on a host whose Docker reaches GHCR) stay open.",
         ),
     ]
 
@@ -119,7 +119,7 @@ _ROW_ANCHOR_START = "| 2026-10-21 | 1.7.14 | **juniper-ml 0.11.0 cut, parked at 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--publish-run", required=True, help="the publish.yml run id the owner approved")
+    ap.add_argument("--publish-run", required=True, help="the publish.yml run id the Overtoad approved")
     ap.add_argument("--archive-sha", required=True, help="the archive PR's squash-merge sha (8 or more hex)")
     ap.add_argument("--recheck-sha", required=True, help="the main commit the post-merge re-check ran on (8 or more hex)")
     ap.add_argument("--fix-pr", help="the concurrent session's propose.py PR number, once it is open")

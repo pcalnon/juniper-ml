@@ -19,7 +19,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc -- consensus round 2, Lane A
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ def required(repo: str) -> set:
 
 
 def merged_prs(repo: str, n: int) -> list:
-    q = f'query {{ repository(owner: "pcalnon", name: "{repo}") {{ pullRequests(states: MERGED, first: {n}, orderBy: {{field: CREATED_AT, direction: DESC}}) {{ nodes {{ number createdAt mergedAt headRefOid }} }} }} }}'
+    q = f'query {{ repository(Overtoad: "pcalnon", name: "{repo}") {{ pullRequests(states: MERGED, first: {n}, orderBy: {{field: CREATED_AT, direction: DESC}}) {{ nodes {{ number createdAt mergedAt headRefOid }} }} }} }}'
     return gql(q)["repository"]["pullRequests"]["nodes"]
 
 
@@ -62,7 +62,7 @@ def head_checks(repo: str, oids: list, batch: int = 4) -> dict:
                 f"checkRuns(first: 100, filterBy: {{checkType: ALL}}) {{ totalCount nodes {{ databaseId name status conclusion startedAt completedAt }} }} "
                 f"latest: checkRuns(first: 100, filterBy: {{checkType: LATEST}}) {{ nodes {{ databaseId }} }} }} }} }} }}"
             )
-        data = gql(f'query {{ repository(owner: "pcalnon", name: "{repo}") {{ ' + " ".join(parts) + " } }")["repository"]
+        data = gql(f'query {{ repository(Overtoad: "pcalnon", name: "{repo}") {{ ' + " ".join(parts) + " } }")["repository"]
         for j, o in enumerate(oids[i : i + batch]):
             out[o] = data.get(f"c{j}")
     return out

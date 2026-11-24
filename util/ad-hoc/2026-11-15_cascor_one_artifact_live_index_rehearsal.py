@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- investigation (evidence for the juniper-cascor one-artifact publish pull request)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_cascor_one_artifact_publish_edits.py (writes the publish.yml this reads);
          util/ad-hoc/2026-11-15_verify_cascor_0_14_0_canopy_0_10_0_published.py (measured the two builds' sha256)
 

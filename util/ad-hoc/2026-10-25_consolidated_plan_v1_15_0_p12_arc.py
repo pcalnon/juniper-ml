@@ -6,13 +6,13 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-25
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (v1.14.0 -> v1.15.0);
          util/ad-hoc/2026-10-25_p12_arc_state_reprobe.py (the probe whose results the edits state);
          notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md v1.7.16
          (the arc's own record, which the edits cite rather than re-derive)
 
-What it records: W1.13's four releases and W1.14 (2026-10-17), the owner's P12 rulings of 2026-10-17 and 2026-10-18,
+What it records: W1.13's four releases and W1.14 (2026-10-17), the Overtoad's P12 rulings of 2026-10-17 and 2026-10-18,
 P12's W5 items in code and in recurrence 0.7.0 / 0.8.0, juniper-ml 0.11.0 and 0.11.1, and the release state the P12 rows
 name (data 0.17.1 and cascor 0.12.0 served; the fix-forwards still owed). It adds R-ML-TOOLS (0.11.1, shipped) and
 R-ML-SERVERS (the `[servers]` floors, next) to the release train. Other paths are not touched.
@@ -71,9 +71,9 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
         "status",
         "and is then gated, landed and merged (Validation record).\n",
         "  - v1.15.0 (2026-10-25) is a record of the recurrence × equities arc (P12) since the final census: W1.13's four releases and W1.14 (2026-10-17), "
-        "the owner's P12 rulings of 2026-10-17 and 2026-10-18, P12's W5 items, and juniper-ml 0.11.0 and 0.11.1 (XC-P12; §5). "
+        "the Overtoad's P12 rulings of 2026-10-17 and 2026-10-18, P12's W5 items, and juniper-ml 0.11.0 and 0.11.1 (XC-P12; §5). "
         "It re-probes the release rows those touch, and adds R-ML-TOOLS (shipped) and R-ML-SERVERS (next) to §5.\n"
-        "    - It is not a validation round: validation ended by the owner's ruling of 2026-10-24, so no round checks v1.15.0, "
+        "    - It is not a validation round: validation ended by the Overtoad's ruling of 2026-10-24, so no round checks v1.15.0, "
         "and each fact it adds names the probe or the record it came from. Every other path keeps v1.14.0's state and its staleness (Snapshot).\n",
     )
     append(
@@ -84,7 +84,7 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
         f"{census_time} with `--since 2026-10-25T18:12:00Z` to catch late drift. It found one open PR in the nine repositories, ml#2271, a settings change;\n"
         f"    - {PROBE} ({probe_time}): 22 PyPI versions, 11 requirement lines, 4 publish runs and 16 issues and PRs. "
         "Every one of the 46 rows with an expected state matched it (exit 0); the other 7 are reported only;\n"
-        f"    - {RPLAN} v1.7.16 (ml#2317), whose Progress and \"Ruled\" blocks record the arc's work and the owner's rulings. "
+        f"    - {RPLAN} v1.7.16 (ml#2317), whose Progress and \"Ruled\" blocks record the arc's work and the Overtoad's rulings. "
         "v1.15.0 cites them rather than re-deriving them.\n"
         "    - It takes in ml#2232, ml#2260, ml#2292, ml#2306 and ml#2314 above, and ml#2319 and ml#2321 (juniper-ml 0.11.1). "
         "The rest of the drift (P1, P2, P3, the turing host plan, flood 3's record) is not taken in, so those rows stay stale.\n",
@@ -106,8 +106,8 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "ov-w114",
-        f"     - Recurrence's fix, W1.14 (effort S), awaits owner acceptance ({RPLAN} F-S10, W1.14). It closes recurrence's relay only:",
-        "     - Recurrence's fix, W1.14, was accepted by the owner on 2026-10-17 and ships from recurrence 0.6.0 (recurrence#203; §5). It closes recurrence's relay only:",
+        f"     - Recurrence's fix, W1.14 (effort S), awaits Overtoad acceptance ({RPLAN} F-S10, W1.14). It closes recurrence's relay only:",
+        "     - Recurrence's fix, W1.14, was accepted by the Overtoad on 2026-10-17 and ships from recurrence 0.6.0 (recurrence#203; §5). It closes recurrence's relay only:",
     )
     append(
         "ov-canopy-screen",
@@ -122,8 +122,8 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     append(
         "ov-train",
-        "and cascor 0.12.0 were cut on 2026-10-10 and wait at the `pypi` gate. The fix-forwards are owed (owner ruling 2026-10-10; §5).\n",
-        "     - By 2026-10-25 the owner had approved all five gates: PyPI serves model 0.4.0 from 2026-10-13, data-client 0.6.0 from 10-17, "
+        "and cascor 0.12.0 were cut on 2026-10-10 and wait at the `pypi` gate. The fix-forwards are owed (Overtoad ruling 2026-10-10; §5).\n",
+        "     - By 2026-10-25 the Overtoad had approved all five gates: PyPI serves model 0.4.0 from 2026-10-13, data-client 0.6.0 from 10-17, "
         "ci-tools 0.9.1 from 10-21, data 0.17.1 from 10-23 and cascor 0.12.0 from 10-25 (18:13Z). "
         "The fix-forwards are still owed: PyPI has no observability 0.4.2, service-core 0.7.2 or data 0.17.2.\n"
         "     - The P12 chain then published recurrence 0.6.0 and canopy 0.9.0 (2026-10-17), recurrence 0.6.1, 0.7.0 and 0.8.0 and model 0.5.0 and 0.6.0 "
@@ -136,22 +136,22 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "ov-p12-head",
-        "- **P12 runs ahead of the owner's rulings.**",
-        "- **P12 ran ahead of the owner's rulings; the owner took them on 2026-10-17 and 2026-10-18.**",
+        "- **P12 runs ahead of the Overtoad's rulings.**",
+        "- **P12 ran ahead of the Overtoad's rulings; the Overtoad took them on 2026-10-17 and 2026-10-18.**",
     )
     add(
         "ov-p12-tail",
         "  - Their rulings are now ratify-or-revert decisions (§6 A1, A9).\n  - P12 continues from `…w1-13-owner-next.md`.",
         "  - **Phase 1 is done** (v1.15.0): W1.13's four releases are served and W1.14 shipped in recurrence 0.6.0 (2026-10-17). "
         "Every pin and floor that follows them is on `main` (XC-P12).\n"
-        "  - The owner ruled R1–R8 as shipped, R5's amended band, W1.14 for 0.6.0, the dates and W5.8 (B) (§6 A1, A9). "
+        "  - The Overtoad ruled R1–R8 as shipped, R5's amended band, W1.14 for 0.6.0, the dates and W5.8 (B) (§6 A1, A9). "
         "P6 OD-2, canopy#685 call (a), DC-0.6's two numbers and F-S10's data-client and cascor fixes remain.\n"
         f"  - P12 continues from `{SHORT}`.",
     )
     add(
         "scope-p12",
-        '  - **P12**: its own horizon is 2027-01-15, and its dates are "owner to confirm".',
-        "  - **P12**: its own horizon is 2027-01-15. The owner confirmed its dates on 2026-10-18: M0 2026-10-24, M1 2026-11-21, M2 and M3 2026-12-12, M4 2027-01-15.",
+        '  - **P12**: its own horizon is 2027-01-15, and its dates are "Overtoad to confirm".',
+        "  - **P12**: its own horizon is 2027-01-15. The Overtoad confirmed its dates on 2026-10-18: M0 2026-10-24, M1 2026-11-21, M2 and M3 2026-12-12, M4 2027-01-15.",
     )
     add(
         "inputs-p12",
@@ -177,14 +177,14 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "s2-p12",
-        "| P12 equities | Phase 0 is closed out (ml#2151), except W0.1's service-core half (owner). Phase 1's waves 1 and 2 merged (10-05, 10-09) "
+        "| P12 equities | Phase 0 is closed out (ml#2151), except W0.1's service-core half (Overtoad). Phase 1's waves 1 and 2 merged (10-05, 10-09) "
         "pending A9's rulings, R7 among them; its code is done except W1.14 and 2c. W1.11 is done, and W1.13 started on 10-10 (`…w1-13-owner-next.md`). "
         "The review of `…EQUITIES-CV-BLOWUP-INVESTIGATION.md` is done (ml#2168: GO upheld), so R5 can be ruled. "
-        "Next: the owner's W1.13 cuts, W1.14, A1 (F-S10's fixes and their vehicle) and A9. | §6 A1, A9; S0.9; S0.11 | T0/T2 |",
+        "Next: the Overtoad's W1.13 cuts, W1.14, A1 (F-S10's fixes and their vehicle) and A9. | §6 A1, A9; S0.9; S0.11 | T0/T2 |",
         "| P12 equities | 2026-10-25: Phase 1 is done. W1.13's releases are served and W1.14 shipped in recurrence 0.6.0 (10-17), then the pins and floors. "
-        "The owner ruled most of A1 and A9 on 10-17/18. P12's W5 items are on `main`; their model and service halves ship in recurrence 0.7.0/0.8.0 "
+        "The Overtoad ruled most of A1 and A9 on 10-17/18. P12's W5 items are on `main`; their model and service halves ship in recurrence 0.7.0/0.8.0 "
         "and model 0.5.0/0.6.0, and W5.7 (data#486) waits for a data release. juniper-ml 0.11.0 and 0.11.1 carry the floors. "
-        "W0.1's service-core half: owner (XC-P12). | §5 R-ML-SERVERS; client 0.3.1 (owner); §6 A1, A9's rest | T1/T2 |",
+        "W0.1's service-core half: Overtoad (XC-P12). | §5 R-ML-SERVERS; client 0.3.1 (Overtoad); §6 A1, A9's rest | T1/T2 |",
     )
 
     # ---- §3 XC-P12 --------------------------------------------------------------------------------------------------
@@ -192,17 +192,17 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
         "xc-done",
         "recurrence-model 0.4.0 and data-client 0.6.0 are cut and wait at the `pypi` gate (§5).\n",
         f"\n**W1.13 and W1.14 are done, and P12 went on to its W5 items** (v1.15.0, from {RPLAN} v1.7.16; every release re-probed 2026-10-25):\n\n"
-        "- **W1.14** was accepted by the owner on 2026-10-17 and merged as recurrence#203 (`aeccd35f`) before recurrence 0.6.0's cut: vehicle (b). "
+        "- **W1.14** was accepted by the Overtoad on 2026-10-17 and merged as recurrence#203 (`aeccd35f`) before recurrence 0.6.0's cut: vehicle (b). "
         "The published 0.6.0 wheel serves fixed 5xx phrases and refuses a padded key at load; the 0.5.0 control relays the key in its 502 detail.\n"
         "- **W1.13's four releases** are served: model 0.4.0 (2026-10-13), data-client 0.6.0 (10-17 05:16Z), and recurrence 0.6.0 and canopy 0.9.0 "
-        "(10-17 22:08Z). The owner delegated the last two cuts and approved every gate (Ruled 2026-10-17).\n"
-        "- **recurrence 0.6.0 shipped without the owner's floors ruling of 2026-10-10** (model `>=0.4.0`, data-client `>=0.6.0`), "
+        "(10-17 22:08Z). The Overtoad delegated the last two cuts and approved every gate (Ruled 2026-10-17).\n"
+        "- **recurrence 0.6.0 shipped without the Overtoad's floors ruling of 2026-10-10** (model `>=0.4.0`, data-client `>=0.6.0`), "
         "so an upgrade over 0.5.0 kept the old pair. recurrence#206 raised them, and 0.6.1 serves them (2026-10-18 19:02Z).\n"
         "- **The pins and floors followed.** juniper-deploy#249 pinned recurrence 0.6.0 and canopy 0.9.0 after both deploy smokes passed on its head "
         "(8/8 and 3/3, by GHCR digest); #251, #255 and #257 moved recurrence to 0.6.1, 0.7.0 and 0.8.0. "
         "In juniper-ml, #2232 widened the `[recurrence]` ceilings and floored canopy `>=0.9.0` and recurrence `>=0.6.0`; "
         "#2243, #2260 and #2292 then raised them step by step, to recurrence `>=0.8.0,<0.9.0` and model `>=0.6.0,<0.7.0`.\n"
-        "- **2c's name is settled** (owner ruling 2026-10-18): `${RUN_DIR}/snapshots`. juniper-ml's `util/isolated_stack.bash` sets it, "
+        "- **2c's name is settled** (Overtoad ruling 2026-10-18): `${RUN_DIR}/snapshots`. juniper-ml's `util/isolated_stack.bash` sets it, "
         "and juniper-canopy#751 (open) has canopy Lane B adopt it.\n"
         "- **P12's W5 items.** W5.10 (recurrence#208), W5.9 and W5.8 (B) (recurrence#209, #212), W5.2 (recurrence#214, #215; the bench row #219), "
         "W5.4 with R5's band (ml#2262), and W5.5 and W5.6 (ml#2273) merged. Their model and service halves were released in model 0.5.0 and 0.6.0 "
@@ -232,15 +232,15 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     append(
         "xc-act5",
         "is an OWNER-ACTION. A live cascor on `:8202` imports from that environment (§8).",
-        " Ruled 2026-10-18: the owner runs it at the next cascor restart on the original host, and M0 closes on its date (2026-10-24) with it as an owner follow-up.",
+        " Ruled 2026-10-18: the Overtoad runs it at the next cascor restart on the original host, and M0 closes on its date (2026-10-24) with it as an Overtoad follow-up.",
     )
     add(
         "xc-act6",
         "6. **Do not dispatch W0.1–W0.9, or Phase 1's waves 1 and 2, again.** Wave 2 and W1.11 are done. Further P12 work follows `…w1-13-owner-next.md`: "
-        "W1.13's cuts, in the order data-client 0.6.0, recurrence-model 0.4.0, recurrence 0.6.0 and canopy 0.9.0, and W1.14, which awaits the owner.",
+        "W1.13's cuts, in the order data-client 0.6.0, recurrence-model 0.4.0, recurrence 0.6.0 and canopy 0.9.0, and W1.14, which awaits the Overtoad.",
         "6. **Do not dispatch W0.1–W0.9, Phase 1 (W1.1–W1.14) or the done W5 items again.** Further P12 work follows "
         f"`{SHORT}`: R-ML-SERVERS (§5), the recurrence-client 0.3.1 cut, the W1.11 and W1.12 smokes on the 0.8.0 image, "
-        "and the owner's open items (§6 A1, A9).",
+        "and the Overtoad's open items (§6 A1, A9).",
     )
 
     # ---- §4 the program ---------------------------------------------------------------------------------------------
@@ -257,16 +257,16 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     append(
         "s09",
         "so R5 joins Group B's P12 asks.",
-        " Overtaken: the owner ruled those asks, R5 among them, in the P12 sessions of 2026-10-17 and 2026-10-18 (XC-P12).",
+        " Overtaken: the Overtoad ruled those asks, R5 among them, in the P12 sessions of 2026-10-17 and 2026-10-18 (XC-P12).",
     )
     append(
         "s09-name",
         "and settle the snapshot-directory name (`…p1-wave1-in-flight.md`).",
-        " The name is settled (`${RUN_DIR}/snapshots`, owner ruling 2026-10-18; juniper-canopy#751); the frozen bodies' comparison is not re-probed.",
+        " The name is settled (`${RUN_DIR}/snapshots`, Overtoad ruling 2026-10-18; juniper-canopy#751); the frozen bodies' comparison is not re-probed.",
     )
     append(
         "s011",
-        "- **S0.11 — F-S10**, for whatever the owner accepts at §6 A1.",
+        "- **S0.11 — F-S10**, for whatever the Overtoad accepts at §6 A1.",
         " W1.14's part is done: it merged with its tests (recurrence#203) and ships from recurrence 0.6.0. What remains is the data-client and cascor fixes, if A1 accepts them.",
     )
     append(
@@ -290,7 +290,7 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
         "wave2-p12",
         "| P12 equities | M0 (after W0.1's service-core half) · Phase 1: waves 1–2 merged pending A9 (R7 added); W1.11 done; W1.13 in progress → M1 · "
         "W1.1b (P12-11, optional, after R1) · R5, rulable now; W5.4 in Wave 4 |",
-        "| P12 equities | M0 closes on its date (10-24); W0.1's service-core half is an owner follow-up · Phase 1 done (10-17) → M1 (11-21; "
+        "| P12 equities | M0 closes on its date (10-24); W0.1's service-core half is an Overtoad follow-up · Phase 1 done (10-17) → M1 (11-21; "
         "the W1.11/W1.12 smokes owed on 0.8.0) · W1.1b not commissioned · W5.4 done · next: R-ML-SERVERS |",
     )
     append(
@@ -308,9 +308,9 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "r-data-2",
-        "| **R-DATA-2** (owed; owner ruling 2026-10-10): juniper-data 0.17.2, or 0.17.1 only if the owner withdraws the cut 0.17.1, its Release, tag and image with it (note below) | "
+        "| **R-DATA-2** (owed; Overtoad ruling 2026-10-10): juniper-data 0.17.2, or 0.17.1 only if the Overtoad withdraws the cut 0.17.1, its Release, tag and image with it (note below) | "
         "P3-03 (`d1c66a11` and `94ce8b1f`, rebased) and P3-09, beside data#478's lock and data#479's floors |",
-        "| **R-DATA-2** (owed; owner ruling 2026-10-10): juniper-data 0.17.2; 0.17.1 is served since 2026-10-23, which ends the withdrawal option (note below) | "
+        "| **R-DATA-2** (owed; Overtoad ruling 2026-10-10): juniper-data 0.17.2; 0.17.1 is served since 2026-10-23, which ends the withdrawal option (note below) | "
         "P3-03 (`d1c66a11` and `94ce8b1f`, rebased) and P3-09, beside data#478's lock and data#479's floors; and P12's W5.7, a default change (note below) |",
     )
     add(
@@ -320,10 +320,10 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "r-fs10",
-        "| **F-S10's release vehicle** (owner ruling, §6 A1) | The recurrence relay fix (W1.14) | Either (a) recurrence 0.5.1 from the `juniper-recurrence-v0.5.0` tag "
+        "| **F-S10's release vehicle** (Overtoad ruling, §6 A1) | The recurrence relay fix (W1.14) | Either (a) recurrence 0.5.1 from the `juniper-recurrence-v0.5.0` tag "
         "with only the fix (an exception to the `origin/main` rule; CI by hand, §4 Wave 1), or (b) the P12-chain recurrence release with its gates "
         "(after W1.13; R-ML-a's widened `[recurrence]` caps admit 0.6.0) |",
-        "| **F-S10's release vehicle** (shipped; owner ruling 2026-10-17: (b)) | The recurrence relay fix (W1.14; recurrence#203) | Either (a) recurrence 0.5.1 "
+        "| **F-S10's release vehicle** (shipped; Overtoad ruling 2026-10-17: (b)) | The recurrence relay fix (W1.14; recurrence#203) | Either (a) recurrence 0.5.1 "
         "from the `juniper-recurrence-v0.5.0` tag with only the fix, or (b) the P12-chain recurrence release. (b) was taken: recurrence 0.6.0 "
         "(PyPI 2026-10-17) and every later release carry it, and no 0.5.1 exists |",
     )
@@ -349,11 +349,11 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
         "Each floor read from the published wheel; PyPI's 0.11.x metadata carries them (2026-10-25) | — |\n"
         "| **R-ML-TOOLS** (shipped as juniper-ml 0.11.1, 2026-10-25) | The `[tools]` floors on the shared security patches, "
         "`juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0` (ml#2314). Rated Medium, CWE-201, CWE-755 and CWE-770 "
-        "(owner, 2026-10-25), as the releases it floors | R-OBS-SC on PyPI (met on 2026-10-10); proposal ml#2319, archive ml#2321; "
-        "the owner approved the gate (run 40178692483) | `[tools]` and `[all]` users whose upgrade kept observability 0.4.0 or service-core 0.7.0 |\n"
+        "(Overtoad, 2026-10-25), as the releases it floors | R-OBS-SC on PyPI (met on 2026-10-10); proposal ml#2319, archive ml#2321; "
+        "the Overtoad approved the gate (run 40178692483) | `[tools]` and `[all]` users whose upgrade kept observability 0.4.0 or service-core 0.7.0 |\n"
         "| **R-ML-SERVERS** (next; unblocked on 2026-10-25): a juniper-ml patch | The `[servers]` floors `juniper-data>=0.17.1` and "
         "`juniper-cascor>=0.12.0`, which floor the shared security patches; ml#2062's fix if it is ready | Both on PyPI (met: data 2026-10-23, "
-        "cascor 2026-10-25). The floors PR first, pre-flighted for `[servers]` and `[all]` against real PyPI; then the owner's cut, gate and rating | "
+        "cascor 2026-10-25). The floors PR first, pre-flighted for `[servers]` and `[all]` against real PyPI; then the Overtoad's cut, gate and rating | "
         "`[servers]` and `[all]` users whose upgrade keeps data 0.17.0 or cascor 0.11.0 |",
     )
     append(
@@ -365,17 +365,17 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     append(
         "note-data",
         "That choice is time-bound while the gate waits (§6, mid-wave sitting; `EX/round14-laneA-reprobe.md` R14A-06).\n",
-        "- **Re-probed 2026-10-25**: the owner approved the gate. PyPI serves 0.17.1 from 2026-10-23T23:49Z (run 38084468369), "
+        "- **Re-probed 2026-10-25**: the Overtoad approved the gate. PyPI serves 0.17.1 from 2026-10-23T23:49Z (run 38084468369), "
         "and juniper-deploy pins it since deploy#258. So R-DATA-2 is 0.17.2, which PyPI does not have yet.\n"
         "- R-DATA-2 would also carry P12's W5.7 (data#486, merged 2026-10-19, in `[Unreleased]`). W5.7 changes a default: "
         "a multi-symbol request that loses a named symbol gets 422 instead of a silently partial dataset. "
-        f"Whether a 0.17.x patch may carry that is the owner's call ({RPLAN}, Progress 2026-10-19).\n",
+        f"Whether a 0.17.x patch may carry that is the Overtoad's call ({RPLAN}, Progress 2026-10-19).\n",
     )
     append(
         "note-cascor",
         "- So R-CASCOR is being cut ahead of its gates (P3-05's validation of cascor#690, P3-08) and without a cascor F-S10 fix. "
-        "Whether a fix-forward is owed for it is the owner's (mid-wave sitting).\n",
-        "- **Re-probed 2026-10-25**: the owner approved the gate. PyPI serves 0.12.0 from 18:13:28Z (run 38085392643 green), "
+        "Whether a fix-forward is owed for it is the Overtoad's (mid-wave sitting).\n",
+        "- **Re-probed 2026-10-25**: the Overtoad approved the gate. PyPI serves 0.12.0 from 18:13:28Z (run 38085392643 green), "
         "and juniper-deploy pins it since deploy#258 (2026-10-23). The fix-forward question stands.\n",
     )
     append(
@@ -386,7 +386,7 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
         f"against a control that fails ({RPLAN}, W1.13's status row).\n\n"
         "- canopy 0.9.0 was also R-CANOPY-A: its `[0.9.0]` section names F-CANOPY-059, #678, #683, #685 and #702. It was cut before R-OBS-SC-2 existed, "
         "so ahead of that row's lock-PR gate; whether P3-06, the O3 wording and A4 were met is not re-probed.\n"
-        "- recurrence 0.6.0 shipped without the owner's floors ruling of 2026-10-10, and 0.6.1 carries it (2026-10-18). "
+        "- recurrence 0.6.0 shipped without the Overtoad's floors ruling of 2026-10-10, and 0.6.1 carries it (2026-10-18). "
         "P12's W5 items followed in model 0.5.0 and 0.6.0 and recurrence 0.7.0 and 0.8.0 (2026-10-19, 10-20).\n"
         "- R-ML-a and R-ML-b shipped together as juniper-ml 0.11.0 (2026-10-21). Its `[recurrence]` ceilings rose on `main` the day after the cuts "
         "(ml#2232, 2026-10-18), and until 0.11.0 `juniper-ml[recurrence]` resolved recurrence 0.5.x. R-ML-TOOLS followed as 0.11.1 (2026-10-25).\n"
@@ -407,13 +407,13 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
         "`>=0.6.0,<0.7.0` (PyPI metadata, 2026-10-25). Left for A9: the number P5's W5 takes, and R-DC-PATCH-6's.\n",
     )
 
-    # ---- §6 owner packet --------------------------------------------------------------------------------------------
+    # ---- §6 Overtoad packet --------------------------------------------------------------------------------------------
     add(
         "s6-ruled",
         "**A1 is time-bound.** W1.13 started on 2026-10-10",
         f"**A1 and A9 since the final census** (v1.15.0; {RPLAN}, \"Ruled 2026-10-17\" and \"Ruled 2026-10-18, turing deploy-smokes session\"):\n\n"
         "- **A1, ruled**: R6 stands as applied; W1.14 is accepted, and vehicle (b) carried it (recurrence 0.6.0); "
-        "W0.1's swap is the owner's, at the next cascor restart on the original host.\n"
+        "W0.1's swap is the Overtoad's, at the next cascor restart on the original host.\n"
         "- **A1, still open**: P6 OD-2, canopy#685 call (a), the data-client source fix and a cascor fix, and whether host recurrence legs take a port of W1.14.\n"
         "- **A9, ruled**: R1–R8 confirmed as shipped, R1's preset not commissioned; the dates confirmed (M0 2026-10-24, M1 2026-11-21, "
         "M2 and M3 2026-12-12, M4 2027-01-15); W5.8 (B), W5.9 and W5.10 accepted for recurrence 0.7.0 and model 0.5.0; W5.11 declined.\n"
@@ -452,8 +452,8 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "s9-vehicle",
-        "| F-S10's release vehicle (§5) | W1.14 accepted, merged and validated; the owner's vehicle ruling (§6 A1) | Hard |",
-        "| F-S10's release vehicle (§5) | W1.14 accepted, merged and validated; the owner's vehicle ruling (§6 A1) | Hard. Met on 2026-10-17: vehicle (b), recurrence 0.6.0 |",
+        "| F-S10's release vehicle (§5) | W1.14 accepted, merged and validated; the Overtoad's vehicle ruling (§6 A1) | Hard |",
+        "| F-S10's release vehicle (§5) | W1.14 accepted, merged and validated; the Overtoad's vehicle ruling (§6 A1) | Hard. Met on 2026-10-17: vehicle (b), recurrence 0.6.0 |",
     )
     add(
         "s9-dc-cut",
@@ -462,8 +462,8 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "s9-phase1",
-        "applied R7 pending (XC-P12); the owner ratifies or reverts |",
-        "applied R7 pending (XC-P12). The owner ratified them on 2026-10-18, with the dates; DC-0.6's numbers remain |",
+        "applied R7 pending (XC-P12); the Overtoad ratifies or reverts |",
+        "applied R7 pending (XC-P12). The Overtoad ratified them on 2026-10-18, with the dates; DC-0.6's numbers remain |",
     )
     add(
         "s9-m1",
@@ -504,8 +504,8 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "risk-fs10",
-        "the owner's `pypi` gates on data-client 0.6.0 and the coming recurrence 0.6.0 |",
-        "the owner's `pypi` gates on data-client 0.6.0 and the coming recurrence 0.6.0 (both approved on 2026-10-17; recurrence 0.6.0 carries W1.14) |",
+        "the Overtoad's `pypi` gates on data-client 0.6.0 and the coming recurrence 0.6.0 |",
+        "the Overtoad's `pypi` gates on data-client 0.6.0 and the coming recurrence 0.6.0 (both approved on 2026-10-17; recurrence 0.6.0 carries W1.14) |",
     )
 
     # ---- appendices -------------------------------------------------------------------------------------------------
@@ -516,17 +516,17 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "appA-p0",
-        "  - **Done, phase 0** (merged; owner ratification pending, §6 A1):",
+        "  - **Done, phase 0** (merged; Overtoad ratification pending, §6 A1):",
         "  - **Done, phase 0** (merged; R6 ratified on 2026-10-18, §6 A1):",
     )
     add(
         "appA-w1",
-        "(merged on 2026-10-05; owner ratification of R1's default half, R2, data#451's reading of R3 and R8's alternative pending, §6 A9):",
+        "(merged on 2026-10-05; Overtoad ratification of R1's default half, R2, data#451's reading of R3 and R8's alternative pending, §6 A9):",
         "(merged on 2026-10-05; R1's default half, R2, data#451's reading of R3 and R8's alternative ratified on 2026-10-18, §6 A9):",
     )
     add(
         "appA-w2",
-        "(merged on 2026-10-09; owner ratification of R7 pending, §6 A9): P12-12 (W1.2: canopy#733, R7 pending),",
+        "(merged on 2026-10-09; Overtoad ratification of R7 pending, §6 A9): P12-12 (W1.2: canopy#733, R7 pending),",
         "(merged on 2026-10-09; R7 ratified on 2026-10-18, §6 A9): P12-12 (W1.2: canopy#733),",
     )
     append(
@@ -537,9 +537,9 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     )
     add(
         "appA-t0",
-        "  - **T0**: P12-01's service-core swap (owner); P12-W1.14 (F-S10; added to `…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` by ml#2151, "
-        "after extraction, so not a validation finding; owner acceptance, then a session fix)",
-        "  - **T0**: P12-01's service-core swap (owner, at the next cascor restart; ruled 2026-10-18). P12-W1.14 (F-S10; added to "
+        "  - **T0**: P12-01's service-core swap (Overtoad); P12-W1.14 (F-S10; added to `…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` by ml#2151, "
+        "after extraction, so not a validation finding; Overtoad acceptance, then a session fix)",
+        "  - **T0**: P12-01's service-core swap (Overtoad, at the next cascor restart; ruled 2026-10-18). P12-W1.14 (F-S10; added to "
         "`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` by ml#2151, after extraction, so not a validation finding) is done (above)",
     )
     add("appA-t1", "P12-23 →the P12 chain\n", "P12-23 →the P12 chain (done)\n")
@@ -567,8 +567,8 @@ def edits(census_time: str, probe_time: str) -> list[tuple[str, str, str]]:
     # ---- validation record / changed by this plan -------------------------------------------------------------------
     append(
         "drift-list",
-        "marked stale (Snapshot), and no round checks it (owner ruling 2026-10-24).\n",
-        "  - v1.15.0 is a record of P12's drift to 2026-10-25 and of the releases P12's rows name (Snapshot). No round checks it (owner ruling 2026-10-24); "
+        "marked stale (Snapshot), and no round checks it (Overtoad ruling 2026-10-24).\n",
+        "  - v1.15.0 is a record of P12's drift to 2026-10-25 and of the releases P12's rows name (Snapshot). No round checks it (Overtoad ruling 2026-10-24); "
         f"its facts cite the census, {PROBE} and {RPLAN} v1.7.16.\n",
     )
     add(

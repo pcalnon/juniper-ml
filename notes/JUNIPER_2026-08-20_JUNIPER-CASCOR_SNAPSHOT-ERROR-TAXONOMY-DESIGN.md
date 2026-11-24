@@ -8,7 +8,7 @@
 **Last Updated**: 2026-08-20
 
 **Status**: DESIGN — **not implemented**. Nothing in juniper-cascor was modified in producing this
-document. The owner asked (2026-08-19) that D-B be *discussed before implementing*; this is that
+document. The Overtoad asked (2026-08-19) that D-B be *discussed before implementing*; this is that
 discussion, written down so the decision has facts rather than recollection.
 
 **Line numbers are against juniper-cascor `4bec1be`** (`origin/main`, 2026-08-20 — the tip after
@@ -162,7 +162,7 @@ So `start_replay` has no channel for a reason at all. Any implementation must ei
    inconsistent across four sibling verbs, which is its own trap for the next reader.
 
 This choice, not the status code, is what decides the size of the change. **It is the main thing
-worth an owner decision.**
+worth an Overtoad decision.**
 
 ---
 
@@ -219,7 +219,7 @@ husk is available to validate that the classification matches reality.
 
 ---
 
-## 10. Open questions for the owner
+## 10. Open questions for the Overtoad
 
 1. **§6 — converge `start_replay` onto `_snapshot_result`, or leave replay fused?** This decides
    whether the change is small-and-inconsistent or larger-and-uniform. *(Recommend: converge —

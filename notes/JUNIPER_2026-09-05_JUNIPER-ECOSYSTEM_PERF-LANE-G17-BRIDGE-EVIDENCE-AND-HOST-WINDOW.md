@@ -3,7 +3,7 @@
 **Closes item 3.3** of
 [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md)
 — *"launch a recurrence run with `--grafana-bridge` and confirm recurrence timings actually appear
-under `environment="host-experiment"`"*. Owner granted host time for items 3.3, 2.1 and 2.2 on
+under `environment="host-experiment"`"*. The Overtoad granted host time for items 3.3, 2.1 and 2.2 on
 2026-09-05.
 
 **3.3 PASSES.** **2.1 and 2.2 are NOT run**, for a measured reason recorded in §4 — not a refusal,

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-08
 Status: ad-hoc — one-off (applied once, on 2026-09-08, to the PR worktree named below; the paths inside are that session's)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy#605 (worktree juniper-canopy--feature--partial-data-three-way-prompt--20260908-0729--eb05021d);
          HANDOFF_2026-09-08_defect-register-round-38-the-three-way-prompt-built-and-the-annotation-made-truthful.md
 """
@@ -135,7 +135,7 @@ replace_once(
     'DATASET_SHORTFALL_REFUSAL_TOKEN = "[dataset_shortfall_refused]"\n'
     'DATASET_SHORTFALL_REFUSAL_SENTENCE = "could not produce the requested dataset in full"\n'
     "\n"
-    "# The three options, as the owner specified them (2026-09-05 ruling): option 3 -- fail -- is\n"
+    "# The three options, as the Overtoad specified them (2026-09-05 ruling): option 3 -- fail -- is\n"
     "# the one that cancels the load and deselects the dataset. Options 1 and 2 are juniper-data\n"
     "# request parameters and travel on the generic ``nn_dataset_params`` channel.\n"
     "DATASET_SHORTFALL_OPTIONS = {\n"
@@ -569,7 +569,7 @@ replace_once(
     "## [Unreleased]\n\n### Added\n\n"
     "- **The partial-data contract's three-way prompt — the last unbuilt piece of the contract.** When a\n"
     "  Start is refused because juniper-data could not produce the staged dataset in full (cascor leaves\n"
-    "  the staged config in place for exactly this retry), a modal now puts the owner's three options to\n"
+    "  the staged config in place for exactly this retry), a modal now puts the Overtoad's three options to\n"
     "  the operator and requires an affirmative choice: **accept** the broken rows and continue, **drop**\n"
     "  them and continue, or **fail** the load — which cancels the staged change and deselects the\n"
     "  dataset (`⊥`) so Start and Apply stay gated until another is chosen. Accept and drop re-stage\n"

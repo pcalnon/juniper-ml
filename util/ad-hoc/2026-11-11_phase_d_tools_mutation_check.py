@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — investigation (test-efficacy evidence)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/yamaguchi_acceptance_probe.py, util/ad-hoc/2026-11-11_phase_d_finish.{py,bash},
          util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash,
          tests/test_yamaguchi_acceptance_probe.py, tests/test_phase_d_finish.py,
@@ -190,7 +190,7 @@ MUTANTS = [
     (FINISH, "drill: the run root is not checked", "    run_root = check_run_root(args.run_root, owner_uid)\n    out_path = ", "    run_root = os.path.realpath(args.run_root)\n    out_path = "),
     (FINISH, "drill: the driver is given the path as typed", "    dest = os.path.realpath(args.dest)\n", "    dest = args.dest\n"),
     # --- the run root and the verdict records ----------------------------------------------------------------------
-    (FINISH, "run root: its owner is not checked", "    if st.st_uid != owner_uid or st.st_mode & 0o077:\n", "    if st.st_mode & 0o077:\n"),
+    (FINISH, "run root: its Overtoad is not checked", "    if st.st_uid != owner_uid or st.st_mode & 0o077:\n", "    if st.st_mode & 0o077:\n"),
     (FINISH, "run root: its mode is not checked", "    if st.st_uid != owner_uid or st.st_mode & 0o077:\n", "    if st.st_uid != owner_uid:\n"),
     (FINISH, "run root: access for the group is accepted", "    if st.st_uid != owner_uid or st.st_mode & 0o077:\n", "    if st.st_uid != owner_uid or st.st_mode & 0o007:\n"),
     (FINISH, "run root: access for others is accepted", "    if st.st_uid != owner_uid or st.st_mode & 0o077:\n", "    if st.st_uid != owner_uid or st.st_mode & 0o070:\n"),
@@ -204,7 +204,7 @@ MUTANTS = [
     # --- shredding -------------------------------------------------------------------------------------------------
     (FINISH, "shred: a nested path is accepted", "    if os.path.dirname(real) != root:\n", "    if os.path.commonpath([real, root]) != root:\n"),
     (FINISH, "shred: any directory name is accepted", "    if not RUN_DIR_NAME.fullmatch(os.path.basename(real)):\n", "    if False:\n"),
-    (FINISH, "shred: the owner is not checked", "    if os.lstat(real).st_uid != owner_uid:\n", "    if False:\n"),
+    (FINISH, "shred: the Overtoad is not checked", "    if os.lstat(real).st_uid != owner_uid:\n", "    if False:\n"),
     (FINISH, "shred: a symlinked run directory is accepted", '    if os.path.islink(path):\n        raise Refused(f"{path} is a symlink")\n    real, root', '    if False:\n        raise Refused(f"{path} is a symlink")\n    real, root'),
     (FINISH, "shred: a symlink inside the tree is followed", "            if os.path.islink(target) or not os.path.isfile(target):\n", "            if False:\n"),
     (FINISH, "shred: a directory it may not touch is not a failure", '        return 0, [f"{run_dir}: {exc}"]\n', "        return 0, []\n"),
@@ -229,7 +229,7 @@ MUTANTS = [
     (FINISH, "aside: a directory inside Dropbox is accepted", '        if os.path.commonpath([real, root]) == root:\n            raise Refused(f"the aside directory', '        if False:\n            raise Refused(f"the aside directory'),
     (FINISH, "aside: inside Dropbox is judged by string prefix", '        if os.path.commonpath([real, root]) == root:\n            raise Refused(f"the aside directory', '        if real.startswith(root):\n            raise Refused(f"the aside directory'),
     (FINISH, "aside: the directory's mode is not checked", "    if st.st_uid != owner_uid or stat.S_IMODE(st.st_mode) != 0o700:\n", "    if st.st_uid != owner_uid:\n"),
-    (FINISH, "aside: the directory's owner is not checked", "    if st.st_uid != owner_uid or stat.S_IMODE(st.st_mode) != 0o700:\n", "    if stat.S_IMODE(st.st_mode) != 0o700:\n"),
+    (FINISH, "aside: the directory's Overtoad is not checked", "    if st.st_uid != owner_uid or stat.S_IMODE(st.st_mode) != 0o700:\n", "    if stat.S_IMODE(st.st_mode) != 0o700:\n"),
     (FINISH, "aside: a symlink at the directory's name is followed", "        fd = os.open(aside, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)\n", "        fd = os.open(aside, os.O_RDONLY | os.O_DIRECTORY)\n"),
     (FINISH, "aside: a directory this run made and lost is only refused", '        raise (ToolError(problem + " -- and this run created it, so something replaced it") if created else Refused(problem))\n', "        raise Refused(problem)\n"),
     (FINISH, "aside: no Dropbox root is not a refusal", '    if not roots:\n        raise Refused(f"{path} names no Dropbox root")\n', '    if False:\n        raise Refused(f"{path} names no Dropbox root")\n'),

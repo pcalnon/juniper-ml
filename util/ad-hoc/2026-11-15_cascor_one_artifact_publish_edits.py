@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (juniper-cascor#763, "publish one artifact to TestPyPI and PyPI", as amended by its review)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_publish_workflow_artifact_audit.py (the audit that classified every publisher);
          util/open_signed_pr.py and util/push_signed_commit.py (upload the files this writes, whole);
          notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md
@@ -243,7 +243,7 @@ def sub_package_workflow(text: str, package: str, blocks: dict[str, str], republ
 
 CHANGELOG_ENTRY = """\
 - **PyPI now receives the files TestPyPI took: `publish.yml` builds once, and the run checks every upload by sha256
-  against TestPyPI** (the owner's directive of 2026-11-15: "deploy to pypi should send the same artifact that was
+  against TestPyPI** (the Overtoad's directive of 2026-11-15: "deploy to pypi should send the same artifact that was
   already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy,
   might also be helpful here to prevent this from slipping through the cracks again."). `publish.yml` ran
   `python -m build` in its TestPyPI job and again in its PyPI job, so PyPI served a second build of each release. For
@@ -274,7 +274,7 @@ CHANGELOG_ENTRY = """\
     workflow's `permissions` is now `{}`: `Build and Validate` gets `contents: read` and `actions: read`,
     `Publish to TestPyPI` `contents: read` and `id-token: write`, and `Publish to PyPI` `id-token: write`. So the
     build, which runs the package's build backend, can mint no OIDC token and holds no environment.
-  - **Recovery, in the owner's order (ruling of 2026-11-15).** A `workflow_dispatch` from the release tag with
+  - **Recovery, in the Overtoad's order (ruling of 2026-11-15).** A `workflow_dispatch` from the release tag with
     `republish_from_testpypi` runs only the new job `Republish the tested files (dispatch only)`, behind the same
     `pypi` gate. It builds nothing: it downloads the version's files from TestPyPI, checks each file's bytes against
     TestPyPI's JSON and, while the release run's artifact exists, against its `SHA256SUMS`, uploads them, and checks
@@ -427,7 +427,7 @@ Give the workflow `permissions: {}` (or `contents: read`) and each job its own: 
 
 ### Recovering a Release That Did Not Reach PyPI
 
-The owner's ladder (ruling of 2026-11-15), in this order. Every rung publishes the files TestPyPI took, or nothing.
+The Overtoad's ladder (ruling of 2026-11-15), in this order. Every rung publishes the files TestPyPI took, or nothing.
 
 1. **Republish TestPyPI's files.** Dispatch the release's own workflow from its tag:
 

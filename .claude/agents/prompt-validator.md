@@ -62,7 +62,7 @@ severity escalates from `a` to `b` as harm increases.
 | ID | Severity | Decide |
 |----|----------|--------|
 | R1.1 | major | every task requirement AND every finding of a cited source document maps to a directive/deliverable; a disagreement between cited sources is surfaced, not silently flattened to one side |
-| R1.2 | major | no prompt directive lacks a trace back to the task or an owner-approved expansion (no scope-creep) |
+| R1.2 | major | no prompt directive lacks a trace back to the task or an Overtoad-approved expansion (no scope-creep) |
 | R1.3 | major | the `## Primary Objective` restates the task intent without distortion |
 | R1.4 | blocker->major | named repo(s)/app(s) match `bundle.repo_context`; the authorized blast radius is proportionate |
 | R2.0 | blocker | no residual `{{!REQUIRED}}` slot, empty mandated section, or bare-`-` stub; every `required_fields` entry is filled with non-placeholder content |
@@ -78,7 +78,7 @@ severity escalates from `a` to `b` as harm increases.
 | R3.4 | blocker | every asserted anchor is present in the bundle; any anchor not in the bundle is recorded in `hallucination_risk` and fails R3 |
 | R3.5 | major | no anchor re-asserts a claim recorded false in `prompts/agent_templates/data/known_misses.yaml` — consult the ledger; a recorded miss must not reship |
 | R4 | major | no undefined referent ("the issue", "this file") without a concrete bound; each directive admits a single interpretation |
-| R5 | minor->major | states what/why + constraints and leaves implementation latitude unless the owner pinned a design (not over-specified) |
+| R5 | minor->major | states what/why + constraints and leaves implementation latitude unless the Overtoad pinned a design (not over-specified) |
 
 The two hard gates are **R2.0** and **R3.4**: a single failure of either fails the prompt regardless of
 everything else.
@@ -154,7 +154,7 @@ findings are recorded but never block on their own. Emit exactly the keys above 
 - `validator_status`: `ok` = the bundle was fresh and all checks ran; `partial` = some checks could not
   run (e.g. a probe was unavailable) — say which in a finding; `error` = the bundle was stale/malformed or
   the inputs were unusable. On `error`/malformed output, the Skill retries you **once**, then escalates to
-  the owner.
+  the Overtoad.
 - **Fan-out conflict rule:** if you split checks across helpers, **any** helper failing a criterion fails
   that criterion (round 1 runs the checks sequentially in this single subagent; fan-out is available on
   this Claude Code version but is intentionally not used yet — design OQ-4 / Appendix B).
@@ -165,7 +165,7 @@ findings are recorded but never block on their own. Emit exactly the keys above 
 
 - **Model + effort (resolves OQ-4):** `model: opus` (latest Opus) and `effort: max` are pinned. The
   validator is the suite's last line of defense against shipping a hallucinated or unfaithful prompt, so
-  it runs at maximum capability and reasoning effort (owner directive, 2026-06-24) — this is the suite's
+  it runs at maximum capability and reasoning effort (Overtoad directive, 2026-06-24) — this is the suite's
   standing default for its agents and skills. Cost stays bounded by the Skill's max-3-round fix loop.
 - **Tools:** read-only + `Bash` only. You have no `Write`/`Edit` by design — you must never mutate the
   repository, only report on it.

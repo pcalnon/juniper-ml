@@ -1,13 +1,13 @@
 """
-Assemble manifest.json for the owner-ruling-17 canopy fix and check its deliverables.
+Assemble manifest.json for the Overtoad-ruling-17 canopy fix and check its deliverables.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: Cursor flood-4, owner ruling 17 ("canopy: dead error path"); juniper-canopy lockfile-update.yml
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Cursor flood-4, Overtoad ruling 17 ("canopy: dead error path"); juniper-canopy lockfile-update.yml
 
 Reads the uncommitted tree in ``--worktree`` and the scratch directory ``--scratch`` (its
 harness, mutants, logs and text deliverables), hashes every changed file and deliverable,

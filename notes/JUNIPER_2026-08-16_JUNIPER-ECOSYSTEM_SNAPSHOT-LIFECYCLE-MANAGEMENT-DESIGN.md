@@ -8,12 +8,12 @@
 **Last Updated**: 2026-08-23
 
 **Status**: **COMPLETE.** Phases 6.1 (identity), 6.2 (index) and 6.3 (fixes) have shipped;
-**Phase 6.4 (retention) was ratified by the owner on 2026-08-23 as a no-deletion policy**
+**Phase 6.4 (retention) was ratified by the Overtoad on 2026-08-23 as a no-deletion policy**
 (§6.4.3). No files were deleted, moved, or modified in producing this document, and under the
 ratified policy none ever will be — every number below still comes from a read-only census.
 
-Supersedes the disposal framing of **F-P1-4** ("snapshot `.h5` debris — owner's to keep or
-delete"). Per the owner (2026-08-16), snapshots get *"a planned, systems based solution … designed,
+Supersedes the disposal framing of **F-P1-4** ("snapshot `.h5` debris — Overtoad's to keep or
+delete"). Per the Overtoad (2026-08-16), snapshots get *"a planned, systems based solution … designed,
 validated, and documented iaw standard juniper operating procedures"*, and **"ad-hoc, overly
 aggressive, or one-off cleanup sweeps should not be performed."**
 
@@ -23,11 +23,11 @@ A sweep sized to "reclaim 1.8 GB" would have destroyed ~27.8k replayable models 
 disk than a single container image.
 
 The real problems are not disk. They are **three silent-failure defects** (§4) and **the absence of
-provenance** (§5) — and they bite precisely the four use cases the owner named.
+provenance** (§5) — and they bite precisely the four use cases the Overtoad named.
 
 ---
 
-## 1. Design requirements (owner-stated)
+## 1. Design requirements (Overtoad-stated)
 
 Snapshotting exists to allow historical models and training runs to be loaded for:
 
@@ -86,7 +86,7 @@ grew any (its absence in a 0-unit network is correct, not damage).
 > *single oldest* file as the 0.3.2 representative. That file is an Oct-2025 husk holding only
 > `config` + `meta`, it fails verification, and `load_network` returns `None` for it. Generalising
 > from it would have declared 97% of the archive dead and made an aggressive sweep look justified —
-> the exact outcome the owner's instruction guards against. **One file is not a cohort.** The
+> the exact outcome the Overtoad's instruction guards against. **One file is not a cohort.** The
 > stratified sample is the load-bearing evidence; the husk is a real but rare artifact (6 of 27,869).
 
 ### 2.2 `mtime` is not creation time
@@ -121,7 +121,7 @@ no audit trail at all.
 This is not hypothetical risk. On **2026-08-09** a concurrent session's `.h5` cleanup in this tree
 **swept 5 snapshot modules**, breaking every cascor boot with `ModuleNotFoundError` until healed as
 **cascor#501**. Mixing mutable artifacts into an importable package is the direct cause, and it is
-the single strongest argument for the owner's "no ad-hoc sweeps" rule: *in this directory a glob is
+the single strongest argument for the Overtoad's "no ad-hoc sweeps" rule: *in this directory a glob is
 a code-deletion tool.*
 
 ### 3.2 W-6 is a per-run redirect, not a policy
@@ -450,7 +450,7 @@ Phase 1 or 2.
 
 ### 6.4 Phase 4 — Retention policy (only after 1–3)
 
-> **RATIFIED 2026-08-23.** The proposal below was put to the owner as three questions; all three
+> **RATIFIED 2026-08-23.** The proposal below was put to the Overtoad as three questions; all three
 > are answered, and the answers resolve this phase to a **no-deletion policy**. The proposal text
 > is retained verbatim because the ratified outcome is only legible against what was proposed.
 
@@ -471,7 +471,7 @@ Phase 1 or 2.
 |---|---|---|
 | 1 | Do cohort B's 273 truncated writes get deleted, quarantined, or kept? | **Quarantine, never delete.** |
 | 2 | Does behavioural attribution count as §6.4 "named"? | **No — inference is not a keep-mark.** |
-| 3 | Is a `util/juniper-backup.bash` archive a sufficient safeguard before removal? | **Not until a restore drill passes.** *(2026-08-26: pipeline half PASSES; key half still owner-gated — see below.)* |
+| 3 | Is a `util/juniper-backup.bash` archive a sufficient safeguard before removal? | **Not until a restore drill passes.** *(2026-08-26: pipeline half PASSES; key half still Overtoad-gated — see below.)* |
 
 **On (1).** Cohort B is the archive's only established, irrecoverable loss — and it is
 **13.0 MB of a 1.7 GB archive, 0.75%**. There is no space argument for an irreversible action at
@@ -492,12 +492,12 @@ and **no restore drill has ever been run**. An unverified backup is the exact fa
 ml#1263 already caught once: archives that exist and do not restore.
 
 **Drill status, updated 2026-08-26.** The drill has two independent failure classes, and only
-one of them is testable without the owner present:
+one of them is testable without the Overtoad present:
 
 | # | class | question | status |
 |---|---|---|---|
 | 1 | **PIPELINE** | Does `tar -cjf - \| gpg -e` round-trip a tree byte-for-byte, and do the script's two unattended checks actually fire? | **PASSES** (re-drilled 2026-08-28 against the corrected bzip2 pipeline) |
-| 2 | **KEY** | Can the owner's YubiKey-backed private key decrypt a *real* archive? | **CLOSED 2026-08-28** |
+| 2 | **KEY** | Can the Overtoad's YubiKey-backed private key decrypt a *real* archive? | **CLOSED 2026-08-28** |
 
 Class 1 was drilled by [`util/ad-hoc/2026-08-26_backup_restore_drill.bash`](../util/ad-hoc/2026-08-26_backup_restore_drill.bash),
 which reproduces this script's pipeline verbatim against a synthetic tree — text, incompressible
@@ -577,11 +577,11 @@ logs / `__pycache__` / `.venv` churn is set aside the only difference is 514 byt
 Loose parent-level files (`AGENTS.md`, the `CLAUDE.md` symlink, the workspace file, a screenshot)
 were staged into `_juniper-parent-files/` because the script archives directories, never loose files.
 
-Once the owner is satisfied with the set, the 111 GB plaintext tarball can be deleted; it is the
+Once the Overtoad is satisfied with the set, the 111 GB plaintext tarball can be deleted; it is the
 single largest consumer of `EBC5-F0A3` and the exposure this script's encryption exists to prevent.
 
 The script still warns at both thresholds rather than only below 50%. The pre-existing *unencrypted*
-`juniper-8.0.0_python_2026-02-27.tgz` (111 GB) on `EBC5-F0A3` remains an owner decision — it is both a
+`juniper-8.0.0_python_2026-02-27.tgz` (111 GB) on `EBC5-F0A3` remains an Overtoad decision — it is both a
 plaintext copy of the whole project on removable media and most of that drive's used space.
 
 #### 6.4.3 The ratified policy
@@ -670,7 +670,7 @@ note, not here.
 
 ---
 
-## 9. Open questions for the owner
+## 9. Open questions for the Overtoad
 
 | #       | Question                                                         | Why it needs a decision                                                                                                                                                           |
 |---------|------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -689,7 +689,7 @@ note, not here.
 
 > **S-5 ANSWERED (2026-08-18) — R3 IS a real requirement, and it is NOT yet delivered.**
 >
-> The owner's answer: *"ideally, my preference would be to resume training on a restored network. The
+> The Overtoad's answer: *"ideally, my preference would be to resume training on a restored network. The
 > workflow would be something like: restore a snapshotted network, observe replay to gain insight
 > into its training, edit the network based on that insight, and then resume training … this
 > functionality would allow an iterative, experimental approach to network training that gets at one
@@ -701,7 +701,7 @@ note, not here.
 > **What the cascor#523-era fix does and does not buy.** The shipped fix (cascor `cb8a30e`) makes the
 > restored optimizer *faithful* — correct class, `Parameter`-keyed state, real buffers, true `lr`.
 > That satisfies **R1 (replay)**, **R2 (further experimentation)** and **R4 (crash recovery)**, and it
-> is what makes the first three steps of the owner's workflow trustworthy.
+> is what makes the first three steps of the Overtoad's workflow trustworthy.
 >
 > **It does not yet satisfy R3**, because the fourth step throws the state away:
 >
@@ -715,7 +715,7 @@ note, not here.
 > **The recreation is right, but over-broad.** Its own comment (`:2049-2053`) justifies it precisely:
 > *"the output layer's parameter space changes each time a hidden unit is added … so the previous
 > nn.Linear and optimizer state are invalid."* That is true **when a unit was added**. It is not true
-> for a resume that has not (yet) grown the network — exactly the owner's case, where the operator
+> for a resume that has not (yet) grown the network — exactly the Overtoad's case, where the operator
 > edits weights or metaparameters and continues. The code applies the always-invalid rule to a
 > sometimes-invalid situation.
 >
@@ -758,7 +758,7 @@ note, not here.
 ## 10. Relationship to F-P1-4 as previously recorded
 
 The P1 smoke note's F-P1-4 row says *"the smoke left **4** snapshot `.h5` files … Files left in
-place for the owner"*, with the remedy *"**W-6** … redirects these into `RUN_DIR/snapshots/`"*.
+place for the Overtoad"*, with the remedy *"**W-6** … redirects these into `RUN_DIR/snapshots/`"*.
 
 Both halves need updating and are updated in that note: the count is **27,869**, and W-6 redirects
 only when its env var is exported, so the direct-CLI path still accrues into the checkout. The

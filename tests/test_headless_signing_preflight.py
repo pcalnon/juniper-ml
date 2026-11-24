@@ -397,7 +397,7 @@ class HappyPathTest(_Fixture):
         self.assertIn("non-credential checks only", proc.stdout)
 
     def test_probe_sends_only_getinfo_flavor_and_bye(self) -> None:
-        # GETINFO never prompts. A GETPIN or CONFIRM here would put a dialog in front of the owner.
+        # GETINFO never prompts. A GETPIN or CONFIRM here would put a dialog in front of the Overtoad.
         self.assert_all_pass(self.run_script())
         self.assertEqual(self.read_log("pinentry.log"), ["mac GETINFO flavor", "mac BYE"])
 
@@ -807,7 +807,7 @@ class SourceContractTest(unittest.TestCase):
         self.assertIn('PINENTRY="${PINENTRY:-}"', self.code)
 
     def test_no_credential_operation_anywhere_in_the_file(self) -> None:
-        # Plan D11: card and PIN checks are owner-run. The file must not run, or even spell, these.
+        # Plan D11: card and PIN checks are Overtoad-run. The file must not run, or even spell, these.
         for token in ("--card-status", "--clearsign", "--detach-sign", "--list-secret-keys", "--pinentry-mode", "ssh-add", "ykman", "gpg-connect-agent", "private-keys-v1.d", "GETPIN", "learn --force"):
             with self.subTest(token):
                 self.assertNotIn(token, self.text)

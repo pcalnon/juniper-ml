@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (validator agent, flood-4 tests carrier, slice B)
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: flood-4 carrier validation (BRIEF_VALIDATE.txt); consumed by 2026-11-07_flood4_val_tests_mutants.py
 
 Usage: python3 <this> <out spec.json>

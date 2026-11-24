@@ -7,7 +7,7 @@ Application: host tooling regression tests
 Author:      Paul Calnon
 License:     MIT License
 
-``notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`` signs the owner's
+``notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`` signs the Overtoad's
 commits in the Juniper tree through one conditional include. That covers three paths:
 
 - the terminal;
@@ -281,7 +281,7 @@ class ApplyTest(SigningHarness):
         with open(self.home / ".gitconfig", "a", encoding="utf-8") as fh:
             fh.write("[commit]\n\tgpgsign = false\n")
         code, report = self.tool_json("--apply", "--gpg-program", str(self.gpg))
-        self.assertEqual(code, 1, "the owner's later global gpgsign=false still wins; --check is the guarantee, not position")
+        self.assertEqual(code, 1, "the Overtoad's later global gpgsign=false still wins; --check is the guarantee, not position")
         self.assertIn("commit.gpgsign=false (global", self.checks(report)["repo:juniper-ml"]["message"])
         self.assertEqual(self.git("config", "--global", "--get-all", INCLUDE_KEY).stdout.split(), [str(owner_inc), INCLUDE_VALUE])
         self.git("config", "--global", "--unset", "commit.gpgsign")
@@ -372,7 +372,7 @@ class ApplyTest(SigningHarness):
         # Round 2, N18: "managed" means byte for byte what --apply writes, comments included.
         self.apply()
         with open(self.include, "a", encoding="utf-8") as fh:
-            fh.write("# the owner's note\n")
+            fh.write("# the Overtoad's note\n")
         code, report = self.tool_json("--remove")
         self.assertEqual(code, 1)
         self.assertTrue(self.include.exists())

@@ -12,7 +12,7 @@ V-1: does asking a juniper-data generator for N+M points preserve the first N?
 WHY THIS MATTERS
 The train/validation/test partition design
 (notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md section 6.3)
-records the owner's decision that the requested TRAINING count is honoured literally and the
+records the Overtoad's decision that the requested TRAINING count is honoured literally and the
 validation/test partitions are generated as ADDITIONAL points -- e.g. train/val/test 100/40/30 at
 N=1000 yields 1000/400/300. Its stated benefit is that `train` does not shrink, so **existing
 baselines are preserved**: the only behavioural change would be that early stopping gains a

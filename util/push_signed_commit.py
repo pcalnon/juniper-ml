@@ -73,8 +73,8 @@ Safety contract
 Lineage
 -------
 Promoted 2026-09-22. Each ad-hoc existing-branch driver under ``util/ad-hoc/`` now carries a line naming
-this file as its replacement for new use. They are RETAINED as provenance under the owner policy of
-2026-08-25 (``util/ad-hoc/README.md`` section "Lifecycle"); retiring any of them is an owner decision.
+this file as its replacement for new use. They are RETAINED as provenance under the Overtoad policy of
+2026-08-25 (``util/ad-hoc/README.md`` section "Lifecycle"); retiring any of them is an Overtoad decision.
 
 Tests: ``tests/test_push_signed_commit.py`` (hermetic; ``gh`` is a PATH stub that enforces
 ``expectedHeadOid`` the way GitHub does). ``util/`` is not covered by the pre-commit Python hooks, so that

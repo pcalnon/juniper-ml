@@ -116,7 +116,7 @@ class TestStripSensitiveHeaders:
 
     @pytest.mark.parametrize("name", ["Proxy-Authorization", "Sec-WebSocket-Protocol", "X-CSRF-Token", "X-XSRF-Token"])
     def test_filters_the_headers_added_in_0_4_2(self, name):
-        """Each carries a credential or a session-bound token (owner ruling, 2026-11-08).
+        """Each carries a credential or a session-bound token (Overtoad ruling, 2026-11-08).
 
         ``Sec-WebSocket-Protocol`` is where juniper-canopy's server reads a WebSocket key
         (``bearer, <key>``) when its opt-in ``ws_auth_enabled`` is on; it and the two CSRF tokens

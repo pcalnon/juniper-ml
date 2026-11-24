@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-06
 Status: ad-hoc -- migration (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: the 35 juniper-ml docs PRs left after the code harvest
 
 A docs PR carries no test, so nothing goes red when it lands a claim `main` has since reversed.

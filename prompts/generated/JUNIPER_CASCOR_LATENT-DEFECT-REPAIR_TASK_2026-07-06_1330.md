@@ -37,7 +37,7 @@ You are a senior engineer executing the task above end-to-end on the named repo(
 - Lint for defect 5: `python -m flake8 --select=F821 src/api/app.py` (must exit 0)
 - Pre-commit: `pre-commit run --all-files`
 
-**Conventions**: line length 512 for all linters; worktrees live in `/home/pcalnon/Development/python/Juniper/worktrees/` named `<repo>--<branch>--<YYYYMMDD-HHMM>--<short-hash>`; changes land as PRs only (the owner merges); `src/snapshots/` already contains committed `.h5` artifacts — write test snapshot files only to pytest `tmp_path`, never into the repo tree.
+**Conventions**: line length 512 for all linters; worktrees live in `/home/pcalnon/Development/python/Juniper/worktrees/` named `<repo>--<branch>--<YYYYMMDD-HHMM>--<short-hash>`; changes land as PRs only (the Overtoad merges); `src/snapshots/` already contains committed `.h5` artifacts — write test snapshot files only to pytest `tmp_path`, never into the repo tree.
 
 ## Primary Objective
 
@@ -48,7 +48,7 @@ Make the smallest correct change set that meets the following requirements:
 3. makes the real `_init_logging_system` body reachable by at least one test while keeping the suite-wide fast-logging fixture
 4. restores the merge-clobbered `_settings_with_uvicorn_cli_bind`/`_cli_option_value` block on the PR #380 branch
 
-Each requirement verified against the repo's real tests and lint and landed as pull requests for the owner to merge.
+Each requirement verified against the repo's real tests and lint and landed as pull requests for the Overtoad to merge.
 
 ## Assigned Tasks / Directives
 
@@ -91,6 +91,6 @@ Each requirement verified against the repo's real tests and lint and landed as p
 ## Finalize / Validation
 
 - Verify with the repo's ACTUAL tests + lint + pre-commit (the exact commands in `## Resources`), not a generic "run the tests"; the acceptance evidence is real command output pasted into the PR description, not a promise.
-- Recover / abort: no merge without a PR; the owner approves all merges; worktree cleanup only after merge; if any acceptance criterion cannot be met without weakening a test or inventing a fact, stop and report what is blocking.
+- Recover / abort: no merge without a PR; the Overtoad approves all merges; worktree cleanup only after merge; if any acceptance criterion cannot be met without weakening a test or inventing a fact, stop and report what is blocking.
 
 ---

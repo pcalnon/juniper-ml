@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # Created     : 2026-10-20
 # Status      : ad-hoc -- investigation
-# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : util/ad-hoc/e2e_cascor_leg_restart.bash (the Linux-host recipe this mirrors);
 #               util/ad-hoc/2026-10-20_turing_canopy_leg.bash (the canopy leg that points at this one)
 # License     : MIT License

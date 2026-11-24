@@ -6,7 +6,7 @@
 **License**: MIT License
 **Version**: 0.7.1
 **Last Updated**: 2026-08-29
-**Status**: DESIGN — **SUPERSEDED IN PART 2026-09-02**; owner-timed; scope owner-raised on [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573)
+**Status**: DESIGN — **SUPERSEDED IN PART 2026-09-02**; Overtoad-timed; scope Overtoad-raised on [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573)
 **Measured at**: cascor `67d7ea35`, 32 worker profiles per corpus
 **Evidence**: `juniper-ml/reports/perf-lane-post-fix-2026-08-26/worker_profile_*`
 
@@ -119,7 +119,7 @@ and the level machinery re-validates level *names* as strings on the hot path �
 `:326`, `:391`, `:401`, `:422`), with `_log_at_level` a further **2.49 %**. Levels are a closed set
 known at import; resolving them to integers once and comparing integers is the standard shape.
 
-## 3. Scope as the owner raised it (#573)
+## 3. Scope as the Overtoad raised it (#573)
 
 1. A clean stream to stdout/stderr.
 2. Richer sinks — formatted, colourised file output.
@@ -173,10 +173,10 @@ most of its risk in the parts that do not matter. Grep for tensor interpolation 
 A sink abstraction with, at minimum, a console sink and a rotating file sink:
 
 - The file sink holds an **open handle** for the process lifetime, **flushing per record**
-  (owner decision 2), instead of opening per record. Create-on-demand from F-2 moves into sink
+  (Overtoad decision 2), instead of opening per record. Create-on-demand from F-2 moves into sink
   initialisation, preserving the `JUNIPER_CASCOR_LOG_DIR` and fresh-worktree cases.
 - The console sink is **independently configurable and independently disableable**, and **stays on
-  stdout** (owner decision 4). It gains a disable switch, which the current unconditional `print()`
+  stdout** (Overtoad decision 4). It gains a disable switch, which the current unconditional `print()`
   lacks; the swallowed-pytest problem is handled separately (§7.1), not by moving the stream.
 - Colourisation belongs to the console sink only, gated on a TTY check, never applied to the file
   sink (colour escapes in `juniper_cascor.log` would break every existing grep-based analysis and
@@ -195,7 +195,7 @@ potentially torn writes.
 > at import or forkserver time **is** inherited by every child with a shared offset. Laziness stays
 > load-bearing — relative to forkserver start, not to fork. See the reconciliation's N-2.
 
-**Owner decision 3: per-process handle**, opened lazily on first write after fork — the simplest
+**The Overtoad decision 3: per-process handle**, opened lazily on first write after fork — the simplest
 option, and the only one that keeps a single log file and so keeps every existing log-reading tool
 working unchanged. Taken as **provisional**: if it proves untenable, the fallbacks are one file per
 PID (safest, but changes the artifact layout that the experiment harness, the census tooling and the
@@ -239,7 +239,7 @@ sidecar, HTTP appender, or a `juniper-observability` helper) out of the first ch
 on the per-record path in a forked worker is exactly where an unbounded queue or a blocking socket
 would cost more than the 18 % this design is trying to recover.
 
-**Owner decision 6: the JSON sink goes through `juniper-observability`**, which already owns
+**The Overtoad decision 6: the JSON sink goes through `juniper-observability`**, which already owns
 structured-JSON logging for the service tier — one implementation, not a cascor-local second one.
 
 > **CORRECTION 2026-09-02 — a second implementation already exists, deliberately.**
@@ -337,9 +337,9 @@ and it should precede the implementation rather than justify it retroactively.
   > N-9. **A persistent-handle redesign acquires this defect for Path A**, so rotation must be given a
   > single owner *before* the handle is made persistent.
 
-## 7. Owner decisions — SETTLED 2026-08-29
+## 7. The Overtoad decisions — SETTLED 2026-08-29
 
-All six questions answered by the owner. Recorded here as the design's binding constraints.
+All six questions answered by the Overtoad. Recorded here as the design's binding constraints.
 
 | # | question | **decision** |
 | --- | --- | --- |
@@ -347,7 +347,7 @@ All six questions answered by the owner. Recorded here as the design's binding c
 | 2 | Flush per record or on an interval? | **Per record.** A complete log for a crashed run outweighs the throughput; a truncated log is how several analyses in this arc went wrong. |
 | 3 | Forked-worker file strategy | **Per-process file handle**, opened lazily on first write after fork. Explicitly provisional — re-evaluate if it proves untenable. Per-PID files and the parent writer thread stay on the table as fallbacks. |
 | 4 | Console default stderr or stdout? | **Keep stdout.** The swallowed-pytest problem is not to be fixed by relocating the stream — it gets its own rigorous investigation (see F-3a below). Provisional; revisit if it becomes problematic. |
-| 5 | Call-site migration scope | **Deferred pending analysis** — written up separately in [`JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-CALL-SITE-MIGRATION-ANALYSIS.md`](JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-CALL-SITE-MIGRATION-ANALYSIS.md). Headline: 1,885 call sites, 879 f-strings, but 36 % of sites and essentially all tensor formatting sit in two files, so hot-path-only is a ~150-site diff. Recommends guards + `%`-args on the hot path, explicitly **not** a full sweep. Still owner's call. |
+| 5 | Call-site migration scope | **Deferred pending analysis** — written up separately in [`JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-CALL-SITE-MIGRATION-ANALYSIS.md`](JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-CALL-SITE-MIGRATION-ANALYSIS.md). Headline: 1,885 call sites, 879 f-strings, but 36 % of sites and essentially all tensor formatting sit in two files, so hot-path-only is a ~150-site diff. Recommends guards + `%`-args on the hot path, explicitly **not** a full sweep. Still Overtoad's call. |
 | 6 | Structured JSON via `juniper-observability`? | **Yes — through `juniper-observability`.** No second implementation local to cascor. |
 
 Consequences of (2) + (3) together: per-record flush on a per-process handle means each forked
@@ -372,7 +372,7 @@ stream buffering, and only then propose a fix. Explicitly NOT a blocker on the r
 
 ## 8. References
 
-- [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) — the issue, owner-raised scope
+- [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) — the issue, Overtoad-raised scope
 - [cascor#563](https://github.com/pcalnon/juniper-cascor/pull/563) — the `inspect.getmodule` fix; its number is banked, not available to this design
 - `reports/perf-lane-post-fix-2026-08-26/worker_profile_inspect_share_pre563_vs_at67d7ea35.txt` — the shares quoted in §1
 - `reports/perf-lane-post-fix-2026-08-26/worker_profile_diff_pre563_vs_at67d7ea35.txt` — the 1,813,318 `__format__` calls, identical on both arms

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-11-23
 Status: ad-hoc — investigation (backup Phase D follow-up: AC-5 and the slow runs)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md (section 6.3.1),
          util/ad-hoc/yamaguchi_acceptance_probe.py (writes the history file this reads),
          util/ad-hoc/2026-11-16_partial_fileset_retention_check.py (replays a retention pass from the same file)
@@ -15,7 +15,7 @@ Related: notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSME
 What it reads (nothing is written, the server is not contacted, nothing under the backup destination is opened)
 -------------
 1. The acceptance probe's history, ``~/.local/state/duplicati/acceptance-history.jsonl``: per probe run, the dlist
-   count, the dlists added and removed since the previous run, the volume classes (type, mode, owner) and the RUN,
+   count, the dlists added and removed since the previous run, the volume classes (type, mode, Overtoad) and the RUN,
    AC-5, AC-7 and CENSUS verdicts.
 2. The watchdog's log, ``~/.local/state/duplicati/server-watchdog.log``, from ``--since`` on.
 3. sysstat's daily files ``/var/log/sysstat/saDD``: per day, the average %iowait, %idle, swap used, 15-minute load

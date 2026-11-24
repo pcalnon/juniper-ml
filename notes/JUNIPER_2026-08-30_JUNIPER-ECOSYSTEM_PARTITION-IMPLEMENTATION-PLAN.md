@@ -45,7 +45,7 @@ is itself evidence about how this plan should be read.
 **v1 → v2** (round 1, three adversarial lenses, all returned *do not ship*): the founding measurement
 was backwards (five exact-key gates **do** run per-PR in juniper-data's unit lane); R-4 removed
 (canopy boots); R-1 downgraded; R-6 named the wrong dependency edge; `SPIRAL_DATASET_TYPE` does not
-exist; the "7 of 9 repos" headline was padded; and **two of five owner decisions had been dropped
+exist; the "7 of 9 repos" headline was padded; and **two of five Overtoad decisions had been dropped
 entirely** (CLI early stopping, re-baseline).
 
 **v2 → v3** (round 2, two lenses). Nine of eleven v2 corrections verified clean. The damage was in
@@ -101,7 +101,7 @@ is `@pytest.mark.slow`, and the only lane running `slow` is schedule/dispatch-ga
 > **D-1's stated premise below is FALSE and is retained only as revision history** — see S-2 in §9.
 > The clauses it cites are *length* identities, which shuffling cannot violate, and
 > `test_e2e_workflow.py:299-301` asserts one and passes. The question was re-posed before it was put
-> to the owner.
+> to the Overtoad.
 >
 > **One new requirement is OPEN and gates the sizing work: prefix stability** (design §9.3). D-1's
 > rationale is cross-snapshot dataset comparison under a shared seed; D-2 makes adding the third
@@ -117,7 +117,7 @@ from `shuffle_and_split` — so `X_full == concat(X_train, X_test)` is *already 
 today, and the two normative clauses (`USER_MANUAL.md:367`, `JUNIPER_DATA_API.md:1001`) are already
 violated by every shuffled tabular generator.
 
-**Options the owner must choose between** (v2 posed the question with none):
+**Options the Overtoad must choose between** (v2 posed the question with none):
 (a) `full = train + val + test`; (b) `full = train + test`, val excluded; (c) retire `X_full`.
 
 **Propagates to**: `DatasetMeta.n_samples` (`core/meta.py:61` computes `n_train + n_test`),
@@ -128,7 +128,7 @@ including the ecosystem `AGENTS.md`.
 
 ### D-2 — how is additive sizing implemented?
 
-Owner decision 2 mandates honouring the requested training count and **generating** extra points.
+The Overtoad decision 2 mandates honouring the requested training count and **generating** extra points.
 `split_data` raises when `train_ratio + test_ratio > 1.0` (`core/split.py:64-65`), so a
 train-at-100 % model violates that function's own invariant — making `split.py` "three-way" **is**
 the carve-up the design rejected.
@@ -249,7 +249,7 @@ invariant to "Chunk 4 gate" and then described no gate.
 - **That v3 is correct.** v2 read as sound and contained a prescription that would have broken every
   tabular artifact in the ecosystem.
 - **Runtime pass/fail.** No test body was executed at any point.
-- **D-1 and D-2.** Owner rulings with no artifact to appeal to.
+- **D-1 and D-2.** The Overtoad rulings with no artifact to appeal to.
 - **Whether `PostgresDatasetStore` is live.** Circumstantially dormant — its DDL declares
   `n_classes`/`class_distribution` `NOT NULL` while `DatasetMeta` allows both `None`, so the table
   is already incompatible with regression artifacts. If dormant, R-3 and R-4 are theoretical.
@@ -257,7 +257,7 @@ invariant to "Chunk 4 gate" and then described no gate.
 - **That the ecosystem change is the right call.** One Lane B lens argued the defect has a ~36-line
   cascor-local fix needing no contract change, no release, and no re-baseline, and that the design's
   rejection of that option was argued against RNG-dependence a deterministic split does not have.
-  **That case is not refuted here.** The owner elected to proceed with it on the record.
+  **That case is not refuted here.** The Overtoad elected to proceed with it on the record.
 
 ---
 
@@ -422,7 +422,7 @@ checking before the swap, and the ticket says so.
 
 #### S-7 note 2026-09-23: two facts above have moved
 
-The ticket's closure is recorded in §10's "Update, 2026-09-23" block: the owner ruled for an
+The ticket's closure is recorded in §10's "Update, 2026-09-23" block: the Overtoad ruled for an
 **advisory** check, and canopy#663 (`cc3588a8`) built it. This note corrects the two facts above
 that a reader would otherwise quote as current:
 
@@ -452,7 +452,7 @@ section exists because the distinction cost four days once already (see the mode
 
 **The eight decision-11 packages are published.** Each was cut as a GitHub Release (never a bare tag
 push), published first to TestPyPI with install verification, then to PyPI behind the `pypi`
-environment's owner-approval gate. The ninth row, `juniper-ml` itself, carries no decision-11 code —
+environment's Overtoad-approval gate. The ninth row, `juniper-ml` itself, carries no decision-11 code —
 it is the meta-package whose floors make the other eight reachable by `pip install`.
 
 | package | version | what decision 11 required of it |
@@ -474,7 +474,7 @@ difference is the whole point:
 
 | package | first carried decision 11 | now | why it moved |
 | --- | --- | --- | --- |
-| `juniper-data` | 0.14.0 | **0.15.0** | `equities` / `equities_seq` go to `generator_version` 5.0.0: data#395 (the owner rulings) took them to 4.0.0 and data#404 (its regression fix) to 5.0.0. PyPI never served 4.0.0. The published wheels read 3.0.0 in 0.14.0 and 5.0.0 in 0.15.0. |
+| `juniper-data` | 0.14.0 | **0.15.0** | `equities` / `equities_seq` go to `generator_version` 5.0.0: data#395 (the Overtoad rulings) took them to 4.0.0 and data#404 (its regression fix) to 5.0.0. PyPI never served 4.0.0. The published wheels read 3.0.0 in 0.14.0 and 5.0.0 in 0.15.0. |
 | `juniper-canopy` | 0.7.0 | **0.8.1** | Every wheel from 0.5.0 through 0.8.0 ships zero top-level modules and cannot import its own dashboard (canopy#631), so 0.7.0 carried decision 11 without being able to deliver it. |
 | `juniper-ml` (meta) | 0.8.0 | **0.9.0**, then **0.10.0** | 0.9.0 floors canopy at `>=0.8.1`. 0.10.0 (ml#2033) floors data at `>=0.15.0`, because `>=0.14.0` left an installed 0.14.0 in place. v0.10.0 was cut 2026-09-23 at `288de462` and is on PyPI since that day (publish run 35879664979). |
 
@@ -528,7 +528,7 @@ ml#1829 while the published 0.3.1 wheel still served the retired contract — re
 `0.3.1` with different contents, because the fix landed after the release and carried no bump. Nothing
 detected it: the release train's `detect.py` scores the package `UP_TO_DATE, bump=none` (`0/0/3`, all
 *discounted*) because it discounts docs-only diffs, so the ceremony would never have proposed 0.3.2 on
-its own. It was cut by explicit owner decision on 2026-09-10.
+its own. It was cut by explicit Overtoad decision on 2026-09-10.
 
 **Still open after the release** — none of these are blocked by it:
 
@@ -546,7 +546,7 @@ its own. It was cut by explicit owner decision on 2026-09-10.
 > `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md`,
 > which dispositions every §5 row of that file:
 >
-> - **S-1**: the owner ruled on 2026-09-22 to **conform** the stores. juniper-data#422 did so and was
+> - **S-1**: the Overtoad ruled on 2026-09-22 to **conform** the stores. juniper-data#422 did so and was
 >   merged on 2026-09-23 as `ce436819`, closing #411. It is **not yet released**: juniper-data 0.15.0 on
 >   PyPI still ships the two-way stores.
 > - **Decision 12**: tracked as juniper-data#423, and specified as a v1 draft in
@@ -554,5 +554,5 @@ its own. It was cut by explicit owner decision on 2026-09-10.
 >   Review round 1 rated the draft unsound as written. It is recorded in that file's §14, which
 >   follows this plan's §9 precedent: record the findings, and do not correct the design in place
 >   while its review is open. Still unimplemented.
-> - **S-7**: the owner ruled on 2026-09-22 for an **advisory** check. juniper-canopy#663 implemented
+> - **S-7**: the Overtoad ruled on 2026-09-22 for an **advisory** check. juniper-canopy#663 implemented
 >   it and was merged on 2026-09-23 as `cc3588a8`, closing #559. It is not yet released.

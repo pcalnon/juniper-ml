@@ -1,9 +1,9 @@
-# Record the 2026-09-22 owner rulings on the seven open backup-design gates
+# Record the 2026-09-22 Overtoad rulings on the seven open backup-design gates
 
 ## Summary
 
 `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` carried
-fourteen owner decisions, of which **seven blocked P0**. All seven were ruled by the owner in one
+fourteen Overtoad decisions, of which **seven blocked P0**. All seven were ruled by the Overtoad in one
 interactive session on 2026-09-22. This PR records them as binding in the document of record and
 updates the three artifacts whose content the rulings change.
 
@@ -23,7 +23,7 @@ D-3, D-5, D-7, D-10, D-11, D-12 and D-13 remain **open** and keep their recommen
 
 ## Two rulings that changed the design rather than just selecting from it
 
-**D-6 came back stronger than the recommendation.** The recommendation was a bare copy. The owner
+**D-6 came back stronger than the recommendation.** The recommendation was a bare copy. The Overtoad
 added a no-change gate with an explicit `--update-backup-behavior` switch, which catches two things
 a bare copy cannot: an installed artifact edited outside the installer, and a repository that has
 moved ahead of what is deployed. A symlink form was proposed and rejected on one decisive fact —

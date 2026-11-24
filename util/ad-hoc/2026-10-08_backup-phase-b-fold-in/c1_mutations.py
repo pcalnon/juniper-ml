@@ -7,7 +7,7 @@ Author:      Paul Calnon
 Created:     2026-10-08
 Version:     1.3.0 (2026-10-08: round-6 `r6` mode; round-5 mutants R17-R27; ci-sim by a `mountpoint` PATH stub)
 Status:      ad-hoc -- validation instrument (Phase B round-3 fold-in, lane C1)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-10-04_backup-phase-b-round3/r3c-harness/t6_mutations.py (round 3's M01-M25)
              util/ad-hoc/2026-10-04_backup-phase-b-round3/R3C.md (D-5: 14 of 25 mutants survived)
 

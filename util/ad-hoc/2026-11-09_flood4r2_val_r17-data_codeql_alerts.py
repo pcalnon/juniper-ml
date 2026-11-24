@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (validator session, Cursor flood-4 round 2)
 Created: 2026-11-09
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: owner ruling 17 ("data: 44 unrun tests"); independent validation of the r17-data-unit-marks carrier
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Overtoad ruling 17 ("data: 44 unrun tests"); independent validation of the r17-data-unit-marks carrier
 
 Question answered: has GitHub's CodeQL EVER alerted (open, dismissed or fixed) on a module-level
 ``pytestmark`` in juniper-data, or on anything in ``juniper_data/tests/unit/test_security.py``? The

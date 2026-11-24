@@ -8,12 +8,12 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-09-15
 Status:      ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md Sec 5
 
 Why
 ---
-The owner ruled (2026-09-15) that the ledger leak invalidates ONLY the run that read ledger
+The Overtoad ruled (2026-09-15) that the ledger leak invalidates ONLY the run that read ledger
 CONTENT -- not the seven that saw only its filename. Acting on that means naming one `obs_id`
 and retiring it from the instrument of record, so the identification has to be measured.
 
@@ -83,7 +83,7 @@ def main() -> int:
         print(f"    -> obs_id={b.get('obs_id')}  ts={b.get('ts')}  "
               f"probe={b.get('probe_id')}  outcome={b.get('outcome')}")
     if len(content_rows) != 1:
-        print("\n  *** NOT exactly one. The owner's ruling names ONE run; do not invalidate")
+        print("\n  *** NOT exactly one. The Overtoad's ruling names ONE run; do not invalidate")
         print("      anything until this disagreement with Sec 5 is resolved. ***")
     return 0
 

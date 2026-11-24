@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-04
-# Status      : ad-hoc — investigation; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — investigation; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Re-derive F-CANOPY-060 by EXECUTING the three functions on the refusal's path, each at a pinned commit.
 

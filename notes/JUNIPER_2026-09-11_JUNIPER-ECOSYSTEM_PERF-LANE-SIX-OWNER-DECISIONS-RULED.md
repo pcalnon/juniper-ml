@@ -1,9 +1,9 @@
-# Perf lane: the six open owner decisions, RULED 2026-09-11
+# Perf lane: the six open Overtoad decisions, RULED 2026-09-11
 
 **Project**: Juniper — performance lane
 **Author**: Paul Calnon
 **Date**: 2026-09-11
-**Status**: all six RULED by the owner in session; four carry an execution gate before they land. **The four `Not decided:` clauses were RULED 2026-09-22/23 — §5.**
+**Status**: all six RULED by the Overtoad in session; four carry an execution gate before they land. **The four `Not decided:` clauses were RULED 2026-09-22/23 — §5.**
 **License**: MIT License
 
 ---
@@ -12,7 +12,7 @@
 
 The six decisions that had accumulated across
 [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md)
-("the P2 plan") and four successive handoffs, put to the owner and ruled in one sitting. Each entry
+("the P2 plan") and four successive handoffs, put to the Overtoad and ruled in one sitting. Each entry
 records **the ruling, the gate that must clear before it lands, and what the ruling does not
 decide**.
 
@@ -32,7 +32,7 @@ and
 ## 1. The correction that reframed two of the rulings
 
 **cascor#531's candidate-phase penalty is `1.52×` — a 52% slowdown — not 1.52%.** It was put to the
-owner as a percentage in the first pass and corrected before the ruling. `parallelism/blas_threads.py`
+Overtoad as a percentage in the first pass and corrected before the ruling. `parallelism/blas_threads.py`
 carries the decomposition:
 
 - the capped path's candidate phase ran **1.52×** the uncapped path's; the cap itself accounted for
@@ -74,15 +74,15 @@ from the sweep.
 ### D2 — the `runtime:` block: IMPLEMENT via the environment-variable route, GATED on investigation
 
 **Ruled**: implement, and implement it as the **launcher exporting the BLAS variables** at cascor
-bring-up — the process-tree-wide route — because that flexibility is what the owner wants. **Gated
+bring-up — the process-tree-wide route — because that flexibility is what the Overtoad wants. **Gated
 on a rigorous re-investigation of the candidate-phase penalty first.**
 
-The alternative was put to the owner explicitly and declined: routing the same flexibility through
+The alternative was put to the Overtoad explicitly and declined: routing the same flexibility through
 `torch.set_num_threads` on the training thread would be **decoupled** — cascor's two width
 mechanisms are independent, and only the environment-variable one reaches the candidate workers
 (they inherit the ancestor's pool through `forkserver`; each child sets its own width at
 `cascade_correlation.py:4153` from `worker_thread_count`, and `blas_threads.py` states that the
-oversubscription guard does not depend on the variables at all). The owner's position: the
+oversubscription guard does not depend on the variables at all). The Overtoad's position: the
 process-tree-wide knob is the more flexible one, and the trade-off should be **re-opened only if
 the penalty proves impossible to decouple from the width setting**.
 
@@ -112,9 +112,9 @@ approval in the first place.
 
 ### D4 — PF-2: RETARGET at the candidate phase, and ADD TWO AXES
 
-**Ruled**: the owner concurs that points-per-spiral is meaningless **in the 250 → 2000 range**, and
+**Ruled**: the Overtoad concurs that points-per-spiral is meaningless **in the 250 → 2000 range**, and
 retargets the scenario at the candidate phase — varying **candidate pool size** and **candidate
-epochs**, where the work genuinely is emergent. Two additions, both the owner's:
+epochs**, where the work genuinely is emergent. Two additions, both the Overtoad's:
 
 1. **Wall-time characterisation over a far wider dataset range — 250 → 500,000 points per spiral.**
    Worth having in its own right even though the 8× range was inert; the inertness finding bounds
@@ -187,10 +187,10 @@ separate signal from ambient drift — or they will measure the shell. Structura
 
 ## 4. Provenance
 
-Put to the owner and ruled 2026-09-11, in the session that shipped
+Put to the Overtoad and ruled 2026-09-11, in the session that shipped
 `JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`
 (`juniper-ml#1896`, merged `4b13f318`). D1 and D4 were ruled as free-text direction rather than a
-menu selection, and are transcribed here in the owner's own terms. D2's ruling was given **after**
+menu selection, and are transcribed here in the Overtoad's own terms. D2's ruling was given **after**
 the decoupling alternative and the 1.52× correction were both put; it is a reaffirmation, not an
 uninformed choice.
 
@@ -201,7 +201,7 @@ uninformed choice.
 Four of §2's rulings ended with an explicit **Not decided** clause. The 09-22 handoff
 (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_perf-lane-d2-binds-d6-discharged-and-two-host-advantaged-tests.md`
 §1) found all four still open. Reading "ruled" as "closed" had hidden that for eleven days. They
-were put to the owner as a menu on 2026-09-22 and ruled in one sitting, except D1, which was
+were put to the Overtoad as a menu on 2026-09-22 and ruled in one sitting, except D1, which was
 put a second time and ruled 2026-09-23 (§5.2). The table records the
 options that were put **and declined**, so each ruling reads as a choice rather than a default.
 
@@ -231,7 +231,7 @@ options that were put **and declined**, so each ruling reads as a choice rather 
   variables that are unset, and it defaults to **"do nothing"** on purpose. That default exists
   because cascor#531 measured the capped candidate phase at 1.52×, and
   `tests/unit/test_blas_thread_policy.py::test_default_is_a_no_op` pins it. The session caught
-  the omission, put the corrected question on 2026-09-22, and on 2026-09-23 the owner ruled **"pay the debt,
+  the omission, put the corrected question on 2026-09-22, and on 2026-09-23 the Overtoad ruled **"pay the debt,
   then flip"**.
 - **The debt is the D1/D2 gate's missing epoch counts.** Both gates required epoch counts per
   phase, and `util/ad-hoc/2026-09-16_thread_width_arm.py` emitted **stage** counts instead. The
@@ -262,7 +262,7 @@ options that were put **and declined**, so each ruling reads as a choice rather 
 - **The suite path stops at 5,882, not at the 10,000 the ruling was given.** The driver stages
   its dataset through juniper-data, whose `MAX_POINTS` (10,000) is a Pydantic bound. See §1 of
   [`JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md`](JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md).
-  The menu put to the owner, and that document, both treated 10,000 as the request ceiling. **It
+  The menu put to the Overtoad, and that document, both treated 10,000 as the request ceiling. **It
   bounds the TOTAL rows per spiral.** juniper-data's additive sizing treats the request as the
   train count and adds val and test on top: 1.7× at the suite's split, so a request of 10,000
   becomes an internal 17,000 and is rejected. Bisected 2026-09-23: 5,882 accepted, 5,883
@@ -320,12 +320,12 @@ The 2026-09-23 handoff
 (`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-23_perf-lane-d1-debt-clear-flip-pf1-rebaselined-pf2-axis2-ceiling-5882.md`)
 left PF-3's host time and the micro timing cut as open items. Its residue check found a third:
 PF-2 axis 1, which was ruled in §2 D4 and then dropped from two successive work lists. All three
-were put to the owner as one menu on 2026-09-23/24. As in §5, the declined options are recorded
+were put to the Overtoad as one menu on 2026-09-23/24. As in §5, the declined options are recorded
 beside each ruling.
 
 | | question | ruling | put and declined |
 |---|---|---|---|
-| **PF-3 host time** | the matrix needs ~7 h per pass (~21 h for 3 round-robin passes), and it measures wall-clock speedup up to 16 processes | **Wait for a quiet window**: hold until the two `clamscan` processes finish and the 1-minute load stays under ~6 | run now on the loaded host, round-robin; the owner frees the host and signals |
+| **PF-3 host time** | the matrix needs ~7 h per pass (~21 h for 3 round-robin passes), and it measures wall-clock speedup up to 16 processes | **Wait for a quiet window**: hold until the two `clamscan` processes finish and the 1-minute load stays under ~6 | run now on the loaded host, round-robin; the Overtoad frees the host and signals |
 | **Micro timing cut (PF-4)** | never cut under Python 3.14; seven sessions deferred it waiting for an idle host | **Cut now, labelled LOADED.** It is report-only, it records its own load average, and a later quiet cut supersedes it by number | keep waiting |
 | **PF-2 axis 1 instrument** | the axis needs each candidate's `epochs_completed` per cell, but no structured suite artifact carries it; only the log does, and only for candidates that stop early (PF-2 re-spec §2 note) | **Publish it in cascor**: a structured per-phase record, e.g. a `metrics_history` entry carrying each candidate's `epochs_completed` | parse the cascor log (absence is load-bearing, and log formats are mid-redesign); defer axis 1 |
 

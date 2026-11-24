@@ -7,7 +7,7 @@
 **Version**: 0.7.1
 **Last Updated**: 2026-08-20
 
-**Status**: DECISION BRIEF — awaiting owner ruling. Nothing here is implemented; this document
+**Status**: DECISION BRIEF — awaiting Overtoad ruling. Nothing here is implemented; this document
 changes no code, no path, and no default. It exists to make S-1 answerable.
 
 **Question, as posed** in
@@ -390,4 +390,4 @@ echo "rc=$?  # 1 = NOT ignored, i.e. **/cascor/cascor_snapshots/* never matches"
 - [`JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md`](JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_PERF-LANE-PHASING-AND-WORK-PRIORITISATION.md)
   — companion prioritisation note.
 - juniper-cascor#537 (service destination out of the importable package), #536 (drift gate made to
-  fire), #539 (R3 resume — the item this brief follows in the owner's stated order).
+  fire), #539 (R3 resume — the item this brief follows in the Overtoad's stated order).

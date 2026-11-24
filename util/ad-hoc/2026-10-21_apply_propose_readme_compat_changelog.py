@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-21
 Status: ad-hoc — one-off (the CHANGELOG half of the propose.py README fix; kept so a silent revert costs one re-run)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/release_train/propose.py set_readme_compat_version / _README_COMPAT_HEADING; tests/test_release_train_propose.py;
          util/ad-hoc/2026-10-21_apply_propose_pr_body_limit_changelog.py (the previous propose.py fix, same shape)
 

@@ -1,17 +1,17 @@
 #!/usr/bin/env python
-"""Print chosen records of a Claude Code session transcript, redacted: the owner's answer to the sweeper question.
+"""Print chosen records of a Claude Code session transcript, redacted: the Overtoad's answer to the sweeper question.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round 5)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9 ("Who");
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round5.md (Lane R5-B's
          finding 1, which located the exchange at lines 4227 and 4260 of session bc31e993's transcript)
 
-Round 5's Lane R5-B found that the owner answered the ledger's owner question in another session four minutes
+Round 5's Lane R5-B found that the Overtoad answered the ledger's Overtoad question in another session four minutes
 after the round's artifact was frozen. This prints only the records asked for, by line number: timestamp,
 record type, role, text blocks, tool_use names and inputs, and tool results, each cut to a bound, with e-mail
 addresses (also %40-encoded) and these token shapes redacted: GitHub (ghp_, gho_, ghu_, ghs_, ghr_,

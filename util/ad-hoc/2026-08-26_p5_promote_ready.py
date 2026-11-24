@@ -4,14 +4,14 @@ P5 step d, preconditions 2-4, one governed repo per invocation: remove `--adviso
 ported memory-budget job, raise the ceiling with RE-MEASURED slack under an
 `Allow-Ceiling-Raise: AGENTS.md` trailer, and prove both with negative controls run against the
 NON-advisory invocation. Makes NO ruleset change -- promotion to a required context is the
-owner's separate decision (juniper-ml util/ad-hoc/2026-08-20_require_context_safely.py).
+Overtoad's separate decision (juniper-ml util/ad-hoc/2026-08-20_require_context_safely.py).
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc — migration (P5 fleet rollout, plan §P5 step d; tracking issue juniper-ml#1326)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-08-25_p5_port_verify.bash (the advisory-era controls this supersedes for
          the promotion step); util/ad-hoc/2026-08-25_p5_port_memory_budget.py (measure-growth);
          util/ad-hoc/2026-08-26_p5_fleet_state.py (the census run before this)
@@ -254,10 +254,10 @@ def edit_workflow(text: str, repo: str, old: int, new: int, slack: int, growth: 
             text,
             "#    aggregate, never a required context, and ADVISORY (`--advisory` reports and exits 0) until\n"
             "#    the three negative controls pass against the non-advisory invocation. Promotion, if ever,\n"
-            "#    is an owner-only branch-protection decision; this workflow makes NO protection change.\n",
+            "#    is an Overtoad-only branch-protection decision; this workflow makes NO protection change.\n",
             "#    aggregate and not a required context. It shipped ADVISORY (`--advisory` reports and exits 0)\n"
             f"#    on 2026-08-25 and went BLOCKING on {TODAY} once the three negative controls passed against\n"
-            "#    the non-advisory invocation. Promotion to a required context, if ever, is an owner-only\n"
+            "#    the non-advisory invocation. Promotion to a required context, if ever, is an Overtoad-only\n"
             "#    branch-protection decision; this workflow makes NO protection change.\n",
             "recurrence header paragraph",
         )
@@ -419,7 +419,7 @@ in {repo}.
      zero-slack ceiling cannot absorb.
 
 This PR makes NO ruleset change. The job stays standalone and absent from every `needs:`;
-whether `Memory Budget` becomes REQUIRED is the owner's separate decision (plan §P5 step d,
+whether `Memory Budget` becomes REQUIRED is the Overtoad's separate decision (plan §P5 step d,
 juniper-ml util/ad-hoc/2026-08-20_require_context_safely.py, observed-only by default).
 
 Verification: ported suite {suite}; this repo's own pre-commit green on the two changed files;
@@ -462,7 +462,7 @@ below ~10 growing commits).
     --ratchet on a COPY of the budget           -> tightens {new:,} -> {old:,}: headroom is exactly the slack
 
 **NO ruleset change.** The job stays standalone and absent from every `needs:` (plan correction C9).
-Whether `Memory Budget` becomes REQUIRED is the owner's separate decision, via juniper-ml
+Whether `Memory Budget` becomes REQUIRED is the Overtoad's separate decision, via juniper-ml
 `util/ad-hoc/2026-08-20_require_context_safely.py --repo {repo} --context 'Memory Budget'` (observed-only
 by default). Until then a red `Memory Budget` is visible but does not block.
 

@@ -6,8 +6,8 @@ Sub-Project:  juniper-ml (ad-hoc)
 Application:  canopy E2E validation arc -- Phase 14 landing from turing
 Author:       Paul Calnon
 Created:      2026-10-20
-Status:       ad-hoc -- one-off landing helper; RETAINED as provenance (owner policy 2026-08-25)
-Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status:       ad-hoc -- one-off landing helper; RETAINED as provenance (Overtoad policy 2026-08-25)
+Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:      util/push_signed_commit.py (does each commit); util/ad-hoc/2026-10-17_push_signed_with_retry.py (the same
               loop without a commit body; this one adds ``--commit-body-file`` so every commit carries the session's
               attribution trailer)
@@ -16,7 +16,7 @@ License:      MIT License
 Per file and per attempt: read the branch head; if the file's blob at that head already equals the local bytes, it
 landed (a request that errored may still have landed: the HTTP 499 trap); else run push_signed_commit.py pinned to
 that head with the body file; on failure back off and retry. Exit 0 every file landed; 1 attempts exhausted; 3 a
-permissions error (owner action).
+permissions error (Overtoad action).
 
 Usage:
     python3 -I util/ad-hoc/2026-10-20_push_signed_with_body_retry.py --repo juniper-ml --branch B --body-file BODY \\

@@ -19,8 +19,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: the owner's rulings of 2026-11-12 and 2026-11-13 (D-14); adapted from 2026-11-12_flood4r2_val_d14-resume_client_census.py
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: the Overtoad's rulings of 2026-11-12 and 2026-11-13 (D-14); adapted from 2026-11-12_flood4r2_val_d14-resume_client_census.py
 """
 
 import argparse

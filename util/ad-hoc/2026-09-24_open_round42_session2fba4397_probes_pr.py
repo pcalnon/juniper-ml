@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use; wraps util/open_signed_pr.py
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 The sibling util/ad-hoc/2026-09-24_open_round42_probes_pr.py (juniper-ml#2081) uploads every file under
 util/ad-hoc/2026-09-24_round42_probes/. This uploads only the six directories

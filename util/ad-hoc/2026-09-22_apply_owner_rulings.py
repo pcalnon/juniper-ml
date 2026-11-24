@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Record the 2026-09-22 owner rulings on D-1, D-2, D-4, D-6, D-8, D-9 and D-14 in the design.
+"""Record the 2026-09-22 Overtoad rulings on D-1, D-2, D-4, D-6, D-8, D-9 and D-14 in the design.
 
 Project:     juniper-ml
 Sub-Project: backup infrastructure
 Author:      Paul Calnon
 Created:     2026-09-22
 Status:      ad-hoc -- document-of-record edit
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md section 10
              util/ad-hoc/2026-09-22_stage_design_artifacts.py (regenerates the artifacts these edits change)
 
@@ -64,7 +64,7 @@ edit(
 
 edit(
     "D-14 prose opener",
-    """**The group-write model above is itself an open owner decision — D-14.** As written it grants
+    """**The group-write model above is itself an open Overtoad decision — D-14.** As written it grants
 **write and delete** on all 877 volumes to every process running as `pcalnon` (editors, browsers,""",
     """**D-14 is RULED (2026-09-22): the read-only model above is in force** (§10.1). The rejected
 alternative — the R-7/R-8 group-write form, directories `2770` and files `0660` — would have granted
@@ -73,7 +73,7 @@ alternative — the R-7/R-8 group-write form, directories `2770` and files `0660
 
 edit(
     "D-14 prose closer",
-    """**accident and commodity malware**, not against a deliberate local adversary. D-14 is the owner's
+    """**accident and commodity malware**, not against a deliberate local adversary. D-14 is the Overtoad's
 call; the script below implements the R-7/R-8 group-write model as specified, and must be re-run
 after a D-14 ruling that changes it.""",
     """**accident and commodity malware**, not against a deliberate local adversary. That limit was stated
@@ -207,7 +207,7 @@ edit(
     "P0 provisional preamble",
     """phases, not of decisions**: P0 applies the recommendations of D-1 (credstore + `--require-db-encryption-key`),
 D-4 (`AmbientCapabilities`), D-6 (installed copy), D-9 (loopback) **and D-14** (the §7.3.2 unit sets
-`UMask=0007`, the group-write value, while D-14 recommends the read-only `0027`) before the owner has ruled on
+`UMask=0007`, the group-write value, while D-14 recommends the read-only `0027`) before the Overtoad has ruled on
 any of them. **D-2 is a sixth**: P0 step 11 runs a full backup under the very passphrase D-2 asks whether to
 retire, and P1 step 5 re-decides it afterwards. Either rule those six first, or accept that P0 applies them
 **provisionally** — a contrary ruling on D-1/D-4/D-6/D-9/D-14 means re-installing the unit, and a contrary
@@ -224,11 +224,11 @@ discarded. Step 0 verifies the artifacts match §10.1 instead of asking for a de
 )
 
 edit(
-    "P0 step 0 owner gates",
-    """**0. Owner gates — none of these is a session's to decide.** (a) Rule D-1, D-4, D-6, D-9 **and D-14**, decide whether
+    "P0 step 0 Overtoad gates",
+    """**0. The Overtoad gates — none of these is a session's to decide.** (a) Rule D-1, D-4, D-6, D-9 **and D-14**, decide whether
 D-2 is re-decided before or after the first run, or record that P0 applies their recommendations
 provisionally. (b)""",
-    """**0. Owner gates — RULED 2026-09-22 (§10.1); this step is now a verification, not a decision.** (a) Confirm the
+    """**0. The Overtoad gates — RULED 2026-09-22 (§10.1); this step is now a verification, not a decision.** (a) Confirm the
 installed artifacts match the rulings: `UMask=0027` in the unit (D-14), `AmbientCapabilities=CAP_DAC_READ_SEARCH`
 with the §7.3.2 confinement set (D-4), `--webservice-interface=loopback` (D-9),
 `--require-db-encryption-key` (D-1), and a `.blessed.sha256` written by the installer (D-6). D-2's rotation is
@@ -279,9 +279,9 @@ edit(
 # --------------------------------------------------------------------------------------------
 
 RULINGS = """
-### 10.1 Owner rulings — 2026-09-22
+### 10.1 The Overtoad rulings — 2026-09-22
 
-All seven open gates were ruled by the owner in one interactive session on 2026-09-22. **The Ruling
+All seven open gates were ruled by the Overtoad in one interactive session on 2026-09-22. **The Ruling
 column below is binding and the Recommendation column above is historical.** D-3, D-5, D-7, D-10, D-11,
 D-12 and D-13 remain open and keep their recommendations.
 
@@ -296,7 +296,7 @@ D-12 and D-13 remain open and keep their recommendations.
 | D-14 | **Read-only destination model.** Directories `duplicati:duplicati 2750`, files `0640`, `UMask=0027`, existing volumes chowned to `duplicati` | §7.4's table and its script rewritten; the unit's `UMask=` goes `0007` → `0027` |
 
 - **(10.1a)** **D-6's ruling is stronger than the recommendation it replaces.** The recommendation was a
-  bare copy. The owner added a no-change gate with an explicit `--update-backup-behavior` switch, which
+  bare copy. The Overtoad added a no-change gate with an explicit `--update-backup-behavior` switch, which
   catches two things a bare copy cannot: an installed artifact edited outside the installer, and a
   repository that has moved ahead of what is deployed. The symlink form was considered and rejected on
   one decisive fact — on a fresh host the checkout does not exist yet, so a symlink at the install path
@@ -321,9 +321,9 @@ D-12 and D-13 remain open and keep their recommendations.
 
 ### 10.2 D-2 execution: scrub, rotate, re-encrypt — order of operations
 
-The owner set two criteria: **access to backup data is never lost**, and **the new passphrase does not
+The Overtoad set two criteria: **access to backup data is never lost**, and **the new passphrase does not
 leak**. The sequence below is ordered by those and not by convenience. **None of it is a session's to
-execute** — it is owner-gated exactly as §8 is, and it runs *after* the recovery, not during it.
+execute** — it is Overtoad-gated exactly as §8 is, and it runs *after* the recovery, not during it.
 
 **The mechanism exists in the product.** `Duplicati.CommandLine.RecoveryTool.Implementation.dll` carries a
 `recompress` verb (strings read from the assembly rather than by running it —
@@ -341,7 +341,7 @@ database before executing any operation on backup.
 
 So an existing fileset **can** cross a passphrase rotation, which is what makes "rotate without losing
 the backups" a real option rather than a wish. Three hazards ride with it, and each touches one of the
-owner's two criteria:
+Overtoad's two criteria:
 
 1. **`--reupload` deletes the originals at the destination.** The sole local copy sits on `sda`, a disk
    that has never had a SMART test (§12, carried). This is why the ruling is **stage → verify → swap**
@@ -374,12 +374,12 @@ was protecting has failed at the thing it was for.
 
 edit(
     "insert rulings before section 11",
-    """  "read/write/execute as appropriate", which is exactly why it is the owner's call and not this design's.
+    """  "read/write/execute as appropriate", which is exactly why it is the Overtoad's call and not this design's.
 
 ---
 
 ## 11. Validation record (CON §7)""",
-    """  "read/write/execute as appropriate", which is why it was the owner's call and not this design's.
+    """  "read/write/execute as appropriate", which is why it was the Overtoad's call and not this design's.
   **Ruled 2026-09-22: the read-only form** (§10.1).
 
 ---

@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc — investigation (handoff re-evaluation)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md
          notes/JUNIPER_2026-09-17_JUNIPER-ML_CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md
 
@@ -406,7 +406,7 @@ def probe_first_pass(n: int = 30) -> dict:
         clears, inside = budget > mxv, budget <= 4 * p90v
         verdict = "OK" if clears and inside else ("BELOW HEALTHY MAX" if not clears else "ABOVE 4x p90")
         if repo == "juniper-cascor-client" and verdict == "ABOVE 4x p90":
-            verdict += " (excluded from the pin by owner ruling 2026-09-15)"
+            verdict += " (excluded from the pin by Overtoad ruling 2026-09-15)"
         worst_unhealthy = max((r["span"] for r in unhealthy), default=0)
         out.append(
             {
@@ -691,7 +691,7 @@ def probe_lockfile() -> dict:
     The first draft of this probe read the five newest PRs and concluded "4 of 4 GITHUB_TOKEN PRs
     were parked, not suppressed". The branch has carried 18 GITHUB_TOKEN PRs, and five of them got
     no `pull_request` run when opened -- a correct predicate over an incomplete set. This probe
-    reads the OPENING commit only: #1139 got runs later, on the owner's merge-from-main push.
+    reads the OPENING commit only: #1139 got runs later, on the Overtoad's merge-from-main push.
     """
     prs = json.loads(run(["gh", "pr", "list", "--repo", f"{OWNER}/juniper-ml", "--head", LOCKFILE_BRANCH, "--state", "all", "--limit", "200", "--json", "number,author,createdAt,state"]).stdout)
     if not prs:

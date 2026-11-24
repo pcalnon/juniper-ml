@@ -4,7 +4,7 @@
 # the verdict.
 #
 # notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md §3 specifies the axis;
-# the owner ruled its range 2026-09-22
+# the Overtoad ruled its range 2026-09-22
 # (notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md §5, D4):
 # "10,000 now, in-process later". Probe the top end through cascor's in-process generator ONLY IF
 # this curve shows a knee worth chasing.
@@ -25,7 +25,7 @@
 #   Filed 2026-09-23 as juniper-data#432 (reproduction: util/ad-hoc/2026-09-23_data_additive_overflow_repro.py).
 # 5,800 is the top cell: the widest round request under the ceiling, with 1.4% margin in case
 # the split defaults move. In TOTAL rows per spiral this suite still spans 425 -> ~9,860.
-# The owner's original 250 -> 500,000 request is reachable only through cascor's own in-process
+# The Overtoad's original 250 -> 500,000 request is reachable only through cascor's own in-process
 # generator, a SEPARATE implementation: figures from that path must never be quoted as
 # juniper-data's.
 #
@@ -60,12 +60,12 @@
 # The top cell is ~45x inside max_wall_seconds, so NO BREACH IS EXPECTED anywhere in this range:
 # the axis will report the SHAPE of wall time against size, not where the machine stops. The
 # budgets are left generous because a ceiling costs nothing unless it is hit. Whole suite: 18
-# cells, expect roughly 10-15 min. The owner's in-process follow-up fires only on a knee in this
+# cells, expect roughly 10-15 min. The Overtoad's in-process follow-up fires only on a knee in this
 # curve (ruling §5, D4), and a range with no breach cannot show where viability ends.
 #
 # RESULT, 2026-09-23 -- RUN: 18/18 succeeded, 3 round-robin passes, load 5-8. Wall time is FLAT
 # (24.1 s at 250 -> 24.4 s at 5,800, x1.01); training compute (step_sum) grows x1.31 with log-log
-# slopes of -0.15..0.31 between neighbours. NO KNEE, so the owner's in-process follow-up does not
+# slopes of -0.15..0.31 between neighbours. NO KNEE, so the Overtoad's in-process follow-up does not
 # fire. Full table: PF-2 re-spec §3 RESULT; reducer util/ad-hoc/2026-09-23_pf2_axis2_reduce.py.
 schema_version: 1
 suite:

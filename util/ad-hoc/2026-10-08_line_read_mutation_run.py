@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-08
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-05_masked_finding_shape.py (the read it mutates);
          util/ad-hoc/2026-10-05_gate_regression.py (the checks it runs);
          reports/2026-10-04_consolidated-development-plan/round12-reconciliation.md (the run it was written for)

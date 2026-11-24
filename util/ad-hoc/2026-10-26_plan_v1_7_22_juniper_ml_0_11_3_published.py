@@ -6,14 +6,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.21 -> v1.7.22);
          util/ad-hoc/2026-10-26_plan_v1_7_21_servers_patch_path_corrected.py (the revision this follows, and the pattern);
          util/ad-hoc/2026-10-26_consolidated_plan_v1_15_4_juniper_ml_0_11_3_published.py (the consolidated plan's matching revision)
 
 Why
 ---
-v1.7.21's **Next** opened with juniper-ml 0.11.3 waiting at the owner's `pypi` gate. The owner approved that gate on
+v1.7.21's **Next** opened with juniper-ml 0.11.3 waiting at the Overtoad's `pypi` gate. The Overtoad approved that gate on
 2026-10-26 and PyPI serves 0.11.3 from 17:48Z, so the head of **Next** is rewritten. v1.7.21's records of the gate stay
 where they stand: they were true when written. The publish was probed here, against PyPI's and TestPyPI's version JSON
 and the run's jobs and approvals; the two peer results the record cites are marked as relayed.
@@ -39,7 +39,7 @@ _PLAN = _REPO / "notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END
 _HEADLINE = "juniper-ml 0.11.3 published"
 
 RECORD = (
-    "the owner approved the `pypi` gate of publish run 40306687867 on 2026-10-26, and `Publish to PyPI` succeeded "
+    "the Overtoad approved the `pypi` gate of publish run 40306687867 on 2026-10-26, and `Publish to PyPI` succeeded "
     "(17:47:43Z-17:48:12Z). `https://pypi.org/pypi/juniper-ml/0.11.3/json` serves the wheel (17:48:05Z) and the sdist "
     "(17:48:07Z), each with the sha256 TestPyPI took at 10:21Z, and the index's latest version is 0.11.3. Its three "
     "`[servers]` lines are `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`, `juniper-cascor[api,juniper-data]>=0.12.0` "
@@ -52,7 +52,7 @@ RECORD = (
     "re-check passed on `main` `31b34c39` (relayed): juniper-ml's `CHANGELOG.md` holds the juniper-ml#2330 entry once, "
     "at line 66 under `[0.11.3]`, `### Fixed` (re-read here), and that thread ends with nothing carried forward, by the "
     "owner's choice. An erratum to 0.11.2's notes (`notes/releases/RELEASE_NOTES_v0.11.2.md`, juniper-ml's "
-    "`CHANGELOG.md` `[0.11.2]` and the Release v0.11.2 body) stays the owner's call (v1.7.21); the Release body is "
+    "`CHANGELOG.md` `[0.11.2]` and the Release v0.11.2 body) stays the Overtoad's call (v1.7.21); the Release body is "
     "unedited since 2026-10-26 00:08:22Z. "
     "`JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` records the same publish (v1.15.4)"
 )
@@ -63,11 +63,11 @@ NEXT_HEAD_OLD = (
     "  - **Next**: juniper-ml 0.11.3, which carries juniper-ml#2062's fix (juniper-ml#2333, `da5e8de3`), waits at the "
     "owner's `pypi` gate (publish run 40306687867; re-runnable until 2026-11-25 10:20Z, and GitHub cancels it on "
     "2026-11-30 10:20Z); its records are session \"draft PRs\"'s. Whether 0.11.2's notes take an erratum for the patch "
-    "path is the owner's call (v1.7.21). "
+    "path is the Overtoad's call (v1.7.21). "
 )
-NEXT_HEAD_NEW = "  - **Next**: whether 0.11.2's notes take an erratum for the patch path is the owner's call (v1.7.21). "
+NEXT_HEAD_NEW = "  - **Next**: whether 0.11.2's notes take an erratum for the patch path is the Overtoad's call (v1.7.21). "
 #: The unchanged tail of the Next bullet, asserted so the head edit cannot land on a rewritten bullet.
-_NEXT_TAIL = "The juniper-recurrence-client 0.3.1 release (owner's cut) carries the embargo fix."
+_NEXT_TAIL = "The juniper-recurrence-client 0.3.1 release (Overtoad's cut) carries the embargo fix."
 
 _ROW_ANCHOR_START = "| 2026-10-26 | 1.7.21 | **`[servers]`'s patch path corrected; juniper-ml 0.11.3 at the `pypi` gate**:"
 _ROW_START = "| 2026-10-26 | 1.7.22 | "

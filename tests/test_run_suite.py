@@ -949,7 +949,7 @@ class ComparisonReportingTest(MainLoopTest):
         """The load-bearing property of item 1.4.
 
         Wiring a comparator verdict to run_suite's exit status would silently make the run tier a
-        gate -- and §6 of the P1 design records that as a SEPARATE owner decision, still open. If
+        gate -- and §6 of the P1 design records that as a SEPARATE Overtoad decision, still open. If
         this test ever fails, someone has made that decision by accident.
         """
         root, suite_dir, _, _ = self._setup()
@@ -1190,7 +1190,7 @@ def _stats_run_dir(case: unittest.TestCase, stats: "dict | None", parent: "Path 
 
 
 class CascorHeadlineMetricsTest(unittest.TestCase):
-    """APD-ML-002 (owner rulings, 2026-10-26): the cascor half of ``_headline_metrics``.
+    """APD-ML-002 (Overtoad rulings, 2026-10-26): the cascor half of ``_headline_metrics``.
 
     It read ``final_accuracy`` / ``test_accuracy`` / ``val_accuracy`` off the TOP of ``stats["cascor"]``, where
     ``build_stats`` never wrote anything, so all 439 cascor registry rows on the run corpus carried
@@ -1593,7 +1593,7 @@ def _restore_environ(saved: "dict[str, str]") -> None:
 
 
 class TestRuntimeBlockEnv(unittest.TestCase):
-    """``runtime:`` -> process environment (owner decision D2).
+    """``runtime:`` -> process environment (Overtoad decision D2).
 
     The failure this pins is not a crash, it is a **silent no-op**: before
     ``runtime_block_env`` existed, ``run_experiment`` validated all three ``RUNTIME_KEYS``

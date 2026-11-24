@@ -7,14 +7,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-29
 Status: ad-hoc — investigation (flood-3 record, ninth update)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§4: cascor `ci.yml:659`, canopy's Bandit SARIF)
 
 Why this exists
 ---------------
-The owner ruled on 2026-10-29 that juniper-cascor's Bandit SARIF upload fails on pull requests
+The Overtoad ruled on 2026-10-29 that juniper-cascor's Bandit SARIF upload fails on pull requests
 (``continue-on-error: ${{ github.event_name != 'pull_request' }}``). Whether the other repositories
-follow is the owner's next call, and this lists where the old ``continue-on-error: true`` still stands.
+follow is the Overtoad's next call, and this lists where the old ``continue-on-error: true`` still stands.
 It reads each sibling's ``origin/main`` after a fetch, never a working tree.
 
     python3 -I util/ad-hoc/2026-10-29_sarif_upload_continue_on_error_census.py <Juniper ecosystem root>

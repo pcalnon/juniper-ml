@@ -6,12 +6,12 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- investigation (canopy E2E arc, Phase 9: who readied and armed canopy#676?)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: memory reference_a_disarmed_pr_is_rearmed_by_an_unseen_actor_draft_it.md;
          notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9, "The merge, out of order"
 
 WHY THIS EXISTS. canopy#676 was marked ready and armed at 2026-09-23 22:28Z while held as a draft,
-as `pcalnon`. GitHub cannot tell the owner from any session or automation holding his token. A
+as `pcalnon`. GitHub cannot tell the Overtoad from any session or automation holding his token. A
 transcript scan for the COMMAND can only refute a named session; it cannot say whether any session
 was able to act at all. This asks a different question of the same transcripts: in the window, which
 sessions recorded any ASSISTANT TOOL CALL, and which recorded a rate-limit refusal ("You've hit your

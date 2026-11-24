@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: Cursor flood-4, owner ruling 17 ("canopy: dead error path"); juniper-canopy lockfile-update.yml
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Cursor flood-4, Overtoad ruling 17 ("canopy: dead error path"); juniper-canopy lockfile-update.yml
 
 juniper-canopy's lockfile-update.yml says juniper-data, -cascor, -data-client, -cascor-client
 and -cascor-worker carry the same regen commit step. This lists, for each repository's

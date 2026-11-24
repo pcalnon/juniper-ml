@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-08
 Status: ad-hoc — one-off (run once on 2026-09-08 to populate this directory)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: HANDOFF_2026-09-08_defect-register-round-38-the-three-way-prompt-built-and-the-annotation-made-truthful.md;
          the script-placement rule in AGENTS.md (§ Script placement) and util/ad-hoc/README.md
 
@@ -54,7 +54,7 @@ def header_for(name: str) -> str:
         "Author: Paul Calnon\n"
         "Created: 2026-09-08\n"
         "Status: ad-hoc — one-off (applied once, on 2026-09-08, to the PR worktree named below; the paths inside are that session's)\n"
-        "Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)\n"
+        "Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)\n"
         f"Related: {related};\n"
         "         HANDOFF_2026-09-08_defect-register-round-38-the-three-way-prompt-built-and-the-annotation-made-truthful.md\n"
     )

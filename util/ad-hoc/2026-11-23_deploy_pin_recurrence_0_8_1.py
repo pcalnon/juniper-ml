@@ -11,7 +11,7 @@ Related: util/ad-hoc/2026-11-15_deploy_pin_cascor_0_14_0_canopy_0_10_0.py (the p
          juniper-deploy#257 (the 0.8.0 pin, whose prose sites this moves); util/open_signed_pr.py (which lands the
          copies as one GitHub-signed commit);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-15_r-obs-sc-2-cascor-one-artifact-landed-ports-plan-v1-15-17-next.md
-         ("Still open with the owner": juniper-deploy's juniper-recurrence:0.8.0 pin)
+         ("Still open with the Overtoad": juniper-deploy's juniper-recurrence:0.8.0 pin)
 
 Why
 ---

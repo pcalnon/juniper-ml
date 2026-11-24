@@ -11,7 +11,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — one-off (flood-4 carrier validation, sub-package slice)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: flood-4 tests carrier validation (BRIEF_VALIDATE.txt)
 
 Usage: python3 <this> <worktree> <venv root> <scratch dir>

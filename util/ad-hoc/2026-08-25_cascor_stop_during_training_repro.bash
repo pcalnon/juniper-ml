@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-08-25
 # Status:     ad-hoc — investigation
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-08-25_JUNIPER-CASCOR_DEV-SHM-LEAK-CHARACTERISATION.md §6;
 #             the 2026-08-25 snapshot-arc handoff §2; util/ad-hoc/uvicorn_sigterm_atexit_probe.py
 #

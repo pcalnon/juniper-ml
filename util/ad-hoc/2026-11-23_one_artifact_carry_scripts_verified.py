@@ -11,14 +11,14 @@
 # Last Updated: 2026-11-23
 #
 # Status: ad-hoc -- one-off (one-artifact publish arc, session e71d3e)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 #
 # Description:
 #   Carry the one-artifact arc's 26 uncommitted util/ad-hoc scripts from a sibling worktree into this one,
 #   proving each file against the sha256 manifests the arc recorded on 2026-11-15/16 (carried_scripts.sha256,
 #   copied_tools_writers.sha256).
 #
-#   Between 2026-11-20 and 11-22 a blind "owner" -> "Overtoad" text substitution (the owner's
+#   Between 2026-11-20 and 11-22 a blind "owner" -> "Overtoad" text substitution (the Overtoad's
 #   task/owner-is-the-overtoad PRs) also rewrote files on disk in sibling worktrees, these scripts among them.
 #   A file whose bytes miss the manifest is therefore tried once more with the inverse substitution
 #   ("Overtoad" -> "owner"), and is written here ONLY if that inverse reproduces the recorded sha256 exactly.
