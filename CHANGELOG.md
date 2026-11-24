@@ -40,7 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     130 interrupted.
   - First full run, 2026-11-23: 269 jobs in 5m32s at `-j 8`, with five local-only failures.
     - Four come from `TMPDIR` sitting inside a checkout; a `--tmpdir` outside the tree made them pass.
-    - `tests/test_a0_restore_scripts.py`'s `install` stub refuses every `/home/` path, so it cannot pass on this host.
+    - `tests/test_a0_restore_scripts.py`'s `install` stub refused every `/home/` path, so it could not pass on this
+      host. Fixed since (see Fixed).
     - docs/REFERENCE.md § Test Suite Reference, "Running tests locally", records all five; it is the operator
       documentation (docs version 0.6.81).
   - `tests/test_run_tests.py` is wired into ci.yml (263 suites). It checks that the real workflows parse the way CI runs
@@ -235,6 +236,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`conf/python_versions.yaml`'s juniper-ml recipe runs `util/run_tests.py regression`.**
+  - It ran `util/ad-hoc/2026-11-15_run_ci_regression_list_locally.py`, which ran the `python3 -m unittest` commands of
+    ci.yml's `Run Python regression tests` step one at a time.
+  - `util/python_version_check.py --repo juniper-ml` now runs all of ci.yml's `tests` job, as a CI matrix leg does:
+    every command of that step (its non-unittest checks too) and `Run bash regression tests`. They run at `-j auto`,
+    each step in its own process group with a timeout, a failed job is re-run alone, and the run is recorded under the
+    primary checkout's `tmp/run-tests/`.
+  - `--python "$VIRTUAL_ENV/bin/python"` keeps every command on the venv's interpreter. docs/REFERENCE.md 0.6.83
+    follows.
+
 - **Backup Phase D: the watchdog can accept the warning classes the Overtoad names (Q6's other half, ruled
   2026-11-23).** A `Warning` run whose every warning is of an accepted class reads `OK WARNINGS_ACCEPTED`, which the
   acceptance probe's AC-5 counts as it counts `OK OK`; any other warning still alerts and ends the streak. The list,
@@ -326,6 +337,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `util/ad-hoc/2026-11-24_flood4_s11_val_doc_{checks,fixcheck}.py`.
 
 ### Fixed
+
+- **`tests/test_a0_restore_scripts.py` passes on a host whose `TMPDIR` is under `/home`.** Its PATH `install` stub, a
+  safety net against a regressed refusal, refused every argument under `/home/`. The 2026-10-26 rule puts `TMPDIR` in
+  the repo's `tmp/`, under `/home` on the Linux workstation, so 10 of its 17 tests failed there.
+  - The stub canonicalises each absolute argument (`realpath -m`), then refuses one under `/home` or the real home
+    unless it is inside the test's own scratch directory.
+  - The production-default test's "path elsewhere" was a scratch path. On such a host every scratch directory is inside
+    the default backup Source, `/home/pcalnon`, so the restore script rightly refused it. It is now
+    `/nonexistent/juniper-a0-r7-elsewhere/out`, which the stub records instead of creating.
+  - `InstallStubSafetyNet` (4 tests) pins the net itself; the suite has 21 tests.
+  - `util/ad-hoc/2026-11-24_a0_install_stub_mutation_check.py` kills six mutants. With the restore script's own
+    refusal removed, the net refuses the real-home path and nothing is created.
+  - docs/REFERENCE.md 0.6.83: "Known local-only failures" marks it fixed, and its Test Suite Reference entry describes
+    the net.
 
 - **Backup Phase D: the acceptance probe judges a day on which a backup is still running.** While a run of the job is
   in progress the server refuses the job log with HTTP 400. On 11-19, 11-21 and 11-22 that made all six server
