@@ -338,6 +338,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Backup: three tools named the job's old times after the Overtoad moved it on 2026-11-15** (14:00Z to 13:00Z, and
+  the watchdog's check from 12:00 to 20:00 local). Text only; nothing any of them does has changed.
+  - `util/ad-hoc/yamaguchi_server_db_snapshot.py` 1.2.1 closes with "13:00Z daily". The installed copy under
+    `/usr/local/lib/duplicati/` keeps saying 14:00Z until the Overtoad copies the new file there.
+  - `util/ad-hoc/yamaguchi_reboot_verify.bash`: the closing message says 13:00Z, and the false-negative note and step 3
+    name the 20:00 watchdog.
+  - `util/systemd/yamaguchi-acceptance-probe.timer`'s comment: the job starts at 13:00 UTC, ten and a half hours before
+    the probe. The probe's next deploy installs it.
+
 - **`tests/test_a0_restore_scripts.py` passes on a host whose `TMPDIR` is under `/home`.** Its PATH `install` stub, a
   safety net against a regressed refusal, refused every argument under `/home/`. The 2026-10-26 rule puts `TMPDIR` in
   the repo's `tmp/`, under `/home` on the Linux workstation, so 10 of its 17 tests failed there.
