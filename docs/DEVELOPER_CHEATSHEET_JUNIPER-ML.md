@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.72
-**Date**: 2026-11-23
+**Version**: 1.0.73
+**Date**: 2026-11-24
 **Project**: juniper-ml
 
 ---
@@ -17,6 +17,9 @@
 | `pip install -e ".[tools]"`                            | Install shared tooling: ci/doc/config tools + model-core + observability + service-core (editable) |
 | `pip install -e ".[recurrence]"`                       | Install Δt-native recurrence stack: model + FastAPI app + HTTP client (editable) |
 | `python -m build && twine check dist/*`                | Build and validate package                      |
+| `python3 util/run_tests.py`                            | Run every regression suite and package lane with CI's own commands (`-j auto`, past failures, failures re-run alone); `--help` for the selectors. [REFERENCE — Running tests locally](REFERENCE.md#running-tests-locally) |
+| `python3 util/run_tests.py safe_merge 'soak_*' doc-tools -k cap` | Run a subset: a suite, a glob of suites, a package lane, only the tests matching `cap`; `--list` shows what a selector picks |
+| `python3 util/run_tests.py --changed` / `--failed`     | The jobs the branch touches (vs `origin/main`; a subset, not CI parity) / the last run's failures again |
 | `python3 -m unittest -v tests/test_wake_the_claude.py` | Run launcher regression tests                   |
 | `python3 -m unittest -v tests/test_pyproject_extras.py`| Lint extras schema + docs↔pyproject pin lockstep |
 | `python3 -m unittest -v tests/test_publish_testpypi_verify.py` | Gate 1 two-phase verify + bounded TestPyPI poll (no `sleep 30`) |
@@ -1295,6 +1298,6 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 
 ---
 
-**Last Updated:** 2026-11-23
-**Version:** 1.0.72
+**Last Updated:** 2026-11-24
+**Version:** 1.0.73
 **Maintainer:** Paul Calnon

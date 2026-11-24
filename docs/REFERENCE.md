@@ -2,7 +2,7 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.6.80
+**Version:** 0.6.81
 **Status:** Active
 **Last Updated:** 2026-11-24
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -3470,11 +3470,160 @@ Related: [Relocation Completeness (G3)](#relocation-completeness-g3),
 
 ## Test Suite Reference
 
+### Running tests locally
+
+`util/run_tests.py` runs any subset of juniper-ml's tests with the commands CI runs. It reads them from the workflows on every run, so it cannot drift from them:
+
+- the **`unittest` lane**: ci.yml's `Run Python regression tests` step, one job per `python3 -m unittest -v tests/<suite>.py` command, plus the step's other commands (`util/soak_ledger.py verify-probes` today);
+- the **`bash` lane**: ci.yml's `Run bash regression tests` step;
+- one **package lane** per `.github/workflows/ci-<package>.yml` with a `test` job: pytest with the workflow's coverage floor, then the per-file coverage gate.
+
+It replaces copying commands out of the block in [Running every suite](#running-every-suite), and the one-off runners in `util/ad-hoc/` (`2026-09-22_run_ci_regression_list.bash`, `2026-10-08_run_ci_regression_suites.py`, `2026-11-07_flood4_run_ci_regression_suites_parallel.py`, `2026-11-15_run_ci_regression_list_locally.py` and their kin), which stay as provenance (Overtoad policy 2026-08-25).
+
+```bash
+python3 util/run_tests.py                          # everything, -j auto, past failures
+python3 util/run_tests.py regression -j 1 -x       # ci.yml's Regression Tests job as CI runs it: in order, stop at the first failure
+python3 util/run_tests.py safe_merge               # one suite, its output live
+python3 util/run_tests.py 'release_train_*' -k cap # a family of suites, only the tests matching "cap"
+python3 util/run_tests.py doc-tools service-core   # two package lanes, with their coverage gates
+python3 util/run_tests.py juniper-doc-tools/tests/test_cli.py -- -x -vv
+python3 util/run_tests.py --changed                # what the branch touches, against origin/main
+python3 util/run_tests.py --failed                 # the failures of the last run, again
+python3 util/run_tests.py --list 'soak*'           # what a selector selects; runs nothing
+python3 util/run_tests.py --help
+```
+
+#### Selectors
+
+Any number, in any combination; none means `all`.
+
+| Selector | Runs |
+|----------|------|
+| `all` | every lane |
+| `regression` | ci.yml's Regression Tests job: the `unittest` and `bash` lanes |
+| `unittest` | every command of `Run Python regression tests` |
+| `bash` | `Run bash regression tests` |
+| `packages` | every package lane |
+| `ci-tools`, `config-tools`, `doc-tools`, `model-core`, `observability`, `service-core` (or `juniper-<package>`) | that package's `ci-<package>.yml` test job |
+| `tests/test_safe_merge.py`, `test_safe_merge.py`, `test_safe_merge`, `safe_merge`, `tests.test_safe_merge` | one regression suite |
+| `'soak_*'`, `'*predict_merge*'` (quoted) | every suite whose name matches, with or without its `test_` prefix |
+| `tests/test_safe_merge.py::<Class>[::<test>]`, `tests.test_safe_merge.<Class>.<test>` | one class or test of a suite |
+| a path under `juniper-<package>/`, optionally `::<node id>` | that lane's pytest on the path alone, with the coverage gates off |
+| `scripts/test_resume_file_safety.bash`, `util/soak_ledger.py` | that command of the `unittest` or `bash` lane |
+
+A selector that names nothing is a usage error (exit 2) that suggests the closest names. A `tests/test_*.py` that ci.yml does not run is refused by name: `tests/test_ci_test_wiring_drift.py` fails until it is wired. `--list` shows what any combination selects, and runs nothing.
+
+#### Options
+
+| Option | Effect |
+|--------|--------|
+| `-k EXPR` | Only tests whose name matches: unittest `-k` (a substring or `fnmatch` pattern) or pytest `-k` (an expression). Repeatable, any match counts (several are or-ed for pytest). Command jobs have no test names and are skipped. A job where nothing matched is `NO-TESTS`, counted in the summary rather than printed. Turns a package lane's coverage gates off. |
+| `--changed` | Add the jobs a change touches (below). |
+| `--base REF` | What `--changed` compares against, through the merge base. Default `origin/main`. |
+| `--failed`, `--lf` | Add the jobs that failed or timed out in the last recorded run of this checkout (the newest `summary.json` under the log directory). `-k` and pass-through arguments are not replayed. |
+| `-l`, `--list` | List what the selectors select, by lane, with each package lane's commands, and exit. |
+| `-j N`, `--jobs N` | Jobs at once, or `auto`: half the CPUs, at most 8 (the default). `-j 1` runs them in CI's order. Above 1, the previous run's durations order the jobs longest first. |
+| `-x`, `--fail-fast` | Start nothing new after the first failure, as CI's `bash -e` does. |
+| `--timeout SECONDS` | Per step; the step's whole process group is killed when it expires. Default 900; `0` means none. |
+| `--no-rerun` | With `-j` above 1, do not re-run a failed job alone (below). |
+| `--no-coverage` | Package lanes: pytest without coverage, and no coverage gate. |
+| `--python PATH` | The interpreter for every command; default: the one running the script. Its directory goes first on PATH when its `python3` is the same interpreter (a venv's or conda env's `bin/`), so a script a test starts gets it too. |
+| `-n`, `--dry-run` | Print the environment, the preflight and every command, with its directory and environment. Runs nothing, writes nothing. |
+| `--clean-env` | Also remove `CLAUDE*`, `JUNIPER_*` and `WTC_*` variables from the children, as on a CI runner. A Claude Code session on the Linux workstation carried 29 of them on 2026-11-23: 27 `CLAUDE*`, 2 `JUNIPER_*`. |
+| `--force-drift` | Set `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`: the drift suites run the cross-repo and live-API assertions they skip outside CI. |
+| `--tmpdir DIR` | The children's `TMPDIR` (below). Never the system temp directory (exit 2). |
+| `-s`, `--stream` | Each step's output live (implies `-j 1`). The default when one job is selected. |
+| `-q`, `--quiet` | Only failures and the summary. |
+| `--tail N` | Lines of a failing step's output printed under its status line. Default 30; `0` for none. |
+| `--color WHEN` | `auto` (a terminal, without `NO_COLOR`), `always` or `never`. |
+| `--log-dir DIR` | Where run directories go. Default `<primary checkout>/tmp/run-tests/<checkout name>`. |
+| `--checkout DIR` | The checkout to test. Default: the one holding the script. |
+| `-- ARGS` | Everything after `--` goes to the runner of every selected job: unittest, or pytest's step of a package lane. A selection holding both kinds is refused; command jobs ignore them. Arguments that deselect tests (`-x`, `--lf`, `-m`) can trip a package's coverage floor: add `--no-coverage`. |
+
+#### How a job runs
+
+- **The interpreter.** `python`, `python3` and `pytest` in a workflow command become the selected interpreter. A console script (`juniper-coverage-gap-map`) is looked for next to it, then on PATH.
+- **One process group per step.** Every suite and command is its own process, as in CI, started in the directory the workflow names, with stdin from `/dev/null`. Its process group is killed on a timeout, on Ctrl-C or SIGTERM (the run then exits 130 and still writes its summary), and when the step ends with processes still in it. The job's detail then says `killed processes it left behind`: a hermeticity defect in that suite worth fixing.
+- **The children's environment.**
+  - `DBUS_SESSION_BUS_ADDRESS` names a socket that does not exist, so no test can raise a desktop notification: the juniper-ml#2559 class, a fixture that reached the real `notify-send`.
+  - `DISPLAY`, `WAYLAND_DISPLAY`, `PYTHONPATH` and `PYTHONHOME` are removed.
+  - `PYTHONUNBUFFERED=1` keeps each log in the order its lines were written.
+  - `TMPDIR` is the inherited one when it is a directory outside the system temp directory, else the primary checkout's `tmp/`. `--tmpdir` overrides it. It goes first in `GIT_CEILING_DIRECTORIES`.
+  - Nothing is ever written under the system temp directory (Overtoad directive, 2026-10-26).
+- **A package lane tests this checkout.** `PYTHONPATH` is set to the directories the workflow's install step installs editable (`pip install -e`), and the preflight refuses the lane (`UNAVAILABLE`) when a package would still import from anywhere else.
+  - Measured on the Linux workstation on 2026-11-23, in `JuniperCascor1`: without it, four of the six packages imported from releases in site-packages and two from the **primary** checkout's editable installs. A plain `python -m pytest` in a worktree tested other code.
+  - The coverage data and the JSON report go to the run directory, because `coverage.json` is not gitignored.
+- **It installs nothing.** The preflight checks each lane's requirements against the interpreter and prints the `pip install` command for what is missing. For the `unittest` lane they are ci.yml's `Install test dependencies`; for a package lane, its `pyproject.toml` dependencies plus the extras its workflow installs. A missing requirement is a warning, not a refusal: a suite that needs it fails or skips, and the summary counts the skips.
+- **Past failures.** CI's step runs under `bash -e` and stops at the first failing suite; here every selected job runs and every failure is reported. `-x` restores stop-at-first-failure.
+- **Parallel runs re-run failures alone.** With `-j` above 1, each job that failed or timed out is run again, alone, once the others are done. One that passes then is `RERUN-PASS`: listed in the summary, and the run still exits 0. It means interference from a concurrent job, or a flaky test, and CI runs one suite at a time.
+
+#### Statuses and exit codes
+
+| Status | Meaning |
+|--------|---------|
+| `PASS` | Every step exited 0. |
+| `FAIL` | A step exited non-zero: failing tests, a coverage floor, the per-file gate, a crash. |
+| `TIMEOUT` | A step outlived `--timeout`; its process group was killed. |
+| `UNAVAILABLE` | Could not run: the preflight refused the lane, or a program is not installed. The detail names the workflow's install command. |
+| `NO-TESTS` | `-k`, or a narrowed selection, matched no test in the job. |
+| `RERUN-PASS` | Failed alongside other jobs, passed alone. |
+| `NOT-RUN` | Not started (after a failure under `-x`, or interrupted), or a step after a failed step. |
+
+Exit **0** every selected job passed (`RERUN-PASS` included) / **1** a failure or timeout / **2** usage or configuration: an unknown selector, a workflow line it cannot run without a shell / **3** nothing failed, but a job was `UNAVAILABLE` / **5** no test ran: `-k` matched nothing anywhere / **130** interrupted.
+
+A workflow command that needs a shell (an operator such as `&&` or `|`, a `$VARIABLE`, `cd`, `FOO=1 cmd`) is refused by name with exit 2. The script runs CI's commands without a shell, so such a change has to teach it the new shape. `tests/test_run_tests.py` fails in the PR that makes it.
+
+#### Output and records
+
+- **Status lines.** One status line per job as it finishes, with its test counts and duration. Under a failure come the last `--tail` lines of its output and the log path. While a job runs, a line every minute names the jobs still running.
+- **The summary.** Then a summary by lane, with test counts and skips, and the problems with their failing tests and logs.
+- **The run directory**, `<primary checkout>/tmp/run-tests/<checkout name>/<UTC stamp>/`, outlives the worktree. It holds:
+  - `<lane>/<suite>.log`, with `.rerun.log` for a re-run;
+  - a package lane's `1-pytest.log`, `2-coverage-gate.log`, `coverage.json` and `.coverage`;
+  - `summary.txt`;
+  - `summary.json` (schema 1): the argv, selectors and options; the interpreter; the git state; the environment changes (removed names, set values); the preflight; and, per job, the status, detail, duration, counts, failing tests and each step's argv, directory, exit code and log.
+- **`latest`** links to the newest run.
+- **Retention.** Nothing is pruned, under the 2026-10-26 retention rule.
+
+#### `--changed`
+
+The changed files are the committed, staged, unstaged and untracked changes against the merge base with `--base`. A job is selected when:
+
+- a suite is itself a changed file, or its text names one (the repo-relative path or the file name; a `tests/` helper also by its module name);
+- a package's directory or workflow holds a changed file;
+- a command runs a changed file.
+
+`--list --changed` shows why each job was chosen. It over-selects on purpose, and still misses a repo-wide suite that names no file: `tests/test_env_repr_safety.py`, which lints every test file, caught changes on juniper-ml#2002 and #2182 that the authors' own subsets never ran. It is a pre-push smoke test; run `all` before trusting green.
+
+#### Known local-only failures
+
+The first full run, on 2026-11-23 on the Linux workstation (`JuniperCascor1`, Python 3.14.7, 16 CPUs): 269 jobs in 5m32s at `-j 8`, of which 264 passed. That was before `tests/test_run_tests.py` existed. Five failed here and pass in CI; each failed again when re-run alone, so none is interference.
+
+| Job | Failed | Cause | Measured remedy |
+|-----|--------|-------|-----------------|
+| `tests/test_workflow_script_paths.py` | 1 of 13 | `TMPDIR`, the primary's `tmp/`, is inside a checkout: the fixture walks up from a temp directory and finds the enclosing one | `--tmpdir` outside every checkout and outside the Juniper tree: passed |
+| `tests/test_e2e_f037_render_census.py` | 1 of 13 | the same: `FindJuniperRootTest`'s sibling walk | the same: passed |
+| `tests/test_replay_redrive_stack_refusal.py` | 13 of 17 | the same | the same: passed |
+| `ci-tools` | 9 of 309 | the same: the repo-root finders' "no root above a temp directory" tests | the same: passed |
+| `tests/test_a0_restore_scripts.py` | 10 of 17 | its `install` stub refuses every argument under `/home/`, and `TMPDIR` is under `/home` here, whichever directory is used | none on this host: it passes only where `TMPDIR` is outside `/home`, as on CI's runners |
+
+The repo's `tmp/` is the Overtoad's rule for temp files. Pointing `--tmpdir` elsewhere is a per-run choice for a parity check, not a new default.
+
+A second run the same day, with `tests/test_run_tests.py` wired in: 270 jobs in 6m20s at `-j 8`, with the same five failures.
+
+- `tests/test_release_train_registry.py` failed 2 of 27 alongside the other jobs and passed alone (`RERUN-PASS`). Its `pyproject.toml` walk counted this suite's fixture package, which lives under `tmp/` while it runs, so the re-run did what it is for.
+- The walk now skips `tmp/`: section 11 of `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md` had listed it as owed. The two suites then pass side by side with `--no-rerun`.
+
+#### Related
+
+- `util/python_version_check.py` runs juniper-ml's suites under another Python version, in a venv built from `/usr/bin/python<version>`.
+- `pre-commit run --all-files` covers lint; this runner runs tests only.
+
 ### Running every suite
 
-The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th), **169** on 2026-10-03 (`tests/test_juniper_backup_tier2_lane.py`), **198** on 2026-10-08 (173 on `main` that morning, plus the 25 suites harvested from the Cursor flood-3 PRs), **199** with W1.5's `tests/test_recurrence_operation_identity_and_dataset_budget.py`, **213** with W5.4's `tests/test_run_suite_acceptance.py`, **214** with G5's `tests/test_home_path_literal_check.py`, **216** on 2026-10-20 with W5.5 / W5.6's `tests/test_stats_summary_target_summary.py` and `tests/test_experiment_stack_shared_equities_cache.py`, **217** with G4's `tests/test_ci_host_tooling_macos.py`, **218** with commit-signing K2's `tests/test_configure_commit_signing.py`, **220** with G1's `tests/test_host_state_probe.py` and `tests/test_host_state_check.py`, **223** with H2's `tests/test_macos_host_sme_contract.py`, `tests/test_signing_auth_sme_contract.py` and `tests/test_k8s_node_sme_contract.py`, **224** with H4's `tests/test_mcp_setup.py`, **225** with the tier-3 backup lane's `tests/test_juniper_backup_tier3_lane.py`, **227** with gate G-TMP's `tests/test_tmp_path_literal_check.py` and `tests/test_juniper_repo_tmp.py` (the 2026-10-26 repo `tmp/` rule), **228** on 2026-10-29 with Phase D's `tests/test_write_matched_settings_key.py` (the block held 226 before it), **229** with `tests/test_stats_summary_eval_blocks.py`, **230** with the securityfs incident's `tests/test_host_api_filesystems_check.py`, **234** on 2026-11-08 with the four flood-4 suites (`tests/test_release_train_exact_caps.py`, `tests/test_per_run_timeout_boundary.py`, `tests/test_claude_agent_guard_brace_cap.py`, `tests/test_host_state_gate_boundaries.py`), **239** on 2026-11-13 with the flood-4 round-2 code carrier's five (`tests/test_prompt_file_later_flag.py`, `tests/test_claudey_empty_prompt_file_env.py`, `tests/test_predict_merge_inherited_git_env.py`, `tests/test_claude_agent_guard_git_sign_abbrev.py`, `tests/test_claude_agent_guard_push_signed_abbrev.py`), **242** on 2026-11-14 with the three Phase D step-14 suites (`tests/test_yamaguchi_acceptance_probe.py`, `tests/test_phase_d_finish.py`, `tests/test_ac4_restore_drill.py`), **244** on 2026-11-15 with the local Python-version helper's two (`tests/test_python_version_check.py`, `tests/test_python_version_matrix_drift.py`), **259** on 2026-11-15 with the flood-4 round-2 tests carrier's fifteen (`tests/test_claude_agent_guard_nest_depth.py`, `tests/test_claude_agent_guard_push_signed.py`, `tests/test_claude_agent_guard_ansi_escapes.py`, `tests/test_claude_agent_guard_gpgsign_off.py`, `tests/test_claude_agent_guard_sign_edges.py`, `tests/test_launcher_empty_version_output.py`, `tests/test_prompt_file_boolean_tokens.py`, `tests/test_prompt_file_kind.py`, `tests/test_wake_spacer_flags.py`, `tests/test_launcher_prompt_and_version_edges.py`, `tests/test_predict_merge_scratch_edges.py`, `tests/test_predict_merge_shallow_worktree.py`, `tests/test_predict_merge_guard_edges.py`, `tests/test_predict_merge_error_screen.py`, `tests/test_cascor_eval_zero_and_enabled.py`), **260** on 2026-11-15 with the pull-request secret scan's `tests/test_gitleaks_pr_scan.py` (the port of juniper-data#530), **261** on 2026-11-16 with the one-artifact publish's `tests/test_publish_one_artifact.py` (the port of juniper-cascor#763 / #767), **262** on 2026-11-23 with the shared resume table's drift gate, `tests/test_ws_resume_answer_table_drift.py`. The drift script above counts, so re-run it rather than trusting this figure. This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
+The complete ordered list, generated from `.github/workflows/ci.yml`'s `Run Python regression tests` step on 2026-09-10 -- **164 suites** then, **168** on 2026-09-23 (`tests/test_thread_width.py` is the 168th), **169** on 2026-10-03 (`tests/test_juniper_backup_tier2_lane.py`), **198** on 2026-10-08 (173 on `main` that morning, plus the 25 suites harvested from the Cursor flood-3 PRs), **199** with W1.5's `tests/test_recurrence_operation_identity_and_dataset_budget.py`, **213** with W5.4's `tests/test_run_suite_acceptance.py`, **214** with G5's `tests/test_home_path_literal_check.py`, **216** on 2026-10-20 with W5.5 / W5.6's `tests/test_stats_summary_target_summary.py` and `tests/test_experiment_stack_shared_equities_cache.py`, **217** with G4's `tests/test_ci_host_tooling_macos.py`, **218** with commit-signing K2's `tests/test_configure_commit_signing.py`, **220** with G1's `tests/test_host_state_probe.py` and `tests/test_host_state_check.py`, **223** with H2's `tests/test_macos_host_sme_contract.py`, `tests/test_signing_auth_sme_contract.py` and `tests/test_k8s_node_sme_contract.py`, **224** with H4's `tests/test_mcp_setup.py`, **225** with the tier-3 backup lane's `tests/test_juniper_backup_tier3_lane.py`, **227** with gate G-TMP's `tests/test_tmp_path_literal_check.py` and `tests/test_juniper_repo_tmp.py` (the 2026-10-26 repo `tmp/` rule), **228** on 2026-10-29 with Phase D's `tests/test_write_matched_settings_key.py` (the block held 226 before it), **229** with `tests/test_stats_summary_eval_blocks.py`, **230** with the securityfs incident's `tests/test_host_api_filesystems_check.py`, **234** on 2026-11-08 with the four flood-4 suites (`tests/test_release_train_exact_caps.py`, `tests/test_per_run_timeout_boundary.py`, `tests/test_claude_agent_guard_brace_cap.py`, `tests/test_host_state_gate_boundaries.py`), **239** on 2026-11-13 with the flood-4 round-2 code carrier's five (`tests/test_prompt_file_later_flag.py`, `tests/test_claudey_empty_prompt_file_env.py`, `tests/test_predict_merge_inherited_git_env.py`, `tests/test_claude_agent_guard_git_sign_abbrev.py`, `tests/test_claude_agent_guard_push_signed_abbrev.py`), **242** on 2026-11-14 with the three Phase D step-14 suites (`tests/test_yamaguchi_acceptance_probe.py`, `tests/test_phase_d_finish.py`, `tests/test_ac4_restore_drill.py`), **244** on 2026-11-15 with the local Python-version helper's two (`tests/test_python_version_check.py`, `tests/test_python_version_matrix_drift.py`), **259** on 2026-11-15 with the flood-4 round-2 tests carrier's fifteen (`tests/test_claude_agent_guard_nest_depth.py`, `tests/test_claude_agent_guard_push_signed.py`, `tests/test_claude_agent_guard_ansi_escapes.py`, `tests/test_claude_agent_guard_gpgsign_off.py`, `tests/test_claude_agent_guard_sign_edges.py`, `tests/test_launcher_empty_version_output.py`, `tests/test_prompt_file_boolean_tokens.py`, `tests/test_prompt_file_kind.py`, `tests/test_wake_spacer_flags.py`, `tests/test_launcher_prompt_and_version_edges.py`, `tests/test_predict_merge_scratch_edges.py`, `tests/test_predict_merge_shallow_worktree.py`, `tests/test_predict_merge_guard_edges.py`, `tests/test_predict_merge_error_screen.py`, `tests/test_cascor_eval_zero_and_enabled.py`), **260** on 2026-11-15 with the pull-request secret scan's `tests/test_gitleaks_pr_scan.py` (the port of juniper-data#530), **261** on 2026-11-16 with the one-artifact publish's `tests/test_publish_one_artifact.py` (the port of juniper-cascor#763 / #767), **262** on 2026-11-23 with the shared resume table's drift gate, `tests/test_ws_resume_answer_table_drift.py`, **263** on 2026-11-24 with the local test runner's `tests/test_run_tests.py`. The drift script above counts, so re-run it rather than trusting this figure. This relocated from `AGENTS.md` (the 2026-09-10 structure repair), where the hand-maintained copy had drifted to 115 and completing it in place would have left the always-loaded file 534 chars under its 38000-char ceiling.
 
-ci.yml is the authoritative list. `tests/test_ci_test_wiring_drift.py` gates that every `tests/test_*.py` on disk is invoked there; `util/ad-hoc/2026-09-10_agents_md_test_list_drift.py` reports any suite CI runs that this list does not name.
+ci.yml is the authoritative list. `tests/test_ci_test_wiring_drift.py` gates that every `tests/test_*.py` on disk is invoked there; `util/ad-hoc/2026-09-10_agents_md_test_list_drift.py` reports any suite CI runs that this list does not name. To run the list, or any part of it, use `python3 util/run_tests.py` ([Running tests locally](#running-tests-locally)): it reads ci.yml itself and keeps going past failures. The block below is the same list as plain commands.
 
 > [juniper-ml#1883](https://github.com/pcalnon/juniper-ml/pull/1883) added three soak suites to the old `AGENTS.md` copy and recorded "Set difference against ci.yml is now empty." At its own merge commit `83556f26` that copy named 118 of 164 and the difference was **46**. The three were real and are included above; the generalisation from the suites being checked to the whole set was not. Re-run the drift script rather than quoting a difference.
 
@@ -3741,6 +3890,7 @@ python3 -m unittest -v tests/test_phase_d_finish.py
 python3 -m unittest -v tests/test_ac4_restore_drill.py
 python3 -m unittest -v tests/test_python_version_check.py
 python3 -m unittest -v tests/test_python_version_matrix_drift.py
+python3 -m unittest -v tests/test_run_tests.py
 bash scripts/test_resume_file_safety.bash
 # doc-link validator regression tests live in juniper-doc-tools/tests/
 # and run under the dedicated `CI -- juniper-doc-tools` workflow.
@@ -3888,7 +4038,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_env_drift_check_drift.py` -- Structural drift gate for the `juniper-env-drift-check` console script (env floor-drift guard, test-suite audit §10.1).
   - Mirrors `test_coverage_gap_mapper_drift.py`: asserts the entry point is registered (`juniper_ci_tools.cli_env_drift_check:main`), both module halves ship, version/pin coherence, **plus a class guard** that *every* `juniper_ci_tools/cli*.py` has a `[project.scripts]` entry.
   - Added in `juniper-ci-tools` 0.5.1 after #580 silently dropped the 0.5.0 entry point -- the always-on assertion the `python -m` behavioural dogfood (`tests/test_env_drift_check.py`) lacked.
-- `tests/test_release_train_registry.py` -- Structural lint + registry<->pyproject drift gate for `util/release_train/registry.yaml` (plan §4.1): always-on checks (18 packages, 8 repos incl. `juniper-recurrence`, required fields, enums, the dynamic-version set, archive-name convention, `depends_on`) plus resolution -- the 7 in-repo juniper-ml packages unconditionally (forward + reverse), the 11 cross-repo entries via the `test_doc_tools_drift.py` sibling auto-skip.
+- `tests/test_release_train_registry.py` -- Structural lint + registry<->pyproject drift gate for `util/release_train/registry.yaml` (plan §4.1): always-on checks (18 packages, 8 repos incl. `juniper-recurrence`, required fields, enums, the dynamic-version set, archive-name convention, `depends_on`) plus resolution -- the 7 in-repo juniper-ml packages unconditionally (forward + reverse), the 11 cross-repo entries via the `test_doc_tools_drift.py` sibling auto-skip. The reverse walk skips every `tmp/` directory, by the 2026-10-26 counting-scope ruling: section 11 of `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md` listed it as owed. Before that, a full-tree copy in the primary's `tmp/` broke it, and so did `tests/test_run_tests.py`'s fixture when the two ran side by side under `util/run_tests.py`. A negative control pins the skip.
   - Also home of the always-on `VersionDunderLockstepTest` (ml#701): every in-repo static-version package with a `_version.py` must keep `[project].version` == `__version__` (dynamic packages exempt -- their dunder IS the source); the ci-tools 0.7.0 / service-core 0.5.0 stale-dunder class.
 - `tests/test_release_train_detect.py` -- Hermetic tests for `util/release_train/detect.py` (plan §4.2/4.3); no network / gh / pip (sources injected). Covers each classification, static/dynamic version reads, tag resolution, the substantive-hunk filter (discount comment/docstring/link; catch real code), path-scoping (subdir vs cascor repo-minus-subpkgs), CHANGELOG conflict surfacing, SemVer, manifest JSON shape, and exit codes 0/1/2. `util/` is not lint-gated, so this unittest is the gate.
   - Soft-fail pins: truncated-without-ship / unreadable-declared / compare-not-ok → `SHIP_UNCERTAIN` (juniper-ml#763); hygiene `SourceError` → `tag_only=None` (juniper-ml#761); offline `list_releases` raise (open #773).
@@ -4114,6 +4264,22 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_ac4_restore_drill.py` -- `util/ad-hoc/2026-11-09_ac4_restore_drill.py`, the AC-4 restore driver. AES Crypt v2 and v3 round-trip at seven sizes against an encoder written from the format's specification; a wrong password, a flipped ciphertext or HMAC byte, a truncated file and a non-AES file each stop with exit 2. The streaming file-list parser takes a UTF-8 BOM and a multibyte character split across reads (the 2026-11-09 "0 entries" fault) and stops on a stream that is not an array. The sample filter never selects a secret-bearing path. The passphrase reaches `duplicati-cli` through the environment only, and neither local-blocks option is on its argv. It absorbs the self-test that lived in a gitignored `tmp/`. 23 tests; needs `cryptography`, which the regression job installs.
 - `tests/test_python_version_check.py` -- `util/python_version_check.py`, the local half of phase 1 of the Python 3.15 migration (Overtoad ruling 2026-11-14: 3.12-3.14 blocking, 3.15 informational). `conf/python_versions.yaml` must carry the ruling, and an invalid config exits 2: a version in both lists, an unquoted version (YAML reads `3.10` as `3.1`), an unknown key, a bad step or repo name. The venv path is `{root}/{repo}/tmp/pyvenv/py{version}` whatever TMPDIR, the cwd or `--checkout` say. A run exits 0 whatever its results, and 1 under `--strict` on a failed or unavailable check; a missing interpreter, or one that reports another version, is `unavailable`, not a crash. `--dry-run` and `--list` invoke nothing and write nothing. The summary and every step's log land under `{root}/juniper-ml/tmp/python-version-checks/<UTC stamp>/`. Each child gets the venv first on PATH, `VIRTUAL_ENV`, the repo's `tmp/` as `TMPDIR` (prepended to `GIT_CEILING_DIRECTORIES`), and no `PYTHONPATH`, `PYTHONHOME` or `env_unset` name. The venv is reused, rebuilt on `--recreate` or when its interpreter reports another version, and a symlink or a directory without `pyvenv.cfg` is never removed; a lock another run holds is `unavailable`. A run changes no file of the checkout, and `.pre-commit-config.yaml` never runs the helper. A stub interpreter builds a stub venv, the demo checkout's wrapper records its environment, and PATH holds only the stubs and symlinked shell tools, so the host's own interpreters are never found.
 - `tests/test_python_version_matrix_drift.py` -- Every Python-version matrix in `.github/workflows/` (pre-commit exempt, the Overtoad's ruling of 2026-11-14) must run each `informational` version of `conf/python_versions.yaml` as an `include` entry with `experimental: true`, under the job-level `continue-on-error: ${{ matrix.experimental == true }}`, and never in its plain `python-version` list, which would make it blocking. No `include` entry may mark another version experimental, and `ci.yml`'s regression matrix runs exactly the `blocking` list. The scan must find the seven matrices juniper-ml#2567 gave informational legs (`ci.yml`'s `tests` and the six `ci-<pkg>.yml` `test` jobs). The config's juniper-ml recipe must install exactly the requirements of the `tests` job's `Install test dependencies` step, and name a regression runner that exists. Negative controls for each violating shape. PyYAML only.
+- `tests/test_run_tests.py` -- `util/run_tests.py`, the local test runner ([Running tests locally](#running-tests-locally)). Against the real workflows, which it never executes:
+  - every suite `Run Python regression tests` invokes is a job of the `unittest` lane, in ci.yml's order, and every `tests/test_*.py` on disk is runnable;
+  - each other command of that step and of `Run bash regression tests` is a job;
+  - each `ci-<package>.yml` with a `test` job is a package lane with a pytest step, a coverage gate, and editable directories inside the checkout;
+  - `--list` names every suite, and `--dry-run` writes nothing.
+
+  A workflow change the runner cannot read therefore fails in the PR that makes it. A fake checkout under the repo's `tmp/` holds three suites, a command, a bash script and a package lane whose `pytest` is a recording stub, and the suite drives the script end to end on it:
+  - selection: every spelling of a suite, globs, `::` narrowing, a package path, groups and aliases, suggestions for an unknown name, and refusing an unwired suite;
+  - failures: every job still runs, the output tail is printed, and `-x` stops new jobs;
+  - processes: a timeout and SIGTERM (exit 130, summary kept) kill the step's whole process group, a process a step leaves behind is killed, and a failure in a parallel pass that passes alone is `RERUN-PASS` (`--no-rerun` makes it a failure);
+  - selection by `-k` (exit 5 when it matches nothing), `--failed`, and `--changed` against a merge base in a throwaway repo;
+  - the child environment: the bus guard, the removed variables, stdin from `/dev/null`, `TMPDIR` and `GIT_CEILING_DIRECTORIES`, `--clean-env`, `--force-drift`, and a system temp directory refused;
+  - the package lane: `PYTHONPATH` naming this checkout, the coverage report and data moved into the run directory, the gates off on a narrowed run or `--no-coverage`, a missing gate tool `UNAVAILABLE` (exit 3);
+  - a workflow line that needs a shell is refused by name (exit 2).
+
+  Every option `--help` lists must appear in this document's section. PyYAML only.
 - `scripts/test.bash` -- Manual end-to-end harness for session create/resume launcher flows
 - `scripts/test_resume_file_safety.bash` -- Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 
@@ -4344,6 +4510,20 @@ Relocated verbatim from `AGENTS.md` (P3 of the shared-session-memory plan) so it
 - `util/tmp_path_literal_check.py` -- Gate G-TMP: `python3 util/tmp_path_literal_check.py [--root DIR] [--baseline FILE] [FILE ...]`, or the same with `--update-baseline [--dry-run]`; the CLI, exit codes and baseline schema are G-PATH's. A tracked `.bash`/`.sh`/`.py`/`.yml`/`.yaml`/`.toml`/`.service`/`.timer` file under `util/`, `scripts/`, `tests/`, `conf/`, `.claude/` or one of the six sub-packages may hold no more lines carrying a system temp-dir path literal than `conf/tmp_path_literal_baseline.json` allows it. The matcher is `(?<![\w.~$})\]/])/(?:var/|private/)?tmp(?![\w-])`: an absolute path to the temp dir (or its `var/tmp` and macOS `private/tmp` forms) counts wherever it starts, a repo's own `$REPO/tmp` or `./tmp` does not. `.github/` is out of scope: no workflow runs on a self-hosted runner, so its temp dir is GitHub's ephemeral disk. When the gate landed the baseline held 315 files and 453 lines; 291 of the files are under `util/ad-hoc/`, 262 of them dated records. A line carrying `tmp-path-literal: allow` is not counted (a legacy root the reaper protects read-only, a fixture, a needle). With FILE arguments it checks those files, or the whole scope when the baseline is one of them; that is the `tmp-path-literal` pre-commit hook. Without arguments it checks the whole scope; that is the whole-scope step in ci.yml's Pre-commit job. The 2026-10-26 repo `tmp/` rule (`notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`). Tests: `tests/test_tmp_path_literal_check.py`.
 - `util/juniper_repo_tmp.bash` -- A Juniper repo's temp root: `bash util/juniper_repo_tmp.bash [DIR]` prints the PRIMARY checkout's gitignored `tmp/` for the checkout holding DIR (default `$PWD`), creating it; a linked worktree resolves to its primary, so the files outlive the worktree. Sourced, it defines `juniper_repo_primary [DIR]` (the primary's root; creates nothing) and `juniper_repo_tmp [DIR]`, and sets no shell option. Exit 1 outside any checkout (or without `git`, or when `tmp/` cannot be created), with nothing printed: callers fail rather than fall back to the system temp dir. It names the FIXED paths that state another process must find lives at: `util/isolated_stack.bash`'s run dir, the orphan reaper's matching protected root, `util/experiment_stack.bash`'s lock root without `XDG_RUNTIME_DIR`, and `scripts/wake_the_claude.bash`'s `TMPDIR` / `CLAUDE_CODE_TMPDIR`. bash 3.2-compatible. Tests: `tests/test_juniper_repo_tmp.py`.
 - `util/python_version_check.py` -- Runs a Juniper repo's own test wrapper under another Python version, locally: the local half of phase 1 of the Python 3.15 migration (Overtoad ruling 2026-11-14). `python3 util/python_version_check.py (--repo NAME... | --all) [--python X.Y]... [--checkout PATH] [--root DIR] [--config FILE] [--recreate] [--dry-run] [--strict]`, or `--list`. `conf/python_versions.yaml` holds the version lists (`blocking` 3.12, 3.13 and 3.14; `informational` 3.15, the default `--python`) and one recipe per repo. A recipe's `install` commands are the repo's CI install step, and its `test` commands the repo's existing wrapper: `bash util/run_coverage.bash`; canopy's `make test PYTEST="$VIRTUAL_ENV/bin/python -m pytest"`; harcot's `PYTHON="$VIRTUAL_ENV/bin/python" bash util/run_coverage.bash`; deploy's `pytest tests/`, because its `make test` runs in Docker on python:3.12-slim; recurrence's packages each from its subdirectory and the bench from the root; juniper-ml's `util/ad-hoc/2026-11-15_run_ci_regression_list_locally.py`. For each repo and version it builds a venv from `/usr/bin/python<version>` (else `python<version>` on PATH) at the FIXED path `{root}/{repo}/tmp/pyvenv/py{version}`, the primary checkout's gitignored `tmp/`, never derived from TMPDIR or `--checkout`, and holds an `flock` on `py{version}.lock` beside it. Each command runs as `bash -e -o pipefail -c` from the checkout, with the venv first on PATH, `VIRTUAL_ENV` set, `TMPDIR` the repo's `tmp/`, and `PYTHONPATH`, `PYTHONHOME` and the recipe's `env_unset` names removed. A result is `passed`; `failed`, with the phase (venv, install or test); or `unavailable`: no interpreter or one reporting another version, a missing checkout, a held lock. `summary.json` and each step's log go to `{root}/juniper-ml/tmp/python-version-checks/<UTC stamp>/`, never pruned. Exit 0 whatever the results, 1 with `--strict` on a failed or unavailable check, 2 on a usage or config error. It never edits a checkout's tracked files, never touches a conda env or `/usr/bin/python3` (which stays 3.14), and is not a pre-commit hook. `--dry-run` and `--list` run and write nothing. `JUNIPER_ROOT` and `PYTHON_VERSION_CHECK_SYSTEM_BIN` (default `/usr/bin`) are overridable. First real run, 2026-11-15: juniper-data-client on 3.15.2 passed, 537 tests passed and 19 skipped, coverage 99.68%. Tests: `tests/test_python_version_check.py`; `tests/test_python_version_matrix_drift.py` holds CI's matrices to the same lists.
+- `util/run_tests.py` -- Runs any subset of juniper-ml's tests locally, with the commands CI runs: `python3 util/run_tests.py [options] [SELECTOR ...] [-- RUNNER-ARGS ...]`.
+  - **What it reads.** On every run, ci.yml's `Run Python regression tests` and `Run bash regression tests` steps, and the `test` job of each `ci-<package>.yml`.
+  - **What it selects.** Lanes (`unittest`, `bash`, one per package), groups (`regression`, `packages`, `all`, the default), a suite by any spelling, globs, one class or test, a package test path or node id, `--changed`, `--failed`.
+  - **How it runs them.**
+    - It keeps going past failures (`-x` stops), runs `-j auto` jobs at once, and re-runs a failure alone.
+    - Each step runs in its own process group, which is killed on a timeout (900 s by default), Ctrl-C or SIGTERM, and when the step leaves processes behind.
+    - The children get the D-Bus guard against desktop alerts, no `DISPLAY`, `PYTHONPATH` or `PYTHONHOME`, and a `TMPDIR` that is never the system temp directory.
+    - Package lanes run with `PYTHONPATH` naming this checkout's editable directories; the preflight refuses one that would import from elsewhere. Their coverage files go to the run directory.
+  - **What it installs.** Nothing. The preflight prints the `pip install` command for whatever is missing.
+  - **What it writes.** Each step's log, `summary.json` and `summary.txt` under `<primary checkout>/tmp/run-tests/<checkout name>/<UTC stamp>/`, never pruned.
+  - **Exit codes.** 0 passed, 1 failed, 2 usage, 3 unavailable, 5 no test ran, 130 interrupted.
+  - **Measured** on 2026-11-23: 269 jobs in 5m32s at `-j 8` on the Linux workstation; the five local-only failures and their causes are in [Running tests locally](#running-tests-locally).
+
+  Tests: `tests/test_run_tests.py`.
 - `util/host_state_probe.bash` -- Collects a macOS host's state, read-only: `bash util/host_state_probe.bash [--json] [--section NAME]... [--tool NAME]... [--root DIR] [--vm NAME] [--timeout SECONDS]`. Each fact is one command's capture: its argv, exit code, stdout and stderr. The sections are hardware, memory (G-MEM's inputs, as `util/macvm_ctl.bash` reads them), vm, network, power, security (with `socketfilterfw --getblockall` since 2026-10-25, for task C2), tools, env, alias (`util/git_remote_alias_check.py --json`) and signing (`util/configure_commit_signing.py --check --json` and `util/headless_signing_preflight.bash`). It judges nothing. A missing, failing or hung command is recorded, a hung one killed at `--timeout` (default 60 s); the probe exits 0, or 2 on a usage error. Under `~/.ssh` and `~/.gnupg` it tests names and permission bits only, and it runs no credential probe. Every program is overridable (`SYSCTL`, `VM_STAT`, `CSRUTIL`, ... `PYTHON`), and commands run with `LC_ALL=C`. The JSON schema is in its header. Turing bring-up G1. It graduates `util/ad-hoc/2026-10-15_turing_host_state_probe.bash`, whose output is the plan's Appendix A. Tests: `tests/test_host_state_probe.py`.
 - `util/host_state_check.py` -- Judges a host against `conf/hosts/<host>/expected.yaml`: `python3 util/host_state_check.py [--host NAME] [--expected FILE] [--probe-json FILE] [--root DIR] [--section GATE]... [--check] [--json]`. It runs the probe, or reads a saved `--probe-json`. It then evaluates seven of the plan's ten host gates, condition by condition, and names the plan task behind each failure: G-ALIAS; G-SIGN (erratum E-G-SIGN: `configure_commit_signing.py --check`, the preflight's pinentry, agent-socket and external-cache lines, and the I-SIGN record); G-SEC (its firewall condition needs the firewall on and blocking all incoming connections: task C2's block-all form, Overtoad ruling 2026-10-25); G-TOOLS (erratum E-D6: each listed tool resolves from `~/.local/bin`, and kubectl is within a minor of the cluster); G-ENV; G-NET; and G-MEM (`util/macvm_ctl.bash`'s arithmetic). G-AUTH, G-PATH and G-AGENT are evaluated elsewhere, and the report names them. expected.yaml is validated first: a VM that cannot fit the machine is regression R-G1, the X2 class, and exits 2, as does a probe whose hardware does not match its `identity`. The report exits 0; with `--check` the exit is 0 / 1 / 2, and an unevaluable condition wins. PyYAML is required. `HOST_STATE_PROBE`, `HOST_STATE_BASH` and `JUNIPER_ROOT` are overridable. Turing's readiness when it landed was 0 of 7. Tests: `tests/test_host_state_check.py`.
   - **Wording (erratum E-H3, juniper-ml#2392).** A failing kubectl condition names task D3 (upgrade Docker Desktop) before task D4. The G-MEM memory line says `free + speculative + inactive`. `macvm_ctl` still says `free + inactive` for the same sum. Operator surface: [Host-Check Wording](#host-check-wording-e-h3).
@@ -9777,6 +9957,7 @@ Source: `juniper-service-core/juniper_service_core/workers/registry.py` (`record
 | 0.6.78  | 2026-11-23 | juniper-ml#2592's edits, which merged without a version row (2026-11-15, `6541b2cc`): the Test Suite Reference's `tests/test_release_train_ceremony.py` entry covers the monitor's `HALT_BUILD`, and the Utility Script Reference's `util/release_train/ceremony.py` entry says the monitor reads only workflows named `... to PyPI`, orders finished runs by their latest attempt, lists the Release's runs with `--branch <tag>` and adds the publisher's `workflow_dispatch` runs on the tag |
 | 0.6.79  | 2026-11-23 | juniper-service-core's `/ws/training` resume handshake answers as juniper-cascor's does (its #754's four cursor rules; the Overtoad's rulings of 2026-11-12 and 2026-11-13): Shared Service-Core Contracts' resume bullet, the `out_of_range` troubleshooting row, and "Training-stream resume and the connection cap" (the continuity bounds, the negative, malformed and past-the-newest rows, the sentence that a future seq is trusted, now false, and the shared answer table); `tests/test_ws_resume_answer_table_drift.py` joins the Test Suite Reference and "Running every suite" (**262**). |
 | 0.6.80  | 2026-11-24 | The agent guard 1.4.0 (the Overtoad's rulings 16 and 18 (2026-11-09; the record's next update adds them to its section 8), the Overtoad's ruling of 2026-11-12 and the Overtoad's ruling of 2026-11-15): its entry in the Utility Script Reference gains the second reading (bash 5.3's words, and the words a computed part makes empty or defaulted), what it closes, quoted text no longer counted against the cap, the bounds on each command's cost (`MAX_CD_BASES`, `ANALYSIS_TIME_BUDGET`), and what stays open, by spelling; the two guard suites' entries in the Test Suite Reference describe their 1.4.0 pins. |
+| 0.6.81  | 2026-11-24 | The local test runner `util/run_tests.py`. § Test Suite Reference gains [Running tests locally](#running-tests-locally): the selectors, the options, how a job runs, the statuses and exit codes, the records, `--changed`, and the five local-only failures of the first full run (269 jobs in 5m32s at `-j 8`) with their measured causes. Running every suite points to it, and the `tests/test_run_tests.py` entry (263 suites) and § Utility Script Reference follow. The `tests/test_release_train_registry.py` entry records its `pyproject.toml` walk skipping `tmp/`, the owed item in section 11 of the 2026-10-26 tmp convention note. |
 | 0.6.22  | 2026-09-04 | X7 off-loop census: the count is **58** (canopy#567); the gate is authority for `main.py` only and the call-graph instrument covers the rest; v1 is the name-matching negative example; module-global expression exemptions certify a partial fix |
 | 0.6.59+1 | 2026-09-05 | Ruleset Context Audit: read-only fleet classifier for `required_status_checks` (`2026-08-10_ruleset_context_audit.py`); BLOCKING vs Tier 1 vs path-gated; advisory_predicate subtracts the live required set; text-mode 0 can still carry `ERROR:` rows |
 | 0.6.16  | 2026-09-04 | Required-context ruleset writer: add vs `--amend-integration-id` (#1612), observed-publisher pre-flight, six invariants, `Memory Budget` unpinned-id hole (#1611) |
@@ -10355,5 +10536,5 @@ Source: `workers/security.py` `AnomalyDetector.check_result` and `workers/coordi
 ---
 
 **Last Updated:** 2026-11-24
-**Version:** 0.6.80
+**Version:** 0.6.81
 **Maintainer:** Paul Calnon
