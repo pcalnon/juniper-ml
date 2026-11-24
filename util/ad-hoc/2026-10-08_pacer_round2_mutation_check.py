@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-08
-# Status      : ad-hoc — one-off mutation check; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off mutation check; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Mutation-check the three node tests canopy#731's round-2 fixes added.
 

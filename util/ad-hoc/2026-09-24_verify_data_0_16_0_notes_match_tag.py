@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register evidence, APD-ML-007)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use verifier
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 APD-ML-007: the release ceremony renders only the FIRST `## [<version>]` heading of the CHANGELOG it is
 given, and by default tags the owning repo's main as it is at cut time, so the notes and the tag can

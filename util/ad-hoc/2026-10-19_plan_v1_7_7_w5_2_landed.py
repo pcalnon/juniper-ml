@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-19
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.6 -> v1.7.7);
          juniper-recurrence#214 (W5.2 model half), #215 (service half), #216 (model 0.6.0 proposal); juniper-ml#2256 (driver);
          util/ad-hoc/2026-10-19_w5_2_eh_remeasure.py (the numbers quoted)
@@ -54,8 +54,8 @@ def edits(release: str) -> list[tuple[str, str]]:
         ),
         # Progress block: one more bullet after the v1.7.6 one.
         (
-            "  - **Next**: the juniper-ml `[recurrence]` extras and the Compose pin (both admit `<0.7.0`) are owner rulings again; W5.2 and W5.4 (round 3 of the CV-blowup note's review first); W5.7.",
-            f"  - **W5.2 landed (later still)**: {MODEL_PR} (model 0.6.0 via juniper-recurrence#216; the follow-on ceiling PR #217 closed as superseded; {release}); {SERVICE_PR} open (its CI needs 0.6.0 on PyPI); {DRIVER_PR}. Design choice to note: an explicit `embargo` below the look-back is **honoured with a WARNING**, not refused — the E-G suite sweeps it and the W5.1 note's embargo-2 numbers remain reproducible; omitting it gives the plan's default. The R5 band {MEASURED}.\n  - **Next**: the `pypi` gate on model 0.6.0, then {SERVICE_PR} and recurrence 0.8.0; the juniper-ml `[recurrence]` extras and the Compose pin (both admit `<0.7.0`) are owner rulings; W5.4 (round 3 of the CV-blowup note's review first, then the facility and the band above); W5.7; the bench's multi-ticker row.",
+            "  - **Next**: the juniper-ml `[recurrence]` extras and the Compose pin (both admit `<0.7.0`) are Overtoad rulings again; W5.2 and W5.4 (round 3 of the CV-blowup note's review first); W5.7.",
+            f"  - **W5.2 landed (later still)**: {MODEL_PR} (model 0.6.0 via juniper-recurrence#216; the follow-on ceiling PR #217 closed as superseded; {release}); {SERVICE_PR} open (its CI needs 0.6.0 on PyPI); {DRIVER_PR}. Design choice to note: an explicit `embargo` below the look-back is **honoured with a WARNING**, not refused — the E-G suite sweeps it and the W5.1 note's embargo-2 numbers remain reproducible; omitting it gives the plan's default. The R5 band {MEASURED}.\n  - **Next**: the `pypi` gate on model 0.6.0, then {SERVICE_PR} and recurrence 0.8.0; the juniper-ml `[recurrence]` extras and the Compose pin (both admit `<0.7.0`) are Overtoad rulings; W5.4 (round 3 of the CV-blowup note's review first, then the facility and the band above); W5.7; the bench's multi-ticker row.",
         ),
     ]
 
@@ -72,7 +72,7 @@ _ROW = (
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--release", required=True, help="model 0.6.0's state, e.g. 'Release juniper-recurrence-model-v0.6.0 cut at `2c5a419c`, publish run N at the owner's pypi gate'")
+    ap.add_argument("--release", required=True, help="model 0.6.0's state, e.g. 'Release juniper-recurrence-model-v0.6.0 cut at `2c5a419c`, publish run N at the Overtoad's pypi gate'")
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
     text = _PLAN.read_text(encoding="utf-8")

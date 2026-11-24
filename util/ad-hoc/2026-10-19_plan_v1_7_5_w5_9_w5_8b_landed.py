@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-19
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.4 -> v1.7.5);
          juniper-recurrence#209 (W5.9 + the W5.8 (B) model half), #210 (the model 0.5.0 proposal), the service PR;
          util/ad-hoc/2026-10-18_plan_v1_7_4_w5_10_landed.py (the revision this follows);
@@ -48,8 +48,8 @@ def edits(service_pr: int, release: str) -> list[tuple[str, str]]:
         ),
         # W5.8 row: header and acceptance cells.
         (
-            "(B) accepted by the owner 2026-10-18** — ships in recurrence 0.7.0 / model 0.5.0 as CHANGELOG \"Changed\" | juniper-recurrence + model |",
-            f"(B) accepted by the owner 2026-10-18; model half landed 2026-10-19** ({MODEL_PR}; model 0.5.0 via {PROPOSAL_PR}); **service half {svc}** (recurrence 0.7.0; floor `>=0.5.0`) — CHANGELOG \"Changed\" in both | juniper-recurrence + model |",
+            "(B) accepted by the Overtoad 2026-10-18** — ships in recurrence 0.7.0 / model 0.5.0 as CHANGELOG \"Changed\" | juniper-recurrence + model |",
+            f"(B) accepted by the Overtoad 2026-10-18; model half landed 2026-10-19** ({MODEL_PR}; model 0.5.0 via {PROPOSAL_PR}); **service half {svc}** (recurrence 0.7.0; floor `>=0.5.0`) — CHANGELOG \"Changed\" in both | juniper-recurrence + model |",
         ),
         (
             "model test: the linear rung standardises train-fold-only and the `ridge = 0` path is byte-identical to today's. | M |",
@@ -79,12 +79,12 @@ def edits(service_pr: int, release: str) -> list[tuple[str, str]]:
             "  - **Next**: W5.8 (B) + W5.9 for recurrence 0.7.0 / model 0.5.0; W5.2 and W5.4; W5.7. The W0.1 service-core half and the parent `Juniper/AGENTS.md` paragraph stay open (the Compose pin followed in juniper-deploy#251, v1.7.3).\n",
             "  - **Next**: W5.8 (B) + W5.9 for recurrence 0.7.0 / model 0.5.0; W5.2 and W5.4; W5.7. The W0.1 service-core half and the parent `Juniper/AGENTS.md` paragraph stay open (the Compose pin followed in juniper-deploy#251, v1.7.3).\n"
             "\n"
-            "  **Progress 2026-10-19, turing W5.9 / W5.8 (B) session** (every commit through the GitHub-signed API path; the owner's checkout untouched — the work was done on a scratch copy overlaid with `main`):\n"
+            "  **Progress 2026-10-19, turing W5.9 / W5.8 (B) session** (every commit through the GitHub-signed API path; the Overtoad's checkout untouched — the work was done on a scratch copy overlaid with `main`):\n"
             f"  - **W5.9 + the W5.8 (B) model half landed**: {MODEL_PR}. `_gcv_select` returns a `_GCVSelection` with the intercept-only GCV and the two flags, logging a WARNING at an edge or a null-model optimum; `LinearReadout` standardises `M` with the train-fold statistics for `ridge > 0` and `\"gcv\"` (persisted as `mean` / `std` beside `coef`, a `standardized` descriptor flag; a pre-0.5.0 state predicts on the raw block), and both readouts expose `gcv_at_edge_` / `null_model_`. `ridge = 0.0` is byte-identical to 0.4.0 (pinned against a raw `lstsq` at readout and model level). Model suite: 215 passed, coverage 98.30 %; ruff clean.\n"
             f"  - **Model 0.5.0 cut**: proposal {PROPOSAL_PR} (`util/release_train/propose.py --execute --cross-repo` on the tree at `d6a81eb4`; the follow-on ceiling-bump PR #211 it also opened was closed as superseded by the floor raise); ceremony `--execute --cross-repo --target-sha 99ae4a7b…` on the tree at that commit; {release}.\n"
             f"  - **W5.8 (B) service half opened**: {svc} — `Settings.default_ridge: \"gcv\"`, the floor `juniper-recurrence-model>=0.5.0,<0.6.0` (base, `[torch]`, `[bench-torch]`, the image lock `==0.5.0`), `conf/experiments/irregular-sine-rff.yaml` `service.default_ridge: gcv`, README and CHANGELOG Changed; the W5.10 tests now take the model's flags verbatim. App suite on model 0.5.0: all passed, coverage 98.29 %; ruff clean. Its CI needs 0.5.0 on PyPI (the app lane installs the model from the index).\n"
             f"  - **Acceptance**: {MEASURED}. The E-H artifact is on turing under `reports/2026-10-05_recurrence-equities-cv-consensus/laneA3-rerun/data/`.\n"
-            "  - **Next**: merge the service PR once 0.5.0 is on PyPI, then cut recurrence 0.7.0 (proposal → ceremony → the owner's `pypi` gate); W5.2 and W5.4 (round 3 of the CV-blowup note's review first); W5.7. The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes on the 0.6.1 image and the client-docstring follow-up stay open.\n",
+            "  - **Next**: merge the service PR once 0.5.0 is on PyPI, then cut recurrence 0.7.0 (proposal → ceremony → the Overtoad's `pypi` gate); W5.2 and W5.4 (round 3 of the CV-blowup note's review first); W5.7. The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes on the 0.6.1 image and the client-docstring follow-up stay open.\n",
         ),
     ]
 

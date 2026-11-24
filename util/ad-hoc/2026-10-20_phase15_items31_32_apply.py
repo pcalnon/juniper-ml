@@ -6,8 +6,8 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-20
-# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (owner policy 2026-08-25)
-# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (Overtoad policy 2026-08-25)
+# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : ledger Phase 15 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);
 #               HANDOFF_2026-10-20_canopy-phase15-items-31-32-done-f069-f028-fixed.md;
 #               util/ad-hoc/2026-10-20_f069_apply_fix.py and 2026-10-20_f028_apply_fix.py (the canopy fixes);
@@ -262,7 +262,7 @@ PHASE15_HEAD = (
 
 The session in juniper-ml worktree `sequential-coalescing-boot` on turing (macOS; Chrome 145 headless under
 Playwright's `chrome` channel; the CDN stylesheet aborted in the browser, so every page unstyled; no trio), from
-`HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`, with the owner's merge approval for the
+`HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`, with the Overtoad's merge approval for the
 session. Every leg served a tree copied from the E2 tree, proved byte-identical to canopy `main` `"""
     + SHA
     + """` for every
@@ -382,18 +382,18 @@ INDEX_NEW_PTR = "(Lane A's current one: `HANDOFF_2026-10-20_canopy-phase15-items
 INDEX_OLD_TAIL = "Next: items 32 (F-CANOPY-069, canopy code), 31 (F-CANOPY-028, canopy code; the manual's Patch Weights idiom), 27 (the Live Switch allow arm, a demo leg on turing can serve it), 25 and 28 (the trio). Y2 wave 2 is stalled at round 15."
 INDEX_NEW_TAIL_TEMPLATE = (
     "Phase 15 (2026-10-20, on turing) did items 32 and 31: F-CANOPY-069 is FIXED (canopy#760, `{sha760}`: the progress alerts are `running=` specs, the opener callbacks are gone, the dash floor is 4.0.0 and the conda file pins 4.4.1; legs of the fix ALIVE under dash 3.3.0 and 4.4.1) and F-CANOPY-028 is FIXED (canopy#761, `{sha761}`: the pin writer persists a user's toggle only and a rebuilt table writes nothing; 25 drives on the fix lose no pin; the race itself was not re-created live, 0 of 26 on the parent); 80/63/1/2/14, 0 open P0, 4 open P1, 10 open P2. "
-    "Next: items 27 (the Live Switch allow arm, a demo leg on turing can serve it), 25 and 28 (the trio), 29 (the Linux host), 26's second step (O17), 33 (turing's E2 canopy env below the floor; owner). Y2 wave 2 is stalled at round 15."
+    "Next: items 27 (the Live Switch allow arm, a demo leg on turing can serve it), 25 and 28 (the trio), 29 (the Linux host), 26's second step (O17), 33 (turing's E2 canopy env below the floor; Overtoad). Y2 wave 2 is stalled at round 15."
 )
 
-HANDOFF_TEXT_TEMPLATE = """# HANDOFF 2026-10-20 — P2 canopy Lane A: Phase 15 recorded. Items 32 and 31 are DONE: F-CANOPY-069 is FIXED (canopy#760, the dash floor is 4.0.0) and F-CANOPY-028 is FIXED (canopy#761). 0 open P0, 4 open P1, 10 open P2. Next are items 27, 25, 28, 29, 26's second step and the owner's 33
+HANDOFF_TEXT_TEMPLATE = """# HANDOFF 2026-10-20 — P2 canopy Lane A: Phase 15 recorded. Items 32 and 31 are DONE: F-CANOPY-069 is FIXED (canopy#760, the dash floor is 4.0.0) and F-CANOPY-028 is FIXED (canopy#761). 0 open P0, 4 open P1, 10 open P2. Next are items 27, 25, 28, 29, 26's second step and the Overtoad's 33
 
 **Written**: 2026-10-20 by the session in juniper-ml worktree `.claude/worktrees/sequential-coalescing-boot` on host
 turing (macOS; no trio; throwaway legs from copies of the E2 tree), at a phase boundary, as its PR was opened.
 **Consensus**: CONSENSUS_SUMMARY_PLACEHOLDER (ledger Phase 15, Consensus record).
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, authoritative for P2.
-Its items 5 and 7 and the owner batch O1–O17 carry over. This file supersedes
+Its items 5 and 7 and the Overtoad batch O1–O17 carry over. This file supersedes
 `HANDOFF_2026-10-20_canopy-phase14-item30-done-f069-dash3-inert.md`.
-**Merge approval**: the owner granted it for this session. It is NOT carried: ask again.
+**Merge approval**: the Overtoad granted it for this session. It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
 
@@ -402,7 +402,7 @@ Continue P2 Lane A (the juniper-canopy E2E validation arc) from
 (juniper-ml). Read it in full, then the parent `HANDOFF_2026-10-03_canopy-consolidated.md`. Run the verification
 commands first. Merge approval is not carried: ask before the first merge. Item 27 is a demo leg on this host (any
 venv at canopy's floor, dash 4.x) and the Live Switch modal's allow arm; items 25 and 28 need the trio on the Linux
-host; item 29 is the Linux host; item 33 is the owner's (turing's E2 canopy env is below canopy's floor).
+host; item 29 is the Linux host; item 33 is the Overtoad's (turing's E2 canopy env is below canopy's floor).
 
 **Completed:**
 
@@ -440,7 +440,7 @@ host; item 29 is the Linux host; item 33 is the owner's (turing's E2 canopy env 
 **Remaining, in order:**
 
 1. **Land this session's PR** if it has not merged: `python3 util/wait_for_checks.py --pr N`, query
-   `reviewThreads(isResolved:false)`, ask the owner, then `python3 util/safe_merge.py --pr N --execute` and read its
+   `reviewThreads(isResolved:false)`, ask the Overtoad, then `python3 util/safe_merge.py --pr N --execute` and read its
    `MERGED` line. Afterwards re-check `origin/main`:
    `python3 -B util/ad-hoc/e2e_finding_triage.py | tail -8` should print 80 / 63 / 1 / 2 / 14 with no open P0.
 2. **Item 27** (the Live Switch allow arm): a demo leg on this host serves it
@@ -448,11 +448,11 @@ host; item 29 is the Linux host; item 33 is the owner's (turing's E2 canopy env 
    then `util/ad-hoc/2026-09-23_f055_f025_allow_arm_demo_drive.py` adapted to the chrome channel and the CDN route);
    it clicks through the Live Switch modal, which Phase 15's probe only fired.
 3. **Items 25 and 28** on the Linux host, against the trio (ledger Phase 12). **Item 29**, the Linux host.
-4. **Item 33** (owner): bring turing's `JuniperCanopy1` env to canopy's floor (`pip install -e .` there resolves
+4. **Item 33** (Overtoad): bring turing's `JuniperCanopy1` env to canopy's floor (`pip install -e .` there resolves
    dash 4.4.1, `comm`, `janus`), re-run the lanes the E2 record cites, erratum in the bring-up plan's E2 section;
    the dash 3.x scratch venvs can go.
-5. **Item 26's second step** once the owner rules (O17).
-6. Then the parent's items 5 and 7, and the owner batch O1–O17.
+5. **Item 26's second step** once the Overtoad rules (O17).
+6. Then the parent's items 5 and 7, and the Overtoad batch O1–O17.
 
 **Traps learned:**
 

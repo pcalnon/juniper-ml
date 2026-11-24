@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-19
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.8 -> v1.7.9);
          juniper-data#486 (W5.7), util/ad-hoc/2026-10-19_apply_w5_7_producer_guards.py (what it applied);
          util/ad-hoc/2026-10-19_plan_v1_7_8_w5_4_landed.py (the revision this follows)
@@ -54,8 +54,8 @@ def edits(w57: str) -> list[tuple[str, str]]:
         ),
         # F-P8 row: the guard exists.
         (
-            "**accepted by the owner 2026-10-18** together with the W5.7 guard) |",
-            f"**accepted by the owner 2026-10-18** together with the W5.7 guard; **guard built 2026-10-19**, {W57_PR}, {w57}) |",
+            "**accepted by the Overtoad 2026-10-18** together with the W5.7 guard) |",
+            f"**accepted by the Overtoad 2026-10-18** together with the W5.7 guard; **guard built 2026-10-19**, {W57_PR}, {w57}) |",
         ),
         # W5.7 row.
         (
@@ -70,7 +70,7 @@ def edits(w57: str) -> list[tuple[str, str]]:
         # Progress block: a W5.7 bullet before Next, and Next updated.
         (
             "  - **Next**: the `pypi` gate on model 0.6.0, then juniper-recurrence#215 (re-run its failed lanes), recurrence 0.8.0, then juniper-recurrence#219; the extras / Compose pins follow 0.8.0 (recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`, image `0.8.0`); W5.7 (juniper-data). The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes (now on the 0.7.0 image) and the client-docstring follow-up stay open.",
-            f"  - **W5.7 built (turing session 3, later, 2026-10-19)**: {W57_PR} ({w57}; applied by {APPLY}) — {SUMMARY}. Verified on turing in a scratch venv (JuniperPython 3.14, pandas 3.0.1, yfinance 1.7.0): {TESTED}. Behaviour change to note for consumers: a multi-symbol request that loses a named symbol now gets 422 by default instead of a silently partial dataset (canopy's registry seeds and the E-H suite request `AAPL` alone, so they are unaffected); callers that relied on the silent shrink send `allow_truncation: true` and read `dropped_symbols`. It ships in juniper-data's next release (its `[Unreleased]`); the juniper-ml `[servers]` floor (`juniper-data>=0.17.0`) does not need to move for it. The model 0.6.0 `pypi` gate (run 39197693617) was still parked at the end of the session.\n  - **Next**: the `pypi` gate on model 0.6.0, then juniper-recurrence#215 (re-run its failed lanes), recurrence 0.8.0, then juniper-recurrence#219; the extras / Compose pins follow 0.8.0 (recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`, image `0.8.0`); juniper-data's next release carries W5.7 (owner's cut). W5.5 / W5.6 (juniper-ml) are the remaining P5 rows. The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes (now on the 0.7.0 image) and the client-docstring follow-up stay open.",
+            f"  - **W5.7 built (turing session 3, later, 2026-10-19)**: {W57_PR} ({w57}; applied by {APPLY}) — {SUMMARY}. Verified on turing in a scratch venv (JuniperPython 3.14, pandas 3.0.1, yfinance 1.7.0): {TESTED}. Behaviour change to note for consumers: a multi-symbol request that loses a named symbol now gets 422 by default instead of a silently partial dataset (canopy's registry seeds and the E-H suite request `AAPL` alone, so they are unaffected); callers that relied on the silent shrink send `allow_truncation: true` and read `dropped_symbols`. It ships in juniper-data's next release (its `[Unreleased]`); the juniper-ml `[servers]` floor (`juniper-data>=0.17.0`) does not need to move for it. The model 0.6.0 `pypi` gate (run 39197693617) was still parked at the end of the session.\n  - **Next**: the `pypi` gate on model 0.6.0, then juniper-recurrence#215 (re-run its failed lanes), recurrence 0.8.0, then juniper-recurrence#219; the extras / Compose pins follow 0.8.0 (recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`, image `0.8.0`); juniper-data's next release carries W5.7 (Overtoad's cut). W5.5 / W5.6 (juniper-ml) are the remaining P5 rows. The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes (now on the 0.7.0 image) and the client-docstring follow-up stay open.",
         ),
     ]
 

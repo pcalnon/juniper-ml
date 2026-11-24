@@ -9,7 +9,7 @@ Version:      0.1.0
 License:      MIT License
 
 Single-use. Builds the "no #454" variant of the juniper-data docs consolidation (the telemetry
-hunks removed) so a reverse patch can be offered if the owner declines juniper-data#454.
+hunks removed) so a reverse patch can be offered if the Overtoad declines juniper-data#454.
 
     python3 util/ad-hoc/2026-10-08_data_docs_apply_edits.py FILE EDITS.json
 

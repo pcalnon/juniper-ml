@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-25
 Status: ad-hoc — landing helper (turing bring-up task H4, erratum E-H6)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18.3, erratum E-H6);
          notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md (SER-E1);
          util/mcp_setup.bash; tests/test_mcp_setup.py; conf/hosts/turing/mcp.json;
@@ -51,7 +51,7 @@ REF_UTIL_RUNS_OLD = f"The entry runs {ENTRY_CMD}."
 REF_UTIL_RUNS_NEW = (
     f"The entry runs {ENTRY_CMD}, with `SERENA_USAGE_REPORTING=false` in its `env`: Serena v1.7.0 reports usage to"
     " `oraios-software.de` at every start unless that variable is exactly `false` (SER-E1 of"
-    f" `{AUDIT}`; owner ruling 2026-10-25)."
+    f" `{AUDIT}`; Overtoad ruling 2026-10-25)."
 )
 REF_UTIL_BUMP_OLD = "A pin bump must re-read the context's `excluded_tools` at the new commit."
 REF_UTIL_BUMP_NEW = "A pin bump must re-read the context's `excluded_tools`, and the usage-report check, at the new commit."
@@ -75,7 +75,7 @@ REF_SUITE_TAIL_OLD = f"`{H4_MUTATION}` kills 20 of 20 mutants.\n"
 CHANGELOG_MARKER = "**H4's Serena entry turns Serena's usage report off**"
 CHANGELOG_ENTRY = (
     f"- {CHANGELOG_MARKER} (turing bring-up, erratum E-H6 of\n"
-    f"  `{PLAN}`; owner ruling 2026-10-25).\n"
+    f"  `{PLAN}`; Overtoad ruling 2026-10-25).\n"
     "  Serena v1.7.0 sends the OS, the dashboard flag, the version, the backend and the context name to\n"
     "  `oraios-software.de` at every start unless `SERENA_USAGE_REPORTING` is exactly `false`\n"
     f"  (`src/serena/agent.py:724-737` at `949a27ef`; SER-E1 of `{AUDIT}`).\n"

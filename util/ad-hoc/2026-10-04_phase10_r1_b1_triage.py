@@ -4,7 +4,7 @@
 # Source: this session's tmpfs scratchpad, lane10B1.8nGM/triage.py
 # Written by Lane 10-B1 (adversarial, dispositions and ratings), a review lane (a subagent), not by the orchestrator.
 # Project: juniper-ml / Sub-Project: ad-hoc tooling / Author: Paul Calnon
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 #   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
 # Everything below this block is the lane's file, unmodified.
@@ -20,7 +20,7 @@ License     : MIT License
 Triage the canopy E2E findings ledger by priority and open/fixed status.
 
 Phase 2's exit criterion (plan §6.3) is "every P0 and P1 closed or explicitly
-deferred with owner sign-off", so the arc needs a mechanical count of what is
+deferred with Overtoad sign-off", so the arc needs a mechanical count of what is
 still open at each priority rather than a hand-maintained list that drifts.
 
 Reads the evidence note's ledger entries -- each is a ``**F-<AREA>-<NNN> — …**``
@@ -72,10 +72,10 @@ def main() -> int:
         tail = body[-170:]
         fixed = bool(re.search(r"\bFIXED\b|\bHEALED\b", tail, re.I))
         # ACCEPTED is a THIRD disposition, not a flavour of fixed: the defect is real
-        # and unrepaired, but the owner has signed off on documented behaviour instead
-        # of a code change (plan §6.3's "closed or explicitly deferred with owner
+        # and unrepaired, but the Overtoad has signed off on documented behaviour instead
+        # of a code change (plan §6.3's "closed or explicitly deferred with Overtoad
         # sign-off"). Counting it as fixed would overstate what shipped; counting it as
-        # open would keep an exit criterion red that the owner has already settled.
+        # open would keep an exit criterion red that the Overtoad has already settled.
         accepted = bool(re.search(r"\bACCEPTED\b", tail, re.I)) and not fixed
         # WITHDRAWN is a FOURTH disposition, and it is not a flavour of any other:
         # the finding was WRONG. Nothing was fixed, nothing was accepted, and there is

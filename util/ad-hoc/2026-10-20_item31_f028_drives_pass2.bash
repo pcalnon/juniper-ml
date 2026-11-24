@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # Created     : 2026-10-20
 # Status      : ad-hoc -- investigation
-# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when : RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : util/ad-hoc/2026-10-20_item31_f028_drives.bash (pass 1: the forced arm at the EARLY timing, now
 #               ``forcedearly``; it lost nothing on the parent, every click landing after the second render);
 #               util/ad-hoc/2026-10-20_item30_fixwave_redrive.py (``forced`` pins at the settled timing). Neither

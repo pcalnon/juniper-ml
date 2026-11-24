@@ -5,8 +5,8 @@
 # Sub-Project: ad-hoc tooling
 # Author:      Paul Calnon (authored via Claude Code)
 # Created:     2026-10-25
-# Status:      ad-hoc — investigation (the tier-3 lane, owner ruling D-5 on §7.9 of the backup design)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status:      ad-hoc — investigation (the tier-3 lane, Overtoad ruling D-5 on §7.9 of the backup design)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:     notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §7.9;
 #              util/systemd/juniper-backup-full.service; tests/test_juniper_backup_tier3_lane.py (the hermetic half)
 #

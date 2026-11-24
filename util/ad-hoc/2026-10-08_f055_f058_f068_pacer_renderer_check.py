@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-08
-# Status      : ad-hoc — instrument for one fix; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — instrument for one fix; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Real-renderer check of canopy's request/ack pacer (F-CANOPY-055, F-CANOPY-058, F-CANOPY-068).
 

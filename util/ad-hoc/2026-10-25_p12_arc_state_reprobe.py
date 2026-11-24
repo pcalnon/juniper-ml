@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-25
 Status: ad-hoc — investigation (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (v1.14.0 -> v1.15.0);
          util/ad-hoc/2026-10-05_ecosystem_live_census.py (the census it complements: that one reads each package's
          LATEST version only, this one reads the specific versions and requirement lines the plan names)

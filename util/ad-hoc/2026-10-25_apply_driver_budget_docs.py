@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-25
 Status: ad-hoc — one-off (the docs half of juniper-ml#2210; kept so a silent revert costs one re-run)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/experiments/run_experiment.py worst_case_budget; util/experiments/run_suite.py driver_budgets /
          check_per_run_timeout; util/ad-hoc/2026-10-25_driver_budget_survey.py;
          util/ad-hoc/2026-10-24_apply_save_model_snapshot_docs.py (the pattern this follows)

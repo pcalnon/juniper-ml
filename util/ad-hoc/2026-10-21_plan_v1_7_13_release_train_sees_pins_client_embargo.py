@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-21
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.12 -> v1.7.13);
          juniper-ml#2296 (detect.py), juniper-ml#2298 (propose.py), juniper-recurrence#221 (the client);
          util/ad-hoc/2026-10-20_plan_v1_7_12_recurrence_0_8_0_published_pins_landed.py (the revision this follows)
@@ -54,7 +54,7 @@ CLIENT = (
     "unembargoed and W5.2's look-back default never applied; `embargo` now defaults to `None` and is sent only when given, and "
     "the `train` / `crossval` docstrings and the README name `metrics_scope`, `operation_id`, `diagnostics`, `folding` and the "
     "`trainval` pool (the client-docstring follow-up). It ships in the client's next release, a 0.3.1 patch inside "
-    "juniper-ml's `<0.4.0` ceiling; an `embargo_days` passthrough would make it a minor and is left to the owner"
+    "juniper-ml's `<0.4.0` ceiling; an `embargo_days` passthrough would make it a minor and is left to the Overtoad"
 )
 
 
@@ -73,15 +73,15 @@ def edits(detect_sha: str, propose_sha: str, client_sha: str) -> list[tuple[str,
         ),
         # Progress block: the session bullet before the Next bullet, and the Next bullet rewritten.
         (
-            "  - **Next**: juniper-data's next release carries W5.7 (owner's cut). The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph (recurrence 0.8.0, model 0.6.0), the W1.12 / W1.11 smokes "
+            "  - **Next**: juniper-data's next release carries W5.7 (Overtoad's cut). The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph (recurrence 0.8.0, model 0.6.0), the W1.12 / W1.11 smokes "
             "(owed on the 0.8.0 image, on a host whose Docker reaches GHCR) and the client-docstring follow-up (`train` / `crossval`'s `diagnostics` / `folding`, a juniper-recurrence-client doc touch with its own "
             "CHANGELOG line) stay open. The release train cuts the juniper-ml version that carries the pins (0.11.0 in the plan).",
             "  - **The release train sees the pins again; the client's embargo default fixed (turing session 7, 2026-10-21)**: step 2's post-merge re-check passed (every juniper-ml#2292 line intact on `main` `b16121ac`). "
             f"{detect}. {propose}. {client}. All three landed from turing through `util/open_signed_pr.py`, the juniper-ml `CHANGELOG.md` entries as their own retried commits built from a fresh `origin/main` copy "
             "(`util/ad-hoc/2026-10-21_apply_detect_pyproject_table_changelog.py`, `util/ad-hoc/2026-10-21_apply_propose_pr_body_limit_changelog.py`).\n"
-            "  - **Next**: the juniper-ml 0.11.0 cut (the owner's call on timing): `util/release_train/detect.py --package juniper-ml --json` on a tree at `origin/main`, `propose.py --execute`, merge the proposal, "
+            "  - **Next**: the juniper-ml 0.11.0 cut (the Overtoad's call on timing): `util/release_train/detect.py --package juniper-ml --json` on a tree at `origin/main`, `propose.py --execute`, merge the proposal, "
             "re-detect at its merge sha, then `ceremony.py --execute --cross-repo --target-sha` (condense the notes first if the archive tops 125,000 B base64); `docs/REFERENCE.md:177`'s pins sentence and a `0.11.x` "
-            "matrix row go with the cut. The juniper-recurrence-client 0.3.1 release (owner's cut) carries the embargo fix. juniper-data's next release carries W5.7 (owner's cut). The W0.1 service-core half, the "
+            "matrix row go with the cut. The juniper-recurrence-client 0.3.1 release (Overtoad's cut) carries the embargo fix. juniper-data's next release carries W5.7 (Overtoad's cut). The W0.1 service-core half, the "
             "parent `Juniper/AGENTS.md` paragraph (recurrence 0.8.0, model 0.6.0) and the W1.12 / W1.11 smokes (owed on the 0.8.0 image, on a host whose Docker reaches GHCR) stay open.",
         ),
     ]
@@ -92,7 +92,7 @@ def row(detect_sha: str, propose_sha: str, client_sha: str) -> str:
     return (
         f"| 2026-10-21 | 1.7.13 | **The release train sees the juniper-ml pins again; the client's embargo default is fixed**: {detect}; {propose}; {client}. "
         "Updated: Status line, the Progress block (session 7 bullet, Next rewritten). "
-        "Owed: the juniper-ml 0.11.0 cut and the client 0.3.1 release (owner's calls); juniper-data's next release (W5.7); W0.1's service-core half; the parent AGENTS.md paragraph; the W1.12 / W1.11 smokes on the 0.8.0 image. | Paul Calnon |\n"
+        "Owed: the juniper-ml 0.11.0 cut and the client 0.3.1 release (Overtoad's calls); juniper-data's next release (W5.7); W0.1's service-core half; the parent AGENTS.md paragraph; the W1.12 / W1.11 smokes on the 0.8.0 image. | Paul Calnon |\n"
     )
 
 

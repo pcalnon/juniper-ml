@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Record the owner's 2026-10-25 rulings (H4's usage report, C2's form, H6) and their two PRs in the turing plan (v1.4.7).
+Record the Overtoad's 2026-10-25 rulings (H4's usage report, C2's form, H6) and their two PRs in the turing plan (v1.4.7).
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-25
 Status: ad-hoc — one-off (the record PR of the "macos dev env setup" session)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§9.3, §18, §18.1, §18.2, §18.3);
          util/mcp_setup.bash (H4); util/host_state_check.py and util/host_state_probe.bash (C2's gate);
          util/ad-hoc/2026-10-25_turing_c9_h6_record.py (the pattern)
@@ -25,7 +25,7 @@ The edits:
         3. §18's opening paragraph: this session and its handoff, now the arc's main handoff;
         4. §18.1 gains the three rulings;
         5. §18.2's H4 row gains the usage-report opt-out;
-        6. §18.2's C2 row: the form chosen, the gate landed, the owner's commands;
+        6. §18.2's C2 row: the form chosen, the gate landed, the Overtoad's commands;
         7. §18.2's H6 row: the decisions deferred, and how they resume;
         8. §18.3 gains errata E-C2-GATE and E-H6-VALUE;
         9. §18.3 gains erratum E-CUT (the doc-edit scripts across the 0.11.2 cut);
@@ -53,7 +53,7 @@ G1_MUTATION = "util/ad-hoc/2026-10-20_turing_g1_mutation_check.py"
 
 VERSION_OLD = "- **Version**: 1.4.6 — v1.4.5 plus"
 VERSION_NEW = (
-    "- **Version**: 1.4.7 — v1.4.6 plus the owner's rulings of 2026-10-25 on H4's usage report, C2's form and H6, and the two "
+    "- **Version**: 1.4.7 — v1.4.6 plus the Overtoad's rulings of 2026-10-25 on H4's usage report, C2's form and H6, and the two "
     "PRs that apply them (§9.3's G-SEC row; §18's opening; §18.1; §18.2's H4, C2 and H6 rows; errata E-C2-GATE, E-H6-VALUE and "
     "E-CUT in §18.3; 2026-10-25). v1.4.6 was v1.4.5 plus"
 )
@@ -66,7 +66,7 @@ INTRO_OLD = (
     "HANDOFF_2026-10-25_turing-c9-landed-h6-audited-owner-decides.md`, is now the arc's main handoff."
 )
 INTRO_NEW = (
-    f"C9 landed and H6's audit ran in the session after that (v1.4.6), whose handoff is `{PREV_HANDOFF}`. The owner ruled on "
+    f"C9 landed and H6's audit ran in the session after that (v1.4.6), whose handoff is `{PREV_HANDOFF}`. The Overtoad ruled on "
     "H4's usage report, C2's form and H6 in the next session, \"macos dev env setup\" (v1.4.7), whose handoff, "
     f"`{THIS_HANDOFF}`, is now the arc's main handoff."
 )
@@ -87,16 +87,16 @@ RULINGS_NEW = (
 
 H4_OLD = "**`timeout 30 claude mcp list` waits on E-H4-WHEEL** |"
 H4_NEW = (
-    "**`timeout 30 claude mcp list` waits on E-H4-WHEEL**. Since juniper-ml#@H4_PR@ (`@H4_SHA@`; owner ruling 2026-10-25) the "
+    "**`timeout 30 claude mcp list` waits on E-H4-WHEEL**. Since juniper-ml#@H4_PR@ (`@H4_SHA@`; Overtoad ruling 2026-10-25) the "
     "entry also sets `\"env\": {\"SERENA_USAGE_REPORTING\": \"false\"}`, so Serena sends no usage report (E-H6, E-H6-VALUE). "
     f"`tests/test_mcp_setup.py` has 38 tests, and `{H4_MUTATION}` kills @H4_MUTANTS@ mutants |"
 )
 
-C2_PREFIX = "| C2 | **changed** (v1.4.5, owner, RR-11 of the H5 risk analysis) |"
+C2_PREFIX = "| C2 | **changed** (v1.4.5, Overtoad, RR-11 of the H5 risk analysis) |"
 C2_ROW = (
-    "| C2 | **form: block all** (owner, 2026-10-25); **gate landed** (AGENT); **apply OWNER** | Application firewall on, stealth "
+    "| C2 | **form: block all** (Overtoad, 2026-10-25); **gate landed** (AGENT); **apply OWNER** | Application firewall on, stealth "
     "mode on, and **block all incoming connections** while nothing inbound is needed, in place of \"allow signed software\" "
-    "(v1.4.5, RR-11 of the H5 risk analysis). The owner chose this form over per-app inbound denies on 2026-10-25. Measured "
+    "(v1.4.5, RR-11 of the H5 risk analysis). The Overtoad chose this form over per-app inbound denies on 2026-10-25. Measured "
     "first with `netstat -anp tcp`: nothing on turing listened beyond loopback except Dropbox's LAN sync (`*.17500`) and "
     "link-local services on the T2 chip's internal interface (`fe80::aede:48ff:…`); there was no sshd and no Screen Sharing. "
     "juniper-ml#@C2_PR@ (`@C2_SHA@`): `util/host_state_probe.bash` captures `socketfilterfw --getblockall`, and G-SEC's firewall "
@@ -108,9 +108,9 @@ C2_ROW = (
 )
 
 H6_PREFIX = "| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions OWNER** |"
-H6_PREFIX_NEW = "| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions deferred** (owner, 2026-10-25) |"
+H6_PREFIX_NEW = "| H6 | **done: audited** (AGENT, the `auditor` agent); **decisions deferred** (Overtoad, 2026-10-25) |"
 H6_APPEND = (
-    " The owner deferred the decisions on 2026-10-25 (§18.1). When they resume, the changes cover every synced host and the "
+    " The Overtoad deferred the decisions on 2026-10-25 (§18.1). When they resume, the changes cover every synced host and the "
     "agent makes them. SER-P1's order stands: VS Code's Serena entry goes before E-H4-WHEEL's wheel build"
 )
 
@@ -122,12 +122,12 @@ ERRATA = (
     "off (captured 2026-10-25), and it can report an unknown or undefined state. `--getglobalstate`'s State = 2 sentence is "
     "\"Firewall is blocking all non-essential incoming connections\", and the binary logs \"turning on the firewall and "
     "setting global state to blockall\".\n"
-    "  - **Not yet observed.** Turning block all on needs the owner's sudo, so no on-state capture exists. The gate accepts "
-    "either block-all sentence, and state 1 or 2; the owner's first run settles which appear.\n"
+    "  - **Not yet observed.** Turning block all on needs the Overtoad's sudo, so no on-state capture exists. The gate accepts "
+    "either block-all sentence, and state 1 or 2; the Overtoad's first run settles which appear.\n"
     "  - **Unjudged, not passed.** An unknown or undefined block-all state, or a probe from before the capture, exits 2 under "
     "`--check`, unless the firewall is off, which fails anyway.\n"
     "  - **Stealth.** C2's acceptance has asked for stealth mode since v1.0.0, but G-SEC only reports it, as G1 designed. "
-    "Gating it is a one-line change if the owner wants it.\n"
+    "Gating it is a one-line change if the Overtoad wants it.\n"
     f"  - **G1's evidence still holds.** `{G1_MUTATION}` kills 57 of 57, C12 among them, because State = 1 with block all on "
     "must still pass.\n"
     "- **E-H6-VALUE (the usage report's opt-out value).** At `949a27ef`, `_send_usage_info` (`src/serena/agent.py:724-737`) "
@@ -151,9 +151,9 @@ CUT = (
 
 PREV_OLD = "\n\n- **From:** the 2026-10-25 session on turing named \"dev env macos\""
 PREV_NEW = (
-    "\n\n- **Continued (2026-10-25, plan v1.4.7).** The \"macos dev env setup\" session took this handoff. The owner ruled on "
+    "\n\n- **Continued (2026-10-25, plan v1.4.7).** The \"macos dev env setup\" session took this handoff. The Overtoad ruled on "
     "H4's usage report (opt out, juniper-ml#@H4_PR@), C2's form (block all, juniper-ml#@C2_PR@) and H6 (deferred). The arc's "
-    f"main handoff is now `{THIS_HANDOFF}`. The owner steps below still stand, C2's now in its block-all form."
+    f"main handoff is now `{THIS_HANDOFF}`. The Overtoad steps below still stand, C2's now in its block-all form."
     + PREV_OLD
 )
 

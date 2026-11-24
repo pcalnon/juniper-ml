@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-17
 Status: ad-hoc — one-off (the turing bring-up Session 1 PRs: F5a, G2, B7, A5 and the C8 agent guard)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§6 "CI wiring rule");
          tests/test_ci_test_wiring_drift.py (the gate these edits must keep green)
 

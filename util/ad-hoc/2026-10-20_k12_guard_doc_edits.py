@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — landing helper (commit-signing plan task K12)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md (S9, K12);
          util/claude_agent_guard.py; tests/test_claude_agent_guard.py;
          util/ad-hoc/2026-10-19_commit_signing_shared_file_edits.py (the K2-K4 counterpart)
@@ -46,7 +46,7 @@ CI_OLD = (
 )
 CI_NEW = (
     "          # gh auth, deploy keys, gh api write/field flags in any position, keychain dumps,\n"
-    "          # user-level .claude settings edits, and (commit-signing K12) changes to the owner's signing\n"
+    "          # user-level .claude settings edits, and (commit-signing K12) changes to the Overtoad's signing\n"
     "          # configuration and git hooks: -c include.path= / gpg.program, --config-env, signing-key\n"
     "          # git config writes, ~/.gitconfig, ~/.config/git, the system gitconfigs and .git/hooks. Payloads pipe\n"
     "          # through it with a temp\n"
@@ -56,7 +56,7 @@ REF_UTIL_NEW = "It denies by rule id (`--list-rules` lists the 17) and otherwise
 REF_UTIL_TAIL_OLD = "the known gaps are listed in its docstring. Turing bring-up C8. Tests: `tests/test_claude_agent_guard.py`.\n"
 REF_UTIL_TAIL_NEW = (
     "the known gaps are listed in its docstring.\n"
-    f"  - **K12** (`{PLAN}`, S9) adds two rules that guard the owner's signing configuration.\n"
+    f"  - **K12** (`{PLAN}`, S9) adds two rules that guard the Overtoad's signing configuration.\n"
     "  - **`GIT-SIGNING-CONFIG` (Bash)** denies:\n"
     "    - `git -c include.*` / `includeIf.*` / `gpg.program` / `gpg.<format>.program`;\n"
     "    - `git --config-env` with any key, as `--config-env=<key>=<var>` or `--config-env <key>=<var>`;\n"
@@ -72,8 +72,8 @@ REF_UTIL_TAIL_NEW = (
 )
 REF_SUITE_ANCHOR = "`util/ad-hoc/2026-10-17_turing_c8_guard_review_probe.py` is the lead's independent black-box review (71 of 71 cases).\n"
 CHANGELOG_ENTRY = (
-    f"- **The agent guard protects the owner's signing configuration (K12)** (`{PLAN}`, S9). With the YubiKey stubs\n"
-    "  learned, an agent that could rewrite the owner's signing configuration could obtain the owner's signature. It could\n"
+    f"- **The agent guard protects the Overtoad's signing configuration (K12)** (`{PLAN}`, S9). With the YubiKey stubs\n"
+    "  learned, an agent that could rewrite the Overtoad's signing configuration could obtain the Overtoad's signature. It could\n"
     "  point `gpg.program` or `core.hooksPath` at its own program, plant a repository-local key that outranks the include,\n"
     "  drop a `post-commit` hook inside a cached-touch window, or re-enable signing past D11 with `git -c include.path=` or\n"
     "  `--config-env`.\n"
@@ -85,7 +85,7 @@ CHANGELOG_ENTRY = (
     "  - `tests/test_claude_agent_guard.py` pins 63 Bash cases (42 denied, 21 allowed) and 18 file cases (10 denied, 8\n"
     "    allowed), and the self-test runs 40 checks.\n"
     f"  - `{MUTATION}` kills @MUTANTS@ mutants, each by its own pin test.\n"
-    "  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install\n"
+    "  - The Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install\n"
     "    the new copy. No YubiKey goes into turing until then: the first `gpg --card-status` writes the card stubs (plan §1).\n"
 )
 
@@ -140,7 +140,7 @@ def main(argv: list[str]) -> int:
         plan = replace_once(plan, PLAN_REF_OLD, PLAN_REF_NEW, "`util/claude_agent_guard.py` 1.1.0: CRED-PATH-BASH")
         evidence = PLAN_EVIDENCE_NEW.replace("@KILLED@", killed).replace("@TOTAL@", total)
         new[PLAN] = replace_once(plan, PLAN_EVIDENCE_OLD, evidence, f"**K12.** `{MUTATION}`")
-        new[".github/workflows/ci.yml"] = replace_once(texts[".github/workflows/ci.yml"], CI_OLD, CI_NEW, "(commit-signing K12) changes to the owner's signing")
+        new[".github/workflows/ci.yml"] = replace_once(texts[".github/workflows/ci.yml"], CI_OLD, CI_NEW, "(commit-signing K12) changes to the Overtoad's signing")
         ref = replace_once(texts["docs/REFERENCE.md"], REF_UTIL_OLD, REF_UTIL_NEW, "`--list-rules` lists the 17")
         ref = replace_once(ref, REF_UTIL_TAIL_OLD, REF_UTIL_TAIL_NEW, "  - **K12** (`")
         suite_tail = (
@@ -152,7 +152,7 @@ def main(argv: list[str]) -> int:
         start = changelog.find("## [Unreleased]")
         end = changelog.find("\n## [", start + 1)
         section = changelog[start:end if end >= 0 else len(changelog)]
-        if "**The agent guard protects the owner's signing configuration (K12)**" not in section:
+        if "**The agent guard protects the Overtoad's signing configuration (K12)**" not in section:
             if section.count("\n### Added\n\n") != 1:
                 raise AnchorError("the Unreleased section does not have exactly one '### Added'")
             entry = CHANGELOG_ENTRY.replace("@MUTANTS@", f"{killed} of {total}")

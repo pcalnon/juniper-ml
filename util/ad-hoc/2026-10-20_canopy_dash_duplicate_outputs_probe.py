@@ -7,7 +7,7 @@ Application:  canopy E2E validation arc -- item 30 (found while standing up its 
 Author:       Paul Calnon
 Created:      2026-10-20
 Status:       ad-hoc -- investigation
-Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:      notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md (Phase 14, F-CANOPY-069);
               util/ad-hoc/2026-10-20_turing_canopy_leg.bash (the legs, one per dash version)
 License:      MIT License

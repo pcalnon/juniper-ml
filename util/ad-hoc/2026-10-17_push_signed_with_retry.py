@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-17
 Status: ad-hoc — one-off (landing the turing A4/B9 re-land of juniper-ml#2222 through a VPN tunnel)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/push_signed_commit.py (does each commit); notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md
          (the HTTP 499 trap: a large createCommitOnBranch can fail and still land, or land nothing);
          notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md
@@ -19,9 +19,9 @@ because a request that errored may still have landed. So, per file and per attem
   2. if the file's blob at that head already equals the local bytes, it landed: next file;
   3. otherwise run util/push_signed_commit.py pinned to that head (it verifies signature, parent and blobs);
   4. on failure, back off and go to 1. A permissions error (for example the OAuth `workflow` scope that a
-     .github/workflows/ path needs) is not retried: it needs the owner, so the run stops with exit 3.
+     .github/workflows/ path needs) is not retried: it needs the Overtoad, so the run stops with exit 3.
 
-Exit codes: 0 every file landed; 1 attempts exhausted; 2 usage; 3 permissions (owner action needed).
+Exit codes: 0 every file landed; 1 attempts exhausted; 2 usage; 3 permissions (Overtoad action needed).
 
 Usage:
     python3 util/ad-hoc/2026-10-17_push_signed_with_retry.py --repo juniper-ml --branch B \\
@@ -91,7 +91,7 @@ def land(owner: str, repo: str, branch: str, local: str, repo_path: str, message
             reason = next((line for line in err if line.startswith(("ERROR", "gh:", "REFUSED"))), err[-1] if err else "?")
             log(f"{repo_path}: attempt {attempt} failed: {reason}")
             if "does not have the correct permissions" in proc.stdout + proc.stderr:
-                log(f"{repo_path}: permissions error -- owner action needed; not retrying")
+                log(f"{repo_path}: permissions error -- Overtoad action needed; not retrying")
                 return 3
         if attempt < attempts:
             delay = DELAYS[min(attempt - 1, len(DELAYS) - 1)]

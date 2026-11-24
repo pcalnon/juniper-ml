@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-17
 Status: ad-hoc — investigation (suite strength evidence for the turing bring-up C8 guard PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task C8;
          D11 item 4, enforcement option (b); the H3 negative tests); util/claude_agent_guard.py;
          util/install_claude_agent_guard.bash; tests/test_claude_agent_guard.py

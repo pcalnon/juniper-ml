@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-19
 Status: ad-hoc — one-off (the second commit on juniper-recurrence#215)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: W5.2 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md;
          util/ad-hoc/2026-10-19_apply_w5_2_service.py (the PR's first commit, which this follows);
          util/ad-hoc/2026-10-19_apply_w5_8b_service.py (the 0.7.0 floor raise that missed the `[torch]` site)
@@ -30,7 +30,7 @@ Two things found on 2026-10-19 while the PR waited for model 0.6.0's PyPI gate:
    block carries the resolved embargo already. The test asserts only ``"below the look-back"``.
 
 Runs against a tree laid out like ``juniper-recurrence/juniper-recurrence/`` (the scratch copy built from the
-PR head with ``gh api .../contents/<path>?ref=<sha>``), never the owner's checkout. Each edit asserts its exact
+PR head with ``gh api .../contents/<path>?ref=<sha>``), never the Overtoad's checkout. Each edit asserts its exact
 old text and must match exactly once; "new present once" counts as applied.
 
 Usage

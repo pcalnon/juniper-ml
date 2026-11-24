@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — one-off (turing bring-up task G4's promotion step)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task G4: "Advisory first; required
          after 10 green runs by adding it to the Quality Gate's required-checks.needs, never as a separate ruleset
          context"; §17.3 E-LAND-2); tests/test_ci_host_tooling_macos.py; tests/test_ci_quality_gate.py;

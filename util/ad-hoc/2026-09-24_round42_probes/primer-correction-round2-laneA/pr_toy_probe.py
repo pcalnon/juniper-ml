@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (documentation verification)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- verification for the primer's Appendix E correction
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 `metadata_etag` in the primer's `conditional_datasets.py` example calls itself "a *strong* validator:
 a hash of the exact representation we would send". Before the 2026-09-24 correction the routes sent

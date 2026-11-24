@@ -5,8 +5,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-19
-Status: ad-hoc — investigation (the evidence behind the owner's D5 ruling, 2026-10-19)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — investigation (the evidence behind the Overtoad's D5 ruling, 2026-10-19)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (D5, §17);
          reports/2026-10-19_turing-d5-path-inventory/
 
@@ -15,9 +15,9 @@ for darwin 18, and every `port` command errors). The plan treated that as a no-o
 binaries still run. Read-only, this script takes each command in /opt/local/{bin,sbin} and reports where it
 resolves on PATH now and where it would resolve with both entries removed. The 2026-10-19 run found:
 - 104 commands that would switch to a Homebrew or system copy;
-- 128 that exist only in /opt/local, among them the owner's gpg2, gnupg and gnupg2 links into the Homebrew Cellar,
+- 128 that exist only in /opt/local, among them the Overtoad's gpg2, gnupg and gnupg2 links into the Homebrew Cellar,
   which Homebrew itself does not link into /usr/local/bin.
-The owner therefore ruled to demote the two entries to the end of PATH, not remove them.
+The Overtoad therefore ruled to demote the two entries to the end of PATH, not remove them.
 
 Usage:
     python3 -I util/ad-hoc/2026-10-19_turing_d5_path_inventory.py [--path PATH_STRING]

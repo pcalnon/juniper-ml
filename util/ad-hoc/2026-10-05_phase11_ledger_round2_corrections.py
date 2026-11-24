@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-05
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Round 2's correction pass on the ledger's Phase 11 (and the evidence README), its Consensus record included.
 
@@ -40,11 +40,11 @@ ROUND2_RECORD = """
   - Their own probes are archived as `util/ad-hoc/2026-10-05_phase11_r2_{a,b}_*.py` (16 files) by
     `util/ad-hoc/2026-10-05_archive_phase11_lane_probes.py --round 2`.
 - **Verdicts.** Both returned SOUND-WITH-FIXES. Lane 11-R2A's two NITs change nothing; Lane 11-R2B's findings
-  change numbers (the counts for each ruling, and the horizon) and actions (the owner's question, and item 25's
+  change numbers (the counts for each ruling, and the horizon) and actions (the Overtoad's question, and item 25's
   method), so §4 of `JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` requires
   round 3.
 - **What round 2 changed:**
-  - the owner's question. F-CANOPY-065's P1 rests on a shipped CHANGELOG or design-plan promise of something a
+  - the Overtoad's question. F-CANOPY-065's P1 rests on a shipped CHANGELOG or design-plan promise of something a
     user sees, the toast; F-CANOPY-068's on a CHANGELOG's description of an internal mechanism. So the question
     gains a second limb, and the counts are given for each ruling: 7 open P1 and 16 open P2 if both are P1, 6 and
     17 if F-CANOPY-065 alone, 5 and 18 if neither (Lane 11-R2B);
@@ -70,10 +70,10 @@ ROUND2_RECORD = """
   longest waits for the next request, each at the census's T-tab activity; Lane 11-R2B's pairing mutation, now the
   trace's fifth self-test, and the new flag's count, 0, in both runs.
 - **Slips.** Lane 11-R2B's `git log --format=%B` of canopy `06d8607e` printed a co-author trailer holding a
-  generic bot no-reply address, not the owner's, into its own local output. Lane 11-R2A reported none."""
+  generic bot no-reply address, not the Overtoad's, into its own local output. Lane 11-R2A reported none."""
 
 SUBS = [
-    # --- the owner's question, with both sources and a second limb (Lane 11-R2B, Finding 1) ---
+    # --- the Overtoad's question, with both sources and a second limb (Lane 11-R2B, Finding 1) ---
     (
         "  F-CANOPY-065 already carries (Phase 10's Consensus record). Plan §6.3's P1 is \"breaks a documented\n"
         "  behaviour\", and canopy's shipped CHANGELOG promises the behaviour these fires break (Its own contract,\n"
@@ -100,9 +100,9 @@ SUBS = [
         "    open P1 and 16 open P2, as the triage counts them; F-CANOPY-065 alone, 6 and 17; neither, 5 and 18.",
     ),
     (
-        "- **Unresolved, for the owner:** whether a shipped CHANGELOG promise counts as documented under plan §6.3, which\n"
+        "- **Unresolved, for the Overtoad:** whether a shipped CHANGELOG promise counts as documented under plan §6.3, which\n"
         "  now decides two ratings, F-CANOPY-065's and F-CANOPY-068's.",
-        "- **Unresolved, for the owner:** Phase 10's question, whether a shipped CHANGELOG or design-plan promise counts\n"
+        "- **Unresolved, for the Overtoad:** Phase 10's question, whether a shipped CHANGELOG or design-plan promise counts\n"
         "  as documented under plan §6.3, which decides F-CANOPY-065's rating; and, since round 2 (Lane 11-R2B), a second\n"
         "  limb, whether a CHANGELOG's description of an internal mechanism counts as documented behaviour, which decides\n"
         "  F-CANOPY-068's.",

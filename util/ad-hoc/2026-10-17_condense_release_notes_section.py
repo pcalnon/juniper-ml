@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-17
 Status: ad-hoc — one-off (W1.13: the juniper-canopy 0.9.0 notes archive)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (W1.13),
          util/ad-hoc/2026-09-12_ceremony_notes_preview.py (renders the input),
          util/release_train/ceremony.py (create_signed_commit / open_archive_pr)
@@ -21,7 +21,7 @@ which carries the whole file base64-encoded in one request. Measured 2026-10-17 
 GraphQL request body of 130,000 bytes is accepted and one of 131,000 is refused (HTTP 499), and
 ``ceremony.py``'s ``create_signed_commit`` passes the base64 as ONE ``gh`` argument, which a Linux
 runner caps at 128 KiB (``MAX_ARG_STRLEN``). So neither this host nor the CI ceremony can commit the
-full file. The owner ruled (2026-10-17): condense ``### Fixed`` to one line per entry, link the
+full file. The Overtoad ruled (2026-10-17): condense ``### Fixed`` to one line per entry, link the
 CHANGELOG for the full text, keep every other section verbatim.
 
 What it does
@@ -100,7 +100,7 @@ def main() -> int:
     note = (
         f"\n{len(found)} entries. Each line below is the entry's lead; the full text of every entry is in "
         f"[CHANGELOG.md `[{args.version}]`]({args.changelog_url}). This section is condensed so that the archive fits one "
-        "GitHub-signed commit (owner ruling 2026-10-17); every other section is complete.\n\n"
+        "GitHub-signed commit (Overtoad ruling 2026-10-17); every other section is complete.\n\n"
     )
     condensed = before + note + "\n".join(leads) + "\n\n" + after
     out = condensed

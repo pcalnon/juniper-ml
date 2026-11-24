@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-04
 Status: ad-hoc — investigation; its --scan-dir mode is the interim pre-push gate named by the plan below
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (XC-LEAKS, XC-PRESERVE);
          reports/2026-10-04_consolidated-development-plan/round4-*.md .. round11-*.md (how it was tested and broken);
          util/ad-hoc/2026-10-05_gate_regression.py (its regression cases)
@@ -135,7 +135,7 @@ message and PR body as files; never on a home directory or on transcripts. Run i
 each upload publishes at once. It cannot scan git history: for that, run ``gitleaks git`` yourself on a fresh
 ``--mirror`` clone, once per config (``defaults.toml`` and ``b9.toml``, written to --workdir, and the exact config the
 repository will ship), with ``--redact``, ``--ignore-gitleaks-allow``, an empty ``--gitleaks-ignore-path``, an
-explicit ``--exit-code``, and a report path only the owner can read.
+explicit ``--exit-code``, and a report path only the Overtoad can read.
 
 Exit codes
 ----------

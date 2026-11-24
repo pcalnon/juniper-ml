@@ -7,7 +7,7 @@ Application:  canopy E2E validation arc -- item 30 (ledger Phase 13, "Still owed
 Author:       Paul Calnon
 Created:      2026-10-20
 Status:       ad-hoc -- investigation
-Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:      notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md (Phase 13, item 30; the entries
               F-CANOPY-018, -028, -032, -001); notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md
               (C2.9-05, M-PARAMETERS-04/-05/-06, C2.1-01/-02, M-METRICS-03, M-WORKERS-02);
