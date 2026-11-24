@@ -39,8 +39,8 @@ the new session: a handoff cannot carry one (memory `feedback_headless_merge_app
 - **Cleanup.**
   - Remote branches `feat/local-test-runner` and `feat/local-test-runner-2` are deleted. Their commits survive as
     `refs/pull/2615/head` and `refs/pull/2621/head`. `feat/local-test-runner-3` was deleted when its PR merged.
-  - The arc's scratch data (145 files: run logs, the upload snapshot, merge inputs) moved to the primary's
-    `tmp/run-tests-design--delegated-questing-bentley/`. It is kept under the retention rule, section 6 of
+  - The arc's scratch data moved to the primary's `tmp/run-tests-design--delegated-questing-bentley/`: run logs,
+    gate outputs, PR bodies, the upload snapshot, merge inputs and file copies. It is kept under the retention rule, section 6 of
     `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`.
   - The worktree is removed.
 
