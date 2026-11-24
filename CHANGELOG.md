@@ -219,6 +219,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     which juniper-ml#2554 took; #2494's troubleshooting rows for symptoms `main` no longer produces; and #2470's
     own section, which described the behaviour the "Fail closed" ruling replaced.
 
+- **The paragraph above `docs/REFERENCE.md`'s compatibility matrix states the rule its tests enforce, and a test pins
+  it** (the Overtoad's ruling of 2026-11-24, flood-4's ruling 48; R55 of
+  `notes/JUNIPER_2026-11-23_JUNIPER-ECOSYSTEM_R-OBS-SC-2-FOLLOW-UPS-REMAINING-TASKS.md`).
+  - juniper-ml#2507's tests, carried by juniper-ml#2581, hold the current series' row and the `recurrence` clause to
+    `pyproject.toml`, so between a PR that changes one of those pins and the release that publishes it, the row states
+    pins no published release carries. The paragraph did not say so, and nothing checked it.
+  - The paragraph gains that sentence, and `ReferenceCompatibilityMatrixTest` gains
+    `test_paragraph_states_that_the_current_row_tracks_pyproject`: one assertion that the paragraph (from the section
+    heading to the matrix header, whitespace collapsed) holds it.
+  - Not vacuous: the test fails when the sentence is dropped, moved out of the paragraph or reworded (`track` ->
+    `follow`), or when the heading is renamed, and it passes a re-wrapped paragraph
+    (`util/ad-hoc/2026-11-24_flood4_s11_r55_mutation_check.py`). The suite's Test Suite Reference entry now names both
+    checks.
+
 ### Changed
 
 - **Backup Phase D: the acceptance probe follows two Overtoad rulings of 2026-11-15.** AC-2 expects the job's 5
