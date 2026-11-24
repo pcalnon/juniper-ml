@@ -22,6 +22,10 @@ Pinned here:
 - every ``gh api`` write-flag spelling; ``bash -c``, ``$( )``, backticks, ``eval``, pipes, here-docs,
   ``GH_TOKEN=`` prefixes, ``/usr/local/bin/gh`` and the wrapper prefixes;
 - the ``.ssh`` component boundary (``.sshrc_backup``, ``foo.ssh.txt``, ``.ssh.bak`` are allowed);
+- guard 1.4.0: the words bash 5.3.9 builds that 1.3.0 never judged (the escape gap, a substitution in a brace list
+  or spliced into a name behind an ``X/..`` hop, ``: ${x:-{}; sudo id; : }``, hops before Claude's settings and the
+  signing files, extglob, ``~+``, brace lists in option words), each measured in a scratch home by
+  ``util/ad-hoc/2026-11-16_flood4r2_r18-guard_probe.py``, and the allowed rows that must stay allowed;
 - a Read through a symlink into the temp home's ``.ssh``; self-protection on the writers while a Read
   of the settings stays allowed; Grep and Glob roots and patterns;
 - malformed input exits 2 with empty stdout; an unknown tool prints nothing;
@@ -283,6 +287,46 @@ CRED_PATH_CASES = [
     ("echo 'see ~/.ssh/config'", CRED_BASH),  # a mention is enough: false positives over false negatives
     ("# cat ~/.ssh/config", CRED_BASH),
     ("cat <<'EOF'\n~/.ssh/config\nEOF", CRED_BASH),
+    # 1.4.0: words bash 5.3.9 builds that 1.3.0 never judged; each reaches ~/.ssh in a scratch home
+    # (util/ad-hoc/2026-11-16_flood4r2_r18-guard_probe.py). X is any directory under home.
+    ("cat ~/.ss{h,b\\}c}/config", CRED_BASH),  # an escaped } keeps bash's list open: ~/.ssh/config
+    ("cat ~/X/../.ss{h,$(:{)}/config", CRED_BASH),  # bash steps over the body of the substitution
+    ("cat ~/X/../.ss{h,`:{`}/config", CRED_BASH),
+    ("cat ~/X/../.ss{h,<(:{)}/config", CRED_BASH),
+    ("cat ~/X/../.ss$(:)h/config", CRED_BASH),  # an empty substitution splices the name, behind a hop
+    ("cat ~/X/../.ss`:`h/config", CRED_BASH),
+    ("cat ~/X/../.ss${x}h/config", CRED_BASH),
+    ("cat @ROOT@/elsewhere/.ss$(:)h/config", CRED_BASH),  # the same splice, outside any home
+    ("cat ~/X/../.???/config", CRED_BASH),  # a hop, then a bare dot-glob
+    ("shopt -s extglob\ncat ~/.s@(s)h/config", CRED_BASH),  # an extglob group, enabled on the line before
+    ("shopt -s extglob\ncat ~/X/../.s+(s)h/config", CRED_BASH),
+    ("cat ~/X/../'$'{Y/../.ss,z}h/config", CRED_BASH),  # a quoted $ glued to a group: ~/X/../$Y/../.ssh/config
+    ("cat ~/.ss{h,$'\\x7d'c}/config", CRED_BASH),  # $'\x7d' is a quoted } to bash's brace scan
+    ("cat ~/X/../.ss{h,$'\\x7d'c}/config", CRED_BASH),  # and behind a hop
+    ("cat ~/X/\\${/../../.ss,y}h/config", CRED_BASH),  # an escaped $ opens no ${: ~/X/$/../../.ssh/config
+    ("cat ~/X/../.ss{h,$(case x in a) : ;; esac)}/config", CRED_BASH),  # a case pattern's ) does not end $(
+    ("cat ~/X/../.ss{h,$(: <<E\n)\nE\n)}/config", CRED_BASH),  # nor does a ) in a here-document
+    ('cat ~/X/../.ss"`echo "{h,x}"`"/config', CRED_BASH),  # bash expands a list inside a quoted backtick body
+    ('cat ~/X/../.ss"${x:-"{h,y}"}"/config', CRED_BASH),  # and inside a quoted ${x:-"..."} default
+    ("cd ~ && cat ~+/.ss$(:)h/config", CRED_BASH),  # ~+ is $PWD
+    ("cat ~/X/../.ss{h,$(: # )\n)}/config", CRED_BASH),  # a ) in a comment does not end $(
+    ("cat ~/X/../.ss{h,$(: <<'E'\n)\nE\n)}/config", CRED_BASH),  # a quoted here-document delimiter
+    ("cat ~/X/../.ss$(printf h)/config", CRED_BASH),  # a substitution that prints the missing letter
+    ("cat @ROOT@/elsewhere/$x.ssh/config", CRED_BASH),  # an empty parameter before the name
+    ("cat @ROOT@/elsewhere/.ss$(printf h)/config", CRED_BASH),  # a substitution printing the letter, outside any home
+    ("cat ~/X/../$x/config", CRED_BASH),  # a computed first component under home, after a hop
+    # .ssh in the OTHER alternative: only bash's end for the $( ) assembles it (no computed head)
+    ("cat ~/X/../.ss{h/config,/$(case x in a) : ;; esac)}", CRED_BASH),
+    ("cat ~/X/../.ss{h/config,/$(: <<E\n)\nE\n)}", CRED_BASH),
+    ("cat ~/X/../.ss{h/config,/$(: <<'E'\n)\nE\n)}", CRED_BASH),
+    ("cat ~/X/../.ss{h/config,/$(: <<< x\n: # )\n)}", CRED_BASH),  # a here-string, then a ) in a comment
+    ('cat ~/X/../.s{s,"$(printf %s "}")"}h/config', CRED_BASH),  # a quoted $( ) whose body holds a quoted }
+    ("ls ~/Development/$repo", None),  # a computed component that is not the first under home
+    ("echo ${x:-{a,b}}", None),
+    ("git commit -m \"$(cat <<'EOF'\nfix: a (b)\nEOF\n)\"", None),
+    ("echo $(case x in a) echo hi ;; esac)", None),
+    ("ls ~/X/../Development", None),
+    ("printf '%s\\n' {a,b} '{n0,n1}'", None),
     # the component boundary: these are other names, not the credential directories
     ("ls -la .sshrc_backup", None),
     ("cat foo.ssh.txt", None),
@@ -298,6 +342,17 @@ CRED_PATH_CASES = [
     ("rg TODO", None),
     ("du -sh ~", None),
     ("ls -a ~", None),
+    # 1.4.0: dotglob or GLOBIGNORE named in the same command lets a glob under a home match a dot-name
+    ("shopt -s dotglob; cat ~/*/config", CRED_BASH),
+    ("GLOBIGNORE=x; cat ~/*/config", CRED_BASH),
+    ("shopt -s dotglob\ncat ~/*/config", CRED_BASH),
+    ("GLOBIGNORE=x\ncat ~/*/config", CRED_BASH),
+    ("cat ~/*/config", None),
+    ("ls ~/*", None),
+    # 1.4.0: a quoted $( ) whose body holds a quoted double quote, inside a brace-assembled name
+    ('cat /x/.ss"$(: \'"\')"{h,x}/config', CRED_BASH),
+    # 1.4.0: empty substitutions in a name after a computed directory (the name's own empty reading denies it)
+    ('cat "$D"/x/$(:).s$(:)sh/config', CRED_BASH),
 ]
 
 SSH_PRIV_DEFAULTS_CASES = [
@@ -331,6 +386,9 @@ SSH_PRIV_DEFAULTS_CASES = [
     ("xargs sudo rm < list.txt", PRIV),
     ("find . -name x -exec sudo rm {} \\;", PRIV),
     ("osascript -e 'do shell script \"ls\" with administrator privileges'", PRIV),
+    ("su{do,x\\}y} id", PRIV),  # 1.4.0: the escape gap on a command word: bash makes sudo, sux}y and id
+    (": ${x:-{}; sudo id; : }", PRIV),  # 1.4.0: bash ends the ${ at its first }, so sudo id runs
+    ("cat <<EOF\n$(case x in x) sudo id ;; esac)\nEOF", PRIV),  # 1.4.0: a case in $( ) in an expanded here-document
     ("grep -n sudo notes/x.md", None),
     ("cat notes/sudo-usage.md", None),
     ("ls pseudo_sudo.txt", None),
@@ -341,6 +399,22 @@ SSH_PRIV_DEFAULTS_CASES = [
     ("defaults delete com.example.app", DEFAULTS),
     ("defaults read com.apple.finder", None),
     ('grep -rn "defaults write" notes/', None),
+    # 1.4.0: $'...' inside a parameter default that holds an unbalanced {
+    (": ${x:-{$'\\''}; sudo id; : '}'", PRIV),
+    # 1.4.0: a command word bash builds when a substitution prints nothing or a parameter takes its default
+    ('sud"$(:)"o id', PRIV),
+    ("pkex$(:)ec id", PRIV),
+    ("s`:`udo id", PRIV),
+    ("{pke${x:-x}ec,Q} id", PRIV),
+    ("pke${x:-x}ec id", PRIV),
+    ('sud"${x:-"{o,Q}"}" id', PRIV),
+    ("defaults wr$(:)ite com.x k v", DEFAULTS),
+    # 1.4.0: an alias's value is judged as the command it names
+    ("alias s=sudo", PRIV),
+    ("shopt -s expand_aliases\nalias s=sudo\ns id", PRIV),
+    ("alias ll='ls -l'", None),
+    ("echo $(date)", None),
+    ('python3 "$(dirname "$0")/x.py"', None),
 ]
 
 GPG_CASES = [
@@ -375,6 +449,7 @@ GPG_CASES = [
     ("git tag -u KEYID v1", GPG_SIGN),
     ("git rebase -S main", GPG_SIGN),
     ("git push --signed origin main", GPG_SIGN),
+    ("git commit --{gpg-sign,quiet} -m x", GPG_SIGN),  # 1.4.0: bash makes --gpg-sign --quiet
     ("gpg --sign x", GPG_SIGN),
     ("gpg -s x", GPG_SIGN),
     ("gpg --clearsign x", GPG_SIGN),
@@ -416,6 +491,12 @@ GPG_CASES = [
     ("git verify-commit HEAD", None),
     ("git merge -s ours main", None),
     ("env | grep GIT_CONFIG", None),
+    # 1.4.0: an option word bash builds when a substitution prints nothing
+    ("git commit --gpg-$(:)sign -m x", GPG_SIGN),
+    ("git -c commit.gpg$(:)sign=true commit -m x", GPG_SIGN),
+    ("git push --sig$(:)ned origin main", GPG_SIGN),
+    ("gpg --export-secret-k$(:)eys", GPG_SECRET),
+    ('git commit -m "$(cat msg)"', None),
 ]
 
 GH_CASES = [
@@ -448,6 +529,15 @@ GH_CASES = [
     ("security export -k login.keychain -o x.p12", KEYCHAIN),
     ("security list-keychains", None),
     ("security find-certificate -a -c Apple", None),
+    # 1.4.0: an option word bash builds when a substitution prints nothing or a parameter takes its default
+    ("gh api --meth$(:)od=POST repos/o/r", GH_API),
+    ("gh api --meth$(:)od POST repos/o/r", GH_API),
+    ("gh api repos/o/r --fi$(:)eld x=y", GH_API),
+    ("gh api repos/o/r --in$(:)put f", GH_API),
+    ("gh api repos/o/r --meth${x:-o}d=POST", GH_API),
+    ("alias g='gh api -X POST'", GH_API),
+    ("security find-generic-pass$(:)word -w -s x", KEYCHAIN),
+    ("gh api repos/$owner/$repo/pulls", None),
 ]
 
 # every spelling of a gh api write or field flag, in every position
@@ -471,6 +561,9 @@ GH_API_SPELLINGS = [
     "gh api graphql -f query='{viewer{login}}'",  # read-only GraphQL is blocked too (D11 accepts it)
     "gh api -H 'X-HTTP-Method-Override: POST' repos/o/r",
     "gh alias set w 'api -X POST'",
+    "gh api --{method=POST,paginate} repos/o/r",  # 1.4.0: bash makes --method=POST --paginate
+    "gh {api,-XPOST} repos/o/r",  # and gh api -XPOST repos/o/r
+    ": ${x:-{}; gh api -X POST repos/o/r; : }",
 ]
 
 # the same call through every shell construct the tokenizer must see through
@@ -544,6 +637,14 @@ SELF_PROTECT_BASH_CASES = [
     ("bash util/install_claude_agent_guard.bash --apply", SELF_BASH),
     ("bash util/install_claude_agent_guard.bash --uninstall", SELF_BASH),
     ("util/install_claude_agent_guard.bash", SELF_BASH),
+    ("cat ~/X/../.claude/settings.json", SELF_BASH),  # 1.4.0: a hop under a home spelling is normalised
+    ("cat $HOME/X/../.claude/settings.json", SELF_BASH),
+    ("cp x ~/Development/../.claude/hooks/x.py", SELF_BASH),
+    ("cat ~/X/../.claude/$x", SELF_BASH),  # a computed child of ~/.claude, behind a hop
+    ("cat ~/X/../.claude/${x}y", SELF_BASH),
+    ("echo disable{AllHooks,x}", SELF_BASH),  # bash's brace expansion assembles the key
+    ("echo disable$(:)AllHooks", SELF_BASH),  # 1.4.0: an empty substitution splices it
+    ("shopt -s dotglob; cat ~/*/settings.json", SELF_BASH),  # 1.4.0: dotglob lets * match .claude
     ("cat .claude/settings.json", None),  # project-relative, inside the repo
     ("ls .claude/agents", None),
     ("cat ~/.claude/projects/x/memory/MEMORY.md", None),
@@ -602,6 +703,10 @@ GIT_SIGNING_CASES = [
     ("echo '[core] hooksPath = /tmp/h' >> /usr/local/etc/gitconfig", GIT_SIGNING),
     ("cat /etc/gitconfig", GIT_SIGNING),
     ("cp x /opt/homebrew/etc/gitconfig", GIT_SIGNING),
+    ("cat ~/X/../.gitconfig", GIT_SIGNING),  # 1.4.0: normalised readings of a home spelling
+    ("cat ${HOME}/X/../.gitconfig", GIT_SIGNING),
+    ("cp hook .git/refs/../hooks/post-commit", GIT_SIGNING),  # and of a relative word
+    ("cat ~/.git{config,x}", GIT_SIGNING),  # a mention bash's brace expansion assembles
     ("cat docs/etc/gitconfig.md", None),
     ("git config --get user.signingkey", None),
     ("git config --global --list --show-origin", None),
@@ -623,6 +728,19 @@ GIT_SIGNING_CASES = [
     ("ls .github/hooks", None),
     ("cat docs/git/hooks.md", None),
     ("git log -1 --format=%H -- .githooks", None),
+    # 1.4.0: a substitution, a parameter or a glob inside a signing path, as bash builds or matches it
+    ("cp hook .git/ho$(:)oks/post-commit", GIT_SIGNING),
+    ("cp hook .git/hoo${x}ks/post-commit", GIT_SIGNING),
+    ("cp post-commit .git/h*/", GIT_SIGNING),
+    ("cp post-commit .git/ho?ks/", GIT_SIGNING),
+    ("cp x ~/.gitc?nfig", GIT_SIGNING),
+    ("cp x ~/.config/gi$(:)t/config", GIT_SIGNING),
+    ("cat ~/.config/gi?/config", GIT_SIGNING),
+    ("cp x /etc/gitc?nfig", GIT_SIGNING),
+    ("git config --global user.signing$(:)key X", GIT_SIGNING),
+    ("git config core.hooks$(:)Path x", GIT_SIGNING),
+    ("ls .git/*", None),
+    ("ls ~/.config/*", None),
 ]
 
 
@@ -670,6 +788,9 @@ class BashRuleTests(GuardHarness):
         self.assert_allowed("Bash", {"command": "cat ../.claude/settings.json"}, cwd="@REPO@/sub")
         self.assert_denied("Bash", {"command": "cat .claude/settings.json"}, SELF_BASH, cwd="@HOME@")
         self.assert_denied("Bash", {"command": "rg BEGIN"}, CRED_BASH, cwd="@HOME@")
+        # 1.4.0: ~+ is $PWD, read against the payload cwd and every cd target
+        self.assert_denied("Bash", {"command": "cat ~+/.claude/settings.json"}, SELF_BASH, cwd="@HOME@")
+        self.assert_allowed("Bash", {"command": "cat ~+/.claude/settings.json"}, cwd="@REPO@")
 
 
 # (tool_input, rule or None); paths use the temp home
@@ -776,6 +897,7 @@ MCP_REGISTER_BASH_CASES = [
     ("cat @HOME@/.claude.json", MCP_BASH),
     ("cd ~ && cat .claude.json", MCP_BASH),
     ("cat ./cfg-link", MCP_BASH),  # a symlink in the checkout to ~/.claude.json (a word with a / is resolved)
+    ("cat ~/X/../.claude.json", MCP_BASH),  # 1.4.0: a hop under a home spelling is normalised
     ("echo '{}' > .mcp.json", MCP_BASH),
     ("cp /tmp/x sub/.mcp.json", MCP_BASH),
     ("cat ./.mcp.json", MCP_BASH),
@@ -800,6 +922,7 @@ MCP_REGISTER_BASH_CASES = [
     ("grep -rn 'claude mcp add' docs", None),
     ("uv add mcp", None),
     ("python3 -m unittest tests/test_mcp_setup.py", None),
+    ("claude mcp a$(:)dd x y", MCP_BASH),  # 1.4.0: an empty substitution splices the verb
 ]
 
 # Task C9 (RR-10): the writers on the registration files, and the approval keys in Claude settings.
