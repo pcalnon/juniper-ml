@@ -9,10 +9,10 @@
 - **Axis 3 RUN** (§4.2): it separates 2 → 3 → 4 spirals. The seed probe (§4.3) shows 5 does
   rank below 4 on most dataset seeds. Seed spread dominates the gap between neighbours, so
   **one seed cannot order adjacent counts**.
-- **Axis 1 BLOCKED on its instrument** (§2 note). The owner ruled 2026-09-24 to publish
+- **Axis 1 BLOCKED on its instrument** (§2 note). The Overtoad ruled 2026-09-24 to publish
   `epochs_completed` from cascor.
 
-*Superseded status line (2026-09-12): "SPEC. Axis 3's calibration is DONE … Axis 2 needs an owner
+*Superseded status line (2026-09-12): "SPEC. Axis 3's calibration is DONE … Axis 2 needs an Overtoad
 decision … Axis 1 is specifiable now."*
 **⚠ §1 carries a CORRECTION to a claim that shipped wrong in `juniper-ml#1927`** — read it before quoting which generator the experiment path uses.
 **License**: MIT License
@@ -21,13 +21,13 @@ decision … Axis 1 is specifiable now."*
 
 ## 0. What this document is
 
-Owner decision **D4** of
+The Overtoad decision **D4** of
 [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md),
 turned into a specification.
 
 PF-2 as written varies `dataset.params.n_points_per_spiral` over `[250, 500, 1000, 2000]` and
 **measures an invariant**: `step_count` is identical at 250 and 2000 at every epoch budget
-(450 / 890 / 1770), and `step_sum` at 2000 is 6–8% *lower* — inside noise. The owner ruled:
+(450 / 890 / 1770), and `step_sum` at 2000 is 6–8% *lower* — inside noise. The Overtoad ruled:
 retarget at the candidate phase, and add a wide wall-time characterisation plus a spiral-count
 axis.
 
@@ -68,14 +68,14 @@ loses the message.
 > full juniper-data param set (`sizing_mode`, `val_percent`, `algorithm`, `radius` — none of
 > which cascor's in-process generator emits).
 >
-> **Therefore the owner's requested 250 → 500,000 range is NOT reachable on the suite path**, and
+> **Therefore the Overtoad's requested 250 → 500,000 range is NOT reachable on the suite path**, and
 > axis 2 must either cap at 10,000 (still a 40× range, 5× wider than the inert 8× that was
 > tested), raise `MAX_POINTS` in juniper-data as its own decision, or run outside the suite
 > harness.
 >
 > ## ⚠ SECOND CORRECTION 2026-09-23 — the suite path does not reach 10,000 either; it stops at 5,882
 >
-> The paragraph above, and the owner menu built from it (D4, ruled 2026-09-22 as "10,000 now"),
+> The paragraph above, and the Overtoad menu built from it (D4, ruled 2026-09-22 as "10,000 now"),
 > treat `MAX_POINTS` as the ceiling on the **request**. It is the ceiling on the **total rows per
 > spiral**. juniper-data's additive sizing (`juniper_data/core/split.py`) treats
 > `n_points_per_spiral` as the TRAIN count, adds the val and test partitions on top, and
@@ -114,14 +114,14 @@ loses the message.
 
 **Consequences for this spec (as originally written — see the correction above):**
 
-- ~~The owner's requested **250 → 500,000** points-per-spiral range is reachable **only on the
+- ~~The Overtoad's requested **250 → 500,000** points-per-spiral range is reachable **only on the
   in-process path** — it is 50× past juniper-data's cap. `spiral-smoke.yaml` sets
   `auto_start_data_service: false` and `dataset.generator: spiral`, so the perf suites already
   take that path today.~~
 - **This makes axis 2 a characterisation of cascor's compute, not of the juniper-data pipeline.**
   The two generators are separate implementations. That is the right target for a wall-time
   question, but the resulting numbers must not be quoted as juniper-data figures.
-- The owner's expectation that the spiral axis is *"certainly ≤ 10 and probably ≤ 6"* matches
+- The Overtoad's expectation that the spiral axis is *"certainly ≤ 10 and probably ≤ 6"* matches
   `MAX_SPIRALS = 10` exactly. Above 10 the in-process path would still run while juniper-data
   would refuse — a divergence worth **not** exercising.
 
@@ -229,7 +229,7 @@ committed, exactly as PF-1 reached 4000 epochs by probing 500 / 2000 / 5000.
 >   staging, collection and plots, not by the dataset.
 > - **Training compute grows ×1.31.** The log-log slope between neighbouring sizes stays between
 >   −0.15 and 0.31: strongly sublinear, **with no knee**.
-> - **Under the owner's D4 ruling** ("in-process later, only if the curve shows a knee"), **the
+> - **Under the Overtoad's D4 ruling** ("in-process later, only if the curve shows a knee"), **the
 >   in-process follow-up does not fire.**
 > - **Scope:** `spiral-smoke`'s budgets. That means 2 hidden units, `output_epochs` 50, and a
 >   `step_count` of 8 in every cell, fixed by the budget and never compared. How wall time scales
@@ -237,7 +237,7 @@ committed, exactly as PF-1 reached 4000 epochs by probing 500 / 2000 / 5000.
 
 ---
 
-## 4. Axis 3 — number of spirals (the owner's preferred axis)
+## 4. Axis 3 — number of spirals (the Overtoad's preferred axis)
 
 **Key**: `dataset.params.n_spirals`, range **2 … 10** (`MAX_SPIRALS`; §1), probably 2 … 6.
 
@@ -290,7 +290,7 @@ monotone in the right direction. **Accuracy is the observable for this axis.**
 **3. The evaluatable range is NARROWER than expected, and capacity does not widen it.** Only
 `n_spirals: 2` is solved (roc_auc 0.9605). Six is 0.6130 and ten is 0.5555 — both near chance,
 **at the larger budget**. Raising capacity 2 → 16 units rescues only the 2-spiral case
-(0.720 → 0.961); at 6 it moves 0.565 → 0.613 and at 10 just 0.541 → 0.556. So the owner's
+(0.720 → 0.961); at 6 it moves 0.565 → 0.613 and at 10 just 0.541 → 0.556. So the Overtoad's
 estimate ("certainly ≤ 10 and probably ≤ 6") is directionally right but **optimistic at these
 budgets**: the interesting transition is already complete between 2 and 6.
 
@@ -386,7 +386,7 @@ over initialisation.
 
 | axis | calibration | status |
 |---|---|---|
-| 1 — candidate phase | none beyond floor/wall | **BLOCKED on its instrument (2026-09-23, §2 note).** No structured suite artifact carries `epochs_completed`, and the log carries it only for candidates that stop early. **Owner ruled 2026-09-24: publish it in cascor** as a structured per-phase record, rather than parse the log. The base also needs `candidate_epochs` ≈ 2000 |
+| 1 — candidate phase | none beyond floor/wall | **BLOCKED on its instrument (2026-09-23, §2 note).** No structured suite artifact carries `epochs_completed`, and the log carries it only for candidates that stop early. **The Overtoad ruled 2026-09-24: publish it in cascor** as a structured per-phase record, rather than parse the log. The base also needs `candidate_epochs` ≈ 2000 |
 | 2 — wide dataset range | largest completing cell at a chosen wall | **DONE 2026-09-23.** Ruled "10,000 now, in-process later"; built capped at 5,800 (the suite path's real ceiling is 5,882, per the second §1 correction); **RUN, no knee** (§3 RESULT), so the in-process follow-up does not fire |
 | 3 — spiral count | capacity budget that lets 2…10 differentiate | **DONE 2026-09-15 (§4.1)** — axis viable, but gate on **accuracy**; sample 2,3,4,5 not 2,6,10. **RUN 2026-09-23 (§4.2)**: separates 2 → 3 → 4 (test roc_auc 0.961 / 0.834 / 0.672). 5 scores 0.746, above 4, on one seed. Passes are bit-identical, so the observable is load-insensitive. **Seed probe 2026-09-24 (§4.3)**: the inversion was the seed. 4 beats 5 on roc_auc for 4 of 5 dataset seeds and on f1 for 5 of 5, but the seed spread (0.611–0.830 at 4) is about 5× the gap, so **a gate needs several seeds per cell** |
 

@@ -214,7 +214,7 @@ process — and not "unpickling a tensor" in general. See §7.
 
 ---
 
-## 4. What this changes for the owner decisions
+## 4. What this changes for the Overtoad decisions
 
 **Nothing is re-opened and no decision is taken here.** The six open decisions listed in
 [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-10_perf-lane-burst-is-libgomp-and-the-pin-binds-the-constructor-thread.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09/HANDOFF_2026-09-10_perf-lane-burst-is-libgomp-and-the-pin-binds-the-constructor-thread.md)

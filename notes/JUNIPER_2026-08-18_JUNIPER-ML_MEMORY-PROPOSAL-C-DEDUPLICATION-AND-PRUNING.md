@@ -404,12 +404,12 @@ rules.
     are **not** `JUNIPER_CASCOR_*` (plant/chop).
 11. **[NEW]** A large markdown deletion trips `juniper-docs-additions-check` — token-diff
     before waiving; restore, do not waive. *Grounded in `40230d2` "restore three
-    owner-decision blocks dropped by 76e4513 (#1165)".*
+    Overtoad-decision blocks dropped by 76e4513 (#1165)".*
 12. `notes/` filenames follow `JUNIPER_<DATE>_JUNIPER-<REPO>_<PHRASE>.md`.
-13. **[NEW, owner decision]** Deployment / PyPI environment approvals are the owner's;
+13. **[NEW, Overtoad decision]** Deployment / PyPI environment approvals are the Overtoad's;
     never approve one. *Asserted from operating practice, not from a repo artifact — the
-    owner should confirm or strike it.*
-14. **[NEW, owner decision]** Merge only on the owner's explicit per-PR approval. *Same
+    Overtoad should confirm or strike it.*
+14. **[NEW, Overtoad decision]** Merge only on the Overtoad's explicit per-PR approval. *Same
     caveat as 13.*
 
 Entries 1–2 and 6–10, 12 exist in the file today; 3, 11, 13, 14 are additions; 4 and 5
@@ -607,7 +607,7 @@ satisfied by an edit that appends 500 lines** (baseline §6).
 **Guardrails.**
 - **G14 — the constant carries a required-justification comment**, mirroring
   `EXPECTED_EXTRAS` in `tests/test_pyproject_extras.py:141`, and `.github/CODEOWNERS`
-  (@pcalnon, all files) puts every raise in front of the owner.
+  (@pcalnon, all files) puts every raise in front of the Overtoad.
 - **G15 — a raise must cite the relocation it could not make.** Encode it: the gate reads
   a `# BUDGET-RAISE:` justification line and fails if it is absent or unchanged from the
   previous raise. Crude, but it converts a silent bump into a visible admission.
@@ -735,9 +735,9 @@ merges ~1.3 PRs/day into this file. Four defences, weakest to strongest:
    existing entries (156 of them, 26% of the file), and a gate that forbids depth-2 nesting
    blocks that mechanism directly, regardless of the total.
 
-**Honest limit.** None of this stops the owner, and none stops a PR that edits the gate in
+**Honest limit.** None of this stops the Overtoad, and none stops a PR that edits the gate in
 the same change. `.github/CODEOWNERS` puts every such PR in front of @pcalnon, which is a
-review control, not a mechanism. If the owner wants a mechanism, it is a `PreToolUse` hook
+review control, not a mechanism. If the Overtoad wants a mechanism, it is a `PreToolUse` hook
 (mechanism fact base §6) — and note that this repo currently has **no active
 `.claude/settings.json`** at all (mechanism fact base §8b), so there is nowhere for a hook
 to be configured until one is created (§11.2).
@@ -1102,7 +1102,7 @@ Phase 6, run a soak:
 - **Population:** the next N ≥ 20 real component-touching tasks (not synthetic prompts).
 - **Metric:** did the session open the relocated destination (`docs/REFERENCE.md` section,
   test docstring, `ci.yml`) before editing the component? Observable in the transcript.
-- **Pass bar (owner to set):** suggested ≥ 80%, with **zero** incidents in which a session
+- **Pass bar (Overtoad to set):** suggested ≥ 80%, with **zero** incidents in which a session
   contradicted a relocated contract.
 - **On failure:** apply §7.7's ladder — row, then gate, then path-scoped rule. Do not
   re-inline.
@@ -1191,15 +1191,15 @@ proposal, because it is the only one of the two problems where content is being 
 
 ---
 
-## 17. Open questions and owner decisions
+## 17. Open questions and Overtoad decisions
 
-| # | Question | Why it is the owner's |
+| # | Question | Why it is the Overtoad's |
 |---|---|---|
 | OQ-1 | Gate constants: **200 lines / 18,000 characters**? A tighter 150/14,000 forces more relocation but risks an unreadable core. | Sets how much friction the team accepts. |
 | OQ-2 | Should the shape gate forbid `#NNN` issue citations outright, or only depth-2 nesting? Issue numbers are dense provenance, and this repo values them. | A convention call, not a technical one. |
 | OQ-3 | Adopt `claudeMdExcludes` for the parent (§11.2), accepting fleet inconsistency and the unverified `Rzr` predicate — or prune the parent in place as a cross-repo change? | Cross-repo consequence. |
 | OQ-4 | Should Phase 5's `.claude/rules/` layer be adopted pre-emptively, or only on soak failure? Pre-emptive adoption reduces §7 risk and dilutes this proposal's thesis. | Whether purity or safety wins. |
-| OQ-5 | Confirm or strike resident rules 13 and 14 (deployment approvals; merge only on explicit approval). I asserted them from operating practice, not from a repo artifact. | Only the owner knows the policy. |
+| OQ-5 | Confirm or strike resident rules 13 and 14 (deployment approvals; merge only on explicit approval). I asserted them from operating practice, not from a repo artifact. | Only the Overtoad knows the policy. |
 | OQ-6 | Soak pass bar (§14.2): is ≥80% pointer-follow acceptable, and what is the rollback trigger? | Defines success. |
 | OQ-7 | §2.4 #6 — `tests/test_assert_release_tag.py` runs in no workflow. Fix now as a standalone PR, or fold into Phase 0? | Priority against live publish risk. |
 

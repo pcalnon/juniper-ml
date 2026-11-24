@@ -9,7 +9,7 @@ Item numbers below refer to the P2 plan unless stated otherwise.
 **Three things happened, in the order the handoff required.** Item 4.3 was answered before any
 harness was built, and the answer is that **no harness is needed** — the one Wave 4 planned to
 build already exists inside `run_suite` (§1). Item 2.4 shipped: a cascor micro-tier **timing
-reference** exists for the first time, cut twice on the workstation, report-only by the owner's
+reference** exists for the first time, cut twice on the workstation, report-only by the Overtoad's
 2.5 ruling (§2). Item 2.1's **probe ran** — the measurement the handoff said must precede any
 epoch number — and §4 records what it found. Three false phrases inherited across two handoffs
 were corrected at their sources (§3).
@@ -24,7 +24,7 @@ were corrected at their sources (§3).
 | **4.1** | **WITHDRAWN as a build item** — the concurrent-launch harness exists: `run_suite` parallel mode (§1.2). What remains of 4.1 is an occupancy probe, S not L (§1.3) |
 | **4.2** | **Re-specified** (§1.4) — a suite *pair*, not a descriptor; blocked on a CI-only hazard the drift gate would otherwise turn red on (§1.5) |
 | **2.4** | **DONE** — `juniper-cascor#638` (branch `feat/perf-micro-timing-reference`); reference cut twice, `0001` and `0002`, both provisional (§2) |
-| **2.1** | Probe **executed** — §4. One value (4000/4000) clears both ends, trivially: **the dataset axis is inert** across the whole PF-2 range — identical `step_count` and flat step time at 250 and 2000 points — so PF-2 as designed measures an invariant. Re-scoping the scenario is an owner call; the suite file is **not** edited by this document |
+| **2.1** | Probe **executed** — §4. One value (4000/4000) clears both ends, trivially: **the dataset axis is inert** across the whole PF-2 range — identical `step_count` and flat step time at 250 and 2000 points — so PF-2 as designed measures an invariant. Re-scoping the scenario is an Overtoad call; the suite file is **not** edited by this document |
 | **2.2** | Untouched — still needs the quiet window §5 shows this session did not have |
 | **2.3** | Untouched, report-only forever for the closed-form readouts (the MLP readout's `n_epochs_` counter is the carve-out the handoff restored; nothing here changes it) |
 
@@ -235,7 +235,7 @@ the condition rather than hoping for a quiet one.
 
 The handoff's §3.3 surfaced an **unexamined option** — a work-style exact-match gate on
 `epochs_completed` for the candidate micro-benchmarks, whose count is emergent (early stopping),
-foreclosed by reasoning that was wrong rather than by evidence. **Still an owner call.** Nothing in
+foreclosed by reasoning that was wrong rather than by evidence. **Still an Overtoad call.** Nothing in
 2.4 builds toward or against it; the reference records timings only.
 
 ---
@@ -317,7 +317,7 @@ matrix would produce a well-formed measurement of an invariant, the vacuous-inst
 lane keeps finding. To exercise dataset scaling the range has to reach where a step's cost is
 data-dominated rather than overhead-dominated — orders of magnitude more points, or a scenario
 aimed at the candidate phase, whose correlation computation is what actually grows with n. That
-is a change to a §12.3 scenario definition, i.e. an **owner call**; the suite file is left as it
+is a change to a §12.3 scenario definition, i.e. an **Overtoad call**; the suite file is left as it
 is, and item 2.1 is re-labelled accordingly in the P2 plan.
 
 **5. An observation, with its caveat.** `final_epoch` in the manifests reads 8, 9 or 10 across
@@ -357,12 +357,12 @@ between those.
 
 - It does **not** edit `perf/pf2-cascor-dataset-scaling.yaml`. §4 shows the suite's axis is
   inert, so writing 4000/4000 into it would make it *run* correctly while still measuring nothing;
-  what the scenario should vary instead is an owner call. If the owner keeps it as written, the
+  what the scenario should vary instead is an Overtoad call. If the Overtoad keeps it as written, the
   pair is 4000/4000, confirmed on a quiet host at least once first (n=1 cells choose a budget;
   they do not measure its variance).
 - It does **not** run 2.2 (PF-3, ~6.7 h) — no quiet window, per §5.
 - It does **not** create the PF-8 suite pair — §1.5.
-- It does **not** decide the `epochs_completed` exact-match question — §2.4, owner.
+- It does **not** decide the `epochs_completed` exact-match question — §2.4, Overtoad.
 
 ---
 

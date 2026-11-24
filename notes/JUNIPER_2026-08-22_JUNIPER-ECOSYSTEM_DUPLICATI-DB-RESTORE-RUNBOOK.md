@@ -273,7 +273,7 @@ a running rebuild. Its value is forensic.
 ### 7.1 Automating the database backups — yes, and here is the actual gap
 
 **Correction to an earlier claim of mine: Duplicati did *not* make `Duplicati-server_2026-08-21.sqlite`
-automatically. The owner made it by hand.** I described it as automatic behaviour; that was wrong.
+automatically. The Overtoad made it by hand.** I described it as automatic behaviour; that was wrong.
 
 What Duplicati *does* do automatically is narrower, and the file naming shows it. The auto-generated
 copies come in **server + job pairs** taken minutes apart:
@@ -334,7 +334,7 @@ irreplaceable categories: model snapshots and database backups.
   (2026-07-09) and the pairing convention; not confirmed.
 - **Should the root `duplicati-server` on :8200 be removed?** Its `yamaguchi` job has never completed
   a backup and it runs privileged.
-- **Should the job move to a dedicated system user?** The owner wants this. Note the job currently
+- **Should the job move to a dedicated system user?** The Overtoad wants this. Note the job currently
   runs in a *user-session* instance that dies with the session — plausibly why a 42-day outage went
   unnoticed.
 

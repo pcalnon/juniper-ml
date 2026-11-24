@@ -235,7 +235,7 @@ and disable **Apply Dataset** at `⊥` (N9). The correct idiom already exists at
 >   - The reason is already in the accessible name, because `gated_dataset_options` appends it to
 >     the label (`"<label> — <reason>"`). What a screen reader misses is the state.
 >
->   The owner's options:
+>   The Overtoad's options:
 >   - **Upstream fix.** Add one attribute, `aria-disabled={!!option.disabled}`, on that `<label>`.
 >     Filing the issue or PR is an outward action.
 >   - **An accessible-name marker.** `label` may be a component, so a greyed option could carry
@@ -272,7 +272,7 @@ misattribution.
 
 ### 4.5 The restart modal (X2)
 
-> **Status (2026-09-23): SHIPPED, with an owner-ruled departure; tested since 2026-09-23** —
+> **Status (2026-09-23): SHIPPED, with an Overtoad-ruled departure; tested since 2026-09-23** —
 > canopy#593 (`aa611561`, 2026-09-06). The modal keeps an `enabled[0]` swap where the sidebar clears,
 > and its regate had no test until canopy#675 (`0254a7ec`, 2026-09-23) (note below).
 
@@ -289,7 +289,7 @@ forwards.
 > things a reader should know:
 >
 > - **The fallback swap is deliberate.** Where the sidebar clears a conflicting dataset (OQ-6,
->   canopy#652), the modal replaces it with `enabled[0]`. The owner ruled on 2026-09-22 to keep that
+>   canopy#652), the modal replaces it with `enabled[0]`. The Overtoad ruled on 2026-09-22 to keep that
 >   swap, because the modal is a confirmation dialog that shows the swapped value before anything is
 >   re-staged: §5.6.1 point 4 of `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`.
 >   Registry order decides where it lands (§12.6). An unset sidebar dataset stays unset.
@@ -912,7 +912,7 @@ closing a capability gap and moving it somewhere less visible.
 >     previous run's results under an `equities` label.
 >   - `mnist` (784 features) should hit the same refusal by the same code path. It was not run.
 >
->   So the failing step is the Start path, not the generator. **Owner ruling, 2026-09-24: fix the Start
+>   So the failing step is the Start path, not the generator. **The Overtoad ruling, 2026-09-24: fix the Start
 >   path.** Detect the width mismatch before Start, refuse with a message that points at Start fresh, and
 >   stop serving the previous run's results under the new label. The seed stays enabled; this section's
 >   disable-with-a-reason rule is not applied, because the fault is not the generator's. The fix must
@@ -932,7 +932,7 @@ closing a capability gap and moving it somewhere less visible.
 > - **Adjacent: Start fresh discards parameters applied just before it.** The restart modal applies
 >   edited parameters (`set_params`) and then restarts. With Start fresh on, cascor rebuilds a
 >   vanilla network at its own defaults, so the edits are silently lost. This was observed through
->   the two routes the modal calls, not by clicking the modal. **Owner ruling, 2026-09-24: apply the
+>   the two routes the modal calls, not by clicking the modal. **The Overtoad ruling, 2026-09-24: apply the
 >   edits after the fresh rebuild**, so they survive.
 >
 >   **Shipped, 2026-09-24.**
@@ -1035,7 +1035,7 @@ order decides where an operator lands on selecting Recurrence. The synthetics ar
 > conflict now CLEARS the dataset to `⊥`, and the operator picks from the gated list. On selecting
 > Recurrence the sidebar lands on `⊥`, not on `enabled[0]`. **Registry order still decides two
 > things:** the order the dropdown offers the options in, and the **restart modal's** fallback,
-> which keeps its `enabled[0]` swap by owner ruling of 2026-09-22 (item 22 of the 09-22 handoff; a
+> which keeps its `enabled[0]` swap by Overtoad ruling of 2026-09-22 (item 22 of the 09-22 handoff; a
 > recorded exception to OQ-6, see §5.6.1 of the same document). So the seeding order above is still
 > worth keeping, but for those two reasons, not for where the sidebar lands.
 
@@ -1185,7 +1185,7 @@ how the registry should express a variable-rank generator, and `csv_import` is a
 ### 12.9 The variable-rank proposal, adjudicated — and the twin `arc_agi` was excluded against (2026-09-12)
 
 §12.8 closed §12 leaving `arc_agi` "waiting on a **design decision** about how the registry should
-express a variable-rank generator". The owner put a proposal for that decision to adversarial
+express a variable-rank generator". The Overtoad put a proposal for that decision to adversarial
 consensus. This section records the verdict, and the two findings that turned out to matter more
 than the verdict did.
 

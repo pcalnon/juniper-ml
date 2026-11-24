@@ -118,7 +118,7 @@ Window: `time_period=month`, `rule_suite_result=all`, 823 suites total.
 | juniper-recurrence | 9 | `pcalnon`(pass:9) |
 
 **`pcalnon` bypassed 614 times in one month.** The handoff's §1 caveat — that a required check
-does not constrain the owner, and that `safe_merge` is discipline rather than enforcement — is
+does not constrain the Overtoad, and that `safe_merge` is discipline rather than enforcement — is
 not a theoretical point. It is the single most exercised entitlement in the roster.
 
 ---
@@ -190,7 +190,7 @@ narrow but real: the primary ruleset's `deletion` and `non_fast_forward` rules o
 which a deploy key bypasses. Whether `no-direct-push`'s `pull_request` rule independently
 blocks a *deletion* is **UNTESTED** — and not a thing to test on a live default branch.
 
-**Disposition, for the owner:**
+**Disposition, for the Overtoad:**
 
 1. **Lowest-risk hygiene, no ruleset edit:** if the "Turing" machine is retired, delete those
    **8 keys**. That narrows the entitlement by nearly half and touches no ruleset.
