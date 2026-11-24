@@ -285,6 +285,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     REFERENCE's sentence that a future seq "is trusted, not checked against `current_seq`" no longer holds and is
     replaced.
 
+- **The Cursor flood-4 disposition record runs to 2026-11-24: the Overtoad's rulings 15–48 and what each produced.**
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` §8 stopped at ruling 14 (2026-11-09).
+  - §8 adds rulings 15–48 (2026-11-09 to 2026-11-24), each dated from its session's transcript, with its option labels
+    verbatim and its pull requests and merge commits. Ruling 17 is one ruling over its four fixes (juniper-data#529,
+    juniper-cascor#756, juniper-canopy#814 and #815), as R54 of
+    `notes/JUNIPER_2026-11-23_JUNIPER-ECOSYSTEM_R-OBS-SC-2-FOLLOW-UPS-REMAINING-TASKS.md` asks.
+  - Rulings 1–14's later outcomes: §4's four open rows now read fixed (juniper-ml#2531, #2534 and #2554, juniper-data#530),
+    ruling 10's seven Gitleaks ports and ruling 11's four fixes are named, rounds 2 and 3 are closed (all 50 drafts),
+    and no Cursor pull request has been opened in any of the nine repositories since 2026-11-08 00:51Z.
+  - Ruling 48's paragraph check landed as juniper-ml#2631, and the first Dependabot pull request after each of ruling
+    10's ports was read from its scan log. "Still open" lists what is left on 2026-11-24: the 2026-11-12 rulings'
+    follow-ups (two service-core PRs; five lockfile-print ports and a canopy docs line, built and in validation; two
+    canopy test PRs), juniper-data#536, the agent guard's open spellings, a docs-carrier link, `JuniperCanopy1`'s
+    upgrade and ruling 7's worktree cleanup.
+  - Every merged citation of a ruling number or date agrees with §8's numbering: juniper-cascor's and juniper-canopy's CHANGELOGs
+    (also at `v0.14.0` and `v0.10.0`), juniper-ml's `docs/REFERENCE.md` and the consolidated plan. §6 and §7 gain the
+    traps and tools a later reader needs; §5's tables are unchanged.
+  - Provenance helpers (new): session 10's sixteen, `util/ad-hoc/2026-11-23_flood4_s10_*.py` and
+    `util/ad-hoc/2026-11-23_flood4r2_val_s10-guard-claims_*.py` (two edited only to clear predicted CodeQL alerts), and
+    session 11's `util/ad-hoc/2026-11-24_flood4_s11_record_{dialogs,census,prs,rulings_json,apply,pathcheck}.py`,
+    `util/ad-hoc/2026-11-24_flood4_s11_{dependabot_scan_read,apply_fixes}.py`,
+    `util/ad-hoc/2026-11-24_flood4_s11_val_claims_{dialogs,prs,timecheck,fixcheck}.py` and
+    `util/ad-hoc/2026-11-24_flood4_s11_val_doc_{checks,fixcheck}.py`.
+
 ### Fixed
 
 - **Backup Phase D: the acceptance probe judges a day on which a backup is still running.** While a run of the job is
