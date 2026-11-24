@@ -246,6 +246,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `--python "$VIRTUAL_ENV/bin/python"` keeps every command on the venv's interpreter. docs/REFERENCE.md 0.6.83
     follows.
 
+- **Backup Phase D: the watchdog accepts the Firefox-profile warning class for AC-5 (Q6's classes, the Overtoad's
+  ruling of 2026-11-24).** `ACCEPTED_WARNING_CLASSES` in `util/ad-hoc/yamaguchi_watchdog.py` now holds AC-3's class of
+  2026-11-08: `FileBlockProcessor.FileEntry-PathNotFound`, `FilePreFilterProcess.FileEntry-PathNotFound` and
+  `MetadataGenerator.Metadata-MetadataProcessFailed`, scoped to `~/.mozilla/firefox/`. These were exactly the 11-16
+  run's three warnings. A `Warning` run of that class reads `OK WARNINGS_ACCEPTED`, which the probe's AC-5 counts; any
+  other warning still alerts.
+  - `tests/test_yamaguchi_watchdog.py` (37 tests): the list is pinned to the ruling and to the probe's
+    `ALLOWED_WARNING_TAGS` under its `ALLOWED_WARNING_SCOPE`, the 11-16 run's warnings read `OK` with the list as
+    deployed, and with no class accepted every `Warning` run still alerts.
+  - `util/ad-hoc/2026-10-03_b2_mutation_check.py`: four mutations widen or narrow the list; all 52 are killed.
+  - The recovery plan's §6.6 records the day's three rulings (Q4, Q6's classes, Q1's size bound), and "Still open"
+    follows. The watchdog runs the primary checkout's copy (finding 44), so this reaches it when that checkout holds
+    it.
+
 - **Backup Phase D: the watchdog can accept the warning classes the Overtoad names (Q6's other half, ruled
   2026-11-23).** A `Warning` run whose every warning is of an accepted class reads `OK WARNINGS_ACCEPTED`, which the
   acceptance probe's AC-5 counts as it counts `OK OK`; any other warning still alerts and ends the streak. The list,
