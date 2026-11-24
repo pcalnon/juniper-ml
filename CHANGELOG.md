@@ -287,6 +287,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Backup Phase D: the acceptance probe judges a day on which a backup is still running.** While a run of the job is
+  in progress the server refuses the job log with HTTP 400. On 11-19, 11-21 and 11-22 that made all six server
+  criteria read `ERROR` (AC-2, AC-13, `OPTIONS`, `RUN`, `OFFSCHED`, `CENSUS`): the recovery plan's finding 42.
+  - `util/ad-hoc/yamaguchi_acceptance_probe.py` 1.4.0 still judges AC-2, AC-13, `OPTIONS` and `CENSUS`, which need no
+    log, and `OFFSCHED` reads `SKIP`. `RUN` names the run and reads `SKIP`, or `FAIL` when the newest finished backup
+    began more than 50 h earlier; it reads that start from the job's metadata (`LastBackupStarted`). Any other refusal
+    of the log still reads `ERROR`, and the active task is named by its ids alone.
+  - `tests/test_yamaguchi_acceptance_probe.py` (115 tests). The mutation harness seeds 13 new defects in the probe,
+    and the probe's suite kills them and all of the probe's other mutants.
+  - The recovery plan's finding 42 records the change and the census values the metadata stamp is pinned against.
+
 - **"owner" is back wherever juniper-ml#2606 renamed a technical owner to "Overtoad": 340 tokens in 112 files.**
   #2606 kept the rename only where "owner" means the person, judged one word on each side of the token, and it
   missed technical owners named by a possessive, a list, a verb, a field label or a code argument.
