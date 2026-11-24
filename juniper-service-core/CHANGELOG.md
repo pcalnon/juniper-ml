@@ -29,6 +29,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`create_app` switches FastAPI's native telemetry off.** FastAPI 0.142 added OpenTelemetry
+  instrumentation (tracing, metrics, logs and operation spans), on by default, and the factory passed
+  no `telemetry=`. On FastAPI 0.142 or later an app it built stayed dormant only until something
+  registered an OpenTelemetry provider, or (`auto_configure`) an OTLP endpoint was set; from then it
+  would instrument itself beside the service's own observability: Sentry, Prometheus and
+  juniper-observability's logging. It now passes `telemetry=` with `tracing`, `metrics`, `logs`,
+  `operation_spans` and `auto_configure` all `False`, as juniper-data (juniper-data#454),
+  juniper-cascor and juniper-canopy do. Below 0.142 the keyword is not a parameter and FastAPI keeps
+  it in `app.extra`, so nothing changes there.
+  - **A consumer can no longer opt in.** `create_app` takes no parameter for it, and from 0.143 the
+    explicit `auto_configure: False` also overrides an operator's `FASTAPI_OTEL_AUTO_CONFIGURE=true`,
+    which only sets the default. The one consumer, juniper-recurrence, uses no OpenTelemetry; a
+    service that needs FastAPI's telemetry would need a new parameter.
+  - juniper-recurrence builds its app with `create_app`. Its lock pins FastAPI 0.141.1, but its
+    floor, `fastapi>=0.110`, is uncapped, so the next regeneration of that lock would have crossed
+    0.142 with every switch on.
+  - `tests/test_app.py`'s new `test_fastapi_native_telemetry_is_off_on_every_fastapi` reads
+    `app._telemetry` where FastAPI has it and `app.extra["telemetry"]` below 0.142. It sets
+    `FASTAPI_OTEL_AUTO_CONFIGURE=true` first, because from 0.143 an omitted `auto_configure` takes
+    its default from that variable. So it runs on every FastAPI the floor admits, and fails when any
+    switch is dropped or turned on.
+
 - **`training_stream_handler` needs a manager whose `promote_to_active` accepts `replayed_through`
   and returns `True` on success.** A resume answered `resume_ok` now promotes through it, and is
   closed 1011 when that returns a false value or raises. A `WebSocketManager` subclass that
