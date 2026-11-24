@@ -46,6 +46,15 @@ every row again, with five separator rows added then, by
 ``util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_pins_vs_bash.py`` on 2026-11-11).
 The tests do not run bash: macOS's /bin/bash 3.2 has neither steps nor padding.
 
+Guard 1.4.0 adds a second reading of every Bash word, bash's own: ``bash_brace_expand``
+on the word as written, acting only on the braces bash's brace scan leaves unquoted, then
+quote removal. ``BashWordTest`` pins the words bash 5.3.9 printed for quoted, escaped and
+``$'...'`` words and for words with a substitution
+(``util/ad-hoc/2026-11-16_flood4r2_r18-guard_bash_words.py``), and, by the owner's rulings
+16 and 18 (2026-11-09; the record's next update adds them to its section 8), that a quoted
+list past the cap is text, never refused, while ``brace_expand``, which Glob, Grep and
+Serena patterns use, is unchanged.
+
 The source words under test do not contain the text ``.ssh`` or ``.gnupg``. The
 raw-command regex therefore cannot be what denies them; a deny comes from an
 expanded alternative, and a refusal from the cap or from a sequence the guard
@@ -329,6 +338,89 @@ class BraceSequenceTest(GuardBraceHarness):
                     self.guard.brace_expand(word)
 
 
+# 1.4.0. (word as written, the words bash 5.3.9 printed for it): bash_brace_expand and then quote removal must make
+# exactly these. Measured with util/ad-hoc/2026-11-16_flood4r2_r18-guard_bash_words.py (printf only, a scratch home,
+# 2026-11-16). No word here holds a substitution, so the guard's quote-removed text is bash's word.
+BASH_WORD_CASES = [
+    (".ss{h,b\\}c}", [".ssh", ".ssb}c"]),  # the escape gap: bash keeps the list open across the escaped }
+    ("{a,$'\\'',b}", ["a", "'", "b"]),  # $'...' is one quoted string before brace expansion
+    ("{}{},01,,-}", ["{}}", "{}01", "{}", "{}-"]),  # bash's {} rule, at the start of the word and of a part
+    ("{a..c','}", ["{a..c,}"]),  # a quoted comma separates nothing, and a..c',' is no sequence
+    ("{a,b'{'}", ["a", "b{"]),
+    ("\\${a,b}", ["$a", "$b"]),  # an escaped $ opens no ${
+    ('{a,$"x,y"}', ["a", "x,y"]),
+    ('"{a,b}"', ["{a,b}"]),
+    ('{"a,b",c}', ["a,b", "c"]),
+    ("{\\},a}", ["}", "a"]),
+    ("$'{a,b}'", ["{a,b}"]),
+    ('"$"{a,b}', ["$a", "$b"]),  # a quoted $ glued to a group
+    ("'{'a,b}", ["{a,b}"]),
+    ("{a,b'}'", ["{a,b}"]),
+    ("{a,b}{}", ["a{}", "b{}"]),  # the {} rule at the start of the text after a group
+    ("{{},a}", ["{}", "a"]),
+    ("{a\\,b,c}", ["a,b", "c"]),
+    ("{a,b\\}", ["{a,b}"]),
+    ("{'1'..3}", ["{1..3}"]),
+    ("{a,'$'{b,c}}", ["a", "$b", "$c"]),
+    ("{a,}{b}", ["a{b}", "{b}"]),
+    ("{1..3}'x'", ["1x", "2x", "3x"]),
+]
+# (word, the words bash 5.3.9 printed, the guard's words): bash runs each substitution; the guard keeps it verbatim.
+BASH_SUBSTITUTION_CASES = [
+    (".ss{h,$(:{)}", [".ssh", ".ss"], [".ssh", ".ss$(:{)"]),  # bash steps over the body: its { closes nothing
+    ('.ss{h,"$(:{)"}', [".ssh", ".ss"], [".ssh", ".ss$(:{)"]),  # inside quotes as well
+    ("${x:-{a,b}}", ["{a,b}"], ["${x:-{a,b}}"]),  # a ${ is a level: nothing inside it separates
+    ('"`printf %s "{h,x}"`"', ["h", "x"], ['`printf %s "h"`', '`printf %s "x"`']),  # inside "...", a backtick quotes nothing
+    (".ss{h,$(case x in a) : ;; esac)}", [".ssh", ".ss"], [".ssh", ".ss$(case x in a) : ;; esac)"]),  # a pattern's ) ends no $(
+    ("{a,$((1)),b}", ["a", "1", "b"], ["a", "$((1))", "b"]),  # an arithmetic body counts parentheses only
+    (".ss{h,$(: <<< x\n: )}", [".ssh", ".ss"], [".ssh", ".ss$(: <<< x\n: )"]),  # a here-string is no here-document
+]
+
+
+class BashWordTest(GuardBraceHarness):
+    """1.4.0: the guard's second reading of a Bash word is bash's own: ``bash_brace_expand`` on the word as written,
+    acting only on the braces bash's brace scan leaves unquoted, then quote removal (``Lexer.word_only``). A quoted
+    or escaped brace list is text, so it is neither counted against the cap nor refused: the owner's rulings 16
+    and 18 (2026-11-09; the record's next update adds them to its section 8). A list bash expands is still
+    capped (the owner's "Fail closed" ruling of 2026-11-08)."""
+
+    def _bash_words(self, raw: str) -> list:
+        return [self.guard.Lexer(alt, faithful=True).word_only("arg").text for alt in self.guard.bash_brace_expand(raw)]
+
+    def test_the_words_bash_makes_of_quoted_and_escaped_braces(self) -> None:
+        for raw, expected in BASH_WORD_CASES:
+            with self.subTest(raw=raw):
+                self.assertEqual(self._bash_words(raw), expected)
+
+    def test_a_substitution_is_stepped_over_and_kept_verbatim(self) -> None:
+        for raw, _bash, expected in BASH_SUBSTITUTION_CASES:
+            with self.subTest(raw=raw):
+                self.assertEqual(self._bash_words(raw), expected)
+
+    def test_a_quoted_or_escaped_list_is_text_never_counted_or_refused(self) -> None:
+        """Past the cap by main's count, inside quotes or escaped: one word to bash, so the hook passes it (it was
+        refused with exit 2). Unquoted, bash expands it, and the cap still refuses it."""
+        cap = self.guard.MAX_BRACE_ALTERNATIVES
+        big = "{" + ",".join("n%d" % index for index in range(cap + 1)) + "}"
+        huge = "{" + ",".join("n%d" % index for index in range(LARGE_COUNTS[-1])) + "}"
+        quoted = ["echo '%s'" % big, 'echo "%s"' % big, "echo '%s'" % huge, "echo \\" + big[:-1] + "\\}", "cd \"$(dirname 'a/%s')\"" % big, "echo '{1..100}' '{a..{c,d}}' '.ss{Y..a..3}h'"]
+        quoted += ["X={1..100} true", "cat <<< {1..100}"]  # bash expands neither an assignment before the command nor a here-string
+        quoted += ["'%s' api -X POST repos/o/r" % big, "$X '%s'" % big]  # a quoted list as the command word, and beside a computed one
+        for command in quoted:
+            with self.subTest(command=command[:60]):
+                self.assertEqual(self._hook("Bash", {"command": command}), (0, "", ""))
+        self.assert_refused_by_the_cap("Bash", {"command": "echo " + big})
+        self.assert_refused_by_the_cap("Bash", {"command": "export X={1..100}"})  # bash expands export's arguments
+        self.assert_refused("Bash", {"command": "echo {a..{c,d}}"}, "with a brace inside it")
+        with self.assertRaises(self.guard.MalformedInput):
+            self.guard.brace_expand(big)  # unchanged: Glob, Grep and Serena patterns are not shell words
+
+    def test_a_list_bash_expands_still_assembles_a_guarded_name(self) -> None:
+        for command in ("cat ~/.ss{h,b\\}c}/config", "cat ~/X/../.ss{h,$(:{)}/config", "ls ~/" + _ssh_assembled_at(self.guard.MAX_BRACE_ALTERNATIVES)):
+            with self.subTest(command=command[:60]):
+                self.assertIn("CRED-PATH-BASH", [hit.rule_id for hit in self.analyze(command)])
+
+
 def _scan_from_one_brace(text: str, j: int):
     """bash's brace_gobbler, as first ported: one scan from just after a ``{``, to the end of the word when the
     group does not close. (index of the closing ``}``, ``","`` or ``".."``), or None. The oracle for
@@ -420,6 +512,17 @@ class BraceScanTest(GuardBraceHarness):
         for _ in range(3):
             self.assertEqual(len(self.guard.brace_expand(word)), 3)
 
+    def test_the_words_bash_expansion_makes_are_charged_per_command(self) -> None:
+        """1.4.0: the second reading quote-removes and judges each word bash makes, so their total length is charged
+        to a per-command budget of ``BRACE_SCAN_BUDGET`` characters: past it the hook refuses (fail closed). A quoted
+        list makes nothing, and is not charged."""
+        self.guard.BRACE_SCAN_BUDGET = self.SMALL_BUDGET
+        tail = "y" * 600
+        self.assert_refused("Bash", {"command": "echo {a,b}" + tail}, "make more than %d characters" % self.SMALL_BUDGET)
+        self.assert_refused("Bash", {"command": "echo {a,b}%s; echo {c,d}%s" % (tail[:300], tail[:300])}, "make more than")
+        self.assertEqual(self._hook("Bash", {"command": "echo '{a,b}'" + tail}), (0, "", ""))
+        self.assertEqual(self._hook("Bash", {"command": "echo {a,b}" + tail[:400]}), (0, "", ""))
+
     def test_the_hook_fails_closed_past_the_scan_budget(self) -> None:
         """End to end: exit 2 and nothing on stdout, for a word that would assemble ``.ssh`` had it been expanded."""
         self.guard.BRACE_SCAN_BUDGET = self.SMALL_BUDGET
@@ -430,6 +533,50 @@ class BraceScanTest(GuardBraceHarness):
         code, out, err = self._hook("Bash", {"command": "cat ~/" + word[: self.SMALL_BUDGET // 2]})
         self.assertEqual(code, 0, err)
         self.assertIn("CRED-PATH-BASH", out)  # the same word, short enough to scan, is denied
+
+
+def _nest_diverge(depth: int) -> str:
+    """Nested ``$( )`` whose body holds a ``)`` inside a comment, with a ``cd`` at every level: the two readings end
+    each ``$( )`` at a different ``)``, so each nests a different text with its own ``cd`` targets."""
+    inner = ": leaf"
+    for level in range(depth, 0, -1):
+        inner = "cd a%d; : $(%s) # )\ncd b%d" % (level, inner, level)
+    return "echo $(%s)" % inner
+
+
+class AnalysisBoundTest(GuardBraceHarness):
+    """1.4.0: what one command may cost. A relative ``cd`` may or may not have run, so each one can double the
+    directories a relative word resolves against: past ``MAX_CD_BASES`` the command is refused, and each reading's
+    nested texts get that reading's own directories. Past ``ANALYSIS_TIME_BUDGET`` seconds of analysis the command
+    is refused as well, so the hook fails closed well inside its 10 s timeout."""
+
+    LOOSE_SECONDS = 8.0  # far above what each shape takes here (well under a second); only a blow-up trips it
+
+    def _timed_hook(self, command: str) -> tuple:
+        start = time.monotonic()
+        result = self._hook("Bash", {"command": command})
+        return time.monotonic() - start, result
+
+    def test_cd_targets_past_the_cap_are_refused(self) -> None:
+        self.assertEqual(self.guard.MAX_CD_BASES, 64)
+        six = "; ".join("cd d%d" % i for i in range(6)) + "; ls x"
+        self.assertEqual(self._hook("Bash", {"command": six}), (0, "", ""))
+        sixteen = "; ".join("cd d%d" % i for i in range(16)) + "; ls x"
+        took, (code, out, err) = self._timed_hook(sixteen)
+        self.assertEqual((code, out), (2, ""), err)
+        self.assertIn("MAX_CD_BASES", err)
+        self.assertLess(took, self.LOOSE_SECONDS)
+
+    def test_nested_substitutions_with_cd_finish_well_inside_the_timeout(self) -> None:
+        """1.4.0 before this bound took 25.8 s on depth 4 and over 60 s on depth 5; 1.3.0 took 0.10 s and 0.17 s."""
+        for depth in (4, 5, 8):
+            took, (code, out, err) = self._timed_hook(_nest_diverge(depth) + "; cat ~/.ssh/config")
+            self.assertLess(took, self.LOOSE_SECONDS, depth)
+            self.assertTrue(code == 2 or "CRED-PATH-BASH" in out, (depth, code, out, err))  # refused or denied, never passed
+
+    def test_the_analysis_time_budget_refuses(self) -> None:
+        self.guard.ANALYSIS_TIME_BUDGET = -1.0  # already past: the first check refuses
+        self.assert_refused("Bash", {"command": "ls -la"}, "ANALYSIS_TIME_BUDGET")
 
 
 if __name__ == "__main__":
