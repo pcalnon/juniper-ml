@@ -170,7 +170,7 @@ def main():
     os.replace(tmp, dest)
 
     print(f"integrity   : ok ({tables} tables)")
-    print(f"wrote       : {dest} ({human(os.path.getsize(dest))}, mode 0600, Overtoad {args.owner})")
+    print(f"wrote       : {dest} ({human(os.path.getsize(dest))}, mode 0600, owner {args.owner})")
     print("this snapshot rides along in the next Yamaguchi backup (14:00Z daily).")
     return 0
 

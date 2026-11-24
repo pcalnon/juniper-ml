@@ -282,7 +282,7 @@ Order matters — do these **after** §4.1's reset and **before** handing the ke
    ```
 
    `on` = every operation needs a physical touch; recommended at least for `sig`. Note: any touch-required key is **incompatible with unattended/headless use** — see rule 8.
-5. Publish/distribute the public key (`$KEYFP-Public.asc`), set Overtoad trust on daily-driver keyrings (`gpg --edit-key … trust` → ultimate on your own machine).
+5. Publish/distribute the public key (`$KEYFP-Public.asc`), set owner trust on daily-driver keyrings (`gpg --edit-key … trust` → ultimate on your own machine).
 6. Git signing switch-over (when adopting a key produced by this procedure):
 
    ```bash

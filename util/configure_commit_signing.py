@@ -1263,7 +1263,7 @@ def perform(git: Git, writes: list[Write]) -> None:
         if write.action == "mkdir":
             os.makedirs(write.file, mode=0o700, exist_ok=True)
         elif write.action == "create":
-            # The Overtoad-only: git reads it as the Overtoad, and nothing else needs to.
+            # Owner-only: git reads it as the owner, and nothing else needs to.
             fd = os.open(write.file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             with os.fdopen(fd, "w", encoding="utf-8") as fh:
                 fh.write(INCLUDE_HEADER)

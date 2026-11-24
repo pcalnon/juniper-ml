@@ -1187,7 +1187,7 @@ Lock in dual metric format with regression test + CODEOWNERS hard merge gate (**
 ### 11.5 Exit gate
 
 1. Regression tests green
-2. CODEOWNERS rule enforced via branch protection (test PR touching `normalize_metric.py` without Overtoad review → blocked)
+2. CODEOWNERS rule enforced via branch protection (test PR touching `normalize_metric.py` without owner review → blocked)
 3. Consumer audit document merged
 4. Shape hash golden file committed
 
@@ -1420,7 +1420,7 @@ Consolidated from R2-01 §15 with R2-04 decision cross-references. Each row is t
 
 - **Sev/Lik**: Medium / Medium
 - **Phase**: all
-- **Owner**: canopy-backend lead (observability Overtoad)
+- **Owner**: canopy-backend lead (observability owner)
 - **Mitigation**: CCC-02 "metric-before-behavior" rule; **D-37** metrics-presence CI test; R2-03 §4.5 item 4 test-fired alerts as hard gate
 - **Signal**: metrics-presence test failure
 - **Kill switch**: n/a (pre-merge)
@@ -1447,7 +1447,7 @@ Consolidated from R2-01 §15 with R2-04 decision cross-references. Each row is t
 
 - **Sev/Lik**: Medium / Medium
 - **Phase**: B, G
-- **Owner**: backend-cascor lead (schema evolution Overtoad)
+- **Owner**: backend-cascor lead (schema evolution owner)
 - **Mitigation**: CCC-05 §7.3 item 4 inline-literal rule; PR review check; grep in CI for cross-repo imports in contract test files
 - **Signal**: review audit
 - **Kill switch**: n/a
@@ -1482,7 +1482,7 @@ Consolidated from R2-01 §15 with R2-04 decision cross-references. Each row is t
 
 ## 15. Resolved observability plan
 
-Per R2-03 §4 and §13 matrix, applied as the single source of truth. Ownership is binding per R2-03 §14.12 meta-assignment: **CCC-02 Overtoad = canopy-backend lead**; **schema evolution Overtoad = backend-cascor lead**; **kill switch Overtoad = security lead**; **documentation Overtoad = project lead**.
+Per R2-03 §4 and §13 matrix, applied as the single source of truth. Ownership is binding per R2-03 §14.12 meta-assignment: **CCC-02 owner = canopy-backend lead**; **schema evolution owner = backend-cascor lead**; **kill switch owner = security lead**; **documentation owner = project lead**.
 
 ### 15.1 Metric-before-behavior rule (binding)
 

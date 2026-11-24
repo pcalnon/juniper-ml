@@ -201,7 +201,7 @@ ll
    enhancement that the platform does **not** actually support.
 7. Produce a **current-state map + a validated gap/opportunity ledger**: for each item — id, one-line
    description, first-party evidence (`file:line` / `notes:line` + probe result), severity, open/fixed,
-   likely Overtoad repo, and the failure-class it addresses (esp. the "green tests / dead app" class the suite
+   likely owner repo, and the failure-class it addresses (esp. the "green tests / dead app" class the suite
    cannot currently see).
 
 ### Phase 2 — Enhancement evaluation & prioritization
@@ -228,7 +228,7 @@ ll
     - the current-state map + validated gap/opportunity ledger (Phase 1);
     - the ranked, scoped enhancement set (Phase 2) with explicit in/out/deferred;
     - **per accepted enhancement**: design sketch, affected files (`file:line`), test/dogfood plan + the
-      `tests/` gate it ships with, acceptance criteria, risk + rollback, Overtoad repo, and JR-ID(s) if known;
+      `tests/` gate it ships with, acceptance criteria, risk + rollback, owner repo, and JR-ID(s) if known;
     - a **phased, single-work-unit PR sequence** (the DOR round model) with a dependency graph;
     - cross-references to DOR `D-#`/`OQ-#` and the two analyses' gap IDs;
     - an **Open Questions for the Overtoad** section;
@@ -422,7 +422,7 @@ Overtoad approval**.
    enhancement that the platform does **not** actually support.
 7. Produce a **current-state map + a validated gap/opportunity ledger**: for each item — id, one-line
    description, first-party evidence (`file:line` / `notes:line` + probe result), severity, open/fixed,
-   likely Overtoad repo, and the failure-class it addresses (esp. the "green tests / dead app" class the suite
+   likely owner repo, and the failure-class it addresses (esp. the "green tests / dead app" class the suite
    cannot currently see).
 
 ### Phase 2 — Enhancement evaluation & prioritization
@@ -449,7 +449,7 @@ Overtoad approval**.
     - the current-state map + validated gap/opportunity ledger (Phase 1);
     - the ranked, scoped enhancement set (Phase 2) with explicit in/out/deferred;
     - **per accepted enhancement**: design sketch, affected files (`file:line`), test/dogfood plan + the
-      `tests/` gate it ships with, acceptance criteria, risk + rollback, Overtoad repo, and JR-ID(s) if known;
+      `tests/` gate it ships with, acceptance criteria, risk + rollback, owner repo, and JR-ID(s) if known;
     - a **phased, single-work-unit PR sequence** (the DOR round model) with a dependency graph;
     - cross-references to DOR `D-#`/`OQ-#` and the two analyses' gap IDs;
     - an **Open Questions for the Overtoad** section;

@@ -287,6 +287,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **"owner" is back wherever juniper-ml#2606 renamed a technical owner to "Overtoad": 340 tokens in 112 files.**
+  #2606 kept the rename only where "owner" means the person, judged one word on each side of the token, and it
+  missed technical owners named by a possessive, a list, a verb, a field label or a code argument.
+  - **`util/safe_merge.py` could not see unresolved review threads.** Its probe's GraphQL query read
+    `repository(Overtoad: ...)`. The probe is best-effort and returns no threads on an error, so the check failed open.
+    The same argument is restored in 17 queries in 10 ad-hoc scripts, and in 5 queries quoted by 3 notes.
+  - **Other code (40 tokens in all, with the queries)**:
+    - an `owner-email` key that a round-42 probe matches against LOWERCASED text, which `Overtoad-email` could never
+      match, and the label it matches;
+    - the needle a yamaguchi test asserts (`owner root`);
+    - four subtest labels for the `--owner` flag;
+    - a JavaScript variable and object key;
+    - a code snippet a patch script matches;
+    - a regex alternative for the requirements `**Owner**:` field;
+    - two `find_open_pr(owner, ...)` signatures quoted in notes;
+    - a shell variable in a design's code block.
+  - **Unix ownership (84)**: "mode and owner", "owner:group", owner-only bits, a process's owner, in:
+    - the backup design and records, and their tests;
+    - the Duplicati and yamaguchi scripts, including five printed or raised messages;
+    - the Phase D mutation labels.
+  - **GitHub owners (21)**: the account a repository belongs to and the trusted-publisher fields.
+  - **Fields and roles (189)**: "Owner: juniper-ml" and "Owner repo" naming the owning repository, the requirements
+    owner shortcodes, and generic roles ("each phase owner", a code owner, the April proposals' owner classes, a pin's
+    owning package).
+  - **Six others**: GPG's owner trust, the per-repo `latest` badge's owner, and the owner of a race.
+  - The sweep's tools and its reviewed list are `util/ad-hoc/2026-11-24_technical_owner_*`: the candidate list of
+    all 7,741 tokens #2606 renamed, the decisions with a reason for each, the restore tool (it refuses records,
+    pinned files, symlinks and the requirements domain) and an independent check of the diff.
+
 - **The release-train monitor reads the PyPI publisher's run, files an issue for a failed build, and sees a
   republish dispatch.** Three gaps in the publish monitor of `util/release_train/ceremony.py`: the two the
   2026-11-15 handoff named, and one its reviews found.

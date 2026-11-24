@@ -38,7 +38,7 @@ every future run of that probe, and the 2026-08-21 pilot found **9 of 15 probes
 invalid** for exactly that reason. `cmd_verify_probes` checks the list against
 `AGENTS.md`; nothing checks that the list is *exhaustive*.
 
-A related gap with no Overtoad at all: `_slugs()` (`soak_ledger.py:625-633`) fails a
+A related gap with no owner at all: `_slugs()` (`soak_ledger.py:625-633`) fails a
 probe whose pointer ANCHOR disappears, and CI runs it — but it never re-reads the
 prose under that heading. A doc edit that keeps the heading and rewrites the
 sentence carrying the fact passes `verify-probes` cleanly while silently

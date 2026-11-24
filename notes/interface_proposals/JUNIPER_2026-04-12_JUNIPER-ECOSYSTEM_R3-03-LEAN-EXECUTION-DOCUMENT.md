@@ -933,7 +933,7 @@ n/a (test-only).
 
 - [ ] Regression tests green
 - [ ] Audit doc published + reviewed
-- [ ] CODEOWNERS rule enforced (verified by opening a test PR that touches `normalize_metric.py` without Overtoad review — must block)
+- [ ] CODEOWNERS rule enforced (verified by opening a test PR that touches `normalize_metric.py` without owner review — must block)
 - [ ] Pre-commit hook installed
 
 ### 13.3 Rollback
@@ -1061,7 +1061,7 @@ Every switch below has a CI test (`test_<switch>_env_override`) flipping the fla
 | 15 | CSWSH attack exploits missing Origin validation | **H**/M | B-pre-a + B-pre-b | Sec+C+Y | `disable_ws_control_endpoint=true` (5 min) | `origin_rejected_total` PAGE on any non-zero from unknown origin_hash. **Abandon trigger if kill switch itself fails** (R1-02 §9.4) |
 | 16 | Topology > 64KB silently for large networks | M/M | B-pre-a + follow-up chunking | C | REST fallback for topology (5 min) | `oversized_frame_total{endpoint,type}`; WARNING log. **Residual risk >50-100 hidden units**; fix v1.1 |
 | CCC-01 | `request_id` rename incomplete across corpus | H | all | R3 lead | grep pre-review | stale references survive to Phase G |
-| CCC-02 | Metric added but no alert/panel | M | all | CCC-02 Overtoad | metric-before-behavior hard gate | silent metric |
+| CCC-02 | Metric added but no alert/panel | M | all | CCC-02 owner | metric-before-behavior hard gate | silent metric |
 | CCC-03 | Kill switch documented but never tested in CI | H | all | ops | CI flip test mandatory | undocumented switch doesn't work in incident |
 | CCC-04 | Cross-repo pin points at unreleased version | H | A→C | ops | `required_upstream_sha` check | CI resolve failure |
 

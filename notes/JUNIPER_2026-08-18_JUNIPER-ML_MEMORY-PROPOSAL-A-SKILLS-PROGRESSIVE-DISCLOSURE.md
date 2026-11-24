@@ -301,7 +301,7 @@ four structural additions, each justified individually:
   separate designs of record ([release-train plan / runbook] and
   [`JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md`](JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md)).
 - `worktree-ops` **split from** `host-orchestration`: different lifecycle (per-task versus
-  per-boot) and different Overtoad surface; merging them makes a 10,000-char body that every
+  per-boot) and different owner surface; merging them makes a 10,000-char body that every
   worktree question drags service-orchestration lore into.
 - `shared-packages` **added**: `## Shared Observability Helpers` + `## Shared Service-Core
   Contracts` are H2 sections today, not `## Key Files` entries, so they carry no `## Key Files`

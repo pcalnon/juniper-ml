@@ -596,7 +596,7 @@ def unresolved_threads(owner: str, repo: str, pr: int) -> list[str]:
     thing that fails a merge.
     """
     q = (
-        'query { repository(Overtoad:"%s",name:"%s"){ pullRequest(number:%d){ '
+        'query { repository(owner:"%s",name:"%s"){ pullRequest(number:%d){ '
         "reviewThreads(first:50){ nodes { isResolved comments(first:1){ nodes { "
         "author { login } body } } } } } } }" % (owner, repo, pr)
     )

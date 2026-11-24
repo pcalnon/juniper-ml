@@ -114,7 +114,7 @@
 4. **P3.4 without P3.3 is a regression.** A persistent handle converts Path A from open-by-name —
    which *survives* Path C's rotation — into a held descriptor, which follows the renamed inode and
    appends to `.1` forever while the live file, the one ~17 juniper-ml consumers glob first, stays
-   near-empty. Nothing errors. **P3.3 (rotation Overtoad) runs BEFORE P3.4 (persistent handle).**
+   near-empty. Nothing errors. **P3.3 (rotation owner) runs BEFORE P3.4 (persistent handle).**
 5. **The mirror gate is one-directional.** `test_drift.py:78` walks the **package** tree
    (`(self.package_root / d).rglob("*.py")`), so a file that exists only in `src/` is never compared.
    P3.1 adds `src/log_config/sinks.py`; drift stays green while the package ships a logging tree
@@ -651,7 +651,7 @@ Neither had a home in the first draft.
   triggered) and `juniper-cascor-worker` depends on it. Every edit to a byte-gated tree therefore
   carries a mirror re-extraction **and a package release** before the worker sees it. P0.6 settles the
   policy; each phase that touches those trees states its release obligation.
-- **Ownership.** Every step marked "live stack? yes" needs an Overtoad and a slot: P0.1, P0.3, P3-G3,
+- **Ownership.** Every step marked "live stack? yes" needs an owner and a slot: P0.1, P0.3, P3-G3,
   P4-G2, P5.3. They contend for the GPU, they carry the reaper hazard, and per trap 1 they destroy
   each other's evidence if they share a log dir.
 

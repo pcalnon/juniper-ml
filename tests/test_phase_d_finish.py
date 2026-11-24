@@ -1108,7 +1108,7 @@ class AsideTest(unittest.TestCase):
         for name in copied:
             source, copy = os.stat(self.dest / name), os.stat(self.aside / name)
             self.assertEqual((self.aside / name).read_bytes(), (self.dest / name).read_bytes())
-            # What `cp -p` keeps: timestamps to the nanosecond, mode, Overtoad and group.
+            # What `cp -p` keeps: timestamps to the nanosecond, mode, owner and group.
             self.assertEqual((copy.st_mtime_ns, copy.st_mode, copy.st_uid, copy.st_gid), (source.st_mtime_ns, source.st_mode, source.st_uid, source.st_gid))
         self.assertEqual(self.listed(), {name: hashlib.sha256((self.dest / name).read_bytes()).hexdigest() for name in DLISTS_2026_11_11})
         self.assertIn("16 new, 0 already current", text)

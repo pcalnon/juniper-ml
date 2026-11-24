@@ -19,7 +19,7 @@ Pins, each able to fail for the reason it exists:
 * the format: exactly one ``DUPLICATI_WEB_CREDENTIAL=`` line, literal value, one matching quote
   pair removed, comments / other keys / ``_OLD`` names ignored, CRLF and a BOM tolerated;
 * refusal of ANY group or other permission bit, of a non-regular file (a FIFO must not hang),
-  of zero or two key lines and of an empty value -- every message naming path, mode and Overtoad,
+  of zero or two key lines and of an empty value -- every message naming path, mode and owner,
   none carrying the content;
 * both clients resolve the same path through the same function, and the override is
   ``DUPLICATI_WEB_CREDENTIAL_FILE``; ``DUPLICATI_PW_FILE`` / ``DUPLICATI_PW_KEY`` are ignored

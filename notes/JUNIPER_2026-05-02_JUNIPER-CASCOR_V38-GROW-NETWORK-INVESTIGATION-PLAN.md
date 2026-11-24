@@ -587,7 +587,7 @@ unit-tier signal as pure isolation coverage.
   ~half-day; may need a worker-coordinator audit.
 - **Worst case (real product regression in the cascade-correlation
   candidate-training algorithm):** open-ended; fall back to Option E
-  and file a tracked issue against the cascade-correlation Overtoad.
+  and file a tracked issue against the cascade-correlation owner.
 
 #### Decision criteria for falling back to E
 

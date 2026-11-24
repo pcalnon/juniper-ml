@@ -358,7 +358,7 @@ GIT_CONFIG_EDIT_FLAGS = ("-e", "--edit")
 GIT_CONFIG_OPTS_WITH_ARG = ("-f", "--file", "--blob", "-t", "--type", "--default", "--comment", "--value", "--url")
 # git 2.46+ spells the same operations as subcommands.
 GIT_CONFIG_VERBS = {"get": "read", "list": "read", "set": "write", "unset": "write", "edit": "edit", "remove-section": "section", "rename-section": "section"}
-# git's system config: Homebrew's (Overtoad-writable on an Intel Mac) and the distribution's.
+# git's system config: Homebrew's (owner-writable on an Intel Mac) and the distribution's.
 SYSTEM_GITCONFIGS = ("/usr/local/etc/gitconfig", "/opt/homebrew/etc/gitconfig", "/etc/gitconfig")
 SIGNING_TOOL = "configure_commit_signing.py"
 SIGNING_TOOL_WRITES = ("--apply", "--remove")

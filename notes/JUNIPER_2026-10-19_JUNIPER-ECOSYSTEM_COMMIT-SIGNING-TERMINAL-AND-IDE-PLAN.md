@@ -198,7 +198,7 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
 
   `--gpg-program` vouches for one other program.
 - **Known installs** (round 2, N4) are `gnupg/<version>/bin/gpg` in Homebrew's own Cellar directories (`/usr/local/Cellar`, `/opt/homebrew/Cellar`, `/home/linuxbrew/.linuxbrew/Cellar`), `/usr/local/MacGPG2/bin/gpg[2]` and `/usr/bin/gpg[2]`. A Cellar-shaped path under `/tmp` or `~/.cache` does not count. `COMMIT_SIGNING_GNUPG_CELLARS` replaces the Cellar list, for the hermetic tests.
-- **What this does not stop.** It catches another user's tampering, mode drift, and a program planted outside those installs. It **cannot** stop an agent running as the Overtoad, who owns the Homebrew prefix (`/usr/local/bin` and the Cellar are writable by the Overtoad and by `admin`). Directory writability is therefore not judged, because the real layout would fail. The controls for that threat are C8 and K12 (S9) plus the touch policy (S11).
+- **What this does not stop.** It catches another user's tampering, mode drift, and a program planted outside those installs. It **cannot** stop an agent running as the Overtoad, who owns the Homebrew prefix (`/usr/local/bin` and the Cellar are writable by the owner and by `admin`). Directory writability is therefore not judged, because the real layout would fail. The controls for that threat are C8 and K12 (S9) plus the touch policy (S11).
 
 ### S4 — `tag.gpgsign`
 
@@ -333,7 +333,7 @@ At the end of `~/.gitconfig`:
 	path = ~/.config/git/juniper-signing.gitconfig
 ```
 
-`~/.config/git/juniper-signing.gitconfig`, with the directory created at mode 0700 and the file at 0600. Git reads it as the Overtoad. The K5 build created turing's copy at 0644, before CodeQL's `py/overly-permissive-file` rule flagged that mode (bring-up E-CQ2's class). It was tightened to 0600 the same day. `--check` accepts either mode, because it fails only group or other *write*:
+`~/.config/git/juniper-signing.gitconfig`, with the directory created at mode 0700 and the file at 0600. Git reads it as the owner. The K5 build created turing's copy at 0644, before CodeQL's `py/overly-permissive-file` rule flagged that mode (bring-up E-CQ2's class). It was tightened to 0600 the same day. `--check` accepts either mode, because it fails only group or other *write*:
 
 ```ini
 # Managed by util/configure_commit_signing.py (juniper-ml): the Overtoad's commit signing for the Juniper tree.

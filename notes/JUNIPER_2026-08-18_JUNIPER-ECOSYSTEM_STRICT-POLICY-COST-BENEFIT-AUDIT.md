@@ -32,7 +32,7 @@ independently demonstrated twice in the last three weeks (§6.1).
 ## 1. Scope
 
 Audit the cost and the benefit of `required_status_checks.strict_required_status_checks_policy: true`
-("require branches to be up to date before merging") on the 9 Overtoad (`pcalnon`) repositories:
+("require branches to be up to date before merging") on the 9 owner (`pcalnon`) repositories:
 `juniper-ml`, `juniper-cascor`, `juniper-canopy`, `juniper-data`, `juniper-data-client`,
 `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-deploy`, `juniper-recurrence`.
 
@@ -836,7 +836,7 @@ gh api repos/pcalnon/<repo> --jq '{owner:.owner.type,private,allow_auto_merge,al
 
 # B/C-1 merged PRs with commit lists (GraphQL; `gh pr list --json commits` exceeds the node budget)
 gh api graphql -F owner=pcalnon -F name=<repo> -f query='
-  query($owner:String!,$name:String!,$cursor:String){repository(Overtoad:$owner,name:$name){
+  query($owner:String!,$name:String!,$cursor:String){repository(owner:$owner,name:$name){
     pullRequests(states:MERGED,first:25,after:$cursor,orderBy:{field:UPDATED_AT,direction:DESC}){
       pageInfo{hasNextPage endCursor}
       nodes{number title createdAt mergedAt headRefName author{login}

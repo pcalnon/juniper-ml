@@ -25,7 +25,7 @@ import sys
 
 prs = [int(a) for a in sys.argv[1:]]
 fields = " ".join(f"p{n}: pullRequest(number: {n}) {{ number headRefOid state isDraft }}" for n in prs)
-query = f'query {{ repository(Overtoad: "pcalnon", name: "juniper-ml") {{ {fields} }} }}'
+query = f'query {{ repository(owner: "pcalnon", name: "juniper-ml") {{ {fields} }} }}'
 out = subprocess.run(["gh", "api", "graphql", "-f", f"query={query}"], capture_output=True, text=True, check=True)
 data = json.loads(out.stdout)["data"]["repository"]
 for n in prs:

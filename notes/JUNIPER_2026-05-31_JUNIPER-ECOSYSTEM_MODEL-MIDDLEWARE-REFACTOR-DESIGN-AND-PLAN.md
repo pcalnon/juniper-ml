@@ -441,7 +441,7 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 
 > **⚑ CROSS-CUTTING (review):** the consolidated Open-Questions table spans both halves and is **canonical**. The companion model document discusses the model-owned questions (OQ-1..5, OQ-7) inline in its §1.6; this table is the single source of truth for status.
 
-| ID        | Question                                                                                        | Part      | The Overtoad WS | Author's lean / status                                                                                                                        |
+| ID        | Question                                                                                        | Part      | Owner WS | Author's lean / status                                                                                                                        |
 |:----------|:------------------------------------------------------------------------------------------------|:----------|:---------|:----------------------------------------------------------------------------------------------------------------------------------------------|
 | **OQ-1**  | "recursive" intended as **recurrent** (temporal), not tree-recursive?                           | A§0.5     | WS-0     | **Resolved (Paul 2026-06-06): recurrent confirmed** — the relevant special case of recursive NNs                                              |
 | **OQ-2**  | Does R5 ("capability over simplicity") override C1 (first-principles) where they conflict?      | A§1.6     | WS-0     | **Resolved (Paul): neither overrides — both bind.** The tension is real and deliberately acknowledged;                                        |

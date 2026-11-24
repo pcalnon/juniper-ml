@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Lane A: merge time (UTC) and title of named PRs, via read-only `gh api` GETs.
 
-usage: a20_pr_dates.py <repo>#<n> [...]   (repo without Overtoad; Overtoad pcalnon)
+usage: a20_pr_dates.py <repo>#<n> [...]   (repo without owner; owner pcalnon)
 """
 import json
 import subprocess

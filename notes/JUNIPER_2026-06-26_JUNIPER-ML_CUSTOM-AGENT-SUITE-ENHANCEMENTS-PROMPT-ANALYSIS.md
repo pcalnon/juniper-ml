@@ -150,7 +150,7 @@ author). This session surfaces one **new** specialization, distinct from all of 
    construction. A second standing validator (or a second RUBRIC lens) that checks "every owner requirement
    and every source-document finding is represented, and source disagreements are surfaced not flattened"
    would catch this class. Recommend prototyping it as a sibling subagent (`intent-reviewer`) or folding an
-   intent-fidelity check into the Skill's validation step. **The Overtoad: juniper-ml.**
+   intent-fidelity check into the Skill's validation step. **Owner: juniper-ml.**
 
 This also reinforces the already-proposed **cross-repo mode (A-1)**: this very prompt's candidates span
 sibling repos (`juniper-canopy/src/tests/ui/`, `juniper-cascor-model`), whose anchors are absent from the
@@ -168,7 +168,7 @@ analysis already recorded it.
   top-level `conf/` and `papers/` directories and the in-tree packaged sub-modules. Verified this session
   (`ls -d conf papers` → both present; `grep -n templates/ AGENTS.md` → `:188`). First raised by TAUDIT §6.2;
   it had been **dropped from the prompt's first-draft catalog** and was restored during validation. Folds
-  into the G-1 prose sweep. **The Overtoad: juniper-ml.**
+  into the G-1 prose sweep. **Owner: juniper-ml.**
 
 **Incomplete development:**
 
@@ -177,7 +177,7 @@ analysis already recorded it.
   `RUBRIC.md`, `AGENTS.md`), corroborating CANOPY's "fixed in #566". But the two emphasized analyses
   *disagree* (TAUDIT independently re-hit prose drift after the fix claim), and the `AGENTS.md` **tree-label**
   form remains (= G-3). Net: the validator can now find its own contract; the residue is the tree label +
-  missing dirs. The prompt records the disagreement rather than collapsing it. **The Overtoad: juniper-ml.**
+  missing dirs. The prompt records the disagreement rather than collapsing it. **Owner: juniper-ml.**
 
 **Design gaps / Architectural weaknesses / Syntax errors / Suspected:**
 

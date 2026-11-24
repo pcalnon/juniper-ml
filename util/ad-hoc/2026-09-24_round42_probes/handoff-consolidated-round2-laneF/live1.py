@@ -3,21 +3,21 @@ def gh(args):
     r = subprocess.run(["gh"] + args, capture_output=True, text=True)
     return r.stdout.strip() + (("\nERR:" + r.stderr.strip()) if r.returncode else "")
 q = '''query {
- a: repository(Overtoad:"pcalnon", name:"juniper-cascor") {
+ a: repository(owner:"pcalnon", name:"juniper-cascor") {
   p690: pullRequest(number:690) { state isDraft mergeStateStatus headRefOid mergedAt mergedBy{login} autoMergeRequest { enabledAt enabledBy{login} } mergeCommit { oid } baseRefName headRefName }
   p689: pullRequest(number:689) { state isDraft mergeStateStatus headRefOid mergedAt mergedBy{login} autoMergeRequest { enabledAt } mergeCommit { oid } headRefName }
   p688: pullRequest(number:688) { state headRefOid mergedAt mergeCommit { oid } }
   p686: pullRequest(number:686) { state headRefOid closedAt }
  }
- b: repository(Overtoad:"pcalnon", name:"juniper-canopy") {
+ b: repository(owner:"pcalnon", name:"juniper-canopy") {
   p685: pullRequest(number:685) { state headRefOid mergedAt mergeCommit { oid } }
   p683: pullRequest(number:683) { state headRefOid mergedAt mergeCommit { oid } }
  }
- c: repository(Overtoad:"pcalnon", name:"juniper-data") {
+ c: repository(owner:"pcalnon", name:"juniper-data") {
   p440: pullRequest(number:440) { state isDraft mergeStateStatus headRefOid mergedAt mergedBy{login} autoMergeRequest { enabledAt } mergeCommit { oid } headRefName }
   p438: pullRequest(number:438) { state headRefOid mergedAt mergeCommit { oid } }
  }
- d: repository(Overtoad:"pcalnon", name:"juniper-ml") {
+ d: repository(owner:"pcalnon", name:"juniper-ml") {
   p2089: pullRequest(number:2089) { state isDraft mergeStateStatus headRefOid autoMergeRequest { enabledAt } headRefName }
   p2097: pullRequest(number:2097) { state isDraft mergeStateStatus headRefOid autoMergeRequest { enabledAt } headRefName }
   p2096: pullRequest(number:2096) { state isDraft mergeStateStatus headRefOid createdAt mergedAt autoMergeRequest { enabledAt enabledBy{login} } mergeCommit { oid } headRefName title }

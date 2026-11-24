@@ -50,7 +50,7 @@ WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 1
               active), its result, its warnings by tag against the 2026-11-08 allow-list, its counts against the
               previous run -- and every backup that began off the schedule
     CENSUS    server: the destination's file count and bytes against the job's own metadata (AGREE or DIVERGE)
-    MODES     the destination's (kind, mode, Overtoad) classes, and which dlists changed class since the last run
+    MODES     the destination's (kind, mode, owner) classes, and which dlists changed class since the last run
 
     Verdicts: PASS, FAIL, PENDING (cannot be proven yet -- it needs more days), ATTN (outside a tolerance the Overtoad has
     not ruled, or an unexplained observation), SKIP (not judged in this run), ERROR (the evidence could not be read),
@@ -66,7 +66,7 @@ WHAT IT NEVER PRINTS OR STORES
 WHAT IT WRITES (unless --no-write)
     <state-dir>/acceptance.json            the verdicts of this run, replaced atomically
     <state-dir>/acceptance-history.jsonl   one line per run: the snapshot's mtime, the destination's classes, each
-                                           dlist's mode and Overtoad, the newest backup's counts
+                                           dlist's mode and owner, the newest backup's counts
     Nothing else changes anywhere. It starts no unit, runs no Duplicati binary and sends the server only GET requests
     plus the login and the export-token POSTs the read-only export needs.
 
@@ -523,7 +523,7 @@ def last_due_fire(now, fires=SNAPSHOT_FIRES, grace=dt.timedelta(minutes=15)):
 
 
 def judge_ac6a(snapshot, journal_text, now, expected_source=SNAPSHOT_SOURCE, enabled=SNAPSHOT_ENABLED, min_days=2, mtime_slack=180.0, me=None):
-    """`snapshot` is None (no file) or a dict: size, mtime (epoch), mode, Overtoad."""
+    """`snapshot` is None (no file) or a dict: size, mtime (epoch), mode, owner."""
     if journal_text is None:
         return Finding("AC-6a", "ERROR", f"the journal of {SNAPSHOT_UNIT} could not be read")
     records, unparsed = parse_journal(journal_text)
@@ -567,7 +567,7 @@ def judge_ac6a(snapshot, journal_text, now, expected_source=SNAPSHOT_SOURCE, ena
         if snapshot["size"] <= 4096:
             fails.append(f"the snapshot is {snapshot['size']} bytes -- a stub, not a database")
         if snapshot["mode"] != 0o600 or (me is not None and snapshot["owner"] != me):
-            fails.append(f"the snapshot is mode {snapshot['mode']:04o} Overtoad {snapshot['owner']} (the lane writes 0600, Overtoad {me})")
+            fails.append(f"the snapshot is mode {snapshot['mode']:04o} owner {snapshot['owner']} (the lane writes 0600, owner {me})")
     if fails or errors or pending:
         return Finding("AC-6a", settle(fails, errors, pending), "; ".join(fails + errors + pending), facts)
     snap = facts["snapshot"]
@@ -623,7 +623,7 @@ def newest_dlist(entries):
 
 
 def judge_ac7(daemons, service_gid, entries, statuses, now, keys_dir_real, dropbox_roots, service_user=SERVICE_USER, grace_hours=24.0):
-    """`daemons`: [{pid, gids, groups}]; `entries`: destination files (name, mtime, Overtoad); `statuses`: {name: status}."""
+    """`daemons`: [{pid, gids, groups}]; `entries`: destination files (name, mtime, owner); `statuses`: {name: status}."""
     fails, errors, pending = [], [], []
     facts = {"daemons": [{"pid": d["pid"], "via": "primary" if service_gid in d["gids"] else ("supplementary" if service_gid in d["groups"] else "absent")} for d in daemons]}
     if not daemons:
@@ -1115,7 +1115,7 @@ def fetch_log(tok, backup_id, want_backups, scope_paths, page_size=LOG_PAGE_SIZE
 def refusal_reason(exc):
     """Why the API client stopped, without anything the SERVER wrote.
 
-    A credential refusal is the client's own sentence -- a path, a mode, an Overtoad, never the file's content -- and is
+    A credential refusal is the client's own sentence -- a path, a mode, an owner, never the file's content -- and is
     kept. A failed login carries the server's answer after the status; that answer is dropped, like every other
     error text this probe meets.
     """

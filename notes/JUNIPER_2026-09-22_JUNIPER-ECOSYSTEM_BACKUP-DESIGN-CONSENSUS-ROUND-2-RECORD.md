@@ -522,7 +522,7 @@ State the split.
 > the binaries included, are still `root:root`."):
 >
 > `/usr/lib/duplicati` and `/usr/lib/duplicati/data` were chowned to `duplicati` — **directories only, and not
-> even all of those**: 97 of 118 directories changed Overtoad, 21 (the `runtimes/` subtree and ten
+> even all of those**: 97 of 118 directories changed owner, 21 (the `runtimes/` subtree and ten
 > `licenses/<package>/` directories) did not, and all 1,443 regular files outside `data/`, the binaries
 > included, are still `root:root`.
 
@@ -946,7 +946,7 @@ Exactly three, in that precedence, marker file in the **install folder** (= `/us
 DataFolderManager.PrepareSecureDataFolder(System.IO.Path.GetDirectoryName(databasePath), createIfMissing: true);
 ```
 
-and `PrepareSecureDataFolder` recomputes `folderPreExisted = Directory.Exists(dataFolder)` per call, then `VerifyDataFolderSecurity(dataFolder, folderPreExisted)` unless overridden. The predicate (`SystemIOLinux.cs:500-539`) is: mode must contain 0700, **no** group or other bits (`& 077 == 0`), Overtoad ∈ {current uid, root}. AGREE with §5.5/§7.3.2.
+and `PrepareSecureDataFolder` recomputes `folderPreExisted = Directory.Exists(dataFolder)` per call, then `VerifyDataFolderSecurity(dataFolder, folderPreExisted)` unless overridden. The predicate (`SystemIOLinux.cs:500-539`) is: mode must contain 0700, **no** group or other bits (`& 077 == 0`), owner ∈ {current uid, root}. AGREE with §5.5/§7.3.2.
 
 **Behavioural confirmation on this host** (`test_datafolder_gate2.bash`, `test_gate_control.bash`) — one factor varied at a time, `--hosturl` pointed at a closed port, never running the server:
 
@@ -1603,7 +1603,7 @@ and add to P0 step **0**, as a new first sentence:
 
 §7.6 states the rule — *"P0 is ordered so that file exists **before** AC-2 runs"* — and the reconciliation moved alerting from after the proof to before it, which fixes AC-2. It does **not** fix step 9, which is the *earlier* consumer. `yamaguchi_server_api.py` hard-codes `CRED_FILE = "/home/pcalnon/Development/python/Juniper/juniper-ml/.env"`, and §6 S-5 records that value as *"now stale"*. So step 9's `pause`, the tempdir change and the `resume` all 401 — and `resume` is what fires the overdue first backup.
 
-Also unassigned: *"(extended with `pause`/`resume`)"* is a code change with no PR, no step and no Overtoad.
+Also unassigned: *"(extended with `pause`/`resume`)"* is a code change with no PR, no step and no owner.
 
 **Exact replacement** — renumber so alerting precedes the pre-run work, i.e. make today's step 10 the new step 9, and open the new step 10 with:
 
@@ -2629,7 +2629,7 @@ The parent is group-writable by `duplicati` with **no sticky bit** — which und
 
 The document's first quote is verbatim from this sentence. ✓ The second quote — that it is *"the system service manager"* that searches `/etc/credstore/` — is also verbatim, but **that sentence governs the case where the `LoadCredential=` path is NOT absolute**. The unit uses an absolute path, for which the operative sentence is *"If the specified path is absolute it is opened as regular file and the credential data is read from it."* The **conclusion is unchanged** (the manager opens it before the unit's namespace exists, so masking does not break the start), but the second citation points at the wrong clause. The document already hedges correctly — *"Verify the mask before trusting this paragraph — it is part of O-12's `systemd-run` trial, not a tested fact"* — and supplies the trial command.
 
-**9 — CONFIRMED as reasoning; PRESENT-BUT-WRONG as shipped.** The POSIX reasoning is correct: unlink permission comes from write+execute on the **parent directory**, not the file's mode; the data folder must be `0700 duplicati:duplicati` and owned by the service user so the server can write its database, so the `duplicati` uid can unlink-and-recreate a `0640 root:duplicati` `.env` inside it. No sticky bit would help — a directory's Overtoad can always delete.
+**9 — CONFIRMED as reasoning; PRESENT-BUT-WRONG as shipped.** The POSIX reasoning is correct: unlink permission comes from write+execute on the **parent directory**, not the file's mode; the data folder must be `0700 duplicati:duplicati` and owned by the service user so the server can write its database, so the `duplicati` uid can unlink-and-recreate a `0640 root:duplicati` `.env` inside it. No sticky bit would help — a directory's owner can always delete.
 
 **But the remedy §7.3.5 issues is not implemented by the document's own artifacts.** §7.3.5 says *"Install it at `/etc/duplicati/env` in a 0755 root:root directory and point the wrapper's `DUPLICATI_ENV_FILE` default there."* Yet:
 - §7.3.3's wrapper still reads `readonly ENV_FILE="${DUPLICATI_ENV_FILE:-/home/duplicati/.config/Duplicati/.env}"` (landed copy `scripts/duplicati-wrapper.bash:40`);

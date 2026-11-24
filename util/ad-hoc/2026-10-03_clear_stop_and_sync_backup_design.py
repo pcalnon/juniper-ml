@@ -174,7 +174,7 @@ STALE = (
     "Land the client changes (the credential path **and** the new `pause`/`resume` subcommands)",
     "(extended with `pause`/`resume`)",
     "becomes provable only when the snapshot lane is re-pointed",
-    "Expect 97 directories to change Overtoad",
+    "Expect 97 directories to change owner",
     "and the census goes through the second",
     "**The deployed watchdog unit takes no `--backup-id`**",
     "observe one SKIPPED (unplugged) and one OK (plugged) run",
@@ -476,7 +476,7 @@ CLEARED = f"""> **The STOP of 2026-09-24 is cleared — 2026-10-03 (note 8a).** 
 > argv), `--webservice-enable-forever-token`, `--webservice-cors-origins` and the alias
 > `--webservice-allowedhostnames`; and the installer (1.3.0; 1.5.1 now) judges the contract — and any existing
 > `/etc/duplicati/env` — by running the wrapper itself, so both apply one grammar. Since 1.4.0 the installer also
-> checks an existing `/etc/duplicati/env`'s Overtoad and mode, and since 1.5.0 it accepts exactly O-12's two forms —
+> checks an existing `/etc/duplicati/env`'s owner and mode, and since 1.5.0 it accepts exactly O-12's two forms —
 > `root:duplicati` 0640 or `duplicati:duplicati` 0600, a regular file, never other-readable — so the grammar check
 > (run as root) and the service's read (as `duplicati`) agree on the file itself; it does not settle O-12 (§11;
 > P1 step 2). A first install copies a
@@ -491,7 +491,7 @@ CLEARED = f"""> **The STOP of 2026-09-24 is cleared — 2026-10-03 (note 8a).** 
 > server's real name, and both lists are now pinned against a vendored copy of the product's option table
 > (`tests/fixtures/duplicati_2.4.0.0_server_options.txt`); every trailing CR is stripped and a NUL in the key
 > refused. Installer 1.4.0 (1.5.1 now) refuses an unblessed differing file without `--update-backup-behavior`, checks an
-> existing env file's Overtoad and mode, says where it copied a file aside, and prints step 8's prerequisites
+> existing env file's owner and mode, says where it copied a file aside, and prints step 8's prerequisites
 > and step 10's guard block verbatim; since round 5 the hint also says to stop the unit (never `pause`) if the
 > first start reads Running, includes step 10's restart, and names Procedure A's `…-key.new`. The re-key (1.3.0) and its gate (1.2.0) also refuse orphaned `Option`
 > and `Source` blobs, and the gate and the hand start (1.3.0) refuse a NUL in a key file.
@@ -860,8 +860,8 @@ edit(
 
 edit(
     "P0.5a item 1: 96 directories, not 97 (the Phase B round)",
-    "Expect 97 directories to change Overtoad and 21 (the `runtimes/` subtree and ten `licenses/<package>/`",
-    "Expect 96 directories to change Overtoad (95 below the top and the top itself; this said 97 until 2026-10-04, counting `data/` and its "
+    "Expect 97 directories to change owner and 21 (the `runtimes/` subtree and ten `licenses/<package>/`",
+    "Expect 96 directories to change owner (95 below the top and the top itself; this said 97 until 2026-10-04, counting `data/` and its "
     "subdirectory, which the command excludes) and 21 (the `runtimes/` subtree and ten `licenses/<package>/`",
 )
 

@@ -35,7 +35,7 @@ import json
 import subprocess  # nosec B404 - gh CLI only, fixed argv
 import time
 
-_QUERY = "query($o:String!,$r:String!,$n:Int!){repository(Overtoad:$o,name:$r){pullRequest(number:$n){state mergeStateStatus headRefOid autoMergeRequest{enabledAt}}}}"
+_QUERY = "query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){state mergeStateStatus headRefOid autoMergeRequest{enabledAt}}}}"
 
 
 def _state(owner: str, repo: str, pr: int) -> dict:

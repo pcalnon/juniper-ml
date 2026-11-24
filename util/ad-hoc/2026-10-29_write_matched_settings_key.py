@@ -50,7 +50,7 @@ WHAT IT DOES, in order. Any refusal exits 1, writes nothing and leaves the .env 
      with double-quoted string literals off, so a missing column is an error, never read as text;
   6. refuses a matched form the credential file cannot deliver: a NUL, a carriage return, any newline, or
      leading or trailing whitespace (any Unicode whitespace: stricter than the wrapper, never looser);
-  7. creates --out in that directory with O_CREAT|O_EXCL|O_NOFOLLOW, mode 0600, Overtoad the effective user
+  7. creates --out in that directory with O_CREAT|O_EXCL|O_NOFOLLOW, mode 0600, owner the effective user
      (root), no trailing newline, and fsyncs the file and the directory -- never over an existing key (the
      A0/A2/B line's `test ! -e`);
   8. reads the file back twice -- with util/ad-hoc/2026-10-03_rekey_gate.py's read_key (what the gate will

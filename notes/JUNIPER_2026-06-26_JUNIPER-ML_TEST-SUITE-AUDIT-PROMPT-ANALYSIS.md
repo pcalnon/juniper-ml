@@ -167,25 +167,25 @@ Where the sibling canopy debug doc already recorded an issue, it is **cross-refe
   - Independently re-hit this session: delegating to `prompt-validator` required **overriding** the rubric/ manifest paths because `.claude/agents/prompt-validator.md` still instructs reading `prompts/templates/RUBRIC.md` / `…/manifest.yaml` (renamed away), and `prompts/agent_templates/RUBRIC.md` itself still references `prompts/templates/data/*.yaml` (e.g. R2.5 text). The library **tests** pass because they use the new path; the drift lives in **agent/rubric prose** that tests don't execute.
   - Now confirmed by **two independent sessions**.
   - *Recommend:* sweep the dead path across `.claude/` + `AGENTS.md` + `RUBRIC.md`, and add a lint that greps agent/Skill/rubric bodies for `prompts/templates/`.
-  - **The Overtoad: juniper-ml.**
+  - **Owner: juniper-ml.**
 
 **Configuration problems:**
 
 - **(NEW) `AGENTS.md` "Repository Structure" tree is stale.**
   - It documents a top-level `prompts/templates/` (the real dir is `prompts/agent_templates/`) and omits the present top-level `conf/` and `papers/` directories and the in-tree packaged sub-modules (`juniper-model-core/`, etc.).
   - *Recommend:* refresh the tree; fold into the I-1 sweep.
-  - **The Overtoad: juniper-ml.**
+  - **Owner: juniper-ml.**
 - **(C-1, cross-ref) Data-layer `ecosystem.yaml` conda-env staleness** (`JuniperCanopy 3.14` vs the live `JuniperCanopy1 3.13`) — recorded by the debug doc; relevant here because the prompt deliberately **avoided** injecting conda-env values to dodge a false R2.5 failure.
-  - **The Overtoad: juniper-ml.**
+  - **Owner: juniper-ml.**
 
 **Design gaps:**
 
 - **(NEW, systemic) No per-file coverage gate anywhere; thresholds frequently CI-YAML-only; aggregates from partial subsets.**
   - See §4 systemic gaps 1–3. This is the test-strategy design gap that lets a broken app ship green.
   - *Recommend:* the per-file gate + a shared enforcement tool (6.1.1); move thresholds into `pyproject.toml` so local runs are gated; measure the gate against the suite actually run.
-  - **The Overtoad: all repos (juniper-ml to lead the shared tool).**
+  - **Owner: all repos (juniper-ml to lead the shared tool).**
 - **(A-2, cross-ref) No live-runtime coverage in the suite** — by design it cannot catch "green tests / dead app."
-  - **The Overtoad: juniper-ml.**
+  - **Owner: juniper-ml.**
 
 **Architectural weaknesses:**
 
@@ -193,10 +193,10 @@ Where the sibling canopy debug doc already recorded an issue, it is **cross-refe
   - Hit directly this session: an **ecosystem-wide** prompt had to be grounded against a **single-repo** discovery bundle, and the validator had to be told to re-probe cross-repo anchors on the shared filesystem.
   - Since the suite's home is juniper-ml and most targets are sibling repos, **cross-repo is the common case**.
   - *Recommend:* a first-class `--target-repo` (cross-repo) mode for `prompt_discovery` + `prompt-validator`.
-  - **The Overtoad: juniper-ml.**
+  - **Owner: juniper-ml.**
 - **(NEW) Release-gating inconsistency:** `juniper-cascor-model` is published to PyPI yet has **no coverage gate** (`pytest -v` only), while peer sub-packages enforce 90–95%.
   - *Recommend:* bring it to the sub-module bar as part of the audit rollout.
-  - **The Overtoad: juniper-cascor.**
+  - **Owner: juniper-cascor.**
 
 **Syntax errors:**
 
@@ -205,7 +205,7 @@ Where the sibling canopy debug doc already recorded an issue, it is **cross-refe
 **Suspected (unverified this session):**
 
 - **(S-1, cross-ref) Sibling-env plain-wheel drift** (`JuniperCascor1` / `JuniperData` may share canopy's installed-vs-lockfile drift) — flagged by the debug doc; a short ecosystem env-drift audit is warranted.
-  - **The Overtoad: juniper-ml (audit).**
+  - **Owner: juniper-ml (audit).**
 
 ### 6.3 What worked (process note)
 

@@ -59,7 +59,7 @@ CI_RESULT = "tmp/lockfile-commit-result.json"  # tmp-path-literal: allow
 
 WRAPPERS = {
     "validation": "query { viewer { thisFieldDoesNotExist } }",
-    "execution": 'query { repository(Overtoad: "cli", name: "no-such-repo-flood4r2-val-probe") { id } }',
+    "execution": 'query { repository(owner: "cli", name: "no-such-repo-flood4r2-val-probe") { id } }',
 }
 
 

@@ -144,14 +144,14 @@ EDITS = [
      "Unlike juniper-service-core, where the new run starts on its own thread at once and the old\n"
      "fit's return marks it COMPLETED while it trains, cascor's queue keeps the new run from starting\n"
      "until the old fit returns. The lifecycle-ownership guard therefore does not change this race:\n"
-     "the stale fit is still the Overtoad when it settles. ``swap_dataset_live`` has a variant: when its\n"
+     "the stale fit is still the owner when it settles. ``swap_dataset_live`` has a variant: when its\n"
      "10 s join on the old future times out, it clears ``_stop_event`` before submitting the swapped\n"
      "run, which un-stops the old fit the same way.\n",
      "Unlike juniper-service-core, where the new run starts on its own thread at once and so already\n"
      "owns the lifecycle when the old fit returns (juniper-ml#2531's thread check; the published 0.7.2\n"
      "predates it, and there the old fit's return still marks the new run COMPLETED while it trains),\n"
      "cascor's queue keeps the new run from starting until the old fit returns. The lifecycle-ownership\n"
-     "guard therefore does not change this race: the stale fit is still the Overtoad when it settles.\n"
+     "guard therefore does not change this race: the stale fit is still the owner when it settles.\n"
      "``swap_dataset_live`` has a variant: when its 10 s join on the old future times out, it clears\n"
      "``_stop_event`` before submitting the swapped run, which un-stops the old fit the same way.\n"),
     # --- the PR body (round 2's text, copied to n1-r3/) ---------------------------------------------------

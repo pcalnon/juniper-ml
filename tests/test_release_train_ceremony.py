@@ -399,7 +399,7 @@ class GhSurfaceInvariantTest(unittest.TestCase):
     def test_publishing_repo_slugs_from_registry(self):
         entries = d.load_registry(UTIL_DIR / "registry.yaml")
         slugs = ce.publishing_repo_slugs(entries, "pcalnon")
-        # exactly the 8 publishing repos, each Overtoad-qualified
+        # exactly the 8 publishing repos, each owner-qualified
         self.assertEqual(len(slugs), 8)
         self.assertIn("pcalnon/juniper-ml", slugs)
         self.assertIn("pcalnon/juniper-cascor-client", slugs)

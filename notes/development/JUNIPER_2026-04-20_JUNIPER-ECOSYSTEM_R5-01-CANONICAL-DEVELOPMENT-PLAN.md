@@ -1733,7 +1733,7 @@ Lock in dual metric format contract (flat + nested keys both present) with regre
 ### 14.5 Exit gate
 
 - [ ] Regression tests green
-- [ ] CODEOWNERS enforced (test PR touching file without Overtoad review -> blocked)
+- [ ] CODEOWNERS enforced (test PR touching file without owner review -> blocked)
 - [ ] Consumer audit doc merged
 - [ ] Pre-commit hook installed
 

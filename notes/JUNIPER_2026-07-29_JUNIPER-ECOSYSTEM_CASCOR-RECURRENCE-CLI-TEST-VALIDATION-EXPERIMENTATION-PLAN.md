@@ -1334,9 +1334,9 @@ Verified against [`notes/requirements/by-area/TEST.md`](requirements/by-area/TES
 - **References `JR-CAS-OBS-005`** — "Verify WebSocket responsiveness under load when training runs via asyncio.run_in_executor()." (proposed, P2; `OBS.md:2333-2338`). Same relationship as TEST-019.
 - **References `JR-CAS-TRAIN-010`** — "Cascor must implement mini-batch training for the output-layer trainer…" with proposed config knobs `use_mini_batch` / `mini_batch_size` (proposed, P0; `TRAIN.md:211-222`). Cited as the **config-knob precedent**: any knob that requirement adds should be exposed through the §5.4 YAML layer, not a new env-only path.
 
-**No `JR-REC-*` requirement IDs exist.** The Overtoad enum is fixed at `notes/requirements/README.md:20` (`cas/can/dat/dep/ml/cwk/ccl/dcl`) and the snapshot is "as of 2026-05-12"; juniper-recurrence postdates it, and a repo-wide grep for `JR-REC-` across `notes/requirements/by-area/` returns nothing. Every recurrence work item in this plan is therefore traceable only through the design notes in §17.
+**No `JR-REC-*` requirement IDs exist.** The owner enum is fixed at `notes/requirements/README.md:20` (`cas/can/dat/dep/ml/cwk/ccl/dcl`) and the snapshot is "as of 2026-05-12"; juniper-recurrence postdates it, and a repo-wide grep for `JR-REC-` across `notes/requirements/by-area/` returns nothing. Every recurrence work item in this plan is therefore traceable only through the design notes in §17.
 
-**Work item 7.6 (PROPOSED)**: extend the Overtoad enum with a `rec` tag and mint a `JR-REC-*` block covering, at minimum, the experiment-config layer (§5.5), the plotting gap (G-5), the bench `--results-dir` and `ar_p` registration (W-5/W-7), the missing Grafana dashboard (G-4), and the absent `performance` marker (G-17) — so recurrence requirements stop being untrackable.
+**Work item 7.6 (PROPOSED)**: extend the owner enum with a `rec` tag and mint a `JR-REC-*` block covering, at minimum, the experiment-config layer (§5.5), the plotting gap (G-5), the bench `--results-dir` and `ar_p` registration (W-5/W-7), the missing Grafana dashboard (G-4), and the absent `performance` marker (G-17) — so recurrence requirements stop being untrackable.
 
 ---
 

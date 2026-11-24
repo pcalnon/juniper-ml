@@ -147,7 +147,7 @@ external and the ABC lean is the right call (crossval design §1-2 = **CONFIRM**
 
 ## 4. Outstanding-work inventory
 
-| Item | State | The Overtoad phase |
+| Item | State | Owner phase |
 |---|---|---|
 | `crossval/{__init__,metrics,splits,executor}.py` | **Not started** | [Phase 1](#phase-1--pr-1-model-core-020-the-crossval-submodule) |
 | `[crossval]` extra (numpy) | Not started | Phase 1 |

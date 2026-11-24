@@ -52,7 +52,7 @@ edit(
 edit(
     "r2-chown-split-55",
     """- **Permissions by trial.** `/usr/lib/duplicati` and `/usr/lib/duplicati/data` were chowned to `duplicati` — **directories only**: all 1,443 regular files, the binaries included, are still `root:root`.""",
-    """- **Permissions by trial.** `/usr/lib/duplicati` and `/usr/lib/duplicati/data` were chowned to `duplicati` — **directories only, and not even all of those**: 97 of 118 directories changed Overtoad and 21 did not (the whole `runtimes/` subtree, 11 directories, and ten `licenses/<package>/` directories — `licenses/` itself *did* change, so this was a shallow or interrupted recursion, not a `find -type d` sweep). All 1,443 regular files outside `data/`, the binaries
+    """- **Permissions by trial.** `/usr/lib/duplicati` and `/usr/lib/duplicati/data` were chowned to `duplicati` — **directories only, and not even all of those**: 97 of 118 directories changed owner and 21 did not (the whole `runtimes/` subtree, 11 directories, and ten `licenses/<package>/` directories — `licenses/` itself *did* change, so this was a shallow or interrupted recursion, not a `find -type d` sweep). All 1,443 regular files outside `data/`, the binaries
   included, are still `root:root`. This matters for the P0.5 remediation: a `chown -R` that is verified by "did anything change?" will see 97 changes and 21 no-ops, and the 21 that look wrong are the ones that were already right.""",
 )
 
@@ -583,7 +583,7 @@ edit(
    sudo find /usr/lib/duplicati -mindepth 1 -maxdepth 1 ! -name data -exec chown -R root:root {} +
    ```
 
-   Expect 97 directories to change Overtoad and 21 (the `runtimes/` subtree and ten `licenses/<package>/`
+   Expect 97 directories to change owner and 21 (the `runtimes/` subtree and ten `licenses/<package>/`
    directories) to be no-ops — they were never chowned in the first place (§4.1 note b), so "nothing changed"
    is the *expected* result for those, not evidence the command failed. Also `chown root:root
    /etc/default/duplicati` (today `duplicati:duplicati` 0644 — the service user can rewrite its own next

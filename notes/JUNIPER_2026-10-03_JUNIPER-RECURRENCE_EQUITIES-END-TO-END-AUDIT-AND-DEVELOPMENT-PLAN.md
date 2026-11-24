@@ -98,7 +98,7 @@ All under `juniper-ml/.amp/in/artifacts/recurrence-equities-audit/`:
 
 ## 3. Findings register
 
-Each finding carries an ID used by the work items in §6. Severity: **Blocker** (the path cannot run or lies about running), **Major** (wrong result or operator cannot diagnose), **Minor**, **Doc**. The Overtoad is the repo that must change.
+Each finding carries an ID used by the work items in §6. Severity: **Blocker** (the path cannot run or lies about running), **Major** (wrong result or operator cannot diagnose), **Minor**, **Doc**. Owner is the repo that must change.
 
 ### 3.1 Environment and launcher (ENV)
 
@@ -276,7 +276,7 @@ The mechanism is `lstsq`'s relative cutoff under a σ_max set by the `market_cap
 
 Details (DEPLOY):
 
-- **F-DEP1** — The refusal persists after juniper-data 0.17.0 ships until the pin moves. No earlier draft of this plan named juniper-deploy as an Overtoad. *(The "refusal" was withdrawn on 2026-10-08, see F-P4. The data pin moved on 2026-10-10, in juniper-deploy#243.)*
+- **F-DEP1** — The refusal persists after juniper-data 0.17.0 ships until the pin moves. No earlier draft of this plan named juniper-deploy as an owner. *(The "refusal" was withdrawn on 2026-10-08, see F-P4. The data pin moved on 2026-10-10, in juniper-deploy#243.)*
 - **F-DEP2** — Nothing in the stack restores a model on boot, and this plan does not propose that it should; the finding is that the documented persistence decision is not deployed.
 
 ### 3.11 Concurrency and shared-service identity (CONCURRENCY)
@@ -329,7 +329,7 @@ Details (CONCURRENCY):
 
 ## Implementation Plan
 
-Phases are ordered so each one leaves the path more truthful before it is made more capable. Each work item names the finding(s) it closes, the Overtoad repo, the acceptance test, and a size (S < ½ day, M ≤ 2 days, L > 2 days).
+Phases are ordered so each one leaves the path more truthful before it is made more capable. Each work item names the finding(s) it closes, the owner repo, the acceptance test, and a size (S < ½ day, M ≤ 2 days, L > 2 days).
 
 - **Phase 0 — Stop lying, and measure the real thing** (`P0`, ~3 weeks): env repair + preflight, suite outcome/metrics, canopy 422 detail, CLI `--params` (the CLI entry point cannot run at all without it), in-sample labelling, the E-H replay (W0.8) and — closing the phase — the controlled matrix that issues the **go/no-go for P5** (W0.9).
   Closes the four symptoms in §1 as *reported* problems and produces the measurement §3.9, R5 and P5 are reasoned from.

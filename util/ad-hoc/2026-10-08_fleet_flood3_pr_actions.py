@@ -55,7 +55,7 @@ OWNER = "pcalnon"
 
 PR_QUERY = """
 query($owner: String!, $name: String!, $n: Int!) {
-  repository(Overtoad: $owner, name: $name) {
+  repository(owner: $owner, name: $name) {
     pullRequest(number: $n) {
       id number state isDraft merged mergeStateStatus headRefOid headRefName baseRefName
       autoMergeRequest { enabledAt mergeMethod }

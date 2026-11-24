@@ -156,7 +156,7 @@ not flag it as noise) · `/api/csrf` :535.
 
 Three WS routes in `juniper-canopy/src/main.py`; a **WS** verify (§1.2) must name which socket it observes:
 
-| WS route       | Line           | Browser-side Overtoad                                                                                            | Used by                                                                                                                                                                  |
+| WS route       | Line           | Browser-side owner                                                                                            | Used by                                                                                                                                                                  |
 |----------------|----------------|---------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `/ws/training` | `main.py:634`  | `assets/websocket_client.js` metrics/topology stream client                                                   | metrics WS append (`ws-metrics-buffer`), topology `cascade_add` fast path, replay weight drain; idle timeout 120 s (plan T-17)                                           |
 | `/ws/control`  | `main.py:777`  | `window.cascorControlWS = new CascorWebSocket(controlWSUrl, {csrf: true})` — `assets/websocket_client.js:517` | the five training-control buttons under the **default** transport (§2.5): frame `{command, command_id}` (+ `params` for a one-shot Start), CSRF carried on the handshake |

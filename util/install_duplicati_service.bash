@@ -225,7 +225,7 @@ elif [[ -e "${ENV_DST}" ]]; then
         exit 2
     fi
     # Refused on a real run; reported on a dry run, which as a user cannot tell a scratch prefix's
-    # Overtoad from the host's.
+    # owner from the host's.
     env_meta="$(stat -c '%U:%G:%a' "${ENV_DST}")"
     case "${env_meta}" in
         root:duplicati:640|duplicati:duplicati:600) ;;
