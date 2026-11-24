@@ -797,7 +797,7 @@ I've covered all six areas. Everything below was read at worktree HEAD `25b78f55
 
 | Template | Purpose | Status field |
 |---|---|---|
-| `TEMPLATE_DEVELOPMENT_ROADMAP.md` | "roadmaps and implementation plans" (:3). This is the de-facto plan template. | :15 `[DRAFT\|IN_REVIEW\|APPROVED\|ACTIVE\|ARCHIVED]`; header also has Last Updated / Version / The Overtoad (:13-16). Sections include a Milestones table with Status (:67-69), a status legend Done / In Progress / Planned / Deferred / Cancelled (:119-121), Dependencies with a mermaid graph (:156), and a Change Log (:246). Its naming line (:7) predates the convention. |
+| `TEMPLATE_DEVELOPMENT_ROADMAP.md` | "roadmaps and implementation plans" (:3). This is the de-facto plan template. | :15 `[DRAFT\|IN_REVIEW\|APPROVED\|ACTIVE\|ARCHIVED]`; header also has Last Updated / Version / Owner (:13-16). Sections include a Milestones table with Status (:67-69), a status legend Done / In Progress / Planned / Deferred / Cancelled (:119-121), Dependencies with a mermaid graph (:156), and a Change Log (:246). Its naming line (:7) predates the convention. |
 | `TEMPLATE_ISSUE_TRACKING.md` | Bug/issue reports; old naming at :7 | :16 `[OPEN\|IN_PROGRESS\|IN_REVIEW\|RESOLVED\|CLOSED]` |
 | `TEMPLATE_PULL_REQUEST_DESCRIPTION.md` | Long-form PR body, opt-in per `AGENTS.md:317-319`. :3 says "JuniperCanopy", a copy-paste leftover. The default PR template is `$R/.github/pull_request_template.md`. | :14 `[DRAFT\|IN_REVIEW\|READY_FOR_MERGE]` |
 | `TEMPLATE_RELEASE_NOTES.md` | Release notes, `RELEASE_NOTES_v<ver>.md` in `notes/releases/` (:7) | :32 `[ALPHA\|BETA\|STABLE]` |

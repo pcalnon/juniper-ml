@@ -421,7 +421,7 @@ same database out of the 09-17 or 09-18 fileset.
   `wipe-encryption --server-datafolder <0755 dir> --dry-run` runs normally with no override — so never read a
   successful `wipe-encryption` as evidence that a folder's permissions are acceptable to the **server**.
 - **Package upgrade mid-migration.** 2.3.0.4 → 2.4.0.0 on 09-19 21:29 raised the server schema from 11 to 12 and changed the `Backup` table (`OperationType` column). Any recovered database is upgraded on first open; keep the pre-upgrade copy.
-- **Permissions by trial.** `/usr/lib/duplicati` and `/usr/lib/duplicati/data` were chowned to `duplicati` — **directories only, and not even all of those**: 97 of 118 directories changed Overtoad and 21 did not (the whole `runtimes/` subtree, 11 directories, and ten `licenses/<package>/` directories — `licenses/` itself *did* change, so this was a shallow or interrupted recursion, not a `find -type d` sweep). All 1,443 regular files outside `data/`, the binaries
+- **Permissions by trial.** `/usr/lib/duplicati` and `/usr/lib/duplicati/data` were chowned to `duplicati` — **directories only, and not even all of those**: 97 of 118 directories changed owner and 21 did not (the whole `runtimes/` subtree, 11 directories, and ten `licenses/<package>/` directories — `licenses/` itself *did* change, so this was a shallow or interrupted recursion, not a `find -type d` sweep). All 1,443 regular files outside `data/`, the binaries
   included, are still `root:root`. This matters for the P0.5 remediation: a `chown -R` that is verified by "did anything change?" will see 97 changes and 21 no-ops, and the 21 that look wrong are the ones that were already right. The destination tree was chgrp'd (directories 09-18 20:36–20:37, 874 volumes 09-19 17:37); the duplicati home dirs were opened to 0777. Each removed a symptom; none was recorded.
 - **Wrapper defects** (§4.3) turned a one-line configuration into a parser with `eval`, an argv bug and a debug mode that logs secrets.
 - **No runbook** existed for "move the server to another user" although the record already contained every trap it hit (YAM §8.19.4, §8.20).
@@ -1067,7 +1067,7 @@ load_settings_key() {
 preflight() {
     # preflight <effective data folder> -- the folder the server will actually receive
     # (--server-datafolder after all sources are merged), not the wrapper's default.
-    local folder="$1" Overtoad
+    local folder="$1" owner
     [[ -x "${DUPLICATI_SERVER}" ]] || die "server binary not executable: ${DUPLICATI_SERVER}"
     [[ -d "${folder}" ]] || die "data folder missing: ${folder}"
     [[ -w "${folder}" ]] || die "data folder not writable by $(id -un): ${folder}"
@@ -1346,7 +1346,7 @@ elif [[ -e "${ENV_DST}" ]]; then
         exit 2
     fi
     # Refused on a real run; reported on a dry run, which as a user cannot tell a scratch prefix's
-    # Overtoad from the host's.
+    # owner from the host's.
     env_meta="$(stat -c '%U:%G:%a' "${ENV_DST}")"
     case "${env_meta}" in
         root:duplicati:640|duplicati:duplicati:600) ;;
@@ -1733,7 +1733,7 @@ bearer JWT is a secret carried by every database copy (S-8).
 
 ### 7.4 Destination and permission model
 
-| Path | The Overtoad:group | Mode | Why |
+| Path | Owner:group | Mode | Why |
 | --- | --- | --- | --- |
 | `/mnt/Backups`, `/mnt/Backups/Ubuntu` | `pcalnon:duplicati` | `2750` | traverse for both; setgid keeps the group on new entries |
 | `/mnt/Backups/Ubuntu/Dropbox` (Dropbox root) | `pcalnon:duplicati` | `2770` | Dropbox runs as `pcalnon` and must write its own root; the service only traverses (note D-14b) |
@@ -2293,7 +2293,7 @@ Dropbox client (270.4.3312) owned `duplicati:duplicati` that nothing runs — th
 > argv), `--webservice-enable-forever-token`, `--webservice-cors-origins` and the alias
 > `--webservice-allowedhostnames`; and the installer (1.3.0; 1.5.1 now) judges the contract — and any existing
 > `/etc/duplicati/env` — by running the wrapper itself, so both apply one grammar. Since 1.4.0 the installer also
-> checks an existing `/etc/duplicati/env`'s Overtoad and mode, and since 1.5.0 it accepts exactly O-12's two forms —
+> checks an existing `/etc/duplicati/env`'s owner and mode, and since 1.5.0 it accepts exactly O-12's two forms —
 > `root:duplicati` 0640 or `duplicati:duplicati` 0600, a regular file, never other-readable — so the grammar check
 > (run as root) and the service's read (as `duplicati`) agree on the file itself; it does not settle O-12 (§11;
 > P1 step 2). A first install copies a
@@ -2308,7 +2308,7 @@ Dropbox client (270.4.3312) owned `duplicati:duplicati` that nothing runs — th
 > server's real name, and both lists are now pinned against a vendored copy of the product's option table
 > (`tests/fixtures/duplicati_2.4.0.0_server_options.txt`); every trailing CR is stripped and a NUL in the key
 > refused. Installer 1.4.0 (1.5.1 now) refuses an unblessed differing file without `--update-backup-behavior`, checks an
-> existing env file's Overtoad and mode, says where it copied a file aside, and prints step 8's prerequisites
+> existing env file's owner and mode, says where it copied a file aside, and prints step 8's prerequisites
 > and step 10's guard block verbatim; since round 5 the hint also says to stop the unit (never `pause`) if the
 > first start reads Running, includes step 10's restart, and names Procedure A's `…-key.new`. The re-key (1.3.0) and its gate (1.2.0) also refuse orphaned `Option`
 > and `Source` blobs, and the gate and the hand start (1.3.0) refuse a NUL in a key file.
@@ -2725,7 +2725,7 @@ echo "SHRED ${OUT} once step 8 has installed the database -- it is cleartext key
    cleartext database on the next run (the S-7 shape).
 5. **Procedure A — re-use the whole data folder (only if step 3 found a key).** `sudo cp -a /usr/lib/duplicati/data /home/duplicati/.config/Duplicati`; `sudo chown -R duplicati:duplicati /home/duplicati/.config/Duplicati`; `chmod 0700` on the folder and `0600` on its files (§7.3.2); write the accepted key to `/etc/credstore/duplicati-settings-key` (0600 root) **and leave it there until P0.5b's re-key replaces it** — the earlier "for the first start only" would
    re-create the 09-18 `SettingsEncryptionKeyMissingException` loop on the very next restart. Then step 8.
-6. **Procedure A2 — wipe the encrypted fields, keep everything else.** On the **copy** from step 1, as the copy's Overtoad, in a 0700 directory:
+6. **Procedure A2 — wipe the encrypted fields, keep everything else.** On the **copy** from step 1, as the copy's owner, in a 0700 directory:
    `duplicati-database-tool wipe-encryption --server-datafolder <copydir> --dry-run <copydir>/Duplicati-server.sqlite` first (expect `version 11 … Server database … 9 encrypted field(s) would be wiped`), then the same without `--dry-run`. Three traps. First, one §5.5 measures and §8 must not leave implicit:
    `duplicati-database-tool` does **not** apply the 0700 data-folder gate at all — it resolves the folder in
    `ProbeOnly` mode — so a clean run here is **no** evidence that the copy's folder is acceptable to the
@@ -2847,7 +2847,7 @@ closes S-1 and S-2; item 2's timer restart, which waits for step 8, came later, 
    sudo find /usr/lib/duplicati -mindepth 1 -maxdepth 1 ! -name data -exec chown -R root:root {} +
    ```
 
-   Expect 96 directories to change Overtoad (95 below the top and the top itself; this said 97 until 2026-10-04, counting `data/` and its subdirectory, which the command excludes) and 21 (the `runtimes/` subtree and ten `licenses/<package>/`
+   Expect 96 directories to change owner (95 below the top and the top itself; this said 97 until 2026-10-04, counting `data/` and its subdirectory, which the command excludes) and 21 (the `runtimes/` subtree and ten `licenses/<package>/`
    directories) to be no-ops — they were never chowned in the first place (§4.1 note b), so "nothing changed"
    is the *expected* result for those, not evidence the command failed. Also `chown root:root
    /etc/default/duplicati` (today `duplicati:duplicati` 0644 — the service user can rewrite its own next
