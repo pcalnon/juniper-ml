@@ -94,6 +94,10 @@ _DECLARES_RE = re.compile(r"`juniper-ml` (?P<version>\d+\.\d+\.\d+) declares the
 # not "sets them to", so an older floor in the same paragraph is not this release's pin.
 _SETS_THEM_RE = re.compile(r"(?P<version>\d+\.\d+\.\d+) sets them to (?P<body>(?:`juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\])?>=[^`]+`(?:, | and )?)+)")
 _PYPROJECT_VERSION_RE = re.compile(r"^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$")
+# The heading of REFERENCE's "Ecosystem Compatibility" section. Its paragraph runs from here to the matrix header.
+_COMPAT_SECTION_HEADING_RE = re.compile(r"^## Ecosystem Compatibility[ \t]*$", re.MULTILINE)
+# The rule that paragraph states, which ReferenceCompatibilityMatrixTest enforces (flood-4's ruling 48).
+_TRACKS_PYPROJECT_SENTENCE = "Between a PR that changes one of these pins and the release that publishes it, the current series' row and the `recurrence` clause that follows track `pyproject.toml`, not a published release: that PR rewrites the row or the clause in place, and `ReferenceCompatibilityMatrixTest` in `tests/test_pyproject_extras.py` fails until it does."
 # A requirement's package, with a PEP 508 extras marker dropped: the matrix cell is the spec alone.
 _REQ_SPEC_RE = re.compile(r"^(?P<pkg>juniper-[a-z0-9-]+)(?:\[[^\]]*\])?(?P<spec>>=.+)$")
 # Column order of docs/REFERENCE.md's Ecosystem Compatibility matrix, after the series label.
@@ -383,6 +387,21 @@ def _reference_matrix(text: str) -> tuple[list[str], dict[str, list[str]]]:
     return header, rows
 
 
+def _compatibility_paragraph(text: str) -> str:
+    """The prose between REFERENCE.md's ``## Ecosystem Compatibility`` heading and its matrix header.
+
+    Whitespace is collapsed, so a re-wrapped paragraph reads the same. Text elsewhere in the file, such as the
+    release train's account of the same rule, is not this paragraph.
+    """
+    heading = _COMPAT_SECTION_HEADING_RE.search(text)
+    if heading is None:
+        raise AssertionError("docs/REFERENCE.md has no '## Ecosystem Compatibility' heading")
+    matrix = text.find("\n| juniper-ml |", heading.end())
+    if matrix < 0:
+        raise AssertionError("docs/REFERENCE.md's Ecosystem Compatibility section has no matrix header")
+    return " ".join(text[heading.end() : matrix].split())
+
+
 class ExtrasDocsLockstepTest(unittest.TestCase):
     """Documented extras tables must match pyproject pin strings exactly."""
 
@@ -536,6 +555,9 @@ class ReferenceCompatibilityMatrixTest(unittest.TestCase):
     ``POST /v1/crossval``), and the 0.11.4 release proposal, juniper-ml#2482, recorded that no
     test guarded the sentence or the matrix. README's flat table is a different surface, already
     pinned by ``ReadmeCompatTableTest``. The extras tables are pinned by ``ExtrasDocsLockstepTest``.
+    The paragraph above the matrix says that the current series' row and the clause track ``pyproject.toml``
+    between such a change and its release, and ``test_paragraph_states_that_the_current_row_tracks_pyproject``
+    pins that sentence (flood-4's ruling 48).
     """
 
     version: ClassVar[str]
@@ -599,6 +621,21 @@ class ReferenceCompatibilityMatrixTest(unittest.TestCase):
             pins,
             self.recurrence,
             "docs/REFERENCE.md's recurrence clause drifted from the [recurrence] extra. 0.8.0 admits juniper-model-core 0.2.0 and POST /v1/crossval answers 500",
+        )
+
+    def test_paragraph_states_that_the_current_row_tracks_pyproject(self) -> None:
+        """The paragraph above the matrix states the rule the two tests above enforce.
+
+        Between a PR that changes a matrix or ``recurrence`` pin and the release that publishes it, those tests hold
+        the current series' row and the ``sets them to`` clause to ``pyproject.toml``, so the row then states pins no
+        published release carries. The Overtoad's ruling of 2026-11-24 (flood-4's ruling 48, R55 of the R-OBS-SC-2
+        follow-ups) pins the sentence that says so, so the prose cannot drift from the tested behaviour. Change the
+        sentence and ``_TRACKS_PYPROJECT_SENTENCE`` together, and only with the rule.
+        """
+        self.assertIn(
+            " ".join(_TRACKS_PYPROJECT_SENTENCE.split()),
+            _compatibility_paragraph(self.reference),
+            "the paragraph above docs/REFERENCE.md's Ecosystem Compatibility matrix no longer states that the current row tracks pyproject.toml between a pin-changing PR and its release",
         )
 
     def test_version_cell_parser_ignores_a_prose_mention(self) -> None:
