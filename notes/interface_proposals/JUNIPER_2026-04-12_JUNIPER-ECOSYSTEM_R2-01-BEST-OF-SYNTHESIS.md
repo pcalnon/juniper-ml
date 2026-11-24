@@ -1477,7 +1477,7 @@ Walked every GAP-WS-NN from source doc §7 (R1-03 §3.1):
 
 ### 19.4 RISK coverage audit
 
-All 16 RISK-NN items from source doc §10 have dedicated entries in §15 with severity, phase, Overtoad, mitigation, signal, kill switch, TTF.
+All 16 RISK-NN items from source doc §10 have dedicated entries in §15 with severity, phase, owner, mitigation, signal, kill switch, TTF.
 
 **16/16 addressed.**
 

@@ -68,7 +68,7 @@
 
 | ID | Item | Pass means | adaptive-graph-of-thoughts | agi-mcp-server |
 | --- | --- | --- | --- | --- |
-| C-P1 | Upstream identity and health | known Overtoad, maintained, licensed, signed history | FAIL: single user, agent-written history, MIT versus Apache-2.0 (AGOT-P3) | FAIL: squatted origin (AGI-P1); no LICENSE file (AGI-P2); unsigned (AGI-P4) |
+| C-P1 | Upstream identity and health | known owner, maintained, licensed, signed history | FAIL: single user, agent-written history, MIT versus Apache-2.0 (AGOT-P3) | FAIL: squatted origin (AGI-P1); no LICENSE file (AGI-P2); unsigned (AGI-P4) |
 | C-P2 | Local tree against upstream at HEAD | every tracked blob identical; local-only files explained | PASS: 305 identical, 0 modified; 2 `.pyc` (AGOT-H1) | PASS: 33 identical, 0 modified; local `package-lock.json` (AGI-P3) |
 | C-P3 | Newer upstream commits | none, or none security-relevant | FAIL: 6, dependency bumps, 3 security-relevant (AGOT-P2) | FAIL: 1, the namespace fix (AGI-P1) |
 | C-P4 | Repository advisories and security issues | 0 advisories; no open security issue | PASS: 0 advisories; dependabot PRs #159, #160 open since 2026-03-24 (AGOT-P2) | PASS: 0 advisories; 2 issues or PRs in all |
@@ -228,7 +228,7 @@ $ gh api --paginate "advisories?ecosystem=npm&per_page=100&affects=<99 pins from
 - **Severity**: minor
 - **Location**: upstream `SaptaDey/Adaptive-Graph-of-Thoughts-MCP-server`; `LICENSE:1`; `pyproject.toml:8`, `:14`; `manifest.json:13`; `package.json:14`
 - **Problem**
-  - **The Overtoad and activity**: a personal account created 2023-08-15, with 41 public repositories. The repository has 32 stars and 9 forks and no security advisory.
+  - **Owner and activity**: a personal account created 2023-08-15, with 41 public repositories. The repository has 32 stars and 9 forks and no security advisory.
   - **HEAD signature**: HEAD `1f7c6cee` merges PR #158, written by the Copilot coding agent. Its `verified: true` is GitHub's own web-flow signature on the merge (committer `GitHub`, reason `valid`), not the author's key. One of the six newer commits, `07b97361c130`, is unsigned.
   - **Security-titled PRs**: a burst landed on 2025-06-20 to 2025-06-22, among them "Fix authentication bypass in verify_token" (#101), "Fix token verification bypass" (#121), "Fix Cypher injection in Neo4j utilities" (#122) and "Fix credential exposure in Neo4j debug logs" (#100). The fail-open Basic authentication of AGOT-A3 survived them all.
   - **A regressed bump**: PR #136 raised the Inspector to 0.14.3 and merged on 2025-06-22, yet HEAD's root `package.json:14` declares `^0.1.0`. PR #158's 15 files do not include it; the reverting commit was not traced.
@@ -611,7 +611,7 @@ $ gh api --paginate "advisories?ecosystem=npm&per_page=100&affects=<174 name@ver
 - **Severity**: minor
 - **Location**: upstream `QuixiAI/agi-mcp-server`
 - **Problem**
-  - **The Overtoad and activity**: the Overtoad is an organization (QuixiAI, created 2024-01-02, 90 public repositories). The repository was created 2025-06-21 and has 6 stars and 4 forks.
+  - **Owner and activity**: the owner is an organization (QuixiAI, created 2024-01-02, 90 public repositories). The repository was created 2025-06-21 and has 6 stars and 4 forks.
   - **Unsigned commits**: HEAD `9eceac9e` (2025-06-21, "update README.md") is unsigned (`verification.reason: unsigned`), and so is the one later commit.
   - **Security and issue history**: no security advisory. The whole issue and PR history is two items: an open "ChatGPT official integration / app?" issue and a closed badge PR.
   - **Test runner**: `package.json:52` pins a beta, vitest 4.0.0-beta.1.

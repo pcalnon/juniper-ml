@@ -47,7 +47,7 @@ NEW_ENTRY = '''    if info.get("mergeStateStatus") == "DIRTY":
         raise Refused(f"PR #{pr}: {snapshot_problem}")
 '''
 
-OLD_ARM = '''    _ARMED = {"owner": Overtoad, "repo": repo, "pr": pr}
+OLD_ARM = '''    _ARMED = {"owner": owner, "repo": repo, "pr": pr}
     pinned = f" pinned to {head[:8]}" if head else " (UNPINNED)"
     log(
         f"  auto-merge net armed{pinned} — GitHub will complete this merge even if this run "
@@ -55,7 +55,7 @@ OLD_ARM = '''    _ARMED = {"owner": Overtoad, "repo": repo, "pr": pr}
     )
     return True'''
 
-NEW_ARM = '''    _ARMED = {"owner": Overtoad, "repo": repo, "pr": pr}
+NEW_ARM = '''    _ARMED = {"owner": owner, "repo": repo, "pr": pr}
     pinned = f" pinned to {head[:8]}" if head else " (UNPINNED)"
     log(
         f"  auto-merge net armed{pinned} — GitHub will complete this merge even if this run "
@@ -67,7 +67,7 @@ NEW_ARM = '''    _ARMED = {"owner": Overtoad, "repo": repo, "pr": pr}
     # net whose stored body is what will actually fire. Report what is stored, not what was
     # asked for. Best-effort: a failed read must never fail a merge that is otherwise fine.
     try:
-        after = pr_state(Overtoad, repo, pr)
+        after = pr_state(owner, repo, pr)
     except HardError as exc:  # nosec B110 - advisory read; see the comment above
         log(f"  (could not read the net back: {str(exc)[:80]})")
         return True

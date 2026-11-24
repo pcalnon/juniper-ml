@@ -1,6 +1,6 @@
 # Round 2 Proposal R2-02: Phase Execution Contracts
 
-**Angle**: Each phase as an execution contract with measurable gates, deliverables, PR lists, Overtoad-class assignments, effort bounds, and rollback
+**Angle**: Each phase as an execution contract with measurable gates, deliverables, PR lists, owner-class assignments, effort bounds, and rollback
 **Author**: Round 2 sub-agent (general-purpose)
 **Date**: 2026-04-11
 **Status**: Round 2 consolidation — input to Round 3
@@ -15,13 +15,13 @@ Each phase is specified as a contract between the implementer and the project. E
 1. **Goal** — one sentence, what changes in the world when this phase ships.
 2. **Entry gate** — the preconditions: dependent phases, code SHAs, env state, artifacts that must already exist.
 3. **Deliverables checklist** — the concrete artifacts (files, commits, metrics, tests, docs) that must exist when the phase is "done".
-4. **Pull request plan** — branch names, titles, scope boundaries, merge order, Overtoad class.
+4. **Pull request plan** — branch names, titles, scope boundaries, merge order, owner class.
 5. **Exit gate** — measurable acceptance criteria with concrete test names or metric thresholds. Going/no-go decision lives here.
 6. **Rollback** — how to undo the phase if something goes wrong after merge.
 
 Every phase also has a **"NOT in this phase"** list. This is load-bearing — it prevents Round 3 from re-importing scope that Round 1 and R1-05 already pushed out.
 
-The Overtoad-class taxonomy used throughout:
+Owner-class taxonomy used throughout:
 
 - **backend-cascor**: engineers working on `juniper-cascor` (server-side Python, WebSocket handlers, replay buffer, `/ws/training` + `/ws/control`).
 - **backend-canopy**: engineers working on `juniper-canopy` Python server (FastAPI, Dash server callbacks, adapter, security middleware).
@@ -103,7 +103,7 @@ From the resolutions, this plan uses the following canonical identifiers:
 
 ## 2. Phase index
 
-The Overtoad-class key: **C** = backend-cascor, **Y** = backend-canopy (Python), **F** = frontend (canopy JS), **S** = SDK (cascor-client), **Sec** = security review, **O** = ops.
+Owner-class key: **C** = backend-cascor, **Y** = backend-canopy (Python), **F** = frontend (canopy JS), **S** = SDK (cascor-client), **Sec** = security review, **O** = ops.
 
 | # | Phase | Owner | Effort (opt/exp/pess, eng-days) | Entry deps | Exit (top criterion) | Rollback TTF |
 |---|---|---|---|---|---|---|
@@ -1062,7 +1062,7 @@ Tests:
 ### 13.5 Exit gate (measurable)
 
 1. Regression tests pass.
-2. CODEOWNERS rule enforced via GitHub branch protection (verified by opening a test PR that touches `normalize_metric.py` without the Overtoad's review — it must block).
+2. CODEOWNERS rule enforced via GitHub branch protection (verified by opening a test PR that touches `normalize_metric.py` without the owner's review — it must block).
 3. Consumer audit document reviewed and merged.
 
 ### 13.6 Rollback

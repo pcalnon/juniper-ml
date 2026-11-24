@@ -577,7 +577,7 @@ class Ac6aTest(unittest.TestCase):
             ("stale", snapshot_file(fire(10)), "is not the newest run's"),
             ("stub", snapshot_file(size=4096), "a stub"),
             ("loose mode", snapshot_file(mode=0o644), "mode 0644"),
-            ("other owner", snapshot_file(owner="root"), "Overtoad root"),
+            ("other owner", snapshot_file(owner="root"), "owner root"),
         ):
             with self.subTest(case=label):
                 finding = probe.judge_ac6a(snapshot, four_days(), NOW, me="operator")
@@ -1082,7 +1082,7 @@ class ServerTest(_Stubbed):
         os.chmod(self.cred, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)  # 0644: the mode the API client must refuse
         unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
         self.assertIn("credential refused: FATAL: web credential file", unsafe)
-        self.assertIn("mode 0644", unsafe, "the client's own sentence -- a path, a mode, an Overtoad -- is kept")
+        self.assertIn("mode 0644", unsafe, "the client's own sentence -- a path, a mode, an owner -- is kept")
         never_leaks(self, unsafe)
 
     def test_the_login_failure_pattern_is_the_api_clients_own_line(self) -> None:

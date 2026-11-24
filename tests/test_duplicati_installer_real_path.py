@@ -20,7 +20,7 @@ the host:
 * ``install`` drops ``-o``/``-g`` (ownership needs root), refuses any path outside the scratch root, and runs the real
   ``install`` on scratch paths -- modes are kept and asserted;
 * ``systemctl`` and ``systemd-analyze`` only log their argv (nothing is reloaded or verified);
-* ``stat -c %U:%a`` (and ``%U:%G:%a``) answers for the scratch data folder, credential and env file only (their real Overtoad
+* ``stat -c %U:%a`` (and ``%U:%G:%a``) answers for the scratch data folder, credential and env file only (their real owner
   is the test user), and is the real ``stat`` otherwise.
 
 Hermetic, including on the Overtoad's host after the installer has really run there (R3C D-4's

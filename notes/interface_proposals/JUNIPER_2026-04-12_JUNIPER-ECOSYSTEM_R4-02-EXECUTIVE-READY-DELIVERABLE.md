@@ -452,7 +452,7 @@ Every phase has at least one config-only kill switch. Every switch has a CI test
 
 ### 3.5 Cross-cutting concerns (CCC) ownership
 
-10 cross-cutting concerns span all phases. Each has an assigned Overtoad and a key acceptance criterion. Per-phase details are woven into the individual phase sections.
+10 cross-cutting concerns span all phases. Each has an assigned owner and a key acceptance criterion. Per-phase details are woven into the individual phase sections.
 
 | # | Concern | Owner | Key acceptance |
 |---|---|---|---|
@@ -467,7 +467,7 @@ Every phase has at least one config-only kill switch. Every switch has a CI test
 | CCC-09 | Feature flag lifecycle | project lead | Flag inventory committed; every flag has lifecycle; flip is separate PR; removal NOT in this migration |
 | CCC-10 | Latency instrumentation | frontend lead | `emitted_at_monotonic` in 0-cascor; full pipe in B; Grafana panel; SLO promotion after >=1 week |
 
-**Ownership binding**: CCC-02 Overtoad = canopy-backend lead; schema evolution Overtoad = backend-cascor lead; kill switch Overtoad = security lead; documentation Overtoad = project lead.
+**Ownership binding**: CCC-02 owner = canopy-backend lead; schema evolution owner = backend-cascor lead; kill switch owner = security lead; documentation owner = project lead.
 
 ### 3.5 Version bump discipline
 

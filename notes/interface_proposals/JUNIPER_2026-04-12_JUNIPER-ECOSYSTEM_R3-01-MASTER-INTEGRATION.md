@@ -1520,7 +1520,7 @@ Lock in the dual metric format contract (flat keys and nested keys both present 
 Version bump: canopy **patch**.
 
 ### 12.5 Exit gate
-1. Regression tests green. 2. CODEOWNERS rule enforced (test PR that touches `_normalize_metric.py` without Overtoad review is blocked). 3. Consumer audit doc reviewed and merged. 4. Pre-commit hook installed.
+1. Regression tests green. 2. CODEOWNERS rule enforced (test PR that touches `_normalize_metric.py` without owner review is blocked). 3. Consumer audit doc reviewed and merged. 4. Pre-commit hook installed.
 
 ### 12.6 Rollback
 None needed (test-only + doc phase). If future PR proposes removal, re-run Phase H scenario analysis.
@@ -1839,7 +1839,7 @@ Every phase has all required fields:
 
 ### 22.2 CCC coverage
 
-All 10 CCCs from R2-03 woven into Phase 0-cascor, B-pre-a, B, B-pre-b explicitly (§3.3.3, §4.3.2, §5.3.2, §6.3.2). Later phases (C-H) reference CCCs per their phase contracts (§7.4, etc.). Summary table in §16 lists Overtoad + acceptance per CCC. Phase x CCC matrix can be reconstructed from the per-phase CCC subsections.
+All 10 CCCs from R2-03 woven into Phase 0-cascor, B-pre-a, B, B-pre-b explicitly (§3.3.3, §4.3.2, §5.3.2, §6.3.2). Later phases (C-H) reference CCCs per their phase contracts (§7.4, etc.). Summary table in §16 lists owner + acceptance per CCC. Phase x CCC matrix can be reconstructed from the per-phase CCC subsections.
 
 ### 22.3 R2-04 decision coverage
 
@@ -1886,7 +1886,7 @@ All 16 RISK-NN entries from source doc §10 have entries in §15 with severity, 
 9. **§19 effort summary**: initially listed total as 13.5 days. Corrected to show R2-02's more conservative 15.75 expected, which includes the 2.25-day delta for audit, HMAC, and NetworkVisualizer work. The 13.5 from R1-05 §4.40 is the parallel-execution compressed estimate.
 10. **§3.4 SDK tests**: initially listed 12 tests. Added `test_correlation_map_bounded_at_256` and `test_len_pending_returns_to_zero_after_failure_modes` for 14 total per R2-01 §4.3.
 11. **§5.3.2 CCC-08**: initially only mentioned "REST paths kept". Added specific reference to regression harness file and golden shape file per R2-03 CCC-08 §10.3 items 2, 5.
-12. **§16 CCC summary**: initially did not assign owners per R2-03 §14.12 recommendation. Added Overtoad-role column.
+12. **§16 CCC summary**: initially did not assign owners per R2-03 §14.12 recommendation. Added owner-role column.
 
 ### 22.9 Confidence assessment
 

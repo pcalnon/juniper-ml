@@ -225,7 +225,7 @@ Leave implementation latitude where the Overtoad has not pinned a value; the num
         - add test-audit-specific ones:
           - a per-file-coverage-gap mapper
           - a click-through-test author
-      - (b) any **other Juniper issues** discovered while planning, each classified with a recommended Overtoad:
+      - (b) any **other Juniper issues** discovered while planning, each classified with a recommended owner:
         - design gaps
         - configuration problems
         - syntax errors

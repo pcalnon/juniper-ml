@@ -242,7 +242,7 @@ The newest session's per-server logs (host-local time, UTC-5; size in bytes):
   - **Usage report.** At each start 1.7.0 and HEAD send the OS, the dashboard flag, the version, the backend and the context name to `https://oraios-software.de/serena_usage.php`, unless `SERENA_USAGE_REPORTING=false` (or `CI` or `GITHUB_ACTIONS`) is set. 0c915bd1 has no such call.
   - **Dashboard.** With no `--open-web-dashboard False`, the template's `web_dashboard: True` and `web_dashboard_open_on_launch: True` open a dashboard at every start, served on `127.0.0.1`.
   - **Other egress.** The install fetches from `github.com` and PyPI. Serena downloads some language servers on demand (security page, "Supply Chain Security"); juniper-ml's [`.serena/project.yml`](../.serena/project.yml):5-6 lists only `python`, whose server is a pip dependency.
-  - **H4 too.** H4's entry has `"env": {}`, so Claude Code's Serena sends the report as well; that is outside H6, for H4's Overtoad.
+  - **H4 too.** H4's entry has `"env": {}`, so Claude Code's Serena sends the report as well; that is outside H6, for H4's owner.
 - **Evidence**: the cited lines.
 - **Fix**: `"env": {"SERENA_USAGE_REPORTING": "false"}` and `--open-web-dashboard False` on any kept entry, H4's included.
 

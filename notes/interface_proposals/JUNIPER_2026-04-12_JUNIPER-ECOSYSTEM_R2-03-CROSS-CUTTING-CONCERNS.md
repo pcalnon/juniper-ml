@@ -653,7 +653,7 @@ Runbooks, PR descriptions, changelog entries, threat-model acknowledgements, arc
 | **PR template check is bypassed** — maintainer force-merges | Low | CODEOWNERS prevents auto-merge without review |
 | **Changelog omission** — PR merged with no entry | Low | CI hard-fail on missing entry |
 | **Post-mortem never written** — incident contained, team moves on | Medium | Post-mortem is a required outcome of any page-severity alert fire |
-| **CODEOWNERS gap** — a file changes without review from the Overtoad | Medium | GitHub branch protection rule + required reviewer |
+| **CODEOWNERS gap** — a file changes without review from the owner | Medium | GitHub branch protection rule + required reviewer |
 | **Threat-model ack is performative** — box-checking without thought | Low | Security lead review cadence |
 | **Source doc patch omitted** in Round 5 | Medium | Round 5 checklist from R1-05 §6.4 item 5 |
 
@@ -1175,11 +1175,11 @@ These are risks that **emerge from the cross-cutting nature of the work**, not f
 
 **Mitigation**: CCC-01 rename mandate; Round 3 lead enforces pre-review grep check for `request_id`. R1-05 §8.6 item 1 is the explicit mandate.
 
-### 14.12 CCC-Risk-12: Cross-cutting concerns themselves have no Overtoad
+### 14.12 CCC-Risk-12: Cross-cutting concerns themselves have no owner
 
-**Scenario**: Each phase Overtoad focuses on their phase. Nobody owns CCC-02 (observability) end-to-end, so metrics drift and the metric catalog goes stale.
+**Scenario**: Each phase owner focuses on their phase. Nobody owns CCC-02 (observability) end-to-end, so metrics drift and the metric catalog goes stale.
 
-**Mitigation**: Round 3 consolidation nominates Overtoad-classes per CCC. R2-03 §13 matrix rows implicitly identify ownership; R2-03 §14.12 makes it explicit: observability Overtoad is the canopy-backend lead; schema evolution Overtoad is the backend-cascor lead; kill switch Overtoad is the security lead; documentation Overtoad is the project lead.
+**Mitigation**: Round 3 consolidation nominates owner-classes per CCC. R2-03 §13 matrix rows implicitly identify ownership; R2-03 §14.12 makes it explicit: observability owner is the canopy-backend lead; schema evolution owner is the backend-cascor lead; kill switch owner is the security lead; documentation owner is the project lead.
 
 ---
 
@@ -1350,7 +1350,7 @@ All issues 1-20 were corrected in the body of the document before the final self
 
 ### 16.6 Outstanding items for Round 3
 
-- **Ownership allocation**: CCC-02 observability Overtoad, CCC-03 kill switch Overtoad, CCC-04 cross-repo coordinator role. R2-03 §14.12 flags this; Round 3 should nominate names.
+- **Ownership allocation**: CCC-02 observability owner, CCC-03 kill switch owner, CCC-04 cross-repo coordinator role. R2-03 §14.12 flags this; Round 3 should nominate names.
 - **CCC-05 contract test fake harness bootstrap**: who writes the `FakeCascorServerHarness` first — it's a prerequisite for canopy Phase B tests and lives in `juniper-cascor-client/testing/server_harness.py`. Round 3 should assign Phase A or Phase 0-cascor ownership.
 - **CCC-07 compose / Helm guardrail**: R2-03 §9.3 item 10 proposes a CI guardrail that refuses weakening flags in prod configs. Implementation details (GitHub Actions? pre-commit? yaml-lint?) are Round 3 decisions.
 - **CCC-09 flag flip PR template**: R2-03 §11.3 item 6 says "flag flip is a separate PR." A PR template for flag-flip PRs should enforce the "reference the criteria" field.
@@ -1376,7 +1376,7 @@ Target: 1200-2000 lines. Final count estimated at ~1700-1800 lines including thi
 
 ### 16.10 Final posture
 
-R2-03 treats cross-cutting concerns as first-class deliverables rather than per-phase afterthoughts. Every CCC has an Overtoad, acceptance criteria, phase touchpoints, and a risk profile. The phase × CCC matrix in §13 is the single index that Round 3 consumers can walk to see what each phase must deliver for each concern.
+R2-03 treats cross-cutting concerns as first-class deliverables rather than per-phase afterthoughts. Every CCC has an owner, acceptance criteria, phase touchpoints, and a risk profile. The phase × CCC matrix in §13 is the single index that Round 3 consumers can walk to see what each phase must deliver for each concern.
 
 The most impactful findings:
 
