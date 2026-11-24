@@ -18,7 +18,9 @@ Group=duplicati
 # and the Dropbox daemon read them through the group and neither can rewrite or unlink one.
 UMask=0027
 Nice=19
-IOSchedulingClass=idle
+# Owner ruling 2026-11-23 (recovery plan §6.6, finding 41): best-effort, not idle. In the idle class the
+# job waited out every other process's I/O on the busy /home disk, and its daily runs grew to 30 h.
+IOSchedulingClass=best-effort
 IOSchedulingPriority=7
 EnvironmentFile=-/etc/default/duplicati
 # The settings encryption key: a root-only file, exposed to the service as
