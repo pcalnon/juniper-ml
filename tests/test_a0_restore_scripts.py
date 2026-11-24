@@ -23,8 +23,14 @@ Pins, for each script:
 * the restore script refuses a restore directory inside the backup Source before anything runs.
 
 Hermetic: ``duplicati-cli`` is a PATH stub that records what it saw; every path comes through the scripts'
-own ``YAMAGUCHI_*`` overrides and points into a temporary directory. No Duplicati binary, no
+own ``YAMAGUCHI_*`` overrides and points into a temporary directory, except one restore path outside every
+home, which the PATH ``install`` stub records and never creates. No Duplicati binary, no
 ``/usr/lib/duplicati``, no ``/mnt/Backups``, no real credential file.
+
+The ``install`` stub is a safety net with its own tests (``InstallStubSafetyNet``). It refused every argument
+under ``/home/`` until 2026-11-24, which failed 10 of the 17 tests on any host whose ``TMPDIR`` is under
+``/home``, as the repo's ``tmp/`` is on the Linux workstation since the 2026-10-26 rule. It now refuses a path
+that RESOLVES under ``/home`` or the real home unless it resolves inside the test's own scratch directory.
 """
 
 from __future__ import annotations
@@ -60,6 +66,47 @@ for a in "$@"; do case "$a" in --dbpath=*) db="${a#--dbpath=}" ;; esac; done
 exit "${STUB_CLI_EXIT:-0}"
 """
 
+# The PATH `install` stub, a safety net: if a regressed refusal let a host path through, `install -d` must not
+# create it. Each absolute argument is canonicalised first (`realpath -m`, so `..` and symlinks cannot walk out of
+# the scratch directory), then:
+# - inside STUB_SCRATCH, the test's own temporary directory: created (on a host whose TMPDIR is under /home, that
+#   directory is under /home too);
+# - equal to STUB_INSTALL_FAKE: recorded in STUB_INSTALL_REPORT and not created. One test needs a restore path
+#   outside the default Source, and on such a host every scratch directory is inside it;
+# - under /home or STUB_HOME, the real home wherever it is: refused with exit 97.
+INSTALL_STUB = r"""#!/usr/bin/env bash
+: "${STUB_SCRATCH:?the install stub needs STUB_SCRATCH}" "${STUB_HOME:?the install stub needs STUB_HOME}"
+for a in "$@"; do
+    [[ "$a" == /* ]] || continue
+    p="$(realpath -m -- "$a")"
+    case "$p" in
+        "${STUB_SCRATCH}" | "${STUB_SCRATCH}"/*) ;;
+        "${STUB_INSTALL_FAKE:-/nonexistent/no-fake-path}") echo "made=$p" >> "${STUB_INSTALL_REPORT:?}"; exit 0 ;;
+        /home | /home/* | "${STUB_HOME}" | "${STUB_HOME}"/*) echo "install stub REFUSES a host path: $a" >&2; exit 97 ;;
+    esac
+done
+exec /usr/bin/install "$@"
+"""
+
+# The restore path "elsewhere": outside every home, never created (the install stub records it instead).
+ELSEWHERE = Path("/nonexistent/juniper-a0-r7-elsewhere/out")
+
+
+def _real_home() -> str:
+    """The real home, canonical, as the install stub compares it."""
+    return os.path.realpath(os.path.expanduser("~"))
+
+
+def _write_install_stub(bin_dir: Path) -> Path:
+    stub = bin_dir / "install"
+    stub.write_text(INSTALL_STUB)
+    stub.chmod(0o755)
+    return stub
+
+
+def _install_stub_env(scratch: Path, report: Path, home: str | None = None) -> dict[str, str]:
+    return {"STUB_SCRATCH": os.path.realpath(scratch), "STUB_HOME": home or _real_home(), "STUB_INSTALL_REPORT": str(report)}
+
 
 if TYPE_CHECKING:  # the mixin is typed as a TestCase for mypy only; at runtime it is a plain object
     _MixinBase = unittest.TestCase
@@ -78,8 +125,9 @@ class _A0(_MixinBase):
         (self.bin / "duplicati-cli").write_text(CLI_STUB)
         (self.bin / "duplicati-cli").chmod(0o755)
         # Safety net: if a regressed refusal let a real-home path through, `install -d` must not create it.
-        (self.bin / "install").write_text('#!/usr/bin/env bash\nfor a in "$@"; do case "$a" in /home/*) echo "install stub REFUSES a host path: $a" >&2; exit 97 ;; esac; done\nexec /usr/bin/install "$@"\n')
-        (self.bin / "install").chmod(0o755)
+        _write_install_stub(self.bin)
+        self.install_report = self.tmp / "install-report"
+        self.install_fake: Path | None = None
         self.env_file = self.tmp / "env"
         self.env_file.write_text(f"# comment\nOTHER=x\nPASSPHRASE={PROBE_VALUE_MARKER}\n")
         self.env_file.chmod(0o600)
@@ -103,7 +151,10 @@ class _A0(_MixinBase):
             YAMAGUCHI_SOURCE_ROOT=str(self.source_root),
             STUB_REPORT=str(self.report),
             STUB_EXPECT_PASSPHRASE=PROBE_VALUE_MARKER,
+            **_install_stub_env(self.tmp, self.install_report),
         )
+        if self.install_fake is not None:
+            env["STUB_INSTALL_FAKE"] = str(self.install_fake)
         env.pop("PASSPHRASE", None)
         if self.source_root is None:  # the production default decides
             env.pop("YAMAGUCHI_SOURCE_ROOT", None)
@@ -229,7 +280,11 @@ class RestoreServerDbFromFileset(_A0, unittest.TestCase):
     def test_the_production_default_root_is_the_real_home(self):
         """R7 NIT-1 (mutants Q01, Q02): with the override unset, a path under /home/pcalnon is refused and a
         path elsewhere is not. `realpath -m` creates nothing, so this is hermetic on CI too; the PATH `install`
-        stub refuses /home/* in case the refusal ever regresses."""
+        stub refuses a path under /home outside this test's scratch directory in case the refusal ever regresses.
+
+        The path elsewhere is ELSEWHERE, outside every home, and the install stub records it instead of creating
+        it. It was a scratch path until 2026-11-24, which is inside the default Source on a host whose TMPDIR is
+        under /home/pcalnon, so the script rightly refused it there and this test failed."""
         probe = Path("/home/pcalnon/a0-r7-probe-must-not-exist")
         existed = probe.exists()
         r = self.run_with_default_root(str(probe / "x" / "y"))
@@ -238,10 +293,11 @@ class RestoreServerDbFromFileset(_A0, unittest.TestCase):
         self.assertFalse(self.report.exists(), "duplicati-cli must not run")
         if not existed:
             self.assertFalse(probe.exists(), "nothing may be created under the real home")
-        out = self.tmp / "outside" / "out"
-        r = self.run_with_default_root(str(out))
+        self.install_fake = ELSEWHERE
+        r = self.run_with_default_root(str(ELSEWHERE))
         self.assertEqual(r.returncode, 0, r.stderr)
-        self.assertTrue(out.is_dir())
+        self.assertEqual(self.install_report.read_text(), f"made={ELSEWHERE}\n", "the refusal let it through, so install was asked to create it")
+        self.assertIn(f"--restore-path={ELSEWHERE}\n", self.seen()["argv"])
         self.assertIn("${YAMAGUCHI_SOURCE_ROOT:-/home/pcalnon}", RESTORE.read_text(encoding="utf-8"))
 
     def test_a_source_root_given_through_a_symlink_is_canonicalised(self):
@@ -260,6 +316,46 @@ class RestoreServerDbFromFileset(_A0, unittest.TestCase):
         r = self.run_script(str(out))
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertTrue(out.is_dir())
+
+
+class InstallStubSafetyNet(unittest.TestCase):
+    """The `install` stub's own contract, so the net cannot go vacuous: a path that resolves under /home or the
+    real home is refused unless it resolves inside the test's scratch directory, whose paths it does create."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp(prefix="a0-net-"))
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.stub = _write_install_stub(self.tmp)
+
+    def install(self, path: str, home: str | None = None) -> subprocess.CompletedProcess:
+        env = RedactedEnv(os.environ, **_install_stub_env(self.tmp, self.tmp / "install-report", home))
+        return subprocess.run([str(self.stub), "-d", "-m", "0700", path], env=env, capture_output=True, text=True, timeout=30, check=False)
+
+    def assert_refused(self, r: subprocess.CompletedProcess) -> None:
+        self.assertEqual(r.returncode, 97, r.stderr)
+        self.assertIn("install stub REFUSES a host path", r.stderr)
+
+    def test_refuses_a_path_under_home(self):
+        probe = Path("/home/a0-net-probe-must-not-exist")
+        self.assert_refused(self.install(str(probe / "x")))
+        self.assertFalse(probe.exists())
+
+    def test_refuses_the_real_home_wherever_it_is(self):
+        """STUB_HOME covers a home outside /home (macOS's /Users/<name>)."""
+        self.assert_refused(self.install("/nonexistent/a0-net-fake-home/x", home="/nonexistent/a0-net-fake-home"))
+
+    def test_resolves_a_dot_dot_walk_out_of_the_scratch_directory(self):
+        """Lexically inside the scratch directory, really under /home: matched on the canonical path."""
+        escape = str(self.tmp) + "/.." * len(self.tmp.resolve().parts) + "/home/a0-net-escape-must-not-exist"
+        self.assert_refused(self.install(escape))
+
+    def test_creates_inside_its_scratch_directory_even_when_a_home_holds_it(self):
+        """The workstation's shape everywhere: the home given is the scratch directory's parent, as /home/pcalnon
+        holds the repo's tmp/. Without the scratch exemption this is refused, on CI's runners too."""
+        made = self.tmp / "made" / "here"
+        r = self.install(str(made), home=os.path.realpath(self.tmp.parent))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(oct(made.stat().st_mode & 0o777), "0o700")
 
 
 if __name__ == "__main__":
