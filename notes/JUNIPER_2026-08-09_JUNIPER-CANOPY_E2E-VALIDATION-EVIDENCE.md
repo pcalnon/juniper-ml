@@ -1005,7 +1005,7 @@ whose *existence* is the finding, not a mechanism.
 - **NOT established**: *which* pre-reducer mechanism discards it. "No dispatch ever carries the
   value" is consistent with renderer retirement — the arc's documented 12-slot behaviour, and the 69%
   request overlap measured on 2026-09-05 — but it is equally consistent with any other discard on the
-  path between response receipt and the aggregate action. **This measurement narrows the Overtoad; it
+  path between response receipt and the aggregate action. **This measurement narrows the owner; it
   does not name the mechanism**, and the retirement hypothesis is still a hypothesis.
 - A weak side-signal, recorded because it is cheap and might matter: `Callback failed: the server did
   not respond` appeared in the console of **2 of the 4** failing probe runs and **none** of the
@@ -1036,7 +1036,7 @@ Evidence, all under `reports/e2e-canopy-2026-09-02/transcripts/`:
 #### 2026-09-07, later — the writer's lifecycle never completes. Supersession is the leading
 #### hypothesis and is NOT established — a Lane B review took the earlier claim apart
 
-The previous block narrowed the Overtoad to "something discards the payload before the reducer" and
+The previous block narrowed the owner to "something discards the payload before the reducer" and
 explicitly refused to name the mechanism. **This block first claimed to name it — renderer-level
 supersession — and that claim did not survive review. It is withdrawn to a hypothesis.** What stands
 is the lifecycle observation; what does not is the inference from it. Both are below, in that order,
@@ -6959,7 +6959,7 @@ withdrawn.) What changed, all at once:
   reframe an earlier draft built on it is WITHDRAWN** (round-1 validation). Both writers were live:
   `ws-metrics-buffer` `gen` went 3 → 5 → 9, and `ws_liveness_store.metrics_live` read **`False` at four of
   the five samples** — and the poll is demoted only while that flag is true, so the REST poll was the
-  un-demoted Overtoad across the very interval (59 → 63) the draft credited to the WS appender. The store also
+  un-demoted owner across the very interval (59 → 63) the draft credited to the WS appender. The store also
   plateaus at 63 while cascor's own history reached 66. Two writers, one Output, nothing in the artifact
   attributing an increment to either. What survives: the store is **not** frozen at 0 during a live run
   with the relay up, which is what the 2026-08-31 GLOWPROBE also saw (4 and 23 rows in the detector's
@@ -13193,12 +13193,12 @@ documented. Owed as item 34, before the release that ships canopy#761.
     land after the second render, behind a screenshot; nothing holds the writer); item 31b's new manual sentence is
     wrong for the three 1-D patch targets; the handoff omitted ledger items 18–21, two of the four open P1s among
     them; item 33's recipe would not upgrade dash; item 27's drive never opens the Live Switch modal, so F-CANOPY-069's
-    gated click-through had no Overtoad, and the recipe's leg would have stamped `571743db`.
+    gated click-through had no owner, and the recipe's leg would have stamped `571743db`.
   - MINOR: wordings in F-CANOPY-069's blockquote (the alert's add time; response times read as alert lives; two of
     three new run dependencies; the floor's counter-position); F-CANOPY-028's stale-input example (a four-key analogue,
     not `early#2`'s 22-box body) and its M-PARAMETERS-06 claim (that row runs only in the `settled` arm); the eviction
     residual the fix leaves; the provenance sentence; the round-1 record's wording; statements true only at landing;
-    `--expected-head`'s Overtoad; the screenshots; the driver's forced arm, whose timing changed between the passes;
+    `--expected-head`'s owner; the screenshots; the driver's forced arm, whose timing changed between the passes;
     M-PARAMETERS-04's Expected cell; and an erratum to Phase 14's F-CANOPY-069 text: two callback pairs and three ids,
     not three pairs, and no registration overwritten (`callback_map` is keyed by each callback's whole output
     string; canopy#760's own `test_callback_map_and_served_list_agree` passes on `571743db`).

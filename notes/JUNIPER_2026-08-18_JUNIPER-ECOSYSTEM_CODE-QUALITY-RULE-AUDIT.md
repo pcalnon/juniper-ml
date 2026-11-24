@@ -1,7 +1,7 @@
 # `code_quality` Branch-Ruleset Rule — Fleet Audit
 
 **Project**: Juniper
-**Sub-Project**: juniper-ecosystem (all 9 repos, Overtoad `pcalnon`)
+**Sub-Project**: juniper-ecosystem (all 9 repos, owner `pcalnon`)
 **Author**: Paul Calnon
 **Status**: AUDIT — read-only; nothing was modified
 **Date**: 2026-08-18
@@ -32,7 +32,7 @@ and cited (§9, finding CQ-7).
 
 ## 1. Scope and checklist
 
-**Scope.** The `code_quality` rule on the `main` branch ruleset of the 9 Overtoad-`pcalnon` repos:
+**Scope.** The `code_quality` rule on the `main` branch ruleset of the 9 owner-`pcalnon` repos:
 `juniper-ml`, `juniper-cascor`, `juniper-canopy`, `juniper-data`, `juniper-data-client`,
 `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-deploy`, `juniper-recurrence`.
 
@@ -583,7 +583,7 @@ Open-PR census, all 9 repos, 2026-08-18 (`mergeable` warmed with a first GraphQL
   blocking rule**. A PR cannot reach `CLEAN` if `code_quality` is unsatisfiable.
 
   ```bash
-  gh api graphql -f query='{ repository(Overtoad:"pcalnon",name:"juniper-ml"){ pullRequest(number:1168){ mergeable mergeStateStatus } } }'
+  gh api graphql -f query='{ repository(owner:"pcalnon",name:"juniper-ml"){ pullRequest(number:1168){ mergeable mergeStateStatus } } }'
   # {"mergeable":"MERGEABLE","mergeStateStatus":"CLEAN"}
   ```
 

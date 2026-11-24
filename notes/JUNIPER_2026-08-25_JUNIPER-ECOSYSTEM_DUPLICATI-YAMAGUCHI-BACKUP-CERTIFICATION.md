@@ -718,7 +718,7 @@ Three **new** facts against option (b), all found today:
 
 - **sdb1's root is not writable by `pcalnon`** — owned `dnsmasq:pcalnon`, mode `drwxr-xr-x`
   (group has r-x only). A 512 MB `dd` probe returned `Permission denied`. Option (b) needs
-  a root-created, `chown`ed subdirectory before it is even possible. (The `dnsmasq` Overtoad is
+  a root-created, `chown`ed subdirectory before it is even possible. (The `dnsmasq` owner is
   a uid collision from another system — cosmetic, but it is why the group bit is the whole
   story.)
 - **sdb1 is not a spare disk.** It holds `Archive/`, `Downloads/`, `Movies/`, `Music/`,

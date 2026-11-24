@@ -1201,7 +1201,7 @@ What actually helps, none of which is Proposal B:
    90%. It cannot run in CI — the file is outside the repo — but it can run from
    `util/agent_suite_doctor.py`, which is already the read-only health check.
 
-**Recommendation: treat `MEMORY.md` as a separate work item with its own Overtoad and its own
+**Recommendation: treat `MEMORY.md` as a separate work item with its own owner and its own
 deadline.** MECH §9 item 6 says the same. It is the *more urgent* of the two problems — `AGENTS.md`
 costs tokens, `MEMORY.md` costs data — and folding it into an `AGENTS.md` proposal, including this
 one, is how it gets deferred again.

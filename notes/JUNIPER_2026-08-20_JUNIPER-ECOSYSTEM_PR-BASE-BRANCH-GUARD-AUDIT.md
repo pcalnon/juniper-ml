@@ -551,7 +551,7 @@ gh api "repos/pcalnon/juniper-recurrence/commits/415c8c97/check-runs?check_name=
 Both appear in the merge box's rollup:
 
 ```bash
-gh api graphql -f query='{repository(Overtoad:"pcalnon",name:"juniper-recurrence"){pullRequest(number:112){commits(last:1){nodes{commit{statusCheckRollup{contexts(first:100){nodes{__typename ... on CheckRun{name conclusion startedAt checkSuite{workflowRun{databaseId}}}}}}}}}}}}'
+gh api graphql -f query='{repository(owner:"pcalnon",name:"juniper-recurrence"){pullRequest(number:112){commits(last:1){nodes{commit{statusCheckRollup{contexts(first:100){nodes{__typename ... on CheckRun{name conclusion startedAt checkSuite{workflowRun{databaseId}}}}}}}}}}}}'
 # Guard PR base branch  SUCCESS  2026-08-14T01:40:31Z  31761343605
 # Guard PR base branch  SUCCESS  2026-08-14T01:41:56Z  31761414448
 ```
@@ -704,7 +704,7 @@ empirically; the payload semantics are documented in the `github.event` definiti
   juniper-cascor for `BASE_REF_CHANGED_EVENT` returned **zero** matching timeline nodes.
 
 ```bash
-gh api graphql -f query='{repository(Overtoad:"pcalnon",name:"juniper-cascor"){pullRequest(number:441){timelineItems(first:40,itemTypes:[BASE_REF_CHANGED_EVENT]){totalCount nodes{__typename}}}}}' \
+gh api graphql -f query='{repository(owner:"pcalnon",name:"juniper-cascor"){pullRequest(number:441){timelineItems(first:40,itemTypes:[BASE_REF_CHANGED_EVENT]){totalCount nodes{__typename}}}}}' \
   --jq '.data.repository.pullRequest.timelineItems | {totalCount, types: [.nodes[].__typename] | group_by(.) | map({t:.[0], n:length})}'
 # {"totalCount":37,"types":[]}       <- filter honoured on nodes; totalCount is unfiltered
 ```
@@ -766,7 +766,7 @@ conflict between the guard and the fleet's own CI configuration. Low likelihood 
 **Answer: none. Requiring this guard today breaks zero open PRs.**
 
 ```bash
-gh api graphql -f query='{a:repository(Overtoad:"pcalnon",name:"juniper-ml"){pullRequests(states:OPEN){totalCount}} ... }'
+gh api graphql -f query='{a:repository(owner:"pcalnon",name:"juniper-ml"){pullRequests(states:OPEN){totalCount}} ... }'
 # ml 2, cascor 0, canopy 0, data 0, data-client 0, cascor-client 0, cascor-worker 0, deploy 0, recurrence 0
 ```
 

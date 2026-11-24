@@ -319,7 +319,7 @@ tree on 2026-08-16, it touches at minimum:
 - **504 tracked files contain a `pcalnon/` string** (`git grep -l 'pcalnon/' | wc -l`) — overwhelmingly
   doc and issue links, but they all rot on transfer. GitHub redirects transferred repos, so these
   degrade rather than break immediately.
-- **The Overtoad-coupled code**, which does break: `util/open_signed_pr.py` (`--owner` defaults to `pcalnon`,
+- **Owner-coupled code**, which does break: `util/open_signed_pr.py` (`--owner` defaults to `pcalnon`,
   line 183), `util/release_train/ceremony.py`, and `.github/workflows/publish.yml`.
 - **PyPI trusted publishing** — OIDC subjects pin the repository owner, so all 7 publishers must be
   re-registered on PyPI *and* TestPyPI before the next release, or every publish fails at the gate.
@@ -328,7 +328,7 @@ tree on 2026-08-16, it touches at minimum:
 
 Note what is *not* affected, which narrows the job usefully: `util/release_train/registry.yaml`,
 `ECOSYSTEM_REPOS` in `docs-full-check.yml`, and `DEFAULT_REPOS` in `validate_claude_yaml_access.bash`
-all carry **bare repo names** with no Overtoad prefix, and need no change.
+all carry **bare repo names** with no owner prefix, and need no change.
 
 **CQ-9 — `code_quality` starts evaluating on migration. Budget for it explicitly.**
 

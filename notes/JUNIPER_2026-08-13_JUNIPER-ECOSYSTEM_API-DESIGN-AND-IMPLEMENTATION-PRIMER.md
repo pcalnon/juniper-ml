@@ -3388,7 +3388,7 @@ juniper-data implements exactly this set: collection at `datasets.py:257`, item 
 **Singletons** — resources with no sibling and no identifier (`/stats`, `/health`, `/settings`, `/me`) — are legitimate. Treat them as items: GET, possibly PUT/PATCH, never POST-to-create.
 
 **When nesting hurts.** Nest only when the child genuinely cannot be addressed without the parent. Three signals it has gone wrong: the nested path is not the *only* way to reach the item, so you now have two URIs for one resource (RFC 9110 §4.2.3: "distinct resources SHOULD NOT be identified by HTTP URIs that are equivalent after normalization"); depth exceeds two levels below the collection,
-forcing clients to know IDs they do not care about; or the parent is a filter rather than an Overtoad — `/users/{id}/orders` where orders have global IDs should be `/orders?user={id}`, because the relationship is a query, not containment.
+forcing clients to know IDs they do not care about; or the parent is a filter rather than an owner — `/users/{id}/orders` where orders have global IDs should be `/orders?user={id}`, because the relationship is a query, not containment.
 
 #### Canonical URIs and aliases
 
@@ -4879,7 +4879,7 @@ guarantees lost. And clients written against codes grow tolerance for missing co
 parsing `detail`.
 
 **Code-primary — guardrails.** Still emit `type`, still make it absolute, and document that the URI is normative and
-the code derived. Namespace the code with an Overtoad segment from day one, and lint that every code maps to exactly one
+the code derived. Namespace the code with an owner segment from day one, and lint that every code maps to exactly one
 URI and vice versa.
 
 **Recommendation** (labelled as such): emit both and say which wins. Make `type` an absolute `https` URI under an

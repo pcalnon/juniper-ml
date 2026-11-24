@@ -1,7 +1,7 @@
 # JR-REC-* Requirements Block — Proposal (Wave 7.6 / Q-12)
 
 **Project**: Juniper — Cascade Correlation Neural Network Research Platform
-**Sub-Project**: Requirements snapshot — juniper-recurrence Overtoad block
+**Sub-Project**: Requirements snapshot — juniper-recurrence owner block
 **Author**: Paul Calnon
 **Date**: 2026-08-08
 **Status**: **RATIFIED 2026-08-21** — ingested by the v5 snapshot refresh; all 11 IDs are official. Drop the *(proposed)* qualifier when citing `JR-REC-*` in PR descriptions.
@@ -12,7 +12,7 @@
 
 ## 1. Enum change proposed
 
-`notes/requirements/README.md` Overtoad-repo enum (currently `cas/can/dat/dep/ml/cwk/ccl/dcl`, fixed as of the 2026-05-12 snapshot) gains:
+`notes/requirements/README.md` owner-repo enum (currently `cas/can/dat/dep/ml/cwk/ccl/dcl`, fixed as of the 2026-05-12 snapshot) gains:
 
 | Code  | Repo                                                                                                       |
 |-------|------------------------------------------------------------------------------------------------------------|
