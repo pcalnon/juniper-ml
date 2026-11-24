@@ -676,7 +676,9 @@ Group=duplicati
 # and the Dropbox daemon read them through the group and neither can rewrite or unlink one.
 UMask=0027
 Nice=19
-IOSchedulingClass=idle
+# Amended 2026-11-23 (owner ruling; notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md
+# §6.6 and §6.3.1 finding 41): best-effort, not idle, which let any other I/O on /home starve the job.
+IOSchedulingClass=best-effort
 IOSchedulingPriority=7
 EnvironmentFile=-/etc/default/duplicati
 # The settings encryption key: a root-only file, exposed to the service as
