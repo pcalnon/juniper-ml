@@ -18,7 +18,7 @@ Pinned here:
 - the entry, argument for argument, with the checkout's resolved path; a worktree's ``.git`` file counts;
 - the four defects the entry fixes: an entry without ``--project`` (audit A2-F1), one bound to another
   checkout (A2-F4), an unpinned ``git+https://github.com/oraios/serena`` (D10), and one that leaves
-  Serena's usage report on (SER-E1 of the H6 audit; owner ruling 2026-10-25). ``--check`` fails on each,
+  Serena's usage report on (SER-E1 of the H6 audit; Overtoad ruling 2026-10-25). ``--check`` fails on each,
   and a write replaces each. The opt-out is ``SERENA_USAGE_REPORTING`` set to exactly ``false``, the one
   value Serena v1.7.0 compares against;
 - other servers and other top-level keys are kept; a changed file is backed up first and keeps its mode;

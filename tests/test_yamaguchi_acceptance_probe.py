@@ -288,7 +288,7 @@ class ExportTest(unittest.TestCase):
         self.assertIn("schedule time of day is 14:00:00 UTC (want 13:00:00)", finding.summary)
 
     def test_ac2_counts_are_the_2026_11_15_ruling(self) -> None:
-        # The owner changed the sources and filters on purpose; the design fixed 2 and 45 until then.
+        # The Overtoad changed the sources and filters on purpose; the design fixed 2 and 45 until then.
         self.assertEqual((probe.EXPECTED_SOURCES, probe.EXPECTED_FILTERS), (5, 76))
 
     def test_ac2_fails_for_each_deviation(self) -> None:
@@ -368,7 +368,7 @@ class ExportTest(unittest.TestCase):
         self.assertIn("set more than once: blocksize", probe.judge_options(twice).summary)
 
     def test_the_ruled_policy_is_the_2026_11_14_amendment(self) -> None:
-        # Q7: the two-week frame keeps every fileset. The read-back judges the string the owner types, exactly.
+        # Q7: the two-week frame keeps every fileset. The read-back judges the string the Overtoad types, exactly.
         self.assertEqual(probe.RULED_RETENTION, "2W:U,6M:1W,2Y:1M,5Y:2M")
         restored = probe.judge_options(export(retention="2W:U,6M:1W,2Y:1M,5Y:2M"), "restored")
         self.assertEqual(restored.verdict, "PASS")
@@ -423,12 +423,12 @@ class Ac5Test(unittest.TestCase):
 
     def test_the_sittings_own_sequence_is_one_day_pending(self) -> None:
         # 2026-11-08 to 11-14 as recorded: OK, RUNNING, ALERT NOT_SUCCESS, RUNNING three times, OK. The handoff's grep
-        # could not show the ALERT. Under the owner's 2026-11-15 ruling the three RUNNING days do not count.
+        # could not show the ALERT. Under the Overtoad's 2026-11-15 ruling the three RUNNING days do not count.
         running = [watchdog_line(noon(day), code="RUNNING", details=f"task {task} for backup 2 running 4.0 h") for day, task in ((11, 46), (12, 48), (13, 49))]
         lines = [watchdog_line(noon(8)), watchdog_line(noon(9), code="RUNNING", details="task 43 for backup 2 running 4.0 h"), watchdog_line(noon(10), "ALERT", "NOT_SUCCESS", details="newest log entry Backup x ParsedResult=Warning [notify-send rc=0]")] + running + [watchdog_line(noon(14))]
         finding = self.judge(lines, now=noon(14) + dt.timedelta(hours=7))
         self.assertEqual(finding.verdict, "PENDING")
-        self.assertIn("OK OK on 1 consecutive day(s) of 3: 2026-11-14 OK; the 3 day(s) before read OK RUNNING and do not count (owner ruling 2026-11-15)", finding.summary)
+        self.assertIn("OK OK on 1 consecutive day(s) of 3: 2026-11-14 OK; the 3 day(s) before read OK RUNNING and do not count (Overtoad ruling 2026-11-15)", finding.summary)
         self.assertEqual((finding.facts["streak_days"], finding.facts["running_days"]), (1, 3))
         self.assertIn("no JOB_MISSING record", finding.summary)
 
@@ -577,7 +577,7 @@ class Ac6aTest(unittest.TestCase):
             ("stale", snapshot_file(fire(10)), "is not the newest run's"),
             ("stub", snapshot_file(size=4096), "a stub"),
             ("loose mode", snapshot_file(mode=0o644), "mode 0644"),
-            ("other owner", snapshot_file(owner="root"), "owner root"),
+            ("other owner", snapshot_file(owner="root"), "Overtoad root"),
         ):
             with self.subTest(case=label):
                 finding = probe.judge_ac6a(snapshot, four_days(), NOW, me="operator")
@@ -943,7 +943,7 @@ class ScheduleTest(unittest.TestCase):
 
 
 class ScheduleMoveTest(unittest.TestCase):
-    """The owner moved the job from 14:00Z to 13:00Z (07:00 CST), and the snapshot from 13:45Z to 12:45Z, on 2026-11-15."""
+    """The Overtoad moved the job from 14:00Z to 13:00Z (07:00 CST), and the snapshot from 13:45Z to 12:45Z, on 2026-11-15."""
 
     def at(self, day: int, hour: int, minute: int = 0, second: int = 0) -> dict:
         return summarized(operation="Backup", begin=dt.datetime(2026, 11, day, hour, minute, second, tzinfo=UTC), fraction="0000000")
@@ -1082,7 +1082,7 @@ class ServerTest(_Stubbed):
         os.chmod(self.cred, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)  # 0644: the mode the API client must refuse
         unsafe = probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["error"]
         self.assertIn("credential refused: FATAL: web credential file", unsafe)
-        self.assertIn("mode 0644", unsafe, "the client's own sentence -- a path, a mode, an owner -- is kept")
+        self.assertIn("mode 0644", unsafe, "the client's own sentence -- a path, a mode, an Overtoad -- is kept")
         never_leaks(self, unsafe)
 
     def test_the_login_failure_pattern_is_the_api_clients_own_line(self) -> None:

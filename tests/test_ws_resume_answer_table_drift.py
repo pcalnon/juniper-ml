@@ -1,7 +1,7 @@
 """Drift gate: the shared ``/ws/training`` resume answer table is byte-identical in juniper-ml and juniper-cascor.
 
 juniper-service-core's ``/ws/training`` handler is the de-cascored core of juniper-cascor's, and the two answer a
-resume frame the same way (juniper-cascor#754's four cursor rules, taken by service-core on the owner's rulings of
+resume frame the same way (juniper-cascor#754's four cursor rules, taken by service-core on the Overtoad's rulings of
 2026-11-12 and 2026-11-13). One table of resume frames and the answers a client reads off the wire, per server
 state, holds that: it is DATA, not code, and each repository keeps a copy that its own test drives its own handler
 against over a real WebSocket:

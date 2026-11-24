@@ -1,4 +1,4 @@
-"""Hermetic coverage for the tier-3 full-set lane (backup design §7.9; owner ruling D-5, 2026-10-25).
+"""Hermetic coverage for the tier-3 full-set lane (backup design §7.9; Overtoad ruling D-5, 2026-10-25).
 
 Tier 3 writes a monthly ``full`` set -- the ten application repos, ``juniper-legacy`` and the parent-level
 ``notes prompts util backups`` directories -- to the offline drive "Blackbox Part 1" (fstab UUID
@@ -53,7 +53,7 @@ RUNNER_TEXT = RUNNER.read_text(encoding="utf-8")
 SCHEDULER_TEXT = SCHEDULER.read_text(encoding="utf-8")
 INSTALLER_TEXT = INSTALLER.read_text(encoding="utf-8")
 
-FULL_DEVICE = "dee46823-4119-4914-ac15-08194ee27d81"  # "Ext WD Passport, Blackbox Part 1" in the owner's /etc/fstab
+FULL_DEVICE = "dee46823-4119-4914-ac15-08194ee27d81"  # "Ext WD Passport, Blackbox Part 1" in the Overtoad's /etc/fstab
 FULL_BACKUP_DIR = "Juniper/Backups"
 FULL_LABEL = "full"
 EXTRA_CONTENT = ("juniper-legacy", "notes", "prompts", "util", "backups")
@@ -708,7 +708,7 @@ class TestInstallerLanes(unittest.TestCase):
             fx = _Tier3Fixture(tmp)
             fx.unit_dir.mkdir(parents=True)
             for unit in INSTALLED_UNITS:
-                (fx.unit_dir / unit).write_text(f"# the owner's tier-2 {unit}\n", encoding="utf-8")
+                (fx.unit_dir / unit).write_text(f"# the Overtoad's tier-2 {unit}\n", encoding="utf-8")
             before = {unit: (fx.unit_dir / unit).read_bytes() for unit in INSTALLED_UNITS}
             result = fx.install_lane("--lane", "full")
             self.assertEqual(result.returncode, 0, msg=_out(result))

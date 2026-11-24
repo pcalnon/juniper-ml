@@ -137,7 +137,7 @@ DELIBERATE_EPOCH_SPLITS = {
 # undecided case into DELIBERATE_EPOCH_SPLITS would launder "nobody has looked at this" into "this is
 # on purpose", which is precisely how the original defect survived in spiral-smoke.yaml for a month.
 # EMPTY as of 2026-09-07, and that is the intended resting state -- an entry here is a config nobody
-# has ruled on yet, not a permanent category. xor-staged.yaml was the only occupant; the owner ruled
+# has ruled on yet, not a permanent category. xor-staged.yaml was the only occupant; the Overtoad ruled
 # on P2 item 0.5 and juniper-cascor#629 set output_epochs: 200, so the split is gone and the
 # exemption with it. test_exempt_entries_are_not_stale forces exactly this: it asserts every exempt
 # config STILL carries the split, so a fixed config cannot quietly keep its waiver.

@@ -11,7 +11,7 @@ License:     MIT License
 ``util/`` is outside every pre-commit Python hook, so this suite is the gate.
 The script is the mechanical P0/P1 open-count for the canopy E2E Phase 2 exit
 criterion (plan §6.3). A green triage that counts ACCEPTED as FIXED overstates
-what shipped; counting ACCEPTED as OPEN keeps an owner-settled exit criterion
+what shipped; counting ACCEPTED as OPEN keeps an Overtoad-settled exit criterion
 red.
 
 Hermetic: every case feeds a TemporaryDirectory ledger. The real evidence note
@@ -60,9 +60,9 @@ def _totals(stdout: str) -> tuple[int, int, int, int]:
 
 
 class AcceptedIsAThirdDisposition(unittest.TestCase):
-    """Plan §6.3: owner sign-off closes the exit criterion without pretending a fix shipped."""
+    """Plan §6.3: Overtoad sign-off closes the exit criterion without pretending a fix shipped."""
 
-    NOTE = "**F-CANOPY-004 — server lag (P0/P1 systemic; owner ACCEPTED 2026-08-26).**\n" "**F-CANOPY-001 — dark-mode toggle (P2, OPEN).**\n" "**F-CANOPY-003 — loading state (P1; VERIFIED LIVE, FIXED).**\n"
+    NOTE = "**F-CANOPY-004 — server lag (P0/P1 systemic; Overtoad ACCEPTED 2026-08-26).**\n" "**F-CANOPY-001 — dark-mode toggle (P2, OPEN).**\n" "**F-CANOPY-003 — loading state (P1; VERIFIED LIVE, FIXED).**\n"
 
     def test_accepted_is_neither_fixed_nor_open(self) -> None:
         result = _run(self.NOTE)
@@ -84,7 +84,7 @@ class AcceptedIsAThirdDisposition(unittest.TestCase):
         self.assertEqual(_totals(result.stdout), (3, 1, 1, 1))
 
     def test_fixed_in_the_same_tail_wins_over_accepted(self) -> None:
-        result = _run("**F-CANOPY-099 — owner ACCEPTED then landed (P1, FIXED).**\n")
+        result = _run("**F-CANOPY-099 — Overtoad ACCEPTED then landed (P1, FIXED).**\n")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(_totals(result.stdout), (1, 1, 0, 0))
         self.assertRegex(result.stdout, r"(?m)^FIXED  P1     F-CANOPY-099\b")

@@ -730,7 +730,7 @@ if __name__ == "__main__":
 class RescoreSourceRecovered(unittest.TestCase):
     """Re-scoring must reclassify a run WITHOUT flattering the follow rate.
 
-    Owner decision 2026-08-31: a run where the agent produced the correct answer
+    The Overtoad decision 2026-08-31: a run where the agent produced the correct answer
     from source rather than through the relocated pointer is not the same event
     as failing to obtain the fact. The dangerous implementation is the one that
     also drops the run from the denominator: 9 of the real ledger's 11

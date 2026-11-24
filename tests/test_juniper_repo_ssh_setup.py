@@ -720,7 +720,7 @@ class UsageTest(_Fixture):
             "no repo": [],
             "unknown option": ["--frobnicate", "k8s"],
             "two repos": ["k8s", "ml"],
-            "owner without value": ["k8s", "--owner"],
+            "Overtoad without value": ["k8s", "--owner"],
             "title without value": ["k8s", "--title"],
             "empty title": ["--title", "", "k8s"],
             "ssh-dir without value": ["k8s", "--ssh-dir"],
@@ -730,7 +730,7 @@ class UsageTest(_Fixture):
             "shell syntax": ["k8s;id"],
             "empty short name": ["juniper-"],
             "leading dash": ["-k8s"],
-            "bad owner": ["--owner", "a/b", "k8s"],
+            "bad Overtoad": ["--owner", "a/b", "k8s"],
             "title with a quote": ["--title", 'Deploy "Key"', "k8s"],
             "title with a newline": ["--title", "Deploy\nKey", "k8s"],
         }
