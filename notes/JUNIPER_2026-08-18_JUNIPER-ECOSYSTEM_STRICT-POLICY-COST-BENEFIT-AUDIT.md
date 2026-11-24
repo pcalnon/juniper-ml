@@ -32,7 +32,7 @@ independently demonstrated twice in the last three weeks (§6.1).
 ## 1. Scope
 
 Audit the cost and the benefit of `required_status_checks.strict_required_status_checks_policy: true`
-("require branches to be up to date before merging") on the 9 owner (`pcalnon`) repositories:
+("require branches to be up to date before merging") on the 9 Overtoad (`pcalnon`) repositories:
 `juniper-ml`, `juniper-cascor`, `juniper-canopy`, `juniper-data`, `juniper-data-client`,
 `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-deploy`, `juniper-recurrence`.
 
@@ -128,7 +128,7 @@ juniper-recurrence    2026-08-18T03:18:00-05:00  n=9  seq=1   prev_n=8  prev_seq
 ```
 
 Corroborated by `gh issue view 1011 --repo pcalnon/juniper-ml` → `CLOSED closed=2026-08-18T08:22:12Z
-[owner-decision] Promote per-PR Sequence Safety to a required check`, and
+[Overtoad-decision] Promote per-PR Sequence Safety to a required check`, and
 `gh pr view 1166` → `MERGED 2026-08-18T09:42:39Z chore(sequence-safety): promote the per-PR screen to
 required, fleet-wide`.
 
@@ -297,7 +297,7 @@ strict=true) → **0.59**.
 **+0.20 syncs per merge — about one third of the observed rate**. The other two thirds is merge volume:
 at ≤44 merges/week the rate is 0.00–0.11 *with `strict` off*, and juniper-cascor shows 0.00 at 13
 merges/week off and 1.15 at 55 merges/week on. **[ESTIMATE — confounded]**: the PRE window is the storm,
-during which the owner was already refreshing stale branches voluntarily
+during which the Overtoad was already refreshing stale branches voluntarily
 (`…FLOOD-REMEDIATION-ANALYSIS.md:41`: "With strict=false, each of the 125 cursor PRs was manually
 true-merged; stale branches were refreshed via GitHub-web **Update branch**"). So the strict=false
 baseline at high volume is *elevated by behaviour*, and the true marginal effect could be larger than
@@ -329,7 +329,7 @@ paying a tax to relax, and the 2 high-traffic repos are the ones where collision
 
 ## 5. Findings — is the gate even binding? (criterion H)
 
-### H-1 — `major` — 1.9% of merges land with a RED head; `strict` does not bind the owner
+### H-1 — `major` — 1.9% of merges land with a RED head; `strict` does not bind the Overtoad
 
 **Evidence** (`scratchpad/final_head_state.py`; per merged PR, `check-runs` on the PR's final commit):
 
@@ -353,11 +353,11 @@ TOTAL                     430    421     8     1      0   1.9%
 ```
 
 Bypass actors on juniper-ml (`gh api repos/pcalnon/juniper-ml/rulesets/13805432 --jq '.bypass_actors[]'`):
-`DeployKey mode=always`, **`RepositoryRole id=5 mode=always`** (admin = owner), `Integration 29110
+`DeployKey mode=always`, **`RepositoryRole id=5 mode=always`** (admin = Overtoad), `Integration 29110
 always`, `Integration 1143301 always`, `Integration 4362741 pull_request`.
 
 This confirms the flood analysis's own caveat verbatim (`…FLOOD-REMEDIATION-ANALYSIS.md:523`): "**RepositoryRole-5
-admin bypass still lets the owner click merge past it** — so it informs, it does not bind."
+admin bypass still lets the Overtoad click merge past it** — so it informs, it does not bind."
 
 ### H-2 — `major` — ~12% of freshness-synced PRs merged before the re-test could finish
 
@@ -528,7 +528,7 @@ Enumerating juniper-ml's non-`main-verify` `main` failures in the POST window wi
 Of the 4 that did come from PR merges, two (`bb2ed045e`, `136718321`) failed on
 `Pre-commit (Python 3.12/3.13/3.14)` — i.e. the `--all-files` union class (§7, V-3).
 
-**Recommended fix**: routing owner commits through PRs would remove more `main` breakage than any change to
+**Recommended fix**: routing Overtoad commits through PRs would remove more `main` breakage than any change to
 `strict`. Out of scope here; flagged as the higher-yield lever.
 
 ---
@@ -771,7 +771,7 @@ real. There is no repo where relaxing buys more than it costs.
 | M-2 | Use `gh api -X PUT /repos/pcalnon/<repo>/pulls/<N>/update-branch` rather than a local rebase | One call, server-side, GitHub-signed (satisfies `required_signatures`); no checkout | runbook §8.1; proven twice on ml#1134 |
 | M-3 | Enable `allow_auto_merge` on the 8 repos where it is `false`, and route merges through `--auto` | Merges the instant the fresh run is green, shrinking the re-invalidation window that costs ~15% of syncs | A-3, C-3 |
 | M-4 | Batch merges into windows rather than interleaving all day | The tax is superlinear in merge rate: ml 0.59 at 76 merges/week vs 0.99 at 128 | C-4 |
-| M-5 | Route owner commits through PRs instead of pushing to `main` | Removes the **largest** single source of post-adoption `main` breakage (5 of ml's 9) | B-5 |
+| M-5 | Route Overtoad commits through PRs instead of pushing to `main` | Removes the **largest** single source of post-adoption `main` breakage (5 of ml's 9) | B-5 |
 
 **Record correction (not optional if the analysis is to stay trustworthy):** amend
 `…FLOOD-REMEDIATION-ANALYSIS.md:222-233` (and `:291`, `:565`, `:588`, `:666`) — the verified prevention
@@ -836,7 +836,7 @@ gh api repos/pcalnon/<repo> --jq '{owner:.owner.type,private,allow_auto_merge,al
 
 # B/C-1 merged PRs with commit lists (GraphQL; `gh pr list --json commits` exceeds the node budget)
 gh api graphql -F owner=pcalnon -F name=<repo> -f query='
-  query($owner:String!,$name:String!,$cursor:String){repository(owner:$owner,name:$name){
+  query($owner:String!,$name:String!,$cursor:String){repository(Overtoad:$owner,name:$name){
     pullRequests(states:MERGED,first:25,after:$cursor,orderBy:{field:UPDATED_AT,direction:DESC}){
       pageInfo{hasNextPage endCursor}
       nodes{number title createdAt mergedAt headRefName author{login}

@@ -1,7 +1,7 @@
 # `code_quality` Branch-Ruleset Rule — Fleet Audit
 
 **Project**: Juniper
-**Sub-Project**: juniper-ecosystem (all 9 repos, owner `pcalnon`)
+**Sub-Project**: juniper-ecosystem (all 9 repos, Overtoad `pcalnon`)
 **Author**: Paul Calnon
 **Status**: AUDIT — read-only; nothing was modified
 **Date**: 2026-08-18
@@ -32,7 +32,7 @@ and cited (§9, finding CQ-7).
 
 ## 1. Scope and checklist
 
-**Scope.** The `code_quality` rule on the `main` branch ruleset of the 9 owner-`pcalnon` repos:
+**Scope.** The `code_quality` rule on the `main` branch ruleset of the 9 Overtoad-`pcalnon` repos:
 `juniper-ml`, `juniper-cascor`, `juniper-canopy`, `juniper-data`, `juniper-data-client`,
 `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-deploy`, `juniper-recurrence`.
 
@@ -189,7 +189,7 @@ and the enablement how-to):
 i.e. **GitHub Team or GitHub Enterprise Cloud**. And `content/code-security/how-tos/maintain-quality-code/enable-code-quality.md`:
 
 > "## Prerequisites
-> * An enterprise owner must have allowed {% data variables.product.prodname_code_quality_short %} in
+> * An enterprise Overtoad must have allowed {% data variables.product.prodname_code_quality_short %} in
 >   your enterprise. …
 > * {% data variables.product.prodname_actions %} must be enabled …"
 > "1. Click **Enable code quality**."
@@ -239,7 +239,7 @@ That is corroborating (not conclusive) evidence that GitHub Code Quality is **no
 A **rule suite** records the per-rule evaluation of a ref update. Critically, the per-rule results are
 computed **independently of bypass**: bypass only decides whether the push is *allowed*, and shows up as
 the suite-level `result: bypass`. Proof that the two axes are independent, from this very dataset: the
-owner holds `RepositoryRole 5 : always` bypass on all 9 repos, yet **141 of his suites are `result:
+Overtoad holds `RepositoryRole 5 : always` bypass on all 9 repos, yet **141 of his suites are `result:
 pass`** (nothing failed, so no bypass was needed) and 620 are `result: bypass` (something failed).
 
 **Therefore every bypass suite is a free counterfactual**: it tells you exactly what would have happened
@@ -385,7 +385,7 @@ gh api /repos/pcalnon/juniper-ml/rulesets/rule-suites/3689919174
 > ```
 
 Suite `result: **pass**` — **not** `bypass`. All eight rules satisfied, `code_quality` among them, by an
-actor who is not the owner.
+actor who is not the Overtoad.
 
 The corresponding PR:
 
@@ -519,7 +519,7 @@ gh pr list --repo pcalnon/juniper-ml --state merged --limit 100 --search "author
 | #1052 | 2026-08-10T00:27:03Z | 2026-08-10T06:26:38Z | **pcalnon** | yes (removed 08:21Z) |
 | **#1108** | **2026-08-14T23:05:06Z** | **2026-08-14T23:08:13Z** | **app/juniper-release-train** | **no** |
 
-Armed auto-merge never fired while `update` was in the ruleset — the owner always had to merge by hand.
+Armed auto-merge never fired while `update` was in the ruleset — the Overtoad always had to merge by hand.
 The first armed auto-merge after `update` was removed fired **on its own, in 3 minutes**.
 `code_quality` was present, unchanged, at `severity: errors`, on **both** sides of that line.
 
@@ -583,7 +583,7 @@ Open-PR census, all 9 repos, 2026-08-18 (`mergeable` warmed with a first GraphQL
   blocking rule**. A PR cannot reach `CLEAN` if `code_quality` is unsatisfiable.
 
   ```bash
-  gh api graphql -f query='{ repository(owner:"pcalnon",name:"juniper-ml"){ pullRequest(number:1168){ mergeable mergeStateStatus } } }'
+  gh api graphql -f query='{ repository(Overtoad:"pcalnon",name:"juniper-ml"){ pullRequest(number:1168){ mergeable mergeStateStatus } } }'
   # {"mergeable":"MERGEABLE","mergeStateStatus":"CLEAN"}
   ```
 
@@ -593,7 +593,7 @@ Open-PR census, all 9 repos, 2026-08-18 (`mergeable` warmed with a first GraphQL
   (`Pre-commit (Python 3.13)` IN_PROGRESS, `Pre-commit (Python 3.14)` QUEUED, `Sequence Safety` QUEUED,
   `Security Scan` QUEUED, …). Ordinary transient state.
 
-**Important control**: `mergeStateStatus` is *not* discounted by the viewer's bypass. The owner holds
+**Important control**: `mergeStateStatus` is *not* discounted by the viewer's bypass. The Overtoad holds
 `always` bypass yet still sees `#1147` as `BLOCKED`. So `#1168`'s `CLEAN` is a genuine "all rules
 satisfied" signal, not a bypass artefact.
 
@@ -605,7 +605,7 @@ gh pr list --repo pcalnon/<repo> --state open --limit 60 --json number,autoMerge
   --jq '.[]|select(.autoMergeRequest!=null)'   # empty for all 9
 ```
 
-The owner's observation that **CodeQL is enabled and reporting on all repos** is confirmed:
+The Overtoad's observation that **CodeQL is enabled and reporting on all repos** is confirmed:
 
 ```bash
 gh api /repos/pcalnon/<repo>/code-scanning/analyses?per_page=5 --jq '[.[]|"\(.tool.name)@\(.created_at[0:10])"]|unique'
@@ -761,7 +761,7 @@ def build_payload(rs: dict) -> dict:
 ## 10. Under what conditions would the claim become true? (C8)
 
 **Conditionally true only under all of**: (1) the account is on GitHub Team or GitHub Enterprise Cloud;
-(2) an enterprise owner has allowed Code Quality; (3) Code Quality is explicitly enabled on the repo;
+(2) an enterprise Overtoad has allowed Code Quality; (3) Code Quality is explicitly enabled on the repo;
 and then (4) analysis is pending, failing, or finding `errors`-severity results.
 
 Evidence that (1)–(3) do not hold here:

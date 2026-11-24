@@ -156,7 +156,7 @@ not flag it as noise) · `/api/csrf` :535.
 
 Three WS routes in `juniper-canopy/src/main.py`; a **WS** verify (§1.2) must name which socket it observes:
 
-| WS route       | Line           | Browser-side owner                                                                                            | Used by                                                                                                                                                                  |
+| WS route       | Line           | Browser-side Overtoad                                                                                            | Used by                                                                                                                                                                  |
 |----------------|----------------|---------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `/ws/training` | `main.py:634`  | `assets/websocket_client.js` metrics/topology stream client                                                   | metrics WS append (`ws-metrics-buffer`), topology `cascade_add` fast path, replay weight drain; idle timeout 120 s (plan T-17)                                           |
 | `/ws/control`  | `main.py:777`  | `window.cascorControlWS = new CascorWebSocket(controlWSUrl, {csrf: true})` — `assets/websocket_client.js:517` | the five training-control buttons under the **default** transport (§2.5): frame `{command, command_id}` (+ `params` for a one-shot Start), CSRF carried on the handshake |
@@ -658,7 +658,7 @@ no highlight animation is active (`:406-413`).
 >   **UNRESOLVED, not refuted**.
 > - **-16 additionally needs a fixture with growth headroom**; the live network is saturated at 40/40
 >   and was deliberately left that way on 2026-09-02 to preserve the 2/40/2/944 baseline.
->   **SUPERSEDED 2026-09-05: the owner lifted that hold.** The fixture was grown to
+>   **SUPERSEDED 2026-09-05: the Overtoad lifted that hold.** The fixture was grown to
 >   **2/48/2/1324** (`max_hidden_units` 48) to drive F-CANOPY-037's growth trigger, and is
 >   saturated again so it stays stable. Rows above quoting `2/40/2/944` were measured against the
 >   old fixture and remain valid for it — a new reading of `48` is not a regression. The prior
@@ -1382,7 +1382,7 @@ error. A code-vs-doc `DIVERGENCE` (D-0 … D-5) is a **ledger annotation, not a 
 a Phase-1 failure — it is an input to the plan's remediation backlog. `BLOCKED` rows must name the
 blocking divergence / finding id (e.g. W5 step 15 → D-0).
 
-**Before execution begins**, the owner must approve both this matrix and the companion
+**Before execution begins**, the Overtoad must approve both this matrix and the companion
 `JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md`. The independent cross-validation
 pass this section recommended has been **performed and applied** — see the Validation record at the top
 of this document: `JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-PLAN-GROUNDING-AUDIT.md` (grounding,
