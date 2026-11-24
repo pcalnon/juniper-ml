@@ -14,7 +14,7 @@
 > is now CODE-RESOLVED**, and the §2 "Seq." row / §5 trigger #1 ("B3.2 open, B3.3 uncreated") are
 > superseded: the B-phase is all but complete — **only WS-6 B4** (retire the test-only
 > `CascorModelCoreAdapter`; point conformance at production `CascorModel`) remains (no PR yet). The verdict
-> is **unchanged — A-phase still NOT ready**: the three §6 owner decisions (DR-1 / soak-OQ-17 /
+> is **unchanged — A-phase still NOT ready**: the three §6 Overtoad decisions (DR-1 / soak-OQ-17 /
 > manager-appetite) remain open, and the manager's non-monitoring divergences (executor / thread /
 > HDF5-snapshot / torch boundary; zero `juniper_service_core` dependency) are untouched by B3.
 
@@ -147,7 +147,7 @@ Open the A-phase repoint only when **all** hold:
 
 1. **B-phase complete & lifecycle quiescent** — B3.2 (#353), B3.3 (manager cutover, to be created), and B4
    merged; no open WS-6-B PR touching `src/api/lifecycle/`.
-2. **DR-1 explicitly resolved B→A** — currently *deferred/leaning*, owner-gated.
+2. **DR-1 explicitly resolved B→A** — currently *deferred/leaning*, Overtoad-gated.
 3. **A defined soak is satisfied** — resolve OQ-17 into a concrete bar. Suggested: service-core 0.2.0
    clean-install-from-PyPI verified + the meta-package "install lightest-extra-after-bare" extras-resolution
    check + ≥ 48–72 h since the 2026-06-22 release.
@@ -160,7 +160,7 @@ orchestrator-convergence work; keep `routes/{admin,history,workers}` cascor-only
 
 ---
 
-## 6. Decisions for the owner
+## 6. Decisions for the Overtoad
 
 | ID | Decision | Note |
 |----|----------|------|

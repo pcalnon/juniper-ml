@@ -265,7 +265,7 @@ early `push: tags` trigger era or a `workflow_dispatch`, or a later-deleted Rele
 workflows are now `release: published`, so this is legacy residue, but cascor-protocol's workflow is *still* tag-push
 (§3.1) and can reproduce it.
 
-**RESOLVED 2026-07-20 — plan §12 step 0.4, owner decision: BACKFILL.** All three Releases created on the existing
+**RESOLVED 2026-07-20 — plan §12 step 0.4, Overtoad decision: BACKFILL.** All three Releases created on the existing
 tags (`--verify-tag --latest=false`, notes from the §F-2/F-3 backfill archives): `juniper-doc-tools-v0.1.1`,
 `juniper-observability-v0.4.0`, `juniper-cascor-protocol-v0.1.0`. Detector hygiene now reads `TAG_ONLY=0` fleet-wide.
 Zero index effects (nothing published; production PyPI untouched). **Operational gotcha discovered**: the per-package

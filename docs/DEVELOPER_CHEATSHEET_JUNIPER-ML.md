@@ -43,7 +43,7 @@
 | `python util/experiments/run_suite.py --suite util/experiments/suites/p4/e-a-cascor-budget-sweep.yaml --dry-run` | Expand a P4 campaign suite (no writes); see [REFERENCE — P4 Campaign Suites](REFERENCE.md#p4-campaign-suites) |
 | `python util/experiments/read_run_metrics.py SUITE_DIR` | Read ratified perf metrics (last-row `step_count` / `step_sum`) |
 | `python util/experiments/make_baseline.py --tag TAG --suite SUITE_DIR` | Bless a suite as a named Q-8 baseline (operator-only; no `--force`) |
-| `python util/experiments/compare_baseline.py --baseline TAG --suite SUITE_DIR` | Split compare vs a baseline (exit 0/1/2). Sound since #1743; CI-wiring is an open **owner** decision. |
+| `python util/experiments/compare_baseline.py --baseline TAG --suite SUITE_DIR` | Split compare vs a baseline (exit 0/1/2). Sound since #1743; CI-wiring is an open **Overtoad** decision. |
 | `python util/experiments/make_baseline.py --tag TAG --suite SUITE_DIR --dry-run` | Validate a Q-8 baseline; writes nothing. No `--force`. |
 | `python3 -m unittest -v tests/test_read_run_metrics.py` | Perf-lane reader regressions (last-row count, fingerprint) |
 | `python3 -m unittest -v tests/test_make_baseline.py` | Baseline refusals (work invariant, mixed workload, no `--force`) |
@@ -557,7 +557,7 @@ plan-time `ALREADY_RELEASED`. Runbook §3.3 / §4.
 **Archive-guard FAIL triage:** the exempt notes-archive PR's required check (`Release-Train Archive Guard`)
 PASSes only on pure `A` adds under `notes/releases/RELEASE_NOTES_*.md`.
 Rename-OUT, Copy (`C`), and Typechange (`T`) are still archive PRs (`touches_releases` checks both rename/copy paths) and FAIL — they never SKIP.
-A FAIL drops the PR back to the standard owner gate (no auto-merge).
+A FAIL drops the PR back to the standard Overtoad gate (no auto-merge).
 Operator tables: [`notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md`](../notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md) §3.3.
 
 **R7 archive-lane `ref=` (juniper-ml#770):** a ceremony `SeamViolation` with `ref=None` / `ref=''` means
@@ -577,7 +577,7 @@ read each `verdict`. The scratch copies the checkout's `shallow` file and writes
 runs the sequence-safety CLIs; `battery` is path-gated (`tests/` \| `util/` \| `scripts/` \|
 `.github/` \| `pyproject.toml`). On failure, `notify` upserts **one** open issue titled
 `main-verify: post-merge verification failing` (later failing SHAs comment on it; not auto-closed on
-green — owner closes after adjudication) plus non-blocking Slack. G3.1 BASE = last successful
+green — Overtoad closes after adjudication) plus non-blocking Slack. G3.1 BASE = last successful
 main-verify tip when it is an ancestor of HEAD (sweeps `[skip ci]` gaps), else `event.before`, else
 `HEAD^1`. PR labels `allow-symbol-loss` / `docs-rewrite` do **not** green post-merge — use
 `Allow-Symbol-Loss:` / `Allow-Docs-Rewrite:` commit trailers. Keep the battery list in lockstep with
@@ -731,7 +731,7 @@ Tip: `compare_baseline.py` is a **split** gate (exact `step_count`, ungated spee
 the termination branch part of the precondition — a branch flip now REFUSES (2) instead of FAILing (1). #1741 + #1743
 closed the writer/comparator asymmetry, so the comparator now refuses unmeasured / `timed_out` / zero-work cells too.
 **Still do not wire it to CI** — not because it is unsound, but because *whether the run tier gates at all* is an
-decision the owner CLOSED on 2026-09-07 (§6 of the P1 design) — structurally: host identity is a
+decision the Overtoad CLOSED on 2026-09-07 (§6 of the P1 design) — structurally: host identity is a
 blocking refusal, CI is `ubuntu-latest` with no self-hosted runner, so it would exit 2 REFUSED on
 every CI run. It is an operator tool, meaningful only on the baseline host.
 Full contract: [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate).
@@ -774,7 +774,7 @@ Tip: after a crashed Juniper pytest session, run `util/reap_pytest_orphans.bash 
 
 Tip: pointer-follow soak — `python3 util/soak_run_probe.py --dry-run` then run; **score with `--reveal` only after**.
 Default pick is least-covered (pooled estimate). For characterisation / a relocation decision pass `--probe-id`.
-The 2026-09-04 runs (#1616) showed the strata are real, but membership is mostly unresolved at these n. **The verdict is now `BET-FAILING`** (43/35, 60.5%), so a real run refuses without `--force` — and `--force` is an open owner decision. Two corrections to what that PR reported: its `p=0.0017` was a **parametric bootstrap**, not the permutation test it was labelled (a real label shuffle is far more extreme); and **nothing predicts stratum membership** — the "nearby test / owning script" account and all three successor candidates are refuted (`notes/JUNIPER_2026-09-09_JUNIPER-ML_SOAK-STRATUM-PREDICTOR-ANALYSIS.md`).
+The 2026-09-04 runs (#1616) showed the strata are real, but membership is mostly unresolved at these n. **The verdict is now `BET-FAILING`** (43/35, 60.5%), so a real run refuses without `--force` — and `--force` is an open Overtoad decision. Two corrections to what that PR reported: its `p=0.0017` was a **parametric bootstrap**, not the permutation test it was labelled (a real label shuffle is far more extreme); and **nothing predicts stratum membership** — the "nearby test / owning script" account and all three successor candidates are refuted (`notes/JUNIPER_2026-09-09_JUNIPER-ML_SOAK-STRATUM-PREDICTOR-ANALYSIS.md`).
 Keep `stream.jsonl` if `parse_events` crashes — a string `message` raises after the session is spent.
 `status` exit 1 is often an open escalation, not a broken tool.
 Full contract: [REFERENCE — Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak).
@@ -944,7 +944,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Planned next segment from `e2e_row_coverage.py` | Estimator. Use `e2e_unfilled_rows.py` against the ledger. |
 | Isolated canopy live but Candidate Metrics / Decision Boundary / Topology frozen at mount defaults | 12-slot starvation, not unwired. `e2e_f027_queues.py` first (queued-and-stuck vs never queued). Do **not** add a new Interval. See [REFERENCE — F-CANOPY-027](REFERENCE.md#f-canopy-027-poller-starvation-probes). |
 | Finding triage still shows an OPEN P0 after the body says FIXED | Disposition is the last 170 chars of the **header**, not the body. Put `FIXED` / `HEALED` / `ACCEPTED` in `**F-… — …**`. |
-| Finding triage counts ACCEPTED as still blocking Phase 2 | ACCEPTED is owner-deferred, not OPEN. `--open-only` hides it; totals still list `accepted`. |
+| Finding triage counts ACCEPTED as still blocking Phase 2 | ACCEPTED is Overtoad-deferred, not OPEN. `--open-only` hides it; totals still list `accepted`. |
 | Finding triage exit 0 with open P0/P1 | Always exits 0. Read the totals block. |
 | One green topology paint "closes" F-037 | Need 11 sessions. Census exit 0 with `painted==0` is a measured miss, not a harness fail. `scope=invalid` means train first. [F-CANOPY-037](REFERENCE.md#f-canopy-037-render-census). |
 | `list_runs.py` empty but runs exist | Default `--run-root` ignores `JUNIPER_EXP_RUN_ROOT`; pass `--run-root`. Non-convention names are invisible. |
@@ -1281,7 +1281,7 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition; WITHDRAWN (`WITHDR`) is a fourth
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; exit 2 = failed to measure; idle populated is VALID
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- shipped count is 58; v1 is the name-matching negative example; C5 remedy refuted
-- [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop; do not run n≈8–10; `--force` is an open owner decision; full slugs; `--class` on miss
+- [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop; do not run n≈8–10; `--force` is an open Overtoad decision; full slugs; `--class` on miss
 - [Requirements Snapshot Consolidation](REFERENCE.md#requirements-snapshot-consolidation) -- `by-area` is the corpus of record; ledger has no `detail`; `--check-roundtrip` is by-area only
 - [Canopy E2E Unfilled-Rows Ledger](REFERENCE.md#canopy-e2e-unfilled-rows-ledger) -- plan re-drives from the matrix status cells, not the TSV estimator
 - [Deprecated Master Cheatsheet](../notes/legacy/DEVELOPER_CHEATSHEET-ORIGINAL.md) -- archived monolithic cross-project reference (relocated to `notes/history/` in 2026-04, consolidated into `notes/legacy/` 2026-05-05)

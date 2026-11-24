@@ -28,7 +28,7 @@ proposal below validates the design by *consuming* it. The full design-of-record
 ## 2. Purpose and scope
 
 **Goal.** Propose a prioritized, immediately-implementable set of **3–5 convenience utilities** that
-make the suite easier to **use** (lower friction for the owner and downstream agents) and easier to
+make the suite easier to **use** (lower friction for the Overtoad and downstream agents) and easier to
 **maintain** (catch drift, surface health), and that — as a side effect of being built — exercise and
 validate the existing components.
 
@@ -122,7 +122,7 @@ when needed, and never let the doctor *write* anything (read-only, like the `pla
 
 **Purpose.** Given a task string, print which template the Skill's step-4 selection would pick
 (`SKILL.md:38-43`), with the matched keywords and the runner-up — an offline preview of the selection the
-Skill performs interactively. Lets the owner sanity-check "will this task land on `regressions` or
+Skill performs interactively. Lets the Overtoad sanity-check "will this task land on `regressions` or
 `failing-tests`?" without launching the Skill.
 
 **Components it validates (and how).** Consumes `manifest.yaml` `match_signals` (`:40-44`) and the
@@ -147,7 +147,7 @@ keyword (e.g. "the test suite is failing" → `failing-tests`, keyword from `man
 the pick; feed a no-keyword string → `generic`; assert it never crashes on the real manifest (drives the
 same file the Skill uses). Use the real manifest, not a fixture, so the test also guards selection
 drift. **Effort: S.** **Risk/note:** the scoring must be documented as a *preview heuristic*, not a
-claim to reproduce the Skill's LLM judgement byte-for-byte — the Skill may additionally ask the owner on
+claim to reproduce the Skill's LLM judgement byte-for-byte — the Skill may additionally ask the Overtoad on
 a thin margin (`SKILL.md:42`); state this in `--help` so the preview is not mistaken for ground truth.
 
 ---
@@ -155,7 +155,7 @@ a thin margin (`SKILL.md:42`); state this in `--help` so the preview is not mist
 ### P3 — `util/agent_suite_summary.py` (suite quick-reference / "list")
 
 **Purpose.** A `--list`-style quick reference: one table of the agents (name, one-line `description`,
-tools, model/effort) and one of the templates (id, `when_to_use`, class, `required_fields`), so the owner
+tools, model/effort) and one of the templates (id, `when_to_use`, class, `required_fields`), so the Overtoad
 can recall "which agent / which template" without opening eight files. The human counterpart to the
 machine `doctor`.
 
@@ -233,7 +233,7 @@ python util/scaffold_template.py --id NEW_ID --title "…" --class execution \
 library-drift assertions against the generated file (import the drift test's helpers) and assert it
 passes; assert refuse-on-collision. **Effort: M–L.** **Risk/note:** must **refuse to auto-edit
 `manifest.yaml`** (the manifest is the human-curated selection contract and `prompts/**` is unlinted —
-an auto-edit could silently break selection); print the stanza for the owner to paste instead. This is
+an auto-edit could silently break selection); print the stanza for the Overtoad to paste instead. This is
 why it is P5: higher blast-radius, lower day-to-day frequency than P1–P4.
 
 ## 5. Prioritization rationale
@@ -304,7 +304,7 @@ block (after line 214).
 
 ## 7. Open questions, risks, testing strategy
 
-**Open questions (owner decisions).**
+**Open questions (Overtoad decisions).**
 - **OQ-1.** Should the `doctor`'s mirror check be WARN (proposed) or FAIL? The mirror is optional per
   `install_agents.bash:8`; recommend WARN.
 - **OQ-2.** Should P3 (`summary`) be folded into P1 as `--summary` rather than a separate script? Saves a

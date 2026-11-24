@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **Document Type**: Convention (design-of-record)
-**Status**: Ratified (owner decision 2026-07-04)
+**Status**: Ratified (Overtoad decision 2026-07-04)
 **Last Updated**: 2026-11-10
 
 ---
@@ -41,7 +41,7 @@ description phrase is UPPER-KEBAB-CASE (`[A-Z0-9-]`); no other underscores, spac
 
 ## 3. Scope and exemptions
 
-The convention applies to all tracked `notes/**/*.md` **except** (owner decision 2026-07-04):
+The convention applies to all tracked `notes/**/*.md` **except** (Overtoad decision 2026-07-04):
 
 | Exempt | Why |
 | ------ | --- |

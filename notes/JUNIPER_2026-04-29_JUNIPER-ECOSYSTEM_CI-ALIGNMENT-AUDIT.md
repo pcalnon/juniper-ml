@@ -144,7 +144,7 @@ consecutive green.)
    savings come from never having a single bad scan block CI.
 6. **Out-of-scope discipline matters**. The validation pass found
    13 pre-existing issues that have nothing to do with alignment.
-   Documenting them with explicit "deferred — owner is X"
+   Documenting them with explicit "deferred — Overtoad is X"
    statements lets the alignment work close cleanly without
    blocking on product-side bugs.
 

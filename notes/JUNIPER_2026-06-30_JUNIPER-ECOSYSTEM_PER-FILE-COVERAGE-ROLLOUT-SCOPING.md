@@ -5,7 +5,7 @@
 **Author**: Paul Calnon (session by Claude Code, custom-agent suite)
 **License**: MIT License
 **Document Type**: SCOPING (operationalizes Phase C of the audit plan)
-**Status**: Draft — measured; owner-ratified decisions inline
+**Status**: Draft — measured; Overtoad-ratified decisions inline
 **Last Updated**: 2026-07-04
 
 ---
@@ -14,7 +14,7 @@
 
 Operationalizes **Phase C** of [`JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md`](JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md) (§6 contract, §7 measurement design, §11 Phase C order) into a measured, sequenced, one-PR-per-unit backlog. **Scoping only — no gate is added by this document.**
 
-**Owner-pinned targets (carried, not softened):** every source file ≥ **90%** line coverage; every packaged sub-module ≥ **95%** average.
+**The Overtoad-pinned targets (carried, not softened):** every source file ≥ **90%** line coverage; every packaged sub-module ≥ **95%** average.
 
 **Decisions ratified this session:**
 
@@ -40,7 +40,7 @@ Add an opt-in blocking mode to `juniper-coverage-gap-map` (advisory stays the de
 
 - **Versioning gotcha (same class as the 0.5.1 incident):** an additive flag is a **minor** bump → `0.5.1`→`0.6.0`, which **exceeds** juniper-ml's own `<0.6.0` ci-tools pins (`ci.yml`/`docs-full-check.yml`/`lockfile-update.yml`) — widen them to `<0.7.0` **in the same PR** (the `test_ci_tools_drift.py` / `test_env_drift_check_drift.py` class guard will fail loudly otherwise). A **patch** (`0.5.2`, staying `<0.6.0`) avoids the pin edits — implementer's call.
 - **Verify:** `pytest --cov=juniper_ci_tools --cov-fail-under=85` green with the new mode; `juniper-coverage-gap-map --coverage-json <fixture> --enforce` exits 1 on a synthetic gap, 0 when clean; `python3 -m unittest tests/test_coverage_gap_mapper_drift.py` + the new dogfood pass.
-- **Then:** owner cuts `juniper-ci-tools-v<C-0>` (Release, templated notes → `notes/releases/`) — **owner-gated** — so consumers can `pip install` the enforcing tool. (Or consumers run `python -m juniper_ci_tools.cli_coverage_gap_mapper --enforce` from a pinned install.)
+- **Then:** Overtoad cuts `juniper-ci-tools-v<C-0>` (Release, templated notes → `notes/releases/`) — **Overtoad-gated** — so consumers can `pip install` the enforcing tool. (Or consumers run `python -m juniper_ci_tools.cli_coverage_gap_mapper --enforce` from a pinned install.)
 
 ---
 
@@ -94,11 +94,11 @@ Each is measured at the start of its own rollout PR (warn-only run produces the 
 
 ## 5. The sequenced rollout backlog (one PR per unit; warn → blocking)
 
-Order = enabler → free wins → small nudges → real lifts → heavy → deferred (worst-first within each band). Each unit PR: add `--cov-report=json` + the `juniper-coverage-gap-map --enforce` step in **warn-only** first, close any gap, then flip to **blocking** and move the threshold into the repo. All under worktree isolation; `gh pr list` dup-guard; no-merge-without-PR; owner merges; publishes are owner-gated.
+Order = enabler → free wins → small nudges → real lifts → heavy → deferred (worst-first within each band). Each unit PR: add `--cov-report=json` + the `juniper-coverage-gap-map --enforce` step in **warn-only** first, close any gap, then flip to **blocking** and move the threshold into the repo. All under worktree isolation; `gh pr list` dup-guard; no-merge-without-PR; Overtoad merges; publishes are Overtoad-gated.
 
 | # | Step | Units | Verify | Acceptance |
 |---|------|-------|--------|------------|
-| **C-0** | enforcing gate tool + publish | juniper-ci-tools (juniper-ml) | `--enforce` exits 1 on synthetic gap / 0 clean; dogfood + ci-tools suite green | enforcing mode shipped + (owner) published; pins widened if minor |
+| **C-0** | enforcing gate tool + publish | juniper-ci-tools (juniper-ml) | `--enforce` exits 1 on synthetic gap / 0 clean; dogfood + ci-tools suite green | enforcing mode shipped + (Overtoad) published; pins widened if minor |
 | **C-1** | turn the gate ON, blocking — **free wins** | `model-core`, `cascor-protocol`, `config-tools` | each: mapper `--enforce` exits 0 today | blocking per-file 90 + sub-module 95 gate live; no coverage work needed |
 | **C-2** | close the handful of per-file gaps, then gate | `observability` (testing.py), `data-client` (client.py), `ci-tools` (exclude `__main__`, lift 2 lint CLIs) | mapper `--enforce` exits 0 after the small tests | each named file ≥90; gate blocking |
 | **C-3** | real coverage lifts, then gate | `doc-tools` (pooled 87→95; check_doc_links/cli + exclude `__main__`), `cascor-client` (pkg pooled 90→95; client/observability/ws_client) | mapper `--enforce` exits 0 | pooled ≥95 + all files ≥90; gate blocking |

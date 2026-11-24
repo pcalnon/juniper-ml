@@ -37,15 +37,15 @@ gates:
 
   # Erratum E-G-SIGN (§19.2): util/configure_commit_signing.py --check passes in every checkout, and
   # util/headless_signing_preflight.bash finds a GUI pinentry, the agent socket and no-allow-external-cache.
-  # Signing itself is owner-run: integration is the record of the I-SIGN matrix, T1-T5 verified (signing
+  # Signing itself is Overtoad-run: integration is the record of the I-SIGN matrix, T1-T5 verified (signing
   # plan task K10, which is B5 widened). Task K11 records it, e.g.
   #   integration: {date: 2026-10-27, record: reports/2026-10-27_turing-signing-probe/README.md}
   # The check confirms the record file exists in this repository.
   G-SIGN:
-    integration: null   # signing plan K10 (owner), recorded by K11
+    integration: null   # signing plan K10 (Overtoad), recorded by K11
 
   # SIP and authenticated root enabled; the application firewall on and blocking all incoming connections
-  # (task C2's block-all form, owner ruling 2026-10-25); FileVault on; no *.asc or *recovery* file under
+  # (task C2's block-all form, Overtoad ruling 2026-10-25); FileVault on; no *.asc or *recovery* file under
   # ~/.ssh or ~/.gnupg (task C3); no non-public file in ~/.ssh open to group or others (task C4).
   G-SEC: {}
 
@@ -83,7 +83,7 @@ gates:
     # Decision D9 and task E4: the parent AGENTS.md is copied from yamaguchi, and its sha256 is recorded here
     # and in HOST.md. The check reads <root>/AGENTS.md, where <root> is the Juniper root.
     parent_agents_md:
-      sha256: null   # task E4 (owner)
+      sha256: null   # task E4 (Overtoad)
 
   G-NET:
     # Task F2: the USB dongle at 1000baseT. The interface is matched by name and then checked against the
@@ -91,11 +91,11 @@ gates:
     interface: en7
     mac: "00:e0:4c:68:06:b1"
     media: 1000baseT
-    reserved_ip: null   # task A6 (owner): the DHCP reservation
+    reserved_ip: null   # task A6 (Overtoad): the DHCP reservation
     min_mbps: 800
     # iperf3 to yamaguchi, run by hand and recorded here, e.g.
     #   throughput: {date: 2026-10-27, mbps: 941, record: reports/2026-10-27_turing-bringup/iperf3.txt}
-    throughput: null   # task F2 (owner)
+    throughput: null   # task F2 (Overtoad)
 
   # The thresholds util/macvm_ctl.bash applies before `start` (task F5a): free + inactive >= the VM's memory
   # + reserve_gib, swap used <= max_swap_gib, and Docker Desktop not running.

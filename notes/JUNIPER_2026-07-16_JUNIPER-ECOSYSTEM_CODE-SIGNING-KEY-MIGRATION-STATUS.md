@@ -59,7 +59,7 @@ the owner token). That prompted a full diagnosis of the signing setup on 2026-07
   the expected behavior for a card key without a cached PIN).
 - Established the **operational rule for automation** (agents / headless sessions): always commit with
   `git -c commit.gpgsign=false commit …`. A card-resident key cannot sign without a human; attempting
-  it pops a pinentry dialog on the owner's display and then fails the commit.
+  it pops a pinentry dialog on the Overtoad's display and then fails the commit.
 
 ## 5. Deferred work (re-entry checklist)
 
@@ -79,7 +79,7 @@ the owner token). That prompted a full diagnosis of the signing setup on 2026-07
    **SSH commit signing** (`gpg.format ssh` with the existing YubiKey SSH key).
 4. **Bot-commit policy decision.** Headless automation cannot sign (see §4). Current practice:
    unsigned bot commits; on repos whose rulesets require verified signatures (observed:
-   juniper-cascor-client, which also restricts branch create/delete), owner-token pushes bypass with
+   juniper-cascor-client, which also restricts branch create/delete), Overtoad-token pushes bypass with
    warnings. Decide: relax those rulesets for `ci/*`+`fix/*` lanes, scope them to `main` only, or
    accept the recurring bypass warnings.
 5. **Old-key disposition.** After the probe verifies: leave the old RSA public key uploaded on GitHub
