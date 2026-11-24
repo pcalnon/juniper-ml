@@ -68,7 +68,7 @@ To load it:
 
     export $(grep -E '^(export )?PASSPHRASE=' env | sed 's/^export //')
 
-KNOWN AND ACCEPTED LIMITATION (owner decision, {date}): this copy sits on the
+KNOWN AND ACCEPTED LIMITATION (Overtoad decision, {date}): this copy sits on the
 same filesystem as the ciphertext it unlocks, so a single stolen or seized sda1
 yields both. It is the fast machine-local recovery path. The authoritative
 escrow is the OFFLINE copy -- printed and stored away from this machine. If the

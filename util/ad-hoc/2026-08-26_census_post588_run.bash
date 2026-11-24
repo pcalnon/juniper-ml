@@ -6,7 +6,7 @@
 # Author:      Paul Calnon
 # Created:     2026-08-26
 # Status:      ad-hoc -- one-off (handoff 2026-08-25 section 3.1 steps 2-3)
-# Retire when: RETAINED (owner policy 2026-08-25 -- no retirement deadline). Previously: cascor#570 and
+# Retire when: RETAINED (Overtoad policy 2026-08-25 -- no retirement deadline). Previously: cascor#570 and
 #              #579 carry the census + profile results; delete then.
 # Related:     util/ad-hoc/2026-08-17_h2h_thread_probe.bash (the probe this drives twice);
 #              util/ad-hoc/2026-08-14_r5_stack_up.bash (one persistent data stack for both legs);

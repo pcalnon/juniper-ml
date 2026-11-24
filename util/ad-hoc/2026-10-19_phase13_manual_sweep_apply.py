@@ -6,8 +6,8 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-19
-# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (owner policy 2026-08-25)
-# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off apply pass; RETAINED as provenance (Overtoad policy 2026-08-25)
+# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : ledger Phase 13 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);
 #               HANDOFF_2026-10-19_canopy-phase13-manual-sweep-five-p2s-now-p1-item-30-owed.md
 # ---------------------------------------------------------------------------
@@ -20,7 +20,7 @@ Applies, in one replayable pass anchored to text that must occur exactly once:
   and F-CANOPY-065, and the new ``## Phase 13`` section appended at the end (its consensus record is a
   placeholder the round scripts fill);
 * ``notes/JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`` -- the dated correction
-  item 26 requires whatever the owner rules (g-3 never reached cascor ``main``);
+  item 26 requires whatever the Overtoad rules (g-3 never reached cascor ``main``);
 * the new Lane A handoff, the SUPERSEDED banner on the Phase 12 handoff, item 4 and O17 of the parent
   consolidated handoff, and the INDEX's P2 row.
 
@@ -134,7 +134,7 @@ F018_NOTE = """
 > successful apply: Apply stayed enabled and `params-status` read `⚠️ Unsaved changes` until a page reload, with
 > no value differing (the three-key latch above). That is a documented behaviour broken, P1 under plan §6.3. The
 > toast this entry is named for the manual does not describe; canopy's 0.6.0 CHANGELOG does (`CHANGELOG.md:2360-2365`
-> at `571743db`), which is the owner's first limb (O17) and is no longer needed for this rating. The fix is in
+> at `571743db`), which is the Overtoad's first limb (O17) and is no longer needed for this rating. The fix is in
 > code: canopy#533 (`6b55399d`, merged 2026-08-28T05:09:29Z, an ancestor of v0.7.0). The entry stays OPEN until
 > C2.9-05 is re-driven on a leg serving that code (item 30); the row was measured in service mode, and the tracker
 > and toast are canopy-side, so a demo leg is expected to reach them, to be confirmed on the drive.
@@ -176,13 +176,13 @@ F057_STATUS = """- **Status 2026-10-19 (Phase 13): P2 stands; the manual re-read
   (`src/backend/cascor_service_adapter.py:1960-1991`) still rebuilds each row without `weights`. The CAN-015g/h
   design note (`JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`) now carries the dated
   correction item 26 required: g-3 never reached `main`. With that it no longer records the stream as shipped, and
-  the owner's first limb (O17) does not reach this entry through it (Phase 13).
+  the Overtoad's first limb (O17) does not reach this entry through it (Phase 13).
 
 """
 
 F065_STATUS = """- **Status 2026-10-19 (Phase 13): not reached by canopy's manual.** At canopy `main` `571743db` the manual says
   only that edits are staged until **Apply** and that the Parameters tab shows the applied values
-  (`docs/USER_MANUAL.md:266-269`); no sentence describes what the toast reports. The rating stays with the owner's
+  (`docs/USER_MANUAL.md:266-269`); no sentence describes what the toast reports. The rating stays with the Overtoad's
   first limb, which after Phase 13 decides this entry alone (Phase 13, Matrix effect and counts).
 """
 
@@ -206,7 +206,7 @@ PHASE13 = """
 
 **Summary.**
 
-- **The check.** Phase 11's item 26 asks first, without waiting for the owner's §6.3 ruling (O17), that every open
+- **The check.** Phase 11's item 26 asks first, without waiting for the Overtoad's §6.3 ruling (O17), that every open
   finding be checked against canopy's manual, which plan §6.3 already counts as documentation ("P1 (breaks a
   documented behaviour)", `JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-FRONTEND-VALIDATION-PLAN.md:357-360`). This phase
   does that for all 20 open findings against `docs/USER_MANUAL.md` at canopy `main` `571743db` (2026-10-17T23:01:09Z,
@@ -236,7 +236,7 @@ PHASE13 = """
   -034, -049, -051, -060, -063, -066, F-ML-002, and F-CANOPY-057, whose Replay Tab text says "Today no weight
   sample reaches the page"). Two were already P1 on other grounds, and the manual bears on neither (F-CASCOR-001,
   F-CASCOR-002). F-CANOPY-064's P1 already rests on the manual; the lines it cites have moved, not changed.
-  F-CANOPY-065 is not reached: no manual text describes the apply toast, so its rating stays with the owner's
+  F-CANOPY-065 is not reached: no manual text describes the apply toast, so its rating stays with the Overtoad's
   first limb. F-CANOPY-067's rating stays "P2 pending a live drive", its own condition; the manual documents the
   plots it would corrupt, so the live drive is all that is left to decide it.
 - **The CAN-015g/h design note is corrected**, as item 26 requires whatever the ruling: a dated note under its
@@ -244,7 +244,7 @@ PHASE13 = """
   API, and its two g-3 rows are annotated
   (`notes/JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`). F-CANOPY-057's defect was
   re-confirmed at both current `main`s while doing it.
-- **The owner's question narrows.** Of the four findings Phase 11 placed within the first limb's reach, three
+- **The Overtoad's question narrows.** Of the four findings Phase 11 placed within the first limb's reach, three
   (F-CANOPY-012, -013, -018) are P1 by the manual without any ruling, and the fourth (F-CANOPY-057) is no longer
   promised by the design note once corrected. The first limb now decides F-CANOPY-065 alone, as Phase 10 first put
   it; the second limb still decides F-CANOPY-068's rating of record and moves no count. Item 26's second step, the
@@ -257,7 +257,7 @@ PHASE13 = """
 
 - **Who.** This phase was written in juniper-ml worktree `federated-stargazing-blanket` on the same host as
   Phase 12 (no Juniper service listening, no reach to the trio), so it is a reading of documents, source and the
-  GitHub API, not a live phase. Nothing ran against a canopy. The owner granted merge approval for this phase's PR
+  GitHub API, not a live phase. Nothing ran against a canopy. The Overtoad granted merge approval for this phase's PR
   in the session that wrote it.
 - **The instrument** is a reading of one file against twenty ledger entries. For each open finding the manual
   section covering its surface was read in full (the Network Editor Tab for F-CANOPY-012 and -013; Configuration
@@ -336,7 +336,7 @@ with the same reasoning in brief.
   `⚠️ Unsaved changes` until a page reload, with nothing differing; Phase 4 traced it to three keys the dirty
   comparison read that the apply payload never wrote. That is the documented rule broken, P1. The toast the entry
   is named for the manual does not describe; canopy's 0.6.0 CHANGELOG does (`CHANGELOG.md:2360-2365` at
-  `571743db`), which is the owner's first limb and is no longer needed for this rating. **In code:** canopy#533.
+  `571743db`), which is the Overtoad's first limb and is no longer needed for this rating. **In code:** canopy#533.
 - **F-CANOPY-028.** The manual says the pin set "lives in browser local storage, so it survives a reload".
   Segment 15 measured it surviving the reload and being discarded by the first pin after it, because the writer
   replaced the store with the state of every rendered checkbox (Phase 4: the writer, not the rehydration, and the
@@ -377,7 +377,7 @@ The note now carries a dated correction under its status block, its header's Sta
 rows say the merges landed in a stacked base and not on `main`, and its "Last updated" is this date. Nothing else
 in the note was re-verified; the correction is scoped to g-3 and to the "decision-boundary animation with
 per-unit weight evolution" its summary describes, which has not shipped. With that, the note no longer records
-the weight stream as implemented, and F-CANOPY-057 is not within reach of the owner's first limb through it; its
+the weight stream as implemented, and F-CANOPY-057 is not within reach of the Overtoad's first limb through it; its
 P2 rests on the manual's and the FAQ's current text, as since Phase 10.
 
 ### What this phase cannot support
@@ -411,11 +411,11 @@ CONSENSUS_RECORD_PENDING
     (item 30); F-CANOPY-064 is item 18; F-CANOPY-065 is item 20 and the first limb; the two cascor findings are
     not this arc's to fix.
   - **11 open P2.**
-  - **The owner's question** (O17): the first limb now decides F-CANOPY-065 alone: 9 open P1 and 11 open P2 if a
+  - **The Overtoad's question** (O17): the first limb now decides F-CANOPY-065 alone: 9 open P1 and 11 open P2 if a
     shipped CHANGELOG or design-plan promise counts as documented, as the triage counts them, else 8 and 12. The
     second limb decides F-CANOPY-068's rating of record and moves no count. F-CANOPY-028 is the one re-rating a
     different reading of the manual would reverse (above), which would make those 8 and 12, or 7 and 13.
-- **Plan §6.3's Phase 2 exit criterion**, every P0 and P1 closed or explicitly deferred with owner sign-off, now
+- **Plan §6.3's Phase 2 exit criterion**, every P0 and P1 closed or explicitly deferred with Overtoad sign-off, now
   waits on nine P1s instead of four. Five of the nine can move without a design: four re-drives of merged fixes
   and one re-drive that closes or re-diagnoses (item 30).
 
@@ -424,7 +424,7 @@ CONSENSUS_RECORD_PENDING
 Phase 12's list stands, items 0 to 29, with these changes:
 
 - **Item 26's first step is DONE**: every open finding has been checked against canopy's manual. Its second step
-  stays, and narrows: once the owner rules, check each open finding not yet rated on canopy's CHANGELOG and the
+  stays, and narrows: once the Overtoad rules, check each open finding not yet rated on canopy's CHANGELOG and the
   design plans for a promise, or, if the ruling counts it, a description of an internal mechanism, of the
   behaviour it breaks; of the four findings Phase 11 named, F-CANOPY-065 is the only one the ruling can still
   move, and the CAN-015g/h design note's correction is applied.
@@ -517,8 +517,8 @@ PARENT_SUBS = [
         "   follows, for context.",
     ),
     (
-        "manual without waiting for the ruling, then sweeps the rest once the owner rules.",
-        "manual without waiting for the ruling, then sweeps the rest once the owner rules. **Since Phase 13 (2026-10-19) the manual\n"
+        "manual without waiting for the ruling, then sweeps the rest once the Overtoad rules.",
+        "manual without waiting for the ruling, then sweeps the rest once the Overtoad rules. **Since Phase 13 (2026-10-19) the manual\n"
         "check is done**: F-CANOPY-012, -013 and -018 are P1 by the manual without a ruling, and the corrected CAN-015g/h design note no\n"
         "longer promises F-CANOPY-057's stream, so the first limb decides F-CANOPY-065 alone: 9/11 or 8/12 open P1/P2.",
     ),
@@ -551,9 +551,9 @@ HANDOFF_TEXT = """# HANDOFF 2026-10-19 — P2 canopy Lane A: Phase 13 recorded. 
 turing (macOS, no Juniper service, no reach to the trio), at a phase boundary, as its PR was opened.
 **Consensus**: CONSENSUS_SUMMARY_PENDING
 **Parent**: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-03_canopy-consolidated.md`, authoritative for P2.
-Its item 4 is DONE; its items 5 and 7 and the owner batch O1–O17 carry over. This file supersedes
+Its item 4 is DONE; its items 5 and 7 and the Overtoad batch O1–O17 carry over. This file supersedes
 `HANDOFF_2026-10-19_canopy-phase12-recorded-pacer-shipped-in-0-9-0-items-25-26-next.md`.
-**Merge approval**: the owner granted it in this session for this session's PR. It is NOT carried: ask again.
+**Merge approval**: the Overtoad granted it in this session for this session's PR. It is NOT carried: ask again.
 
 ## Goal statement (paste as the new thread's first prompt)
 
@@ -563,7 +563,7 @@ Continue P2 Lane A (the juniper-canopy E2E validation arc) from
 commands first. Merge approval is not carried: ask before the first merge. Items 25 and 28 need a canopy verify leg
 against the trio (the Linux host, not turing); item 27 needs a demo leg that trains, never the trio; item 30's Network
 Editor and Workers rows need a service leg with a writable or stoppable cascor (never the trio), and its Parameters
-rows a demo leg; item 26's second step waits on the owner's ruling (O17).
+rows a demo leg; item 26's second step waits on the Overtoad's ruling (O17).
 
 **Completed:**
 
@@ -583,7 +583,7 @@ rows a demo leg; item 26's second step waits on the owner's ruling (O17).
     source correct and suspected F-CANOPY-027's class, since FIXED); its re-drive closes or re-diagnoses it.
   - **The other fifteen stand**: ten not reached (F-CANOPY-001, -033, -034, -049, -051, -057, -060, -063, -066,
     F-ML-002); F-CASCOR-001/-002 P1 already; F-CANOPY-064 P1 on the manual already; F-CANOPY-065 not reached (its rating
-    stays with the owner's first limb, which now decides it alone); F-CANOPY-067 "P2 pending a live drive", unchanged.
+    stays with the Overtoad's first limb, which now decides it alone); F-CANOPY-067 "P2 pending a live drive", unchanged.
   - **Counts**: 79 findings, 56 fixed, 1 accepted, 2 withdrawn, **20 open**: 0 P0, **9 P1** (F-CANOPY-012, -013, -018,
     -028, -032, -064, -065, F-CASCOR-001, -002), **11 P2**. By the first limb's ruling: 9/11 or 8/12.
   - **The CAN-015g/h design note** (`notes/JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`)
@@ -600,7 +600,7 @@ rows a demo leg; item 26's second step waits on the owner's ruling (O17).
 **Remaining, in order:**
 
 1. **Land this session's PR** if it has not merged: `python3 util/wait_for_checks.py`, query
-   `reviewThreads(isResolved:false)` (a CodeQL thread blocks the merge while every check is green), ask the owner,
+   `reviewThreads(isResolved:false)` (a CodeQL thread blocks the merge while every check is green), ask the Overtoad,
    then `python3 util/safe_merge.py --execute` and read its `MERGED` line. Afterwards re-check `origin/main` for the
    five headers (`grep -c 'P1 since 2026-10-19' notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`
    should print 5): a concurrent whole-file upload of a shared file can revert merged lines.
@@ -618,17 +618,17 @@ rows a demo leg; item 26's second step waits on the owner's ruling (O17).
    Linux host). Schedule each trigger as its own task when the shim sees `AddWatched` (`setTimeout(…, 0)`), timestamp
    it in the page, validate on the synthetic check first. Under the pacer every TOOK predicate reads NO-EFFECT by
    construction, so the evictions are the score. **T-apply needs its own design** (Phase 12, Instruments).
-4. **Item 26's second step**, once the owner rules (O17): every open finding not yet rated against canopy's
+4. **Item 26's second step**, once the Overtoad rules (O17): every open finding not yet rated against canopy's
    `CHANGELOG.md` and the design plans for a promise, or, if the ruling counts it, a description of an internal
    mechanism, of the behaviour it breaks. Only F-CANOPY-065's rating can still move among the four Phase 11 named;
    the others may be reached by entries nobody has read for them yet.
 5. **Item 27: F-CANOPY-055's Live Dataset Switch allow arm**, on a demo leg serving 0.9.0 or later whose training may
    be started (never the trio), with the experimental-functions toggle on (ledger Phase 12, item 27). Record in
    F-CANOPY-025's and F-CANOPY-055's entries.
-6. **Item 28: the first live run on the shipped pacer**, when the trio's canopy is restarted on 0.9.0 (owner, O13) or
+6. **Item 28: the first live run on the shipped pacer**, when the trio's canopy is restarted on 0.9.0 (Overtoad, O13) or
    on any leg serving the merged tree (ledger Phase 12, item 28).
 7. **Item 29**: worktree housekeeping on the Linux host (ledger Phase 12, item 29).
-8. Then the parent's items 5 and 7, and the owner batch O1–O17 (O17's first limb now decides F-CANOPY-065 alone).
+8. Then the parent's items 5 and 7, and the Overtoad batch O1–O17 (O17's first limb now decides F-CANOPY-065 alone).
 
 **Traps learned:**
 

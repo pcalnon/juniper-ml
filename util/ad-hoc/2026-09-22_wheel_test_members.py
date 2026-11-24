@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md
          item 3 (juniper-data's PyPI wheel ships its test suite)
 

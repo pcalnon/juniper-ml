@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-25
 Status: ad-hoc — investigation (the tier-3 lane's "existing tier-2 behaviour must not change" constraint)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/install_juniper_backup_timer.bash 1.1.0 (--lane); tests/test_juniper_backup_tier3_lane.py;
          notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §7.9
 

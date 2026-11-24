@@ -8,14 +8,14 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — one-off (flood-4 disposition record PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md; the V4 validator's findings in the
          session worktree's tmp/flood4/val-record/v4/findings.json (and fix_old_strings.txt,
          changelog_entry_rewrapped.txt); util/ad-hoc/2026-11-08_flood4_record_round1_fixes.py (round 1, same shape)
 
 WHY THIS EXISTS
 Round 1's corrections were validated by a fourth validator (V4), whose 15 findings each came with exact text. The
-session that lands the record also has to add what happened after round 1 was written up: the owner's rulings 8 to
+session that lands the record also has to add what happened after round 1 was written up: the Overtoad's rulings 8 to
 14, #2460's provenance for the paused-fit row, four defects found while the first fixes were built, round 2's triage
 outcome, and the fixes' validation status. This applies all of it as exact, single-occurrence replacements, in one
 pass, and refuses the whole pass if any old text is missing or ambiguous, so a half-applied correction cannot ship.
@@ -81,7 +81,7 @@ RULINGS_8_TO_14 = (
     " `docs/REFERENCE.md` text had called the behaviour an invariant to preserve, and that ruling 5 was given without"
     " that fact. The text came only from a Cursor draft, juniper-ml#2460, and `main` never carried it as one (§4); no"
     " person ruled it.\n"
-    "13. **Approval for the session that lands this record** (2026-11-09): the owner wrote \"merge approval granted"
+    "13. **Approval for the session that lands this record** (2026-11-09): the Overtoad wrote \"merge approval granted"
     " for this work arc\", then chose \"Merge, update, close\" again. Ruling 1's approval held for its own session"
     " only; this one covers the next session, and adds the gitleaks port PRs to ruling 1's set: this record's PR, the"
     " defect-fix PRs, the gitleaks port PRs and the round-2 carriers.\n"
@@ -98,7 +98,7 @@ CHANGELOG_OLD = (
     "  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` records how the 74-PR census was\n"
     "  disposed of: six carriers (juniper-data#518 and #519, juniper-canopy#797 and #802, juniper-ml#2517 and #2519) merged,\n"
     "  and all 68 census drafts assigned to them closed, 67 of them carried. It also records each carrier's 2 to 6 independent validation rounds, the\n"
-    "  defects found on `main`, the per-PR disposition (§5), the process traps, and the owner's rulings of 2026-11-08:\n"
+    "  defects found on `main`, the per-PR disposition (§5), the process traps, and the Overtoad's rulings of 2026-11-08:\n"
     "  round 2 takes 48 drafts; the launcher's effort default becomes `max`, and an explicit `auto` will send no\n"
     "  `--effort` flag; the three open defects get their own fixes; and juniper-ml#2271's one setting moved to user\n"
     "  settings, with its branch deleted. §5's six manifests and render config are archived under\n"
@@ -117,7 +117,7 @@ CHANGELOG_NEW = (
     "  disposed of: six carriers (juniper-data#518 and #519, juniper-canopy#797 and #802, juniper-ml#2517 and #2519)\n"
     "  merged, and all 68 census drafts assigned to them closed, 67 of them carried. It also records each carrier's 2 to\n"
     "  6 independent validation rounds, the defects found on `main`, the per-PR disposition (§5), the process traps, and\n"
-    "  the owner's rulings 1–7 of 2026-11-08: round 2 takes 48 drafts; the launcher's effort default becomes `max`, and\n"
+    "  the Overtoad's rulings 1–7 of 2026-11-08: round 2 takes 48 drafts; the launcher's effort default becomes `max`, and\n"
     "  an explicit `auto` will send no `--effort` flag; three of the four open defect rows in §4 get their own fixes\n"
     "  now; and juniper-ml#2271's one setting moved to user settings, with its branch deleted. Later rulings decide that\n"
     "  the agent guard's brace cap is to fail closed, that the gitleaks fix is to be ported to the seven other\n"
@@ -168,9 +168,9 @@ FIXES = [
           " a fit that returns while paused. No consumer imports service-core's lifecycle manager; juniper-cascor runs"
           " its own (§8, ruling 11) |"),
     # S3: the wedge fix's status (rulings 5 and 12; its validators).
-    (REC, "**ruled: fix now** (owner, 2026-11-08; §8). A fix is built and under validation; no PR yet. Until it lands,"
+    (REC, "**ruled: fix now** (Overtoad, 2026-11-08; §8). A fix is built and under validation; no PR yet. Until it lands,"
           " #2519 describes the wedge as current behaviour |",
-          "**ruled: fix now** (owner, 2026-11-08; §8), and confirmed once the owner had #2460's provenance (ruling 12)."
+          "**ruled: fix now** (Overtoad, 2026-11-08; §8), and confirmed once the Overtoad had #2460's provenance (ruling 12)."
           " A fix was built. Its two validators returned SHIP-WITH-FIXES, and one found a regression in it: a stale fit"
           " returning while a new run is paused resumed or completed the new run. On 2026-11-09 the corrected fix was"
           " rebuilt on `main` `4bae7520` and put through a second validation round. Its code validator returned"
@@ -180,9 +180,9 @@ FIXES = [
           " monitor alone, but only the settle is fenced. Its PR opens once both are corrected, after this record merges."
           " Until it lands, #2519 describes the wedge as current behaviour |"),
     # S3: the resume_ok fix's status.
-    (REC, "**ruled: fix now** (owner, 2026-11-08; §8). A fix is built and under validation; no PR yet. The race was"
+    (REC, "**ruled: fix now** (Overtoad, 2026-11-08; §8). A fix is built and under validation; no PR yet. The race was"
           " reproduced",
-          "**ruled: fix now** (owner, 2026-11-08; §8). A fix was built, and its two validators returned SHIP-WITH-FIXES;"
+          "**ruled: fix now** (Overtoad, 2026-11-08; §8). A fix was built, and its two validators returned SHIP-WITH-FIXES;"
           " among their findings, its new `replayed_through` keyword is public API, so it ships in a minor release of"
           " juniper-service-core, and juniper-ml's `[tools]` cap (`<0.8.0`) must rise when that release ships;"
           " juniper-cascor, juniper-data (its `[api]` extra), juniper-canopy and juniper-recurrence cap it `<0.8.0` too,"
@@ -196,14 +196,14 @@ FIXES = [
     # happens at any length (B-F1, A-04, confirmed from the two job logs), and #370's lost commits were scanned only
     # in the zero-rule era (A-04), so no "their own scans covered them" mitigation is claimed.
     (REC, "| juniper-data | gitleaks-action's pull-request scan reads one unpaginated page of the PR's commits (30 by"
-          " default), so a longer PR would not be fully scanned | **ruled: fix now** (owner, 2026-11-08; §8). A fix is"
+          " default), so a longer PR would not be fully scanned | **ruled: fix now** (Overtoad, 2026-11-08; §8). A fix is"
           " built and under validation; no PR yet. The fix's builder found the page to be the PR's **oldest** 30"
           " commits, so commit 31 onward, the head included, is never scanned, and `--first-parent` also drops commits"
           " a merge brought in (`src/gitleaks.js:113-117, 160-172` at the pinned SHA). juniper-ml#1797's run scanned 12"
           " commits of its 88. Seven Juniper repositories run the action the same way |",
           "| juniper-data | gitleaks-action's pull-request scan reads one unpaginated page of the PR's commits (30 by"
           " default), so a longer PR would not be fully scanned, and it walks that page with `--first-parent`, which"
-          " drops the commits a merge brought in | **ruled: fix now** (owner, 2026-11-08; §8), for juniper-data. A fix"
+          " drops the commits a merge brought in | **ruled: fix now** (Overtoad, 2026-11-08; §8), for juniper-data. A fix"
           " was built. Its two validators returned SHIP-WITH-FIXES, none of their findings a regression, and on"
           " 2026-11-09 its corrections were applied, among them scanning a merge commit's own changes"
           " (`--remerge-diff`); its PR opens after this record merges. The fix's builder found the page to be the PR's"
@@ -257,8 +257,8 @@ FIXES = [
           " fixes' status.\n"),
     (REC, "With these, the PR ships 159 scripts.", "With these, the PR ships 160 scripts."),
     # S3: the rulings header now spans two days.
-    (REC, "**The owner's rulings of 2026-11-08** (option labels verbatim):",
-          "**The owner's rulings of 2026-11-08 and 2026-11-09** (option labels verbatim, less the \"(Recommended)\""
+    (REC, "**The Overtoad's rulings of 2026-11-08** (option labels verbatim):",
+          "**The Overtoad's rulings of 2026-11-08 and 2026-11-09** (option labels verbatim, less the \"(Recommended)\""
           " marker on the option each question advised):"),
     # V4-F7.
     (REC, "Claude Code reads `.claude/settings.local.json`, which 2.1.319 resolves, for a worktree session, to the main"
@@ -292,7 +292,7 @@ FIXES = [
     # V4-F13; S3: rulings 10, 11 and 14 add open work.
     (REC, "- **The three defect fixes** (ruling 5) and the deferred `JuniperCanopy1` upgrade (ruling 6).\n",
           "- **The three defect fixes** (ruling 5), and the `JuniperCanopy1` upgrade, not done because its check failed,"
-          " which waits for the owner (ruling 6).\n"
+          " which waits for the Overtoad (ruling 6).\n"
           "- **The four further defect fixes** (ruling 11), and the gitleaks fix's port to the seven other repositories"
           " once juniper-data's has run green live (ruling 10).\n"
           "- **#2507's tests, with `util/release_train/propose.py` extended** (ruling 14), in the juniper-ml carriers.\n"),
@@ -341,7 +341,7 @@ FIXES = [
     # ---------------------------------------------------------------- the PR title, body and commit body
     (TTL, "round 1 complete, rulings of 2026-11-08, render inputs", "round 1 complete, rulings 1-14, render inputs"),
     # V5C-F4: rulings 1-7 are not the only rulings of 2026-11-08.
-    (PRB, "- Records the owner's rulings of 2026-11-08 (§8):", "- Records the owner's rulings 1–7 of 2026-11-08 (§8):"),
+    (PRB, "- Records the Overtoad's rulings of 2026-11-08 (§8):", "- Records the Overtoad's rulings 1–7 of 2026-11-08 (§8):"),
     # V4-F3 items 1-5.
     (PRB, "All 68 census drafts they carry are closed, each with a comment naming its carrier.",
           "All 68 census drafts assigned to them are closed, each with a comment naming its carrier: 67 are carried,"
@@ -359,7 +359,7 @@ FIXES = [
     (PRB, "  - the host's juniper-ci-tools is upgraded to CI's 0.9.1; `JuniperCanopy1` waits, because four live canopy"
           " E2E legs run from it.",
           "  - host state: the ruling's check failed for `JuniperCanopy1`, from which four live canopy E2E legs"
-          " (another arc's) run, so its juniper-observability 0.4.0 and juniper-service-core 0.5.0 stay until the owner"
+          " (another arc's) run, so its juniper-observability 0.4.0 and juniper-service-core 0.5.0 stay until the Overtoad"
           " decides; on a per-environment reading of the ruling, the host's juniper-ci-tools in `JuniperCascor1` went"
           " from 0.8.0 to CI's 0.9.1.\n"
           "- Records the later rulings (§8, 8–14; 8–11 of 2026-11-08, 12–14 of 2026-11-09): the agent guard's brace cap"
@@ -388,7 +388,7 @@ FIXES = [
     (PRB, "The detector lines carry `# tmp-path-literal: allow`, and the docstrings were reworded.",
           "The detector and guard lines carry `# tmp-path-literal: allow`, and the docstrings were reworded.\n"
           "    - Gate G-PATH (`util/home_path_literal_check.py`, on `main`; the required Pre-commit and Regression Tests"
-          " jobs run it): 8 lines in 7 scripts spelled the owner's home directory. Six code paths now come from"
+          " jobs run it): 8 lines in 7 scripts spelled the Overtoad's home directory. Six code paths now come from"
           " `os.path.expanduser` or `Path.home()`, which give the same strings on this host; a docstring usage line says"
           " `~/`; one line of recorded findings text keeps its literal under `# home-path-literal: allow`.\n"
           "    - One probe sent RFC 6455's sample `Sec-WebSocket-Key` nonce, which gitleaks' generic-api-key rule"
@@ -455,7 +455,7 @@ FIXES = [
           "merged (juniper-data#518/#519, juniper-canopy#797/#802, juniper-ml\n"
           "#2517/#2519), all 68 census drafts they carry closed, the 74-row\n"
           "per-PR table rendered from the archived manifests\n"
-          "(reports/2026-11-08_flood4-disposition/), and the owner's rulings of\n"
+          "(reports/2026-11-08_flood4-disposition/), and the Overtoad's rulings of\n"
           "2026-11-08. Ships the arc's 157 provenance scripts and round 1's\n"
           "closing handoff.\n",
           "Records the flood-4 disposition after round 1: six signed carriers\n"
@@ -463,7 +463,7 @@ FIXES = [
           "#2517/#2519), all 68 census drafts assigned to them closed (67\n"
           "carried), the 74-row per-PR table rendered from the archived\n"
           "manifests (reports/2026-11-08_flood4-disposition/) and each PR's\n"
-          "live state, the owner's rulings 1-14 of 2026-11-08 and 2026-11-09,\n"
+          "live state, the Overtoad's rulings 1-14 of 2026-11-08 and 2026-11-09,\n"
           "four more defects found while the first fixes were built, and round\n"
           "2's triage outcome. Ships the arc's 160 provenance scripts and two\n"
           "handoffs.\n"),

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-23
 Status: ad-hoc — one-off (a record revision of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor#763 and #767 (the fix); juniper-recurrence#236, juniper-ml#2592, juniper-canopy#823, juniper-data#543,
          juniper-cascor-client#199, juniper-data-client#264, juniper-ml#2593 and juniper-cascor-worker#232 (the ports and
          the release-train fix); handoffs ml#2591, ml#2594 and ml#2603; the rename PRs juniper-ml#2605 and #2606,
@@ -15,19 +15,19 @@ Related: juniper-cascor#763 and #767 (the fix); juniper-recurrence#236, juniper-
 
 Why
 ---
-v1.15.16 recorded the owner's directive of 2026-11-15 (PyPI must receive the very files TestPyPI took, checked by hash)
+v1.15.16 recorded the Overtoad's directive of 2026-11-15 (PyPI must receive the very files TestPyPI took, checked by hash)
 and left the fix as "a session's work in progress". Four sessions then carried it out (b9dfa450, d67643b8, 85756bf1 and
 e71d3e, 2026-11-15 to 2026-11-23):
 
-- juniper-cascor#763 and #767 fixed cascor's three publishers, after an independent review, and added the owner's
+- juniper-cascor#763 and #767 fixed cascor's three publishers, after an independent review, and added the Overtoad's
   recovery ladder (dialog 2 of 2026-11-15); an audit of all 18 publish workflows in 8 repositories preceded them;
 - seven ports and a release-train fix (ml#2592) merged by 2026-11-16, each after an independent review, and all 15
   ported workflows matched cascor's template on 2026-11-16 and again on 2026-11-23;
-- the owner ruled the template sweep's two questions on 2026-11-16, and on 2026-11-23 the sweep's order was set
-  around the owner's eight open rename PRs, whose substitution had also rewritten files on disk in sibling worktrees.
+- the Overtoad ruled the template sweep's two questions on 2026-11-16, and on 2026-11-23 the sweep's order was set
+  around the Overtoad's eight open rename PRs, whose substitution had also rewritten files on disk in sibling worktrees.
 
 This revision records that in the plan's own structure: a header bullet, three handoffs in "Documents referenced", a
-note in section 5 after R-OBS-SC-2's follow-ups, the owner's new item in section 6's mid-wave sitting, a Validation
+note in section 5 after R-OBS-SC-2's follow-ups, the Overtoad's new item in section 6's mid-wave sitting, a Validation
 record entry, and the landed scripts in "Changed by this plan". It also gives juniper-ml's docs/REFERENCE.md the
 version row juniper-ml#2592 never added (SWEEP item 18): 0.6.77 -> 0.6.78.
 
@@ -67,7 +67,7 @@ _EVIDENCE = "`juniper-ml/tmp/2026-11-23-plan-v1-15-17-evidence/`"
 _SWEEP_BRIEF = "`tmp/ports/SWEEP_BRIEF.md`"
 _SWEEP_ITEMS = "`tmp/ports/SWEEP_ITEMS.md`"
 _MERGES = "ml#2593 at 08:26:37Z, cascor-client#199 at 08:29:22Z, cascor-worker#232 at 08:29:42Z and data-client#264 at 08:30:47Z"
-#: The owner's words of 2026-11-15 05:14:10Z (session b9dfa450), the second paragraph of that message, verbatim.
+#: The Overtoad's words of 2026-11-15 05:14:10Z (session b9dfa450), the second paragraph of that message, verbatim.
 _DIRECTIVE = (
     "\"this needs to be fixed. deploy to pypi should send the same artifact that was already sent to testpypi. "
     "an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks again.\""
@@ -182,7 +182,7 @@ _N_PRS = (
     "  - Session `d67643b8` merged recurrence#236 and ml#2592 with `util/safe_merge.py` (ml#2592 through the auto-merge net it armed at 23:22:09Z). "
     "The other six merged under the {W}'s account, each at the head carrying its review's fixes, the four that add a build job (data, data-client, cascor-client, cascor-worker) after ml#2592, as SWEEP item 16 required.\n"
     "    - GitHub records auto-merge armed on four of the six (" + _MERGES + ") and none on canopy#823 or data#543, which were merged directly. "
-    "So " + _HO_MERGED + "'s \"The owner's armed auto-merge merged the last six\" holds for those four.\n"
+    "So " + _HO_MERGED + "'s \"The Overtoad's armed auto-merge merged the last six\" holds for those four.\n"
     "    - ml#2593's and cascor-worker#232's heads are update-branch merges on top of their reviewed `acc5c262` and `41933886`.\n"
 )
 _N_IDENTITY = (

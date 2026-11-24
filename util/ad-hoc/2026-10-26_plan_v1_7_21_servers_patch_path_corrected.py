@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.20 -> v1.7.21);
          util/ad-hoc/2026-10-26_plan_v1_7_20_juniper_ml_0_11_2_published.py (the revision this follows, and the pattern);
          util/ad-hoc/2026-10-26_consolidated_plan_v1_15_3_servers_patch_path_corrected.py (the consolidated plan's matching revision)
@@ -57,9 +57,9 @@ RECORD = (
     "floor both patches, since 0.11.1\", which under-warns any `[servers]` install that also has `[tools]` (`[all]` "
     "included) still on cascor 0.11.0, and juniper-ml's `CHANGELOG.md` `[0.11.2]` entry (lines 223-224 on `main`, "
     "2026-10-26) says the patches \"arrive through cascor 0.12.0\". An erratum to those two and the Release v0.11.2 "
-    "body is the owner's call, raised by that session. juniper-ml 0.11.3, which carries "
+    "body is the Overtoad's call, raised by that session. juniper-ml 0.11.3, which carries "
     "juniper-ml#2333 (#2062's fix), is cut: Release `v0.11.3` at 10:20:47Z (tag at `a771a5b8`; archive juniper-ml#2350, "
-    "`8b2221d3`), and publish run 40306687867 waits at the owner's `pypi` gate; its records are that session's. "
+    "`8b2221d3`), and publish run 40306687867 waits at the Overtoad's `pypi` gate; its records are that session's. "
     "`JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md` carries the same correction (v1.15.3)"
 )
 
@@ -78,17 +78,17 @@ _STATUS_ANCHOR = "pins both bounds in CI). The v1.4.0 plan edits follow that rec
 
 NEXT_HEAD_OLD = (
     "  - **Next**: juniper-ml#2062's fix (`[servers]` installs no client, as 0.11.2's still does), juniper-ml#2333, "
-    "merged as `da5e8de3` (2026-10-26 09:10Z); it ships in juniper-ml 0.11.3 (owner ruling 2026-10-25), whose `pypi` "
-    "gate is the owner's. "
+    "merged as `da5e8de3` (2026-10-26 09:10Z); it ships in juniper-ml 0.11.3 (Overtoad ruling 2026-10-25), whose `pypi` "
+    "gate is the Overtoad's. "
 )
 NEXT_HEAD_NEW = (
     "  - **Next**: juniper-ml 0.11.3, which carries juniper-ml#2062's fix (juniper-ml#2333, `da5e8de3`), waits at the "
     "owner's `pypi` gate (publish run 40306687867; re-runnable until 2026-11-25 10:20Z, and GitHub cancels it on "
     "2026-11-30 10:20Z); its records are session \"draft PRs\"'s. Whether 0.11.2's notes take an erratum for the patch "
-    "path is the owner's call (v1.7.21). "
+    "path is the Overtoad's call (v1.7.21). "
 )
 #: The unchanged tail of the Next bullet, asserted so the head edit cannot land on a rewritten bullet.
-_NEXT_TAIL = "The juniper-recurrence-client 0.3.1 release (owner's cut) carries the embargo fix."
+_NEXT_TAIL = "The juniper-recurrence-client 0.3.1 release (Overtoad's cut) carries the embargo fix."
 
 _ROW_ANCHOR_START = "| 2026-10-26 | 1.7.20 | **juniper-ml 0.11.2 published, juniper-ml#2330 ruled**:"
 _ROW_START = "| 2026-10-26 | 1.7.21 | "

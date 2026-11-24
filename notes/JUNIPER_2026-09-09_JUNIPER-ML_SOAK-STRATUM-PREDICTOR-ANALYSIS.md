@@ -18,7 +18,7 @@ that none has been tested —
 2. whether the task is completable correctly *without* the fact;
 3. whether the fact contradicts a plausible default the agent already holds.
 
-These need no owner decision and spend no sessions: they run over the 15-probe registry
+These need no Overtoad decision and spend no sessions: they run over the 15-probe registry
 and its tasks, not over the 43 ledger rows. `util/ad-hoc/2026-09-09_soak_stratum_predictors.py`
 tests them.
 
@@ -208,7 +208,7 @@ be pre-registered before it means anything.
 **A practical constraint on doing that.** Registry rule 1 in `conf/soak_probes.json`
 `_README` is *"FROZEN BEFORE OBSERVATION 1. Adding or editing a probe after runs begin
 invalidates the arm. Add a new probe with a new id; never edit a run one."* So testing any
-predictor against fresh probes is a **registry change** — owner decision §7.1's
+predictor against fresh probes is a **registry change** — Overtoad decision §7.1's
 neighbourhood — not something a successor can do inside the existing 15.
 
 ## 7. What this does and does not change
@@ -220,7 +220,7 @@ who re-derives it should stop.
 
 **Does not**: it supplies no working predictor, so §8.2's gap — *nothing predicts the
 stratum of a new fact* — **remains open**, and remains the blocker to decision support. It
-touches none of the owner decisions in §7 of
+touches none of the Overtoad decisions in §7 of
 `notes/JUNIPER_2026-09-04_JUNIPER-ML_SOAK-HANDOFF-CONSENSUS-VALIDATION.md`. No probe was
 run and the ledger is unmodified.
 

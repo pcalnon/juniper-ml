@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-08
 Status: ad-hoc — investigation (Cursor flood #3 evaluation of juniper-ml#2163)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/worktree_cleanup.bash phase_4_cleanup (the `git log ... --not --branches` line);
          juniper-ml#2163's PR body, which noted the empty list and did not pin it
 

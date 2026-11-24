@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor#678 (merged 0e016a7) and its follow-up PR; the post-merge validation at
          reports/2026-09-24_defect-register-round-42/cascor678-postmerge-validation.md, whose
          findings 1-8 are the follow-up's items 1-8 and whose mutants M21-M23 survived #678's suite.

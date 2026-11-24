@@ -19,7 +19,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md §8 ruling 11; juniper-cascor fix/ws-resume-losses;
          validator findings N3-03, N3-04, N3-06, N3-09 (tmp/flood4r2-val/n3-code-lens/findings.json)
 """

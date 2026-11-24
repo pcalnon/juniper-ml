@@ -83,7 +83,7 @@ LEDGER_FILE = "pointer_follow_soak"
 # Re-derived 2026-09-10 over all 43 valid rows: 8 runs TOUCHED the ledger and
 # exactly ONE read its contents. The other seven saw the filename in a porcelain
 # status line, a diff stat, an `ls -t reports/soak/`, or a `grep -l` list. Flagging
-# all eight would overstate the exposure 8x on the number that feeds owner decision
+# all eight would overstate the exposure 8x on the number that feeds Overtoad decision
 # 8 -- whether the leak invalidates its runs -- which changes the DENOMINATOR of
 # every rate in the arc.
 #
@@ -230,7 +230,7 @@ def scan(path: Path) -> dict:
         "contaminated": contaminated[0] > 0,
         "contamination_hits": contaminated[0],
         # Reported SEPARATELY from `contaminated`, not folded into it. Whether a
-        # ledger read invalidates its run is owner decision 8 of the 09-09 handoff
+        # ledger read invalidates its run is Overtoad decision 8 of the 09-09 handoff
         # and is NOT settled; a screen that silently rolled it into the existing
         # flag would decide it by implementation. The measurement is here either
         # way, which is what the decision needs.

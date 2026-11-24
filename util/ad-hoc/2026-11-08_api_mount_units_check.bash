@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-11-08
 # Status:     ad-hoc — investigation (claim check)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md (§3 L4, §4 RC-2, §14)
 #             reports/2026-11-07_yamaguchi-securityfs-unmount/2026-11-08T0905Z_upstream-source-pins.txt
 #             (systemd v259.5 src/core/mount.c mount_setup_unit() and mount_verify(), mount-setup.c mount_point_is_api())

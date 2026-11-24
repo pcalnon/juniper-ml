@@ -43,7 +43,7 @@ Ground every claim in these real, re-verified artifacts; **re-confirm each in-re
 
 **Publish + consumer (the follow-on, sequenced — NOT part of PR1):**
 
-- Publish: `juniper-ml/.github/workflows/publish-ci-tools.yml` triggers on tag `juniper-ci-tools-v*`. Per the release convention, **cut a GitHub Release** (notes templated from `notes/templates/TEMPLATE_RELEASE_NOTES.md` → archived `notes/releases/RELEASE_NOTES_ci-tools_v<ver>.md`), never a bare tag push. **Publishing/deploy approval is the owner's.**
+- Publish: `juniper-ml/.github/workflows/publish-ci-tools.yml` triggers on tag `juniper-ci-tools-v*`. Per the release convention, **cut a GitHub Release** (notes templated from `notes/templates/TEMPLATE_RELEASE_NOTES.md` → archived `notes/releases/RELEASE_NOTES_ci-tools_v<ver>.md`), never a bare tag push. **Publishing/deploy approval is the Overtoad's.**
 - Canopy already installs ci-tools in CI — `juniper-canopy/.github/workflows/ci.yml:542-546` (dependency-docs job) and `:679-682` (docs job), both pinned **`juniper-ci-tools>=0.2.0,<0.5.0`**. Canopy does NOT list ci-tools in `pyproject.toml`/`requirements`. The `<0.5.0` upper bound must be widened to admit the new version.
 
 **Conventions (current canonical):** line-length **512**; deliverable docs → `notes/`; Python `>=3.11` (ci-tools) / `>=3.12` (juniper-ml); one-PR-per-work-unit; no-merge-without-PR; worktree isolation under `/home/pcalnon/Development/python/Juniper/worktrees/`; thread-handoff at **95–99%** of compaction. Canopy test env: `JuniperCanopy1`.
@@ -52,7 +52,7 @@ Ground every claim in these real, re-verified artifacts; **re-confirm each in-re
 
 ## Primary Objective
 
-Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-env-drift-check`** console script in `juniper-ci-tools` that detects when an active environment's installed `juniper-*` distributions (**plain wheels included**) violate a target repo's `pyproject.toml` floors (and, with `--check-lock`, its `requirements.lock` pins) — the durable, ecosystem-reusable form of plan §10.1. Land it as a **self-contained juniper-ml PR** with the tool's own unit tests (≥85% gate) and a juniper-ml dogfood test; then, **after the owner publishes ci-tools**, wire canopy to run it as a preflight.
+Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-env-drift-check`** console script in `juniper-ci-tools` that detects when an active environment's installed `juniper-*` distributions (**plain wheels included**) violate a target repo's `pyproject.toml` floors (and, with `--check-lock`, its `requirements.lock` pins) — the durable, ecosystem-reusable form of plan §10.1. Land it as a **self-contained juniper-ml PR** with the tool's own unit tests (≥85% gate) and a juniper-ml dogfood test; then, **after the Overtoad publishes ci-tools**, wire canopy to run it as a preflight.
 
 ## Assigned Tasks / Directives
 
@@ -65,7 +65,7 @@ Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-e
    - d. Add `juniper-ml/tests/test_env_drift_check.py` (dogfood; mirror `test_ci_tools_drift.py`) invoking the console script / `python -m` form end-to-end against a synthetic fixture; assert exit codes + drift detection + JSON shape.
    - e. Bump `juniper_ci_tools/_version.py` per the ci-tools release convention — an additive console script is a **minor** bump (`0.4.0` → `0.5.0`). Because juniper-ml's own three workflows pin `juniper-ci-tools>=0.1.0,<0.5.0`, **in the SAME PR widen those upper bounds** (`.github/workflows/ci.yml:459`, `docs-full-check.yml:226`, `lockfile-update.yml:48` → e.g. `<0.6.0`) so `tests/test_ci_tools_drift.py::test_juniper_ml_own_workflows_pin_current_version` stays green. Update the package description + README to list the new script. Do **not** change juniper-ml's unbounded `>=0.1.0` [tools] pin (`tests/test_pyproject_extras.py:52`). (A patch bump would avoid the pin edits but is semantically wrong for a new console script — prefer the minor + pin-widen.)
 4. **Follow-on (sequence explicitly; do NOT bundle into PR1):**
-   - The owner cuts a `juniper-ci-tools-v<new>` GitHub Release (templated notes → `notes/releases/`) to publish — **owner-gated**.
+   - The Overtoad cuts a `juniper-ci-tools-v<new>` GitHub Release (templated notes → `notes/releases/`) to publish — **Overtoad-gated**.
    - **PR2 (canopy):** widen the `juniper-ci-tools` pin past `<0.5.0` to admit the published version; add a preflight step (after the `requirements.lock` install, before the unit tests) invoking `juniper-env-drift-check --repo-root . --check-lock`; add a local `make check-env` target + a short doc note. (CI installs from the lock, so the CI step mainly guards **lock-below-floor** drift; the local/runtime target — run in `JuniperCanopy1` — is the guard for the original incident class.)
 
 ## Key Deliverables & Requirements
@@ -83,7 +83,7 @@ Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-e
 - Do NOT delete, disable, or weaken any test to make a suite pass — a CRITICAL and ABSOLUTE requirement. Do NOT duplicate `test_client_version_floors.py`; **generalize** its logic (the canopy test remains).
 - Never invent APIs / paths / flags / versions; if the grounding does not contain it, stop and report.
 - **PR1 must be self-contained and verifiable WITHOUT publishing.** Do not make canopy depend on an unpublished ci-tools; keep PR1 (juniper-ml) and PR2 (canopy) separate (one-PR-per-work-unit). The `<0.5.0` upper bound exists in **two** places: juniper-ml's OWN three workflows (`ci.yml:459`, `docs-full-check.yml:226`, `lockfile-update.yml:48`) — widened in **PR1** (directive 3e), because `test_ci_tools_drift.py` runs there ungated — and canopy's CI (`>=0.2.0,<0.5.0`) — widened in **PR2**, after publish. Keep `test_ci_tools_drift.py` + `test_pyproject_extras.py` green in PR1.
-- The owner approves all merges **and** the ci-tools publish/deploy — do not self-merge or self-publish.
+- The Overtoad approves all merges **and** the ci-tools publish/deploy — do not self-merge or self-publish.
 
 ## Finalize / Validation
 

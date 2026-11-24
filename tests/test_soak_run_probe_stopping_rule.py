@@ -185,7 +185,7 @@ class RealRunIsGatedThroughMain(unittest.TestCase):
         """``--probe-id`` and ``--reason`` are now part of the override (D3).
 
         This test read ``["--force"]`` alone until 2026-09-17. That was the
-        contract then and is not the contract now: owner decision D3 admits the
+        contract then and is not the contract now: Overtoad decision D3 admits the
         override only for a NAMED probe with the reason recorded. The scoped form
         must still reach dispatch, or D3 has repealed ``--force`` instead of
         narrowing it -- which is the failure this case now pins.
@@ -332,7 +332,7 @@ class RealRunIsGatedThroughMain(unittest.TestCase):
 
 
 class ForceIsNarrowedToANamedProbe(unittest.TestCase):
-    """Owner decisions D1/D3, ruled 2026-09-17, enforced rather than written down.
+    """The Overtoad decisions D1/D3, ruled 2026-09-17, enforced rather than written down.
 
     ``notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md``:
     D1 authorises a named probe on request and declines the campaign; D3 admits

@@ -212,7 +212,7 @@ All arms at a single recorded cascor SHA; the campaign driver refuses otherwise.
 
 ## 8. Explicitly out of scope — the logging redesign
 
-The owner has separately raised a broader logging question: a clean stream to stdout/stderr, richer
+The Overtoad has separately raised a broader logging question: a clean stream to stdout/stderr, richer
 sinks (formatted and colourised file output), **per-logger** levels settable via config file and
 environment variable, and possibly streaming into an ELK/Kibana-style backend.
 

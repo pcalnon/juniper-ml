@@ -4,8 +4,8 @@
 **Author**: Paul Calnon
 **Status**: PLAN (design of record) — no code changes proposed for immediate execution
 **Created**: 2026-08-27
-**Requirement**: [`JR-CAN-PERF-004`](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md) (PERF, P2, owner `can`)
-**Triggered by**: the owner's 2026-08-26 disposition on **F-CANOPY-004** — *accept the freshness
+**Requirement**: [`JR-CAN-PERF-004`](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md) (PERF, P2, Overtoad `can`)
+**Triggered by**: the Overtoad's 2026-08-26 disposition on **F-CANOPY-004** — *accept the freshness
 contract now **and** schedule the WS migration* (the scheduled half; the contract half is already
 written into the finding).
 
@@ -13,7 +13,7 @@ written into the finding).
 
 ## 1. Why this exists
 
-F-CANOPY-004 is ACCEPTED, not fixed. The owner accepted a measured freshness envelope and scheduled
+F-CANOPY-004 is ACCEPTED, not fixed. The Overtoad accepted a measured freshness envelope and scheduled
 this workstream to remove the architecture that produces it. That envelope, quoted verbatim from the
 finding so this plan and the ledger cannot drift:
 
@@ -255,7 +255,7 @@ multi-session render census, not one screenshot.
 
 ---
 
-## 7. Open questions for the owner
+## 7. Open questions for the Overtoad
 
 1. **Is Phase 4's "keep polling, deliberately" acceptable as a terminal state** for redis /
    cassandra / snapshots? This plan assumes yes.
@@ -281,4 +281,4 @@ multi-session render census, not one screenshot.
 | 4 — decide on the remaining six | not started | — (can be written at any time) |
 
 **No code has been written for this workstream.** This document is the design of record produced by
-the scheduled half of the owner's 2026-08-26 F-CANOPY-004 disposition.
+the scheduled half of the Overtoad's 2026-08-26 F-CANOPY-004 disposition.

@@ -14,8 +14,8 @@
 This is the **security / vulnerability** companion to
 [`JUNIPER_2026-07-02_JUNIPER-ECOSYSTEM_STACK-INTERACTIVE-UX-AUDIT-PLAN.md`](JUNIPER_2026-07-02_JUNIPER-ECOSYSTEM_STACK-INTERACTIVE-UX-AUDIT-PLAN.md).
 The interactive-UX plan covers dimensions D1–D4 (functionality/UX/docs/output/correctness); this plan is **dimension D5 —
-vulnerabilities in architecture and implementation**. It is an **authorized defensive audit of the platform owner's own stack**
-(owner: Paul Calnon / `@pcalnon`, sole CODEOWNER), scoped to the **containerized** deployment (`juniper-deploy` compose), for the
+vulnerabilities in architecture and implementation**. It is an **authorized defensive audit of the platform Overtoad's own stack**
+(Overtoad: Paul Calnon / `@pcalnon`, sole CODEOWNER), scoped to the **containerized** deployment (`juniper-deploy` compose), for the
 purpose of hardening. It enumerates weaknesses and defines **verification steps phrased defensively** ("confirm X rejects Y",
 "confirm the secure default"). It is not an offensive playbook: it contains no weaponized payloads or exploit recipes.
 
@@ -337,11 +337,11 @@ Per finding, the SP2 verification is one of:
   `pyproject.toml`, `docker inspect` the running user/caps. Most findings above are already at this bar.
 - **Active / dual-use (→ Opus, §8):** anything that proves a weakness by *exercising* it against a live service — auth-bypass
   demonstration, SSRF reachability/exfil proof, deserialization-escape PoC, deliberate fault/DoS injection, timing measurement,
-  Origin/CSRF spoof. Deferred by design (Fable's dual-use safety posture; owner's explicit hand-off).
+  Origin/CSRF spoof. Deferred by design (Fable's dual-use safety posture; Overtoad's explicit hand-off).
 
 ## 8. Opus hand-off register (granular, execution-phase)
 
-Each item is one surface, scoped, with the inputs Opus needs and the artifact expected. All presuppose the owner's authorization
+Each item is one surface, scoped, with the inputs Opus needs and the artifact expected. All presuppose the Overtoad's authorization
 and an **isolated, non-production** bring-up (a throwaway compose stack), never the live/shared environment.
 
 | HO | Surface / finding | Why handed off | Inputs Opus needs | Expected artifact | Pre-req |
@@ -373,7 +373,7 @@ container inspect, config parity), the hardening recommendations, and the report
 | SP2 | Static/read-only verification of each finding at the evidence bar | Fable | verified findings |
 | SP2′ **(done 2026-07-02, §5.2)** | Active/dual-use verification of the §8 register on an isolated stack | Opus | HO-1…HO-8 artifacts ✓ |
 | SP3 | Author the security findings report (Critical→Low, diffed vs the 24-finding baseline) | Fable + Opus (HO items) | report doc |
-| SP4 | Owner triage → issues/PRs; deploy/secret changes are owner-gated | owner | tracked follow-ups |
+| SP4 | The Overtoad triage → issues/PRs; deploy/secret changes are Overtoad-gated | Overtoad | tracked follow-ups |
 
 ## 10. Appendix — key references
 
@@ -390,4 +390,4 @@ container inspect, config parity), the hardening recommendations, and the report
 
 > All `file:line` and every grounded finding here are source-cited and re-verified in SP1 (§9) before the report is authored.
 > Live-exercised confirmations are deferred to Opus (§8). Nothing in this plan is a weaponized exploit; it is a defensive
-> hardening checklist for the owner's own stack.
+> hardening checklist for the Overtoad's own stack.

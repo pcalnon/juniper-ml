@@ -10,7 +10,7 @@
 
 ## 0. What this document is
 
-The measurement gating owner decisions **D1** and **D2** of
+The measurement gating Overtoad decisions **D1** and **D2** of
 [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md).
 
 - **D1**: is width 2 actually optimal for the *later* output passes, or merely what cascor's
@@ -196,13 +196,13 @@ produces, and it should not be read as "what the burst costs". The realistic bur
 **D1**: closed, with a weaker claim than run 1 suggested. Keep 2. No tuning headroom exists, and
 none of 4/6/8 is distinguishable from it on this host.
 
-**D2**: **the gate passes.** The owner chose the environment-variable route for its flexibility and
+**D2**: **the gate passes.** The Overtoad chose the environment-variable route for its flexibility and
 gated it on this investigation. The route **does** control the initial-pass width, capping **does**
 remove the burst it was aimed at (−33%), and the penalty that justified the gate **does not appear
 at any cap value on current code**. Nothing here argues against implementing it.
 
 > **This reverses what I reported on 2026-09-16.** That report said the route was inert and put the
-> decision back to the owner. It was wrong, for the instrument reason in §0, and the correction is
+> decision back to the Overtoad. It was wrong, for the instrument reason in §0, and the correction is
 > in the route's favour.
 
 ---

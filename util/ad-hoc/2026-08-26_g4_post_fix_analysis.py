@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author:      Paul Calnon
 Created:     2026-08-26
 Status:      ad-hoc -- one-off (cascor#586/#587 live re-measure; handoff 2026-08-25 section 3.1 step 1)
-Retire when: RETAINED (owner policy 2026-08-25 -- no retirement deadline). Previously: the post-#587
+Retire when: RETAINED (Overtoad policy 2026-08-25 -- no retirement deadline). Previously: the post-#587
              G4 table is posted to cascor#571 and the register's G4 row updated; delete then.
 Related:     util/ad-hoc/2026-08-25_g4_overhead_decomposition.py (the instrument this drives);
              util/ad-hoc/2026-08-21_h2h_paired_campaign.bash (writes the legs.jsonl this reads).

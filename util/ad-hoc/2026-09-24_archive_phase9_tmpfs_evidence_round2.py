@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round 2: Lane R2-F's finding 17, Lane R2-B's finding 6)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-09-24_archive_phase9_tmpfs_evidence.py (the first pass, session 259b4d16 only);
          notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9;
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round2.md
@@ -107,7 +107,7 @@ HEADER = [
     "Project: juniper-ml / Sub-Project: ad-hoc tooling / Author: Paul Calnon",
     "Status: ad-hoc -- investigation (canopy E2E arc, Phase 9 consensus). Written by a review lane",
     "  (a subagent), not by the orchestrator; paths and ports inside are the lane's own.",
-    "Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)",
+    "Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)",
     "Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9;",
     "  {report}",
     "Everything below this block is the lane's file, unmodified.",

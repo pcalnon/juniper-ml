@@ -164,7 +164,7 @@ approach exists to avoid), `Tip:` paragraphs duplicating a cheatsheet row that d
     # stay inside the ~30 s request budget — pick an explicit list:
         # max_symbols: 10              # silent prefix of the resolved list; no annotation
     ### Operator pitfalls (shipped)
-    ### Still an owner call
+    ### Still an Overtoad call
     A finite `EQUITIES_DEFAULT_MAX_SYMBOLS` (single-digit to low teens) plus the csv_import loud-truncation contract (`InputTooLargeError` → 422 unless opt-in, then
     Do **not** add a tight byte cap as the binding bound — it is anti-correlated with wall time. A generous byte backstop (tens of MB) would only catch a pathologic
     Experiment `--up` redirects it to `$RUN_DIR/equities-cache`. A default (no-`symbols`) request is still ~34 min even when warm helps a *repeat*. See [Equities Sy

@@ -9,7 +9,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc — investigation (P5 fleet rollout, plan §P5 step d; tracker juniper-ml#1326)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-25_p5-four-ports-and-helper-fold.md
          ("Remaining work" step 1: confirm what the merge run landed);
          util/ad-hoc/2026-08-25_p5_port_verify.bash (the in-worktree controls this census precedes)

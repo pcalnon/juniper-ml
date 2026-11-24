@@ -27,7 +27,7 @@ mutants of the new code survive (its D-5).
 | Scripts | Subject |
 | --- | --- |
 | `t1_*` | the clearing script: its declared fence run against stubs, its gates attacked on copies, idempotence, an empty replacement, the STOP block's replacement, and the staged input |
-| `t2_rekey_test_hermetic.py` | whether the re-key's dry-run test is hermetic on the owner's host (its D-4) |
+| `t2_rekey_test_hermetic.py` | whether the re-key's dry-run test is hermetic on the Overtoad's host (its D-4) |
 | `t3_*` | the installer (dry run, real path, drift), the re-key's dry run, the password-init hand start, the wrapper's argv and env-file deny list, the snapshot lane's WAL claim, and whether one credential file gives all three readers one key |
 | `t4_*`, `t5_gate.py` | the re-key's non-dry-run path and EXIT trap, re-runs after a failure, the timer pre-flight, the drop-in it writes, and its gate |
 | `t6_mutations.py` | the 25 mutants and which suites kill them |

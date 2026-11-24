@@ -75,7 +75,7 @@ _spec.loader.exec_module(safe_merge)
 # budget exceeded 4x its p90 when measured (724 -> 2896), and the OWNER RULED on 2026-09-15 that
 # the value stands and the row stays out of this pin. Re-measured 2026-09-22 it reads p90 1264 /
 # max 1626 over 30 healthy heads, so 3300 would now pass both halves -- recorded, not acted on:
-# re-including the row is the owner's call. Its historic exclusion note claimed a 15,616 s max
+# re-including the row is the Overtoad's call. Its historic exclusion note claimed a 15,616 s max
 # that "is a QUEUED check, not CI working"; that is REFUTED -- the figure was the v1 instrument
 # counting bot check-runs.
 MEASURED_SPANS = {
@@ -658,7 +658,7 @@ class AutoMergeNetTest(SafeMergeTestBase):
     """RC-4: hand the merge to GitHub so a killed run does not strand the PR.
 
     The gate is load-bearing. Where `allow_auto_merge` is false, `gh pr merge --auto` does NOT
-    arm -- it falls back to an immediate merge, which with the owner's `always` bypass can land
+    arm -- it falls back to an immediate merge, which with the Overtoad's `always` bypass can land
     a PR whose checks never finished. Arming blind would reintroduce the exact bug this tool
     prevents.
     """

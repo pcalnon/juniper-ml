@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc — investigation (independent Lane A validator, entry point = source + causal intervention)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md (Phase 6: F-CANOPY-035 / -052);
          notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md §2 (Lane A)
 

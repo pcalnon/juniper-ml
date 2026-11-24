@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-20
 Status: ad-hoc — one-off (the #2273 landing; kept so a silent revert costs one re-run plus a small PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2273 (W5.5 + W5.6); juniper-ml#2272 (G5, which moved main under #2273 and conflicted on the two
          contended files below); util/ad-hoc/2026-10-19_plan_v1_7_9_w5_7_opened.py (the --check shape this follows)
 

@@ -3,7 +3,7 @@
 **Project**: Juniper — performance lane
 **Author**: Paul Calnon
 **Date**: 2026-09-17
-**Status**: D6's gating measurement DONE. The value is stable; the decision to build the gate is the owner's.
+**Status**: D6's gating measurement DONE. The value is stable; the decision to build the gate is the Overtoad's.
 **License**: MIT License
 
 ---
@@ -19,8 +19,8 @@
 > They are committed so the 09-17 evidence
 > (`~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json`) keeps the
 > instrument that produced it. That follows the ad-hoc retention policy
-> ([`util/ad-hoc/README.md`](../util/ad-hoc/README.md), owner decision 2026-08-25), under which
-> retiring a script is owner-directed only. **Everything below this block is verbatim**: the
+> ([`util/ad-hoc/README.md`](../util/ad-hoc/README.md), Overtoad decision 2026-08-25), under which
+> retiring a script is Overtoad-directed only. **Everything below this block is verbatim**: the
 > original note's sha256 is `acfc899b4cef42326cf8e2ef9bc58ba74a73e4da71ec20239bb517d74744d015`.
 > The instrument
 > ([`util/ad-hoc/2026-09-17_epochs_completed_spread.py`](../util/ad-hoc/2026-09-17_epochs_completed_spread.py))
@@ -37,7 +37,7 @@
 > - **§4's "safe to build" is not the whole story.** The 09-22 note §4 adds that the gate's
 >   reference is **tree-sensitive by construction**: it fires on any cascor change that moves
 >   candidate numerics. Whether that is its value or its cost is unmeasured, and **whether to
->   build the gate at all is still the owner's call**. D6 bought the measurement, not the gate.
+>   build the gate at all is still the Overtoad's call**. D6 bought the measurement, not the gate.
 > - **This instrument cannot tell an inert axis from a real invariance.** It sets width with
 >   `torch.set_num_threads` and reads it back with `torch.get_num_threads()`, which re-pins the
 >   caller (the 09-22 note §2.2). It records neither the ICV in force nor a control arm. Its
@@ -48,11 +48,11 @@
 
 ## 0. What this document is
 
-The measurement gating owner decision **D6** of
+The measurement gating Overtoad decision **D6** of
 [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md).
 
 D6 asks whether a work-style **exact-match** gate on `epochs_completed` is safe for the candidate
-micro-benchmarks — the micro analogue of the run tier's split gate. The owner ruled **"re-measure
+micro-benchmarks — the micro analogue of the run tier's split gate. The Overtoad ruled **"re-measure
 first"**, because the reference looked unstable: the 2026-09-07 validation observed requested-100
 completing **52** in one round and **68** in another, and a gate whose reference moves with ambient
 conditions is a flaky gate.
@@ -131,7 +131,7 @@ a change like any reference.
 
 ---
 
-## 4. Recommendation (the decision remains the owner's)
+## 4. Recommendation (the decision remains the Overtoad's)
 
 **An exact-match gate on `epochs_completed` is safe to build**, scoped to the candidate
 micro-benchmarks:

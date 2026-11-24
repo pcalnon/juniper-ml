@@ -7,7 +7,7 @@
 # Author:     Paul Calnon (authored via Claude Code)
 # Created:    2026-10-17
 # Status:     ad-hoc — investigation (turing bring-up task F3: memory-headroom baseline)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§6 F3, §9.3 G-MEM, D1);
 #             util/ad-hoc/2026-10-17_turing_headroom_summarize.py turns the samples into p5/p50/p95.
 #
@@ -16,7 +16,7 @@
 #
 # - READ-ONLY on the host. It runs vm_stat, sysctl, memory_pressure -Q and pgrep, each bounded by `timeout` (task D0).
 # - F3 wants at least 480 samples per mode at 60 s: 8 hours each. "node" mode means desktop apps and Docker Desktop
-#   are quit and no VM is running; the owner sets that state, this script only labels the rows.
+#   are quit and no VM is running; the Overtoad sets that state, this script only labels the rows.
 # - Output is one tab-separated row per sample, with a header row when the file is new:
 #     ts_utc mode page_size pages_free pages_speculative pages_inactive pages_active pages_wired pages_compressor
 #     swap_total_mib swap_used_mib free_pct docker

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- investigation (independent-agent consensus, round 3, Lane B2)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-09-23_f054_r2_laneB2_node_repro.py (driver), ..._r2_laneB2_fix_check.py (sequences)
 
 Same sequences as round 2's fix check, now on the frozen v3 commit instead of a textual patch of v2:

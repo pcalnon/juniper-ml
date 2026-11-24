@@ -3,7 +3,7 @@
 // Source: this session's tmpfs scratchpad, lane10B2.eZmWfY/extend_traces_fn.js
 // Written by Lane 10-B2 (adversarial, claims beyond evidence), a review lane (a subagent), not by the orchestrator.
 // Project: juniper-ml / Sub-Project: ad-hoc tooling / Author: Paul Calnon
-// Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+// Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 // Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 10;
 //   reports/e2e-canopy-2026-09-02/consensus/2026-10-04_validator_reports_phase10_round1.md
 // Everything below this block is the lane's file, unmodified except for trailing whitespace and the final

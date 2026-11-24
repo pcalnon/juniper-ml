@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-29
 Status: ad-hoc -- investigation (CLI-experimentation tail re-probe: intra-entry corpus quality)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-TAIL-REPROBE.md;
          ml#1467 (five artifacts repaired); ml#1462 (by-repo/by-status became a projection)
 

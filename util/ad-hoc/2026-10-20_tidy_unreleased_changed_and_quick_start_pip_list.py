@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-20
 Status: ad-hoc — one-off (two follow-ups carried by every recurrence-equities handoff since 2026-10-18)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: P5 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md;
          util/ad-hoc/2026-10-19_raise_recurrence_floor_0_7_0.py (flagged the duplicate heading and used the first);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_recurrence-equities-w5-5-w5-6-landed-p5-code-complete-model-0-6-0-gate-parked.md

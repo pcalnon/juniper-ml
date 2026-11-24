@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (API primer correction, v3)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- read-only mutation check; writes mutated copies to a scratch directory only
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 v2 of the primer correction (juniper-ml#2075) made the II.11 toy's four metadata responses send exactly
 the canonical bytes their strong `ETag` hashes. Round 2 of its validation found that nothing in the

@@ -718,7 +718,7 @@ Three **new** facts against option (b), all found today:
 
 - **sdb1's root is not writable by `pcalnon`** — owned `dnsmasq:pcalnon`, mode `drwxr-xr-x`
   (group has r-x only). A 512 MB `dd` probe returned `Permission denied`. Option (b) needs
-  a root-created, `chown`ed subdirectory before it is even possible. (The `dnsmasq` owner is
+  a root-created, `chown`ed subdirectory before it is even possible. (The `dnsmasq` Overtoad is
   a uid collision from another system — cosmetic, but it is why the group bit is the whole
   story.)
 - **sdb1 is not a spare disk.** It holds `Archive/`, `Downloads/`, `Movies/`, `Music/`,
@@ -1705,7 +1705,7 @@ filter 43 is the exclusion). `yamaguchi_server_api.py export` currently fails `4
   is git-ignored, so `git worktree remove` deletes it **silently** — do not sweep that worktree
   before §8.8's reconciliation.
 
-#### 8.18.3 What has to happen (owner decision)
+#### 8.18.3 What has to happen (Overtoad decision)
 
 Agree an escrow for `PASSPHRASE` that is **off `sdc` and outside the ciphertext** — an offline or
 printed copy, and/or a copy on sda1 — and decide whether `Duplicati-server.sqlite` gets an automated
@@ -1726,9 +1726,9 @@ rather than an addition. **The commented-out line in that file omits `--portable
 activating it by swapping comment markers reproduces the §2 restart trap — edit the active line in
 place.
 
-### 8.19 Addendum (2026-08-29 afternoon) — the four owner decisions, and the half of them a headless session could execute
+### 8.19 Addendum (2026-08-29 afternoon) — the four Overtoad decisions, and the half of them a headless session could execute
 
-§8.18 ended by naming an owner decision. It was taken the same day. This section records the
+§8.18 ended by naming an Overtoad decision. It was taken the same day. This section records the
 decisions, what was executed and verified against them, and what is still gated on root.
 
 #### 8.19.1 The decisions
@@ -1738,7 +1738,7 @@ decisions, what was executed and verified against them, and what is still gated 
 | 8.18.3 | Where does the `PASSPHRASE` escrow live? | **Both** — an offline/printed copy *and* a copy on sda1 |
 | 8.18.2 | How is `Duplicati-server.sqlite` protected? | **Automated root-owned copy** into a non-excluded path |
 | 8.18.4 | How far to narrow the web service? | **Narrow bind only** — leave cloud reporting alone for now |
-| 7 (crit. 5) | Reboot? | **Prepare it; the owner reboots on his own schedule** |
+| 7 (crit. 5) | Reboot? | **Prepare it; the Overtoad reboots on his own schedule** |
 
 #### 8.19.2 Escrow — the sda1 half is DONE, the offline half is not
 
@@ -1880,12 +1880,12 @@ completing (`FilesUploaded=5`; 818 + 5 = 823), not drift. Next run `2026-08-30T1
 2. **`sudo bash util/ad-hoc/yamaguchi_server_db_deploy.bash`** — after the primary checkout is synced
    to a `main` containing the script, or every timer fire exits non-zero.
 3. **`sudo bash util/ad-hoc/yamaguchi_narrow_bind.bash --restart`**.
-4. **Criterion 5** — owner reboots, then `yamaguchi_reboot_verify.bash pre` / `post`.
+4. **Criterion 5** — Overtoad reboots, then `yamaguchi_reboot_verify.bash pre` / `post`.
 5. **§8.8's `.env` sha256 reconciliation**, still unreconciled — and still the precondition for
    sweeping `curious-plotting-hummingbird`. Note that §8.19.2 changes its risk: with the sda1 escrow
    in place, sweeping it no longer destroys the only recoverable copy of `PASSPHRASE_OLD`. It is now
    an ordinary secrets-sprawl item.
-6. **Cloud reporting** (§8.18.4) — owner-deferred, not rejected. `remote-control-enabled = True` and
+6. **Cloud reporting** (§8.18.4) — Overtoad-deferred, not rejected. `remote-control-enabled = True` and
    `additional-report-url` embeds a **long-lived bearer JWT** (issuer `api.duplicati.com`, expiring
    2028) — it is a credential, not merely a URL, and should be treated as one if that file is shared.
 7. **The disabled `duplicati-backup.*` user lane** (§8.11.3) — removal PR still unopened. The lane
@@ -1893,12 +1893,12 @@ completing (`FilesUploaded=5`; 818 + 5 = 823), not drift. Next run `2026-08-30T1
 
 ### 8.20 Addendum (2026-08-30) — the passphrase is cleartext, and two harnesses that break on reboot
 
-Three of §8.19.1's four owner decisions were executed by the owner overnight (items 2 and 3 in full;
+Three of §8.19.1's four Overtoad decisions were executed by the Overtoad overnight (items 2 and 3 in full;
 item 1's sda1 half on 08-29). A validation pass the next morning found two things the arc had been
 carrying wrongly. Handoff:
 [`HANDOFF_2026-08-30_duplicati-cleartext-passphrase-and-escrow-tail.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-08/HANDOFF_2026-08-30_duplicati-cleartext-passphrase-and-escrow-tail.md).
 
-#### 8.20.1 Executed by the owner, verified here
+#### 8.20.1 Executed by the Overtoad, verified here
 
 | Item | Evidence |
 |---|---|
@@ -1937,7 +1937,7 @@ targeted `_yamaguchi_records/` (mode **0775**) rather than `_yamaguchi_keys/` (*
 any local account"; that was false and was caught in validation, which is worth recording because
 the predecessor chain had *already* flagged overstatement of exactly this shape.
 
-**Owner decision (2026-08-30): accept as-is and document.** `SETTINGS_ENCRYPTION_KEY` was rejected —
+**The Overtoad decision (2026-08-30): accept as-is and document.** `SETTINGS_ENCRYPTION_KEY` was rejected —
 it adds a third key needing escrow and makes the DB unreadable if lost. Excluding the snapshot from
 the backup was rejected — it defeats the purpose and the archive holds a cleartext copy regardless.
 The recipe target was changed to `_yamaguchi_keys/`.
@@ -1991,7 +1991,7 @@ item 4, "KEEP. No change". A literal-string sweep flags it as orphaned; it is no
    (163,840 B at `20260830T134500Z`, present in dlist `20260831T085413Z`, control-query verified).
    Confirming it is what exposed §8.22: there was no completed run to check, because the server had
    been stuck `Paused` for 42.6 h.
-5. §8.8's `.env` reconciliation; 6. cloud reporting (owner-deferred); 7. the disabled user-lane
+5. §8.8's `.env` reconciliation; 6. cloud reporting (Overtoad-deferred); 7. the disabled user-lane
    removal PR; 8. the two §8.20.4 items.
 
 ---
@@ -2160,7 +2160,7 @@ one at the moment of discovery.
 The queue entry is the load-bearing evidence: the scheduler fired on time and enqueued job 2, and
 the pause held it there. This was not a missed trigger, a bad `OnCalendar`, or a dead timer.
 
-**Resolved** by `POST /api/v1/serverstate/resume` (owner-approved). The queued job dequeued
+**Resolved** by `POST /api/v1/serverstate/resume` (Overtoad-approved). The queued job dequeued
 immediately and ran to `Backup Success 2026-08-31T08:54:13Z -> 09:07:23Z` (13 m 10 s, `Errors=[]`).
 Census reconciles at the new baseline **826 files / 212,336,971,122 B `-> AGREE`**;
 `BackupListCount` 5 → 6; next run `2026-08-31T14:00:00Z`.
@@ -2240,7 +2240,7 @@ known to return non-empty.
 ### 8.23 Addendum (2026-08-31) — the reboot hazard of §8.22.2 is REFUTED by direct test
 
 §8.22.2 warned that if the stuck pause reproduced on restart, the post-reboot server would come up
-`Paused` and the backup would silently stop again. **The owner ran the restart. It does not
+`Paused` and the backup would silently stop again. **The Overtoad ran the restart. It does not
 reproduce.**
 
 #### 8.23.1 The measurement
@@ -2310,7 +2310,7 @@ routine restart's 30-minute window.
 
 #### 8.24.1 Key escrow: the single-disk exposure is CLOSED (interim), printing deferred
 
-Owner, 2026-08-31: the escrow sheet is **stored in a synced password manager**, judged an acceptable
+The Overtoad, 2026-08-31: the escrow sheet is **stored in a synced password manager**, judged an acceptable
 level for now. Printing is still intended but **deferred on a printer-connection fault**, and will
 follow the reboot.
 
@@ -2404,7 +2404,7 @@ key, and it deserves an explicit decision rather than arriving as a side effect 
 Note the interaction: moving the 196 GB copy *to sda1* preserves the unique restore point but does
 **not** preserve redundancy — one disk cannot be its own second copy.
 
-#### 8.24.3 Recommendation (owner-deferrable; on the radar per owner, 2026-08-31)
+#### 8.24.3 Recommendation (Overtoad-deferrable; on the radar per Overtoad, 2026-08-31)
 
 1. ~~**Do now, unconditionally**: move `_yamaguchi_check/` + the four drill/scratch dirs (~1.5 MB) to
    sda1 under `_yamaguchi_records/`.~~ **ALREADY DONE — verified by content 2026-09-01 (§8.24.2
@@ -2422,7 +2422,7 @@ Note the interaction: moving the 196 GB copy *to sda1* preserves the unique rest
 
 ### 8.25 Addendum (2026-09-01) — the frozen set is preserved and certified, and sdc4 is cleared by three-lane consensus
 
-Owner decision (2026-09-01): **keep** restore point `20260826T181206Z`. Executed, certified, then
+The Overtoad decision (2026-09-01): **keep** restore point `20260826T181206Z`. Executed, certified, then
 verified for retirement by independent-agent consensus.
 
 #### 8.25.1 The copy, and its certification
@@ -2705,7 +2705,7 @@ unmounted 2026-09-02 (§8.26.1); from that moment:
 - `util/ad-hoc/yamaguchi_retire_tier2.bash` — gate 0 loops both filesystems, `FATAL: … not a mountpoint`, **exit 3**
 - `util/ad-hoc/yamaguchi_retire_tier3.py` — gate 0 `is_mountpoint`, `refuse(...)`, **exit 3**
 
-The owner confirms (2026-09-08) the partition table was edited directly. So the deletion carried
+The Overtoad confirms (2026-09-08) the partition table was edited directly. So the deletion carried
 **none** of the protections the arc spent three tools building: tier-2's gate 3 (newest run Success),
 gate 4 (a drill at the new destination verified, every candidate `VERIFIED`/`PASS`), tier-3's gate 2
 (live-set census AGREE), gate 3 (purge complete) and gate 4 (drill evidence byte-identical on both
@@ -2750,7 +2750,7 @@ is a separate decision from recovering 2.3 KB.
 
 This could not be run from the agent lane: uid 1000 is not in group `disk` (`/dev/sdc` is
 `brw-rw---- root:disk`), and `sudo` is refused by the worktree-isolated session guard. It is an
-**owner action**. It is also not urgent-but-indefinite: the region is free space, and the first
+**Overtoad action**. It is also not urgent-but-indefinite: the region is free space, and the first
 partition created there ends the option.
 
 #### 8.27.4 `sda` health — partially checked for the first time, and still not drive health
@@ -2773,12 +2773,12 @@ to this verdict.
 **SMART remains undone**, and cannot be done from this lane: `dmesg` returns *"read kernel buffer
 failed: Operation not permitted"*, `/dev/sda` is not readable by uid 1000, and `sudo` is refused by
 the worktree guard. `sudo smartctl -H /dev/sda` (plus `-A` for reallocated/pending counts) is an
-**owner action**, and it is now the single highest-value unchecked fact in the arc: since §8.27.2 it
+**Overtoad action**, and it is now the single highest-value unchecked fact in the arc: since §8.27.2 it
 guards the only remaining copy of the live destination.
 
 #### 8.27.5 Escrow printing is CLOSED
 
-`~/.cache/yamaguchi-key-escrow-sheet.txt` is **absent**. Owner confirms (2026-09-08): **printed, then
+`~/.cache/yamaguchi-key-escrow-sheet.txt` is **absent**. The Overtoad confirms (2026-09-08): **printed, then
 removed.** The paper copy exists, and the §8.24.1 interim — a synced password-manager copy, accepted
 as a trust-model improvement rather than a fix — is now backed by a record that fails independently of
 an account, a provider and a reachable device. **This item is closed.** The sheet remains regenerable
@@ -2794,7 +2794,7 @@ its *unaided return* half and its *the schedule actually fires* half, the latter
 **last unexercised acceptance criterion** in
 `notes/JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md` §7.
 
-**Open, owner actions, in value order**:
+**Open, Overtoad actions, in value order**:
 
 1. `sudo smartctl -H -A /dev/sda` — §8.27.4. Guards the sole remaining copy.
 2. The read-only loop probe of §8.27.3, then a decision on recovering the 2.3 KB and/or the 196 G copy.

@@ -137,7 +137,7 @@
    "carrier": null,
    "quality": "WEAK",
    "priority": "P3",
-   "note": "Documents the Yamaguchi server installer, wrapper, unit and defaults that the unmerged backup Phase B rewrites, behind the design's section 8 STOP. Three statements are false on main (a first install exits 1 silently without .blessed.sha256; an empty DUPLICATI_REQUIRE_MOUNT does not skip the mount check; a hand edit in /etc/default/duplicati is overwritten by the --update-backup-behavior re-run it recommends), and it presents install + restart as operator steps despite the owner's 'stop, never restart' Tier 1 ruling. Not carried: the server's operator docs belong with Phase B; the diff stays available on this closed PR."
+   "note": "Documents the Yamaguchi server installer, wrapper, unit and defaults that the unmerged backup Phase B rewrites, behind the design's section 8 STOP. Three statements are false on main (a first install exits 1 silently without .blessed.sha256; an empty DUPLICATI_REQUIRE_MOUNT does not skip the mount check; a hand edit in /etc/default/duplicati is overwritten by the --update-backup-behavior re-run it recommends), and it presents install + restart as operator steps despite the Overtoad's 'stop, never restart' Tier 1 ruling. Not carried: the server's operator docs belong with Phase B; the diff stays available on this closed PR."
   },
   {
    "repo": "juniper-ml",

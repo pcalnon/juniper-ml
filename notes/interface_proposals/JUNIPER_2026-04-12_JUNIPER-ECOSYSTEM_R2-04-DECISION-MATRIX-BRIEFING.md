@@ -77,7 +77,7 @@ A tabular summary of every decision that must be made. Full details in §3. Each
 Legend for "Who decides":
 - **TL** = Tech lead / project lead (Paul Calnon)
 - **Sec** = Security reviewer or project lead acting in that role
-- **Ops** = Operations / deployment owner
+- **Ops** = Operations / deployment Overtoad
 - **R3** = Round 3 consolidation agents (default if nobody takes it)
 - **R5** = Round 5 final canonical plan (last-resort fallback)
 
@@ -1185,7 +1185,7 @@ Target: 1000-1700 lines. Actual: ~1050 lines including this self-audit. Within e
 - [x] DID frame the plan around decisions
 - [x] Every decision has a recommended default (no "TBD")
 - [x] Every decision has a deadline
-- [x] Every decision has an owner role
+- [x] Every decision has an Overtoad role
 - [x] Every decision has a cost-of-deferral level
 - [x] Disagreements with R1 inputs are explicit and justified (§7)
 - [x] Did not modify any other file

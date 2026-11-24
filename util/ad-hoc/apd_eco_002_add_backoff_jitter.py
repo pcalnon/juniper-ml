@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc -- migration (the APD-ECO-002 close across the three client repos)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md (APD-ECO-002), the three client fix PRs named in its §5.1 row
 
 ``APD-ECO-002``: none of the three clients passes ``backoff_jitter`` to ``urllib3``'s ``Retry``,

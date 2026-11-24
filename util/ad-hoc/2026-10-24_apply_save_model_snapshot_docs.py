@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-24
 Status: ad-hoc — one-off (the docs half of juniper-ml#2211; kept so a silent revert costs one re-run)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/experiments/run_experiment.py _save_model_snapshot / _snapshots_dir;
          tests/test_recurrence_operation_identity_and_dataset_budget.py SaveModelSnapshotTest;
          util/ad-hoc/2026-10-21_apply_propose_readme_compat_changelog.py (the CHANGELOG insertion this reuses)

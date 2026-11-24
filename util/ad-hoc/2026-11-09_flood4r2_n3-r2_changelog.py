@@ -15,7 +15,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md §8 ruling 11; juniper-cascor fix/ws-resume-losses
 """
 
@@ -35,7 +35,7 @@ N1_BASE = "f3dfee8c10ede0fbef6b4b61cb36af2b02307fd1"
 SHARED = ["CHANGELOG.md", "docs/DEVELOPER_CHEATSHEET.md", "docs/api/API_SCHEMAS.md", "docs/api/JUNIPER_CASCOR_API_REFERENCE.md"]
 
 FIXED_START = "- **A `/ws/training` client that resumes no longer misses broadcasts behind a `resume_ok`.**"
-ROUND1_FIXED_END = "    Owner ruling: fix now.\n\n"
+ROUND1_FIXED_END = "    The Overtoad ruling: fix now.\n\n"
 INSERT_BEFORE = "- **The nightly performance smoke runs on pytest 9.2 again: its `pytest<9.2` cap is gone.**"
 BANDIT_START = "- **The Bandit SARIF upload's comment and its survey's docstring no longer claim that every upload succeeded.**"
 

@@ -1,7 +1,7 @@
 """
 Print a merged ruling-17 census as a per-port, per-file, per-test report.
 
-Builder helper for the owner's ruling 17 ("canopy: tests hit :8050"). Reads a merged census JSON written by
+Builder helper for the Overtoad's ruling 17 ("canopy: tests hit :8050"). Reads a merged census JSON written by
 util/ad-hoc/2026-11-09_flood4r2_r17-canopy-guard_run_groups.py and prints, for each port: the connect and test
 counts and verdicts; then each test that connected, grouped by file, with its markers, outcome, phases, threads
 and the innermost worktree frames of its first connect. ``--ports`` limits the per-test part to those ports.
@@ -14,8 +14,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: owner ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Overtoad ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
 """
 
 from __future__ import annotations

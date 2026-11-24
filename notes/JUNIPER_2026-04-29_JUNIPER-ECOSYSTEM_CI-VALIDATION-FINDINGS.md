@@ -245,7 +245,7 @@ Identical failure mode in all 6 Python repos that ship a
 - **Priority**: **P1** — this blocks every push to canopy `main`.
 - **Note**: out-of-scope for this session's CI alignment effort.
   Document, **but do not fix here** — push as a finding for the
-  canopy product owner.
+  canopy product Overtoad.
 
 ## V12 — juniper-canopy / ci.yml / Lockfile Freshness
 
@@ -259,7 +259,7 @@ Identical failure mode in all 6 Python repos that ship a
 - **Root cause**: Phase 6E PRs added new deps to canopy's
   `pyproject.toml` without regenerating the lockfile.
 - **Group**: G-CODE.
-- **Fix**: out-of-scope — defer to canopy product owner.
+- **Fix**: out-of-scope — defer to canopy product Overtoad.
 
 ## V13 — juniper-data / ci.yml / Lockfile Freshness
 

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (port juniper-cascor#763 / #767's one-artifact publish fix to the other publishing repos)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_publish_workflow_artifact_audit.py (the audit naming the 18 publishers),
          util/ad-hoc/2026-11-15_publish_port_clone.py (makes the clones this reads)
 

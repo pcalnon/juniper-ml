@@ -66,7 +66,7 @@ CASES = [
      True, "negative control -- if this were False the guard is broken"),
     ("OD7 names our file but does not open it",
      "grep -c per_run_timeout docs/REFERENCE.md",
-     True, "owner decision 7, NOT a defect; pinned by test_pointer_path_in_a_command_arg_*"),
+     True, "Overtoad decision 7, NOT a defect; pinned by test_pointer_path_in_a_command_arg_*"),
 ]
 
 
@@ -100,7 +100,7 @@ def main() -> int:
     print("CONCLUSION: M2 and M3 cannot reach the wired channel -- it reads tool INPUTS and")
     print("both are tool-RESULT phenomena. The handoff's item 4 (\"two false-positive")
     print("mechanisms remain in util/soak_run_probe.py\") does not hold: they remain in the")
-    print("UNWIRED screen. What remains on the wired path is OD7, an owner decision.")
+    print("UNWIRED screen. What remains on the wired path is OD7, an Overtoad decision.")
     return 0
 
 

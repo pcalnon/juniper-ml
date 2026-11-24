@@ -3,21 +3,21 @@
 **Project**: Juniper — juniper-ml (meta-package)
 **Author**: Claude (flood-remediation program orchestrator), for Paul Calnon
 **Date**: 2026-07-28
-**Status**: Complete — heal PRs #852/#853 MERGED (2026-07-29 03:14/03:15Z); censusclean verified ON MAIN at `23024f5`; three validated guardrail proposals awaiting owner decisions
+**Status**: Complete — heal PRs #852/#853 MERGED (2026-07-29 03:14/03:15Z); censusclean verified ON MAIN at `23024f5`; three validated guardrail proposals awaiting Overtoad decisions
 **Program prompt**: `prompts/generated/JUNIPER_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION_PLAN_2026-07-28_0315.md` (merged via ml#844)
 **Grounding**: main `3915d1e6` (= Phase-0 anchor `ac2ec9d7` + ml#844); discovery bundle all-probes-ok; ruleset 13805432 live-probed
 
 ---
 
-This document is the single record of the 2026-07-25→28 Cursor-fleet PR-flood remediation program: (1) the incident narrative and consolidated root cause, (2) the definitive damage census with heal PRs, (3) three independently-validated guardrail proposals with their validation records and a comparison matrix, (4) the owner decision list, and (5) the process-validation record. The program performed no merges, no repo-settings changes, and no Cursor-dashboard changes — its only writes are the
-owner-merge heal PRs and this document's PR.
+This document is the single record of the 2026-07-25→28 Cursor-fleet PR-flood remediation program: (1) the incident narrative and consolidated root cause, (2) the definitive damage census with heal PRs, (3) three independently-validated guardrail proposals with their validation records and a comparison matrix, (4) the Overtoad decision list, and (5) the process-validation record. The program performed no merges, no repo-settings changes, and no Cursor-dashboard changes — its only writes are the
+Overtoad-merge heal PRs and this document's PR.
 
 ---
 
 ## §1 Incident narrative & root cause
 
 *Evidence tags: `[ruleset]` = live `gh api repos/pcalnon/juniper-ml/rulesets/13805432`; `[universe]` = the pinned census JSON `scratchpad/flood_census_universe.json` (computed at main `3915d1e6`); `[git]` = local history probe at `3915d1e6`; `[gh]` = read-only `gh pr view`; `[apps]` = `gh api /apps/cursor`;*
-*`[memory]` = owner incident log `project_juniper_ml_concurrent_session_activity.md` §"2026-07-26: Cursor Automation fleet"; `[Phase-0]` = the 2026-07-28 two-agent forensic pass (numbers not cheaply re-derivable at HEAD).*
+*`[memory]` = Overtoad incident log `project_juniper_ml_concurrent_session_activity.md` §"2026-07-26: Cursor Automation fleet"; `[Phase-0]` = the 2026-07-28 two-agent forensic pass (numbers not cheaply re-derivable at HEAD).*
 
 ### (a) Incident narrative and quantified scope
 
@@ -25,7 +25,7 @@ Over roughly 25 hours the Cursor agent fleet opened **134 PRs** against `pcalnon
 By class the 134 created split **63** `cursor/missing-test-coverage-*`, **57** `cursor/engineering-documentation-updates-*`, **6** `cursor/critical-bug-investigation-*` (126 cursor) and **8** non-cursor incl. heals #838/#842/#843 `[Phase-0]`. Outcome: **133 merged, 1 closed (#743), 0 open** `[Phase-0]`.
 The census universe — 135 first-parent `Merge pull request #` merges by merge-date, span **#709–#844** — reconciles this exactly: **125 cursor merged** (63 test-coverage / **56** docs / 6 bug-investigation) plus 10 non-cursor; docs drops 57→56 because the single closed PR #743 is a docs branch `[universe]`.
 
-Creation ran **2026-07-25 19:41Z → 07-26 20:14Z** containing a ~10-hour lull, with merge activity continuing through 07-28; the creation rate peaked at **48 PRs per fixed 6-hour UTC bucket**, with same-second dispatch pairs observed `[Phase-0]`. This is a recurring pattern, not a one-off: prior monthly cursor-PR volumes were **2026-03: 47, 05: 10, 06: 28, 07: 130** `[Phase-0]`. The owner's "600+" recollection is the **repo-lifetime closed-PR counter (835)**, not this window `[Phase-0]`.
+Creation ran **2026-07-25 19:41Z → 07-26 20:14Z** containing a ~10-hour lull, with merge activity continuing through 07-28; the creation rate peaked at **48 PRs per fixed 6-hour UTC bucket**, with same-second dispatch pairs observed `[Phase-0]`. This is a recurring pattern, not a one-off: prior monthly cursor-PR volumes were **2026-03: 47, 05: 10, 06: 28, 07: 130** `[Phase-0]`. The Overtoad's "600+" recollection is the **repo-lifetime closed-PR counter (835)**, not this window `[Phase-0]`.
 
 Merge mechanics were **100% true merges (no squashes)**; **136** `Merge branch 'main' into <branch>` union-carrier commits rode in on second parents — re-verified exactly at HEAD (committer-date window 07-25…07-29) `[git]`. There is no `merge=union` gitattributes driver; the damage is ordinary 3-way (ort) hunk fusion/loss on append-heavy files during stale-branch refreshes `[Phase-0]`.
 
@@ -38,7 +38,7 @@ Merge mechanics were **100% true merges (no squashes)**; **136** `Merge branch '
    The small `+1`s (AGENTS/runbook/ceremony) are window-edge drift — my HEAD `3915d1e6` sits 2 merges past Phase-0's `ac2ec9d`; universe buckets read tests 77 / util 17 / doc-union 62 / ci.yml 9 vs Phase-0 76/16/61/9 `[universe]`.
 3. **Ruleset `juniper-ml-rules` (id 13805432) gaps** `[ruleset]`: `required_status_checks.strict_required_status_checks_policy: **false**` (branches need NOT be up to date before merge); the `rules` array carries deletion, non_fast_forward, code_scanning, code_quality, required_status_checks, required_signatures, update, creation — but **no `pull_request` (required-review) rule** and **no merge-queue rule**. CODEOWNERS is therefore advisory only.
 4. **Always-bypass actors.** Five actors hold `bypass_mode: always`: `DeployKey`, `RepositoryRole` (id 5), and Integrations **1210556 (Cursor)**, **1236702**, **1276151** `[ruleset]`. The Cursor app itself can bypass; 1236702 resolves to **claude** via `gh api /apps/claude`; only 1276151 stays unidentified (see (e)).
-5. **Owner manual true-merges + web "Update branch".** With strict=false, each of the 125 cursor PRs was manually true-merged; stale branches were refreshed via GitHub-web **Update branch**, whose commits show **committer `GitHub`** (the web-flow identity) and author the owner's GitHub account.
+5. **The Overtoad manual true-merges + web "Update branch".** With strict=false, each of the 125 cursor PRs was manually true-merged; stale branches were refreshed via GitHub-web **Update branch**, whose commits show **committer `GitHub`** (the web-flow identity) and author the Overtoad's GitHub account.
    Spot-checked on three `Merge branch 'main' into cursor/…` carriers (`b1adc5b`, `be844d8`, `37b418a`): `committer=GitHub`, `author=Overtoad` `[git]`. (Phase-0 recorded the author as `pcalnon`; same owner account, display-name nuance — the load-bearing evidence is committer=`GitHub` = the web mechanism.)
 6. **Ort 3-way fusion/loss → green-on-green damage.** Those refresh merges fused/deleted sibling content that was individually green on each branch, so damaged states merged **green** — the mechanism the flat CI + advisory review could not see `[memory]`.
 
@@ -61,16 +61,16 @@ Merge mechanics were **100% true merges (no squashes)**; **136** `Merge branch '
 - **Proven repair recipes** `[memory]`: **graft-method** restore — take main's file wholesale and re-graft each branch's additions verbatim from `<merge-sha>^1` (the canonical last-good main-side blob), AST-verifying byte-identical dupes before deleting;
   and the **`git log -m -S<symbol>`** unmasking technique — a plain `-S` finds nothing when a deletion happened inside a merge resolution, so `-m` is required to attribute the loss to its guilty merge. The primary checkout, found parked on #782's branch (338 behind), was restored to main `[Phase-0]`.
 
-### (e) Owner-side open probes to REQUEST (not performed here)
+### (e) The Overtoad-side open probes to REQUEST (not performed here)
 
-- **Identify always-bypass integration 1276151.** (1236702 resolved to the **claude** app via its slug — `gh api /apps/claude`; numeric-id endpoints 404.) 1276151 does not resolve via the public API `[git]`, so the owner must read it from **Settings → Integrations / Installed GitHub Apps** (or their app slugs). Decide per-integration whether always-bypass is intended.
+- **Identify always-bypass integration 1276151.** (1236702 resolved to the **claude** app via its slug — `gh api /apps/claude`; numeric-id endpoints 404.) 1276151 does not resolve via the public API `[git]`, so the Overtoad must read it from **Settings → Integrations / Installed GitHub Apps** (or their app slugs). Decide per-integration whether always-bypass is intended.
 - **Retrieve the three Cursor dashboard automation configs** behind the per-class UUIDs (test-coverage `4e249ce1-…` from #729; docs `294b2ed6-…` from #746; plus the bug-investigation class): **schedule/cadence, concurrency cap, per-class prompts, and file-scope settings** — the control surface is entirely the Cursor dashboard, invisible to the repo.
 
 ### §1 addendum — post-consolidation corrections (validation round)
 
 - **The "monthly storm" framing is corrected to bimodal.** Re-derived cursor-branch merge counts by merge-date (`git log --merges --since=<M-01> --until=<next-M-01> --format='%s' origin/main | grep -c 'from pcalnon/cursor/'`): 2026-01: 0, 02: 0, 03: 43, 04: 0, 05: 10, 06: **0**, 07: **129**. Phase-0's per-month figures (47/10/28/130) reproduce for May and approximately for July; March differs slightly (43 vs 47); June does **not** reproduce by merge-date (0 merged of 4 total June merges). The
   likely reconciliation is created-vs-merged bucketing (June-created cursor PRs merging in July), so the honest statement is: cursor activity recurs, but the *storm* pattern by merge-date is bimodal (2026-03 and 2026-07), not monthly.
-- **Update-branch author identity nuance**: spot-checked carrier merges show `committer=GitHub` with the owner's account (`Overtoad` display) as author — Phase-0 recorded `pcalnon`; same owner account, and the load-bearing evidence for the web Update-branch mechanism is the `GitHub` committer identity.
+- **Update-branch author identity nuance**: spot-checked carrier merges show `committer=GitHub` with the Overtoad's account (`Overtoad` display) as author — Phase-0 recorded `pcalnon`; same owner account, and the load-bearing evidence for the web Update-branch mechanism is the `GitHub` committer identity.
 - **Docs class count nuance**: 57 docs-class PRs were *created*; 56 merged (the single closed PR #743 was a docs branch).
 
 ---
@@ -157,11 +157,11 @@ flood-added content dropped by a later union merge.
   state-machine lines, and the worktree-procedure Phase-4 subsection; 6 duplicated-heading blocks deduplicated (supersets kept, differing subsections merged); 3 units honestly adjudicated (2 SKIPPED-REWORDED-SURVIVOR where fuller reworded text survives; 1 RESTORED-ADJUDICATED where the guidance survives via an explicit cross-reference to REFERENCE.md's full contract). Validation: `pre-commit --all-files` green, `juniper-check-doc-links` valid across 624 files, full battery 1012 tests OK, AGENTS.md
   header/tree gates green. Main advanced mid-heal (v0.7.0 #845 + release merges #848–#850); the branch merged current main cleanly (sole conflict: automation-owned AGENTS.md header lines).
 
-Both PRs were opened owner-gated (`required_signatures`; no auto-merge) and the owner **merged both on 2026-07-29** (#852 at 03:14Z → `4abf936`, #853 at 03:15Z → `1ca69a2`). Prior in-flood heals #838/#842/#843 remain the first wave; #852/#853 complete the census-driven second wave.
+Both PRs were opened Overtoad-gated (`required_signatures`; no auto-merge) and the Overtoad **merged both on 2026-07-29** (#852 at 03:14Z → `4abf936`, #853 at 03:15Z → `1ca69a2`). Prior in-flood heals #838/#842/#843 remain the first wave; #852/#853 complete the census-driven second wave.
 
 ### §2.6 Censusclean statement
 
-Census re-verified after heals — first against the heal branches, then **re-certified on main at `23024f5`** after the owner merged #852/#853 (all 59 combined markers, in one pass):
+Census re-verified after heals — first against the heal branches, then **re-certified on main at `23024f5`** after the Overtoad merged #852/#853 (all 59 combined markers, in one pass):
 
 - **Tests + ci.yml** (`fix/flood-census-c1-tests-restore`, PR #852): all **38** restored-symbol/invocation markers present (20 classes' names, the 13 run_fix/hygiene/execute-seam/sweep method+helper grafts incl. `FAILED_PUBLISH_RUN`, and the 4 battery invocations); diff vs the pin is +2045/−0.
 - **Docs** (`fix/flood-census-c2-docs-restore`, PR #853): **21/21** finding markers accounted — 20 literal + 1 adjudicated-equivalent (the cheatsheet's `graceful_stop` tip restored reworded, with the full contract present at `docs/REFERENCE.md:225`); runbook `RESUME_MONITOR` mentions = **5**, exactly the §2.3 reconstruction target.
@@ -177,9 +177,9 @@ Each proposal was drafted blind to the others by an independent agent, then revi
 ### Proposal P1 — Repository-side GitHub controls
 
 **Scope:** repository-side GitHub controls only (rulesets, merge settings, bypass actors, app access,
-native alarms). RETURN-FINDINGS; the owner decides and performs every change.
+native alarms). RETURN-FINDINGS; the Overtoad decides and performs every change.
 
-**Root cause (drives every recommendation):** the damage was authored by the owner's manual web "Update
+**Root cause (drives every recommendation):** the damage was authored by the Overtoad's manual web "Update
 branch" 3-way merges (main → stale `cursor/**` branch, then merge), NOT by apps merging. `strict=false`
 validated checks on each branch's own last run, never on the fused merge result. The load-bearing control
 is therefore "run the real checks on the true merge result — and PERFORM that merge cleanly — before it
@@ -194,14 +194,14 @@ lands," plus "stop feeding ~50 concurrent same-file PRs into a manual serial mer
 - **13 authoritative required checks:** Pre-commit ×3, Regression Tests ×3, Build and Validate Package,
   Documentation Links, Security Scan, Quality Gate, Analyze (python), Dependency Documentation,
   Release-Train Archive Guard. `Claude.yml Access Audit` runs on CI but is NOT required (re-verified).
-- Bypass actors (all `bypass_mode: always`): `DeployKey`, `RepositoryRole 5` (=admin=owner), `Integration
-  1210556`=**cursor**, `1236702`=**claude**, `1276151`=**UNRESOLVED** (needs owner UI verification).
+- Bypass actors (all `bypass_mode: always`): `DeployKey`, `RepositoryRole 5` (=admin=Overtoad), `Integration
+  1210556`=**cursor**, `1236702`=**claude**, `1276151`=**UNRESOLVED** (needs Overtoad UI verification).
 - Merge settings: `allow_auto_merge=true`, `allow_update_branch=false`, all three merge methods on,
   `delete_branch_on_merge=true`; repo **public / User-owned**; classic branch protection 404 (ruleset
   only). **Open PRs now: 0** — this proposal is PREVENTIVE, not backlog-clearing.
 
 **§1 Merge queue vs `strict=true`.** Both implement **M2** (test the prospective merge result). The queue
-also implements **M1** (it *performs* a clean automated 3-way merge-or-eject, replacing the owner's manual
+also implements **M1** (it *performs* a clean automated 3-way merge-or-eject, replacing the Overtoad's manual
 Update-branch that authored the damage), so they are NOT equivalent.
 
 - **Prerequisite (MUST wire before enabling — verified gap: zero workflows subscribe to `merge_group`):**
@@ -216,7 +216,7 @@ Update-branch that authored the damage), so they are NOT equivalent.
 - **Standing latency tax:** between storms the queue serializes every merge (full 13-check + CodeQL per
   merge, one at a time). Benefit is storm-concentrated.
 - **Bypass interaction (honest):** both queue and strict rules are skipped by `bypass_actors`, but apps
-  never self-merge — the owner merges everything — so the queue's teeth come from the owner routing every
+  never self-merge — the Overtoad merges everything — so the queue's teeth come from the Overtoad routing every
   merge through "Merge when ready," not from bypass state.
 
 > **CORRECTION 2026-08-18 — the `strict=true` column below is REFUTED. Verified score: 0 of 8, not ~5 of 8.**
@@ -256,7 +256,7 @@ Update-branch that authored the damage), so they are NOT equivalent.
 | **#782**                                                           | on-branch class fusion → F821                                             | **PREVENTED** — F821 red; the branch can't reach green                                            | **PREVENTED**                                                                                             |
 | **#801**                                                           | docs wholesale-section deletion (AGENTS/REFERENCE/cheatsheet)             | **NOT PREVENTED** — manual update re-authors it; prose deletion is invisible to doc-links → green | **PREVENTED** — M1's clean merge keeps main's sections; a genuine conflict ejects, never silently green   |
 | **#803**                                                           | repeat of #801                                                            | **NOT PREVENTED** (same)                                                                          | **PREVENTED** (same as #801)                                                                              |
-| **23:01Z batch merge** (#744/#751/#739/#753; healed by owner #842) | silent multi-test loss in a ~90 s batch; flake8/mypy/pre-commit all green | **PARTIAL/NOT** — manual batch re-authors; fewer tests still pass green                           | **PARTIAL** — M1 prevents the manual-merge-authored losses; branch-authored test deletion is the residual |
+| **23:01Z batch merge** (#744/#751/#739/#753; healed by Overtoad #842) | silent multi-test loss in a ~90 s batch; flake8/mypy/pre-commit all green | **PARTIAL/NOT** — manual batch re-authors; fewer tests still pass green                           | **PARTIAL** — M1 prevents the manual-merge-authored losses; branch-authored test deletion is the residual |
 
 - **Net (premise: all merges route through the queue):** queue prevents **~7.5/8**, strict=true **~5/8**.
   M1 kills the #801/#803/#738 manual-merge-authored deletion class that strict's re-test cannot (prose/test
@@ -266,25 +266,25 @@ Update-branch that authored the damage), so they are NOT equivalent.
   no-redef**, not flake8 (flake8 ignores F811 at `.pre-commit-config.yaml:129`).
 
 **§2 Required-review (`pull_request`) rule.** WEAK for a solo maintainer: GitHub forbids self-approval, so
-on the owner's OWN PRs the requirement is unsatisfiable → falls back to admin bypass; on fleet PRs (app
-author) the owner can approve. Advisory under owner-bypass; automates nothing. Value: (a) makes CODEOWNERS
-block not merely request; (b) the sole lever at the branch-authored silent-weakening residual, via owner
+on the Overtoad's OWN PRs the requirement is unsatisfiable → falls back to admin bypass; on fleet PRs (app
+author) the Overtoad can approve. Advisory under Overtoad-bypass; automates nothing. Value: (a) makes CODEOWNERS
+block not merely request; (b) the sole lever at the branch-authored silent-weakening residual, via Overtoad
 diligence, zero automation; (c) gives a supervisor a `review_decision` state. **House-fact cost (NIT-1):
 it breaks the release-train archive PR's hands-free auto-merge** (App-token author can't self-approve).
-Rank optional/last; do NOT remove owner bypass to give it teeth (self-lockout).
+Rank optional/last; do NOT remove Overtoad bypass to give it teeth (self-lockout).
 
 **§3 Bypass removal — defense-in-depth, NOT a queue prerequisite.** Removing Cursor's bypass has **zero**
 flood-mechanics impact (PR creation isn't a push to main; `cursor/**` refs aren't targeted) and ~0 workflow
 cost; it closes the latent app-self-merge-direct-to-main hole. Kills 0 incidents on its own (the incidents
-were owner-authored).
+were Overtoad-authored).
 
 | Bypass actor                  | Identity                                                                                                                                                                                                                                                         | Recommendation                                                                                                                                                                                                                                                                                                                                                             |
 |-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Integration 1210556`         | **cursor** (verified)                                                                                                                                                                                                                                            | **Remove.** No cost; the app never needs to bypass main.                                                                                                                                                                                                                                                                                                                   |
-| `Integration 1236702`         | **claude** (verified — the Claude GitHub App)                                                                                                                                                                                                                    | **Remove.** Same reasoning; `claude.yml` posts comments/commits via PRs, not by bypassing main. Owner should smoke-test @claude on a scratch PR after removal to confirm no regression.                                                                                                                                                                                    |
-| `Integration 1276151`         | **UNRESOLVED** — id→slug needs the app's JWT (401). **Needs owner UI verification:** Settings → Rules → `juniper-ml-rules` → the Bypass list renders app **names** (not just IDs); or Settings → GitHub Apps / Integrations shows installed apps.                | Identify first, then **remove its bypass** unless it is a deliberate automation that must write to main.                                                                                                                                                                                                                                                                   |
-| `RepositoryRole 5`            | **admin = the owner (pcalnon)**                                                                                                                                                                                                                                  | **KEEP.** Removing owner bypass + `required_signatures` + a review rule = solo-maintainer self-lockout (can't self-approve, could be blocked on emergency direct-to-main fixes and on the release-train archive/ceremony flows). House fact: owner merges everything. The owner's control is *discipline* (route merges through the queue), not removing their own bypass. |
-| `DeployKey` (actor_id `null`) | A category bypass for deploy keys. The concurrency memory notes SSH-key pushes are NOT bypass actors for branch deletion, suggesting no automation relies on a deploy-key bypass to main. **Needs owner verification** of whether any deploy key pushes to main. | **Remove** unless a specific deploy-key automation writes to main. Low cost, closes another direct-to-main hole.                                                                                                                                                                                                                                                           |
+| `Integration 1236702`         | **claude** (verified — the Claude GitHub App)                                                                                                                                                                                                                    | **Remove.** Same reasoning; `claude.yml` posts comments/commits via PRs, not by bypassing main. The Overtoad should smoke-test @claude on a scratch PR after removal to confirm no regression.                                                                                                                                                                                    |
+| `Integration 1276151`         | **UNRESOLVED** — id→slug needs the app's JWT (401). **Needs Overtoad UI verification:** Settings → Rules → `juniper-ml-rules` → the Bypass list renders app **names** (not just IDs); or Settings → GitHub Apps / Integrations shows installed apps.                | Identify first, then **remove its bypass** unless it is a deliberate automation that must write to main.                                                                                                                                                                                                                                                                   |
+| `RepositoryRole 5`            | **admin = the Overtoad (pcalnon)**                                                                                                                                                                                                                                  | **KEEP.** Removing Overtoad bypass + `required_signatures` + a review rule = solo-maintainer self-lockout (can't self-approve, could be blocked on emergency direct-to-main fixes and on the release-train archive/ceremony flows). House fact: Overtoad merges everything. The Overtoad's control is *discipline* (route merges through the queue), not removing their own bypass. |
+| `DeployKey` (actor_id `null`) | A category bypass for deploy keys. The concurrency memory notes SSH-key pushes are NOT bypass actors for branch deletion, suggesting no automation relies on a deploy-key bypass to main. **Needs Overtoad verification** of whether any deploy key pushes to main. | **Remove** unless a specific deploy-key automation writes to main. Low cost, closes another direct-to-main hole.                                                                                                                                                                                                                                                           |
 
 **Consequence to name (V1a-3):** once the app bypasses are removed, the ceremony's archive PR must **PASS**
 (not bypass) all 13 checks — a valid notes-only, add-only archive PR should pass (the Archive Guard is
@@ -306,27 +306,27 @@ skip-if-secret-unset; release-train.yml:325-366). Kills 0 directly; attacks root
 
 1. **Add a merge queue on main (flagship)** — verify UI, else `strict=true` fallback; prerequisite: wire
    `merge_group:` first. ~7.5/8.
-2. **Remove the three Integration bypasses** + review DeployKey; keep owner bypass. Defense-in-depth, ~0
+2. **Remove the three Integration bypasses** + review DeployKey; keep Overtoad bypass. Defense-in-depth, ~0
    cost.
 3. **Add an open-PR budget alarm** (Slack, non-blocking).
 4. **Decide the source-control lever** (restrict Cursor app access or a `cursor/**` ruleset — the only
    intake cap).
-5. Optional/last: a **required-review rule** (only if the owner will read every fleet diff).
+5. Optional/last: a **required-review rule** (only if the Overtoad will read every fleet diff).
 
 | Control                      | Exact setting / API surface                                                                                                                                                                       | Incidents killed                                                                                                                | Cost to solo-maintainer + fleet flow                                                                                        | Recommendation                                  |
 |------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
-| Merge queue on main          | Ruleset → Add rule → "Require merge queue"; **prerequisite:** add `merge_group:` to ci.yml + codeql.yml, reconcile `release-train-archive-guard` `if` (ci.yml:423); owner uses "Merge when ready" | **~7.5/8** — #751/#729/#759/#782/#801/#803/#738 + batch partial (M1 clean-merge-or-eject + M2)                                  | One-time multi-file wiring + stall risk if mis-wired; standing per-merge latency tax; owner must stop manual Update-branch  | **Adopt if available (flagship; verify UI)**    |
+| Merge queue on main          | Ruleset → Add rule → "Require merge queue"; **prerequisite:** add `merge_group:` to ci.yml + codeql.yml, reconcile `release-train-archive-guard` `if` (ci.yml:423); Overtoad uses "Merge when ready" | **~7.5/8** — #751/#729/#759/#782/#801/#803/#738 + batch partial (M1 clean-merge-or-eject + M2)                                  | One-time multi-file wiring + stall risk if mis-wired; standing per-merge latency tax; Overtoad must stop manual Update-branch  | **Adopt if available (flagship; verify UI)**    |
 | `strict=true` (fallback)     | Set `strict_required_status_checks_policy=true` in `required_status_checks`                                                                                                                       | **~5/8** — #751/#729/#759/#782 + #738 partial; **misses #801/#803/batch** (M2 only; the update is still the manual 3-way merge) | **High** — O(N²) Update-branch thrash at ~50 PRs; update is still a manual 3-way merge                                      | **Only if queue unavailable (honestly weaker)** |
 | Remove Integration bypasses  | Ruleset 13805432 → Bypass list → delete 1210556 / 1236702 / 1276151 (+ review DeployKey). Keep RepositoryRole 5.                                                                                  | 0 directly; **defense-in-depth** for the hypothetical app-self-merge path (NOT a queue prerequisite)                            | ~0 (apps don't self-merge); archive PR must then pass (not bypass) the 13 checks (V1a-3)                                    | **Adopt (cheap hygiene)**                       |
 | Open-PR budget alarm         | New scheduled `.github/workflows/*.yml`: `gh pr list` count → Slack (`SLACK_WEBHOOK_URL`, `continue-on-error:true` + skip-if-unset) / tracking issue                                              | 0 directly (root-cause velocity)                                                                                                | ~0; one small workflow; already-patterned                                                                                   | **Adopt**                                       |
-| Block/scope Cursor at source | Settings → GitHub Apps → Cursor → Repository access (remove juniper-ml), OR a `cursor/**` ruleset with creation/update restriction                                                                | Prevents the flood entirely (all classes, by stopping intake)                                                                   | High social cost — disables the fleet's value on this repo; owner's call                                                    | **Owner decision (v)**                          |
-| Required-review rule         | Ruleset → Add rule → "Require a pull request before merging", `required_approving_review_count:1`, `dismiss_stale_reviews_on_push:true`, opt. `required_review_thread_resolution`                 | Only the branch-authored silent-weakening residual, via owner reading diffs — 0 automatic                                       | Advisory under owner-bypass; blocks owner's OWN PRs (no self-approval); **breaks archive-PR hands-free auto-merge (NIT-1)** | **Optional / last**                             |
+| Block/scope Cursor at source | Settings → GitHub Apps → Cursor → Repository access (remove juniper-ml), OR a `cursor/**` ruleset with creation/update restriction                                                                | Prevents the flood entirely (all classes, by stopping intake)                                                                   | High social cost — disables the fleet's value on this repo; Overtoad's call                                                    | **The Overtoad decision (v)**                          |
+| Required-review rule         | Ruleset → Add rule → "Require a pull request before merging", `required_approving_review_count:1`, `dismiss_stale_reviews_on_push:true`, opt. `required_review_thread_resolution`                 | Only the branch-authored silent-weakening residual, via Overtoad reading diffs — 0 automatic                                       | Advisory under Overtoad-bypass; blocks Overtoad's OWN PRs (no self-approval); **breaks archive-PR hands-free auto-merge (NIT-1)** | **Optional / last**                             |
 | Auto-merge policy            | Keep `allow_auto_merge=true`, use only behind the queue; keep `allow_update_branch=false`                                                                                                         | 0 alone; removes the manual-batch race (23:01Z-batch class) behind the queue                                                    | ~0                                                                                                                          | **Adopt behind queue**                          |
 
-**Do NOT:** remove the owner's RepositoryRole 5 bypass; turn ON `allow_update_branch`; touch
+**Do NOT:** remove the Overtoad's RepositoryRole 5 bypass; turn ON `allow_update_branch`; touch
 `required_signatures` or the `pypi` environment gates.
 
-**Unverified / flagged for owner:** merge-queue availability on a User-owned public repo (verify UI);
+**Unverified / flagged for Overtoad:** merge-queue availability on a User-owned public repo (verify UI);
 merge_group required-context behaviour after wiring (smoke-test a scratch queued PR); Integration 1276151
 identity; DeployKey-to-main usage; the "no setting disables the Update-branch button" fact (load-bearing,
 minor UI-visibility rules not exhaustively verified); the M1 re-scoring's conditional (those deletions
@@ -339,13 +339,13 @@ Full validated text: developed under the program's validation pipeline; decision
 
 ### Proposal P2 — Compositional CI: sequence-safety gates
 
-**Scope:** CI-layer designs for later owner-merged PRs; read-only + `gh api` GET, no code shipped here.
+**Scope:** CI-layer designs for later Overtoad-merged PRs; read-only + `gh api` GET, no code shipped here.
 
 **Root cause (grounded):** damage was **compositional** — every PR was individually green; serial same-file
 merges into main fused/deleted sibling content; a deleted test cannot fail, so flake8/mypy/pre-commit
-stayed green. Ruleset 13805432 `strict=false`, no `merge_queue`, `bypass_mode=always` for owner + Cursor
+stayed green. Ruleset 13805432 `strict=false`, no `merge_queue`, `bypass_mode=always` for Overtoad + Cursor
 App → required checks **inform, they do not enforce**; every per-PR gate below is **advisory for exactly the
-two actors that caused the damage** (owner + Cursor). Reconstruction fact: every merged PR tip survives as
+two actors that caused the damage** (Overtoad + Cursor). Reconstruction fact: every merged PR tip survives as
 `<merge>^2`; the last-good main-side blob is `<merge>^1`.
 
 **Incident-class → gate map (recalibrated):**
@@ -387,7 +387,7 @@ three-dot inside `archive_guard.py:224-230`).
 
 **G2 — docs additions-only gate (docs-class PRs).** `git diff --merge-base FETCH_HEAD HEAD -- <docs
 cluster>`, **magnitude-gated** (not any-minus-line ⇒ FAIL): **FAIL** on a deleted Markdown heading OR a run
-of **≥ N consecutive deleted lines** (default N=8, owner-tunable); **WARN** on small in-place swaps.
+of **≥ N consecutive deleted lines** (default N=8, Overtoad-tunable); **WARN** on small in-place swaps.
 
 - **Scope:** DOC_UNION_6 (`AGENTS.md` + `CLAUDE.md` symlink, `docs/**`, and the 2 churned `notes/`
   runbooks). **Residual (honest):** only 2 `notes/` files pinned; every other `notes/**` is uncovered.
@@ -431,7 +431,7 @@ today / FP low.** Kills #3.
    promote).
 4. **G5 (i) queue meter, (iv) fleet-PR lint, (vi) supervisor artifact** — incremental observability.
    **G5 (ii) strict/merge-queue and (v) remove Cursor bypass are RULESET/repo-control fixes, not CI —
-   escalate to owner as the true systemic remedy.**
+   escalate to Overtoad as the true systemic remedy.**
 
 | Gate                       | Trigger                           | Incidents killed                                                         | Build cost | Run cost                           | False-positive risk                                      |
 |----------------------------|-----------------------------------|--------------------------------------------------------------------------|------------|------------------------------------|----------------------------------------------------------|
@@ -444,7 +444,7 @@ today / FP low.** Kills #3.
 | G5(vi) supervisor artifact | `pull_request`                    | observability                                                            | SMALL      | LOW                                | n/a                                                      |
 
 **Non-goals:** not enforcing merge freshness in the CI layer (that is ruleset `strict`/`merge_queue`); not
-modifying ruleset 13805432 or its bypass actors (recommended to the owner, not a CI artifact); not
+modifying ruleset 13805432 or its bypass actors (recommended to the Overtoad, not a CI artifact); not
 auto-closing Cursor PRs from CI (unreliable vs the App's always-bypass); not a semantic-equivalence checker
 — **`WEAKENED` is bounded** (`cur_lines ≤ 0.6·max_prior_lines` AND Δ ≥ 4, `symbol_screen.py:33-34,303`), so
 a **same-length gutting (Δ=0)** is invisible to it (needs mypy/human review); not covering non-`.py`/`.bash`
@@ -465,14 +465,14 @@ Full validated text: developed under the program's validation pipeline; decision
 
 ### Proposal P3 — Supervisory layer + fleet policy
 
-**Scope:** supervisory layer + fleet policy; RETURN-FINDINGS, no repo mutation; the owner decides.
+**Scope:** supervisory layer + fleet policy; RETURN-FINDINGS, no repo mutation; the Overtoad decides.
 
 **Grounding (verified this session):**
 
 - Ruleset `13805432` governs `main` ONLY (`include=["~DEFAULT_BRANCH"]`); `cursor/*` branches ungoverned.
   No `merge_queue`, no `pull_request` rule. `strict_required_status_checks_policy=false` — CI runs on the
   branch head, never the merge result (the exact hole); 13 required contexts.
-- Bypass actors (all `always`): `DeployKey`, **`RepositoryRole 5` (admin=owner — load-bearing: the owner
+- Bypass actors (all `always`): `DeployKey`, **`RepositoryRole 5` (admin=Overtoad — load-bearing: the Overtoad
   can click-merge past every non-nuclear stage)**, `Integration 1210556` (Cursor App), `1236702`,
   `1276151`. Merge settings: `allow_auto_merge=true`, `allow_update_branch=false`.
 - Docs (`AGENTS.md`/`REFERENCE.md`/cheatsheet) have **only** markdownlint + dangling-anchor check → prose/
@@ -488,7 +488,7 @@ Full validated text: developed under the program's validation pipeline; decision
 **§1 Supervisory layer — deterministic SCRIPT + O(1)/batch AGENT (V3c-E1 restructure).**
 
 - **(1A) `util/fleet_triage/predict_merge.py`** (gated by `tests/test_predict_merge.py`): per PR, in a
-  throwaway **detached `git clone`** (NOT `git worktree add`, never the owner's checkout, never a push),
+  throwaway **detached `git clone`** (NOT `git worktree add`, never the Overtoad's checkout, never a push),
   `git merge --no-ff origin/main` into the branch tip, then on the RESULT run repo-pinned fast gates on
   touched files (`pre-commit run black isort flake8 mypy check-ast --files <changed>`; black 26.3.1, mypy
   v1.13.0, check-ast `:83`) **plus two screens CI cannot see** — an AST **symbol screen** (LOST-vs-main =
@@ -515,20 +515,20 @@ only on the ≤12-PR `.py` clusters (top-5 ≈ 247 re-runs ≈ 82 min serial; su
 per-PR **normalized added-line multiset per file** from the predicted-merge delta; **dup-SUSPECT** on
 Jaccard/containment over threshold. Near-dup **titles** with disjoint content (**#772 vs #774**, both
 genuine) score LOW, not flagged. **Two-key DUP-CLOSE** (a false close = LOST REAL WORK): requires BOTH high
-overlap AND the agent's judgment + **owner confirmation**; the script never auto-closes.
+overlap AND the agent's judgment + **Overtoad confirmation**; the script never auto-closes.
 
 **The four verdict classes:** **MERGE-CLEAN** (result conflict-free, gates pass, no lost symbols, docs
 additions-only); **NEEDS-UPDATE-BRANCH** (behind main; needs a **rebase**, never a union/take-own-side merge
 — that created #751); **DAMAGED-FIX-FIRST** (result fails a gate / lost symbol / deleted docs section —
 **flags** #738/#751/#782/#801; a read-only gate can flag a bad human conflict-fix, not validate one);
-**DUP-CLOSE** (recommend close, owner-confirmed only). The cluster map is built from the script's TRUE deltas,
+**DUP-CLOSE** (recommend close, Overtoad-confirmed only). The cluster map is built from the script's TRUE deltas,
 NOT `gh pr list --json files` (which showed 12 files vs 2 truly changed for #729). Gating tests
 (`test_predict_merge.py`, `test_fleet_supervisor_contract.py`) MUST be wired into the ci.yml enumerated
 battery + AGENTS.md run-all; adoption co-changes AGENTS.md (agents-list node, tests bullets, run-all lines,
 `util/fleet_triage/` tree entry).
 
-**§2 Cursor-dashboard controls to request (owner performs; ALL "verify in dashboard", none assumed):**
-concurrency cap (≤ owner triage rate, e.g. ≤5); schedule cadence (throttle the bursts); per-class disjoint
+**§2 Cursor-dashboard controls to request (Overtoad performs; ALL "verify in dashboard", none assumed):**
+concurrency cap (≤ Overtoad triage rate, e.g. ≤5); schedule cadence (throttle the bursts); per-class disjoint
 file scopes (docs automation owns `docs/**`+`AGENTS.md`, test automation owns `tests/**`); per-run PR budget;
 draft-PR creation (feeds Stage 2); target-branch selection (feeds Stage 2); automation count (ml#844 body
 says 3, the 2026-07-26 note lists 4 check names).
@@ -545,14 +545,14 @@ review time.
 
 **§4 The blocking option, evaluated honestly.**
 
-| Mechanism                                                                                   | Owner-level?                                                                                                                    | Stops PR creation?           | What it actually does                                                                                                                                                                                                                                                                                                              |
+| Mechanism                                                                                   | The Overtoad-level?                                                                                                                    | Stops PR creation?           | What it actually does                                                                                                                                                                                                                                                                                                              |
 |---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Remove Cursor (Integration 1210556) from ruleset bypass**                                 | Yes (ruleset edit)                                                                                                              | **No**                       | PR creation is not a `main`-ref op, and `cursor/*` branches are ungoverned (`include=["~DEFAULT_BRANCH"]`). Cursor doesn't self-merge; the owner (admin bypass) does. **Near-zero flood effect alone.** Its only real use: a **prerequisite** for a merge queue / strict policy to gate Cursor's PRs (bypass actors skip a queue). |
-| **Enable `strict_required_status_checks_policy: true`**                                     | Yes (one ruleset setting)                                                                                                       | No                           | Forces every PR up-to-date + re-checked on the merge base before merge → **detects** the stale-branch union class (#759/#738). But **RepositoryRole-5 admin bypass still lets the owner click merge past it** — so it informs, it does not bind the owner-batch-merge class.                                                       |
-| **Add a `merge_queue` rule** (+ remove Cursor bypass)                                       | Yes                                                                                                                             | No                           | GitHub-native equivalent of the script's predicted-merge: validates the actual merge result before landing, and (unlike strict) a queue **binds** even the owner unless bypassed. ml#844's recommended systemic fix. Requires bypass-removal to bite.                                                                              |
+| **Remove Cursor (Integration 1210556) from ruleset bypass**                                 | Yes (ruleset edit)                                                                                                              | **No**                       | PR creation is not a `main`-ref op, and `cursor/*` branches are ungoverned (`include=["~DEFAULT_BRANCH"]`). Cursor doesn't self-merge; the Overtoad (admin bypass) does. **Near-zero flood effect alone.** Its only real use: a **prerequisite** for a merge queue / strict policy to gate Cursor's PRs (bypass actors skip a queue). |
+| **Enable `strict_required_status_checks_policy: true`**                                     | Yes (one ruleset setting)                                                                                                       | No                           | Forces every PR up-to-date + re-checked on the merge base before merge → **detects** the stale-branch union class (#759/#738). But **RepositoryRole-5 admin bypass still lets the Overtoad click merge past it** — so it informs, it does not bind the Overtoad-batch-merge class.                                                       |
+| **Add a `merge_queue` rule** (+ remove Cursor bypass)                                       | Yes                                                                                                                             | No                           | GitHub-native equivalent of the script's predicted-merge: validates the actual merge result before landing, and (unlike strict) a queue **binds** even the Overtoad unless bypassed. ml#844's recommended systemic fix. Requires bypass-removal to bite.                                                                              |
 | **Restrict the Cursor App's repository access** (remove juniper-ml from its selected repos) | Yes — GitHub App *installation* settings (`github.com/settings/installations`), **not** a ruleset, **not** the Cursor dashboard | **Yes, for juniper-ml only** | The surgical lever: Cursor keeps working elsewhere, stops opening PRs here.                                                                                                                                                                                                                                                        |
 | **Uninstall the Cursor GitHub App**                                                         | Yes                                                                                                                             | **Yes, everywhere**          | Nuclear; loses the tool account-wide.                                                                                                                                                                                                                                                                                              |
-| **Revoke the app's `pull_requests: write` permission**                                      | No — app-developer (Cursor) side                                                                                                | n/a                          | Not an owner lever.                                                                                                                                                                                                                                                                                                                |
+| **Revoke the app's `pull_requests: write` permission**                                      | No — app-developer (Cursor) side                                                                                                | n/a                          | Not an Overtoad lever.                                                                                                                                                                                                                                                                                                                |
 
 **Key honest finding:** removing the ruleset bypass does **not** stop the flood; only restricting/
 uninstalling the app's *access* does. The ruleset is the right tool for "validate the merge result" (strict/
@@ -562,9 +562,9 @@ open.
 
 **Staged adoption path:**
 
-- **Stage 0 — Advisory supervisor (RECOMMENDED START):** zero GitHub/Cursor config change; owner runs
+- **Stage 0 — Advisory supervisor (RECOMMENDED START):** zero GitHub/Cursor config change; Overtoad runs
   `@fleet-supervisor` before each merge batch. **This DETECTS the incident families; it PREVENTS nothing by
-  itself** — prevention is contingent on the owner (a) running it per batch, (b) acting on verdicts, (c)
+  itself** — prevention is contingent on the Overtoad (a) running it per batch, (b) acting on verdicts, (c)
   re-running the script pass between merges instead of batch-clicking. **Entry:** agent + `predict_merge.py`
   + both gating tests merged & wired. **Exit→1:** verdicts match post-merge reality across ≥2 batches, AND
   no batch was merged without a report / the per-merge script pass, AND the post-merge screen finds no
@@ -574,34 +574,34 @@ open.
   *Strict still does not bind the admin-batch path; a merge queue does.* **Exit→2:** fleet volume exceeds
   triage capacity, or union damage recurs despite strict.
 - **Stage 2 — Draft-only / integration-branch fleet:** Cursor emits drafts or targets `fleet/incoming`
-  (OQ2); the supervisor promotes validated ones. **Exit→3:** drafts still collide, or owner wants full
+  (OQ2); the supervisor promotes validated ones. **Exit→3:** drafts still collide, or Overtoad wants full
   mediation.
 - **Stage 3 — Full mediation (blocking):** remove juniper-ml from Cursor App repo access; fleet arrives as
   branches/patches. **The supervisor plans and validates; it NEVER authors or pushes — the consolidated PRs
-  are authored by a `task-executor` agent or by the owner.** Concentration risk: consolidating same-file PRs
+  are authored by a `task-executor` agent or by the Overtoad.** Concentration risk: consolidating same-file PRs
   is itself the fusion-prone operation (#738/#782); mitigation = every consolidated result runs the SAME
   gate battery, batches kept small. **Exit:** terminal (revert by re-granting access).
 
 **§6 Recommendation + measures table. Recommended start: Stage 0 (advisory supervisor) + Stage 1's
-one-setting strict flip in parallel.** Both DETECT; **neither BINDS the owner's admin-batch-merge path** —
+one-setting strict flip in parallel.** Both DETECT; **neither BINDS the Overtoad's admin-batch-merge path** —
 that binds only at a merge queue (Stage 1-alt/2) or blocking (Stage 3). Escalate only if damage recurs
 (blocking costs Cursor's self-healing #800 + concentrates risk on the supervisor).
 
-| Measure                          | Mechanism                                        | Detects                                                                          | Prevents (contingent)                                                                 | Owner effort                                 | Risk                                                    |
+| Measure                          | Mechanism                                        | Detects                                                                          | Prevents (contingent)                                                                 | The Overtoad effort                                 | Risk                                                    |
 |----------------------------------|--------------------------------------------------|----------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|----------------------------------------------|---------------------------------------------------------|
-| Advisory supervisor (Stage 0)    | script predicted-merge + agent dup/cluster/order | #738 #751 #759 #729 #782 #801 #803 #755 (all 8)                                  | none by itself — contingent on run-per-batch + act-on-verdict + re-run-between-merges | Med (run script per batch; agent O(1)/batch) | Low (advisory; owner still merges)                      |
+| Advisory supervisor (Stage 0)    | script predicted-merge + agent dup/cluster/order | #738 #751 #759 #729 #782 #801 #803 #755 (all 8)                                  | none by itself — contingent on run-per-batch + act-on-verdict + re-run-between-merges | Med (run script per batch; agent O(1)/batch) | Low (advisory; Overtoad still merges)                      |
 | Strict status checks (Stage 1)   | ruleset `strict=true`                            | #759 #738 (stale-branch union)                                                   | contingent — admin bypass still merges past                                           | Low (one setting)                            | Low-Med (re-check cost)                                 |
 | Merge queue (Stage 1 alt)        | ruleset `merge_queue` + remove Cursor bypass     | all union-merge (#738 #759 #729 #751)                                            | **yes** (binds; validates merge result)                                               | Med (config + workflow)                      | Med (queue latency; bypass-removal peer effects)        |
 | AGENTS.md PR contract            | §3 paste-in + supervisor enforces                | dup fan-out (AGENTS 54 / cheatsheet 53 / runbook 34) + docs deletion (#801 #803) | contingent (only if Cursor reads it — OQ3)                                            | Low (doc)                                    | Low                                                     |
 | Dashboard caps + disjoint scopes | Cursor dashboard (verify)                        | excessive-queue (bursts) + same-file pile-up                                     | **yes at source** (if Cursor supports it)                                             | Low (dashboard edits)                        | Med (unverified Cursor capability)                      |
 | Block repo access (Stage 3)      | remove juniper-ml from app install               | all fleet-origin incidents                                                       | **yes** (no PRs created)                                                              | High (loses Cursor iteration)                | High (SPOF + consolidation concentration on supervisor) |
 
-**Open questions (owner):** OQ1 automation count (3 vs 4); OQ2 Cursor caps/budget/scope/draft/target
+**Open questions (Overtoad):** OQ1 automation count (3 vs 4); OQ2 Cursor caps/budget/scope/draft/target
 support; OQ3 does Cursor read `AGENTS.md` at generation; OQ4 read-only supervisor vs gated push for
 lint-fixes; OQ5 flip `strict=true` now; OQ6 add `merge_queue` + remove Cursor bypass (the only lever that
 BINDS the admin-batch class); OQ7 remove Cursor from bypass now (near-zero flood effect alone; sits alongside
 1236702/1276151 peers — confirm expectations first); OQ8 archive a durable plan to `notes/` (via `planner`)
-or return-as-message only. **Unverified vendor capabilities:** every §2 control + OQ1-OQ2 — the owner
+or return-as-message only. **Unverified vendor capabilities:** every §2 control + OQ1-OQ2 — the Overtoad
 verifies in the Cursor dashboard / GitHub App installation settings; none assumed.
 
 Full validated text: developed under the program's validation pipeline; decision tables above are verbatim.
@@ -610,20 +610,20 @@ Full validated text: developed under the program's validation pipeline; decision
 
 ### Cross-proposal comparison
 
-| Control / measure (source)                             | Layer                                                             | Incident classes addressed (with contingency markers)                             | Owner effort                                                           | Build cost                                                               | Dependencies / prerequisites                                                            | Standalone value                        |
+| Control / measure (source)                             | Layer                                                             | Incident classes addressed (with contingency markers)                             | The Overtoad effort                                                           | Build cost                                                               | Dependencies / prerequisites                                                            | Standalone value                        |
 |--------------------------------------------------------|-------------------------------------------------------------------|-----------------------------------------------------------------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|-----------------------------------------|
 | **P1** Merge queue on main [merge_group wiring prereq] | Prevention (merge-time; M1 clean-merge-or-eject + M2 test-result) | ~7.5/8 — #751/#729/#759/#782/#801/#803/#738 + batch partial                       | Adopt "Merge when ready" as sole path + standing per-merge latency tax | One-time `merge_group` wiring (ci.yml + codeql.yml + archive-guard `if`) | **Step 0:** wire `merge_group` (else stalls all merges); queue availability (verify UI) | High — binds the merge result natively  |
 | **P1** `strict=true` fallback                          | Prevention (M2 only)                                              | ~5/8 — #751/#729/#759/#782 + #738 partial; **misses #801/#803/batch**             | O(N²) Update-branch thrash at ~50 PRs                                  | One ruleset setting                                                      | None                                                                                    | Medium — honestly weaker than the queue |
 | **P1** Remove Integration bypasses (+DeployKey review) | Prevention (hygiene)                                              | 0 directly — defense-in-depth for the hypothetical app-self-merge path            | ~0                                                                     | None                                                                     | NOT a queue prereq; after removal archive PR must PASS 13 checks                        | Closes a latent direct-to-main hole     |
 | **P1** Open-PR budget alarm                            | Detection                                                         | 0 directly (root-cause velocity)                                                  | ~0                                                                     | One scheduled workflow                                                   | `SLACK_WEBHOOK_URL` (skip-if-unset, non-blocking)                                       | Yes — visibility                        |
-| **P1** Required-review rule                            | Process / detection                                               | Only branch-authored silent-weakening residual, via owner diligence — 0 automatic | Blocks owner's OWN PRs; breaks archive-PR auto-merge                   | One ruleset rule                                                         | Owner reads every fleet diff; keep owner bypass                                         | Weak for a solo maintainer              |
+| **P1** Required-review rule                            | Process / detection                                               | Only branch-authored silent-weakening residual, via Overtoad diligence — 0 automatic | Blocks Overtoad's OWN PRs; breaks archive-PR auto-merge                   | One ruleset rule                                                         | The Overtoad reads every fleet diff; keep Overtoad bypass                                         | Weak for a solo maintainer              |
 | **P1** Block/scope Cursor at source                    | Prevention (source intake cap)                                    | Prevents the flood entirely (all classes)                                         | High social cost — loses the fleet's value here                        | App-access edit OR `cursor/**` ruleset                                   | None                                                                                    | Yes — the only intake cap               |
 | **P2** G1 symbol-loss gate                             | Detection (pre-merge, merge ref)                                  | #1/#4/#7 silent deletion; #2/#5 best-effort (mypy is primary)                     | Low (review the red)                                                   | MED (lift + reharness + lint-test + job)                                 | Wire lint-test into battery + AGENTS.md; advisory for bypass actors                     | High pre-merge signal (bypassable)      |
 | **P2** G2 docs additions-only gate                     | Detection (pre-merge, docs-class)                                 | #6 (#801/#803) — docs section deletion                                            | Low                                                                    | SMALL                                                                    | DOC_UNION_6 scope (2-notes/ residual); wire lint-test                                   | The only pre-merge docs-deletion net    |
 | **P2** G3 post-merge main-verify [incl. docs screen]   | Detection (post-merge, BYPASS-PROOF)                              | all compositional classes as a post-merge net (incl. docs via step 4)             | Low (loud notify)                                                      | MED                                                                      | Per-SHA concurrency fix; shared battery script; Slack/issues                            | **Highest — the only unbypassable net** |
 | **P2** G4 pre-commit changed-files split               | Prevention (removes false-red blast radius)                       | #3 (#759) contamination                                                           | ~0                                                                     | SMALL                                                                    | Add base fetch                                                                          | Yes — cheap win                         |
 | **P2** cancel-in-progress per-SHA fix                  | Detection-enabler (near-free, high value)                         | Unblocks G3 storm coverage (else only the last merge is verified)                 | ~0                                                                     | Trivial (one concurrency stanza)                                         | Part of G3                                                                              | Near-free structural fix                |
-| **P3** Stage-0 supervisor (script + agent)             | Process / detection                                               | all 8 detected; **prevents nothing without owner adherence**                      | Med (run per batch; agent O(1)/batch)                                  | predict_merge.py + agent + 2 gating tests + ci/AGENTS.md wiring          | Owner discipline; wiring                                                                | Yes as a detector (advisory)            |
+| **P3** Stage-0 supervisor (script + agent)             | Process / detection                                               | all 8 detected; **prevents nothing without Overtoad adherence**                      | Med (run per batch; agent O(1)/batch)                                  | predict_merge.py + agent + 2 gating tests + ci/AGENTS.md wiring          | The Overtoad discipline; wiring                                                                | Yes as a detector (advisory)            |
 | **P3** AGENTS.md PR contract                           | Process                                                           | dup fan-out + docs deletion — **contingent (only if Cursor reads it, OQ3)**       | Low (doc)                                                              | Paste-in + supervisor enforces                                           | OQ3 (else review-time only)                                                             | Low alone                               |
 | **P3** Cursor dashboard asks                           | Prevention at source (if supported)                               | excessive-queue + same-file pile-up — **yes at source (if Cursor supports)**      | Low (dashboard)                                                        | None (vendor config)                                                     | UNVERIFIED Cursor capability (verify dashboard)                                         | Yes at source (unverified)              |
 | **P3** Staged blocking (Stage 3 app-access removal)    | Prevention (full mediation)                                       | all fleet-origin incidents (yes — no PRs created)                                 | High (loses Cursor iteration #800)                                     | App-access removal + task-executor consolidation                         | Supervisor proven at Stages 0-2; SPOF + consolidation concentration                     | Yes — terminal                          |
@@ -631,13 +631,13 @@ Full validated text: developed under the program's validation pipeline; decision
 **Complementarity.** The three proposals occupy different layers and are additive, not competing. **P1
 prevents at merge time** — the merge queue's clean-merge-or-eject (M1) performs the merge itself so a
 wholesale deletion either merges clean or ejects, never silently green. **P2 detects compositionally, pre-
-and post-merge** — and G3 is the *only unbypassable net* given the always-bypass actors (owner + Cursor),
+and post-merge** — and G3 is the *only unbypassable net* given the always-bypass actors (Overtoad + Cursor),
 firing on `push:main` no matter who merged or what they skipped. **P3 restores order at the process level** —
 triage, merge-order, dup/cluster adjudication, and the AGENTS.md contract. The honest residuals dovetail:
 P1's true residual (branch-authored silent test weakening/deletion) is exactly **P2-G1/G3's kill** (the
 merge-ref/post-merge symbol screen), leaving only P2's own same-length-gutting (Δ=0) sub-residual for mypy/
 human review; P2's "advisory for the two bypass actors" limit is exactly what **P1's queue/strict binds**
-(the queue routes the merge; removing bypass makes the required checks enforce); and P3's owner-discipline
+(the queue routes the merge; removing bypass makes the required checks enforce); and P3's Overtoad-discipline
 dependency (Stage 0 detects but prevents nothing) is precisely what **P1's binding controls remove**.
 
 **Overlaps / tensions.** Three measures all attack the excessive-queue class: P2's G5(i) queue-meter and
@@ -647,7 +647,7 @@ throttling; they are complementary. The sharpest overlap is P1's queue vs P3's `
 real GitHub **merge queue is live (Stage 1-alt+), the native queue WINS** for merge-result validation — it
 does M1+M2 and *binds* — so the script's predicted-merge becomes redundant *for that purpose* and P3's
 supervisor retains unique value only as the cross-PR dup/cluster/**order** intelligence the queue lacks
-(P3 says exactly this). **Below Stage 1 (no queue), the supervisor's predicted-merge is the owner's only
+(P3 says exactly this). **Below Stage 1 (no queue), the supervisor's predicted-merge is the Overtoad's only
 merge-result screen.** Note also the strict-vs-queue tension P3 flags: `strict=true` detects but does not
 bind the RepositoryRole-5 admin-batch path — only the queue (or Stage-3 blocking) binds it.
 
@@ -686,7 +686,7 @@ all-clusters subtotal) was fixed by the orchestrator post-verdict.
 
 ---
 
-## §4 Owner decision list
+## §4 The Overtoad decision list
 
 1. **Merge queue vs `strict=true` (the merge-result gate on main).**
     - Option: (a) **merge queue** — M1+M2, ~7.5/8, P1's flagship recommendation and P3-OQ6 ("the only ruleset lever that BINDS the admin-batch class");
@@ -708,9 +708,9 @@ all-clusters subtotal) was fixed by the orchestrator post-verdict.
 
 3. **Required-review (`pull_request`) rule adoption.**
     - Options: adopt (`required_approving_review_count:1`, `dismiss_stale_reviews_on_push:true`) vs not.
-      - Limits: the owner cannot self-approve own PRs (falls back to admin bypass); it **breaks the release-train archive-PR hands-free auto-merge** (App-token author can't self-approve).
-    - Recommendation: P1 optional/last, only if the owner will read every fleet diff; do NOT remove owner bypass to give it teeth.
-    - **Unblocks:** owner commitment to review fleet diffs + accept the archive-PR auto-merge clash.
+      - Limits: the Overtoad cannot self-approve own PRs (falls back to admin bypass); it **breaks the release-train archive-PR hands-free auto-merge** (App-token author can't self-approve).
+    - Recommendation: P1 optional/last, only if the Overtoad will read every fleet diff; do NOT remove Overtoad bypass to give it teeth.
+    - **Unblocks:** Overtoad commitment to review fleet diffs + accept the archive-PR auto-merge clash.
     - Source: **P1 §2.**
 
     - Answer: i concur with recommendation for now. ultimately, the goal is automerge.
@@ -721,10 +721,10 @@ all-clusters subtotal) was fixed by the orchestrator post-verdict.
       - 1236702 (**claude**),
       - 1276151 (**identify first**),
       - review the **DeployKey** bypass
-    - Keep RepositoryRole 5 (owner).
+    - Keep RepositoryRole 5 (Overtoad).
     - Framing: defense-in-depth + hygiene, NOT a queue prerequisite; ~0 cost; after removal the archive PR must PASS (not bypass) the 13 checks.
     - P3-OQ7: near-zero flood effect alone; confirm the 1236702/1276151 peer expectations before touching.
-    - **Unblocks:** identify 1276151 (owner UI); confirm DeployKey-to-main usage; @claude scratch-PR smoke-test after removal.
+    - **Unblocks:** identify 1276151 (Overtoad UI); confirm DeployKey-to-main usage; @claude scratch-PR smoke-test after removal.
     - Source: **P1 §3, P3 §4/OQ7.**
 
     - Answer: this question will require additional research, planning, and discussion
@@ -739,7 +739,7 @@ all-clusters subtotal) was fixed by the orchestrator post-verdict.
       - target-branch selection
     - Confirm: the automation count (3 vs 4).
     - The only source-side throttle if Cursor supports it; none is assumed.
-    - **Unblocks:** the owner verifies each capability in the Cursor dashboard / GitHub App installation settings.
+    - **Unblocks:** the Overtoad verifies each capability in the Cursor dashboard / GitHub App installation settings.
     - Source: **P3 §2/OQ1-OQ2, P1 §6(i), P2 §5(i).**
 
     - Answer: let's automate this, with specific feedback where necessary
@@ -764,7 +764,7 @@ all-clusters subtotal) was fixed by the orchestrator post-verdict.
       - plus the AGENTS.md co-changes
         - (agents node, `util/fleet_triage/` tree entry).
     - Recommendation: P3's recommended start (read-only per OQ4).
-    - **Unblocks:** nothing external — an in-repo owner-merged PR.
+    - **Unblocks:** nothing external — an in-repo Overtoad-merged PR.
     - Source: **P3 §1.**
 
     - Answer: i concur with recommendation
@@ -805,7 +805,7 @@ all-clusters subtotal) was fixed by the orchestrator post-verdict.
 
 ---
 
-## §6 Owner-side open probes (requested, not performed)
+## §6 The Overtoad-side open probes (requested, not performed)
 
 - Identify always-bypass integrations **1236702 = `claude` (confirmed via API)** — decide whether the Claude GitHub App should retain always-bypass — and **1276151 (unresolvable via public API**; read from Settings → GitHub Apps / the ruleset bypass list UI). Review the `DeployKey` bypass entry.
 - Retrieve the Cursor dashboard automation configs behind the per-class UUIDs (test-coverage `4e249ce1-…` from #729; docs `294b2ed6-…` from #746; plus the bug-investigation class): schedule/cadence, concurrency, per-class prompts, file scopes. Reconcile the automation count (3 per Phase-0 vs 4 fleet check names incl. "Find vulnerabilities").
@@ -816,5 +816,5 @@ all-clusters subtotal) was fixed by the orchestrator post-verdict.
 
 - Census tooling (committed with this PR under `util/ad-hoc/`, per the mandatory script-placement rule): `2026-07-28_flood_census_universe.py` (pinned universe), `2026-07-28_flood_census_symbol_screen.py` + `2026-07-28_flood_census_adjudicate.py` + `2026-07-28_flood_census_ci_yml_screen.py` (C1), `2026-07-28_docs_census_c2.py` + `2026-07-28_docs_census_v2_c2.py` + `2026-07-28_fp_transition_c2.py` (C2; C3/C4 ran adjudication via git plumbing, no scripts). Retire when: the guardrail decisions land
   and the census class is productionized (P2's `util/sequence_safety/`, P3's `util/fleet_triage/`).
-- Heal PRs: **#852** (tests + ci.yml) and **#853** (docs), both owner-gated. Prior in-flood heals: #838, #842, #843.
+- Heal PRs: **#852** (tests + ci.yml) and **#853** (docs), both Overtoad-gated. Prior in-flood heals: #838, #842, #843.
 - The full proposal texts were developed and validated in program scratchpad space; their decision surfaces (tables, ranked sets, staged paths) are carried verbatim in §3.

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-25
 Status: ad-hoc — investigation (cascor#571 / perf-lane G4)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: cascor#571; util/ad-hoc/2026-08-16_h2h_phase_split.py (candidate/output split only);
          util/ad-hoc/2026-08-21_h2h_paired_campaign.bash (produces the runs this reads)
 

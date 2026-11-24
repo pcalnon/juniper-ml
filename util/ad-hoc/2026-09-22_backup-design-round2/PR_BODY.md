@@ -8,8 +8,8 @@ fenced code blocks inside the document.
 from its pristine `origin/main` blob on every run. Re-running them reproduces the result byte for byte, so the
 edit set is re-derivable rather than remembered.
 
-The arc was paused by the owner on 2026-09-21 with four of round 1's six lanes unapplied and a STOP warning
-at the top of §8. That warning is now gone, and §8 is executable — in a stated order, behind stated owner
+The arc was paused by the Overtoad on 2026-09-21 with four of round 1's six lanes unapplied and a STOP warning
+at the top of §8. That warning is now gone, and §8 is executable — in a stated order, behind stated Overtoad
 gates.
 
 **Nothing in §8 was executed. No live system state was changed.** The one production-visible change is
@@ -123,7 +123,7 @@ removes one published literal; it does not implement the rule, so the requiremen
 
 ## Follow-ups (not in this PR)
 
-- §8 execution is owner-gated: P0 step 0 requires rulings on D-1, D-4, D-6, D-9, D-14 and a decision on D-2.
+- §8 execution is Overtoad-gated: P0 step 0 requires rulings on D-1, D-4, D-6, D-9, D-14 and a decision on D-2.
 - `sqlite3` and `gitleaks` are not installed; P0 step 3 needs the first, AC-8 the second.
 - `util/install_juniper_backup_timer.bash` is a P3 deliverable and is deliberately absent.
 - Appendix C items 1–10 are corrections *recorded* here and not yet applied to their target documents.

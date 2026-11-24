@@ -138,11 +138,11 @@ Each was **documented, not fixed** during the analysis (deliverables were the pr
     - `RUBRIC.md` (R2.5 text + design links)`planner.md` / `auditor.md` descriptions, and `AGENTS.md` (≥8 hits: lines 219, 222, 241, 244, 300, 306, 328, 332) also still say `prompts/templates/`.
     - The library tests pass because they reference the new path; the drift lives in **agent prose**, which tests don't execute.
   - *Recommend:* sweep `prompts/templates/` → `prompts/agent_templates/` across `.claude/` and `AGENTS.md`, and add a lint that greps the agent/Skill bodies for the dead path.
-  - **Owner: juniper-ml.**
+  - **The Overtoad: juniper-ml.**
 - **(I-2) Env provisioning gap (the actual canopy incident).**
   - `JuniperCanopy1` was never reinstalled from `requirements.lock` after the floor bumps, and no guard enforces that an env satisfies the repo's floors.
   - *Recommend:* the drift checker in §6.1.2 + a documented post-refactor reinstall step.
-  - **Owner: juniper-canopy + juniper-ml (tooling).**
+  - **The Overtoad: juniper-canopy + juniper-ml (tooling).**
 
 **Configuration problems:**
 
@@ -150,12 +150,12 @@ Each was **documented, not fixed** during the analysis (deliverables were the pr
   - `conda_envs` lists `JuniperCanopy {python: 3.14}`; the live env is `JuniperCanopy1 {python: 3.13}` (canopy `AGENTS.md`; commit `a06abb1`).
     - Because RUBRIC **R2.5 validates injected conventions against this data layer**, a stale data layer risks **false rubric failures** for correct prompts.
   - *Recommend:* update `prompts/agent_templates/data/ecosystem.yaml` `conda_envs`.
-  - **Owner: juniper-ml.**
+  - **The Overtoad: juniper-ml.**
 - **(C-2) Misleading commented client pins in canopy requirements docs.**
   - `conf/requirements.txt`, `requirements.txt`, `requirements_ci.txt` carry old `# juniper-cascor-client==0.3.0` / `# juniper-data-client==0.4.0` (lines ~82/84) while `requirements.lock` is correct.
     - Anyone reinstalling from those could re-introduce the drift.
   - *Recommend:* refresh or delete the commented pins.
-  - **Owner: juniper-canopy.**
+  - **The Overtoad: juniper-canopy.**
 
 **Design gaps:**
 
@@ -163,16 +163,16 @@ Each was **documented, not fixed** during the analysis (deliverables were the pr
   - It returns a 6-week-old `lastfailed` count as `status: "ok"` (`util/prompt_discovery/test_status.py:15-37`).
     - The probe's own docstring promises "no failures can never masquerade as fact" — but the inverse failed here: a **stale failure count masqueraded as current** and misdirected the initial read toward "188 failing."
   - *Recommend:* stamp the cache mtime into the output and flag/`unavailable` it past a TTL.
-  - **Owner: juniper-ml.**
+  - **The Overtoad: juniper-ml.**
 - **(D-2) Canopy demo-mode degradation choice.**
   - The data client is constructed above the `try:` (`demo_mode.py:918`/`:935`) and the `except` (`:944`) only catches `JuniperDataClientError`, so a constructor `TypeError` hard-crashes despite a deprecated local fallback existing (`:1001`).
     - "No local fallback" is documented as intentional, so this is a **choice to revisit**, not a clear bug.
-  - *Recommend:* the downstream session raises it for an owner decision.
-  - **Owner: juniper-canopy (decision).**
+  - *Recommend:* the downstream session raises it for an Overtoad decision.
+  - **The Overtoad: juniper-canopy (decision).**
 - **(D-3) Recurrence model `status="live"` + Start-enabled with no service URL.**
   - `model_registry.py:188` marks it live and D8 Train-gating allows Start, but `recurrence_service_url` defaults `None` (`settings.py:237`) and the demo path sets neither URL nor key → selecting "Recurrence (LMU)" and starting fails to reach a service with no obvious UX guard.
   - *Recommend:* gate Start on a resolvable service, or define the failure UX.
-  - **Owner: juniper-canopy.**
+  - **The Overtoad: juniper-canopy.**
 
 **Architectural weaknesses:**
 
@@ -181,9 +181,9 @@ Each was **documented, not fixed** during the analysis (deliverables were the pr
     - Authoring a canopy-targeted prompt *from* juniper-ml (the suite's home) required manual cross-repo overrides.
     - Since the suite's home is juniper-ml and most targets are **sibling repos**, cross-repo is the common case.
   - *Recommend:* a first-class `--target-repo` mode.
-  - **Owner: juniper-ml.**
+  - **The Overtoad: juniper-ml.**
 - **(A-2) No live-runtime coverage in the suite** (the §6.1.1 gap, framed as a weakness): the suite cannot, by design, catch "green tests / dead app."
-  - **Owner: juniper-ml.**
+  - **The Overtoad: juniper-ml.**
 
 **Syntax errors:**
 
@@ -196,7 +196,7 @@ Each was **documented, not fixed** during the analysis (deliverables were the pr
 - **(S-1) Sibling-env plain-wheel drift.**
   - `JuniperCascor1` / `JuniperData` may show the same installed-vs-lockfile drift; not checked here.
     - The prompt instructs the downstream session to note (not fix) it; a short ecosystem env-drift audit is warranted.
-  - **Owner: juniper-ml (audit).**
+  - **The Overtoad: juniper-ml (audit).**
 
 ### 6.3 What worked (process note)
 

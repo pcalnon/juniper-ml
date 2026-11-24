@@ -8,7 +8,7 @@ Version:     0.1.0
 License:     MIT License
 
 Purpose: scope and perform P6.4's mechanical ``f"...{name}..."`` -> ``"...%s...", name`` conversion,
-restricted to the two HOT files the owner authorised on 2026-09-22 --
+restricted to the two HOT files the Overtoad authorised on 2026-09-22 --
 ``src/candidate_unit/candidate_unit.py`` and ``src/cascade_correlation/cascade_correlation.py``.
 
 MECHANICAL is defined exactly as ``util/ad-hoc/2026-09-09_p64_fstring_classify.py`` defines it, and
@@ -167,7 +167,7 @@ def main() -> int:
 
     sha = subprocess.run(["git", "-C", CASCOR, "rev-parse", "--short=8", REV],
                          capture_output=True, text=True, check=False).stdout.strip()
-    print(f"repo: {CASCOR}\nrev : {REV} ({sha})\nscope: P6.4 hot files only (owner ruling 2026-09-22)\n")
+    print(f"repo: {CASCOR}\nrev : {REV} ({sha})\nscope: P6.4 hot files only (Overtoad ruling 2026-09-22)\n")
 
     grand = Counter()
     converted_all, skipped_all, mismatches = [], [], []

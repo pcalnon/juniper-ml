@@ -16,12 +16,12 @@ Direct pushes to ``main`` were never permitted: the existing ruleset already car
 ``pull_request`` rule, and rule suites show it firing --
 ``pull_request: fail "Changes must be made through a pull request"`` -- while the push lands
 anyway, because the suite result is ``bypass``. **Bypass actors are per-ruleset**, and the
-main ruleset grants ``RepositoryRole 5`` (owner) an ``always`` bypass.
+main ruleset grants ``RepositoryRole 5`` (Overtoad) an ``always`` bypass.
 
 That entitlement is load-bearing for three separate reasons (squash-SHA races, unresolved
 review threads, and emergency access), so it is NOT being removed. Instead a **second**
 ruleset carries the same ``pull_request`` rule with an **empty** ``bypass_actors`` list. Both
-rulesets are evaluated, so the no-bypass copy binds everyone -- including the owner -- while
+rulesets are evaluated, so the no-bypass copy binds everyone -- including the Overtoad -- while
 the original keeps its bypass for the other seven rules.
 
 This is what R5 needs: 5 of juniper-ml's 9 post-adoption ``main`` breakages came from direct
@@ -33,7 +33,7 @@ path, because there is no PR to gate.
 Verified behaviour (live, juniper-ml, 2026-08-18)
 ------------------------------------------------
 * A ref **update** is rejected: ``GH013: Repository rule violations found`` /
-  *"Changes must be made through a pull request."* -- **even for the owner**.
+  *"Changes must be made through a pull request."* -- **even for the Overtoad**.
 * A branch **creation** is NOT rejected by this rule. Irrelevant for ``main``, which exists,
   but do not assume this rule blocks new branches.
 * ``git push --dry-run`` does **NOT** evaluate rulesets -- it happily reports a push that the

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- investigation (independent-agent consensus, round 3, Lane B2)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: canopy#670 v2 = 85415f3c, v3 = a967a5bd (REPLAY_CONTROLS_JS);
          util/ad-hoc/2026-09-23_f054_r2_laneB2_node_repro.py (the node driver reused here)
 

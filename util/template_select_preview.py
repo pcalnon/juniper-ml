@@ -4,7 +4,7 @@ Given a task description, prints which ``prompts/agent_templates/`` template the
 Skill's ``match_signals`` step would pick, with the matched keyword(s) and the ranked
 runner-ups. This is an **offline preview heuristic** of the selection the Skill performs
 interactively -- NOT a byte-for-byte reproduction of the Skill's LLM judgement (the Skill may
-additionally ask the owner on a thin margin). It consumes ``prompts/agent_templates/manifest.yaml``
+additionally ask the Overtoad on a thin margin). It consumes ``prompts/agent_templates/manifest.yaml``
 ``match_signals`` and *executes* the selection design the selection lint
 (``tests/test_template_selection.py``) only checks statically.
 
@@ -82,7 +82,7 @@ def select(task: str, manifest: dict):
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         description="Preview which template the Template Agent would select for a task (offline heuristic).",
-        epilog="Preview heuristic only -- the Skill may additionally ask the owner on a thin selection margin.",
+        epilog="Preview heuristic only -- the Skill may additionally ask the Overtoad on a thin selection margin.",
     )
     parser.add_argument("task", nargs="+", help="the task description text")
     parser.add_argument("--repo-root", default=None, help="suite repo root (default: walk up for .github/workflows/)")
@@ -111,7 +111,7 @@ def main(argv=None) -> int:
             print(f"top {min(args.top, len(ranked))} candidates (score / id / matched):")
             for cand in ranked[: args.top]:
                 print(f"  {cand['score']}  {cand['id']:<22} {cand['matched']}")
-        print("(preview heuristic; the Skill may ask the owner on a thin margin)")
+        print("(preview heuristic; the Skill may ask the Overtoad on a thin margin)")
     return 0
 
 

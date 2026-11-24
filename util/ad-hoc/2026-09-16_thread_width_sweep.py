@@ -2,7 +2,7 @@
 """
 Project:     Juniper
 Sub-Project: juniper-ml
-Application: Performance lane -- owner decisions D1 and D2
+Application: Performance lane -- Overtoad decisions D1 and D2
 Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License

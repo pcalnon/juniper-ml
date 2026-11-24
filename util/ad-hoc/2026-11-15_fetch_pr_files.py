@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (verify the one-artifact publish ports as pushed, not as the porting session's copies)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_publish_port_template_identity.py (checks the files this fetches)
 
 Why

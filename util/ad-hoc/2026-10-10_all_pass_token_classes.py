@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-10
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-05_masked_finding_shape.py (the read whose random-looking test this reuses);
          util/ad-hoc/2026-10-08_pr_printed_line_screen.py (the sibling screen for ``--names`` output);
          notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (the PRs this screens)

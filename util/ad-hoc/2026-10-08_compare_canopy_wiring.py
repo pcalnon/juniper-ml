@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-08
-# Status      : ad-hoc — provenance check; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — provenance check; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Compare a canopy tree's callback wiring with a ``_dash-dependencies`` capture from a live leg.
 

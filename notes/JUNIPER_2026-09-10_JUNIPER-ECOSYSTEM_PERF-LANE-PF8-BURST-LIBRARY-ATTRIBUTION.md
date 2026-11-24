@@ -303,7 +303,7 @@ The pair `--mode output_pass --on-thread --repeat 3` (bursts throughout) against
   (probe note §4.1) is a separate, real finding; fixing it by exporting `JUNIPER_CASCOR_BLAS_THREADS`
   would mask this defect rather than repair it.
 - The narrower repair — pin on the thread that runs the training, or set the process-wide default
-  before any BLAS-importing import — is a **cascor** change and an owner decision, not something
+  before any BLAS-importing import — is a **cascor** change and an Overtoad decision, not something
   this document takes.
 
 ---

@@ -116,7 +116,7 @@ export DEFAULT_EFFORT="${MAX}"
 
 export DEFAULT_ID="${FALSE}"
 export DEFAULT_RESUME="${FALSE}"
-# Worktree and remote control are ON by default (owner ruling, 2026-11-04): a bare --worktree, so Claude Code names the worktree, and a
+# Worktree and remote control are ON by default (Overtoad ruling, 2026-11-04): a bare --worktree, so Claude Code names the worktree, and a
 # bare --remote-control, which never takes a value. --no-worktree / --no-remote-control, or CLAUDE_WORKTREE / CLAUDE_REMOTE_CONTROL set
 # to ${FALSE}, turn them off.
 export DEFAULT_WORKTREE="${TRUE}"
@@ -173,7 +173,7 @@ function require_nonempty_value {
 }
 
 # -v, -V, --version and --claude-version report Claude Code's version, as `claude -v` does, through wake_the_claude.bash; this script's
-# own version is --script-version (owner ruling, 2026-11-06). Until then -v and --version printed this script's version.
+# own version is --script-version (Overtoad ruling, 2026-11-06). Until then -v and --version printed this script's version.
 function claude_code_version {
     # Without wake_the_claude.bash's debug log, unless the caller asks for it: stdout is then the version line alone
     WTC_DEBUG="${WTC_DEBUG:-${FALSE}}" exec "${WAKE_THE_CLAUDE_SCRIPT}" "${CLAUDE_VERSION_FLAG}"
@@ -214,7 +214,7 @@ while (( $# > 0 )); do
             fi ;;
         "--no-worktree") CLAUDE_WORKTREE="${FALSE}" && shift ;;
         "--resume-session" | "--resume" | "-rs" | "-r") CLAUDE_RESUME="${TRUE}" && shift ;;
-        # Remote control never takes a value (owner ruling, 2026-11-04)
+        # Remote control never takes a value (Overtoad ruling, 2026-11-04)
         "--remote-control-session" | "--remote-control" | "-rc") CLAUDE_REMOTE_CONTROL="${TRUE}" && shift ;;
         "--no-remote-control") CLAUDE_REMOTE_CONTROL="${FALSE}" && shift ;;
         "--dangerously-skip-permissions" | "--skip-permissions" | "-sp") CLAUDE_SKIP_PERMISSIONS="${TRUE}" && shift ;;
@@ -249,7 +249,7 @@ fi
 if [[ "${CLAUDE_PROMPT_PATH+x}" == "x" && "${CLAUDE_PROMPT_PATH}" == "" ]]; then
     usage 1 "Missing value for ${CLAUDE_PROMPT_PATH_FLAG}"
 fi
-# A prompt file replaces the default prompt (owner ruling, 2026-11-06). wake_the_claude.bash prefers --prompt to a prompt file, so the
+# A prompt file replaces the default prompt (Overtoad ruling, 2026-11-06). wake_the_claude.bash prefers --prompt to a prompt file, so the
 # default prompt sent alongside the file would silently discard it -- and so would an explicit prompt, which is refused instead.
 if [[ ( "${CLAUDE_PROMPT_FILE_PARAM}" != "" ) || ( "${CLAUDE_PROMPT_PATH_PARAM}" != "" ) ]]; then
     [[ ( "${CLAUDE_PROMPT:-}" == "" ) || ( "${CLAUDE_PROMPT:-}" == "${FALSE}" ) ]] || usage 1 "A prompt and a prompt file are exclusive: give --prompt (or CLAUDE_PROMPT), or --file / --path (or CLAUDE_PROMPT_FILE / CLAUDE_PROMPT_PATH), not both"

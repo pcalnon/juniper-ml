@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- investigation (read-only audit behind the juniper-cascor one-artifact publish fix)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_verify_cascor_0_14_0_canopy_0_10_0_published.py (measured the symptom: PyPI's
          juniper-cascor 0.13.0 files differ from TestPyPI's by sha256); notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md
          section 10.3 (the "rebuild in the pypi job" decision, marked historical); util/release_train/ceremony.py
@@ -14,7 +14,7 @@ Related: util/ad-hoc/2026-11-15_verify_cascor_0_14_0_canopy_0_10_0_published.py 
 
 Why
 ---
-The owner's directive of 2026-11-15: "deploy to pypi should send the same artifact that was already sent to testpypi."
+The Overtoad's directive of 2026-11-15: "deploy to pypi should send the same artifact that was already sent to testpypi."
 juniper-cascor's ``publish.yml`` ran ``python -m build`` in its TestPyPI job and again in its PyPI job, so for 0.13.0
 and 0.14.0 PyPI serves a second build, with a different sha256, of what TestPyPI verified. This reads every publish
 workflow on each repo's default branch and classifies it:
@@ -24,7 +24,7 @@ workflow on each repo's default branch and classifies it:
 (c) SKIP: can the TestPyPI upload skip an existing file (``skip-existing``), so that the install check after it would
     test an OLDER file than the one this run built, and nothing would say so?
 
-It also reports the shared artifact's ``retention-days``: the PyPI job downloads the artifact only after the owner
+It also reports the shared artifact's ``retention-days``: the PyPI job downloads the artifact only after the Overtoad
 approves the ``pypi`` gate, which may wait up to 30 days, so an artifact that expires sooner strands the release; and
 each publish job's NAME, which ``util/release_train/ceremony.py`` reads ("testpypi" in the name = the TestPyPI job;
 "pypi" without "testpypi" = the PyPI job).

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round-7 fix pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9;
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round7.md;
          util/ad-hoc/2026-09-24_phase9_ledger_round6_corrections.py (the pass this corrects)
@@ -34,10 +34,10 @@ SUBS = [
     (
         "B3: cascor#678 was never a draft either, and its arm was on 09-23",
         """It added that cascor#678 was
-      armed the same way that morning, and asked whether that sweeper was the owner's.""",
+      armed the same way that morning, and asked whether that sweeper was the Overtoad's.""",
         """It added that cascor#678 was
       armed the same way earlier (its only arm was at 13:32:10Z on 09-23, and it too was never a draft), and
-      asked whether that sweeper was the owner's.""",
+      asked whether that sweeper was the Overtoad's.""",
     ),
     # --- Instruments ---------------------------------------------------------------------------------------------
     (
@@ -47,11 +47,11 @@ SUBS = [
     ),
     (
         "B4, B5: the tools round 7 fixed",
-        """    used it for the owner's answer ("Who", above). Round 6 widened its secret shapes, and the launch scan's and
+        """    used it for the Overtoad's answer ("Who", above). Round 6 widened its secret shapes, and the launch scan's and
     the archive tool's, after Lane R6-B found `sk-ant-…` keys passing it; `2026-09-24_secret_shape_check.py`
     tests all three against constructed fake values, both ways.
 """,
-        """    used it for the owner's answer ("Who", above). Round 6 widened its secret shapes, and the launch scan's and
+        """    used it for the Overtoad's answer ("Who", above). Round 6 widened its secret shapes, and the launch scan's and
     the archive tool's, after Lane R6-B found `sk-ant-…` keys passing it; round 7 restored the bare `sk-` floor
     that round 6 had raised to 32 characters (Lane R7-B). `2026-09-24_secret_shape_check.py` tests all three,
     and the report archiver, against constructed fake values, both ways.

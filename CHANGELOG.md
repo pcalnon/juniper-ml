@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Local Python-version checks: `util/python_version_check.py` runs a repo's own tests under Python 3.15 (or any
   listed version) in a venv kept at a fixed path, and reports without blocking.** The local half of phase 1 of the
-  Python 3.15 migration (the owner's request and ruling of 2026-11-14; juniper-ml#2567 was the CI half).
+  Python 3.15 migration (the Overtoad's request and ruling of 2026-11-14; juniper-ml#2567 was the CI half).
   - `conf/python_versions.yaml` holds the ecosystem's version lists, `blocking` 3.12, 3.13 and 3.14 and
     `informational` 3.15, and one recipe per repo: its CI's install commands and its existing local wrapper.
   - For each repo and version the helper builds a venv from `/usr/bin/python<version>` at
@@ -27,14 +27,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - First real run, juniper-data-client on 3.15.2: passed (537 passed, 19 skipped; coverage 99.68%).
 
 - **CI runs the regression tests and every sub-package's tests on Python 3.15 as well, as informational legs that
-  block nothing.** Phase 1 of the ecosystem's Python 3.15 migration (the owner's request of 2026-11-14): 3.15
+  block nothing.** Phase 1 of the ecosystem's Python 3.15 migration (the Overtoad's request of 2026-11-14): 3.15
   results are reported, and no merge, commit or deployment waits on them.
   - `ci.yml`'s `Regression Tests` and the `test` job of all six `ci-<pkg>.yml` workflows gain an `include` entry,
     Python `"3.15"` with `experimental: true`, and the job-level `continue-on-error: ${{ matrix.experimental == true }}`,
     which is true on that leg alone. A red 3.15 leg leaves the job's result, and so the Quality Gate's
     `needs.tests.result`, at `success`; no ruleset requires the new contexts. Measured on juniper-data#538 (run
     43655144734): with the 3.15 leg failed on purpose, the gate printed `Unit Tests: success` and passed.
-  - Pre-commit stays on 3.12-3.14 (the owner's ruling the same day), and `requires-python`, the classifiers and the
+  - Pre-commit stays on 3.12-3.14 (the Overtoad's ruling the same day), and `requires-python`, the classifiers and the
     tool targets are unchanged: 3.15 is tested, not yet supported.
   - `util/ad-hoc/2026-11-14_py315_informational_edits.py` applies this change and juniper-data#538's as exact,
     re-runnable replacements. `docs/REFERENCE.md` § Shared-Package CI Workflows says so.
@@ -79,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   already fixed (2026-11-15).** The three forks' `RateLimiter` truncated the seconds until a window resets, so a
   rejection in a window's last second said `Retry-After: 0`, and juniper-data's and juniper-cascor's
   `FailedAuthThrottle` truncated its wait too, after the shared package had rounded both up (juniper-ml#1300 and
-  juniper-ml#2524). The owner ruled on 2026-11-09 to file the row, fix all three forks and add a guard naming it; the
+  juniper-ml#2524). The Overtoad ruled on 2026-11-09 to file the row, fix all three forks and add a guard naming it; the
   fixes merged on 2026-11-13 (juniper-data#537, juniper-cascor#757 and juniper-canopy#817).
   - `tests/test_service_fork_drift.py` gains the guard: eleven scoped sites in the four copies (canopy has no
     throttle), at `RateLimiter._seconds_until_reset`, the two returns of `RateLimiter.check` that carry a remainder,
@@ -93,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     fork-drift comments in `.github/workflows/ci.yml` and `.github/workflows/docs-full-check.yml` name canopy's
     `RateLimiter` as a site.
 
-- **Regression tests carried from 18 Cursor fleet drafts of the flood-4 round 2 (owner rulings "Fold into round 2",
+- **Regression tests carried from 18 Cursor fleet drafts of the flood-4 round 2 (Overtoad rulings "Fold into round 2",
   2026-11-08, and "Carry + extend propose.py", 2026-11-09), each mutation-checked against the code it pins.** Fifteen
   new suites, wired into `ci.yml` and `docs/REFERENCE.md` (259 in all): the agent guard's 12-deep nesting cap (#2469),
   `git push --signed=<value>` (#2489), ANSI-C `\u`, `\U` and octal escapes that spell `.ssh` (#2491),
@@ -105,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   location variables, unrelated histories and a failed prepare (#2496, whose first test is also #2480's, carried
   once), and an `ERROR` row's screen coverage (#2512); and a measured zero and `enabled` in the cascor eval blocks
   (#2499). All fifteen are mirrored into `main-verify.yml`'s Regression Battery too, in `ci.yml`'s order (the
-  owner's ruling of 2026-11-14, "Add all fifteen"); no test compares that battery with `ci.yml`. In `juniper-ci-tools`:
+  Overtoad's ruling of 2026-11-14, "Add all fifteen"); no test compares that battery with `ci.yml`. In `juniper-ci-tools`:
   the symbol-loss WEAKENED arms at equality (#2475). In existing suites: `tests/test_predict_merge.py` checks that a
   non-shallow source's scratch gets no graft (#2480), and `tests/test_pyproject_extras.py` pins four
   `docs/REFERENCE.md` sites to `pyproject.toml`: the Package Overview Version cell, the "declares the following pins"
@@ -126,7 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `revert`, `cherry-pick` and `commit-tree`, and now says which do: juniper-ml#2554's
     `tests/test_claude_agent_guard_git_sign_abbrev.py` names the long option, and this suite the short `-S`. #2512's
     `ERROR` row in `docs/REFERENCE.md` now says how `screen_coverage` counts it.
-  - **ci.yml's `host-tooling-macos` job runs every agent-guard suite**, by the owner's ruling of 2026-11-12 (the next
+  - **ci.yml's `host-tooling-macos` job runs every agent-guard suite**, by the Overtoad's ruling of 2026-11-12 (the next
     update of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` adds it to its section 8).
     `HOST_TOOLING_SUITES` gains the eight that ran in the Linux step alone: `tests/test_claude_agent_guard_brace_cap.py`
     (juniper-ml#2517), juniper-ml#2554's `tests/test_claude_agent_guard_git_sign_abbrev.py` and
@@ -176,22 +176,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Backup Phase D: the acceptance probe follows two owner rulings of 2026-11-15.** AC-2 expects the job's 5
-  sources and 76 filters: the owner changed them on purpose, and the design fixed 2 and 45 before. AC-5 no longer
+- **Backup Phase D: the acceptance probe follows two Overtoad rulings of 2026-11-15.** AC-2 expects the job's 5
+  sources and 76 filters: the Overtoad changed them on purpose, and the design fixed 2 and 45 before. AC-5 no longer
   counts a day whose watchdog check found the job still running (`OK RUNNING`). Such a day ends the three-day
   streak and reads `PENDING`, not `FAIL`.
   - `util/ad-hoc/yamaguchi_acceptance_probe.py` 1.3.0; `tests/test_yamaguchi_acceptance_probe.py` (97 tests);
     the mutation harness seeds 223 defects, eleven of them new, and the suites kill all 223.
   - The integrated design's §9 rows for AC-2 and AC-5 and its note 10.1i record both rulings. The note also
-    records that D-14 stands, with the host's `UMask=0017` an interim measure of the owner's.
-- **Backup Phase D: the job starts at 13:00 UTC (07:00 CST) and the watchdog checks at 20:00 local (owner, 2026-11-15).**
+    records that D-14 stands, with the host's `UMask=0017` an interim measure of the Overtoad's.
+- **Backup Phase D: the job starts at 13:00 UTC (07:00 CST) and the watchdog checks at 20:00 local (Overtoad, 2026-11-15).**
   At 12:00 local the watchdog found most runs still going, and a RUNNING day no longer counts toward AC-5.
   `util/systemd/yamaguchi-watchdog.timer` fires at 20:00 local; `util/systemd/yamaguchi-server-db-snapshot.timer`
   at 12:45 UTC, 15 minutes before the backup as before. The probe judges each run against the slot in force on its
   own UTC date, so the runs before the move stay on schedule; its AC-6a follows the snapshot's fire time. The
   design's note 10.1j records the move, and why the snapshot timer is installed as one file, not by the installer.
 - **Backup Phase D, step 14: the retention policy to restore keeps every fileset of the last two
-  weeks (owner ruling, 2026-11-14).** The 2026-10-08 ruling `2W:1D,6M:1W,2Y:1M,5Y:2M` becomes
+  weeks (Overtoad ruling, 2026-11-14).** The 2026-10-08 ruling `2W:1D,6M:1W,2Y:1M,5Y:2M` becomes
   `2W:U,6M:1W,2Y:1M,5Y:2M`. Duplicati keeps a fileset in a frame only if it lies at least the interval
   after the last kept one. Under a one-day interval, the job's off-schedule runs displaced the scheduled
   filesets beside them (on 2026-11-13 the first pass was predicted to delete 9 of 18 dlists), and a daily
@@ -209,7 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     step 14 point to it.
 
 - **`juniper-service-core`: `/ws/training` answers a resume frame as juniper-cascor does, and one shared table of
-  frames and answers pins both** (juniper-cascor#754's four cursor rules; the owner's rulings of 2026-11-12 and
+  frames and answers pins both** (juniper-cascor#754's four cursor rules; the Overtoad's rulings of 2026-11-12 and
   2026-11-13). A `data` that is not an object, and a `last_seq` that is not a plain integer, are `resume_failed`
   `malformed_resume`, checked before `server_instance_id`; a negative `last_seq` is read as `0`; and
   `WebSocketManager.replay_since` raises `ReplayOutOfRange` for a `last_seq` above the last seq numbered, where, with
@@ -246,7 +246,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **A dispatch from the tag was invisible.** `publish_run_status` listed a repo-wide window of 20 release-event
     runs, which is fewer than three Releases in juniper-ml, and no dispatch runs. It now lists the Release's own
     runs with `--branch <tag>`, then that publisher's `workflow_dispatch` runs on the tag, filtered by its workflow
-    id. So the republish job (rung 1 of the owner's recovery ladder of 2026-11-15) is seen.
+    id. So the republish job (rung 1 of the Overtoad's recovery ladder of 2026-11-15) is seen.
   - **Tests.** `tests/test_release_train_ceremony.py` gains `OneArtifactPublisherClassifyTest`,
     `SelectPublishRunPublisherTest` and `PublishRunStatusDispatchTest`, and `LiveSeamSurfaceTest` drives the new
     listing through the R7 guard (182 tests). Each of the thirteen mutations of the fix in
@@ -256,7 +256,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Docs.** The operator runbook (§3.3, §4, §4.1), `docs/REFERENCE.md` and the cheatsheet describe the changes.
 
 - **h5py installs on the informational Python 3.15 leg.** Phase 2 of the ecosystem's Python 3.15 migration (approved
-  by the owner on 2026-11-15) works through what the 3.15 legs found, and this is the first item: h5py publishes no
+  by the Overtoad on 2026-11-15) works through what the 3.15 legs found, and this is the first item: h5py publishes no
   CPython 3.15 wheel (3.16.0, 2026-03-06, the newest release on PyPI when re-probed on 2026-11-15, ships
   cp310-cp314), so pip builds it from the sdist there, and the runner image lacks the libhdf5 headers and
   pkg-config that build needs. On `main`'s 3.15 leg (run 43681267307) h5py's wheel build stopped at `Unable to load dependency
@@ -271,7 +271,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Drop the step once h5py ships a cp315 wheel. Applied by juniper-ml's
     `util/ad-hoc/2026-11-15_py315_h5py_hdf5_headers.py`.
 
-- **The informational Python 3.15 legs no longer show as failed checks** (the owner's report of 2026-11-15: they
+- **The informational Python 3.15 legs no longer show as failed checks** (the Overtoad's report of 2026-11-15: they
   "are supposed to produce an informational message without affecting the ability of code to commit, push, PR,
   or merge"). juniper-ml#2567's job-level `continue-on-error` kept the Quality Gate green, but the leg's own check
   still concluded `failure`: every pull request showed a red X and "Some checks were not successful", its merge
@@ -296,7 +296,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   address that names no socket, and `TestFixtureReachesNoDesktop` pins both (35 tests, 32 before).
 
 - **The release-train proposal rewrites the four `docs/REFERENCE.md` sites that name the meta-package's release
-  (owner ruling on juniper-ml#2507: "Carry + extend propose.py").** juniper-ml#2507's tests
+  (Overtoad ruling on juniper-ml#2507: "Carry + extend propose.py").** juniper-ml#2507's tests
   (`ReferenceCompatibilityMatrixTest`) pin the Package Overview Version cell, the "`juniper-ml` X.Y.Z declares the
   following pins" sentence, the Ecosystem Compatibility matrix's current-series row and the `[recurrence]` "sets
   them to" clause to `pyproject.toml`. `util/release_train/propose.py` edited none of them, and every cut from
@@ -362,7 +362,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     shows that each of its 72 mutations turns the cases it names red. `docs/REFERENCE.md` describes the job.
 
 - **PyPI now receives the files TestPyPI took, checked by sha256, in all seven publishers** (`publish.yml` and the six
-  `publish-<pkg>.yml`; the port of juniper-cascor#763 and #767). The owner's directive of 2026-11-15: "deploy to pypi
+  `publish-<pkg>.yml`; the port of juniper-cascor#763 and #767). The Overtoad's directive of 2026-11-15: "deploy to pypi
   should send the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after
   testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks
   again." Each publisher handed both publish jobs one artifact, but nothing checked it, and a re-run broke it:
@@ -387,7 +387,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     sub-packages' stays `contents: read`. The build holds `contents: read` and `actions: read`, the TestPyPI job
     `contents: read` and `id-token: write`, every PyPI job `id-token: write` alone (none checks out; `publish.yml`'s
     no longer checks out or sets up Python), and the republish job `actions: read` and `id-token: write`.
-  - **The owner's recovery ladder (2026-11-15)** for a release that did not reach PyPI: (1) dispatch its workflow from
+  - **The Overtoad's recovery ladder (2026-11-15)** for a release that did not reach PyPI: (1) dispatch its workflow from
     the release tag with `-f republish_from_testpypi=true`, which runs only `Republish the tested files (dispatch
     only)`: behind the same `pypi` gate it copies TestPyPI's files for the version to PyPI, checked against TestPyPI's
     JSON and the release run's `SHA256SUMS`, and builds nothing; (2) if that fails, within 30 days of the release run,
@@ -419,11 +419,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     §4.1 and §5.3, which said to fix and re-cut: a transient failure is "Re-run failed jobs", a broken package a new
     patch version), and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (the ladder replaces its plain re-fire row).
 
+- **The agent guard also reads each Bash command as bash 5.3 builds its words, and quoted text no longer counts
+  against the brace cap (`util/claude_agent_guard.py` 1.4.0)** (the Overtoad's rulings 16 and 18 (2026-11-09; the
+  record's next update adds them to its section 8), the Overtoad's ruling of 2026-11-12 and the Overtoad's ruling of
+  2026-11-15).
+  - **A second reading.** 1.3.0 brace-expanded each word after quote removal, so it could not tell `\}` from `}`,
+    counted quoted lists against `MAX_BRACE_ALTERNATIVES`, read a substitution's body as brace syntax and never
+    expanded an option word. Each command is now also read as bash 5.3 reads it: the parser's end for `${...}` (its
+    first unquoted `}`) and for `$( )` (a `case` pattern's `)`, a here-document and a comment do not end it),
+    extglob groups, then every word brace-expanded as written (`bash_brace_expand`, a port of bash's brace scan's
+    quoting, with its `{}` rule) and quote-removed. Every rule runs on those words, and again on the words a computed
+    part inside a word makes when it prints nothing or takes its `${x:-WORD}` default (`sud"$(:)"o id` is
+    `sudo id`). A call is denied when either reading trips a rule, so nothing 1.3.0 denies passes.
+  - **Path readings.** A substitution or parameter is one part that may hold any text or none (`.ss$(:)h`,
+    `.ss$(printf h)`), wherever its path component also holds a literal character other than a leading dot, for the credential directories, Claude's settings, the MCP files and the
+    signing paths alike. `~`, `$HOME`, `${HOME}`, `~+` and `~-` words are normalised (`~/X/../.ssh` is `~/.ssh`),
+    and on those readings `~/.gitconfig`, `~/.config/git`, git's system gitconfig and a `.git/hooks` path count as
+    the signing paths they are. When the command names `dotglob` or `GLOBIGNORE`, a glob directly under a home can
+    match a dot-name, and an `alias` value is judged as the command it names.
+  - **Closed** (each passed 1.3.0 and reaches the path, or runs the command, in bash 5.3.9, measured printf-only in a
+    scratch home): the escape gap `cat ~/.ss{h,b\}c}/config` and `su{do,x\}y} id`; behind an `X/..` hop,
+    `cat ~/X/../.ss{h,$(:{)}/config` and `cat ~/X/../.ss$(:)h/config` with their backtick, `<( )` and `${x}` forms;
+    `: ${x:-{}; sudo id; : }`; hops before `.claude/settings.json`, `.gitconfig`, `.claude.json` and `.???`;
+    `cat ~/.s@(s)h/config` after `shopt -s extglob`; `cat ~/X/../'$'{Y/../.ss,z}h/config`;
+    `cat ~/.ss{h,$'\x7d'c}/config`; `cat ~+/.claude/settings.json` from home; a `case` or a here-document inside
+    `$( )` in a brace list, and a `case` inside `$( )` in an expanded here-document, whose command runs; brace
+    lists in option words (`gh api --{method=POST,paginate}`, `gh {api,-XPOST}`, `git commit --{gpg-sign,quiet}`);
+    in a path word, the lists bash expands inside a quoted backtick body or `${x:-"..."}`; an empty substitution or a `${x:-WORD}`
+    default inside a command or option word (`sud"$(:)"o id`, `gh api --meth$(:)od=POST repos/o/r`,
+    `git commit --gpg-$(:)sign -m x`, `{pke${x:-x}ec,Q} id`, `claude mcp a$(:)dd x y`); a substitution, parameter
+    or glob in a signing path (`cp hook .git/ho$(:)oks/post-commit`, `cp x ~/.gitc?nfig`,
+    `cat ~/.config/gi?/config`); `shopt -s dotglob; cat ~/*/config` and `GLOBIGNORE=x; cat ~/*/config`; and
+    `alias s=sudo`, then `s id` on a later line.
+  - **Quoted text is text.** Of the 44,678 Bash commands in the newest 200 session transcripts on 2026-11-16
+    (aggregates only), 1.3.0 refuses 33. 1.4.0 refuses 2 (a brace sequence with an operand past 2**61), passes 24
+    of the 33, and denies 7 others (`CRED-PATH-BASH` or `GH-API-WRITE`). It denies one command 1.3.0 passed: a
+    recursive command in a `for` loop, through the rule for a recursive tool rooted at home or above, on the second
+    reading. A list bash itself expands past 64 alternatives is still refused,
+    and so is a command whose expansions make more than `BRACE_SCAN_BUDGET` characters of words in all (the second
+    reading quote-removes and judges each). `brace_expand`, which Glob, Grep and Serena patterns use, is unchanged.
+  - **Bounded cost.** A command whose `cd` targets make more than `MAX_CD_BASES` (64) directories to resolve
+    relative words against, or whose analysis takes more than `ANALYSIS_TIME_BUDGET` (3 s), is refused (exit 2),
+    well inside the hook's 10 s timeout, and each reading's nested texts get that reading's own directories.
+    Measured as the hook on 2026-11-16: each of 33 adversarial shapes finishes in under 4 s (1.3.0 runs past
+    60 s on seven of them), and the census's slowest commands take 0.10-0.26 s (1.3.0: 0.08-0.13 s).
+  - **Still open**, by spelling: a substitution that prints part of a command or option word
+    (`d$(printf %s o)as id`, `gh api repos/o/r --$(printf %s i)nput f`); a parameter expansion whose operator is
+    quoted (`s"${x$':'-"{u,Q}"}" id`); a glob with no literal character as a whole signing-path component
+    (`cat ~/.config/*/config`); a substitution, or a parameter with no `:-` default, that makes up a whole path component or follows a lone dot, anywhere but the first component under a home or inside `~/.claude` (`cp hook .git/$(printf %s hoo ks)/post-commit`, `cp x ~/.config/$d/config`, `cat /x/$(printf %s .s sh)/config`, `cat /x/.$d/config`); aliases and functions from the shell's profile; a variable that
+    holds `..` or `/`, even in the same command (gap 2: `d=~/.ss; cat ${d}h/config`);
+    a program that hands its argument to a shell the guard does not model (gap 1: `script -c`, `flock -c`,
+    `npx -c`, `tmux`, `ssh-agent`, a git `!` alias), in which a quoted brace list is no longer refused; and the rules
+    of shells other than bash 5.3.
+  - `tests/test_claude_agent_guard.py` gains a row for each closed spelling and allowed rows that must stay allowed;
+    `tests/test_claude_agent_guard_brace_cap.py` gains `BashWordTest` (the words bash 5.3.9 printed for 29 words, and
+    the quoted cases of the cap) and `AnalysisBoundTest` (the two bounds); the self-test runs 66 checks. The Overtoad
+    re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` to install it.
+
 ## [0.11.5] - 2026-11-13
 
 ### Security
 
-- **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (owner ruling
+- **`[tools]` floors `juniper-observability>=0.4.2` and `juniper-service-core>=0.7.2,<0.8.0` (Overtoad ruling
   2026-11-09).** They were `>=0.4.1` and `>=0.7.1,<0.8.0`. By default pip upgrades a dependency only when the
   installed one no longer satisfies its range, so `pip install -U juniper-ml[tools]` left an environment that held
   0.4.1 and 0.7.1 on them.
@@ -446,7 +503,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **The repo `tmp/` convention: no file is written under `/tmp`** (owner directive, 2026-10-26;
+- **The repo `tmp/` convention: no file is written under `/tmp`** (Overtoad directive, 2026-10-26;
   `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`, new). On the Linux host `/tmp` is a
   tmpfs that `systemd-tmpfiles-clean` ages daily (`q /tmp 1777 root root 10d`). It emptied the isolated E2E stack's
   pid files and venv three times in a week, leaving seven live servers killable by the orphan reaper.
@@ -486,7 +543,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     exact versions. It also has the timeline, the blast radius, the rejected hypotheses, the
     unconfirmed actor, and the vetting against the kubeadm install.
   - `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md` is the
-    owner's root procedure: no reboot, legacy snap k8s services disabled first (decision D-1), three
+    Overtoad's root procedure: no reboot, legacy snap k8s services disabled first (decision D-1), three
     `mount` commands with systemd's options, then validation.
   - `util/host_api_filesystems_check.py` (new) judges `/proc/self/mountinfo` against systemd's
     API-filesystem table and AppArmor's interface. Tests: `tests/test_host_api_filesystems_check.py`,
@@ -498,7 +555,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Finding 17 of `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`
     carries an erratum: "repaired without a reboot" was incomplete.
 
-- **Regression tests carried from 28 Cursor fleet drafts (the flood-4 consolidation, owner ruling 2026-11-06), each
+- **Regression tests carried from 28 Cursor fleet drafts (the flood-4 consolidation, Overtoad ruling 2026-11-06), each
   mutation-checked against the code it pins.** In `juniper-service-core/tests/`: the failed-auth tracker drops the
   oldest of its 10,000 source IPs (#2419); an exhausted rate-limit window admits again at its boundary (#2427); a
   worker connection burst refills only up to its cap (#2430); a stuck worker's scores become a duplicate (#2436);
@@ -550,7 +607,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   disposed of: six carriers (juniper-data#518 and #519, juniper-canopy#797 and #802, juniper-ml#2517 and #2519)
   merged, and all 68 census drafts assigned to them closed, 67 of them carried. It also records each carrier's 2 to
   6 independent validation rounds, the defects found on `main`, the per-PR disposition (§5), the process traps, and
-  the owner's rulings 1–7 of 2026-11-08: round 2 takes 48 drafts; the launcher's effort default becomes `max`, and
+  the Overtoad's rulings 1–7 of 2026-11-08: round 2 takes 48 drafts; the launcher's effort default becomes `max`, and
   an explicit `auto` will send no `--effort` flag; three of the four open defect rows in §4 get their own fixes
   now; and juniper-ml#2271's one setting moved to user settings, with its branch deleted. Later rulings decide that
   the agent guard's brace cap is to fail closed, that the gitleaks fix is to be ported to the seven other
@@ -592,9 +649,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     isolated-stack checklist, the release-train runbook, `docs/REFERENCE.md`, the developer cheatsheet and the
     Template Agent's standing rule.
 
-- **The owner's 2026-10-26 rulings on `tmp/`**, quoted in section 1 of
+- **The Overtoad's 2026-10-26 rulings on `tmp/`**, quoted in section 1 of
   `notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md`: the doc-link checker and local Docker
-  builds ignore `tmp/`; pytest does not; a counting script chooses its scope deliberately (the owner's revision, later
+  builds ignore `tmp/`; pytest does not; a counting script chooses its scope deliberately (the Overtoad's revision, later
   the same day); full-tree repo copies and log copies may live there; and a work arc's `tmp/` file is kept until four
   conjunctive conditions hold (that doc's section 6).
   - `--exclude tmp` reaches the remaining doc-link checker invocations: two more cheatsheet rows, `docs/REFERENCE.md`'s
@@ -604,10 +661,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the three `conftest.py` files, so nothing changed; `testpaths` keeps a bare `pytest` in `tests/`.
   - Docker: juniper-ml has no build context (no Dockerfile, Containerfile, compose file or `.dockerignore`, the
     sub-packages included).
-  - The owner's revised search ruling: a script that counts matches with `grep` or `find` searches the repo with its
+  - The Overtoad's revised search ruling: a script that counts matches with `grep` or `find` searches the repo with its
     `tmp/` excluded, or `tmp/` alone, and both only for a stated edge case; existing counting scripts are to be
     modified to make that choice explicit, not left to `.gitignore` or a tool's defaults. The convention doc's new
-    section 11 documents the juniper-ml counting sites still owed that change (ten rows, twelve files), as the owner
+    section 11 documents the juniper-ml counting sites still owed that change (ten rows, twelve files), as the Overtoad
     asked; none of them is modified here. The ten sibling repos report theirs in their own PRs.
   - `util/ad-hoc/2026-10-26_tmp_literal_sweep.py` (0.3.0) makes the choice: by default the repo with `tmp/` excluded by
     the explicit root-anchored glob `!tmp/**` (not by ripgrep's `.gitignore` handling), and with `--tmp-only` the
@@ -617,7 +674,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and 11 (new), and the Template Agent's standing rules gain `repo_tmp_rulings`.
 
 - **`-v` reports Claude Code's version in both launchers, `claudey` takes a prompt file, and the default interactive
-  session turns on remote control (owner rulings, 2026-11-06).** In `scripts/wake_the_claude.bash` (now 1.1.0), `-v`
+  session turns on remote control (Overtoad rulings, 2026-11-06).** In `scripts/wake_the_claude.bash` (now 1.1.0), `-v`
   joins `-V`, `--version` and `--claude-version`, as `claude -v` does; it printed the script's own version, which
   `--script-version` alone now prints. `claudey` (`scripts/claude_interactive.bash`, now 0.2.0) runs `wake_the_claude.bash
   --version` for all four, so they print Claude Code's version too; `-v` and `--version` printed claudey's,
@@ -647,7 +704,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   included, and scratch copies of notes kept there failed it. It reads `.txt` as well as markdown, so even
   captured logs there can fail it. On 2026-11-08 the primary checkout failed with 2,424 broken-link lines,
   every one under `tmp/`. With `--exclude tmp` it passes: 2,365 files scanned, every link valid. This
-  implements the 2026-10-26 owner ruling for the
+  implements the 2026-10-26 Overtoad ruling for the
   hook only. The hunk is byte-identical to juniper-ml#2360's, which has since merged (2026-11-12 UTC) and carries
   the CI and documented invocations. `--exclude` matches a whole path component, so only directories named
   exactly `tmp` are skipped; no tracked file lives in one.
@@ -657,7 +714,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`juniper-service-core`: a `resume_ok` on `/ws/training` now means the client missed nothing up to the moment
   its socket goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
-  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix now" by the owner on
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix now" by the Overtoad on
   2026-11-08. A broadcast made with no socket active is now sequenced and buffered. One that lands while the
   replay is being sent reaches the client before its socket goes live, through the new keyword-only
   `promote_to_active(..., replayed_through=...)`. A resume that cannot stay continuous after `resume_ok` is closed
@@ -673,7 +730,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `juniper-service-core/CHANGELOG.md`.
 
 - **The yamaguchi securityfs incident: remediated, recorded, and two defects in its validator fixed.**
-  The owner ran the remount runbook on 2026-11-08, and the three filesystems have been mounted since
+  The Overtoad ran the remount runbook on 2026-11-08, and the three filesystems have been mounted since
   08:28:29Z. The validator passes, all seven juniper containers run confined by `docker-default`, and
   juniper-deploy's suite has no failures (409 passed, where 17 had failed). The record is §14 of
   `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md`.
@@ -691,7 +748,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     conclusion stands.
   - **Runbook step 1** sets `J`, stops when the scripts are missing, and runs the probe only after a
     good capture. Step 4 names a fallback baseline.
-  - The evidence, from the owner's terminal output to the after-probe, is in
+  - The evidence, from the Overtoad's terminal output to the after-probe, is in
     `reports/2026-11-07_yamaguchi-securityfs-unmount/`.
 
 - **`util/fleet_triage/predict_merge.py` triages a PR whose head exists only as `origin/<branch>` from a shallow
@@ -720,14 +777,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **The agent guard expands brace sequences as bash does, fails closed on a brace expansion past its cap, and denies
   the git and GnuPG prefixes that sign (`util/claude_agent_guard.py` 1.3.0).**
-  - **Brace cap: "Fail closed"** (owner ruling, 2026-11-08). The guard expands at most `MAX_BRACE_ALTERNATIVES` (64)
+  - **Brace cap: "Fail closed"** (Overtoad ruling, 2026-11-08). The guard expands at most `MAX_BRACE_ALTERNATIVES` (64)
     alternatives. A word that needed more was judged on its first 64, so a `.ssh` or `.gnupg` spelled in alternative
     65 passed the credential check. Such a word now raises `MalformedInput` and the hook exits 2, for a Bash word, a
     range, a product of groups, a Glob or Grep pattern and a Serena include glob alike. A list is counted part by
     part, so at most one part past the cap is taken in (a nested part adds at most 64 words), and a range is sized
     arithmetically, so `{1..1000000}` is refused without being expanded. `for i in {1..100}` is refused too;
     `$(seq 1 100)` is not.
-  - **Brace sequences** (owner ruling "Carry in ml-code", 2026-11-09). bash 4 and later expand `{x..y..incr}`, which
+  - **Brace sequences** (Overtoad ruling "Carry in ml-code", 2026-11-09). bash 4 and later expand `{x..y..incr}`, which
     the guard left as written, so `cat ~/.{r..t..1}sh/config` read `~/.ssh/config` and passed the credential check;
     `{s..s..1}udo` and `gpg{2..2..1}` hid `sudo` and `gpg2` the same way. The guard now follows bash 5.3's brace code
     for sequences and the lists around them: a step of either sign, a step of 0, a step past the range, `+` signs, zero
@@ -755,10 +812,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       the text after a group opens nothing);
     - bash steps over the body of a `$(...)` and of backticks, which the scan reads as text.
   - **Known open bypasses.** Three spellings are known to reach `~/.ssh` or `~/.gnupg` and pass, on `main` as
-    well, and they stay open: `cat ~/.ss{h,b\}c}/config` (the escape gap: the owner has ruled that a quote- and
+    well, and they stay open: `cat ~/.ss{h,b\}c}/config` (the escape gap: the Overtoad has ruled that a quote- and
     escape-aware expansion follows in its own PR); and, behind an `X/..` hop, an unbalanced `{` inside a command
     substitution in a brace list (`~/X/../.ss{h,$(:{)}/config`) and an empty substitution or parameter spliced into
-    the name (`~/X/../.ss$(:)h/config`). The owner has ruled that the same PR fixes those two. The guard's docstring lists all
+    the name (`~/X/../.ss$(:)h/config`). The Overtoad has ruled that the same PR fixes those two. The guard's docstring lists all
     three (gap 12), and `util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_pins_vs_bash.py` shows that each still passes.
   - **GnuPG** (juniper-ml#2493): a long option counts from two letters, not four. GnuPG 2.4.8 runs `--cl` as
     clear-sign, `--ls` as lsign-key and `--det` as detach-sign, and rejects every one-letter prefix of a denied
@@ -772,11 +829,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Every git and GnuPG claim was re-derived on this host's git 2.53.0 and GnuPG 2.4.8, with a recording
     `gpg.program` stub for git and an empty GnuPG homedir with no agent for gpg, so no keyring, agent or smartcard
     was reachable: `util/ad-hoc/2026-11-08_flood4r2_ml_code_git_gpg_probe.py`.
-  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` to install it.
+  - The Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` to install it.
 
 - **The launchers: `max` is the effort default again, `auto` sends no `--effort`, and two prompt-file holes are
   closed.**
-  - **Effort** (owner ruling, 2026-11-08). juniper-ml#2396 had made `scripts/wake_the_claude.bash`'s
+  - **Effort** (Overtoad ruling, 2026-11-08). juniper-ml#2396 had made `scripts/wake_the_claude.bash`'s
     `EFFORT_DEFAULT` `auto`, which Claude Code answers with "Unknown --effort value 'auto'" and ignores.
     `--effort 0` now sends `--effort max`, and `--effort auto` (any alias, any case) sends no `--effort` flag, so
     Claude Code uses its own default. `scripts/claude_interactive.bash` already defaulted to `max` and forwards
@@ -809,7 +866,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`juniper-service-core`: a `fit` that returns while the run is paused settles `COMPLETED` instead
   of wedging the lifecycle, and the training thread settles only a run it still owns** (the
   "paused-fit wedge" in §4 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`;
-  owner ruling "Fix now", 2026-11-08). The training thread called `mark_completed()`, which refuses
+  Overtoad ruling "Fix now", 2026-11-08). The training thread called `mark_completed()`, which refuses
   `PAUSED`, and ignored the refusal. The machine stayed `PAUSED` with no thread behind it; after a
   resume it read `STARTED`, and every start with data was a 409 until a stop or reset. The thread now
   releases the pause before it records the completion, and the state machine is unchanged. Every
@@ -817,7 +874,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   that outlives a following start no longer completes or fails the newer run when it ends. The overlap
   itself remains: that `fit` still runs to its end, and its events still reach the shared sink. The
   pause release on a paused completion or failure also wakes such a `fit` if it is waiting at the
-  shared pause gate, and a start is then accepted beside it. The owner has ruled that this race gets
+  shared pause gate, and a start is then accepted beside it. The Overtoad has ruled that this race gets
   its own fix, in its own PR (§8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`); that fix is the
   stop-then-start entry below, with which such a start is refused while the stopped `fit` still runs.
@@ -832,7 +889,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     release after 0.7.2.
 
 - **`juniper-service-core`: a `/ws/training` socket whose broadcast send fails or times out is closed 1011
-  instead of being left open on a stream nothing is sent to** (owner ruling 11 in §8 of
+  instead of being left open on a stream nothing is sent to** (Overtoad ruling 11 in §8 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`). `broadcast` dropped such a socket
   from the fan-out without closing it, so the client kept answering heartbeats, was never told it was missing
   frames, and held a socket that its released per-IP slot no longer counted. It is now closed **1011**
@@ -857,7 +914,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`juniper-service-core`: a start sent while a stopped run's `fit` is still running is refused, so that
   `fit` sees its stop** (the stop-then-start race; §8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, "Fix all four now", which names
-  the defect and no mechanism). The owner's ruling of 2026-11-12 accepts the refusal (that record's next
+  the defect and no mechanism). The Overtoad's ruling of 2026-11-12 accepts the refusal (that record's next
   update adds it to its §8). A stop is seen at `fit`'s next event, and `start_training` cleared it, so a
   start sent before then cancelled the stop: the stopped run's `fit` ran on beside the new run, on the same
   model, its events landed in the new run's monitor, and the pause releases juniper-ml#2531 added woke it if
@@ -899,7 +956,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`[recurrence]` now floors `juniper-recurrence>=0.8.1`** (`<0.9.0`), the release that floors
   `juniper-model-core[crossval]>=0.3.0,<0.4.0` (juniper-recurrence#229). The pin was
-  `juniper-recurrence>=0.8.0,<0.9.0`. The owner approved the raise on 2026-11-06, with a 0.11.4 cut to carry it.
+  `juniper-recurrence>=0.8.0,<0.9.0`. The Overtoad approved the raise on 2026-11-06, with a 0.11.4 cut to carry it.
   - **Why.** recurrence 0.8.0's `_folds.build_folds` passes `groups=` to `walk_forward_folds` on every
     `POST /v1/crossval`, and `groups=` first shipped in juniper-model-core 0.3.0. 0.8.0 declared
     `juniper-model-core>=0.2.0`, so an environment holding model-core 0.2.0 passed `pip check` while every
@@ -918,7 +975,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     exactly one match apiece.
 
 - **`claudey` starts with a worktree and remote control by default, `--remote-control` never takes a value, and in
-  `scripts/wake_the_claude.bash` `--version` is Claude Code's version and `-u` fails (owner rulings, 2026-11-04).**
+  `scripts/wake_the_claude.bash` `--version` is Claude Code's version and `-u` fails (Overtoad rulings, 2026-11-04).**
   `claude_interactive.bash` sends a bare `--worktree`, so Claude Code names the worktree unless `-w <name>` names one,
   and a bare `--remote-control`. `--no-worktree` and `--no-remote-control` turn them off, as `CLAUDE_WORKTREE=1` and
   `CLAUDE_REMOTE_CONTROL=1` do. Both had been opt-in since juniper-ml#2396. `wake_the_claude.bash` now refuses a word
@@ -928,13 +985,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `-v` / `--script-version`. `-u` prints the usage text and exits 1, as its comment always said; after juniper-ml#2396
   it exited 0. `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`'s launcher table now describes claudey's own defaults: it
   described `default_interactive_session_claude_code.bash`'s.
-- **`agents-md-touch-up.yml` pins `actions/checkout` to a commit SHA (owner ruling 2026-11-03).** It checked out with
+- **`agents-md-touch-up.yml` pins `actions/checkout` to a commit SHA (Overtoad ruling 2026-11-03).** It checked out with
   the `v7.0.1` tag, the only tag-only `actions/checkout` in `.github/workflows/`. It now uses
   `3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1`, the commit that tag resolves to and the pin every other
   workflow here uses, so behaviour is unchanged. A census of the nine Juniper repositories' `main` on 2026-11-01 found
   249 `actions/checkout` uses, 242 pinned to that SHA; the seven tag-only ones were this workflow's copies, one per
   repository. juniper-data#503 pinned juniper-data's, and this change is one of the seven that pin the rest.
-- **The release-train ceremony's archive cap rises from 125,000 B to 1,000,000 B** (owner ruling 2026-10-26, on the
+- **The release-train ceremony's archive cap rises from 125,000 B to 1,000,000 B** (Overtoad ruling 2026-10-26, on the
   runner-side measurement that the 2026-10-18 ruling called for; a follow-up to juniper-ml#2227).
   `util/release_train/ceremony.py`'s `ARCHIVE_B64_MAX_DEFAULT` bounds a release-notes archive's base64, because the
   archive travels inside one `createCommitOnBranch` request. The old figure was measured from turing, and was that
@@ -956,7 +1013,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **G-SEC's firewall condition reads the block-all sentence turing printed** (turing bring-up task C2; the §18.2
   C2 row and erratum E-C2-GATE of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
-  The owner applied C2's block-all form on 2026-10-26, so the on-state captures exist: `--getglobalstate` prints
+  The Overtoad applied C2's block-all form on 2026-10-26, so the on-state captures exist: `--getglobalstate` prints
   "Firewall is blocking all non-essential incoming connections. (State = 2)", `--getblockall` "Firewall is blocking
   all non-essential incoming connections." and `--getstealthmode` "Firewall stealth mode is on".
   - `util/host_state_check.py` accepts only the getter's sentence. "Firewall is set to block all non-essential
@@ -974,7 +1031,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Cascor suites carry headline columns: `aggregate.csv` and `REPORT.md` gain `train_accuracy` and `val_accuracy`, a
   finished suite gains them without re-running, and a NaN or infinite value fails every acceptance band** (register row
-  `APD-ML-002`; the owner's four rulings of 2026-10-26; juniper-ml#2369). `util/experiments/run_suite.py`'s
+  `APD-ML-002`; the Overtoad's four rulings of 2026-10-26; juniper-ml#2369). `util/experiments/run_suite.py`'s
   `_headline_metrics` read `final_accuracy` / `test_accuracy` / `val_accuracy` off the TOP of `stats["cascor"]`, where
   `stats_summary.build_stats` never wrote anything, so every cascor cell recorded `metrics: {}` (0 of 439 cascor
   registry rows on the run corpus) and a W5.4 band on those names (juniper-ml#2262) read `absent` on every cascor cell.
@@ -1072,7 +1129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from task H3's `macos-host-sme` report). Neither changes a verdict.
   - `util/host_state_check.py`'s kubectl fix said only "task D4". Docker Desktop installs its own
     `/usr/local/bin/kubectl` (decision D7), and turing's v1.22.4 client is that link, so the fix now puts the
-    owner's Docker Desktop upgrade (task D3) first, then D4, which still needs re-planning under the D6 ruling
+    Overtoad's Docker Desktop upgrade (task D3) first, then D4, which still needs re-planning under the D6 ruling
     (erratum E-D6).
   - The memory message said "free + inactive", but the figure also adds vm_stat's speculative pages, as
     `util/macvm_ctl.bash` does (88 MiB of turing's 6161 MiB on 2026-10-27). It now reads "free + speculative +
@@ -1088,7 +1145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **`[servers]` installs what each server needs to run as a service** (juniper-ml#2062; option (a+), owner ruling 2026-10-25).
+- **`[servers]` installs what each server needs to run as a service** (juniper-ml#2062; option (a+), Overtoad ruling 2026-10-25).
   `[servers]` installed `juniper-canopy`, `juniper-cascor` and `juniper-data` bare, but canopy declares both clients and
   cascor its data client only as extras. So the three services started and failed at their first cross-service call:
   canopy's service mode on `ModuleNotFoundError: No module named 'juniper_cascor_client'`, and cascor's dataset fetch on
@@ -1128,7 +1185,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cap 64, the R-6 gate's wide-cap threshold, but took its only budget from juniper-cascor's `spiral-baseline.yaml`,
   whose 3600 s equals the driver's `DEFAULT_MAX_WALL_SECONDS`. `WallBudgetContractTest` therefore failed it
   wherever the sibling base resolved, and CI, which never resolves it, filed the suite `undecidable`.
-  - The suite sets `execution.max_wall_seconds: 5400` (owner ruling 2026-10-26, the issue's option 1). `run_suite`
+  - The suite sets `execution.max_wall_seconds: 5400` (Overtoad ruling 2026-10-26, the issue's option 1). `run_suite`
     forwards it as `--max-wall-seconds`, so the eight cells keep their ids and `config_sha256`. The worst-case
     driver budget goes from 4050 s to 5850 s, still under `per_run_timeout_seconds: 7200`, and
     `util/ad-hoc/2026-10-25_driver_budget_survey.py` reports every suite OK.
@@ -1142,16 +1199,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Tier 3: the monthly full set to the offline drive, as a scheduled lane** (owner ruling D-5, 2026-10-25, on §7.9
+- **Tier 3: the monthly full set to the offline drive, as a scheduled lane** (Overtoad ruling D-5, 2026-10-25, on §7.9
   and §8 P3 step 3 of `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`).
   - **The units** (new): `util/systemd/juniper-backup-full.{timer,path,service}` and
     `util/systemd/juniper-backup-full-failure.service`. The service runs tier 2's scheduler and runner with the lane's
     own environment: state directory `~/.local/state/juniper-backup-full`, drive
-    `dee46823-4119-4914-ac15-08194ee27d81` ("Ext WD Passport, Blackbox Part 1" in the owner's `/etc/fstab`, mounted at
+    `dee46823-4119-4914-ac15-08194ee27d81` ("Ext WD Passport, Blackbox Part 1" in the Overtoad's `/etc/fstab`, mounted at
     `/run/media/<user>/<UUID>`), directory `Juniper/Backups`, a 30-day period and a 45-day staleness limit. Its
     `--label full --repos "…"` names the ten application repos, `juniper-legacy` and the parent-level
     `notes prompts util backups`, and the scheduler hands both to the runner unchanged. The timer fires monthly and
-    the path unit on connection. The owner's fstab deprecates `/mnt/JuniperArchive`, so the path that §7.9 of
+    the path unit on connection. The Overtoad's fstab deprecates `/mnt/JuniperArchive`, so the path that §7.9 of
     `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md` proposed
     is superseded, and that section gains a dated as-built note. Retention stays manual: nothing prunes.
   - **`JUNIPER_BACKUP_DIR` may be a path.** `util/juniper-backup.bash` 1.1.0 accepts a relative path of
@@ -1192,13 +1249,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **G-SEC's firewall condition follows C2's block-all form** (turing bring-up task C2, the §18.2 C2 row of
-  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-25).
-  The owner chose to block all incoming connections while nothing inbound is needed, over per-app inbound
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; Overtoad ruling 2026-10-25).
+  The Overtoad chose to block all incoming connections while nothing inbound is needed, over per-app inbound
   denies (RR-11 of `notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md`).
   The condition passed at `State = 1`, and its fix still said "allowing signed software".
   - `util/host_state_probe.bash` also captures `socketfilterfw --getblockall` (`blockall` in the security section).
   - `util/host_state_check.py` passes the firewall only when it is on and `--getblockall` reports block all. It
-    accepts both block-all sentences in the binary's strings, since turning block all on needs the owner's sudo.
+    accepts both block-all sentences in the binary's strings, since turning block all on needs the Overtoad's sudo.
     An unknown or undefined state, or a probe without the capture, cannot be judged (exit 2 under `--check`),
     unless the firewall is off, which fails anyway. The fix names only the missing `socketfilterfw` steps.
     Stealth mode stays reported, not gated, as G1 designed it.
@@ -1209,7 +1266,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     off (`State = 0`), as it was on 2026-10-15.
 
 - **H4's Serena entry turns Serena's usage report off** (turing bring-up, erratum E-H6 of
-  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-25).
+  `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`; Overtoad ruling 2026-10-25).
   Serena v1.7.0 sends the OS, the dashboard flag, the version, the backend and the context name to
   `oraios-software.de` at every start unless `SERENA_USAGE_REPORTING` is exactly `false`
   (`src/serena/agent.py:724-737` at `949a27ef`; SER-E1 of `notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md`).
@@ -1245,7 +1302,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-- **`juniper-secret-assignment` fires on a QUOTED value that contains spaces** (owner-approved 2026-10-25; a
+- **`juniper-secret-assignment` fires on a QUOTED value that contains spaces** (Overtoad-approved 2026-10-25; a
   follow-up to the backup recovery B9 rule of juniper-ml#2203). A value opened by `"` or `'` right after the `=`
   stopped at its first space, so a quoted diceware phrase left only its first word, which is under the
   12-character minimum, and never fired.
@@ -1292,7 +1349,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `util/ad-hoc/2026-10-26_erratum_0_11_x_security_floor_probe.py`.
   - The extras tables in `README.md` (both), `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with
     the pins. The `0.11.x` row of `docs/REFERENCE.md`'s compatibility matrix moves with the release that carries
-    this, which is the owner's cut. Applied by `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py`, which asserts each site's exact text and requires exactly
+    this, which is the Overtoad's cut. Applied by `util/ad-hoc/2026-10-25_raise_servers_floors_cascor_0_12_0_data_0_17_1.py`, which asserts each site's exact text and requires exactly
     one match apiece.
   - **Pre-flighted against real PyPI** on 2026-10-25 with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`, which resolves Linux x86_64 wheels and
     installs nothing. `[servers]` resolves in 61 packages and `[all]` in 95, on Python 3.12, 3.13 and 3.14, with
@@ -1305,7 +1362,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   registration either, and a registered server runs a command the guard never sees.
   - `util/claude_agent_guard.py` 1.2.0 adds three rules:
     - `MCP-EDIT-PATH` judges Serena v1.7.0's 19 edit tools. A path argument, resolved against the project roots literally
-      and through `realpath`, may not reach `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the owner's git
+      and through `realpath`, may not reach `.git/`, `.ssh` or `.gnupg`, Claude's settings or hooks, the Overtoad's git
       configuration, `~/.claude.json` or a `.mcp.json`. `replace_in_files`' include glob and `repl` are judged too, and
       Serena's `execute_shell_command` gets the Bash rules.
     - `MCP-REGISTER-BASH` denies `mcp add`, `add-json` and `add-from-claude-desktop` after any command word, `--mcp-config`,
@@ -1319,7 +1376,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (8 denied), every Serena edit tool, 32 path cases, 20 `replace_in_files` cases and 7 shell cases. The self-test runs
     50 checks.
   - `util/ad-hoc/2026-10-25_turing_c9_guard_mutation_check.py` kills 26 of 26 mutants, each by its own pin test.
-  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install it.
+  - The Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install it.
 
 ## [0.11.1] - 2026-10-25
 
@@ -1383,8 +1440,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **The agent guard protects the owner's signing configuration (K12)** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, S9). With the YubiKey stubs
-  learned, an agent that could rewrite the owner's signing configuration could obtain the owner's signature. It could
+- **The agent guard protects the Overtoad's signing configuration (K12)** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, S9). With the YubiKey stubs
+  learned, an agent that could rewrite the Overtoad's signing configuration could obtain the Overtoad's signature. It could
   point `gpg.program` or `core.hooksPath` at its own program, plant a repository-local key that outranks the include,
   drop a `post-commit` hook inside a cached-touch window, or re-enable signing past D11 with `git -c include.path=` or
   `--config-env`.
@@ -1396,12 +1453,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tests/test_claude_agent_guard.py` pins 63 Bash cases (42 denied, 21 allowed) and 18 file cases (10 denied, 8
     allowed), and the self-test runs 40 checks.
   - `util/ad-hoc/2026-10-20_k12_guard_mutation_check.py` kills 18 of 18 mutants, each by its own pin test.
-  - The owner re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install
+  - The Overtoad re-runs `bash util/install_claude_agent_guard.bash --apply` (task C8) from an up-to-date `main` to install
     the new copy. No YubiKey goes into turing until then: the first `gpg --card-status` writes the card stubs (plan §1).
 
 - **Commit signing for the terminal and the IDEs** (`notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md`, VALIDATED after two consensus rounds; it extends arc B of
   `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md`).
-  - **What the tool does.** `util/configure_commit_signing.py` installs and verifies the owner's signing for every checkout under
+  - **What the tool does.** `util/configure_commit_signing.py` installs and verifies the Overtoad's signing for every checkout under
     `~/Development/python/Juniper/` with one `includeIf "gitdir/i:~/Development/python/Juniper/"`, which points at
     `~/.config/git/juniper-signing.gitconfig`. That file holds yamaguchi's values: `user.signingkey` pinned to the full
     fingerprint with `!`, `commit.gpgsign` and `tag.gpgsign`, plus an absolute `gpg.program` in a known GnuPG install.
@@ -1417,7 +1474,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **The other modes.** `--remove` undoes `--apply` exactly.
   - **Tests and evidence.** `tests/test_configure_commit_signing.py` pins R-S1..R-S19, and `util/ad-hoc/2026-10-19_commit_signing_mutation_check.py` kills 50 of 50 mutants.
   - **Doc changes.** `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` gains §19 (v1.4.0). The AGENTS.md unsigned-commit hazard gains the IDE-agent rule.
-  - **Applied on turing (2026-10-20).** An owner commit in the tree now fails closed until the owner imports the public
+  - **Applied on turing (2026-10-20).** An Overtoad commit in the tree now fails closed until the Overtoad imports the public
     key and learns the card stubs (bring-up B2/B3). The first `gpg --card-status` writes the stubs, so no card goes into
     turing until the agent guard (C8) is installed, the guard rules (K12) are merged and re-installed, and the IDE-agent
     approval rules (K13) are in place. The touch policy (S11) is set at that first insertion.
@@ -1505,7 +1562,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     summary line counts `flagged` cells when there are any; `--dry-run` prints each banded cell's bands;
     `suite_manifest.json` records them.
   - **The R5 band**, on `util/experiments/suites/p4/e-h-recurrence-real-data.yaml`'s equities row only:
-    `cv_r2 ∈ [-1.0, +0.5]` and `cv_r2_std ≤ 0.5`, both `gate` (the owner accepted the W5.1 note's amended
+    `cv_r2 ∈ [-1.0, +0.5]` and `cv_r2_std ≤ 0.5`, both `gate` (the Overtoad accepted the W5.1 note's amended
     recommendation on 2026-10-18). Row-scoped because the irregular-sine control's `cv_r2 0.975` would fail
     `+0.5` under a suite-level band. Re-measured on W5.2's trainval population on 2026-10-19 before encoding
     (1,522 windows, five expanding folds, embargo = look-back 64): the bare 0.7.0 default scores `-0.298` /
@@ -1541,7 +1598,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the curses build until B1), the agent socket and `no-allow-external-cache`. It lists every failure and
     exits 0 / 1 / 2. The D11 override fails as "signing disabled by construction". The card checks of the
     original design (`notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md`)
-    stay owner-run.
+    stay Overtoad-run.
   - `tests/test_headless_signing_preflight.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
   - `util/ad-hoc/2026-10-17_turing_b7_mutation_check.py` (new) shows that the suite kills 18 of 18 mutants.
 
@@ -1624,7 +1681,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   option (a), would break agent `git fetch` and push over ssh.
   - `util/claude_agent_guard.py` (new) is a PreToolUse hook with 15 rules. It only denies, never allows, and it
     fails closed.
-  - `util/install_claude_agent_guard.bash` (new, owner-run) installs a checksummed copy, self-tests it, and prints
+  - `util/install_claude_agent_guard.bash` (new, Overtoad-run) installs a checksummed copy, self-tests it, and prints
     or merges the settings entry plus 8 `permissions.deny` rules.
   - `tests/test_claude_agent_guard.py` (new) is wired into `ci.yml` and `docs/REFERENCE.md`.
   - `util/ad-hoc/2026-10-17_turing_c8_guard_mutation_check.py` (new) shows that the suite kills 18 of 18 mutants.
@@ -1688,7 +1745,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New: `util/ad-hoc/2026-10-10_gitleaks_probe.py`, `…_gitleaks_finding_inspect.py`,
     `…_gitleaks_rule_mutation_check.py` and `…_secret_assignment_corpus_survey.py`. These are the
     measurements behind the change; none of them prints a value.
-  - Owner action, not done here: enable `secret_scanning_non_provider_patterns` on the repository.
+  - The Overtoad action, not done here: enable `secret_scanning_non_provider_patterns` on the repository.
 
 - **`util/ad-hoc/2026-10-08_run_ci_regression_suites.py`, and the flood-3 record's follow-up
   statuses.**
@@ -1696,7 +1753,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     CI does. A repo-wide lint suite judges files a change never touched, so "the suites I edited
     pass" is not the question CI asks.
   - `notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md` now records the
-    owner-requested follow-up:
+    Overtoad-requested follow-up:
     - three `ANTHROPIC_API_KEY` secrets added;
     - the five §4 defects fixed, across nine repos;
     - the data-client `t` / `dt` check accepted as written;
@@ -1711,7 +1768,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   disposed of on 2026-10-08: 25 merged as themselves, 78 carried into six consolidation PRs (ml#2182,
   ml#2184, data#475, canopy#729, cascor#709, data-client#230), 10 superseded and 3 closed as
   incorrect. The record holds a per-PR table rendered from the verdicts and each PR's live state, the
-  defects the evaluation found on `main` (three are owner decisions: an `ANTHROPIC_API_KEY` secret in
+  defects the evaluation found on `main` (three are Overtoad decisions: an `ANTHROPIC_API_KEY` secret in
   three client repos, the data-client `t` / `dt` tolerance, and releases that would ship the
   non-ASCII-key and Sentry frame-locals fixes), and the process traps hit. The tooling: the census,
   the signed one-commit re-cut, the gated close, the renderer, post-merge blob verification, and the
@@ -1760,7 +1817,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`util/release_train/ceremony.py`). By default the Release tags the owning repo's `main` as it is
   at cut time, while the notes come from the `--ecosystem-root` checkout. The two agree only if
   nothing merged in between, and on 2026-09-23/24 three juniper-data PRs did: #428, #431 and #434,
-  between the owner's approval of the 0.16.0 notes (pinned at `7125e161`) and the cut. #428 left a
+  between the Overtoad's approval of the 0.16.0 notes (pinned at `7125e161`) and the cut. #428 left a
   duplicate `## [0.16.0]` heading on `main`, and the section parser takes the first match, so a cut
   of `main` would have published only #428's bullets. With a full 40-character sha, the tag lands on
   that commit (`gh release create --target`). The S8 precondition then reads **every** completed CI
@@ -1777,7 +1834,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md`.
 - **The publish-environment drift gate covers the `dockerhub` environments**
   (`tests/test_publish_env_policy_drift.py`). Wave 4's Docker Hub credential will live in a
-  tags-only `dockerhub` environment in the five image repos (Option B, owner ruling 2026-09-22), and
+  tags-only `dockerhub` environment in the five image repos (Option B, Overtoad ruling 2026-09-22), and
   nothing watched those settings. The gate now checks each one against its own tag set, `v*` and
   `juniper-*-v*`, where `pypi` has six. It also checks that no `DOCKERHUB_*` secret or variable sits
   at repository scope, where every workflow on every ref could read it. That check reads names only:
@@ -1810,7 +1867,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     in an env with torch.
 - **PF-2 axis 3, built and RUN** (`util/experiments/suites/perf/pf2-axis3-cascor-spiral-count.yaml`
   and `util/ad-hoc/2026-09-23_pf2_axis3_reduce.py`, both new; PF-2 re-spec §4.2).
-  - Owner decision D4 ruled this axis in, and it was dropped from two successive handoff work
+  - The Overtoad decision D4 ruled this axis in, and it was dropped from two successive handoff work
     lists.
   - Test roc_auc is 0.961 / 0.834 / 0.672 / 0.746 for 2 / 3 / 4 / 5 spirals. The three passes are
     bit-identical, which shows the observable is load-insensitive. It is one seed, so 5 scoring
@@ -1859,7 +1916,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     deleted the installed unit, because a dpkg vendor unit exists under `/usr/lib/systemd/system/`. The
     re-key now removes its drop-in with `rm` and `daemon-reload`, then asserts which unit systemd loads.
   - **Rounds 3 to 7, folded in.** The procedure changes:
-    - **Retention (owner ruling, 2026-10-08).** Retention is suspended through recovery, in the job and in the
+    - **Retention (Overtoad ruling, 2026-10-08).** Retention is suspended through recovery, in the job and in the
       server's default options. It is restored as `2W:1D,6M:1W,2Y:1M,5Y:2M` only after AC-4's first drill
       passes, and the five dlists that first pass deletes are copied aside first.
     - **The start-up sequence.** Step 8 stores `paused-until=0` while no server runs. Step 10 ends with a
@@ -1949,8 +2006,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   still the service's 0. `tests/test_run_experiment.py` pins the omission.
 
 - **`[recurrence]` now floors `juniper-recurrence>=0.6.1`**, the release that carries the recurrence floors ruling
-  (M1 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; owner ruling 2026-10-18 UTC). The floor was `>=0.6.0`.
-  - **Why 0.6.0 was not enough.** 0.6.0 shipped without the owner's 2026-10-10 floors ruling: it still
+  (M1 of `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`; Overtoad ruling 2026-10-18 UTC). The floor was `>=0.6.0`.
+  - **Why 0.6.0 was not enough.** 0.6.0 shipped without the Overtoad's 2026-10-10 floors ruling: it still
     admitted `juniper-recurrence-model>=0.3.0` and `juniper-data-client>=0.4.2`. Over a 0.5.0
     environment, `pip install -U juniper-recurrence` kept model 0.3.0 and data-client 0.5.0,
     `pip check` was clean, and the service started without the W1.4 rules (`float32`, finite `dt`,
@@ -1970,7 +2027,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`util/isolated_stack.bash` hands the `--with-recurrence` leg `JUNIPER_RECURRENCE_SNAPSHOTS_DIR=${RUN_DIR}/snapshots`
   and creates that directory before `serve`** (item 2c of
-  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, owner
+  `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`, Overtoad
   ruling 2026-10-18: the name is W1.10's, which `util/experiment_stack.bash` already ships; canopy Lane B
   adopts it in juniper-canopy#751). Unexported, the service wrote a CWD-relative `recurrence-snapshots/`
   (F-D9). `tests/test_isolated_stack_script.py` pins the variable and the directory.
@@ -1982,7 +2039,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   escaped: model 0.4.0 was published on 2026-10-13, and recurrence 0.6.0 and canopy 0.9.0 on
   2026-10-17.
   - **The two ceilings rise to the next minor**: `<0.5.0` for the model, `<0.7.0` for the app.
-  - **Two floors rise, each to a security release** (owner ruling, 2026-10-18 UTC).
+  - **Two floors rise, each to a security release** (Overtoad ruling, 2026-10-18 UTC).
     - `juniper-canopy>=0.9.0`, up from `>=0.8.1`. 0.9.0 is rated High. It refuses an outbound key
       with padding, a line break or a non-ASCII character where the key is read. It keeps a
       padded `CANOPY_API_KEY` out of the logs and Sentry, compares every API key without
@@ -2015,7 +2072,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   juniper-data releases that serve `equities_seq` as `classification`** (W1.11 and F-P4 of
   `notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`). Every published juniper-data up to 0.16.0 serves `equities_seq` with
   `task_type: classification` and `n_classes: 2`, and the two the old `>=0.15.0` floor admitted,
-  0.15.0 and 0.16.0, serve it at generator `5.0.0` (0.14.0 was `3.0.0`). juniper-data#437 (owner ruling X8)
+  0.15.0 and 0.16.0, serve it at generator `5.0.0` (0.14.0 was `3.0.0`). juniper-data#437 (Overtoad ruling X8)
   relabelled it `regression` at `6.0.0` after v0.16.0 was cut, and 0.17.0 is the release that
   carries it. The arrays did not change, and a recurrence fit reads `y_reg_*` under either
   version. What changed is the producer's stored metadata, and with it the `dataset_id`, which
@@ -2038,7 +2095,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by `util/ad-hoc/2026-10-08_raise_data_floor_0_17_0.py`, which asserts each site's exact text
   and requires exactly one match apiece.
 
-- **PF-2 axis 2 is RUN, with no knee, so the owner's in-process follow-up does not fire**
+- **PF-2 axis 2 is RUN, with no knee, so the Overtoad's in-process follow-up does not fire**
   (`notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` §3 RESULT; the
   `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml` header;
   `util/experiments/suites/perf/README.md`; `util/ad-hoc/2026-09-23_pf2_axis2_reduce.py`, new).
@@ -2048,7 +2105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sizes. The D4 ruling sends the top end in-process only on a knee, so it stays on the suite path.
   This holds at `spiral-smoke`'s budgets only. `step_count` is 8 in every cell because the
   budget fixes it, and it is never compared.
-- **Perf lane, 2026-09-23/24: the D6 count, three owner rulings, PF-2 axis 1 blocked, and the
+- **Perf lane, 2026-09-23/24: the D6 count, three Overtoad rulings, PF-2 axis 1 blocked, and the
   Python 3.14 micro reference**
   (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md` §5.4 and
   new §6; `notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md` §1, §2,
@@ -2058,7 +2115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     blocking. A throwaway `workflow_dispatch` branch with the reference drifted fired on 4 of 4
     legs, and all 4 still passed, so the zero is not vacuous. CI's CPU-only torch 2.14.0 observed
     the same 68 as the torch 2.11.0+cu130 reference.
-  - **Owner rulings (§6).** PF-3 waits for a quiet window. It opened at 02:39 and closed within
+  - **The Overtoad rulings (§6).** PF-3 waits for a quiet window. It opened at 02:39 and closed within
     minutes, so PF-3 was not launched. The micro cut went ahead LOADED:
     `Linux-CPython-3.14-64bit/0001`, cascor `0e016a7`, 1-minute load 5.5–6.6. PF-2 axis 1's
     count will be published from cascor.
@@ -2137,7 +2194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `create_branch` when the encoded archive exceeds 125,000 B. That default is the figure measured from turing
   for the GraphQL request body, which is not yet established as GitHub's own limit rather than that host's
   weak link (re-diagnosed 2026-10-18: GitHub's GraphQL frontend drops a request that runs past about 7-10 s);
-  `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides it after a runner-side measurement (owner ruling
+  `JUNIPER_RELEASE_TRAIN_ARCHIVE_B64_MAX` overrides it after a runner-side measurement (Overtoad ruling
   2026-10-18). The HALT names the condenser as the remedy, never an invented body.
   `tests/test_release_train_ceremony.py` pins the file transport, the HALT, the env override, that re-entry
   is not blocked by the cap, and the `OSError` mapping; the release-train operator runbook §4 and
@@ -2230,7 +2287,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **The outcome is derived from those records, never from `acceptance.ok`.** Acceptance also
     collects plot errors and, once W5.4 lands, metric-band failures, so a plot that cannot render
     still leaves the run `succeeded` (exit 1). A degraded run exits `EXIT_ACCEPTANCE` (1): the plan's
-    recommended ruling R6, applied pending the owner's. The cascor path is unchanged: it has no
+    recommended ruling R6, applied pending the Overtoad's. The cascor path is unchanged: it has no
     predict / crossval / save_model phases, and its optional `snapshot_at_end` is a non-essential
     collect step that does not fail acceptance.
   - **The suite.** `degraded` joins `TERMINAL_OUTCOMES`; the summary line reads
@@ -2404,7 +2461,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   so a quoted `"true"` reads false. Tests pin the whole chain, from the entry to the plan, the
   `cut_release` action, `create_release`'s kwarg and the gh argv, plus exactly one flagged package
   per repo. Five mutations, one per link and one on the registry data, each fail the new tests. The
-  six badges were moved by hand the same day, on the owner's approval. That fires nothing, because
+  six badges were moved by hand the same day, on the Overtoad's approval. That fires nothing, because
   all 24 release-triggered workflows in the nine repos subscribe to `published` only
   (`util/ad-hoc/2026-09-23_release_trigger_types_census.py`, new). The procedure's §11.7 records it.
 - **Release notes: "Breaking changes" missed three registered house styles, and both section
@@ -2442,7 +2499,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unused `import statistics`, which CodeQL flagged and which blocked the merge. It is kept
   because it is the provenance of the retained
   `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json`. Under the
-  ad-hoc retention policy (`util/ad-hoc/README.md`) retirement is owner-directed only, so
+  ad-hoc retention policy (`util/ad-hoc/README.md`) retirement is Overtoad-directed only, so
   committing was the only move open to a session. The note is verbatim under a banner. The
   banner names `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md` as
   the record, and says the older instrument reads `torch.get_num_threads()` and has no ICV
@@ -2463,12 +2520,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   signature verified, parent == pin, blob shas, deletions gone). It reuses `open_signed_pr`'s helpers
   and carries no copy of the mutation. Hermetic suite `tests/test_push_signed_commit.py` (its `gh` stub enforces
   `expectedHeadOid` like GitHub), wired into `ci.yml`; `docs/REFERENCE.md` documents both. The
-  ad-hoc drivers are **retained** as provenance (owner policy 2026-08-25) with a "Superseded" header
-  line each; retiring them is an owner decision.
+  ad-hoc drivers are **retained** as provenance (Overtoad policy 2026-08-25) with a "Superseded" header
+  line each; retiring them is an Overtoad decision.
 
 - **PF-2 axis 2 is built, and the suite path's real ceiling is 5,882 points per spiral, not the
   10,000 it was ruled on** (`util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`,
-  new). The owner ruled D4's axis-2 range on 2026-09-22 as "10,000 now, in-process later". Running
+  new). The Overtoad ruled D4's axis-2 range on 2026-09-22 as "10,000 now, in-process later". Running
   the top cell found the ceiling is lower: juniper-data's additive sizing treats
   `n_points_per_spiral` as the TRAIN count and adds val and test on top, 1.7x at the suite's split,
   and `MAX_POINTS` (10,000) bounds that inflated TOTAL. A request of 10,000 becomes an internal
@@ -2486,7 +2543,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **D1's epoch-count debt is paid: a BLAS cap of 2 leaves every count, and every bit, where the
   old default put it** (`notes/JUNIPER_2026-09-23_JUNIPER-ECOSYSTEM_PERF-LANE-D1-EPOCH-COUNT-DEBT.md`,
   `util/ad-hoc/2026-09-23_d1_epoch_count_sweep.py`, `util/ad-hoc/2026-09-23_d1_epoch_debt_reduce.py`,
-  all new). The owner ruled D1 on 2026-09-23 as "pay the debt, then flip": change cascor's
+  all new). The Overtoad ruled D1 on 2026-09-23 as "pay the debt, then flip": change cascor's
   `configure_blas_threads()` default from "do nothing" to 2 only if the cap does not move the epoch
   count. The 09-16 width sweep emitted stage counts rather than epoch counts. Every structural
   count it had was also pinned to its budget: 4 of 4 hidden units in all 39 arms, and an output
@@ -2505,7 +2562,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   capped threads ran 16-wide and a matrix that *varied* the key measured one configuration N
   times. `eval_metrics_enabled` was the worst of the three because the schema *herds* authors
   into it: `service:` rejects it with *"belongs in `runtime:` (process env)"*. Implemented via
-  the environment route the owner ruled for, resolved **before the first `--up`** so a bad
+  the environment route the Overtoad ruled for, resolved **before the first `--up`** so a bad
   value refuses the suite rather than one cell. A width the **suite names** beats the H-11
   parallel budget (this is what makes PF-3's axis expressible); a width merely **inherited**
   from a base config does not, so no parallel run can silently oversubscribe itself.
@@ -2534,7 +2591,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   request w1→1 … w16→16), so this is a real invariance and not an inert axis. **The historical
   `52` is therefore an observation of unknown provenance, not evidence of instability** — the
   leading suspect is a different tree, which this measurement cannot separate.
-  Whether to *build* the exact-match gate remains the owner's call: only 2 of the 4 cells would
+  Whether to *build* the exact-match gate remains the Overtoad's call: only 2 of the 4 cells would
   be real assertions (at budgets 10 and 50 the count equals the request), and the gate's
   reference is tree-sensitive by construction.
 
@@ -2547,7 +2604,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the `/tmp` one: **`util/ad-hoc/` placement protects work from `/tmp` reaping, not from never
   being committed**, and to `git`, to CI and to the next session an uncommitted file in a
   sibling worktree is indistinguishable from one that does not exist. That worktree is locked;
-  the lock is currently the only thing preserving it. **Owner action**: commit those two files,
+  the lock is currently the only thing preserving it. **The Overtoad action**: commit those two files,
   or retire them in favour of this one. Also recorded, because the shape recurs: this session's
   searches used `d6-epochs-spread` / `epochs_spread`, patterns taken from the *evidence
   directory's* name, and the instrument is `epochs_completed_spread` — neither is a substring.
@@ -2558,7 +2615,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BREAKING (resolution): `[servers]` now floors `juniper-data>=0.15.0`, because 0.14.0 still serves the
   `equities` generators at the contract 0.15.0 replaced.** Read from the published wheels, not a
   checkout: 0.14.0 ships `equities` and `equities_seq` at `VERSION = "3.0.0"`, 0.15.0 at `"5.0.0"`.
-  The two majors between them are the owner rulings of juniper-data#395 -- `adj_close` leaves the
+  The two majors between them are the Overtoad rulings of juniper-data#395 -- `adj_close` leaves the
   default feature matrix because `close / adj_close` encodes dividends paid *after* each row, and
   the SEC share history becomes an as-of join on the FILED date, so a restated period no longer
   rewrites when a value became knowable -- and the regression fix of juniper-data#404. PyPI never
@@ -2579,7 +2636,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   site's exact text, requires exactly one match apiece, and refuses to open this section unless
   `[Unreleased]` is empty.
 
-- **Owner rulings recorded for the four `Not decided:` clauses of D1, D2, D4 and D6**
+- **The Overtoad rulings recorded for the four `Not decided:` clauses of D1, D2, D4 and D6**
   (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`, new §5 plus
   a pointer under each clause). D2: `blas_threads` / `num_processes` / `eval_metrics_enabled`
   ratified as-is, with no second knob. D4 axis 2: 10,000 now, in-process later (the suite path's
@@ -2846,9 +2903,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   that tree. New: `util/ad-hoc/2026-09-15_conda_env_tree_diff.py`, which separates *absent* from
   *user-site-only* — a distinction its own first run got wrong by reporting three importable
   packages as missing. `Juniper/AGENTS.md` records the version drift and all three traps.
-- **Perf lane — the six open owner decisions are RULED, and the two that needed no host time are
+- **Perf lane — the six open Overtoad decisions are RULED, and the two that needed no host time are
   executed** (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`).
-  Decisions that had accumulated across the P2 plan and four handoffs, put to the owner and ruled
+  Decisions that had accumulated across the P2 plan and four handoffs, put to the Overtoad and ruled
   in one sitting; the note records each ruling, the gate before it lands, and what it does **not**
   decide. One correction reframed two of them: cascor#531's candidate-phase penalty is **1.52×**
   (a 52% slowdown), not 1.52%, and **both of its channels shrink as the budget rises**
@@ -2910,7 +2967,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   8 with it), so the occupancy note's §4.2 proposed discriminator would have destroyed the
   measurement it was meant to take; that section now carries the warning. Consequence for the open
   cascor thread-pin decision: the defect's **extent** is bounded to the initial output pass only,
-  not a whole-run 16-wide regime. No owner decision is taken or re-opened. New under `util/ad-hoc/`:
+  not a whole-run 16-wide regime. No Overtoad decision is taken or re-opened. New under `util/ad-hoc/`:
   `2026-09-11_omp_icv_checkpoint_probe.py` (the instrument) and `2026-09-11_icv_trace_align.py`
   (the reducer, which scores the two claims separately); new
   `tests/test_pf8_icv_checkpoint_probe.py` (18 tests) wired into `.github/workflows/ci.yml`,
@@ -2939,7 +2996,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   throughout — it reports the library global, not the width in force on the working thread.
   Consequence: exporting `JUNIPER_CASCOR_BLAS_THREADS` from `runtime.blas_threads` would **mask**
   this defect rather than repair it, so "implement the `runtime:` block" is not the whole fix; the
-  narrower repair is a cascor change and remains an owner decision. Two residuals are named rather
+  narrower repair is a cascor change and remains an Overtoad decision. Two residuals are named rather
   than papered over: what ends the burst after the initial pass (measured in both the listener and
   one process — 16 `_retrain_output_layer` calls produce exactly one ≥10-thread block — and *not*
   explained by the mechanism above, which predicted the opposite), and the exact PyTorch path that
@@ -2965,7 +3022,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   day's within-arm spread; advisory, as item 4.3 said. The burst is removed by the three BLAS
   variables, which `torch.set_num_threads` does not reach and which the YAML's
   `runtime.blas_threads` never sets: the block is validated by the driver, accepted by the service,
-  and read by nothing on either path — an owner decision (implement or retire), not a fix — and
+  and read by nothing on either path — an Overtoad decision (implement or retire), not a fix — and
   **PF-3's `runtime.num_processes` matrix axis is therefore inert** (P2 item 2.2 blocked). Which
   library carries the burst is narrowed (NumPy's OpenBLAS pool the leading candidate), not
   identified. *(Superseded the same day by the entry above: it is libgomp under `libtorch_cpu`,
@@ -3045,7 +3102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ever run** — it is authored by `app/github-actions`, and GitHub does not let `GITHUB_TOKEN`
     PRs trigger workflows. A vacuous green on a *write* path is how untested code merges.
   - **Sweep refuses any repo whose `allow_auto_merge` is false**, where `--auto` silently degrades
-    to an immediate merge that, under the owner's ruleset bypass, can land unfinished checks.
+    to an immediate merge that, under the Overtoad's ruleset bypass, can land unfinished checks.
   - **Converge exists only because `strict_required_status_checks_policy: true` is paired with
     `allow_update_branch: false`** on all 9 repos. GitHub's auto-merge cannot clear `BEHIND`, and
     every sibling merge causes it, so 10 of 17 armed PRs stalled indefinitely. Converge issues the
@@ -3157,7 +3214,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Release-train ceremony (`util/release_train/ceremony.py`) — the exempt notes-archive PR's commit is now GitHub-signed (created through the GitHub API), so the exempt PR auto-merges hands-free.** The archive lane no longer branches/commits/pushes with runner-side git; instead `open_archive_pr` creates `refs/heads/release-notes/<pkg>-v<ver>` via a REST `POST /repos/pcalnon/juniper-ml/git/refs` (`create_branch`) and adds the single archive file via the GraphQL `createCommitOnBranch` mutation (`create_signed_commit`; single-file addition, `expectedHeadOid` for optimistic concurrency, base64 content). A commit made through GitHub's API under the App / `GITHUB_TOKEN` identity is **GitHub-signed and Verified**, so the exempt archive PR satisfies the juniper-ml ruleset's `required_signatures` rule and **auto-merges with zero clicks** — a plain unsigned runner-side commit previously left an all-green archive PR BLOCKED behind that rule (2026-07-23 run 30051952226 / ml#707, resolved only by the owner's admin one-click); owner one-click is now only the degraded/manual fallback, with **no security-posture change** (the PyPI deploy still waits at the owner-gated `pypi` environment, Gate 2). The R7 seam keeps `api` forbidden for the general surface and sanctions **exactly** those two calls, each bound to the 8 publishing repos: `_assert_gh_allowed` dispatches an `api` argv to the new `_assert_api_allowed`, which accepts only a `repos/<owner>/<repo>/git/refs` POST creating a `refs/heads/*` ref, or an `api graphql` body containing `createCommitOnBranch` with `repoWithOwner` bound, and rejects any other path/mutation/repo (a stray `gh api environments/…` still raises `SeamViolation`). The archive is always in juniper-ml (plan §10.2), where both token modes hold `contents: write`, so the API path is unconditional (no local-git fallback). Because the API path never switches the operator's checkout, the (unreleased) 2026-07-19 branch capture/restore rough-edge fix is removed as moot — git is now used only for READS in the archive lane (freshen `origin/main`, resolve the base sha, inspect an existing branch for idempotent re-entry: reuse at base, reuse the single archive commit, or HALT on divergence). Hermetic coverage in `tests/test_release_train_ceremony.py` replaces the branch-restore tests with the signed-commit lane (the two api-call argv shapes, base64 content round-trip, `expectedHeadOid` threading, branch-exists re-entry reuse/re-commit/HALT, and the `_assert_api_allowed` positive/negative carve-out); `--dry-run` stays byte-identical (`git status` clean). `.github/workflows/release-train.yml` is unchanged (the ceremony job already holds `contents: write` on juniper-ml); `propose.py` proposal PRs are owner-merged and unaffected (a possible future consistency follow-up). **No ceremony runs live in this change** — hermetic tests + `--dry-run` only; the live proof (an archive PR auto-merging with zero clicks) rides the next real ceremony dispatch.
+- **Release-train ceremony (`util/release_train/ceremony.py`) — the exempt notes-archive PR's commit is now GitHub-signed (created through the GitHub API), so the exempt PR auto-merges hands-free.** The archive lane no longer branches/commits/pushes with runner-side git; instead `open_archive_pr` creates `refs/heads/release-notes/<pkg>-v<ver>` via a REST `POST /repos/pcalnon/juniper-ml/git/refs` (`create_branch`) and adds the single archive file via the GraphQL `createCommitOnBranch` mutation (`create_signed_commit`; single-file addition, `expectedHeadOid` for optimistic concurrency, base64 content). A commit made through GitHub's API under the App / `GITHUB_TOKEN` identity is **GitHub-signed and Verified**, so the exempt archive PR satisfies the juniper-ml ruleset's `required_signatures` rule and **auto-merges with zero clicks** — a plain unsigned runner-side commit previously left an all-green archive PR BLOCKED behind that rule (2026-07-23 run 30051952226 / ml#707, resolved only by the Overtoad's admin one-click); Overtoad one-click is now only the degraded/manual fallback, with **no security-posture change** (the PyPI deploy still waits at the Overtoad-gated `pypi` environment, Gate 2). The R7 seam keeps `api` forbidden for the general surface and sanctions **exactly** those two calls, each bound to the 8 publishing repos: `_assert_gh_allowed` dispatches an `api` argv to the new `_assert_api_allowed`, which accepts only a `repos/<owner>/<repo>/git/refs` POST creating a `refs/heads/*` ref, or an `api graphql` body containing `createCommitOnBranch` with `repoWithOwner` bound, and rejects any other path/mutation/repo (a stray `gh api environments/…` still raises `SeamViolation`). The archive is always in juniper-ml (plan §10.2), where both token modes hold `contents: write`, so the API path is unconditional (no local-git fallback). Because the API path never switches the operator's checkout, the (unreleased) 2026-07-19 branch capture/restore rough-edge fix is removed as moot — git is now used only for READS in the archive lane (freshen `origin/main`, resolve the base sha, inspect an existing branch for idempotent re-entry: reuse at base, reuse the single archive commit, or HALT on divergence). Hermetic coverage in `tests/test_release_train_ceremony.py` replaces the branch-restore tests with the signed-commit lane (the two api-call argv shapes, base64 content round-trip, `expectedHeadOid` threading, branch-exists re-entry reuse/re-commit/HALT, and the `_assert_api_allowed` positive/negative carve-out); `--dry-run` stays byte-identical (`git status` clean). `.github/workflows/release-train.yml` is unchanged (the ceremony job already holds `contents: write` on juniper-ml); `propose.py` proposal PRs are Overtoad-merged and unaffected (a possible future consistency follow-up). **No ceremony runs live in this change** — hermetic tests + `--dry-run` only; the live proof (an archive PR auto-merging with zero clicks) rides the next real ceremony dispatch.
 - **Notes-migration ad-hoc scripts retired.** The four one-off migration scripts (`2026-07-04_notes_rename_{convention,refupdate,context_revert,sibling_links}.py`) moved to `util/ad-hoc/retired/` with a `_RETIRED-2026-07-06` suffix per the `util/ad-hoc/` lifecycle, now that every migration PR (juniper-ml#620/#626 + the 7 sibling link-fix PRs) is merged and verified. The old→new mapping TSV stays in place as the durable record; the convention doc's migration-record section points at the retired paths.
 - **Notes loose-ends cleanup (follow-up to the naming migration).** The 13 pre-existing stale citations in `notes/requirements/id_assignments.yaml` (and their echoes in the by-area/by-repo/by-status views) are repointed to the files' current homes — three juniper-ml docs long since archived to `notes/legacy/` (`CONVERGENCE_UI_FIX_PLAN`, `REMAINING_ISSUES_REMEDIATION_PLAN`, `DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN`) and one juniper-cascor doc that moved from `notes/history/` to `notes/pull_requests/` — taking the requirements drift checker to zero findings. The obsolete scratch file `notes/JUNIPER_2026-05-02_JUNIPER-CANOPY_TEMP.md` (ex-`temp.md`, flagged by the 2026-06-21 docs-reality audit) is deleted.
 - **`notes/` file naming convention adopted + 251 files renamed.** Every document in `notes/` (except the exempt `templates/`, `releases/`, `requirements/`, `legacy/` subdirectories and README files) now follows `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<CONTENTS-DESCRIPTION-PHRASE>.md`, where REPO is one of ML / CANOPY / RECURRENCE / CASCOR / CASCOR-CLIENT / CASCOR-WORKER / DATA / DATA-CLIENT / DEPLOY / ECOSYSTEM (ECOSYSTEM = cross-repo/platform-wide). Dates were taken from the old filename when present, else the file's last git-commit date. All ~7,000 in-repo references (markdown links, workflow comments, `id_assignments.yaml` citations, test/util docstrings) were rewritten in the same branch; the planner/auditor agents and the plan/audit/code-review prompt templates now emit the new name shape. Convention source of truth: `notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`; full old→new mapping: `util/ad-hoc/2026-07-04_notes_rename_map.tsv`.
@@ -3169,14 +3226,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Release-train Phase 4.3: full `off|report|propose|ceremony` mode switch + operator runbook + rollback (`release-train.yml`, `util/release_train/ceremony.py`).** Implements step 4.3 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§8 / §9.3-9.4 / §11 / §12 step 4.3). `ceremony` mode is now **wired** (it no longer degrades to `report`): a second write-scoped `ceremony` job — `needs: detect`, `if: needs.detect.outputs.mode == 'ceremony'`, identical `permissions: {contents: write, pull-requests: write}` + its own App-token mint step + sibling clones — runs `util/release_train/ceremony.py --execute --monitor-timeout 900` and renders a ceremony step summary (ceremonies / resume-monitors / HALTs / `PENDING_PYPI_APPROVAL`). Mode resolution accepts all four values (precedence: dispatch input > repo variable `RELEASE_TRAIN_MODE` > `report`); an unknown value warns and degrades to `report`; **`off` fully quiesces** (nothing runs beyond mode resolution). `ceremony.py` gains **graceful HALT-issue degradation** (`_file_halt_issue`): a failed `gh issue create/edit` during a HALT upsert — most plausibly the cross-repo App token lacking the Issues permission — degrades to a loud log line + a step-summary `halt_issue_failed` flag instead of crashing the run (a `SeamViolation` code bug still propagates; the R7 gh surface is unchanged), and `--execute` now emits one stable machine-parseable `ceremony-result:` line per package for the step summary. New operator runbook [`notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md`](notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md): the four modes + what each writes, mode-resolution precedence, the daily-cron / propose / ceremony cheat-sheet, the two owner gates, the §8 HALT catalog with responses, rollback procedures (`RELEASE_TRAIN_MODE=off`, deleting a bad Release/tag, closing a bad proposal, the immutable-index stance), and the App identity + R7 in operator terms (every claim cited to `file:line` / `§section`). `tests/test_release_train_workflow_guard.py` extends to pin both write jobs (perms, mode gates, mint-only App secret referenced exactly once per write job, off-quiescence) and **rehearses the actual workflow snippets** — the mode-resolution shell over the full matrix and the ceremony summary Python over a synthetic output — via the YAML-extraction pattern; `tests/test_release_train_ceremony.py` adds the HALT-issue-degradation unit + end-to-end coverage and the `ceremony-result:` output-format tests. **No cross-repo ceremony runs live in this change** — hermetic tests + `--dry-run` only; the owner triggers the pilot post-merge.
+- **Release-train Phase 4.3: full `off|report|propose|ceremony` mode switch + operator runbook + rollback (`release-train.yml`, `util/release_train/ceremony.py`).** Implements step 4.3 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§8 / §9.3-9.4 / §11 / §12 step 4.3). `ceremony` mode is now **wired** (it no longer degrades to `report`): a second write-scoped `ceremony` job — `needs: detect`, `if: needs.detect.outputs.mode == 'ceremony'`, identical `permissions: {contents: write, pull-requests: write}` + its own App-token mint step + sibling clones — runs `util/release_train/ceremony.py --execute --monitor-timeout 900` and renders a ceremony step summary (ceremonies / resume-monitors / HALTs / `PENDING_PYPI_APPROVAL`). Mode resolution accepts all four values (precedence: dispatch input > repo variable `RELEASE_TRAIN_MODE` > `report`); an unknown value warns and degrades to `report`; **`off` fully quiesces** (nothing runs beyond mode resolution). `ceremony.py` gains **graceful HALT-issue degradation** (`_file_halt_issue`): a failed `gh issue create/edit` during a HALT upsert — most plausibly the cross-repo App token lacking the Issues permission — degrades to a loud log line + a step-summary `halt_issue_failed` flag instead of crashing the run (a `SeamViolation` code bug still propagates; the R7 gh surface is unchanged), and `--execute` now emits one stable machine-parseable `ceremony-result:` line per package for the step summary. New operator runbook [`notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md`](notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md): the four modes + what each writes, mode-resolution precedence, the daily-cron / propose / ceremony cheat-sheet, the two Overtoad gates, the §8 HALT catalog with responses, rollback procedures (`RELEASE_TRAIN_MODE=off`, deleting a bad Release/tag, closing a bad proposal, the immutable-index stance), and the App identity + R7 in operator terms (every claim cited to `file:line` / `§section`). `tests/test_release_train_workflow_guard.py` extends to pin both write jobs (perms, mode gates, mint-only App secret referenced exactly once per write job, off-quiescence) and **rehearses the actual workflow snippets** — the mode-resolution shell over the full matrix and the ceremony summary Python over a synthetic output — via the YAML-extraction pattern; `tests/test_release_train_ceremony.py` adds the HALT-issue-degradation unit + end-to-end coverage and the `ceremony-result:` output-format tests. **No cross-repo ceremony runs live in this change** — hermetic tests + `--dry-run` only; the Overtoad triggers the pilot post-merge.
 - **Release-train Phase 4.2: dependency-ordered scheduling + consumer ceiling-bump follow-on PRs (`util/release_train/propose.py`).** Implements step 4.2 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§13 / §5.4 / §6 / §12 step 4.2). (1) **Dependency-aware ordering.** When multiple packages are eligible in one run, `propose.py` now processes them **upstream-first** via a deterministic topological sort of the registry `depends_on` DAG (`topological_order`, Kahn's algorithm with a lexicographic `pypi_name` tie-break — derived from the registry, NOT hardcoded tiers; shared libs → sub-libs → apps → meta, with `juniper-ml` last); a cyclic `depends_on` graph is a hard invocation error (exit 2) naming the cycle (`CycleError`). (2) **Ceiling-bump follow-on PRs (D6).** Each propagation edge is annotated with a `consumer_pin_state` (`within_range` / `floor_only` / `escaped -> follow-on` / `escaped -> skipped(<reason>)`) read from the consumer's REAL pyproject on disk (both floor-only and `<ceiling` forms; the PEP 508 `[extras]` marker, e.g. `juniper-model-core[crossval]>=…`, is tolerated); for each escaped cross-repo consumer it builds a **standard-gated** ceiling-bump follow-on PR in that consumer's repo — the pin edit (ceiling raised to the upstream's next-minor, floors preserved byte-for-byte), branch `deps/<upstream>-ceiling-<new-ceiling>`, and a body citing §13 + the triggering proposal — **never** folded into the upstream proposal or the exempt notes-archive path (the 2026-07-06 ci-tools incident class; rec#85 is the hand-made shape). Cross-repo capability (Phase 4.1) gates the open (`escaped -> follow-on` when `--cross-repo` with the sibling checked out, else `escaped -> skipped`), and a per-consumer-repo dup-guard suppresses a duplicate. The meta (`juniper-ml`) never gets a follow-on: its pin rides #661's folded co-change when the upstream is in-repo and stays MANUAL (Q-META) otherwise. (3) The proposal JSON/report + PR body surface the per-run propagation picture (`follow_on_prs`, `consumer_pin_state`). Hermetic coverage in `tests/test_release_train_propose.py` (topological order over the real registry + a synthetic cycle → exit 2; the §12-4.2 verify — a simulated upstream MINOR bump produces the expected edges + follow-on content; escaped / within-range / floor-only / extras-form pins; degraded-mode skip; per-repo dup-guard; dry-run writes nothing). **No cross-repo write runs live in this change** — hermetic tests + `--dry-run` only.
-- **Release-train Phase 4.1: cross-repo write identity + cross-repo `propose`/`ceremony` (`release-train.yml`, `util/release_train/propose.py`, `util/release_train/ceremony.py`).** Implements step 4.1 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§9.2–9.4 / §10.2 / §12 step 4.1). The `propose` job now mints a **GitHub App installation token** (`actions/create-github-app-token`, SHA-pinned `bcd2ba4` / v3.2.0) scoped to the 8 publishing repos and passes `propose.py --cross-repo`; `propose.py` replaces its hard `WRITABLE_REPO` guard with **capability-based** logic — given that cross-repo token and an on-disk sibling checkout (`--ecosystem-root`), a sibling package's proposal branches from that repo's `origin/main`, edits that checkout (the write/git seam is now **repo-aware**), pushes with the App token, and opens the PR **in the sibling repo** (the dup-guard runs per-repo); without the capability it skips siblings with the same clear reason as before (the degraded single-repo `GITHUB_TOKEN` path). The in-repo meta consumer-pin co-changes (#661 RK-11 lockstep) stay juniper-ml-only — a sibling proposal emits the §13 propagation edge instead of editing the meta from a sibling checkout. `ceremony.py` gains the same capability gate and a **repo split** (plan §10.2): the exempt notes-archive PR is **always** opened centrally in juniper-ml (`plan.archive_repo`) while the Release is cut on the **owning** repo (`gh release create --repo pcalnon/<repo>`) and that repo's publish run monitored; its R7 seam (`_assert_gh_allowed`) now bounds every `--repo` to the 8 publishing repos (registry-derived via `publishing_repo_slugs`) **without widening the verb allowlist**, and `create_release` renders the `--notes-file` to a scratch temp path instead of the checkout (the 07-19 stray-untracked-file fix). **Graceful degradation is mandatory**: the mint step is gated on the repo variable `RELEASE_TRAIN_APP_ID` (owner-provisioned with the `RELEASE_TRAIN_APP_PRIVATE_KEY` secret); when unset the job falls back to `GITHUB_TOKEN` and skips siblings. The App private-key secret is referenced **only** in the mint step and the minted token **only** in the propose job — pinned by `tests/test_release_train_workflow_guard.py`, whose `ALLOWED_SECRETS` allowlist is deliberately extended for `RELEASE_TRAIN_APP_PRIVATE_KEY`. Because App-created PRs trigger CI normally, the `GITHUB_TOKEN` no-checks caveat now applies **only** to the degraded no-App path (AGENTS.md + the workflow header updated accordingly). Hermetic coverage extends `tests/test_release_train_propose.py` (cross-repo opens in the sibling with the correct branch/base, no meta edits from a sibling context, degraded-path skip preserved) and `tests/test_release_train_ceremony.py` (cross-repo archive-in-juniper-ml while `release create` carries `--repo <owning>`; seam `--repo` accept/reject; temp-path notes render). **No cross-repo write runs live in this change** — hermetic tests + `--dry-run` only; the owner triggers the pilot post-merge.
-- **Release-train Phase 3.2: exempt-archive + Release ceremony engine (`util/release_train/ceremony.py`).** Implements step 3.2 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§5.3 / §7 / §8 / §9.3 / §10). For each `BUMPED_NOT_RELEASED` package the detector reports (in-repo / juniper-ml only this phase — the `WRITABLE_REPO` guard reused from `propose.py`; sibling repos are skipped with a clear reason, deferred to Phase 4's GitHub App identity), the engine: (1) runs the §8 preconditions — target `main` CI green, the `declared >= released` re-check against live PyPI truth, a non-empty `CHANGELOG [<version>]` section, and (in the monitor) TestPyPI install-verify success — each failure **HALTs that package** with a deduplicated GitHub-issue payload (title keyed on `pypi_name` + reason), never blocking the others; (2) builds the FINAL central notes file via `notes_render` from the released package's `CHANGELOG [<version>]` section (`archive_name` from `registry.yaml`); (3) opens the exempt add-only, single-file archive PR (the diff the Phase 3.1 guard proves); (4) enables `gh pr merge --auto --squash` on it, **degrading gracefully** to the owner one-click merge when `allow_auto_merge` is off (step 3.3 has not landed — that is *not* a HALT); (5) cuts `gh release create <tag> --latest=false --notes-file <archive>` — the Release **creates** the sub-package tag (procedure §11.4), so there is deliberately **no** `--verify-tag`; (6) monitors the triggered publish run and reports the terminal state `PENDING_PYPI_APPROVAL` — the run legitimately parks at the owner-gated `pypi` environment, which **is success for the train**. The **R7 write-identity invariant (§9.3) is enforced in code**: every `gh` call is routed through `_assert_gh_allowed`, which permits exactly `{pr create, pr merge --auto, release create, run list/view, issue create/edit}` and rejects any `api` / environment / deployment / reviewer mutation, a bare `pr merge` without `--auto`, or a `release create --verify-tag`; `tests/test_release_train_ceremony.py` asserts the live seam's actual surface matches. **Idempotent re-entry** (§8): a re-run re-computes state from PyPI/Release truth — already-released is a no-op, an existing Release resumes at the monitor, and an open archive PR / already-archived file is reused, never duplicated. **`--dry-run` is the default and prints the full ceremony script of actions while writing nothing**; `--execute` exists but is not run against the real repo in this change. `util/` is not pre-commit-lint-gated, so the new hermetic unittest is the gate, wired into `ci.yml`. The live end-to-end (a real low-risk sub-package bump — `juniper-service-core` 0.5.0 is queued as exactly that payload) is owner-triggered **after** the step-3.3 auto-merge preconditions land.
-- **Release-train Phase 3.1: structural archive-guard for the exempt notes-archive PR (`util/release_train/archive_guard.py` + `ci.yml` guard lane).** Implements step 3.1 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§7.2 / R5): the required-CI-job CHECK that proves the release-train's ONE gate-exempt PR — the one that archives the generated release notes and contains *no other change* — really is exactly that, so it can (later, step 3.3) auto-merge behind a required status check without leaking any code/config change past the owner gate. The path-invokable module computes a PR's changed-file set (`git diff --name-status <base>...<head>`, injected so the tests are hermetic) and passes ONLY if all four rules hold: **add-only** (every change status `A`), **path-confined** (each added path `^notes/releases/RELEASE_NOTES_.*\.md$`), **name-valid** (each filename `RELEASE_NOTES_v<semver>.md` meta / `RELEASE_NOTES_<pkg>_v<semver>.md` else, `<pkg>` a registry `pypi_name`, per procedure §11.3), and **single-purpose** (nothing else in the diff). A PR that does not touch `notes/releases/` is `SKIP` (passes), so the guard never blocks a normal PR; a violation merely fails the check (exit 1) and the PR falls back to the standard owner gate — the guard opens/merges nothing and mutates no environment (R7). A new PR-only `release-train-archive-guard` job in `ci.yml` runs it (standalone, so the owner can later mark it a required status check in the branch ruleset). New hermetic gate `tests/test_release_train_archive_guard.py` proves a pure notes-add passes and modify / delete / out-of-path / bad-name / mixed diffs each fail; `util/` is not pre-commit-lint-gated, so that unittest is the gate. No ceremony/auto-merge behaviour ships here (that is step 3.2); this is the guard alone.
-- **Release-train Phase 2.2: `propose` mode wired into `release-train.yml` (opt-in, in-repo pilot).** Implements step 2.2 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§9.3 / §12 step 2.2). A **two-job privilege split** preserves the R7 write-identity invariant: the `detect` job keeps the workflow-level `contents: read` and now runs for both `report` and `propose` (detection is common) while exposing the resolved mode as a job output; a new **write-scoped `propose` job** — `permissions: {contents: write, pull-requests: write}`, `if: needs.detect.outputs.mode == 'propose'` (so the write scope is unreachable off the propose path) — downloads the release-manifest artifact and runs `util/release_train/propose.py --execute` to open **standard-gated** release-proposal PRs, never touching environments, deployments, Releases, or (Test)PyPI. `off`/`report`/`propose` are all valid modes now; only `ceremony` still degrades to `report`. A new `packages` dispatch input (whitespace/comma-separated pypi_names, validated against the pypi-name charset; empty = all eligible) restricts which packages are proposed. `propose.py` gains a **cross-repo guard**: under `--execute` a package whose registry `repo` is not `juniper-ml` is skipped with a clear reason (the single-repo `GITHUB_TOKEN` cannot open cross-repo PRs; cross-repo is Phase 4), and its commit passes `-c commit.gpgsign=false` (the job also runs `git config commit.gpgsign false`) so the headless runner never trips the owner's YubiKey signing config. New guards: `tests/test_release_train_workflow_guard.py` pins the R7 boundary (workflow-level `contents: read`; propose-job perms exactly `{contents: write, pull-requests: write}`; the mode-gated `if`; only `SLACK_WEBHOOK_URL` referenced), and `tests/test_release_train_propose.py` covers the cross-repo skip + the gpgsign fix; both are wired into `ci.yml`. **Known limitation** (accepted for the pilot): PRs opened with `GITHUB_TOKEN` do not trigger CI (GitHub's recursion guard), so a proposal PR shows no checks until the owner re-triggers (close/reopen, or push an empty commit); Phase 4's GitHub App resolves this. The real pilot dispatch (`gh workflow run release-train.yml -f mode=propose -f packages=<one>`) is owner-run post-merge.
+- **Release-train Phase 4.1: cross-repo write identity + cross-repo `propose`/`ceremony` (`release-train.yml`, `util/release_train/propose.py`, `util/release_train/ceremony.py`).** Implements step 4.1 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§9.2–9.4 / §10.2 / §12 step 4.1). The `propose` job now mints a **GitHub App installation token** (`actions/create-github-app-token`, SHA-pinned `bcd2ba4` / v3.2.0) scoped to the 8 publishing repos and passes `propose.py --cross-repo`; `propose.py` replaces its hard `WRITABLE_REPO` guard with **capability-based** logic — given that cross-repo token and an on-disk sibling checkout (`--ecosystem-root`), a sibling package's proposal branches from that repo's `origin/main`, edits that checkout (the write/git seam is now **repo-aware**), pushes with the App token, and opens the PR **in the sibling repo** (the dup-guard runs per-repo); without the capability it skips siblings with the same clear reason as before (the degraded single-repo `GITHUB_TOKEN` path). The in-repo meta consumer-pin co-changes (#661 RK-11 lockstep) stay juniper-ml-only — a sibling proposal emits the §13 propagation edge instead of editing the meta from a sibling checkout. `ceremony.py` gains the same capability gate and a **repo split** (plan §10.2): the exempt notes-archive PR is **always** opened centrally in juniper-ml (`plan.archive_repo`) while the Release is cut on the **owning** repo (`gh release create --repo pcalnon/<repo>`) and that repo's publish run monitored; its R7 seam (`_assert_gh_allowed`) now bounds every `--repo` to the 8 publishing repos (registry-derived via `publishing_repo_slugs`) **without widening the verb allowlist**, and `create_release` renders the `--notes-file` to a scratch temp path instead of the checkout (the 07-19 stray-untracked-file fix). **Graceful degradation is mandatory**: the mint step is gated on the repo variable `RELEASE_TRAIN_APP_ID` (Overtoad-provisioned with the `RELEASE_TRAIN_APP_PRIVATE_KEY` secret); when unset the job falls back to `GITHUB_TOKEN` and skips siblings. The App private-key secret is referenced **only** in the mint step and the minted token **only** in the propose job — pinned by `tests/test_release_train_workflow_guard.py`, whose `ALLOWED_SECRETS` allowlist is deliberately extended for `RELEASE_TRAIN_APP_PRIVATE_KEY`. Because App-created PRs trigger CI normally, the `GITHUB_TOKEN` no-checks caveat now applies **only** to the degraded no-App path (AGENTS.md + the workflow header updated accordingly). Hermetic coverage extends `tests/test_release_train_propose.py` (cross-repo opens in the sibling with the correct branch/base, no meta edits from a sibling context, degraded-path skip preserved) and `tests/test_release_train_ceremony.py` (cross-repo archive-in-juniper-ml while `release create` carries `--repo <owning>`; seam `--repo` accept/reject; temp-path notes render). **No cross-repo write runs live in this change** — hermetic tests + `--dry-run` only; the Overtoad triggers the pilot post-merge.
+- **Release-train Phase 3.2: exempt-archive + Release ceremony engine (`util/release_train/ceremony.py`).** Implements step 3.2 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§5.3 / §7 / §8 / §9.3 / §10). For each `BUMPED_NOT_RELEASED` package the detector reports (in-repo / juniper-ml only this phase — the `WRITABLE_REPO` guard reused from `propose.py`; sibling repos are skipped with a clear reason, deferred to Phase 4's GitHub App identity), the engine: (1) runs the §8 preconditions — target `main` CI green, the `declared >= released` re-check against live PyPI truth, a non-empty `CHANGELOG [<version>]` section, and (in the monitor) TestPyPI install-verify success — each failure **HALTs that package** with a deduplicated GitHub-issue payload (title keyed on `pypi_name` + reason), never blocking the others; (2) builds the FINAL central notes file via `notes_render` from the released package's `CHANGELOG [<version>]` section (`archive_name` from `registry.yaml`); (3) opens the exempt add-only, single-file archive PR (the diff the Phase 3.1 guard proves); (4) enables `gh pr merge --auto --squash` on it, **degrading gracefully** to the Overtoad one-click merge when `allow_auto_merge` is off (step 3.3 has not landed — that is *not* a HALT); (5) cuts `gh release create <tag> --latest=false --notes-file <archive>` — the Release **creates** the sub-package tag (procedure §11.4), so there is deliberately **no** `--verify-tag`; (6) monitors the triggered publish run and reports the terminal state `PENDING_PYPI_APPROVAL` — the run legitimately parks at the Overtoad-gated `pypi` environment, which **is success for the train**. The **R7 write-identity invariant (§9.3) is enforced in code**: every `gh` call is routed through `_assert_gh_allowed`, which permits exactly `{pr create, pr merge --auto, release create, run list/view, issue create/edit}` and rejects any `api` / environment / deployment / reviewer mutation, a bare `pr merge` without `--auto`, or a `release create --verify-tag`; `tests/test_release_train_ceremony.py` asserts the live seam's actual surface matches. **Idempotent re-entry** (§8): a re-run re-computes state from PyPI/Release truth — already-released is a no-op, an existing Release resumes at the monitor, and an open archive PR / already-archived file is reused, never duplicated. **`--dry-run` is the default and prints the full ceremony script of actions while writing nothing**; `--execute` exists but is not run against the real repo in this change. `util/` is not pre-commit-lint-gated, so the new hermetic unittest is the gate, wired into `ci.yml`. The live end-to-end (a real low-risk sub-package bump — `juniper-service-core` 0.5.0 is queued as exactly that payload) is Overtoad-triggered **after** the step-3.3 auto-merge preconditions land.
+- **Release-train Phase 3.1: structural archive-guard for the exempt notes-archive PR (`util/release_train/archive_guard.py` + `ci.yml` guard lane).** Implements step 3.1 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§7.2 / R5): the required-CI-job CHECK that proves the release-train's ONE gate-exempt PR — the one that archives the generated release notes and contains *no other change* — really is exactly that, so it can (later, step 3.3) auto-merge behind a required status check without leaking any code/config change past the Overtoad gate. The path-invokable module computes a PR's changed-file set (`git diff --name-status <base>...<head>`, injected so the tests are hermetic) and passes ONLY if all four rules hold: **add-only** (every change status `A`), **path-confined** (each added path `^notes/releases/RELEASE_NOTES_.*\.md$`), **name-valid** (each filename `RELEASE_NOTES_v<semver>.md` meta / `RELEASE_NOTES_<pkg>_v<semver>.md` else, `<pkg>` a registry `pypi_name`, per procedure §11.3), and **single-purpose** (nothing else in the diff). A PR that does not touch `notes/releases/` is `SKIP` (passes), so the guard never blocks a normal PR; a violation merely fails the check (exit 1) and the PR falls back to the standard Overtoad gate — the guard opens/merges nothing and mutates no environment (R7). A new PR-only `release-train-archive-guard` job in `ci.yml` runs it (standalone, so the Overtoad can later mark it a required status check in the branch ruleset). New hermetic gate `tests/test_release_train_archive_guard.py` proves a pure notes-add passes and modify / delete / out-of-path / bad-name / mixed diffs each fail; `util/` is not pre-commit-lint-gated, so that unittest is the gate. No ceremony/auto-merge behaviour ships here (that is step 3.2); this is the guard alone.
+- **Release-train Phase 2.2: `propose` mode wired into `release-train.yml` (opt-in, in-repo pilot).** Implements step 2.2 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§9.3 / §12 step 2.2). A **two-job privilege split** preserves the R7 write-identity invariant: the `detect` job keeps the workflow-level `contents: read` and now runs for both `report` and `propose` (detection is common) while exposing the resolved mode as a job output; a new **write-scoped `propose` job** — `permissions: {contents: write, pull-requests: write}`, `if: needs.detect.outputs.mode == 'propose'` (so the write scope is unreachable off the propose path) — downloads the release-manifest artifact and runs `util/release_train/propose.py --execute` to open **standard-gated** release-proposal PRs, never touching environments, deployments, Releases, or (Test)PyPI. `off`/`report`/`propose` are all valid modes now; only `ceremony` still degrades to `report`. A new `packages` dispatch input (whitespace/comma-separated pypi_names, validated against the pypi-name charset; empty = all eligible) restricts which packages are proposed. `propose.py` gains a **cross-repo guard**: under `--execute` a package whose registry `repo` is not `juniper-ml` is skipped with a clear reason (the single-repo `GITHUB_TOKEN` cannot open cross-repo PRs; cross-repo is Phase 4), and its commit passes `-c commit.gpgsign=false` (the job also runs `git config commit.gpgsign false`) so the headless runner never trips the Overtoad's YubiKey signing config. New guards: `tests/test_release_train_workflow_guard.py` pins the R7 boundary (workflow-level `contents: read`; propose-job perms exactly `{contents: write, pull-requests: write}`; the mode-gated `if`; only `SLACK_WEBHOOK_URL` referenced), and `tests/test_release_train_propose.py` covers the cross-repo skip + the gpgsign fix; both are wired into `ci.yml`. **Known limitation** (accepted for the pilot): PRs opened with `GITHUB_TOKEN` do not trigger CI (GitHub's recursion guard), so a proposal PR shows no checks until the Overtoad re-triggers (close/reopen, or push an empty commit); Phase 4's GitHub App resolves this. The real pilot dispatch (`gh workflow run release-train.yml -f mode=propose -f packages=<one>`) is Overtoad-run post-merge.
 - **Release-train Phase 2.1: proposal-PR generator (`util/release_train/propose.py` + `notes_render.py`).** Implements step 2.1 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) (§5.4 / §6 / §10.1): consumes the Phase 1.2 detector's release-manifest JSON (`detect.py --json`) and, for each `UNRELEASED_CHANGES` package, generates the complete **standard-gated** release-proposal PR content — the version bump (`[project].version` for static packages, `_version.py` `__version__` for the four dynamic ones), the CHANGELOG `[Unreleased]` → `[<version>] - <date>` move (a fresh empty `[Unreleased]` left behind), a template-driven release-notes draft (`notes_render.py`, sourced from `TEMPLATE_RELEASE_NOTES.md` or the security template when a `Security` category is present; **not** archived to `notes/releases/` — archival is the later exempt ceremony step), the meta-package `AGENTS.md` `**Version**` co-change, the §5.4 co-change checklist, and the `propagation_edges` (a pre-1.0 MINOR bump escapes a consumer's `<next-minor` ceiling pin → standard-gated follow-on PRs, the 2026-07-06 ci-tools incident class), plus the branch name, commit message, and PR title/body. The `gh pr list` dup-guard and the `changelog_conflict` refusal run behind an injectable seam so `tests/test_release_train_propose.py` is fully hermetic (no network / gh / repo writes). **`--dry-run` is the default and the only mode this step exercises**: it prints the well-formed proposal and writes nothing / opens nothing. The `--execute` code path and wiring the `propose` mode into `release-train.yml` are deferred to step 2.2. `util/` is not pre-commit-lint-gated, so the new unittest is the gate, wired into `ci.yml` alongside the detector tests.
-- **Release-train Phase 1.4: non-blocking Slack notification lane in `release-train.yml`.** Each report run now posts a compact summary (classification counts, packages needing release action, run URL — no secrets, no diff content) to the Juniper Slack channel via the owner-provisioned `SLACK_WEBHOOK_URL` incoming-webhook repo secret (Q-CHANNEL decision, plan §11). Strictly non-blocking by construction: with the secret absent the step logs a skip and the run stays green, and a Slack post failure never fails the train (`continue-on-error: true`). The step-summary table + manifest artifact remain the canonical auditable record; Slack is additive signal only.
+- **Release-train Phase 1.4: non-blocking Slack notification lane in `release-train.yml`.** Each report run now posts a compact summary (classification counts, packages needing release action, run URL — no secrets, no diff content) to the Juniper Slack channel via the Overtoad-provisioned `SLACK_WEBHOOK_URL` incoming-webhook repo secret (Q-CHANNEL decision, plan §11). Strictly non-blocking by construction: with the secret absent the step logs a skip and the run stays green, and a Slack post failure never fails the train (`continue-on-error: true`). The step-summary table + manifest artifact remain the canonical auditable record; Slack is additive signal only.
 - **Release-train Phase 1.3: daily report-only orchestrator (`.github/workflows/release-train.yml`).** Implements step 1.3 of the [PyPI release-train plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md): a scheduled workflow (daily `0 13 * * *` UTC per the ratified Q-CADENCE decision, plus `workflow_dispatch`) that full-history-clones the 7 sibling package repos — including `juniper-recurrence`, which the `docs-full-check.yml` clone list omits — runs the Phase 1.1/1.2 detection engine (`util/release_train/detect.py`, juniper-ml#641) over the 18-package registry, uploads the release-manifest JSON as a run artifact, and renders a per-package classification table into the step summary. Report-only by construction: no PRs, no Releases, no (Test)PyPI writes; detector exit 1 ("action needed") is a normal green outcome and only a hard source error (exit >= 2) fails the run. The repo variable `RELEASE_TRAIN_MODE` (`off`|`report`, default `report`) with a dispatch-input override is the instant rollback switch; the future `propose`/`ceremony` modes degrade to `report` with a warning until those phases land.
 - Host orchestration reference docs now distinguish the startup scripts' `JUNIPER_CASCOR_*` overrides from the `get_cascor_*.bash` query helpers' legacy `CASCOR_*` overrides, and document the host-facing `8201` / worker-health `8210` port map in `docs/REFERENCE.md`, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, and `AGENTS.md`.
 - Host-stack operations docs now include source-verified prerequisites, all `util/get_cascor_*.bash` endpoints, PID-file versus systemd lifecycle behavior, common startup/shutdown troubleshooting, and navigation links from `README.md`, `docs/QUICK_START.md`, and `docs/DOCUMENTATION_OVERVIEW.md`.
@@ -3186,7 +3243,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Release-train ceremony R7 archive-lane guard (`util/release_train/ceremony.py`) — a `git/refs` POST with no `ref=` field is now a `SeamViolation`.** `_assert_api_allowed` previously only rejected a *present* non-`refs/heads/*` value, so omitting `ref=` entirely passed the allowlist and deferred failure to the live GitHub API — weakening the documented archive-branch "heads only" invariant. Missing and empty `ref=` now fail closed; hermetic coverage in `tests/test_release_train_ceremony.py`.
 - **Release-train propose (`util/release_train/propose.py`) — a static-version package's `_version.py` dunder is now bumped in lockstep with `pyproject.toml` (the ml#701 stale-dunder class).** All five in-repo static packages also ship a `_version.py` `__version__`, which the pyproject-only bump silently falsified: the shipped wheel's metadata was right while its `__version__` lied (juniper-ci-tools 0.7.0, caught only by its own consumer gates and healed in ml#684; juniper-service-core 0.5.0, silent for five days, healed in ml#702). `build_proposal` now auto-detects a static package's `_version.py` by file presence (no new registry field that could itself drift) and appends the lockstep edit, naming the co-change in the proposal body + the S5.4 checklist; a present-but-unparseable dunder is left alone and flagged REQUIRED-manual (the AGENTS.md header precedent). A new always-on gate (`VersionDunderLockstepTest` in `tests/test_release_train_registry.py`) asserts `[project].version == __version__` for every in-repo static-with-dunder package (dynamic packages exempt — their dunder IS the source), closing the "service-core had no gate" hole; the hermetic propose tests cover the four shapes (both-bumped / no-phantom-edit / dynamic-unchanged / unparseable-REQUIRED-manual). Design of record: `notes/JUNIPER_2026-07-23_JUNIPER-ML_RELEASE-TRAIN-VERSION-DUNDER-LOCKSTEP-FOLLOWUP.md`.
-- **Release-train ceremony (`util/release_train/ceremony.py`) — the publish-run monitor now reaches the designed terminal state instead of a premature `IN_PROGRESS`.** It polls the triggered run on a bounded wall clock (new `--monitor-timeout`, default ~15 min, at a short fixed interval) until the run is terminal (success/failure — existing handling) or parked at the owner-gated `pypi` deployment environment — GitHub reports that as run status `waiting` (a documented workflow-run status that `gh run view --json status` passes through verbatim), which the train reports as `PENDING_PYPI_APPROVAL` (plan §12-3.2, terminal-healthy) and exits 0. Only a genuine still-building timeout now yields `IN_PROGRESS` (honest, and the ceremony is idempotent so a re-run resumes at the monitor). No new `gh` surface: the fix stays within the R7 §9.3 read-only allowlist (`run list` / `run view`). Hermetic coverage in `tests/test_release_train_ceremony.py` (monitor → `PENDING_PYPI_APPROVAL` on a `waiting` fixture; honest `IN_PROGRESS` on timeout). (The same 2026-07-19 run's *other* rough edge — capturing/restoring the operator's checkout branch across the archive-PR git ops — is **superseded before release** by the signed-archive-commit change under `### Changed`: the archive lane no longer switches the checkout, so there is nothing to restore.)
+- **Release-train ceremony (`util/release_train/ceremony.py`) — the publish-run monitor now reaches the designed terminal state instead of a premature `IN_PROGRESS`.** It polls the triggered run on a bounded wall clock (new `--monitor-timeout`, default ~15 min, at a short fixed interval) until the run is terminal (success/failure — existing handling) or parked at the Overtoad-gated `pypi` deployment environment — GitHub reports that as run status `waiting` (a documented workflow-run status that `gh run view --json status` passes through verbatim), which the train reports as `PENDING_PYPI_APPROVAL` (plan §12-3.2, terminal-healthy) and exits 0. Only a genuine still-building timeout now yields `IN_PROGRESS` (honest, and the ceremony is idempotent so a re-run resumes at the monitor). No new `gh` surface: the fix stays within the R7 §9.3 read-only allowlist (`run list` / `run view`). Hermetic coverage in `tests/test_release_train_ceremony.py` (monitor → `PENDING_PYPI_APPROVAL` on a `waiting` fixture; honest `IN_PROGRESS` on timeout). (The same 2026-07-19 run's *other* rough edge — capturing/restoring the operator's checkout branch across the archive-PR git ops — is **superseded before release** by the signed-archive-commit change under `### Changed`: the archive lane no longer switches the checkout, so there is nothing to restore.)
 
 ## [0.6.0] - 2026-05-23
 

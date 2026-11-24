@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (builder session, flood-4 round 2, fix N-1 round 3)
 Created: 2026-11-09
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md §8 ruling 11 (juniper-cascor's paused-fit wedge);
          tmp/flood4r2-val/n1-r2-code-lens/findings.json and tmp/flood4r2-val/n1-r2-claims-lens/findings.json (this worktree)
 
@@ -127,13 +127,13 @@ EDITS = [
      "between `mark_completed` and that write leaves the same pair. Neither is a wedge: the next `start` runs.\n"),
     # --- claims lens F1 (BLOCKER): cascor's race is ruling 17; no ruling chose a design -----------------
     (CHANGELOG, "claims-F1",
-     'The owner ruled on 2026-11-09 ("Fix all four now") that it gets its own fix, in a separate PR: a per-run stop signal, or a start that refuses or fences a live fit.',
+     'The Overtoad ruled on 2026-11-09 ("Fix all four now") that it gets its own fix, in a separate PR: a per-run stop signal, or a start that refuses or fences a live fit.',
      f"{RULING_17[0].upper()}{RULING_17[1:]}, gives it its own fix, in its own PR. Candidate fixes, which no ruling chose: a per-run stop signal, or a start that refuses or fences a live fit."),
     (REPRO, "claims-F1+F4",
-     'Status: ad-hoc — investigation (evidence for a reported race; the owner ruled on 2026-11-09,\n        "Fix all four now", that it gets its own fix, in a separate PR)\n'
+     'Status: ad-hoc — investigation (evidence for a reported race; the Overtoad ruled on 2026-11-09,\n        "Fix all four now", that it gets its own fix, in a separate PR)\n'
      "Retire when: that PR has merged (a per-run stop signal, or a start that refuses or fences a\n             live fit)\n",
      "Status: ad-hoc — investigation: evidence for a reported race, which gets its own fix in its own\n"
-     "        PR by the owner's ruling 17 (2026-11-09, recorded in the record-update PR), \"cascor:\n"
+     "        PR by the Overtoad's ruling 17 (2026-11-09, recorded in the record-update PR), \"cascor:\n"
      '        stop-then-start"\n'
      "Retire when: that PR has merged\n"),
     # --- claims lens F2 (MAJOR): service-core's fix merged (juniper-ml#2531) ---------------------------
@@ -144,14 +144,14 @@ EDITS = [
      "Unlike juniper-service-core, where the new run starts on its own thread at once and the old\n"
      "fit's return marks it COMPLETED while it trains, cascor's queue keeps the new run from starting\n"
      "until the old fit returns. The lifecycle-ownership guard therefore does not change this race:\n"
-     "the stale fit is still the owner when it settles. ``swap_dataset_live`` has a variant: when its\n"
+     "the stale fit is still the Overtoad when it settles. ``swap_dataset_live`` has a variant: when its\n"
      "10 s join on the old future times out, it clears ``_stop_event`` before submitting the swapped\n"
      "run, which un-stops the old fit the same way.\n",
      "Unlike juniper-service-core, where the new run starts on its own thread at once and so already\n"
      "owns the lifecycle when the old fit returns (juniper-ml#2531's thread check; the published 0.7.2\n"
      "predates it, and there the old fit's return still marks the new run COMPLETED while it trains),\n"
      "cascor's queue keeps the new run from starting until the old fit returns. The lifecycle-ownership\n"
-     "guard therefore does not change this race: the stale fit is still the owner when it settles.\n"
+     "guard therefore does not change this race: the stale fit is still the Overtoad when it settles.\n"
      "``swap_dataset_live`` has a variant: when its 10 s join on the old future times out, it clears\n"
      "``_stop_event`` before submitting the swapped run, which un-stops the old fit the same way.\n"),
     # --- the PR body (round 2's text, copied to n1-r3/) ---------------------------------------------------
@@ -159,7 +159,7 @@ EDITS = [
      "juniper-service-core's fix for the same wedge, built before this one and not merged as of this PR, needed such a check",
      "juniper-service-core's fix for the same wedge, built before this one and merged as juniper-ml#2531 (`7b3b91b7`), needed such a check"),
     ("@r3/pr_body.txt", "claims-F1",
-     'The owner ruled on 2026-11-09 ("Fix all four now") that it gets its own fix, in a separate PR. A reproducer is included.',
+     'The Overtoad ruled on 2026-11-09 ("Fix all four now") that it gets its own fix, in a separate PR. A reproducer is included.',
      f"{RULING_17[0].upper()}{RULING_17[1:]}, gives it its own fix, in its own PR. A reproducer is included."),
     ("@r3/pr_body.txt", "claims-F3",
      ", which lands in juniper-ml separately.",
@@ -174,15 +174,15 @@ EDITS = [
      "There the new run starts at once on its own thread and the old fit's return completes it.",
      "There the new run starts at once on its own thread, so it already owns the lifecycle when the old fit returns: since juniper-ml#2531 that return settles nothing (juniper-service-core 0.7.2, published before #2531, still completes the new run)."),
     ("@r3/pr_body.txt", "claims-F1",
-     'The owner ruled on 2026-11-09 ("Fix all four now") that this race gets its own fix, in a separate PR: a per-run stop signal, or a start that refuses or fences a live fit.',
+     'The Overtoad ruled on 2026-11-09 ("Fix all four now") that this race gets its own fix, in a separate PR: a per-run stop signal, or a start that refuses or fences a live fit.',
      f"{RULING_17[0].upper()}{RULING_17[1:]}, gives this race its own fix, in its own PR. Candidate fixes, which no ruling chose: a per-run stop signal, or a start that refuses or fences a live fit."),
     ("@r3/pr_body.txt", "brief",
      "\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nhttps://claude.ai/code/session_016H76AjZYVKxwr19XfGm6kE\n",
      ""),
     # --- the commit body ---------------------------------------------------------------------------------
     ("@r3/commit_body.txt", "claims-F1",
-     "this change alike. It needs its own fix, which the owner ruled on 2026-11-09 to\nmake in a separate PR.\n",
-     "this change alike. It gets its own fix, in its own PR: the owner's ruling 17\n(2026-11-09, recorded in the record-update PR), \"cascor: stop-then-start\".\n"),
+     "this change alike. It needs its own fix, which the Overtoad ruled on 2026-11-09 to\nmake in a separate PR.\n",
+     "this change alike. It gets its own fix, in its own PR: the Overtoad's ruling 17\n(2026-11-09, recorded in the record-update PR), \"cascor: stop-then-start\".\n"),
 ]
 
 

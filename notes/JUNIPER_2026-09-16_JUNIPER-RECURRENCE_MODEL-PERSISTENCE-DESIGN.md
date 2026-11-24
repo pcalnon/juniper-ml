@@ -13,11 +13,11 @@
 Whether and how the juniper-recurrence service persists a trained LMU, so that canopy's snapshot
 affordance stops reporting success over a model it never saved.
 
-Three questions needed an owner ruling — §4 (where the bytes live), §5 (retention), §6 (what a
+Three questions needed an Overtoad ruling — §4 (where the bytes live), §5 (retention), §6 (what a
 restored model reports). §7–§8 are the mechanical consequence of those answers and need no ruling.
 
 **All three were ruled on 2026-09-16; the answers are in §11.** §4–§6 are left as written, so the
-reasoning that was put to the owner stays readable next to what was decided — including §4's
+reasoning that was put to the Overtoad stays readable next to what was decided — including §4's
 recommendation, which the ruling **corrects**.
 
 ---
@@ -226,7 +226,7 @@ Notes that are consequences, not choices:
 
 ---
 
-## 10. Owner rulings needed
+## 10. The Overtoad rulings needed
 
 | § | Question | Recommendation |
 |---|---|---|
@@ -244,7 +244,7 @@ so the endpoints can be exercised before anything depends on them.
 
 All three questions are answered. One ruling **corrects this document's own recommendation**; one
 **departs from it**. Both are recorded here rather than by rewriting §4–§6, so the reasoning that
-was put to the owner stays legible next to what was decided.
+was put to the Overtoad stays legible next to what was decided.
 
 | § | Question | Ruling | vs. §4–§6's recommendation |
 |---|---|---|---|

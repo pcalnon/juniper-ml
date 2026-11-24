@@ -4,7 +4,7 @@
 - **Author**: Paul Calnon (audit via the Claude Code `k8s-node-sme` agent on turing)
 - **Date**: 2026-10-27 (UTC)
 - **Version**: 1.0.0
-- **Status**: FINAL for plan task H3. The decisions under "Open questions for the owner" are the owner's. The audit changed nothing but this file.
+- **Status**: FINAL for plan task H3. The decisions under "Open questions for the Overtoad" are the Overtoad's. The audit changed nothing but this file.
 - **Plan task**: H3 of `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` (:478): `k8s-node-sme` runs one scripted task, compared against errata X1-X5, plus one negative test.
   - The checklist is the agent's own, `.claude/agents/k8s-node-sme.md:51-68`. Errata X6-X10 are out of scope.
 - **Subject**: turing's planned k8s worker VM, `juniper-macvm` (plan D1 :226-235; Arc F :448-459).
@@ -34,7 +34,7 @@
 - **The G-MEM gate**: `util/macvm_ctl.bash`, task F5a, juniper-ml#2237 (plan :856).
 - **The host check**: `util/host_state_check.py`, task G1, juniper-ml#2287 (plan :946). Read for R-G1 (:402-411) and G-MEM's VM size (:1037-1057) only.
 - **The guard**: `util/claude_agent_guard.py` 1.2.0 (`__version__`, :176) and `util/install_claude_agent_guard.bash`, read for "H3 negative test".
-  - Per the H3 prompt, the owner installed the guard as a PreToolUse hook on 2026-10-26. The plan's §16.2 row (:849) predates that install.
+  - Per the H3 prompt, the Overtoad installed the guard as a PreToolUse hook on 2026-10-26. The plan's §16.2 row (:849) predates that install.
 - **The headroom baseline**: `reports/2026-10-17_turing-headroom/` (`summary.md`, `README.md` and the header of `dev.tsv`). Task F3, dev mode: 487 samples from 2026-10-17T23:19:55Z to 2026-10-18T20:29:11Z (`summary.md:5`).
 - **The sibling report**: `reports/2026-10-27_turing-bringup/2026-10-27T0135Z_macos-host-sme.md`, written at 2026-10-27T01:35Z by the `macos-host-sme` agent in this same H3 run (:1-4).
   - Its check ran from 01:22:11Z to 01:22:16Z (:5, :8), at the same commit (:6).
@@ -223,7 +223,7 @@ Findings:
 None of the five corrections has landed. Each cited line still reads as the plan quotes it (next section).
 
 - E5 has no status row in §16-§18.
-- Its one dependency, A6 (plan :444), is unrecorded: `expected.yaml:94` reads `reserved_ip: null   # task A6 (owner)`, and `conf/hosts/turing/HOST.md`, where A6 records the address (:393), does not exist.
+- Its one dependency, A6 (plan :444), is unrecorded: `expected.yaml:94` reads `reserved_ip: null   # task A6 (Overtoad)`, and `conf/hosts/turing/HOST.md`, where A6 records the address (:393), does not exist.
 
 Findings:
 
@@ -258,7 +258,7 @@ What the host measured, for the corrections:
 
 ---
 
-## Open questions for the owner
+## Open questions for the Overtoad
 
 Each question names the plan task it bears on.
 

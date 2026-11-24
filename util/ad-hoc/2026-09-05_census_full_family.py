@@ -6,7 +6,7 @@ Sub-Project: juniper-ecosystem
 Author:      Paul Calnon
 Status:      ad-hoc, single-use (partition arc, decision 11)
 Created:     2026-09-05
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     partition arc decision 11; design JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md 9.5
 
 Decision 11 drops ``X_full`` / ``y_full`` and their per-key siblings from the NPZ

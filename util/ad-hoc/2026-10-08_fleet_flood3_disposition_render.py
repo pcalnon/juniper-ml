@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-10-08
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-10-08_fleet_flood3_disposition.json` (the verdicts), `2026-10-08_fleet_flood3_pr_actions.py close`
 
 WHY THIS EXISTS

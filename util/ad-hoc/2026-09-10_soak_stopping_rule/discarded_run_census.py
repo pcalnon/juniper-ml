@@ -160,7 +160,7 @@ def main() -> int:
     print()
     print(f"ledger exposure over ALL {len(all_paths)} transcripts: content={c} filename={f} touched={c + f}")
     print("  (the scored 43-row corpus is content=1 filename=7 touched=8; the extra content")
-    print("   reads are already-discarded runs, so owner decision 8 governs ONE scored row)")
+    print("   reads are already-discarded runs, so Overtoad decision 8 governs ONE scored row)")
     return 0
 
 

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc -- investigation (mutation evidence for the APD-ECO-002 close)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md (APD-ECO-002), the three client fix PRs named in its §5.1 row
 
 Applies each mutation to a COPY-BACKED source file, runs the pin module in a subprocess with

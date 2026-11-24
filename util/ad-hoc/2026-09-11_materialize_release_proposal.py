@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-11
 Status: ad-hoc -- migration
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy v0.8.0 / juniper-cascor-worker v0.6.0 release prep (container-registry Wave 3)
 
 Why this exists: ``propose.py --execute`` opens a sibling repo's PR only with

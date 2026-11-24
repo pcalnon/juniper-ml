@@ -10,7 +10,7 @@ Author: Paul Calnon
 Created: 2026-10-29
 Version: 1.3.1 (2026-10-30: Phase D round-4 fold-in -- see HISTORY)
 Status: ad-hoc — recovery (Phase D, Procedure A only)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md
          ("the assessment") section 6.4 steps 7 and 9; notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-
          INFRASTRUCTURE-INTEGRATED-DESIGN.md ("D") section 8 P0 steps 3, 5 and 8;
@@ -50,7 +50,7 @@ WHAT IT DOES, in order. Any refusal exits 1, writes nothing and leaves the .env 
      with double-quoted string literals off, so a missing column is an error, never read as text;
   6. refuses a matched form the credential file cannot deliver: a NUL, a carriage return, any newline, or
      leading or trailing whitespace (any Unicode whitespace: stricter than the wrapper, never looser);
-  7. creates --out in that directory with O_CREAT|O_EXCL|O_NOFOLLOW, mode 0600, owner the effective user
+  7. creates --out in that directory with O_CREAT|O_EXCL|O_NOFOLLOW, mode 0600, Overtoad the effective user
      (root), no trailing newline, and fsyncs the file and the directory -- never over an existing key (the
      A0/A2/B line's `test ! -e`);
   8. reads the file back twice -- with util/ad-hoc/2026-10-03_rekey_gate.py's read_key (what the gate will
@@ -73,7 +73,7 @@ WHAT IT PRINTS: candidate labels, counts, the matched variant labels, the value'
 never the value, never a hash. Exit 0 written (or dry run passed), 1 refused, 2 usage or I/O error; a deferred
 signal may end the process with its own status once the decision is printed.
 
-Usage, in the owner's root shell, from a checkout at origin/main, after step 7's probe matched an
+Usage, in the Overtoad's root shell, from a checkout at origin/main, after step 7's probe matched an
 ENV_ACTIVE_KEY label (step 7: --dry-run; step 9, after the installer: the real run):
     python3 util/ad-hoc/2026-10-29_write_matched_settings_key.py --dry-run \
         --env /home/duplicati/.config/Duplicati.empty-2026-09-20/.env \
@@ -384,11 +384,11 @@ def main(argv: list[str]) -> int:
         total, other, report = other_key_blobs(args.db, gate, target)
         print(f"the gate's five columns: blobs={total} under-another-key={other} [{report}]")
         if other:
-            raise Refused("blobs in the gate's columns carry another key hash: no single key opens this database, and step 13's exit gate would fail. STOP; ask the owner (A0 is the fallback)")
+            raise Refused("blobs in the gate's columns carry another key hash: no single key opens this database, and step 13's exit gate would fail. STOP; ask the Overtoad (A0 is the fallback)")
         value = forms[matched[0]]
         why = undeliverable(value)
         if why:
-            raise Refused(f"the matched form cannot be delivered through the credential file: {why}. STOP: Procedure A cannot run on this key; ask the owner (A0 is the fallback)")
+            raise Refused(f"the matched form cannot be delivered through the credential file: {why}. STOP: Procedure A cannot run on this key; ask the Overtoad (A0 is the fallback)")
         print(f"deliverable through the credential file: yes ({len(value)} chars, written without a trailing newline)")
         if args.dry_run:
             print(f"dry run: would write {args.out} (0600, owner uid {os.geteuid()}); nothing written")

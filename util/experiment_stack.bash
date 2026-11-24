@@ -873,7 +873,7 @@ cascor_up() {
     # is undefined there. Best-effort — no git, or a non-repo checkout, yields empty,
     # and cascor treats blank as unset rather than recording a lie.
     git_sha="$(git -C "${CASCOR_SRC_DIR}" rev-parse --short=12 HEAD 2>/dev/null || true)"
-    # D2 (perf lane, owner-ruled 2026-09-11; route half of the gate measured 2026-09-17, the
+    # D2 (perf lane, Overtoad-ruled 2026-09-11; route half of the gate measured 2026-09-17, the
     # epoch-count half never delivered — see `run_suite.runtime_block_env`): the `runtime:` block's
     # thread budget, made VISIBLE.
     #

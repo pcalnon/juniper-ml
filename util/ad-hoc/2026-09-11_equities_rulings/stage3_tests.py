@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Add the regressions for the three owner rulings that shipped without one: the as-of publication
+Add the regressions for the three Overtoad rulings that shipped without one: the as-of publication
 history (APD-DATA-040), the absolute floor (APD-DATA-043 / -044), and the staleness annotation
 (APD-DATA-039 / -045).
 
@@ -9,7 +9,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-11
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-09-11_equities_rulings/stage1_fetch_shares.py
 
 Each test is written against the DEFECT, not the implementation: it constructs the payload shape

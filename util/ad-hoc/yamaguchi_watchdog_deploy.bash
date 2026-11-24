@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-08-26
 # Status:     ad-hoc — one-off (Paul's 2026-08-26 pick: architecture B; re-runnable after a reboot or re-clone)
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md (§8.6-4);
 #             notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (§7.6);
 #             util/systemd/yamaguchi-watchdog.{service,timer}; util/ad-hoc/yamaguchi_watchdog.py

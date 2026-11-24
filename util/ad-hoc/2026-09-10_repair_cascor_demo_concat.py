@@ -32,7 +32,7 @@ close at :1205. Balance was the wrong question. The right one is which lines lan
 block, and 161 of them do.
 
 Found only after the walker was made length- and info-string-aware, which is why this file
-sat inside the set an owner was asked to ratify as benign.
+sat inside the set an Overtoad was asked to ratify as benign.
 
 THE REPAIR
 

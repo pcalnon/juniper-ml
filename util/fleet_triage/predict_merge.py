@@ -51,7 +51,7 @@ For a PR branch (``--pr N``) or every open PR (``--batch``) it, per PR:
       so the least-colliding PRs land first).
 
 Script verdicts: MERGE-CLEAN | NEEDS-UPDATE-BRANCH | DAMAGED-FIX-FIRST | CONFLICT.
-The DUP-CLOSE recommendation is an agent-layer, two-key, owner-confirmed
+The DUP-CLOSE recommendation is an agent-layer, two-key, Overtoad-confirmed
 adjudication (see ``.claude/agents/fleet-supervisor.md``); the script never
 adjudicates duplicates and never closes, pushes, or merges anything.
 
@@ -66,7 +66,7 @@ If a console script is absent, that screen degrades to ``skip`` (never crashes t
 the fast-gate battery + verdict logic still run.
 
 Any git commit this script makes (only the throwaway local merge commit) uses
-``-c commit.gpgsign=false`` so the owner's YubiKey/ed448 signing config never
+``-c commit.gpgsign=false`` so the Overtoad's YubiKey/ed448 signing config never
 blocks an unattended run.
 
 CLI: ``python util/fleet_triage/predict_merge.py --pr <N> | --batch [--json] [--repo-root P]``
@@ -100,11 +100,11 @@ PRECOMMIT_HOOKS = ("black", "isort", "flake8", "ruff", "ruff-format", "mypy", "c
 MISSING_HOOK_RE = re.compile(r"No hook with id", re.IGNORECASE)
 
 # The four verdicts the deterministic SCRIPT emits. DUP-CLOSE is deliberately
-# NOT here: it is an agent-layer, owner-confirmed adjudication, never a script call.
+# NOT here: it is an agent-layer, Overtoad-confirmed adjudication, never a script call.
 SCRIPT_VERDICTS = ("MERGE-CLEAN", "NEEDS-UPDATE-BRANCH", "DAMAGED-FIX-FIRST", "CONFLICT")
 
 # Headless git identity for the throwaway merge commit. gpgsign/tag.gpgsign are
-# forced off so the owner's signing config can never block an unattended run.
+# forced off so the Overtoad's signing config can never block an unattended run.
 _MERGE_IDENT = (
     "-c", "user.name=fleet-triage",
     "-c", "user.email=fleet-triage@juniper.invalid",

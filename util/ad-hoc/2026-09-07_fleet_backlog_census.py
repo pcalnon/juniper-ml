@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-07
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-06_close_superseded_fleet.py`, which did the closing
 
 A backlog claim is a universal quantifier over a set the claimant chose. "Zero across all four

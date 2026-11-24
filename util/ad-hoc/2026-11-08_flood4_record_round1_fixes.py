@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — one-off (flood-4 disposition record PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md; the validators' findings in the session
          worktree's tmp/flood4/val-record/{v1,v2,v3}/findings.json (facts, conclusions and artifacts lenses)
 
@@ -35,8 +35,8 @@ FIXES = [
     (REC, "have the three open defect rows of §4 fixed now, and settle the launcher's effort default and juniper-ml#2271's setting.",
           "have three of §4's four open rows fixed now, settle the fourth (the launcher's effort default), and settle juniper-ml#2271's setting."),
     # v1 F2, v2 F3, v2 F18: six of the 35 change code, two more among the folded 13; #2484's base is #2480's branch.
-    (REC, "- **Second wave (owner, 2026-11-07):** 35 Cursor drafts opened in juniper-ml after the census, #2469 .. #2509",
-          "- **Second wave (owner, 2026-11-07):** the 35 Cursor drafts juniper-ml received after the census, up to #2509"),
+    (REC, "- **Second wave (Overtoad, 2026-11-07):** 35 Cursor drafts opened in juniper-ml after the census, #2469 .. #2509",
+          "- **Second wave (Overtoad, 2026-11-07):** the 35 Cursor drafts juniper-ml received after the census, up to #2509"),
     (REC, "and four code fixes that fit neither a tests nor a docs carrier. #2484 is stacked on a `cursor/` branch.",
           "and six code fixes that fit neither a tests nor a docs carrier: #2480, #2493, #2502, #2504, #2505 and #2508. #2484 is stacked on #2480's own branch (`cursor/critical-bug-resolution-68c6`)."),
     (REC, "Round 2 therefore holds 48 drafts.",
@@ -59,13 +59,13 @@ FIXES = [
     (REC, "until a stop or reset (`routes/training.py:61`, `state_machine.py:87`).",
           "until a stop or reset: the refusal is `lifecycle/manager.py:165-166`, the 409 `routes/training.py:61`, and `mark_completed` refuses any state but `STARTED` (`lifecycle/state_machine.py:239-247`)."),
     # v1 F6, v2 F13: no fix PR exists yet.
-    (REC, "| **being fixed** (owner, 2026-11-08: \"Fix now\"; §8). Until the fix lands, #2519 describes it as current behaviour |",
-          "| **ruled: fix now** (owner, 2026-11-08; §8). A fix is built and under validation; no PR yet. Until it lands, #2519 describes the wedge as current behaviour |"),
-    (REC, "| **being fixed** (owner, 2026-11-08; §8). The race was reproduced",
-          "| **ruled: fix now** (owner, 2026-11-08; §8). A fix is built and under validation; no PR yet. The race was reproduced"),
+    (REC, "| **being fixed** (Overtoad, 2026-11-08: \"Fix now\"; §8). Until the fix lands, #2519 describes it as current behaviour |",
+          "| **ruled: fix now** (Overtoad, 2026-11-08; §8). A fix is built and under validation; no PR yet. Until it lands, #2519 describes the wedge as current behaviour |"),
+    (REC, "| **being fixed** (Overtoad, 2026-11-08; §8). The race was reproduced",
+          "| **ruled: fix now** (Overtoad, 2026-11-08; §8). A fix is built and under validation; no PR yet. The race was reproduced"),
     # v1 F6 / v2 F13, and the M-1 fix's builder (2026-11-08): the page is the OLDEST 30, and it has happened.
-    (REC, "| **being fixed** (owner, 2026-11-08; §8). Not reproduced: no recent PR exceeds 30 commits |",
-          "| **ruled: fix now** (owner, 2026-11-08; §8). A fix is built and under validation; no PR yet. The fix's builder found the page to be the PR's **oldest** 30 commits, so commit 31 onward, the head included, is never scanned, and `--first-parent` also drops commits a merge brought in (`src/gitleaks.js:113-117, 160-172` at the pinned SHA). juniper-ml#1797's run scanned 12 commits of its 88. Seven Juniper repositories run the action the same way |"),
+    (REC, "| **being fixed** (Overtoad, 2026-11-08; §8). Not reproduced: no recent PR exceeds 30 commits |",
+          "| **ruled: fix now** (Overtoad, 2026-11-08; §8). A fix is built and under validation; no PR yet. The fix's builder found the page to be the PR's **oldest** 30 commits, so commit 31 onward, the head included, is never scanned, and `--first-parent` also drops commits a merge brought in (`src/gitleaks.js:113-117, 160-172` at the pinned SHA). juniper-ml#1797's run scanned 12 commits of its 88. Seven Juniper repositories run the action the same way |"),
     # v2 F4: a re-render needs gh auth, shows live states, and degrades silently without auth.
     (REC, "and each PR's live state. A draft split across two carriers has one row naming both.",
           "and each PR's live state. A re-render therefore shows the states at that moment, and needs an authenticated `gh`: without one the renderer still exits 0, printing every carrier as \"(open)\" and every state as \"?\". A draft split across two carriers has one row naming both."),
@@ -87,7 +87,7 @@ FIXES = [
     (REC, "Their detector lines now carry G-TMP's allow pragma, and the docstrings were reworded; no behaviour changed.\n",
           "The detector and guard lines now carry G-TMP's allow pragma, and the docstrings were reworded; no behaviour changed.\n"
           "- **The gates already on `main` caught what the local screens missed.** The record PR's validator found two failures of required checks in the harvested scripts:\n"
-          "  - G-PATH (`util/home_path_literal_check.py`) refuses the owner's home directory spelled out, and 8 lines in 7 scripts did. The paths now come from `os.path.expanduser` or `Path.home()`, which give the same strings on this host; one line of recorded findings text keeps its literal under G-PATH's pragma.\n"
+          "  - G-PATH (`util/home_path_literal_check.py`) refuses the Overtoad's home directory spelled out, and 8 lines in 7 scripts did. The paths now come from `os.path.expanduser` or `Path.home()`, which give the same strings on this host; one line of recorded findings text keeps its literal under G-PATH's pragma.\n"
           "  - One probe sent RFC 6455's sample `Sec-WebSocket-Key` nonce, which gitleaks' generic-api-key rule matches. It is now built at run time from its decoded text.\n\n"
           "  The repository's pre-commit secrets hook had passed only because it scans staged changes, and nothing was staged.\n"),
     # v1 F9, v2 F9: not "14 tests"; run 41757850549 covers the ci-tools tests only; the cause is likely, not isolated.
@@ -122,7 +122,7 @@ FIXES = [
     (REC, "   - **Done**: the host's juniper-ci-tools went from 0.8.0 to CI's 0.9.1. It lives in `JuniperCascor1`, which supplies the `pre-commit` and `juniper-check-doc-links` on `PATH`. A dry run first showed no dependency changes, and no live service used that environment.\n"
           "   - **Deferred**: the check failed for `JuniperCanopy1`. Four live canopy E2E legs run from it (ports 8052, 8053, 8058 and 8059, up since 2026-10-10). Its juniper-observability 0.4.0 and juniper-service-core 0.5.0, both below canopy's floors, are upgraded only once those legs stop.",
           "   The check the ruling named was for `JuniperCanopy1`, and it preceded all three upgrades.\n"
-          "   - **Not done**: the check failed. Four live canopy E2E legs, another arc's, run from `JuniperCanopy1` (ports 8052, 8053, 8058 and 8059, up since 2026-10-10). Its juniper-observability 0.4.0 and juniper-service-core 0.5.0, both below canopy's floors, stay until the owner decides.\n"
+          "   - **Not done**: the check failed. Four live canopy E2E legs, another arc's, run from `JuniperCanopy1` (ports 8052, 8053, 8058 and 8059, up since 2026-10-10). Its juniper-observability 0.4.0 and juniper-service-core 0.5.0, both below canopy's floors, stay until the Overtoad decides.\n"
           "   - **Done anyway, on a per-environment reading of the ruling**: the host's juniper-ci-tools went from 0.8.0 to CI's 0.9.1. It lives in `JuniperCascor1`, which supplies the `pre-commit` and `juniper-check-doc-links` on `PATH`, and that environment got its own check: no live Python service (only five Serena MCP launchers running its `uv` binary) and a dry run with no dependency changes. It is reversible with `pip install juniper-ci-tools==0.8.0` there."),
     # v1 F2, v2 F3 (sec 8 side).
     (REC, "  They are triaged against current `main`, then carried in tests and docs carriers per repository. One juniper-ml code carrier takes #2480, #2493, #2502 and #2504, and the launcher's effort fix. #2484 is stacked on a `cursor/` branch, and #2513 follows up #2474.",

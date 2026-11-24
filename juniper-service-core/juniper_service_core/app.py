@@ -52,8 +52,21 @@ def create_app(
 
     Returns:
         A configured :class:`~fastapi.FastAPI` instance. Model-agnostic by design.
+        FastAPI's native telemetry is switched off in it (below).
     """
     app = FastAPI(
+        # FastAPI 0.142 added native OpenTelemetry instrumentation (tracing, metrics, logs and
+        # operation spans), on by default. A Juniper service's observability is Sentry, Prometheus
+        # and its own structured logging (juniper-observability), so every switch is off, as in
+        # juniper-data (juniper-data#454), juniper-cascor and juniper-canopy. Before 0.142 the
+        # keyword is not a parameter and lands in ``app.extra``.
+        telemetry={
+            "tracing": False,
+            "metrics": False,
+            "logs": False,
+            "operation_spans": False,
+            "auto_configure": False,
+        },
         title=title,
         version=version,
         lifespan=lifespan,

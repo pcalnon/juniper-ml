@@ -18,7 +18,7 @@ ahead. Nothing below has been rewritten to match the outcome.
 Found by an independent fact-check run against live state after the rollout, not by the audit
 and not by the rollout author. It matters more than any other correction here, because F-03 was
 used to argue the guard had ~zero protective value, and that argument was written into the
-workflow header, the rollout PR bodies, and the owner-facing recommendation.
+workflow header, the rollout PR bodies, and the Overtoad-facing recommendation.
 
 **F-03 claimed:** a base≠`main` PR triggers none of the repo's 10–22 required contexts, they sit
 at `expected`, and *"a stacked PR is already unmergeable; the guard only replaces a silent stall
@@ -131,7 +131,7 @@ Three results dominate:
 
 3. **`required` does not constrain the actor whose mistake this catches.** Independently measured on
    juniper-ml over the last month: **401 of 612 rule-suite evaluations (65.5%) were `bypass`, all of them
-   on `refs/heads/main`** (F-14). The stranded-PR defect class is an owner-merge defect; the owner
+   on `refs/heads/main`** (F-14). The stranded-PR defect class is an Overtoad-merge defect; the Overtoad
    bypasses the ruleset roughly two updates in three.
 
 **Recommendation**: adopt the workflow on all 8 repos **as an advisory (non-required) check first**, fix
@@ -551,7 +551,7 @@ gh api "repos/pcalnon/juniper-recurrence/commits/415c8c97/check-runs?check_name=
 Both appear in the merge box's rollup:
 
 ```bash
-gh api graphql -f query='{repository(owner:"pcalnon",name:"juniper-recurrence"){pullRequest(number:112){commits(last:1){nodes{commit{statusCheckRollup{contexts(first:100){nodes{__typename ... on CheckRun{name conclusion startedAt checkSuite{workflowRun{databaseId}}}}}}}}}}}}'
+gh api graphql -f query='{repository(Overtoad:"pcalnon",name:"juniper-recurrence"){pullRequest(number:112){commits(last:1){nodes{commit{statusCheckRollup{contexts(first:100){nodes{__typename ... on CheckRun{name conclusion startedAt checkSuite{workflowRun{databaseId}}}}}}}}}}}}'
 # Guard PR base branch  SUCCESS  2026-08-14T01:40:31Z  31761343605
 # Guard PR base branch  SUCCESS  2026-08-14T01:41:56Z  31761414448
 ```
@@ -654,8 +654,8 @@ Full bypass roster, identical on 7 of 8 targets:
 
 **Portability delta**: `juniper-deploy`'s ruleset omits the `4362741` row (4 bypass actors, not 5).
 
-**Consequence**: the stranded-PR incident (juniper-recurrence #7/#8) was an owner-merge defect. Making
-this a required check adds a gate the owner steps over roughly two default-branch updates in three. The
+**Consequence**: the stranded-PR incident (juniper-recurrence #7/#8) was an Overtoad-merge defect. Making
+this a required check adds a gate the Overtoad steps over roughly two default-branch updates in three. The
 guard's real value is the **annotation on the PR**, which an advisory check delivers identically.
 
 ---
@@ -704,7 +704,7 @@ empirically; the payload semantics are documented in the `github.event` definiti
   juniper-cascor for `BASE_REF_CHANGED_EVENT` returned **zero** matching timeline nodes.
 
 ```bash
-gh api graphql -f query='{repository(owner:"pcalnon",name:"juniper-cascor"){pullRequest(number:441){timelineItems(first:40,itemTypes:[BASE_REF_CHANGED_EVENT]){totalCount nodes{__typename}}}}}' \
+gh api graphql -f query='{repository(Overtoad:"pcalnon",name:"juniper-cascor"){pullRequest(number:441){timelineItems(first:40,itemTypes:[BASE_REF_CHANGED_EVENT]){totalCount nodes{__typename}}}}}' \
   --jq '.data.repository.pullRequest.timelineItems | {totalCount, types: [.nodes[].__typename] | group_by(.) | map({t:.[0], n:length})}'
 # {"totalCount":37,"types":[]}       <- filter honoured on nodes; totalCount is unfiltered
 ```
@@ -766,7 +766,7 @@ conflict between the guard and the fleet's own CI configuration. Low likelihood 
 **Answer: none. Requiring this guard today breaks zero open PRs.**
 
 ```bash
-gh api graphql -f query='{a:repository(owner:"pcalnon",name:"juniper-ml"){pullRequests(states:OPEN){totalCount}} ... }'
+gh api graphql -f query='{a:repository(Overtoad:"pcalnon",name:"juniper-ml"){pullRequests(states:OPEN){totalCount}} ... }'
 # ml 2, cascor 0, canopy 0, data 0, data-client 0, cascor-client 0, cascor-worker 0, deploy 0, recurrence 0
 ```
 

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — one-off (turing bring-up task G1: util/host_state_probe.bash and util/host_state_check.py)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task G1, the gates of §9.3,
          regression R-G1; §17.3 E-LAND-2 and §18.3 E-LAND-3); util/ad-hoc/2026-10-20_turing_g4_apply.py (the pattern
          this follows)

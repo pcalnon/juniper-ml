@@ -27,7 +27,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — one-off (flood-4 tests carrier, rebase onto juniper-ml#2516)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2517 (the carrier), juniper-ml#2516 (147263ec)
 """
 

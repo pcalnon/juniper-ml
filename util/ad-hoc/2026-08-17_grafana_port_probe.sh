@@ -5,14 +5,14 @@
 # Sub-Project: ad-hoc tooling
 # Author: Paul Calnon
 # Created: 2026-08-17
-# Status: ad-hoc — investigation (answers the owner's F-P1-2 / D-1 question)
-# Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: the native grafana-server is repointed or disabled and D-1 is closed.
+# Status: ad-hoc — investigation (answers the Overtoad's F-P1-2 / D-1 question)
+# Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: the native grafana-server is repointed or disabled and D-1 is closed.
 # Related: notes/JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_F-P1-2-GRAFANA-RENDER-CLOSURE-EVIDENCE.md
 #          (§5, D-1 and its 2026-08-17 update), juniper-ml#1136
 #
 # WHY
 #   D-1 recorded that the packaged grafana-server is in a hard restart loop because it cannot
-#   bind :3000 (the Domotz agent owns it), and proposed a root-level systemd drop-in. The owner
+#   bind :3000 (the Domotz agent owns it), and proposed a root-level systemd drop-in. The Overtoad
 #   asked whether the port could instead be configured at server start — command line, env var,
 #   or config file — before settling for a hard-coded fix. This answers that empirically rather
 #   than from documentation.

@@ -5,8 +5,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-25
-Status: ad-hoc — one-off (the tier-3 full-set lane: owner ruling D-5 of 2026-10-25 on §7.9 of the backup design)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (the tier-3 full-set lane: Overtoad ruling D-5 of 2026-10-25 on §7.9 of the backup design)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (§7.9, §8 P3 step 3, §10 D-5);
          util/ad-hoc/2026-10-21_turing_h4_apply.py (the pattern this follows)
 
@@ -21,7 +21,7 @@ The edits:
   count history; the suite's entry in § Test Suite Reference; the runner's and the installer's utility entries.
 - AGENTS.md: the suite count follows ci.yml's regression step, and **Last Updated** takes today's UTC date.
 - CHANGELOG.md: an [Unreleased] / Added entry.
-- The design: ONE dated as-built note at the end of §7.9, and nothing else (the owner's instruction for this change).
+- The design: ONE dated as-built note at the end of §7.9, and nothing else (the Overtoad's instruction for this change).
 
 Each edit has a marker. When the marker is already present the edit is skipped; otherwise its anchor must occur
 exactly once. A re-run on a newer main therefore applies cleanly or stops loudly.
@@ -75,7 +75,7 @@ TIER3_SECTION_ANCHOR = "\n### Operator pitfalls\n\n| Symptom | Cause / fix |\n|-
 TIER3_SECTION = f"""
 ### Scheduled lane (tier 3, full set)
 
-`bash util/install_juniper_backup_timer.bash --lane full [--dry-run]` installs tier 3 under `systemd --user`: §7.9 of [the backup design](../{DESIGN}), whose default the owner ruled for D-5 on 2026-10-25. It installs the same three scripts as tier 2 and the four units below, and touches none of tier 2's units. No `--lane`, or `--lane usb`, is the tier-2 install exactly.
+`bash util/install_juniper_backup_timer.bash --lane full [--dry-run]` installs tier 3 under `systemd --user`: §7.9 of [the backup design](../{DESIGN}), whose default the Overtoad ruled for D-5 on 2026-10-25. It installs the same three scripts as tier 2 and the four units below, and touches none of tier 2's units. No `--lane`, or `--lane usb`, is the tier-2 install exactly.
 
 | Installed | From |
 |-----------|------|
@@ -90,8 +90,8 @@ The lane is tier 2's scheduler and runner with its own environment, set in `juni
 | Setting | Value | Why |
 |---------|-------|-----|
 | `JUNIPER_BACKUP_STATE_DIR` | `~/.local/state/juniper-backup-full` | Its own lock, `last-run.status` and `last-success.*` stamps. Shared with tier 2, a tier-2 success would hide a stale full set. |
-| `JUNIPER_BACKUP_DEVICES` | `{DEVICE}` | "Ext WD Passport, Blackbox Part 1", by filesystem UUID, per the owner's `/etc/fstab`; it mounts at `/run/media/<user>/<UUID>`. This is the relative form under the default root, so the scheduler and the runner name one path. The fstab deprecates `/mnt/JuniperArchive`, the path §7.9 proposed. |
-| `JUNIPER_BACKUP_DIR` | `Juniper/Backups` | The owner's directory on that drive. Two components, which the runner and the scheduler accept from 1.1.0. |
+| `JUNIPER_BACKUP_DEVICES` | `{DEVICE}` | "Ext WD Passport, Blackbox Part 1", by filesystem UUID, per the Overtoad's `/etc/fstab`; it mounts at `/run/media/<user>/<UUID>`. This is the relative form under the default root, so the scheduler and the runner name one path. The fstab deprecates `/mnt/JuniperArchive`, the path §7.9 proposed. |
+| `JUNIPER_BACKUP_DIR` | `Juniper/Backups` | The Overtoad's directory on that drive. Two components, which the runner and the scheduler accept from 1.1.0. |
 | `JUNIPER_BACKUP_PERIOD_DAYS` | `30` | Monthly. |
 | `JUNIPER_BACKUP_STALE_DAYS` | `45` | The period plus two weeks. It must be at least the period, or a drive connected before its set is due reads `FAILED`. |
 
@@ -172,16 +172,16 @@ def suite_entry(mutants):
 
 def changelog_entry(mutants, tests, heading=True):
     return ("### Added\n\n" if heading else "") + (
-        "- **Tier 3: the monthly full set to the offline drive, as a scheduled lane** (owner ruling D-5, 2026-10-25, on §7.9\n"
+        "- **Tier 3: the monthly full set to the offline drive, as a scheduled lane** (Overtoad ruling D-5, 2026-10-25, on §7.9\n"
         f"  and §8 P3 step 3 of `{DESIGN}`).\n"
         "  - **The units** (new): `util/systemd/juniper-backup-full.{timer,path,service}` and\n"
         "    `util/systemd/juniper-backup-full-failure.service`. The service runs tier 2's scheduler and runner with the lane's\n"
         "    own environment: state directory `~/.local/state/juniper-backup-full`, drive\n"
-        f"    `{DEVICE}` (\"Ext WD Passport, Blackbox Part 1\" in the owner's `/etc/fstab`, mounted at\n"
+        f"    `{DEVICE}` (\"Ext WD Passport, Blackbox Part 1\" in the Overtoad's `/etc/fstab`, mounted at\n"
         "    `/run/media/<user>/<UUID>`), directory `Juniper/Backups`, a 30-day period and a 45-day staleness limit. Its\n"
         "    `--label full --repos \"…\"` names the ten application repos, `juniper-legacy` and the parent-level\n"
         "    `notes prompts util backups`, and the scheduler hands both to the runner unchanged. The timer fires monthly and\n"
-        "    the path unit on connection. The owner's fstab deprecates `/mnt/JuniperArchive`, so the path that §7.9 of\n"
+        "    the path unit on connection. The Overtoad's fstab deprecates `/mnt/JuniperArchive`, so the path that §7.9 of\n"
         f"    `{DESIGN}` proposed\n"
         "    is superseded, and that section gains a dated as-built note. Retention stays manual: nothing prunes.\n"
         "  - **`JUNIPER_BACKUP_DIR` may be a path.** `util/juniper-backup.bash` 1.1.0 accepts a relative path of\n"

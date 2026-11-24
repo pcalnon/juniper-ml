@@ -7,19 +7,19 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-21
 Status: ad-hoc — investigation (the evidence behind H5's option B record in the turing plan, v1.4.5)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-21_JUNIPER-ML_TURING-H5-RESTORED-MCP-SERVERS-RISK-ANALYSIS.md (§7, option B);
          notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18, H5);
          util/ad-hoc/2026-10-21_turing_h5_restore_check.py (whose checks this reuses);
          reports/2026-10-21_turing-h5-hardening/ (this check's output, before and after B)
 
-On 2026-10-21 the owner chose the risk analysis' option B: keep both trees, dormant and hardened. The agent
+On 2026-10-21 the Overtoad chose the risk analysis' option B: keep both trees, dormant and hardened. The agent
 applied B.1 to B.3, each a reversible step in place:
   B.1  adaptive-graph-of-thoughts' .claude/settings.local.json renamed to settings.local.json.h5-disabled
   B.2  its three .dxt bundles and the .zip renamed with the same .h5-disabled suffix
   B.3  agi-mcp-server/.npmrc written with ignore-scripts=true
 B.4 (a standing Little Snitch rule for the Cellar node) and B.5 (`git remote remove origin` in each tree) are
-the owner's. After B the restore check's provenance fails by design; this check accepts exactly option B's
+the Overtoad's. After B the restore check's provenance fails by design; this check accepts exactly option B's
 deviations and judges the restore check's other checks unchanged. Like the scripts it builds on, it never runs
 code from the trees and never runs git inside them.
 
@@ -28,12 +28,12 @@ Checks:
   b2-bundles     each bundle is absent at its own path, and its .h5-disabled rename holds upstream's bytes
   b3-npmrc       agi-mcp-server/.npmrc is exactly "ignore-scripts=true"
   provenance     each tree's HEAD is the audited commit, with no other remote, no command-running git config key
-                 and no live hook; its origin is the expected repository, or absent once the owner has run B.5.
+                 and no live hook; its origin is the expected repository, or absent once the Overtoad has run B.5.
                  Online, the tree differs from upstream at HEAD by exactly B's renames and .npmrc, plus agi's
                  regenerated lockfile (offline the check says the tree was not compared)
   npm-lock, npm-tree, no-scripts, configured, processes
                  the restore check's own checks, judged as there (processes excludes this script's command lines)
-  b5-origin      whether the owner has removed each origin (reported)
+  b5-origin      whether the Overtoad has removed each origin (reported)
   advisories     active GitHub advisories for the installed npm set, by severity (reported; online only)
 B.4 has no machine check: Little Snitch's rules are not read here.
 
@@ -210,8 +210,8 @@ def print_text(result: dict) -> None:
         entry = checks[key]
         shown = {k: v for k, v in entry.items() if k not in ("ok", "configs")}
         print(f"{'PASS' if entry['ok'] else 'FAIL'}  {key}: {json.dumps(shown, sort_keys=True)}")
-    print(f"INFO  b5-origin (owner): {json.dumps(checks['b5-origin'], sort_keys=True)}")
-    print("INFO  b4-node-rule (owner): not machine-checked; Little Snitch's rules are not read here")
+    print(f"INFO  b5-origin (Overtoad): {json.dumps(checks['b5-origin'], sort_keys=True)}")
+    print("INFO  b4-node-rule (Overtoad): not machine-checked; Little Snitch's rules are not read here")
     adv = checks.get("advisories")
     if adv:
         if "error" in adv:

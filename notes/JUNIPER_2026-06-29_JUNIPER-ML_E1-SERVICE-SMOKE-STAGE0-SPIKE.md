@@ -125,7 +125,7 @@ items for E-1 (Skill-vs-subagent + MCP availability).
 - **Gate**: structural-only `tests/test_service_smoke_skill_lint.py` (modeled on
   `tests/test_template_agent_skill_lint.py`) — frontmatter (opus + max, user-only, declared MCP/tools) +
   wiring to real artifacts **+ an explicit teardown step** — plus a documented **manual** smoke-verify the
-  owner runs (the live boot cannot run in ubuntu CI: no conda, no services).
+  Overtoad runs (the live boot cannot run in ubuntu CI: no conda, no services).
 - **Acceptance for Stage 1**: against a *deliberately broken* canopy, the Skill boots, fails `/v1/health`,
   reports the live traceback `file:line`, and **leaves no orphan python**.
 

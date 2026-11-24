@@ -10,7 +10,7 @@
 #
 # Description:
 #   Regression suite for util/snapshot_classify.py -- the read-only classifier that implements the
-#   owner's five-category snapshot scheme (handoff 2026-08-22 §2.4) over the §6.2 index.
+#   Overtoad's five-category snapshot scheme (handoff 2026-08-22 §2.4) over the §6.2 index.
 #####################################################################################################################################################################################################
 """Pin the classifier's contracts.
 
@@ -431,7 +431,7 @@ class NoDestructivePathTest(unittest.TestCase):
 
     Anti-resurrection, mirroring the guard on ``snapshot_index.py``: a ``--prune`` added
     to the tool that FORMS the verdict would act on it in the same breath, prejudging the
-    owner's decision.
+    Overtoad's decision.
     """
 
     def test_module_has_no_delete_surface(self) -> None:

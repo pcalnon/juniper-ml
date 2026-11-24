@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-08
 Status: ad-hoc — investigation (flood-3 evaluator ``data-tests``; juniper-data #449-#473)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data #449 #450 #453 #458 #459 #461 #466 #467 #469 #471 #473
 
 Usage::

@@ -11,7 +11,7 @@ is a DIFFERENT script, one word apart in the filename. That one is the screen
 against the merge-base)` CI step actually executes. This file is a standalone verifier and is
 wired into nothing.
 
-**FOUR blind spots were FIXED 2026-09-15 (owner-ruled). They had been documented and left
+**FOUR blind spots were FIXED 2026-09-15 (Overtoad-ruled). They had been documented and left
 for ten days, which is its own lesson: a documented defect is still a defect.**
 
   * the VCS command was absent from the `CODEY` alternation, so every such command line was

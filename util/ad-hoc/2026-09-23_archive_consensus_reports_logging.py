@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (logging redesign arc, cascor#573)
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc — one-off per validation round
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-09-22_archive_consensus_reports_canopy.py (the canopy arc's copy; same
          extraction, a canopy-specific heading); memory note
          reference_subagents_killed_by_session_limit_resume_with_sendmessage ("archive reports

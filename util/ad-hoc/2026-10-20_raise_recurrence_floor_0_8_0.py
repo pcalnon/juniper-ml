@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-20
 Status: ad-hoc — migration
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: P5 / W5.2 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md;
          util/ad-hoc/2026-10-19_raise_recurrence_floor_0_7_0.py (the 0.7.0 raise this follows, ml#2262);
          juniper-recurrence#215 (W5.2's service half + the ``[torch]`` fix) / #220 (the 0.8.0 proposal)

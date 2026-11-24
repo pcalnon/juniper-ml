@@ -7,7 +7,7 @@ Application: ad-hoc memory-governance tooling
 Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-31
-Status:      ad-hoc -- the full index pass deferred by the owner to the end of the
+Status:      ad-hoc -- the full index pass deferred by the Overtoad to the end of the
              shared-session-memory arc (tracker juniper-ml#1326).
 Retire when: the index is under budget and a forward-only cap keeps it there.
 

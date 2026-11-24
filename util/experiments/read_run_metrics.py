@@ -29,7 +29,7 @@
 #   poll-independent AND Prometheus-independent: a run reporting `scrape_confirmed: false` still
 #   carries a complete histogram, because that flag describes the PROMETHEUS scrape, not the data.
 #
-#   THE GATE IS SPLIT (owner decision, 2026-09-02), and these are its two halves:
+#   THE GATE IS SPLIT (Overtoad decision, 2026-09-02), and these are its two halves:
 #     * WORK  -- step_count. Deterministic for a seed-fixed config, and CONTENTION-IMMUNE: measured
 #                identical across 21 cells spanning a 3x range of step duration. Gateable exactly --
 #                but the determinism holds only WITHIN a termination branch (completion_reason).

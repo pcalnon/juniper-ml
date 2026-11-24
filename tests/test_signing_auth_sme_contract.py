@@ -129,7 +129,7 @@ class SigningAuthSmeContractTest(ContractMixin, unittest.TestCase):
         self.assertIn("the OWNER command list, as one fenced `bash` block", output)
 
     def test_owner_list_draws_on_the_plan_checklist(self):
-        self.assertIn("§14.1", self.body, "the owner-run operator checklist is the plan's §14.1")
+        self.assertIn("§14.1", self.body, "the Overtoad-run operator checklist is the plan's §14.1")
         for task in ("A2", "A3", "B3", "B4", "B5", "A1"):
             with self.subTest(task=task):
                 self.assertIn(task, self.body.split("**Write the OWNER command list.**", 1)[-1])

@@ -11,7 +11,7 @@
 # Last Updated: 2026-11-23
 #
 # Status: ad-hoc -- investigation (one-artifact publish sweep, ruling 2 of 2026-11-16)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related: util/release_train/ceremony.py (classify_publish_run); juniper-ml#2592 (HALT_BUILD, the monitor's
 #          dispatch runs); notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md v1.15.17
 #          (section 5, the note on the one-artifact publish). Promoted from session e71d3e's scratch

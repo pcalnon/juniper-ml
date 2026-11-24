@@ -30,12 +30,12 @@ git worktree and you verify your own work before reporting done.
    conflict rule "any checker failing a criterion fails it".
 4. **Verify.** Run the repo's ACTUAL tests + lint + pre-commit (not a generic "run the tests"). Do NOT
    delete, disable, or weaken any test to make a suite pass — a CRITICAL and ABSOLUTE requirement.
-5. **Open a PR.** Push the branch and `gh pr create` against the base branch. **Never merge** — the owner
+5. **Open a PR.** Push the branch and `gh pr create` against the base branch. **Never merge** — the Overtoad
    merges. Report the PR URL and a verification summary.
 
 ## Recover / abort
 
-- No merge without a PR; the owner approves merges and PyPI / deploy gates.
+- No merge without a PR; the Overtoad approves merges and PyPI / deploy gates.
 - Worktree cleanup only after the PR merges; never delete a worktree that holds unmerged work.
 - If you cannot satisfy the acceptance criteria without weakening a test or inventing a fact, **stop and
   report** what is blocking, rather than forcing a wrong change.

@@ -242,7 +242,7 @@ contract unchanged.
    plus honesty about what happens at the boundary.
 2. **Value: a single-digit-to-low-teens default.** 7.5 symbols fit the 30 s budget at the
    conservative rate, 14.1 at the optimistic one, and the earlier independent estimate was ~7.
-   **10 is the round number inside that range**; it is the owner's call whether to sit at the
+   **10 is the round number inside that range**; it is the Overtoad's call whether to sit at the
    optimistic or conservative end.
 3. **Same contract as `csv_import`**, because the failure mode is identical:
    `generators/equities/generator.py:264` is `ordered = ordered[: params.max_symbols]` — a bare
@@ -402,7 +402,7 @@ when it returned nothing, so `fundamentals_fill="zero"` turned a missing series 
 downstream distinguishes from a measurement. It now logs a warning naming the ticker and the fill
 policy.
 
-### 6.4 What this leaves for the owner
+### 6.4 What this leaves for the Overtoad
 
 - **The 3 rescuable tickers.** `us-gaap:CommonStockSharesIssued` would cover them, but *issued* is
   not *outstanding* — it includes treasury shares, so `market_cap` would silently mean something

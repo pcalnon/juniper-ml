@@ -1,8 +1,8 @@
-# The pointer-follow soak's ten open owner decisions — RULED
+# The pointer-follow soak's ten open Overtoad decisions — RULED
 
 **Project**: juniper-ml
 **Date**: 2026-09-17
-**Status**: decisions of record — all ten ruled by the owner in one interactive pass
+**Status**: decisions of record — all ten ruled by the Overtoad in one interactive pass
 **Supersedes**: §6 of `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md`, and decision #7 of `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md`
 **Companion, not superseded**: `notes/JUNIPER_2026-09-16_JUNIPER-ML_SOAK-OWNER-RULINGS-AND-WHAT-THEY-CHANGED.md`
 
@@ -25,7 +25,7 @@ wire the contamination screen report-only, and "apply the escalation ladder" (wh
 action was due** and the implementation was withdrawn in full) — are outside the ten and are
 not re-opened here.
 
-Read that document for what the instrument does; read this one for what the owner decided.
+Read that document for what the instrument does; read this one for what the Overtoad decided.
 Where both speak, they agree.
 
 ## 1. The rulings
@@ -60,11 +60,11 @@ re-audit published it, **23/42 = 54.8%** [0.399, 0.688] once D5 removed its row.
 **ml#1952 shipped it as a schema change only, and reverted two data edits made on its
 authority — correctly.** §7 of
 `notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md` lists
-*"which standard binds"* and *"whether the §4 rows are re-scored"* as **separate** owner
+*"which standard binds"* and *"whether the §4 rows are re-scored"* as **separate** Overtoad
 questions. Only the first was ruled. **The standard binds prospectively; the historical
 corpus is untouched.**
 
-That separation was not visible when D2 was put to the owner — the question as framed
+That separation was not visible when D2 was put to the Overtoad — the question as framed
 implied the corpus would follow. It does not, and re-scoring the §4 rows remains unruled.
 
 **A consequence found by ml#1952 that no earlier document records:** a downward re-score
@@ -161,7 +161,7 @@ failures on P15, a probe the ledger files under *"the discriminator is stricter 
 source rule"*. Closed: no skills probe.
 
 `util/soak_ledger.py`'s `status` message is updated accordingly. It told every operator to
-"revisit owner decision 7" — completed work — and that wording is what left the instruction
+"revisit Overtoad decision 7" — completed work — and that wording is what left the instruction
 unactioned for ten days.
 
 ### D10 — relocation continues, for a stated reason
@@ -185,7 +185,7 @@ Ruling these ten does **not** close the arc. Still open, and untouched here:
   `notes/JUNIPER_2026-09-09_JUNIPER-ML_SOAK-STRATUM-PREDICTOR-ANALYSIS.md` at a sample size
   where a perfect split would have been found. **Nothing predicts which stratum a new fact
   lands in**, so D10's policy cannot be narrowed per-fact.
-- **Whether the §4 rows are re-scored** (D2's sibling question, never put to the owner).
+- **Whether the §4 rows are re-scored** (D2's sibling question, never put to the Overtoad).
 - **Item C** — `analyse()` has no era filter. Building it is inert; wiring it was D4, now ruled.
 - **Item D** — no soak script reads `tool_result`, so half of what §4 calls a FOLLOW is
   invisible. Changing that changes the standard D2 just fixed.
@@ -194,7 +194,7 @@ Ruling these ten does **not** close the arc. Still open, and untouched here:
   invalidation left P18 at 1 run and the corpus at exactly `MIN_DISTINCT_PROBES` — **live
   margin zero**. D3 removes the *procedural* obstacle that question was blocked on
   (`--force` past a terminal verdict is now authorised, narrowly), so what remains is only
-  whether the billed session is worth spending. That is still the owner's, and it is the one
+  whether the billed session is worth spending. That is still the Overtoad's, and it is the one
   place where these rulings make a previously-blocked action possible.
 
 **D3 does NOT close the fail-open cliff**, and it should not be read as doing so. That cliff

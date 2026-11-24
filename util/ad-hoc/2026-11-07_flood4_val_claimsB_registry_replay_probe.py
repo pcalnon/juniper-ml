@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: flood-4 docs carrier validation (claims lens, slice B); drafts juniper-ml#2449, #2460
 
 Run with PYTHONPATH=<checkout>/juniper-service-core. ``--stats-only`` runs only the

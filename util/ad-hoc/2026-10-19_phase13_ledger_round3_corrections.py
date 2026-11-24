@@ -6,8 +6,8 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-19
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
-# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
+# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : ledger Phase 13 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);
 #               HANDOFF_2026-10-19_canopy-phase13-manual-sweep-five-p2s-now-p1-item-30-owed.md
 # ---------------------------------------------------------------------------
@@ -61,12 +61,12 @@ LEDGER_SUBS = [
     ),
     # --- F-057 Status bullet ---
     (
-        "  the owner's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1 and CAN-015\n"
+        "  the Overtoad's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1 and CAN-015\n"
         "  row (`" + ROADMAP_NAME + "`) and the 2026-05-05 audit's §5.2 (`" + AUDIT_NAME + "`), which had said \"shipped\n"
         "  end-to-end on `main`\" while its own §11.4 confirmed only g-1 and g-6, carry the same correction since Phase 13's\n"
         "  rounds 1 and 2; the audit's §5.1 line \"CAN-015g replay V2 wired\" (`:112`) describes canopy's consumers, which\n"
         "  shipped, and stands. No document this phase or its lanes read still records the stream as shipped.",
-        "  the owner's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1\n"
+        "  the Overtoad's first limb (O17) does not reach this entry through it (Phase 13). The V7 roadmap's §28.1\n"
         "  (`" + ROADMAP_NAME + "`) and the 2026-05-05 audit's §5.2 (`" + AUDIT_NAME + "`), which had said \"shipped end-to-end\n"
         "  on `main`\" while its own §11.4 confirmed only g-1 and g-6, carry the same correction since Phase 13's rounds 1\n"
         "  and 2, and the roadmap's CAN-015 row and the audit's three restatements (its §5.2 Status delta, §8.1 and §11.7\n"
@@ -101,9 +101,9 @@ LEDGER_SUBS = [
     ),
     # --- Matrix effect (R3A F4) ---
     (
-        "  - **The owner's question** (O17): the first limb decides F-CANOPY-065 alone among the findings Phase 11 named,\n"
+        "  - **The Overtoad's question** (O17): the first limb decides F-CANOPY-065 alone among the findings Phase 11 named,\n"
         "    the four sites that recorded F-CANOPY-057's stream as shipped now carrying the dated correction: 9 open P1\n",
-        "  - **The owner's question** (O17): the first limb decides F-CANOPY-065 alone among the findings Phase 11 named,\n"
+        "  - **The Overtoad's question** (O17): the first limb decides F-CANOPY-065 alone among the findings Phase 11 named,\n"
         "    the four sites in three documents that recorded F-CANOPY-057's stream as shipped now corrected or pointed at\n"
         "    the correction: 9 open P1\n",
     ),

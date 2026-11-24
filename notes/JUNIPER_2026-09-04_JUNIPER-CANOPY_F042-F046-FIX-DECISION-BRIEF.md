@@ -3,7 +3,7 @@
 **Project**: Juniper — juniper-canopy
 **Author**: Paul Calnon
 **Date**: 2026-09-04
-**Status**: **DECIDED 2026-09-04** — all six decision points closed by the owner; this is now the
+**Status**: **DECIDED 2026-09-04** — all six decision points closed by the Overtoad; this is now the
 design-of-record for both fixes. Decisions are recorded verbatim in
 [§ Decisions taken](#decisions-taken-2026-09-04) at the foot of this document; the options analysis
 above is preserved unchanged so the *rejected* alternatives and their costs remain legible.
@@ -220,7 +220,7 @@ predicate belongs with whichever option D1 selects.
 
 ## Decisions taken (2026-09-04)
 
-Closed interactively by the owner against the options above.
+Closed interactively by the Overtoad against the options above.
 
 | ID | Decision | Chosen | Rejected, and why it matters |
 |---|---|---|---|

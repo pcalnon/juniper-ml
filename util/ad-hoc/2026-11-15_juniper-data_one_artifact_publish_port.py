@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (port juniper-cascor#763 / #767's one-artifact publish fix to juniper-data)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_cascor_one_artifact_publish_edits.py (template_blocks, republish_job and replace_once,
          which this loads); util/ad-hoc/2026-11-15_publish_port_template_identity.py (the cross-repo identity check);
          util/open_signed_pr.py (uploads the files this writes, whole);
@@ -15,7 +15,7 @@ Related: util/ad-hoc/2026-11-15_cascor_one_artifact_publish_edits.py (template_b
 Why
 ---
 juniper-data's ``publish.yml`` ran ``python -m build`` in its TestPyPI job and again in its PyPI job, so PyPI served a
-second build of every release (0.17.1's wheel: ``cce2c167...`` on PyPI, ``3b8f1a84...`` on TestPyPI). The owner's
+second build of every release (0.17.1's wheel: ``cce2c167...`` on PyPI, ``3b8f1a84...`` on TestPyPI). The Overtoad's
 directive of 2026-11-15 asks for one artifact and a sha256 check; juniper-cascor's ``publish.yml`` (main 675884888f5a,
 after #763 and #767) is the template. ``util/open_signed_pr.py`` uploads WHOLE files, so an edit made on a tree that
 ``main`` has since moved past silently reverts whatever merged in between. Every edit here is therefore replayable on a
@@ -118,7 +118,7 @@ HEADER_BODY = """\
 #
 # Description:   Publish the juniper-data package to TestPyPI, then PyPI, from a published `v*` GitHub Release.
 #
-#    ONE ARTIFACT (the owner's directive of 2026-11-15; a port of juniper-cascor#763 and #767). The build job builds
+#    ONE ARTIFACT (the Overtoad's directive of 2026-11-15; a port of juniper-cascor#763 and #767). The build job builds
 #    the sdist and wheel once, records their sha256 in SHA256SUMS and hands both publish jobs that one artifact.
 #    TestPyPI takes it first and must then serve exactly those sha256; PyPI takes it only after TestPyPI's JSON is
 #    checked again, and must serve them too. Until then each publish job ran its own `python -m build`, so PyPI served
@@ -127,7 +127,7 @@ HEADER_BODY = """\
 #
 #    The steps marked "one-artifact publish template", and the republish job, are juniper-cascor's publish.yml copied
 #    verbatim: they read nothing from this repository but the two `env` values below. The republish job is step 1 of
-#    the owner's recovery ladder for a release that did not reach PyPI (docs/ci_cd/CICD_MANUAL.md § Recovering a
+#    the Overtoad's recovery ladder for a release that did not reach PyPI (docs/ci_cd/CICD_MANUAL.md § Recovering a
 #    release that did not reach PyPI). notify-consumers runs after the PyPI job of a release run only: a republish
 #    dispatch skips it, and notify-consumers.yml's own workflow_dispatch re-sends.
 """
@@ -272,7 +272,7 @@ def publish_workflow(text: str, template: str, notify_yml: str) -> str:
 
 CHANGELOG_ENTRY = """\
 - **PyPI now receives the files TestPyPI took: `publish.yml` builds once, and the run checks every upload by sha256
-  against TestPyPI** (the owner's directive of 2026-11-15: "deploy to pypi should send the same artifact that was
+  against TestPyPI** (the Overtoad's directive of 2026-11-15: "deploy to pypi should send the same artifact that was
   already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy,
   might also be helpful here to prevent this from slipping through the cracks again."). The `testpypi` and `pypi` jobs
   each ran `python -m build`, so PyPI served a second build of every release: the 0.17.1 wheel is `cce2c167…` on PyPI
@@ -297,7 +297,7 @@ CHANGELOG_ENTRY = """\
     `Build and Validate` gets `contents: read` and `actions: read`, `Publish to TestPyPI` `contents: read` and
     `id-token: write`, and `Publish to PyPI` `id-token: write`, so the build, which runs the build backend, can mint no
     OIDC token.
-  - **Recovery, in the owner's order (ruling of 2026-11-15).** A `workflow_dispatch` from the release tag with
+  - **Recovery, in the Overtoad's order (ruling of 2026-11-15).** A `workflow_dispatch` from the release tag with
     `republish_from_testpypi` runs only the new job `Republish the tested files (dispatch only)`, behind the same
     `pypi` gate. It builds nothing: it downloads the version's files from TestPyPI, checks each against TestPyPI's JSON
     and, while the release run's artifact exists, against its `SHA256SUMS`, uploads them, and checks PyPI's JSON. If
@@ -367,7 +367,7 @@ MANUAL_SECTIONS = f"""\
 
 #### One artifact, checked against TestPyPI
 
-Until 2026-11-15 the `testpypi` and `pypi` jobs each ran `python -m build`, so PyPI served a second build of every release: the 0.17.1 wheel is `cce2c167…` on PyPI and `3b8f1a84…` on TestPyPI, 0.17.0's `680c37b5…` against `2842d5b1…`, and 0.16.0's `8560d60c…` against `ead4708d…`; their sdists differ too. The owner's directive (2026-11-15): "deploy to pypi should send the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks again."
+Until 2026-11-15 the `testpypi` and `pypi` jobs each ran `python -m build`, so PyPI served a second build of every release: the 0.17.1 wheel is `cce2c167…` on PyPI and `3b8f1a84…` on TestPyPI, 0.17.0's `680c37b5…` against `2842d5b1…`, and 0.16.0's `8560d60c…` against `ead4708d…`; their sdists differ too. The Overtoad's directive (2026-11-15): "deploy to pypi should send the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks again."
 
 Now both publish jobs upload the build job's artifact, and each checks it against `SHA256SUMS` first. TestPyPI's JSON must list exactly those files and sha256 after the TestPyPI upload, before the install check, and again before the PyPI upload; PyPI's JSON must list them after the PyPI upload. An index never takes a second file under a name it already holds, so TestPyPI's record witnesses what the install check tested. Only the jobs that upload hold `id-token: write`: the workflow grants nothing (`permissions: {{}}`), `Build and Validate` holds `contents: read` and `actions: read`, `Publish to TestPyPI` `contents: read` and `id-token: write`, `Publish to PyPI` `id-token: write`, the republish job `actions: read` and `id-token: write`, and `notify-consumers` nothing.
 
@@ -375,7 +375,7 @@ The steps marked `One-artifact publish template`, and the whole `republish` job,
 
 #### Recovering a release that did not reach PyPI
 
-The owner's ladder (ruling of 2026-11-15), in this order. Every rung publishes the files TestPyPI took, or nothing:
+The Overtoad's ladder (ruling of 2026-11-15), in this order. Every rung publishes the files TestPyPI took, or nothing:
 
 1. **Republish TestPyPI's files.** Dispatch `publish.yml` from the release tag:
 
@@ -492,8 +492,8 @@ def cicd_reference(text: str) -> str:
     )
     text = replace_once(
         text,
-        "| `pypi` | 5 minutes | Yes (the owner) | The same six tag patterns | Production PyPI publishing |\n",
-        "| `pypi` | 5 minutes | Yes (the owner) | The same six tag patterns | Production PyPI publishing: the `pypi` job, and the `republish` job on its dispatch from a release tag |\n",
+        "| `pypi` | 5 minutes | Yes (the Overtoad) | The same six tag patterns | Production PyPI publishing |\n",
+        "| `pypi` | 5 minutes | Yes (the Overtoad) | The same six tag patterns | Production PyPI publishing: the `pypi` job, and the `republish` job on its dispatch from a release tag |\n",
         where,
     )
     text = replace_once(
@@ -512,8 +512,8 @@ def reference(text: str) -> str:
     text = replace_once(text, "**Last Updated:** November 15, 2026\n**Version:** 0.4.11\n", "**Last Updated:** November 15, 2026\n**Version:** 0.4.12\n", where)
     text = replace_once(
         text,
-        "| **Publish to PyPI** | `publish.yml` | GitHub release `published` | Build and `twine check`; TestPyPI (`testpypi` environment) and an install check; then PyPI (`pypi` environment: the owner's review plus a 5-minute wait). Both by Trusted Publishing (OIDC). Then [notify consumers](#consumer-release-notification) | None |\n",
-        "| **Publish to PyPI** | `publish.yml` | GitHub release `published`; manual (`workflow_dispatch` from a release tag with `republish_from_testpypi`: republish only) | `Build and Validate` builds once and records `SHA256SUMS`; TestPyPI (`testpypi` environment) takes that artifact, its JSON must list exactly those sha256, and an install check follows; then PyPI (`pypi` environment: the owner's review plus a 5-minute wait) takes the same artifact after TestPyPI's JSON is checked again, and PyPI's JSON is checked. Both by Trusted Publishing (OIDC). Then [notify consumers](#consumer-release-notification). The dispatch republishes TestPyPI's files: " + ladder + " | None |\n",
+        "| **Publish to PyPI** | `publish.yml` | GitHub release `published` | Build and `twine check`; TestPyPI (`testpypi` environment) and an install check; then PyPI (`pypi` environment: the Overtoad's review plus a 5-minute wait). Both by Trusted Publishing (OIDC). Then [notify consumers](#consumer-release-notification) | None |\n",
+        "| **Publish to PyPI** | `publish.yml` | GitHub release `published`; manual (`workflow_dispatch` from a release tag with `republish_from_testpypi`: republish only) | `Build and Validate` builds once and records `SHA256SUMS`; TestPyPI (`testpypi` environment) takes that artifact, its JSON must list exactly those sha256, and an install check follows; then PyPI (`pypi` environment: the Overtoad's review plus a 5-minute wait) takes the same artifact after TestPyPI's JSON is checked again, and PyPI's JSON is checked. Both by Trusted Publishing (OIDC). Then [notify consumers](#consumer-release-notification). The dispatch republishes TestPyPI's files: " + ladder + " | None |\n",
         where,
     )
     text = replace_once(

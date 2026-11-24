@@ -15,7 +15,7 @@
 #####################################################################################################################################################################################################
 """Pin the caveats, because the caveats ARE the feature.
 
-The owner's instruction (§3.4) was explicit: backfilled metadata must carry "a clear and
+The Overtoad's instruction (§3.4) was explicit: backfilled metadata must carry "a clear and
 visible label capturing the approximate, inferred, or recreated nature of their metadata [...]
 a potentially important caution against naive reasoning."
 

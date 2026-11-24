@@ -2,12 +2,12 @@
 """
 Project:     Juniper
 Sub-Project: juniper-ml
-Application: Performance lane -- owner decision D1 (the epoch-count debt)
+Application: Performance lane -- Overtoad decision D1 (the epoch-count debt)
 Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Status:      ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-09-23_d1_epoch_count_sweep.py
 
 Reduce the per-arm JSON records of ``2026-09-23_d1_epoch_count_sweep.py`` WITHOUT waiting for the
@@ -16,7 +16,7 @@ files exist, so an interim look is possible and a crashed sweep still yields its
 
 For every arm record it prints, against the FIRST ``none`` record:
   * counts   -- hidden units, per-phase candidate ``epochs_completed``, output epochs, history length
-                (the owner's criterion for the D1 flip);
+                (the Overtoad's criterion for the D1 flip);
   * numerics -- winning candidate per phase, best correlations, final loss (supplementary: explains
                 the counts; bit-identity is stronger than count-identity).
 and, per arm, whether its repeats agree with each other (determinism).

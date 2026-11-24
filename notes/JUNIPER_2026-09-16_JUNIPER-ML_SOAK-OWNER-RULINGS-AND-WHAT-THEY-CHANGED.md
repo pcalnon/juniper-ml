@@ -1,9 +1,9 @@
-# Soak arc — owner rulings 2026-09-15/16, and exactly what each changed
+# Soak arc — Overtoad rulings 2026-09-15/16, and exactly what each changed
 
 **Date**: 2026-09-16
 **Repo**: juniper-ml
 **Author**: Paul Calnon
-**Status**: RECORD of owner rulings and their implementation. Validated by independent consensus,
+**Status**: RECORD of Overtoad rulings and their implementation. Validated by independent consensus,
 which **rejected one ruling's implementation outright** (§4) and narrowed another (§1).
 
 Ledger of record: `reports/soak/pointer_follow_soak.jsonl`.
@@ -51,11 +51,11 @@ DOWN, and `cmd_rescore` rejected anything whose outcome was not `miss`. `RESCORA
 
 **The data edit took three steps, and the sequence is the point.** §7 of the recovery note lists
 item 1 (which standard binds) and item 2 (**whether the §4 rows are re-scored**) as *separate*
-owner questions.
+Overtoad questions.
 
 1. **2026-09-15** — item 1 ruled. Two re-scores were made on that authority alone. They were not
-   authorised: item 2 had not been put to the owner.
-2. **2026-09-16** — owner ruled *keep the widening, revert the edits*. Both reverted
+   authorised: item 2 had not been put to the Overtoad.
+2. **2026-09-16** — Overtoad ruled *keep the widening, revert the edits*. Both reverted
    (`util/ad-hoc/2026-09-15_soak_decisions/revert_unauthorised_rescores.py`); the standard stayed
    expressible and prospectively binding, the historical corpus untouched.
 3. **2026-09-17** — **item 2 ruled: option A, re-score both.** Re-applied, this time citing item 2.
@@ -78,7 +78,7 @@ by `_own_repo_occurrence`. P21 is the **retrieval standard**, which `retrieval_c
 implement — `tests/test_soak_run_probe.py::test_pointer_path_in_a_command_arg_currently_counts_as_a_hit`
 still pins the over-inclusive behaviour, deliberately, so that narrowing it is a visible test break.
 
-The owner was shown this consequence and chose **A** over **E** (which would also have narrowed the
+The Overtoad was shown this consequence and chose **A** over **E** (which would also have narrowed the
 scorer). **The divergence is therefore deliberate.** A later reader must not reconcile it by
 reverting the P21 row; the open follow-up is narrowing the scorer, and that is its own decision.
 
@@ -92,7 +92,7 @@ reverting the P21 row; the open follow-up is narrowing the scorer, and that is i
   because the corpus has 2 area misses against `AREA_MIN_MISSES = 3`.
 
 Both were measured before the ruling, by
-`util/ad-hoc/2026-09-17_item2_options/score_the_item2_options.py`, and shown to the owner.
+`util/ad-hoc/2026-09-17_item2_options/score_the_item2_options.py`, and shown to the Overtoad.
 
 ### 1.1 The widening is NOT "monotone in the safe direction" — three consequences
 
@@ -115,7 +115,7 @@ The 2026-08-31 guard's wording is *"any inconvenient row to any **convenient** c
 stop. An earlier draft of this work inserted the gloss *"and convenient means verdict-rescuing"*,
 which appears nowhere in the original, and then showed the change fell outside the gloss. That
 gloss is withdrawn. Widening the margin that keeps a billed study terminal **is** a convenient
-column under the guard's actual wording, which is why item 2 remains the owner's.
+column under the guard's actual wording, which is why item 2 remains the Overtoad's.
 
 ---
 
@@ -211,17 +211,17 @@ The reasoning that produced an action was wrong four ways, and consensus caught 
    re-inlining, the thing the plan forbids absolutely, and it destroyed P15 as a probe.
 
 **Correct disposition: nothing is due.** The ladder is discharged for P15 and the post-intervention
-evidence shows the intervention worked. Any further rung-1 action for P15 is a **new** owner
+evidence shows the intervention worked. Any further rung-1 action for P15 is a **new** Overtoad
 decision, belongs in `MEMORY.md` (which the residency gate does not read), and must be worded to
 survive `must_be_absent_from_source`.
 
 ---
 
-## 5. What is still the owner's
+## 5. What is still the Overtoad's
 
 - ~~**§7 item 2**~~ — **RULED 2026-09-17** (option A, re-score both). See §1 and §1.2.
 - **NEW, opened by that ruling: whether `retrieval_channel` is narrowed to implement the
-  filename half of the mechanism-checked standard.** Option E offered this and the owner chose A,
+  filename half of the mechanism-checked standard.** Option E offered this and the Overtoad chose A,
   so the divergence in §1.2 is deliberate and current. Narrowing means deliberately breaking
   `test_pointer_path_in_a_command_arg_currently_counts_as_a_hit`, which exists to make that a
   visible test break rather than a silent flip. Consensus has refuted two changes to this exact

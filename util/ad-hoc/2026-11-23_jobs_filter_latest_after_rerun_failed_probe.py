@@ -10,11 +10,11 @@
 # Created:      2026-11-23
 # Last Updated: 2026-11-23
 #
-# Status: ad-hoc -- one-off (one-artifact publish sweep, owner ruling 1 of 2026-11-16, session e71d3e)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status: ad-hoc -- one-off (one-artifact publish sweep, Overtoad ruling 1 of 2026-11-16, session e71d3e)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 #
 # Description:
-#   Owner ruling 1 (2026-11-16) makes the republish job refuse unless the release run's TestPyPI job(s) concluded
+#   The Overtoad ruling 1 (2026-11-16) makes the republish job refuse unless the release run's TestPyPI job(s) concluded
 #   success "in the latest attempt". The proposed mechanism is GET actions/runs/{id}/jobs?filter=latest. This probe
 #   answers the open question: after "Re-run failed jobs", does filter=latest still list the jobs that attempt N+1
 #   CARRIED OVER from attempt N (did not re-run), with their success conclusion?

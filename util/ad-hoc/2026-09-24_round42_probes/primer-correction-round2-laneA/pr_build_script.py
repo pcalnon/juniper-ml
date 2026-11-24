@@ -174,7 +174,7 @@ paragraph.
    numpy or zlib could do the same. RFC 9110 §8.8.1 calls such a validator weak: "a validator is weak
    if it is shared by two or more representations of a given resource at the same time, unless those
    representations have identical representation data". juniper-data therefore sends
-   `ETag: W/"<checksum>"`, per the owner's ruling of 2026-09-23. Three consequences for the passages
+   `ETag: W/"<checksum>"`, per the Overtoad's ruling of 2026-09-23. Three consequences for the passages
    linked here:
 
    - `If-None-Match` compares weakly, so revalidation works. `If-Match` compares strongly, so it can

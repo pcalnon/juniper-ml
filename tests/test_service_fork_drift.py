@@ -7,7 +7,7 @@ the key-handling code, which this gate could not name until ``APD-ECO-008``
 (2026-09-22) -- and its own ``RateLimiter``. Canopy is a site of the two
 key-handling guards and of ``retry-after-rounds-up`` (``APD-ECO-016``), and of
 nothing else. The shared package's own copy is a site of four guards: the two
-key-handling guards (owner ruling 2026-09-23), ``throttle-check-never-inserts``
+key-handling guards (Overtoad ruling 2026-09-23), ``throttle-check-never-inserts``
 and ``retry-after-rounds-up``. ``juniper-recurrence`` imports it, so a regression
 there reaches a service with no change of its own. That is the single most
 productive defect shape in the 2026-08-14 ecosystem defect register: **a guard
@@ -280,7 +280,7 @@ GUARDS: tuple[Guard, ...] = (
             ForkSite("juniper-cascor", _CASCOR_SECURITY, ("isinstance(k, str)", "k.strip()")),
             # APD-ECO-008: canopy's copy, fixed by juniper-canopy#660.
             ForkSite("juniper-canopy", _CANOPY_SECURITY, ("isinstance(k, str)", "k.strip()")),
-            # The canonical copy itself (owner ruling 2026-09-23). Unwatched until then,
+            # The canonical copy itself (Overtoad ruling 2026-09-23). Unwatched until then,
             # although recurrence imports it and would inherit a regression unseen.
             ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, ("isinstance(k, str)", "k.strip()")),
         ),
@@ -309,7 +309,7 @@ GUARDS: tuple[Guard, ...] = (
             # exactly one key, so this changes no timing there today; it holds the copy
             # to the same shape as its siblings, which is the class this gate exists for.
             ForkSite("juniper-canopy", _CANOPY_SECURITY, ("matched = False", "return matched")),
-            # The shared package, which recurrence imports (owner ruling 2026-09-23).
+            # The shared package, which recurrence imports (Overtoad ruling 2026-09-23).
             ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, ("matched = False", "return matched")),
         ),
     ),

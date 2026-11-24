@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-21
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: round-40 handoff §6; round-39 handoff §9.5 / §9.8
 
 FOUR FINDINGS, ALL RE-DERIVED BEFORE BEING ACCEPTED (procedure §5.2 -- a lone finding is a lead,

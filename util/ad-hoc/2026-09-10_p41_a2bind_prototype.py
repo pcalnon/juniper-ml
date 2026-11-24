@@ -8,7 +8,7 @@ Version:     0.1.0
 License:     MIT License
 
 Purpose: a working prototype of the **A2-bind** dispatch shape ruled for P4.1, with the
-``_default`` SETTER the owner asked for, proving four things before any cascor code moves:
+``_default`` SETTER the Overtoad asked for, proving four things before any cascor code moves:
 
   1. ``Logger.<m>`` stays a plain class attribute -- so the class path keeps the measured
      74-89 ns, faster than today's 95-110.

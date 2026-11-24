@@ -6,7 +6,7 @@
 **License**: MIT License
 **Document Type**: Design-of-record + roadmap
 **Document Version**: v2 (validation-hardened)
-**Status**: RATIFIED — round-1 build authorized (owner, 2026-06-24)
+**Status**: RATIFIED — round-1 build authorized (Overtoad, 2026-06-24)
 **Last Updated**: 2026-06-24
 
 ---
@@ -23,7 +23,7 @@
 |---------|------|--------|
 | v1 | 2026-06-23 | Initial design after corpus survey + primitive research |
 | **v2** | **2026-06-24** | Validated & Hardened, 5-agents: concrete validator contract, bound loop; expand rubric (R1–R5); ground bundle gains symbol/dep/prov facts; `.gitignore` reality + `~/.claude` mirror + `--repo-root`; roadmap re-sliced & made CI-objective; factual corrections |
-| **v2 — ratified** | **2026-06-24** | Owner ratified; round-1 build (PR 1) authorized |
+| **v2 — ratified** | **2026-06-24** | The Overtoad ratified; round-1 build (PR 1) authorized |
 
 ---
 
@@ -63,7 +63,7 @@ Two corpus facts ground the design:
 1. **There is no `prompts/templates/` subdirectory.** The de-facto template set is the **seven**
    `prompts/common-prompt-template_*.md` files: `code-review`, `failing-tests`, `implement-plan`,
    `new-plan_failing-tests`, `proposal-analysis`, `regressions`, `release-and-deployment`. They are a
-   **seed to mine, not a binding requirement** (per owner note).
+   **seed to mine, not a binding requirement** (per Overtoad note).
 2. **The seven converge on a skeleton** ~85–90 % aligned with the draft's structure and carry reusable
    **anti-hallucination doctrine** worth harvesting verbatim (§5.8, Appendix A).
 
@@ -87,7 +87,7 @@ Two corpus facts ground the design:
 
 ---
 
-## 3. Ratified owner decisions (round 1)
+## 3. Ratified Overtoad decisions (round 1)
 
 | ID | Decision | Choice | Implication |
 |----|----------|--------|-------------|
@@ -334,7 +334,7 @@ further questions — *deliverable correctness itself is undecidable from the pr
 bound; each directive admits a single resolvable interpretation; reading order unambiguous.
 
 **R5 — Right-sized scope** — states *what/why* + constraints, leaving implementation latitude unless the
-owner pinned a design; flags over-specification that boxes the agent into a predetermined (possibly
+Overtoad pinned a design; flags over-specification that boxes the agent into a predetermined (possibly
 wrong) solution. *(Counterpart to R1.2's scope-creep check.)*
 
 **De-overlap**: grounding *presence* → R2.1; grounding *truthfulness* → R3.4. RUBRIC IDs are stable so the
@@ -490,7 +490,7 @@ mitigated by the static lint + the mandatory build-time delegation check + dogfo
 - **OQ-2 — prompt datastore**: YAML for round 1; a queryable store is future work if the snippet set grows.
 - **OQ-3 — additional agent types** (Infrastructure/Review/Refactor/Test/Documentation): future rounds.
 - **OQ-4 — validator model/cost** *(resolved 2026-06-24)*: `prompt-validator` pins `model: opus` (latest
-  Opus) + `effort: max` — the suite's **standing default** for all agents and skills (owner directive);
+  Opus) + `effort: max` — the suite's **standing default** for all agents and skills (Overtoad directive);
   the validator is the last line of defense, so it runs at maximum capability/effort. Cost is bounded by
   the Skill's max-3-round fix loop.
 - **OQ-5 — auto-invocation**: `/template-agent` user-only initially; revisit after dogfooding.

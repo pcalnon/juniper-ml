@@ -9,7 +9,7 @@
 # Created:    2026-10-03
 # Version:    1.4.0 (2026-10-29: the VACUUM's temporary copy stays in memory -- see HISTORY)
 # Status:     ad-hoc -- recovery (the assessment's B4; issues I-15, I-28, I-38, I-39)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md
 #             ("the assessment"; its section 6.4 is the P0 checklist whose step numbers this file cites);
 #             notes/JUNIPER_2026-09-21_...INTEGRATED-DESIGN.md ("D") section 8 P0.5b, P1 step 1;

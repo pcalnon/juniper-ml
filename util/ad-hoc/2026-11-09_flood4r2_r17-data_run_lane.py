@@ -3,11 +3,11 @@
 Run juniper-data's CI unit lane, or the 44 tests it used to deselect, under a chosen interpreter, and log it.
 
 Project: juniper-ml
-Sub-Project: ad-hoc tooling (Cursor-fleet flood-4, owner ruling 17: "data: 44 unrun tests")
+Sub-Project: ad-hoc tooling (Cursor-fleet flood-4, Overtoad ruling 17: "data: 44 unrun tests")
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (prove the newly selected tests pass, and are not timing-sensitive)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md (ruling 17 is recorded in the record-update PR)
 
 MODES

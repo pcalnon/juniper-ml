@@ -6,7 +6,7 @@ Sub-Project: backup infrastructure
 Author:      Paul Calnon
 Created:     2026-09-23
 Status:      ad-hoc -- document-of-record edit
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-09-22_apply_owner_rulings.py (same contract; this reuses its guards)
              util/ad-hoc/smart_checks_backup-sda.bash (produced the evidence recorded here)
 
@@ -110,7 +110,7 @@ failed at the thing it was for.
   obvious-looking target, which is exactly the trap: it holds the sole local copy, so staging there puts
   the original and the re-encrypted copy in **one failure domain** for the whole of steps 4–7. The clean
   SMART report above does not change that — it lowers the probability, not the consequence, and the
-  criterion the owner set is that access is *never* lost. `/` has 376 GiB free against the ~203 GiB
+  criterion the Overtoad set is that access is *never* lost. `/` has 376 GiB free against the ~203 GiB
   needed, sits on a different physical device, is **ext4** so ownership and modes survive for D-14's
   read-only model, and is **outside the `/home/pcalnon` backup source**. `sdc3` (`/home`, 1.2 TiB free)
   satisfies the failure-domain test but fails the last one: staging there would sweep 203 GiB of

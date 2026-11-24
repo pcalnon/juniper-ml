@@ -120,7 +120,7 @@ system-exit:1       # no system-level signing configuration
 
 `~/.gnupg/gpg.conf` (39 lines, read in full) contains **no `default-key` and no `local-user`** — only algorithm/trust/display preferences. The four active git hooks (`post-checkout`, `post-commit`, `post-merge`, `pre-push` under `core.hooksPath=/…/juniper-ml/.git/hooks`) are pure Git LFS shims and matched no signing tokens (`HOOKGREP-EXIT:1`).
 
-**Conclusion for C1-C7: there is no stale RSA reference anywhere on this host's Juniper surface.** The owner's report is not reproducible against the current local state. §3.2 dates the behaviour it describes to on-or-before 2026-07-14; §8 records what could not be ruled out.
+**Conclusion for C1-C7: there is no stale RSA reference anywhere on this host's Juniper surface.** The Overtoad's report is not reproducible against the current local state. §3.2 dates the behaviour it describes to on-or-before 2026-07-14; §8 records what could not be ruled out.
 
 ---
 
@@ -222,7 +222,7 @@ So `B5690EEEBB952194` = **GitHub web-flow (current)** and is the expected signat
 
 The interim ed448 key `93E8591643C507FF` produced **0** signatures across all 3,208 commits — it was configured on 2026-07-16 and superseded on 2026-08-07 without ever signing a main-branch commit. This corroborates that the §5.3 "empirical verification probe" of the migration note was genuinely never performed for ed448.
 
-**Verified pass, but recorded as a finding** because it establishes the timeline: the regression the owner describes is **real and historical**, terminating with the 2026-07-16 repoint. It is not currently reproducible on this host.
+**Verified pass, but recorded as a finding** because it establishes the timeline: the regression the Overtoad describes is **real and historical**, terminating with the 2026-07-16 repoint. It is not currently reproducible on this host.
 
 #### A1-F3b — MINOR — five unsigned bot-lane main commits in the recent window
 
@@ -468,11 +468,11 @@ This is consistent with GitHub's documented persistence model: *"When a commit s
 | Release-train **propose** commits | **Unsigned local** — signing explicitly disabled | `util/release_train/propose.py:985,1441,1444`; `AGENTS.md:665` |
 | Release-train workflow jobs | **Unsigned** — global disable in both write jobs | `.github/workflows/release-train.yml:478,687` |
 | Fleet-triage predicted merges | **Unsigned** — throwaway detached clone | `util/fleet_triage/predict_merge.py:84,89,90` |
-| Owner's direct commits/pushes from this host | **Locally signed** with the ed25519 card subkey | The 10 `BA18D1A733B1831A` census commits, all 2026-08-09 |
+| The Overtoad's direct commits/pushes from this host | **Locally signed** with the ed25519 card subkey | The 10 `BA18D1A733B1831A` census commits, all 2026-08-09 |
 
-`AGENTS.md:665` states the design intent verbatim: *"`propose.py`'s proposal commits are unsigned local git commits … so the headless run never trips the owner's YubiKey signing config. `ceremony.py`'s exempt-archive commit is instead created via the GitHub API (`createCommitOnBranch`, no local commit), so it is **GitHub-signed / Verified**"*.
+`AGENTS.md:665` states the design intent verbatim: *"`propose.py`'s proposal commits are unsigned local git commits … so the headless run never trips the Overtoad's YubiKey signing config. `ceremony.py`'s exempt-archive commit is instead created via the GitHub API (`createCommitOnBranch`, no local commit), so it is **GitHub-signed / Verified**"*.
 
-**Implication for the reported regression**: the agentic PR flows exercised in this session's class of work **never touch the local signing key**. The local key is exercised only by the owner's own direct commits. That narrows the surface on which a stale-key regression could manifest to exactly one path — and §3.1/§3.2 show that path is currently correct.
+**Implication for the reported regression**: the agentic PR flows exercised in this session's class of work **never touch the local signing key**. The local key is exercised only by the Overtoad's own direct commits. That narrows the surface on which a stale-key regression could manifest to exactly one path — and §3.1/§3.2 show that path is currently correct.
 
 ---
 

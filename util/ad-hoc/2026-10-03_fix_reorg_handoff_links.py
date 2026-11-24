@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-03
 Status: ad-hoc — migration
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: branch task/reorg-prompts-directory-subdirs-by-month (9ca80284 moved 222 files from
          prompts/thread-handoff_automated-prompts/ into its HANDOFF_YYYY-MM/ subdirectories);
          the juniper-check-doc-links hook in .pre-commit-config.yaml; .github/workflows/docs-full-check.yml

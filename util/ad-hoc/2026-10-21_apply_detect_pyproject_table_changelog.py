@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-21
 Status: ad-hoc — one-off (the CHANGELOG half of the detect.py fix; kept so a silent revert costs one re-run)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/release_train/detect.py classify_pyproject_patch; tests/test_release_train_detect.py;
          util/ad-hoc/2026-10-20_apply_w5_5_w5_6_shared_docs.py (the --check shape this follows);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-20_recurrence-equities-recurrence-0-8-0-published-extras-and-compose-pins-landed-plan-v1-7-12.md

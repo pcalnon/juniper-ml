@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4 consolidation, canopy tests carrier (JuniperCanopy1 carries an editable juniper-canopy 0.6.0 install of the primary)
 
 Load with: PYTHONPATH=<this dir> python -m pytest -p 2026-11-07_flood4_canopy_import_origin ...

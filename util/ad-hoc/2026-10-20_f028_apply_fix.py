@@ -8,7 +8,7 @@ Application:  canopy E2E validation arc -- item 31 (F-CANOPY-028: a pin made jus
 Author:       Paul Calnon
 Created:      2026-10-20
 Status:       ad-hoc -- investigation
-Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:      notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md (F-CANOPY-028's Phase 14 blockquote; item 31);
               util/ad-hoc/2026-10-20_f069_apply_fix.py (the same mechanism, item 32; this tree is its output);
               util/ad-hoc/2026-10-20_item30_fixwave_redrive.py (``--step f028``, the ``delay<N>`` arms)

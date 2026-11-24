@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Record the owner's application of C2 and the gate's narrowing in the turing plan (v1.4.8).
+Record the Overtoad's application of C2 and the gate's narrowing in the turing plan (v1.4.8).
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-26
 Status: ad-hoc — one-off (the record PR of the "modular-meandering-crayon" session)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18, §18.2, §18.3);
          util/host_state_check.py (C2's gate); util/ad-hoc/2026-10-25_turing_rulings_1025_record.py (the pattern)
 
@@ -22,9 +22,9 @@ The edits:
   plan  1. the Version line, 1.4.7 -> 1.4.8. Only from 1.4.7: another version is reported and left alone;
         2. §18's opening paragraph: this session and its handoff, now the arc's main handoff;
         3. §18.2's C2 row: its status cell (applied);
-        4. §18.2's C2 row: the owner's commands become the on-state record and the narrowing;
+        4. §18.2's C2 row: the Overtoad's commands become the on-state record and the narrowing;
         5. erratum E-C2-GATE: "The sentences" gives the getter's observed on-sentence;
-        6. erratum E-C2-GATE: "Not yet observed" becomes the observation, the allow-signed note and the owner's checkout;
+        6. erratum E-C2-GATE: "Not yet observed" becomes the observation, the allow-signed note and the Overtoad's checkout;
   the previous main handoff:  7. a pointer to its successor.
 
 Exit 0 = every edit is present or applied (or would be, under --dry-run); 1 = an anchor is missing; 2 = bad arguments.
@@ -47,19 +47,19 @@ C2_MUTATION = "util/ad-hoc/2026-10-25_turing_c2_gate_mutation_check.py"
 
 VERSION_OLD = "- **Version**: 1.4.7 — v1.4.6 plus"
 VERSION_NEW = (
-    "- **Version**: 1.4.8 — v1.4.7 plus the owner's application of C2 and the gate's narrowing to the block-all sentence "
+    "- **Version**: 1.4.8 — v1.4.7 plus the Overtoad's application of C2 and the gate's narrowing to the block-all sentence "
     "turing printed (§18's opening; §18.2's C2 row; erratum E-C2-GATE in §18.3; 2026-10-26). v1.4.7 was v1.4.6 plus"
 )
 
 INTRO_OLD = f"whose handoff, `{PREV_HANDOFF}`, is now the arc's main handoff."
 INTRO_NEW = (
-    f"whose handoff is `{PREV_HANDOFF}`. The owner applied C2 during the next session, \"modular-meandering-crayon\" (v1.4.8), "
+    f"whose handoff is `{PREV_HANDOFF}`. The Overtoad applied C2 during the next session, \"modular-meandering-crayon\" (v1.4.8), "
     f"which narrowed G-SEC's firewall condition to the sentence turing printed; its handoff, `{THIS_HANDOFF}`, is now the arc's "
     "main handoff."
 )
 
-C2_CELL_OLD = "| C2 | **form: block all** (owner, 2026-10-25); **gate landed** (AGENT); **apply OWNER** |"
-C2_CELL_NEW = "| C2 | **done: applied** (OWNER, 2026-10-26); form: block all (owner, 2026-10-25); **gate landed, then narrowed** (AGENT) |"
+C2_CELL_OLD = "| C2 | **form: block all** (Overtoad, 2026-10-25); **gate landed** (AGENT); **apply OWNER** |"
+C2_CELL_NEW = "| C2 | **done: applied** (OWNER, 2026-10-26); form: block all (Overtoad, 2026-10-25); **gate landed, then narrowed** (AGENT) |"
 
 C2_TAIL_OLD = (
     "**OWNER**, in a terminal: `sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on`, then the same with "
@@ -68,10 +68,10 @@ C2_TAIL_OLD = (
 )
 C2_TAIL_NEW = (
     "On 2026-10-25 the firewall was off (`State = 0`), block all disabled, stealth off, and downloaded signed software "
-    "auto-allowed. **Applied** by the owner on 2026-10-26, between 08:44Z and 08:47Z: `--getglobalstate` reports \"Firewall is "
+    "auto-allowed. **Applied** by the Overtoad on 2026-10-26, between 08:44Z and 08:47Z: `--getglobalstate` reports \"Firewall is "
     "blocking all non-essential incoming connections. (State = 2)\", `--getblockall` \"Firewall is blocking all non-essential "
     "incoming connections.\" and `--getstealthmode` \"Firewall stealth mode is on\"; both allow-signed settings stay ENABLED. "
-    "G-SEC's firewall condition passes: in the owner's run at 08:47:40Z, from a primary checkout that predates juniper-ml#2338 "
+    "G-SEC's firewall condition passes: in the Overtoad's run at 08:47:40Z, from a primary checkout that predates juniper-ml#2338 "
     "and so judged the state alone, and on `main`'s gate at 08:48:50Z. juniper-ml#@C2_PR@ (`@C2_SHA@`) narrows the gate to "
     f"`--getblockall`'s own sentence, and `{C2_MUTATION}` now kills @C2_MUTANTS@ mutants (E-C2-GATE) |"
 )
@@ -88,11 +88,11 @@ SENT_NEW = (
 )
 
 OBS_OLD = (
-    "  - **Not yet observed.** Turning block all on needs the owner's sudo, so no on-state capture exists. The gate accepts either "
-    "block-all sentence, and state 1 or 2; the owner's first run settles which appear.\n"
+    "  - **Not yet observed.** Turning block all on needs the Overtoad's sudo, so no on-state capture exists. The gate accepts either "
+    "block-all sentence, and state 1 or 2; the Overtoad's first run settles which appear.\n"
 )
 OBS_NEW = (
-    "  - **Observed (2026-10-26).** Once the owner applied C2, `--getglobalstate` printed \"Firewall is blocking all non-essential "
+    "  - **Observed (2026-10-26).** Once the Overtoad applied C2, `--getglobalstate` printed \"Firewall is blocking all non-essential "
     "incoming connections. (State = 2)\", `--getblockall` the same sentence without the state, and `--getstealthmode` \"Firewall "
     "stealth mode is on\". The \"set to block all\" sentence never appeared, so juniper-ml#@C2_PR@ (`@C2_SHA@`) accepts only the "
     "getter's: a capture holding the setter's goes unjudged (exit 2 under `--check`), unless the firewall is off. B7 of "
@@ -102,7 +102,7 @@ OBS_NEW = (
     "  - **Allow-signed.** Both allow-signed settings stayed ENABLED. Under block all only essential services (configd, "
     "mDNSResponder, racoon) take incoming connections, so the settings matter again only if block all is turned off for Arc F's "
     "VM: revisit them then.\n"
-    "  - **The owner's checkout.** The owner's own G-SEC run came from a primary checkout that predates juniper-ml#2338, so it "
+    "  - **The Overtoad's checkout.** The Overtoad's own G-SEC run came from a primary checkout that predates juniper-ml#2338, so it "
     "judged the state alone. C8's step 1 (`git pull --ff-only origin main`) brings the block-all gate there.\n"
 )
 
@@ -110,9 +110,9 @@ OBS_NEW = (
 
 PREV_OLD = "\n\n- **From:** the 2026-10-25 session on turing named \"macos dev env setup\""
 PREV_NEW = (
-    "\n\n- **Continued (2026-10-26, plan v1.4.8).** The \"modular-meandering-crayon\" session took this handoff. The owner applied "
+    "\n\n- **Continued (2026-10-26, plan v1.4.8).** The \"modular-meandering-crayon\" session took this handoff. The Overtoad applied "
     "C2 (the firewall on, blocking all, with stealth mode), and juniper-ml#@C2_PR@ narrowed G-SEC's firewall condition to the "
-    f"sentence turing printed. The arc's main handoff is now `{THIS_HANDOFF}`. The other owner steps below still stand." + PREV_OLD
+    f"sentence turing printed. The arc's main handoff is now `{THIS_HANDOFF}`. The other Overtoad steps below still stand." + PREV_OLD
 )
 
 
@@ -137,7 +137,7 @@ def edit_plan(text: str, subs: dict, report: list) -> str:
         report.append("MISSING  plan: Version line: the plan is at neither 1.4.7 nor 1.4.8")
     text = edit(text, INTRO_OLD, INTRO_NEW, THIS_HANDOFF, "plan: §18 opening paragraph", report)
     text = edit(text, C2_CELL_OLD, C2_CELL_NEW, "| C2 | **done: applied** (OWNER, 2026-10-26)", "plan: §18.2 C2 row, status cell", report)
-    text = edit(text, C2_TAIL_OLD, fill(C2_TAIL_NEW, subs), "**Applied** by the owner on 2026-10-26", "plan: §18.2 C2 row, the record", report)
+    text = edit(text, C2_TAIL_OLD, fill(C2_TAIL_NEW, subs), "**Applied** by the Overtoad on 2026-10-26", "plan: §18.2 C2 row, the record", report)
     text = edit(text, SENT_OLD, SENT_NEW, "when on (observed 2026-10-26)", "plan: E-C2-GATE, the sentences", report)
     return edit(text, OBS_OLD, fill(OBS_NEW, subs), "  - **Observed (2026-10-26).**", "plan: E-C2-GATE, the observation", report)
 

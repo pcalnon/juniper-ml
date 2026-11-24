@@ -113,7 +113,7 @@ trigger: prior runs of that probe may not be comparable.
 
 - a defect filed whose root cause is a documented-but-unretrieved fact
 - a PR review comment amounting to "you should have known X"
-- a session asking the owner something answerable from a relocated fact
+- a session asking the Overtoad something answerable from a relocated fact
 - a postmortem citing a fact that was written down and not followed
 
 This is ground truth from the world rather than a synthetic task, and it lands
@@ -247,7 +247,7 @@ The two things currently wired are ranked 7 and 8.
 
 ---
 
-## 6. Questions this conversation should put to the owner
+## 6. Questions this conversation should put to the Overtoad
 
 1. **Is the soak's purpose to produce a verdict, or to inform relocation decisions?**
 If the latter, §2F should probably be the primary trigger and the timer becomes a fallback.
@@ -271,7 +271,7 @@ that a design note cannot settle.
 
 ## 8. Question 1, answered — and it reorders the product, not just the triggers
 
-**Owner, 2026-09-03: "the soak exists, most importantly, to inform relocation
+**The Overtoad, 2026-09-03: "the soak exists, most importantly, to inform relocation
 decisions."**
 
 §6 flagged this as the question that governs the rest. It does, and it reaches
@@ -589,7 +589,7 @@ now actually blocked per-probe characterisation work — which the *pooled* verd
 says nothing about. The guard behaved as designed; the design is what is wrong
 for the current purpose.
 
-`--force` exists for this, but a terminal verdict is an owner-facing event, not
+`--force` exists for this, but a terminal verdict is an Overtoad-facing event, not
 something to push through silently.
 
 ### 10.5 State

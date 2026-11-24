@@ -96,7 +96,7 @@ NEVER_RELEASED = "NEVER_RELEASED"
 SHIP_UNCERTAIN = "SHIP_UNCERTAIN"
 ANOMALY = "ANOMALY"
 
-# Any of these means "this package needs owner attention" -> process exit 1.
+# Any of these means "this package needs Overtoad attention" -> process exit 1.
 ACTION_CLASSIFICATIONS = frozenset({UNRELEASED_CHANGES, BUMPED_NOT_RELEASED, NEVER_RELEASED, SHIP_UNCERTAIN, ANOMALY})
 
 # NON-SHIP basenames (docs / meta / packaging paperwork; audit S7.5).

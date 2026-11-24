@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Record the owner's rulings on all sixteen parked PRIMER rows (2026-09-11), and correct the two
+Record the Overtoad's rulings on all sixteen parked PRIMER rows (2026-09-11), and correct the two
 rows whose text the re-derivation disproved.
 
 Project: juniper-ml
@@ -8,11 +8,11 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-11
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/register_owner_rulings_2026-09-09.py (the post-primer rulings two days earlier);
          HANDOFF_2026-09-09_defect-register-round-38-the-three-way-prompt-shipped-and-two-corrections-that-reversed-themselves.md
 
-With these, **the set of rows a session may action without asking the owner first is no longer
+With these, **the set of rows a session may action without asking the Overtoad first is no longer
 empty** — it is every open row in the register. That sentence has stood since 2026-09-03 and its
 removal is the point of this change, so §2's note is rewritten rather than deleted.
 
@@ -52,11 +52,11 @@ def sub(old: str, new: str, label: str) -> None:
 
 # ---- 1. The empty-set sentence is no longer true. ---------------------------------------------
 sub(
-    "> **The set of rows a session may action without asking the owner first is still empty.**)*\n",
-    "> **The set of rows a session may action without asking the owner first was still empty when this\n"
+    "> **The set of rows a session may action without asking the Overtoad first is still empty.**)*\n",
+    "> **The set of rows a session may action without asking the Overtoad first was still empty when this\n"
     "> note was written. It is not any more** — see [§2.4](#24-owner-rulings-on-the-parked-primer-rows-2026-09-11),\n"
     "> which rules on all sixteen remaining parked rows. What that block does NOT do is weaken the rule\n"
-    "> above: the rows became actionable because the owner ruled on them one at a time, which is exactly\n"
+    "> above: the rows became actionable because the Overtoad ruled on them one at a time, which is exactly\n"
     "> what §2 requires, and not because a document asserted they were.)*\n",
     "1. empty-set sentence",
 )
@@ -74,7 +74,7 @@ sub(
 )
 
 # ---- 3. The rulings block, before §3. ---------------------------------------------------------
-BLOCK = """### 2.4 Owner rulings on the parked primer rows (2026-09-11)
+BLOCK = """### 2.4 The Overtoad rulings on the parked primer rows (2026-09-11)
 
 All sixteen. Taken interactively, four at a time, each against evidence re-derived that day rather
 than against the primer's anchors — which is how the three corrections noted below were found. Each

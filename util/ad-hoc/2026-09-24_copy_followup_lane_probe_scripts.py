@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use copier
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 The follow-up lane of defect-register round 42 (session bc31e993) validated juniper-cascor#686 and
 #688, juniper-canopy#683, and the bytes-compare trio (juniper-ml#2086, juniper-data#440,

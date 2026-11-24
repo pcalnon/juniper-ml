@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-18
 Status: ad-hoc — one-off (the UTC-midnight rollover on juniper-ml#2245)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2245, juniper-ml#2247; util/ad-hoc/2026-10-17_push_signed_with_retry.py (pushes OUT)
 
 Why: the advisory "Verify AGENTS.md Last Updated" check fails any PR that changes AGENTS.md without setting

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2046 (red ``main`` run 35864791786: ``OSError: [Errno 39] Directory not empty: '…/markers'``)
 
 ``tests/test_isolated_stack_script.py`` kills its launch stubs in a ``finally`` that runs INSIDE the

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-20
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.10 -> v1.7.11);
          juniper-recurrence#215 (W5.2 service half), #220 (the 0.8.0 proposal), #219 (the bench row);
          juniper-ml#2283 (docs tidy), #2284 (handoff), #2285 (the 0.8.0 archive);
@@ -31,11 +31,11 @@ _REPO = Path(__file__).resolve().parents[2]
 _PLAN = _REPO / "notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md"
 
 CUT = (
-    "the owner approved the model 0.6.0 `pypi` gate (run 39197693617 green; the index serves 0.6.0 with 0.5.0's `requires_dist`); "
+    "the Overtoad approved the model 0.6.0 `pypi` gate (run 39197693617 green; the index serves 0.6.0 with 0.5.0's `requires_dist`); "
     "juniper-recurrence#215 (W5.2's service half + the `[torch]` extra fix) merged as `5e0e2b2e` once its lanes resolved 0.6.0 "
     "(one lane first saw a stale PyPI edge and was re-run); proposal juniper-recurrence#220 merged as `6a98515e`; "
     "Release `juniper-recurrence-v0.8.0` cut at that commit (archive juniper-ml#2285; `publish-image.yml` run 39411081827 green — "
-    "GHCR `0.8.0` / `0.8` / `latest` at index `sha256:f3bc2a4c…`, revision `6a98515e`); the PyPI publish run 39411081775 is parked at the owner's `pypi` gate"
+    "GHCR `0.8.0` / `0.8` / `latest` at index `sha256:f3bc2a4c…`, revision `6a98515e`); the PyPI publish run 39411081775 is parked at the Overtoad's `pypi` gate"
 )
 BENCH = (
     "juniper-recurrence#219 (the bench row) merged as `BENCH_SHA` after the cut: refreshed onto main by pushing main's CHANGELOG verbatim, "
@@ -73,9 +73,9 @@ def edits(bench_sha: str) -> list[tuple[str, str]]:
         ),
         # Progress block: the session bullet before the Next bullet, and the Next bullet rewritten.
         (
-            "  - **Next**: the `pypi` gate on model 0.6.0, then juniper-recurrence#215 (re-run its failed lanes), recurrence 0.8.0, then juniper-recurrence#219; the extras / Compose pins follow 0.8.0 (recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`, image `0.8.0`); juniper-data's next release carries W5.7 (owner's cut). The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes (now on the 0.7.0 image) and the client-docstring follow-up stay open.",
+            "  - **Next**: the `pypi` gate on model 0.6.0, then juniper-recurrence#215 (re-run its failed lanes), recurrence 0.8.0, then juniper-recurrence#219; the extras / Compose pins follow 0.8.0 (recurrence `>=0.8.0,<0.9.0`, model `>=0.6.0,<0.7.0`, image `0.8.0`); juniper-data's next release carries W5.7 (Overtoad's cut). The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph, the W1.12 / W1.11 smokes (now on the 0.7.0 image) and the client-docstring follow-up stay open.",
             f"  - **Model 0.6.0 published, #215 merged, recurrence 0.8.0 cut, the bench row landed (turing session 5, 2026-10-20)**: {CUT}. {bench}. Gate-independent first: juniper-ml#2283 merged `[Unreleased]`'s two `### Changed` headings and refreshed `docs/QUICK_START.md`'s pip-list block to what 0.10.0 resolves (`[all]` 76 packages on 3.12 / 3.13 / 3.14). {PINS}.\n"
-            "  - **Next**: the owner's `pypi` gate on recurrence 0.8.0 (run 39411081775), then the two pin scripts above (pre-flight with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`; the README compat table via `util/ad-hoc/2026-09-21_sync_readme_compat_table.py`); juniper-data's next release carries W5.7 (owner's cut). The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph (recurrence 0.8.0, model 0.6.0), the W1.12 / W1.11 smokes (now owed on the 0.8.0 image) and the client-docstring follow-up (`crossval`'s `folding` / `diagnostics`, after 0.8.0) stay open.",
+            "  - **Next**: the Overtoad's `pypi` gate on recurrence 0.8.0 (run 39411081775), then the two pin scripts above (pre-flight with `util/ad-hoc/2026-10-18_preflight_extras_against_pypi.py`; the README compat table via `util/ad-hoc/2026-09-21_sync_readme_compat_table.py`); juniper-data's next release carries W5.7 (Overtoad's cut). The W0.1 service-core half, the parent `Juniper/AGENTS.md` paragraph (recurrence 0.8.0, model 0.6.0), the W1.12 / W1.11 smokes (now owed on the 0.8.0 image) and the client-docstring follow-up (`crossval`'s `folding` / `diagnostics`, after 0.8.0) stay open.",
         ),
     ]
 

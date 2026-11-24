@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-07
 Status: ad-hoc -- one-off (cursor-fleet PR disposition, #1799 re-land repair)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-07_dedupe_relanded_sections.py`, which repaired the section level first
 
 Deduping section headings is not enough. After five whole `##` sections were resolved, the

@@ -3,7 +3,7 @@
   1. fizzy's copy, in fizzy (r4 L168 "53 in fizzy at 03:05Z");
   2. origin/main's copy, in a scratch root built with `git archive origin/main` (r4 L168 "34 in a
      worktree at origin/main").
-Never prints a REFUSE line's pattern text (main's copy would print the owner's address): only the
+Never prints a REFUSE line's pattern text (main's copy would print the Overtoad's address): only the
 report name before the colon. The scratch root is under this lane's scratch directory."""
 import collections
 import os

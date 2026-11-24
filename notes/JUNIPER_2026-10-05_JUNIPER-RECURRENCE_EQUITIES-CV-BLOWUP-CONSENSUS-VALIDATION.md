@@ -3,7 +3,7 @@
 - **Project**: Juniper — juniper-recurrence (with juniper-data, juniper-data-client, juniper-recurrence-model, juniper-model-core, juniper-ml experiment stack)
 - **Author**: Paul Calnon
 - **Date**: 2026-10-05
-- **Status**: Validation complete after three rounds (3 Lane A + 2 Lane B; 1 + 1 on the corrections; 1 Lane A on the round-2 keys); the W5.1 note is **upheld with corrections** at v1.1.2 — verdict GO and the R5 band numbers unchanged throughout, the explanatory layer rewritten twice. Owner decisions left: §9. Nothing committed by this review itself; the plan carries the consequences at v1.4.0.
+- **Status**: Validation complete after three rounds (3 Lane A + 2 Lane B; 1 + 1 on the corrections; 1 Lane A on the round-2 keys); the W5.1 note is **upheld with corrections** at v1.1.2 — verdict GO and the R5 band numbers unchanged throughout, the explanatory layer rewritten twice. The Overtoad decisions left: §9. Nothing committed by this review itself; the plan carries the consequences at v1.4.0.
 - **Validates**: [`JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md`](JUNIPER_2026-10-04_JUNIPER-RECURRENCE_EQUITIES-CV-BLOWUP-INVESTIGATION.md) (v1.0.0) — the W5.1 cause-investigation note that issues the P5 go/no-go (**GO**) and the R5 band recommendation for the plan [`JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`](JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md) (v1.3.0)
 - **Procedure**: [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md) (§2 lanes, §3 sizing, §4 iteration, §5 reconciliation, §7 minimum record)
 - **Precedent followed**: [`JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-PLAN-CONSENSUS-VALIDATION.md`](JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-PLAN-CONSENSUS-VALIDATION.md) (the plan's own two-round validation)
@@ -107,7 +107,7 @@ the procedure warns, the fix pass itself:
 3. **The cause statement over-reached the other way** (B1-r2 F3 / F4): "the cause is extrapolation under drift" re-elevated the plan-consensus-withdrawn candidate (b) while every remedy acts on (a); and the shuffled control that supported it has no embargo, so it removed drift **and** inserted 61-of-64-day near-duplicate rows — it can show "in-support" but not "drift". Resolution: an embargoed in-era block control was added (F15: eval = fold 2's 283-window block inside fold 4's training era, a 64-window
    embargo on both sides, 1,002 training rows — linear ridge 0 −1.8, ridge 1.0 −2.3, GCV −0.42, rff/1.0 −0.081, rff/gcv −0.006, against −3.70 for the chronological fold with the same eval block; the 10³–10⁴ catastrophes are the era-boundary folds 0 and 4); F-SCI1's statement becomes "the service-default readout applied to a chronologically drifting input — both necessary, neither separated by this matrix; the actionable lever is the default", and (b) stays withdrawn as a hypothesis of record.
 4. **(d) re-based on a non-discriminating control** (B1-r2 F5): the irregular-sine control is stationary, so it shows the route and configuration are sound on a stationary signal and does not test a drift-conditioned defect; the RFF in-support number it leaned on had no artifact (now F12 / F15). v1.1.1 scopes the sentence accordingly.
-5. **The W5.8 option table ranked on a criterion the owner did not set** (B1-r2 F6 / F7): "retains a fit" is in-sample, option (A) was quoted at the best of six seeds, the RFF rung's own default (gcv, −0.015, in band) was absent from the table, and (A) needs a `Settings.default_readout` that does not exist and changes what canopy is served. Resolution: (A) is filed as its own proposal (**W5.11**) with the seed-mean quoted; W5.8 is (B) gcv **and** standardisation, gated on W5.10; the rff/gcv row is in the
+5. **The W5.8 option table ranked on a criterion the Overtoad did not set** (B1-r2 F6 / F7): "retains a fit" is in-sample, option (A) was quoted at the best of six seeds, the RFF rung's own default (gcv, −0.015, in band) was absent from the table, and (A) needs a `Settings.default_readout` that does not exist and changes what canopy is served. Resolution: (A) is filed as its own proposal (**W5.11**) with the seed-mean quoted; W5.8 is (B) gcv **and** standardisation, gated on W5.10; the rff/gcv row is in the
    table.
 6. **The structural gate argument contradicted §1.1** (B1-r2 F8): "the only way the row can breach the bound is a configuration or code change" — F-P8 is a third way (an upstream data change under the same id), and "12 fold-stds above −1.0" is seed 0's dispersion (3.9 at seed 5). Resolution: three ways named, W5.7's `actions_present` guard distinguishes the third; the fold-std statistic is dropped.
 7. **The "wrong columns" correction was itself half wrong** (B1-r2 F9; re-derived from Lane A3's `30-numpy-checks.json` and F16): `cost_basis` **is** an exactly-constant raw feature (27.3325 over every window and step; the one zero-std column); its sixteen memory columns vary only with the `dt` sequence. v1.0.0 was right about `cost_basis` and wrong about `total_shares` (CV 0.63); v1.1.0 inverted both.
@@ -136,8 +136,8 @@ mints with numpy, the two −0.101 values are distinguished at every site, no qu
 
 - **Attribution of cause vs amplifier** (B1-r2 F3 vs round-1 B1 F2): round 1 argued the drift is necessary and `ridge = 0` only sets the magnitude; round 2 argued the shuffled control cannot separate drift from near-duplicate leakage and that "cause = drift" misaligns with every remedy. The reconciler's F15 control (embargoed, in-era) settles what the shuffled control could not; the recorded statement is the conjunction, with the default as the actionable lever. No reviewer disputed that statement after it
   was written, but no reviewer has yet read it either — round 3 checks it.
-- **Option (A), a default readout change**: round-1 B2 recommended it (the only in-band default that retains a fit); round-2 B1 held that the criterion is in-sample and the scope exceeds W5.8. Both are recorded; the owner decides between W5.8 (B) and W5.11 with the trade-off stated (a fit that scores worse out of sample vs an abstention that must be flagged).
-- **Milestone dates** remain unconfirmed by the owner (carried from the plan's own record).
+- **Option (A), a default readout change**: round-1 B2 recommended it (the only in-band default that retains a fit); round-2 B1 held that the criterion is in-sample and the scope exceeds W5.8. Both are recorded; the Overtoad decides between W5.8 (B) and W5.11 with the trade-off stated (a fit that scores worse out of sample vs an abstention that must be flagged).
+- **Milestone dates** remain unconfirmed by the Overtoad (carried from the plan's own record).
 
 ---
 
@@ -160,16 +160,16 @@ The W5.1 note is **upheld with corrections** at v1.1.2: verdict GO, R5 band `cv_
 (`JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md`): F-SCI1's corrected
 statement, F-P8 re-filed Major with a W5.7 guard, W5.8 rewritten around its measured options, W5.9 as reporting, W5.10 and W5.11 proposed, the W5.2 → W5.3 / W5.4 edges, and the "applied pending ruling" record for R2, R3 and R8.
 
-The owner decisions this review leaves, in the order the plan needs them:
+The Overtoad decisions this review leaves, in the order the plan needs them:
 
 | Decision | Gates | Recommendation of record |
 | --- | --- | --- |
 | R5 — band and mode | W5.4 | `cv_r2 ∈ [−1.0, +0.5]`, `cv_r2_std ≤ 0.5`, `gate`, row-scoped; re-measure on W5.2's population before encoding |
-| W5.8 (B) and/or W5.11 (A) | the service default | (B) gcv + standardisation gated on W5.10, or (A) default readout rff/1.0 — the owner picks; neither ships without the response flag |
+| W5.8 (B) and/or W5.11 (A) | the service default | (B) gcv + standardisation gated on W5.10, or (A) default readout rff/1.0 — the Overtoad picks; neither ships without the response flag |
 | W5.9 as reporting; W5.10 | the response contract | accept |
 | F-P8 Major; W5.7 guard | juniper-data | accept |
 | R8 re-ruling | W1.3 (shipped `auto`) | keep `auto` until the producer names the regression target consistently or the service passes `target` from `task_type` |
-| Release placement of W5.8 / W5.10 | W1.13 vs 0.7.0 | owner |
+| Release placement of W5.8 / W5.10 | W1.13 vs 0.7.0 | Overtoad |
 
 Instruments and sample for the record (procedure §7): the two 2026-10-04 ad-hoc scripts (HTTP replay + in-process matrix; SVD of the rebuilt design), a fresh-stack rerun of both, three reconciler re-derivation scripts through the model's own readout functions, and numpy-only checks; one ticker, one window, five folds, 12 distinct cells, six RFF seeds, two mints of one id. Three Lane A entry points and two Lane B briefs in round 1, one of each in round 2, two iterations so far; dissent as recorded in §7.
 
@@ -180,4 +180,4 @@ Instruments and sample for the record (procedure §7): the two 2026-10-04 ad-hoc
 | Date | Version | Changes | Author |
 | --- | --- | --- | --- |
 | 2026-10-05 | 0.1.0 | Skeleton: sizing argument, instruments, lanes and entry points; round 1 launched | Paul Calnon |
-| 2026-10-05 | 1.0.0 | Record of three rounds against note v1.0.0 → v1.1.0 → v1.1.1 → v1.1.2: round-1 reconciliation (§4), round-2 corrections and the round-3 termination (§5), what held (§6), dissent (§7), limits (§8), disposition and owner decisions (§9) | Paul Calnon |
+| 2026-10-05 | 1.0.0 | Record of three rounds against note v1.0.0 → v1.1.0 → v1.1.1 → v1.1.2: round-1 reconciliation (§4), round-2 corrections and the round-3 termination (§5), what held (§6), dissent (§7), limits (§8), disposition and Overtoad decisions (§9) | Paul Calnon |

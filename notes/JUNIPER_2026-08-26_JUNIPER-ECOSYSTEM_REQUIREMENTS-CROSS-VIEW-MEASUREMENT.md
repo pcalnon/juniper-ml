@@ -88,7 +88,7 @@ Two consequences follow. Both are acted on in §5; they are stated here as they 
 
 2. **The shipped architecture does not match the design.** The plan (§97) describes `by-repo` and `by-status` as *"thin indexes that link into `by-area` — not duplicates … avoids the maintenance trap of three copies of every requirement going stale independently."* What shipped is three copies of every entry body. Three copies is precisely what exists, and the 201 cosmetic diffs are them having drifted — mildly, so far. The design's own stated failure mode is live; it just has not yet cost anything.
 
-## 5. Owner decision — TAKEN 2026-08-29: option (c), keeping full bodies
+## 5. The Overtoad decision — TAKEN 2026-08-29: option (c), keeping full bodies
 
 The options as framed:
 

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-04
 Status: ad-hoc — investigation (extracted so the contracts have a gate)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: F-CANOPY-041b (blank heatmap certified PASS), F-CANOPY-047 (CSP filed as environment),
          F-CANOPY-040 (unreadable store scored as empty FAIL)
 

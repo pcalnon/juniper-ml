@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-10-08
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `util/open_signed_pr.py` (whose `create_branch` / `create_signed_commit` this reuses),
          `2026-09-08_push_signed_commit.py` (APPENDS to a branch; this REPLACES its history)
 

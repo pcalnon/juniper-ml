@@ -8,14 +8,14 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-20
 Status:      ad-hoc -- audit
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: ml#434 is closed.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: ml#434 is closed.
 Related:     ml#434; util/ad-hoc/2026-08-20_stacked_pr_sweep.py.
 
 A periodic sweep finds instances after the fact. `pr-base-branch-guard.yml` prevents them:
 it fails a PR whose base is not a trunk branch, so the footgun cannot fire unnoticed. This
 reports which repos have the workflow, and -- separately -- whether its check is actually
 REQUIRED by the ruleset, because a present-but-advisory guard stops nothing on a repo whose
-owner holds an `always` bypass.
+Overtoad holds an `always` bypass.
 """
 
 from __future__ import annotations
@@ -83,7 +83,7 @@ def main() -> int:
         print("  A stacked PR on these merges with nothing objecting.")
     if advisory:
         print(f"GUARD PRESENT BUT NOT REQUIRED ({len(advisory)}): {', '.join(advisory)}")
-        print("  Advisory only -- and the owner holds an `always` bypass, so an advisory")
+        print("  Advisory only -- and the Overtoad holds an `always` bypass, so an advisory")
         print("  check constrains nothing. Present is not the same as enforced.")
     if not missing and not advisory:
         print("All 9 repos carry the guard AND require its context. Class is structurally")

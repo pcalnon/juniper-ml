@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (generated with Claude Code)
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 consolidation, juniper-canopy tests carrier VALIDATION)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy#789 #792 #794 #795; flood-4 validation brief (test correctness / fidelity lens)
 
 Reads only git objects and `gh` (read-only); writes nothing to any repository. For each draft: the live

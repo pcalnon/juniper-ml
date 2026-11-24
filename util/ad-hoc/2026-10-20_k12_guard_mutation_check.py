@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — investigation (suite strength evidence for the K12 guard-rules PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md (S9, task K12);
          util/claude_agent_guard.py; tests/test_claude_agent_guard.py;
          util/ad-hoc/2026-10-17_turing_c8_guard_mutation_check.py (the C8 rules' own mutation check)

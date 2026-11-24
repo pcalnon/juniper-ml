@@ -25,7 +25,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-20
 Status:      SUPERSEDED by the v2 tool -- retained for audit, do not size budgets from it
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: `DEFAULT_TIMEOUT` is derived automatically, or the fleet's CI shape settles.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: `DEFAULT_TIMEOUT` is derived automatically, or the fleet's CI shape settles.
 Related:     HANDOFF_2026-08-19 section 2.3; util/safe_merge.py DEFAULT_TIMEOUT.
 
 Why not just time `ci.yml`

@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-19
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """Round 1's correction pass on the ledger's Phase 12, and on the Phase 12 handoff.
 
@@ -286,10 +286,10 @@ HANDOFF_SUBS = [
     # --- filenames (C4) ---
     (
         "3. **Item 26: the manual sweep.** Every open finding against canopy's manual, F-CANOPY-012 and F-CANOPY-013 first;\n"
-        "   then, once the owner rules (O17), the CHANGELOG and the design plans. Whatever the ruling, the CAN-015g/h design\n"
+        "   then, once the Overtoad rules (O17), the CHANGELOG and the design plans. Whatever the ruling, the CAN-015g/h design\n"
         "   note's \"every CAN-015g item has merged\" needs a dated correction.",
         "3. **Item 26: the manual sweep.** Every open finding against canopy's manual (canopy `docs/USER_MANUAL.md`),\n"
-        "   F-CANOPY-012 and F-CANOPY-013 first; then, once the owner rules (O17), canopy's `CHANGELOG.md` and the design\n"
+        "   F-CANOPY-012 and F-CANOPY-013 first; then, once the Overtoad rules (O17), canopy's `CHANGELOG.md` and the design\n"
         "   plans. Whatever the ruling, the CAN-015g/h design note\n"
         "   (`notes/JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md`) and its \"every CAN-015g\n"
         "   item has merged\" need a dated correction.",

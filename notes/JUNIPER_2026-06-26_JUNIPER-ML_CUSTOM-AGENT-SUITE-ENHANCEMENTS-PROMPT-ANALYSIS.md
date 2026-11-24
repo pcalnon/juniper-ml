@@ -17,10 +17,10 @@ custom-agent infrastructure** — the suite of agents, the `template-agent` Skil
 discovery/grounding layer, the data layer, and the supporting `util/`+`tests/` tooling that lives in
 `juniper-ml`.
 
-The owner's constraints on the prompt: the downstream work must **begin with an investigatory / analysis
+The Overtoad's constraints on the prompt: the downstream work must **begin with an investigatory / analysis
 phase**, then a **planning phase**; **every aspect of the plan must be vetted and validated by multiple,
-independent sub-agents**; and **implementation must be gated on the owner's approval of the planning
-document**. The owner directed particular attention to the two most-recent dogfooding analyses
+independent sub-agents**; and **implementation must be gated on the Overtoad's approval of the planning
+document**. The Overtoad directed particular attention to the two most-recent dogfooding analyses
 (`notes/JUNIPER_2026-06-26_JUNIPER-ML_TEST-SUITE-AUDIT-PROMPT-ANALYSIS.md` and
 `notes/JUNIPER_2026-06-26_JUNIPER-CANOPY_DEBUG-PROMPT-ANALYSIS.md`). Custom agents were to be employed as needed,
 and a meta-analysis was to record additional helpful agent specializations and any other Juniper issues
@@ -127,9 +127,9 @@ re-prove every row first-party. `OPEN` items are the higher-value targets; `G-#`
 ## 5. The downstream task in one line
 
 Investigate the current state of the custom-agent infrastructure, evaluate and prioritize a grounded set of
-enhancements, author **one** owner-actionable `notes/` PLAN document sequencing them as single-work-unit
+enhancements, author **one** Overtoad-actionable `notes/` PLAN document sequencing them as single-work-unit
 PRs, have **every aspect independently validated by ≥3 sub-agents**, and **stop at an approval gate** so no
-implementation begins until the owner approves the plan.
+implementation begins until the Overtoad approves the plan.
 
 ---
 
@@ -143,14 +143,14 @@ author). This session surfaces one **new** specialization, distinct from all of 
 
 1. **Requirement-coverage / intent-fidelity reviewer (new).** The `prompt-validator` returned a clean
    **PASS** (anchor-grounding and RUBRIC structure were sound), yet an independent effectiveness lens still
-   found a **dropped requirement-sourced finding** (G-3, a named item from a doc the owner told us to attend
+   found a **dropped requirement-sourced finding** (G-3, a named item from a doc the Overtoad told us to attend
    to) and a **collapsed source-disagreement** (G-1, where the two emphasized analyses actually conflict).
    These are *faithfulness* defects — the prompt was internally consistent and fully grounded but slightly
-   unfaithful to the owner's intent and sources. They are invisible to an anchor-grounding validator by
+   unfaithful to the Overtoad's intent and sources. They are invisible to an anchor-grounding validator by
    construction. A second standing validator (or a second RUBRIC lens) that checks "every owner requirement
    and every source-document finding is represented, and source disagreements are surfaced not flattened"
    would catch this class. Recommend prototyping it as a sibling subagent (`intent-reviewer`) or folding an
-   intent-fidelity check into the Skill's validation step. **Owner: juniper-ml.**
+   intent-fidelity check into the Skill's validation step. **The Overtoad: juniper-ml.**
 
 This also reinforces the already-proposed **cross-repo mode (A-1)**: this very prompt's candidates span
 sibling repos (`juniper-canopy/src/tests/ui/`, `juniper-cascor-model`), whose anchors are absent from the
@@ -168,7 +168,7 @@ analysis already recorded it.
   top-level `conf/` and `papers/` directories and the in-tree packaged sub-modules. Verified this session
   (`ls -d conf papers` → both present; `grep -n templates/ AGENTS.md` → `:188`). First raised by TAUDIT §6.2;
   it had been **dropped from the prompt's first-draft catalog** and was restored during validation. Folds
-  into the G-1 prose sweep. **Owner: juniper-ml.**
+  into the G-1 prose sweep. **The Overtoad: juniper-ml.**
 
 **Incomplete development:**
 
@@ -177,7 +177,7 @@ analysis already recorded it.
   `RUBRIC.md`, `AGENTS.md`), corroborating CANOPY's "fixed in #566". But the two emphasized analyses
   *disagree* (TAUDIT independently re-hit prose drift after the fix claim), and the `AGENTS.md` **tree-label**
   form remains (= G-3). Net: the validator can now find its own contract; the residue is the tree label +
-  missing dirs. The prompt records the disagreement rather than collapsing it. **Owner: juniper-ml.**
+  missing dirs. The prompt records the disagreement rather than collapsing it. **The Overtoad: juniper-ml.**
 
 **Design gaps / Architectural weaknesses / Syntax errors / Suspected:**
 

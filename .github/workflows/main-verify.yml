@@ -16,7 +16,7 @@
 #    Post-merge main-verification workflow (Proposal P2 gate G3; flood-remediation
 #    analysis notes/JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md
 #    S3 / S4 item 8). Runs AFTER a merge lands on main, so it fires no matter who merged
-#    or what they bypassed -- the only gate the always-bypass actors (the owner + the
+#    or what they bypassed -- the only gate the always-bypass actors (the Overtoad + the
 #    Cursor App) cannot skip. This is the bypass-proof compositional-loss net: the flood
 #    damage was every-PR-green but serial same-file merges fused / deleted sibling
 #    content, and a deleted test cannot fail, so nothing per-PR saw it.
@@ -511,7 +511,7 @@ jobs:
   # issue -- ONE open issue titled "main-verify: post-merge verification failing" per red streak;
   # each subsequent failing SHA COMMENTS on it instead of opening a new issue (the old per-SHA title
   # filed one issue per failing push -- six in the 2026-07-31..08-01 streak, ml#883/#884/#891/#892/
-  # #896/#897). NOT auto-closed on green (the owner closes it after adjudication). Dedup binds to
+  # #896/#897). NOT auto-closed on green (the Overtoad closes it after adjudication). Dedup binds to
   # the workflow's own AUTHORSHIP (creator=github-actions[bot] + exact title), never title alone --
   # a pre-created look-alike issue can neither capture nor suppress the tracker (#928 review). Also
   # posts a non-blocking Slack summary (verbatim release-train.yml pattern: a missing
@@ -590,10 +590,10 @@ jobs:
               echo "notes/JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md."
               echo ""
               echo "_Auto-filed by .github/workflows/main-verify.yml. One issue per red streak; the"
-              echo "owner closes it after adjudication (NOT auto-closed on green)._"
+              echo "Overtoad closes it after adjudication (NOT auto-closed on green)._"
             } > issue-body.md
             echo "Opening the stable-title tracking issue"
-            # Bot-applied `main-verify` label: ensure it exists (idempotent, never clobbers owner
+            # Bot-applied `main-verify` label: ensure it exists (idempotent, never clobbers Overtoad
             # customization -- no --force), open the issue, then best-effort apply. The label is
             # operator filtering / defense-in-depth, never part of the dedup match above -- but a
             # failed CREATE must still fail this step loudly (the tracker is the point of notify).

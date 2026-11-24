@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc -- investigation (mutation evidence for the APD-DATA-005 / -024 close)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md (APD-DATA-005, APD-DATA-024), the juniper-data fix PR named in its §5.1 row
 
 Applies each mutation to a COPY-BACKED source file, runs the pin module in a subprocess with

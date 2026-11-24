@@ -8,7 +8,7 @@ Author: Paul Calnon
 Created: 2026-08-25
 Status: ad-hoc — wip (candidate B for plan §7 criterion 4, "failure notification observed firing";
         promote to util/ + util/systemd/ once Paul picks the alerting architecture)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md (§8, §8.22),
          notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (§7.6),
          util/duplicati_backup_failure.bash (the user lane's reporter this replaces for the server job)

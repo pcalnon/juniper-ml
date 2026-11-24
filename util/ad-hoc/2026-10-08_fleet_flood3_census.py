@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-10-08
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-07_fleet_backlog_census.py` (counts only), `2026-09-05_fleet_harvest_triage.py`
          (per-file NEW/DIVERGED/SAME against main), `util/fleet_triage/predict_merge.py`
 
@@ -43,7 +43,7 @@ from collections import Counter
 
 QUERY = """
 query($owner: String!, $name: String!, $after: String) {
-  repository(owner: $owner, name: $name) {
+  repository(Overtoad: $owner, name: $name) {
     pullRequests(states: OPEN, first: 25, after: $after, orderBy: {field: CREATED_AT, direction: ASC}) {
       pageInfo { hasNextPage endCursor }
       nodes {

@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-11-07
 Status: ad-hoc -- one-off (flood-4 tests carrier build)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-10-08_fleet_flood3_wire_ml_tests.py` (the round-3 wirer this copies)
 
 WHAT CHANGED AGAINST THE FLOOD-3 WIRER

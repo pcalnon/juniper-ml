@@ -119,7 +119,7 @@ curl -s http://localhost:8100/v1/health
 
 ## Primary Objective
 
-Produce ONE clear, owner-actionable planning document — a diagnosis-of-record plus a phased fix plan — covering, at minimum, ALL issues in the inventory above (I-1 – I-7) and the triaged prior-doc §6 follow-ups, grounded in the real repositories and the live stack, with every factual claim verified, and with implementation latitude preserved wherever the owner has not pinned a design.
+Produce ONE clear, Overtoad-actionable planning document — a diagnosis-of-record plus a phased fix plan — covering, at minimum, ALL issues in the inventory above (I-1 – I-7) and the triaged prior-doc §6 follow-ups, grounded in the real repositories and the live stack, with every factual claim verified, and with implementation latitude preserved wherever the Overtoad has not pinned a design.
 
 ## Assigned Tasks / Directives
 
@@ -127,7 +127,7 @@ Produce ONE clear, owner-actionable planning document — a diagnosis-of-record 
 2. **Required reading.** Read the two prior-work notes documents and the PR subjects listed above; extract the four §6 follow-up items into this plan's scope — each becomes a triaged entry: in-scope and assigned to a roadmap work unit (phase + repo), or explicitly deferred with a reason.
 3. **Live evidence (read-only).** Run the probe pack above against the running stack; sweep the current canopy/cascor/data logs with the grep keys; capture what the backend reports vs what the UI showed (the screenshots' values are operator observations, not ground truth — verify everything independently). Do NOT restart services, stop training, click mutating controls, or POST to the live stack.
    - If the stack is not running when you start, record that, skip the live probes, and rely on logs plus the isolated stack (directive 4) — never start or restart the operator's stack yourself.
-4. **Mutating repros (isolated only).** Where a diagnosis needs a mutating reproduction (Apply Parameters, Create Snapshot, MNIST start, Stop & Restart), use an ISOLATED second stack on alternate ports launched from the repos (the prior doc's §7 E2E pattern, e.g. cascor 8202 + canopy 8051). Where isolation is impracticable, record the repro as pending owner approval.
+4. **Mutating repros (isolated only).** Where a diagnosis needs a mutating reproduction (Apply Parameters, Create Snapshot, MNIST start, Stop & Restart), use an ISOLATED second stack on alternate ports launched from the repos (the prior doc's §7 E2E pattern, e.g. cascor 8202 + canopy 8051). Where isolation is impracticable, record the repro as pending Overtoad approval.
    - A repro that generates datasets (I-5) must ALSO launch its own juniper-data on an alternate port (e.g. 8101) and point the isolated cascor's `JUNIPER_DATA_URL` at it — never POST to the operator's juniper-data on 8100.
    - Note: browser automation cannot type into Dash `dbc.Input(type=number)` fields — drive parameter repros via the REST surface instead.
 5. **Per-issue diagnosis.** For each of I-1 – I-7: confirm or refute each listed hypothesis with evidence (log lines, probe output, code reading); state the confirmed root cause(s) with `file:line` anchors; where evidence is unobtainable read-only, mark the hypothesis OPEN and say exactly what experiment would close it.
@@ -167,8 +167,8 @@ npx markdownlint-cli --config .markdownlint.yaml "notes/JUNIPER_<YYYY-MM-DD>_JUN
 
 ## Constraints
 
-- **Document only** — do NOT modify source code, configuration, or CI in any repo; this task produces a plan, not an implementation. Committing/PR-ing the finished document follows the owner's instruction at dispatch time; default is to leave it uncommitted and report.
-- **Live-stack safety** — the running cascor holds live training state: read-only GETs only; never restart canopy/cascor/data, never stop/start/reset training, never apply parameters or datasets, and never create snapshots against the operator's stack. Mutating repros happen only on an isolated alternate-port stack (directive 4) or with explicit owner approval.
+- **Document only** — do NOT modify source code, configuration, or CI in any repo; this task produces a plan, not an implementation. Committing/PR-ing the finished document follows the Overtoad's instruction at dispatch time; default is to leave it uncommitted and report.
+- **Live-stack safety** — the running cascor holds live training state: read-only GETs only; never restart canopy/cascor/data, never stop/start/reset training, never apply parameters or datasets, and never create snapshots against the operator's stack. Mutating repros happen only on an isolated alternate-port stack (directive 4) or with explicit Overtoad approval.
 - **Model guardrails (Fable 5)** — this planning task develops no dual-use or exploit code; perform ALL work with the fable-5 model, including sub-agents (override any agent-frontmatter model pin with fable). If a specific component proves impossible on fable-5, split out ONLY that minimal component to opus-4.8 and record what was handed off and why in the Validation Record.
 - Never invent APIs, paths, symbols, flags, versions, ports, or env-var names: if it is not in this prompt's grounding, the cited prior documents, or your own verified probing, do not assert it — re-confirm each cited `file:line`/symbol in-task and STOP-and-report rather than invent if one does not resolve.
 - Treat this prompt's hypotheses as hypotheses: the ranked candidates in the inventory are leads to test, not conclusions to transcribe. Where live evidence contradicts them, the document records the contradiction and follows the evidence.

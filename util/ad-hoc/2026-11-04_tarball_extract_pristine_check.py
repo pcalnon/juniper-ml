@@ -6,15 +6,15 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-04
-Status: ad-hoc — one-off (flood-3: the predecessor worktree's cleanup, owner ruling 2026-11-04 "Remove; keep evidence")
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (flood-3: the predecessor worktree's cleanup, Overtoad ruling 2026-11-04 "Remove; keep evidence")
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-03_fetch_main_tarballs.py (writes the layout this reads);
          util/ad-hoc/2026-11-04_worktree_cleanup_keep_evidence_skip_extracts.py (reads this script's output);
          notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§6, §8)
 
 Why this exists
 ---------------
-The owner ruled on 2026-11-04 that the predecessor's worktree is removed with its evidence kept, as on 2026-10-30.
+The Overtoad ruled on 2026-11-04 that the predecessor's worktree is removed with its evidence kept, as on 2026-10-30.
 About 600 MB of its ``tmp/`` is ``main`` tarball extracts, which the fetcher can make again from the SHA it recorded
 beside each one. An extract is regenerable only while nothing in it was edited, and the pin lane DID edit one copy:
 it rewrote ``CHANGELOG.md`` and ``agents-md-touch-up.yml`` in place. A modification time cannot settle that,

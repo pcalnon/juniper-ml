@@ -218,7 +218,7 @@ REST `base_url` is normalised at construction on GitHub-main of the three HTTP c
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- canopy event-loop blocking; slice-1a count is **58**; C5 remedy refuted
 - [Train / Val / Test Partition Contract](REFERENCE.md#train--val--test-partition-contract) -- shipped NPZ still requires `*_full`; design drops it; recurrence `dataset.split: validation` is exit 2
 - [Canopy E2E Dataset Drivers](REFERENCE.md#canopy-e2e-dataset-drivers) -- W6 `--steps` (no ranges; never confirm restart) vs §3.6 `--step`; `LD_LIBRARY_PATH=` + `JuniperCanopy1`
-- [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop; do not run n≈8–10; `--force` is an open owner decision; full slugs; `--class` on miss
+- [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop; do not run n≈8–10; `--force` is an open Overtoad decision; full slugs; `--class` on miss
 - [Requirements Snapshot Consolidation](REFERENCE.md#requirements-snapshot-consolidation) -- refresh `notes/requirements/` from `by-area` (never from the ledger); `--check-roundtrip` then `--check-views`
 - [Canopy E2E Unfilled-Rows Ledger](REFERENCE.md#canopy-e2e-unfilled-rows-ledger) -- plan matrix re-drives from `e2e_unfilled_rows.py` (status cells), not the TSV estimator
 - [Worker Result Anomaly Detector](REFERENCE.md#worker-result-anomaly-detector) -- a fast, perfect, stale, or duplicate score is a warning; the result is still accepted. A missing duration is timed as `0.0` s

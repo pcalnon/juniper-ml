@@ -96,7 +96,7 @@ Z_95 = 1.959963984540054
 AREA_MIN_MISSES = 3
 AREA_ALPHA = 0.05
 
-# "source-recovered" (owner decision 2026-08-31): the agent produced the CORRECT
+# "source-recovered" (Overtoad decision 2026-08-31): the agent produced the CORRECT
 # answer but reached the fact from source -- the helper, its test, a grep -- rather
 # than through the relocated pointer. It is recordable directly so a future scorer
 # does not have to file a miss and then re-score it; the `rescore` verb exists for
@@ -227,7 +227,7 @@ def analyse(rows: list[dict], bad_lines: int = 0) -> dict:
     # had never been relocated, so their runs measured nothing.
     invalidated = {r.get("invalidates") for r in rows if r.get("kind") == "invalidate"}
 
-    # Re-scoring (owner decision 2026-08-31). A run where the agent produced the
+    # Re-scoring (Overtoad decision 2026-08-31). A run where the agent produced the
     # CORRECT answer but reached it from source rather than through the relocated
     # pointer is not the same event as failing to obtain the fact, and scoring
     # both as "miss" conflated them. Like resolve and invalidate this is an
@@ -585,7 +585,7 @@ def cmd_invalidate(args: argparse.Namespace) -> int:
         "note": args.note,
     }
 
-    # SPEND-CONTROL GUARD (owner ruling 2026-09-16). `analyse` tests the IN-PROGRESS
+    # SPEND-CONTROL GUARD (Overtoad ruling 2026-09-16). `analyse` tests the IN-PROGRESS
     # branch ABOVE the terminal ones, so an invalidate that drops distinct live probes
     # below MIN_DISTINCT_PROBES silently converts a TERMINAL verdict into IN-PROGRESS --
     # at which point `refuses_terminal_verdict` returns False and billed runs stop being
@@ -618,14 +618,14 @@ RESCORE_OUTCOMES = ("source-recovered",)
 # row to be re-scored onto itself, and more importantly it is the column a row lands
 # in -- never one it should leave.
 #
-# `follow` was added 2026-09-15 by owner ruling on handoff section 6 item 7 (which
+# `follow` was added 2026-09-15 by Overtoad ruling on handoff section 6 item 7 (which
 # retrieval standard binds -> MECHANISM-CHECKED). See cmd_rescore's docstring for why
 # this widening is direction-safe and does not reopen the 2026-08-31 anti-gaming guard.
 RESCORABLE_FROM = ("miss", "follow")
 
 
 def cmd_rescore(args: argparse.Namespace) -> int:
-    """Re-score an observation to a different outcome (owner decision 2026-08-31).
+    """Re-score an observation to a different outcome (Overtoad decision 2026-08-31).
 
     Distinct from both siblings: ``invalidate`` says the run should never have
     counted; ``resolve`` discharges an escalation that was real and has been
@@ -642,7 +642,7 @@ def cmd_rescore(args: argparse.Namespace) -> int:
     standing INCONCLUSIVE verdict into a pass by redefinition.
 
     SOURCE WIDENED 2026-09-15: ``follow`` may now be re-scored, not only ``miss``.
-    Owner ruling on handoff section 6 item 7 -- the binding retrieval standard is
+    The Overtoad ruling on handoff section 6 item 7 -- the binding retrieval standard is
     MECHANISM-CHECKED: apply the protocol's own section 4 definition (inputs union
     results), then discard hits that are not the destination document at all.
     Expressing that requires moving a ``follow`` DOWN, which the previous
@@ -678,8 +678,8 @@ def cmd_rescore(args: argparse.Namespace) -> int:
        converges on "pointer failed / relocation safe" by re-interpretation alone.
 
     The two moves expressible are ``miss -> source-recovered`` (raises retention;
-    owner-approved 2026-08-31) and ``follow -> source-recovered`` (lowers ``rate``;
-    owner-approved 2026-09-15). Neither can rescue a failing bet; both can make one
+    Overtoad-approved 2026-08-31) and ``follow -> source-recovered`` (lowers ``rate``;
+    Overtoad-approved 2026-09-15). Neither can rescue a failing bet; both can make one
     harder to reopen.
 
     ``source-recovered`` is deliberately NOT rescorable: it is the only target, so
@@ -870,11 +870,11 @@ def cmd_status(args: argparse.Namespace) -> int:
         # visually separated, so neither can be mistaken for the other's outcome.
         if st["verdict"] == "BET-FAILING":
             # Decision 7 WAS revisited, on 2026-09-17, and closed. Keeping the
-            # old "revisit owner decision 7" wording would send every future
+            # old "revisit Overtoad decision 7" wording would send every future
             # operator to redo completed work -- which is the friction that left
             # the instruction unactioned for ten days in the first place. The
             # second half is unconditional and survives the ruling.
-            print("  -> the relocation bet is failing. Owner decision 7 was RULED "
+            print("  -> the relocation bet is failing. The Overtoad decision 7 was RULED "
                   "2026-09-17: closed, no skills probe -- see "
                   "notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md. "
                   "NEVER re-inline.")
@@ -900,7 +900,7 @@ def cmd_status(args: argparse.Namespace) -> int:
                 print("       IRREVERSIBLE: this appends to an append-only ledger; there is no un-resolve.")
                 print("       Do NOT run it to make `status` exit 0 -- exiting 1 here is the design.")
                 print("       If the miss was a CORRECT answer scored conservatively, that is an "
-                      "owner decision about SCORING, not a discharge.")
+                      "Overtoad decision about SCORING, not a discharge.")
             elif e["kind"] == "area-systematic":
                 print(f"  -> rung 3: path-scoped rule for {e['areas']}. "
                       "Caveat (plan 7.6): a path-scoped rule is LOST AT COMPACTION.")

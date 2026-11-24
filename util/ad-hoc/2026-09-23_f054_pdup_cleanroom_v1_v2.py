@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-23
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-canopy fix/f054-replay-block-clientside (canopy#670); ledger Phase 8 (F-CANOPY-054)
 
 CREDIT. Adapted from Lane B2's clean room in the round-1 independent review of canopy#670

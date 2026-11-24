@@ -15,7 +15,7 @@ Item F' of
 states: "8 of the 43 runs touched ``reports/soak/pointer_follow_soak.jsonl``; exactly ONE
 read its contents", the one being P18-health-interval-non-positive on 2026-08-22.
 
-That number decides item F''s exposure, and through owner decision 8 it decides whether the
+That number decides item F''s exposure, and through Overtoad decision 8 it decides whether the
 leak invalidates its runs -- which changes the DENOMINATOR of every rate in the arc. It is
 worth re-deriving rather than inheriting, because the instrument that produced it cannot
 quite make the distinction it is being quoted for:

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor#690 (fix-forward of #688's validation). Its report found that
          ``TrainingLifecycleManager._as_bool_stance`` read "f" / "n" as True -- ``bool("f")`` -- while
          juniper-data reads them as False. The fixup makes the two agree; this script is how the

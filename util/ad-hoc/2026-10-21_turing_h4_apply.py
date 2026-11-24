@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-21
 Status: ad-hoc — one-off (turing bring-up task H4: util/mcp_setup.bash, Serena pinned and bound to the checkout)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task H4, D10, §10; §17.3 E-LAND-2
          and §18.3 E-LAND-3); util/ad-hoc/2026-10-20_turing_h2_apply.py and util/ad-hoc/2026-10-20_turing_g1_apply.py
          (the pattern this follows)

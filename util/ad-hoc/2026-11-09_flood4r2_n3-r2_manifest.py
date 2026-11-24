@@ -11,7 +11,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md §8 ruling 11; juniper-cascor fix/ws-resume-losses
 """
 
@@ -64,7 +64,7 @@ def main() -> int:
         "branch": "fix/ws-resume-losses (local only; fast-forwarded f3dfee8c -> base_sha, never pushed)",
         "files": hashes["files"],
         "carried": [],
-        "carried_note": "No Cursor draft: a defect fix the owner ruled in section 8, ruling 11 (\"Fix all four now\").",
+        "carried_note": "No Cursor draft: a defect fix the Overtoad ruled in section 8, ruling 11 (\"Fix all four now\").",
         "rebase": extras["rebase"],
         "phases": {k: {kk: v[kk] for kk in ("sources", "exit_status", "tests", "failed", "round2_tests_failed", "log")} for k, v in mut["phases"].items()},
         "checks": checks,
