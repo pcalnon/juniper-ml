@@ -1,0 +1,4 @@
+# The sdist carries tests/*.py by default but not their data files. tests/test_websocket_resume_answer_table.py
+# reads tests/fixtures/ws_resume_answers.json when it is imported, so the sdist carries the fixtures too.
+# The wheel holds no tests (only juniper_service_core*).
+recursive-include tests/fixtures *.json

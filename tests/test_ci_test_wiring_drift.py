@@ -97,14 +97,14 @@ class CiTestWiringDriftTest(unittest.TestCase):
 
     def test_the_extraction_found_something(self):
         """Guard the guard: 0 invocations would make every other assertion meaningless."""
-        self.assertGreater(len(self.invoked), 50, "extracted almost no invocations -- the extractor is broken, " "not the wiring. Every other assertion in this file would be vacuous.")
+        self.assertGreater(len(self.invoked), 50, "extracted almost no invocations -- the extractor is broken, not the wiring. Every other assertion in this file would be vacuous.")
 
     def test_every_suite_on_disk_is_invoked_by_ci(self):
         missing = sorted(set(self.on_disk) - set(self.invoked))
         self.assertEqual(
             missing,
             [],
-            "test suites exist in tests/ but are NEVER RUN by ci.yml:\n" + "\n".join(f"  {m}" for m in missing) + "\n\nA suite that never runs is indistinguishable from one that passes " "(ml#1254, ml#1259). Add `python3 -m unittest -v tests/<name>` to the " f"{_STEP!r} step -- and any third-party import to 'Install test dependencies', " "which installs an explicit short list and fails at collection otherwise.",
+            "test suites exist in tests/ but are NEVER RUN by ci.yml:\n" + "\n".join(f"  {m}" for m in missing) + f"\n\nA suite that never runs is indistinguishable from one that passes (ml#1254, ml#1259). Add `python3 -m unittest -v tests/<name>` to the {_STEP!r} step -- and any third-party import to 'Install test dependencies', which installs an explicit short list and fails at collection otherwise.",
         )
 
     def test_ci_does_not_invoke_a_suite_that_does_not_exist(self):
@@ -164,7 +164,7 @@ class OperatorListMatchesCiTest(unittest.TestCase):
         self.assertGreater(
             len(self.listed),
             50,
-            f"extracted {len(self.listed)} invocations from {self.DOC} -- the extractor is " "broken, or the list moved again. Both assertions below would be vacuous.",
+            f"extracted {len(self.listed)} invocations from {self.DOC} -- the extractor is broken, or the list moved again. Both assertions below would be vacuous.",
         )
 
     def test_every_ci_suite_is_in_the_operator_list(self):
@@ -172,7 +172,7 @@ class OperatorListMatchesCiTest(unittest.TestCase):
         self.assertEqual(
             missing,
             [],
-            f"suites gated by ci.yml but ABSENT from {self.DOC}'s run-all-tests block:\n" + "\n".join(f"  {m}" for m in missing) + f"\n\nAn operator who runs that block believes they ran the suite. Add " f"`python3 -m unittest -v tests/<name>` to {self.DOC}.",
+            f"suites gated by ci.yml but ABSENT from {self.DOC}'s run-all-tests block:\n" + "\n".join(f"  {m}" for m in missing) + f"\n\nAn operator who runs that block believes they ran the suite. Add `python3 -m unittest -v tests/<name>` to {self.DOC}.",
         )
 
     def test_the_operator_list_names_no_suite_ci_does_not_run(self):

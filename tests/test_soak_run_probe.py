@@ -147,7 +147,7 @@ class RetrievalChannel(unittest.TestCase):
             "tool_inputs": [
                 json.dumps(
                     {
-                        "command": "cd /home/pcalnon/Development/python/Juniper/juniper-deploy " "&& grep -rn 3001 docs/REFERENCE.md",
+                        "command": "cd /home/pcalnon/Development/python/Juniper/juniper-deploy && grep -rn 3001 docs/REFERENCE.md",
                     }
                 )
             ],
@@ -185,7 +185,7 @@ class RetrievalChannel(unittest.TestCase):
                 json.dumps(
                     {
                         "file_path": "docs/REFERENCE.md",
-                        "description": "compare against " "reports/soak/pointer_follow_soak.jsonl",
+                        "description": "compare against reports/soak/pointer_follow_soak.jsonl",
                     }
                 )
             ],
@@ -201,7 +201,7 @@ class RetrievalChannel(unittest.TestCase):
             "tool_inputs": [
                 json.dumps(
                     {
-                        "command": "cat reports/soak/pointer_follow_soak.jsonl " "&& sed -n 10,40p docs/REFERENCE.md",
+                        "command": "cat reports/soak/pointer_follow_soak.jsonl && sed -n 10,40p docs/REFERENCE.md",
                     }
                 )
             ],
@@ -252,7 +252,7 @@ class RetrievalChannel(unittest.TestCase):
             "tool_inputs": [
                 json.dumps(
                     {
-                        "command": "cd /home/pcalnon/Development/python/Juniper " "&& sed -n '145,175p' juniper-ml/docs/REFERENCE.md",
+                        "command": "cd /home/pcalnon/Development/python/Juniper && sed -n '145,175p' juniper-ml/docs/REFERENCE.md",
                     }
                 )
             ],
@@ -269,7 +269,7 @@ class RetrievalChannel(unittest.TestCase):
             "tool_inputs": [
                 json.dumps(
                     {
-                        "command": "cd /home/pcalnon/Development/python/Juniper " "&& grep -rn 3001 juniper-deploy/docs/REFERENCE.md",
+                        "command": "cd /home/pcalnon/Development/python/Juniper && grep -rn 3001 juniper-deploy/docs/REFERENCE.md",
                     }
                 )
             ],
@@ -286,7 +286,7 @@ class RetrievalChannel(unittest.TestCase):
             "tool_inputs": [
                 json.dumps(
                     {
-                        "command": "cd /home/pcalnon/Development/python/Juniper/juniper-deploy " "&& grep -rn 'juniper-ml/docs' docs/REFERENCE.md",
+                        "command": "cd /home/pcalnon/Development/python/Juniper/juniper-deploy && grep -rn 'juniper-ml/docs' docs/REFERENCE.md",
                     }
                 )
             ],
@@ -304,7 +304,7 @@ class RetrievalChannel(unittest.TestCase):
                 "tool_inputs": [
                     json.dumps(
                         {
-                            "command": "cd /home/pcalnon/Development/python/Juniper/juniper-deploy " f"&& sed -n 1p /home/pcalnon/Development/python/Juniper/{other}/docs/REFERENCE.md",
+                            "command": f"cd /home/pcalnon/Development/python/Juniper/juniper-deploy && sed -n 1p /home/pcalnon/Development/python/Juniper/{other}/docs/REFERENCE.md",
                         }
                     )
                 ],
@@ -321,7 +321,7 @@ class RetrievalChannel(unittest.TestCase):
             "tool_inputs": [
                 json.dumps(
                     {
-                        "command": "cd /home/pcalnon/Development/python/Juniper && diff " "juniper-deploy/docs/REFERENCE.md juniper-ml/docs/REFERENCE.md",
+                        "command": "cd /home/pcalnon/Development/python/Juniper && diff juniper-deploy/docs/REFERENCE.md juniper-ml/docs/REFERENCE.md",
                     }
                 )
             ],
@@ -337,7 +337,7 @@ class RetrievalChannel(unittest.TestCase):
             "tool_inputs": [
                 json.dumps(
                     {
-                        "file_path": "/home/pcalnon/Development/python/Juniper/juniper-ml/" ".claude/worktrees/giggly-marinating-backus/docs/REFERENCE.md",
+                        "file_path": "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/giggly-marinating-backus/docs/REFERENCE.md",
                     }
                 )
             ],
@@ -395,7 +395,7 @@ class EventParsing(unittest.TestCase):
         d = Path(tempfile.mkdtemp())
         p = d / "stream.jsonl"
         p.write_text(
-            '["not","an","object"]\n' '"bare string"\n' "42\n" '{"type":"assistant","message":{"content":[{"type":"text","text":"ok"}]}}\n',
+            '["not","an","object"]\n"bare string"\n42\n{"type":"assistant","message":{"content":[{"type":"text","text":"ok"}]}}\n',
             encoding="utf-8",
         )
         self.assertIn("ok", mod.parse_events(p)["answer"])

@@ -76,7 +76,7 @@ _INLINE_PIN_RE = re.compile(r"`(juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\])?>=[^`]+)`"
 # Extra name in the first table column: | `tools` | … |
 _EXTRA_CELL_RE = re.compile(r"^\|\s*`([a-z0-9-]+)`\s*\|")
 # REFERENCE.md three-column row: | [`extra`| ] | `pkg` [(…)] | `>=…` |
-_REFERENCE_ROW_RE = re.compile(r"^\|\s*(?:`(?P<extra>[a-z0-9-]+)`)?\s*\|\s*`(?P<pkg>juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\])?)`" r"[^|]*\|\s*`(?P<spec>[^`]+)`\s*\|")
+_REFERENCE_ROW_RE = re.compile(r"^\|\s*(?:`(?P<extra>[a-z0-9-]+)`)?\s*\|\s*`(?P<pkg>juniper-[a-z0-9-]+(?:\[[a-z0-9,-]+\])?)`[^|]*\|\s*`(?P<spec>[^`]+)`\s*\|")
 
 # README "Ecosystem Compatibility" two-column row: | `juniper-foo` | `>=1.2.3` |, where the package
 # cell keeps an extras marker (`juniper-foo[bar]`), as ReadmeCompatTableTest keys a row by
@@ -219,7 +219,7 @@ class PyprojectExtrasTest(unittest.TestCase):
         self.assertEqual(
             set(self.extras.keys()),
             set(EXPECTED_EXTRAS.keys()),
-            "pyproject.toml extras set drifted from the lint contract; " "update tests/test_pyproject_extras.py in the same PR as the " "pyproject change so reviewers see the diff.",
+            "pyproject.toml extras set drifted from the lint contract; update tests/test_pyproject_extras.py in the same PR as the pyproject change so reviewers see the diff.",
         )
 
     def test_each_extra_has_expected_members(self) -> None:
@@ -403,7 +403,7 @@ class ExtrasDocsLockstepTest(unittest.TestCase):
                 self.assertEqual(
                     set(documented.keys()),
                     set(self.pyproject_pins.keys()),
-                    f"{path.name}: extras set drifted from pyproject.toml; " "co-update the documented table in the same PR as the pin change",
+                    f"{path.name}: extras set drifted from pyproject.toml; co-update the documented table in the same PR as the pin change",
                 )
                 for extra, expected in self.pyproject_pins.items():
                     with self.subTest(doc=path.name, extra=extra):
@@ -418,7 +418,7 @@ class ExtrasDocsLockstepTest(unittest.TestCase):
         self.assertEqual(
             set(documented.keys()),
             set(self.pyproject_pins.keys()),
-            "docs/REFERENCE.md extras set drifted from pyproject.toml; " "co-update the Extras Reference table in the same PR as the pin change",
+            "docs/REFERENCE.md extras set drifted from pyproject.toml; co-update the Extras Reference table in the same PR as the pin change",
         )
         for extra, expected in self.pyproject_pins.items():
             with self.subTest(extra=extra):
@@ -498,7 +498,7 @@ class ReadmeCompatTableTest(unittest.TestCase):
         self.assertEqual(
             set(documented),
             set(self.expected),
-            "README.md Ecosystem Compatibility package set drifted from pyproject.toml; " "regenerate with util/ad-hoc/2026-09-21_sync_readme_compat_table.py",
+            "README.md Ecosystem Compatibility package set drifted from pyproject.toml; regenerate with util/ad-hoc/2026-09-21_sync_readme_compat_table.py",
         )
         for pkg, spec in self.expected.items():
             with self.subTest(package=pkg):
@@ -598,7 +598,7 @@ class ReferenceCompatibilityMatrixTest(unittest.TestCase):
         self.assertEqual(
             pins,
             self.recurrence,
-            "docs/REFERENCE.md's recurrence clause drifted from the [recurrence] extra. " "0.8.0 admits juniper-model-core 0.2.0 and POST /v1/crossval answers 500",
+            "docs/REFERENCE.md's recurrence clause drifted from the [recurrence] extra. 0.8.0 admits juniper-model-core 0.2.0 and POST /v1/crossval answers 500",
         )
 
     def test_version_cell_parser_ignores_a_prose_mention(self) -> None:

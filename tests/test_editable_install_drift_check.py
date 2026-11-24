@@ -374,7 +374,7 @@ class VersionDriftTest(unittest.TestCase):
     def _dynamic_repo(self, *, layout: str = "flat", version: str = "0.4.0") -> Path:
         repo = self.make_repo(
             "juniper-recurrence",
-            '[project]\nname = "juniper-recurrence"\ndynamic = ["version"]\n\n' "[tool.setuptools.dynamic]\n" 'version = { attr = "juniper_recurrence._version.__version__" }\n',
+            '[project]\nname = "juniper-recurrence"\ndynamic = ["version"]\n\n[tool.setuptools.dynamic]\nversion = { attr = "juniper_recurrence._version.__version__" }\n',
         )
         base = repo / "src" if layout == "src" else repo
         pkg = base / "juniper_recurrence"
@@ -395,7 +395,7 @@ class VersionDriftTest(unittest.TestCase):
     def test_source_version_dynamic_hatch_path(self) -> None:
         repo = self.make_repo(
             "juniper-hatched",
-            '[project]\nname = "juniper-hatched"\ndynamic = ["version"]\n\n' '[tool.hatch.version]\npath = "juniper_hatched/__about__.py"\n',
+            '[project]\nname = "juniper-hatched"\ndynamic = ["version"]\n\n[tool.hatch.version]\npath = "juniper_hatched/__about__.py"\n',
         )
         pkg = repo / "juniper_hatched"
         pkg.mkdir()
@@ -423,7 +423,7 @@ class VersionDriftTest(unittest.TestCase):
     def test_dynamic_version_file_without_dunder_is_unknown(self) -> None:
         repo = self.make_repo(
             "juniper-recurrence",
-            '[project]\nname = "juniper-recurrence"\ndynamic = ["version"]\n\n' "[tool.setuptools.dynamic]\n" 'version = { attr = "juniper_recurrence._version.__version__" }\n',
+            '[project]\nname = "juniper-recurrence"\ndynamic = ["version"]\n\n[tool.setuptools.dynamic]\nversion = { attr = "juniper_recurrence._version.__version__" }\n',
         )
         pkg = repo / "juniper_recurrence"
         pkg.mkdir()

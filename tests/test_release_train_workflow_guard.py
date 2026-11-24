@@ -317,12 +317,12 @@ class ReleaseTrainWorkflowGuardTest(unittest.TestCase):
         self.assertEqual(
             propose_repos,
             expected,
-            "propose mint repositories: must equal registry.yaml's publishing-repo set " f"(extra={sorted(propose_repos - expected)}, missing={sorted(expected - propose_repos)}).",
+            f"propose mint repositories: must equal registry.yaml's publishing-repo set (extra={sorted(propose_repos - expected)}, missing={sorted(expected - propose_repos)}).",
         )
         self.assertEqual(
             ceremony_repos,
             expected,
-            "ceremony mint repositories: must equal registry.yaml's publishing-repo set " f"(extra={sorted(ceremony_repos - expected)}, missing={sorted(expected - ceremony_repos)}).",
+            f"ceremony mint repositories: must equal registry.yaml's publishing-repo set (extra={sorted(ceremony_repos - expected)}, missing={sorted(expected - ceremony_repos)}).",
         )
         self.assertEqual(
             propose_repos,
@@ -339,7 +339,7 @@ class ReleaseTrainWorkflowGuardTest(unittest.TestCase):
         self.assertEqual(
             ecosystem,
             expected_siblings,
-            "env.ECOSYSTEM_REPOS must equal registry publishing repos minus juniper-ml " f"(extra={sorted(ecosystem - expected_siblings)}, missing={sorted(expected_siblings - ecosystem)}).",
+            f"env.ECOSYSTEM_REPOS must equal registry publishing repos minus juniper-ml (extra={sorted(ecosystem - expected_siblings)}, missing={sorted(expected_siblings - ecosystem)}).",
         )
         self.assertNotIn("juniper-ml", ecosystem, "juniper-ml is the workflow checkout, not an ECOSYSTEM_REPOS clone")
         self.assertNotIn("juniper-deploy", ecosystem, "juniper-deploy hosts no PyPI package and must not be cloned")
@@ -358,7 +358,7 @@ class ReleaseTrainWorkflowGuardTest(unittest.TestCase):
                 self.assertIn(
                     charset_needle,
                     blob,
-                    f"{job} must validate every packages-input token against the pypi-name charset " "(reject ../x / UPPER / ;rm rather than shelling garbage into propose.py/ceremony.py).",
+                    f"{job} must validate every packages-input token against the pypi-name charset (reject ../x / UPPER / ;rm rather than shelling garbage into propose.py/ceremony.py).",
                 )
                 self.assertIn("exit 2", blob, f"{job} packages-input reject path must exit 2")
                 self.assertIn("::error::", blob, f"{job} packages-input reject path must emit ::error::")
@@ -374,7 +374,7 @@ class ReleaseTrainWorkflowGuardTest(unittest.TestCase):
                 self.assertRegex(
                     blob,
                     r'if\s+\[\s+-n\s+"\$\{APP_TOKEN:-\}"\s*\]',
-                    f"{job} must gate --cross-repo on a non-empty APP_TOKEN " "(unconditional --cross-repo breaks the no-App degraded GITHUB_TOKEN path).",
+                    f"{job} must gate --cross-repo on a non-empty APP_TOKEN (unconditional --cross-repo breaks the no-App degraded GITHUB_TOKEN path).",
                 )
                 # Sanity: the flag is added inside that branch, not as a bare always-on argv.
                 # Extract the APP_TOKEN if-block (best-effort; structural, not a shell parser).
@@ -414,19 +414,19 @@ class ReleaseTrainWorkflowGuardTest(unittest.TestCase):
                 self.assertEqual(
                     len(steps),
                     1,
-                    f"the {job} job must have exactly one 'Configure git identity' step " f"(cross-repo sibling commits need a job-scoped global identity).",
+                    f"the {job} job must have exactly one 'Configure git identity' step (cross-repo sibling commits need a job-scoped global identity).",
                 )
                 run = str(steps[0].get("run", ""))
                 for needle in required_global:
                     self.assertIn(
                         needle,
                         run,
-                        f"{job} identity step must use `{needle}` -- repo-local config does not " f"propagate into freshly-cloned sibling checkouts (ml#705).",
+                        f"{job} identity step must use `{needle}` -- repo-local config does not propagate into freshly-cloned sibling checkouts (ml#705).",
                     )
                 for pat in local_only:
                     self.assertIsNone(
                         pat.search(run),
-                        f"{job} identity step must not use repo-local `{pat.pattern}` " f"(would reintroduce Author-identity-unknown on sibling checkouts).",
+                        f"{job} identity step must not use repo-local `{pat.pattern}` (would reintroduce Author-identity-unknown on sibling checkouts).",
                     )
 
     def test_detect_job_does_not_configure_git_identity(self):
@@ -1146,7 +1146,7 @@ class HeredocCompileTest(unittest.TestCase):
         self.assertEqual(
             problems,
             [],
-            "PY heredoc body(ies) in release-train.yml failed to compile -- a SyntaxError would " "fail the step only after the real work finished (late-failure class): " + "; ".join(problems),
+            "PY heredoc body(ies) in release-train.yml failed to compile -- a SyntaxError would fail the step only after the real work finished (late-failure class): " + "; ".join(problems),
         )
         # Pin the known set so a deleted heredoc (or a new uncompiled one that the opener regex
         # misses) cannot silently shrink coverage. Today: detect summary, detect Slack, propose
@@ -1154,7 +1154,7 @@ class HeredocCompileTest(unittest.TestCase):
         self.assertEqual(
             compiled,
             4,
-            f"expected to compile 4 PY heredoc bodies in {WORKFLOW_NAME}; got {compiled} " f"(update this pin when intentionally adding/removing a <<'PY' block).",
+            f"expected to compile 4 PY heredoc bodies in {WORKFLOW_NAME}; got {compiled} (update this pin when intentionally adding/removing a <<'PY' block).",
         )
 
 
@@ -1195,7 +1195,7 @@ class DetectorExitContractRehearsalTest(unittest.TestCase):
             # Stub `python` (the workflow invokes bare `python`, not `python3`).
             stub = bin_dir / "python"
             stub.write_text(
-                "#!/bin/bash\n" f"# stub: emit a tiny JSON manifest on stdout (shell redirects to the artifact), then exit {py_exit}\n" "echo '{\"packages\":[]}'\n" f"exit {py_exit}\n",
+                f"#!/bin/bash\n# stub: emit a tiny JSON manifest on stdout (shell redirects to the artifact), then exit {py_exit}\necho '{{\"packages\":[]}}'\nexit {py_exit}\n",
                 encoding="utf-8",
             )
             stub.chmod(0o755)

@@ -75,7 +75,7 @@ class AgentSuitePathDriftTest(unittest.TestCase):
         self.assertEqual(
             offenders,
             [],
-            "live suite files must not reference the pre-rename path " f"'{_STALE}' (use 'prompts/agent_templates/'):\n" + "\n".join(offenders),
+            f"live suite files must not reference the pre-rename path '{_STALE}' (use 'prompts/agent_templates/'):\n" + "\n".join(offenders),
         )
 
 

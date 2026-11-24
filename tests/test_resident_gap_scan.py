@@ -121,7 +121,7 @@ class CommentBlocksTest(unittest.TestCase):
         with TemporaryDirectory() as tmp:
             path = Path(tmp) / "x.py"
             path.write_text(
-                "# never silently\n" "# drop this_unique_token when the lines are split\n",
+                "# never silently\n# drop this_unique_token when the lines are split\n",
                 encoding="utf-8",
             )
             blocks = mod.comment_blocks(path)

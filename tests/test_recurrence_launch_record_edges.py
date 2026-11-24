@@ -270,7 +270,7 @@ class TestModelVersionProbeEdges(unittest.TestCase):
             fake = Path(tmp) / "python"
             probe = rx.RECURRENCE_MODEL_VERSION_PROBE
             fake.write_text(
-                "#!/bin/bash\n" f'printf \'cwd=%s\\nargc=%s\\narg1=%s\\narg2=%s\\nsentinel=%s\\n\' "$PWD" "$#" "${{1-}}" "${{2-}}" "${{PROBE_SENTINEL-}}" > {shlex.quote(str(log))}\n' f'if [[ "$#" == 2 && "$1" == -c && "$2" == {shlex.quote(probe)} ]]; then\n' "    printf '1!2.0+local\\n\\n'\n" "    exit 0\n" "fi\n" "echo bad >&2\n" "exit 9\n",
+                f'#!/bin/bash\nprintf \'cwd=%s\\nargc=%s\\narg1=%s\\narg2=%s\\nsentinel=%s\\n\' "$PWD" "$#" "${{1-}}" "${{2-}}" "${{PROBE_SENTINEL-}}" > {shlex.quote(str(log))}\nif [[ "$#" == 2 && "$1" == -c && "$2" == {shlex.quote(probe)} ]]; then\n    printf \'1!2.0+local\\n\\n\'\n    exit 0\nfi\necho bad >&2\nexit 9\n',
                 encoding="utf-8",
             )
             fake.chmod(0o755)

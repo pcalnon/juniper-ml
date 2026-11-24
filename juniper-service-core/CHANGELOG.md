@@ -47,6 +47,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   read with `receive()` until `websocket.disconnect`, as `/ws/training`'s receive loop now does.
   None of the shipped handlers registers a socket with `connect()`.
 
+- **`/ws/training` answers a resume frame as juniper-cascor does: juniper-cascor#754's four cursor rules**
+  (the owner's rulings of 2026-11-12, "Match cascor's resume answers", and of 2026-11-13, "Four rules + shared
+  table" and, for a negative cursor, "Read as 0"). Driven over a real WebSocket, the two copies answered 131 of
+  240 (frame, state) cases differently; now none do.
+  - A `data` that is not an object is `resume_failed` `malformed_resume`. It raised `AttributeError`, which the
+    handshake's broad `except` turned into a fresh connect with no reply.
+  - A `last_seq` that is not a plain integer (a float, `NaN`, `Infinity`, a boolean, a string, a list, an
+    object) is `malformed_resume`, checked before `server_instance_id`. A float, a boolean, `NaN` or `Infinity`
+    was answered by its numeric value (with seqs 1-5 buffered, `2.5` replayed from seq 3, and `NaN` and `Infinity`
+    were `resume_ok` with nothing replayed), and the others, unless replay was disabled (then `out_of_range`),
+    raised: a fresh connect with no reply.
+  - A negative `last_seq` is read as `0`, as `promote_to_active`'s catch-up already read it. It was `resume_ok`
+    on an empty buffer and `out_of_range` once anything was buffered, seq 1 included.
+  - **`WebSocketManager.replay_since` raises `ReplayOutOfRange` for a `last_seq` above the last seq numbered**
+    (`Requested seq N is above the last seq numbered, M`), where, with seqs buffered, it returned `[]`. A resume with such a cursor
+    is `out_of_range` and a fresh snapshot instead of `resume_ok` with nothing replayed, after which a broadcast
+    made before the socket went live with a seq at or below the claimed cursor was never sent to it.
+    `promote_to_active(..., replayed_through=...)` with such a cursor returns `False` and leaves the socket
+    pending; the handler never passes one, since its handshake has checked the cursor first.
+  - **One table of frames and answers, tested on the wire in both repositories.**
+    `tests/fixtures/ws_resume_answers.json` holds 60 resume frames and the reply frames a client reads in four
+    server states. `tests/test_websocket_resume_answer_table.py` serves the package's app with uvicorn on a loopback port and
+    drives all 240 cases with the `websockets` client; the `[test]` extra gains both. juniper-cascor holds the
+    same bytes at `src/tests/fixtures/ws_resume_answers.json` and drives its own app against them, and
+    juniper-ml's `tests/test_ws_resume_answer_table_drift.py` compares the two copies. A new `MANIFEST.in` puts
+    `tests/fixtures/` in the sdist beside the test that reads it; the wheel still holds no tests.
+  - **Tests**: `tests/test_websocket_resume_continuity.py` gains 23 cases (juniper-cascor's 20, two for the
+    order of the checks, and one that pins `replay_since` itself still raising for a negative cursor, which only
+    the handshake reads as `0`), and `test_replay_since_returns_exactly_the_tail_after_every_cut_point` now
+    expects the two cursors past the newest seq to raise. Against the code before this change, that test, 20 of
+    the 23 (the other three are controls) and 131 of the 240 table cases fail.
+
 ### Fixed
 
 - **A `fit` that returns while the run is paused settles `COMPLETED` instead of wedging the

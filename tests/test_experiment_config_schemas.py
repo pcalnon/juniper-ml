@@ -171,7 +171,7 @@ class EpochBudgetSplitDriftTest(unittest.TestCase):
         self.assertEqual(
             offenders,
             [],
-            "cascor experiment configs set max_epochs without output_epochs -- the service will run " "every non-initial output pass at the 10000 default while the CLI runs it at max_epochs. " f"Set both to the same value, or add an entry with a reason: {offenders}",
+            f"cascor experiment configs set max_epochs without output_epochs -- the service will run every non-initial output pass at the 10000 default while the CLI runs it at max_epochs. Set both to the same value, or add an entry with a reason: {offenders}",
         )
 
     def test_exempt_entries_are_not_stale(self) -> None:

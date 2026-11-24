@@ -298,7 +298,7 @@ class InjectionRegressionTest(_Fixture):
         stub = self.cwd / "find-stub"
         # Built line by line: the path's own newline would defeat textwrap.dedent and indent the shebang.
         stub.write_text(
-            "#!/bin/bash\n" f"printf '%s\\n' \"$@\" > '{argv_log}'\n" f"printf '%s\\0' '{tricky}'\n",
+            f"#!/bin/bash\nprintf '%s\\n' \"$@\" > '{argv_log}'\nprintf '%s\\0' '{tricky}'\n",
             encoding="utf-8",
         )
         stub.chmod(0o755)

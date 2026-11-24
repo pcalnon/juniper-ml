@@ -232,7 +232,7 @@ class V1NegativeExampleTest(unittest.TestCase):
         self.assertEqual(
             findings,
             [],
-            "v1 is the negative example: the global expression skip must still hide health_check. " "If this fails, v1 was 'fixed' -- delete this characterisation or the file, do not leave a second unsound gate.",
+            "v1 is the negative example: the global expression skip must still hide health_check. If this fails, v1 was 'fixed' -- delete this characterisation or the file, do not leave a second unsound gate.",
         )
 
     def test_v1_reports_awaited_async_client_as_blocking(self) -> None:

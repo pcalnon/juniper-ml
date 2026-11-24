@@ -128,7 +128,7 @@ class PrecommitG4RehearsalTest(unittest.TestCase):
 
             precommit = stub_bin / "pre-commit"
             precommit.write_text(
-                "#!/usr/bin/env bash\n" "set -euo pipefail\n" f'printf "%s\\n" "$*" >>"{log_path}"\n' "exit 0\n",
+                f'#!/usr/bin/env bash\nset -euo pipefail\nprintf "%s\\n" "$*" >>"{log_path}"\nexit 0\n',
                 encoding="utf-8",
             )
             precommit.chmod(0o755)
@@ -137,7 +137,7 @@ class PrecommitG4RehearsalTest(unittest.TestCase):
             git = stub_bin / "git"
             cat_rc = 0 if cat_file_ok else 1
             git.write_text(
-                "#!/usr/bin/env bash\n" "set -euo pipefail\n" 'if [ "${1:-}" = "cat-file" ]; then\n' f"  exit {cat_rc}\n" "fi\n" 'if [ "${1:-}" = "fetch" ]; then\n' "  exit 0\n" "fi\n" 'echo "unexpected git argv: $*" >&2\n' "exit 99\n",
+                f'#!/usr/bin/env bash\nset -euo pipefail\nif [ "${{1:-}}" = "cat-file" ]; then\n  exit {cat_rc}\nfi\nif [ "${{1:-}}" = "fetch" ]; then\n  exit 0\nfi\necho "unexpected git argv: $*" >&2\nexit 99\n',
                 encoding="utf-8",
             )
             git.chmod(0o755)

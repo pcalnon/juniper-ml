@@ -74,6 +74,24 @@ The paths:
   State the sentry-sdk floor each option needs, and check that floor against every consumer's lock and `pyproject.toml`.
 - **Round 1's queue**: request bodies, breadcrumbs, exception values and list-shaped headers.
 
+**Addendum, 2026-11-23: sentry-sdk 3.0.0.** This was added after the prompt was generated; see
+`notes/JUNIPER_2026-11-23_JUNIPER-ECOSYSTEM_R-OBS-SC-2-FOLLOW-UPS-REMAINING-TASKS.md`, R14, R15 and R57.
+
+- **What 3.0.0 removed.** sentry-sdk 3.0.0 reached PyPI at 2026-11-23T09:30:33Z. It has no `send_default_pii` option
+  and no `sentry_sdk.scrubber` module, and `sentry_sdk/client.py:102` raises `TypeError("Unknown option ...")` for an
+  unknown option.
+- **What that breaks.** `juniper_observability/sentry.py:182` passes `send_default_pii`, so `configure_sentry` with a
+  DSN raises under 3.x. With an empty DSN, it returns before `sentry_sdk.init`.
+- **The cap.** juniper-ml#2608 (merged 2026-11-23T20:50:42Z) caps `sentry-sdk[fastapi]>=2.35.0,<3` at
+  `juniper-observability/pyproject.toml:35` and `:44`, under `[Unreleased]`. No release carries it yet, and which
+  release number carries it is the Overtoad's ruling (R14).
+- **The consumers' floors are uncapped.** juniper-cascor `pyproject.toml:151` and juniper-canopy `:251` require
+  `sentry-sdk>=2.0.0`, and juniper-data `:142` requires `sentry-sdk[fastapi]>=2.0.0`. juniper-cascor's
+  `src/main.py:236` passes `send_default_pii` itself (R15).
+- **What the design must now state.** "The sentry-sdk floor each option needs" above gains a ceiling. The design
+  states whether 0.4.3 stays on 2.x behind the cap or ports `configure_sentry` to 3.x. For each path above, it says
+  what 3.x offers in place of the scrubber and of `send_default_pii`, measured with the real SDK, not assumed.
+
 Then the release plan. Patch or minor, judged by what the change does to the public API and to what consumers see.
 After the release comes the third lock round in each consumer, and the floors in each consumer's next release
 PR: round 1's ruling 1 of 2026-11-09, "In release PRs", records that each consumer raises the floors in its
