@@ -145,7 +145,7 @@ diagnosis** (surfaces the problem to a human) from **prevention / true-catch** (
 the Phase-1 static triad *detects*; only **E-1** (gated) and **E-8** (app-level) *catch or prevent* the "green
 tests / dead app" class.
 
-| id | One-line | First-party evidence | Severity | State | The Overtoad repo | Failure-class addressed |
+| id | One-line | First-party evidence | Severity | State | Owner repo | Failure-class addressed |
 |----|----------|----------------------|----------|-------|------------|--------------------------|
 | **G-1** | `prompts/templates/`→`agent_templates` rename drift | LIVE suite surface (`.claude/`, `prompts/agent_templates/`, `util/prompt_discovery/`) has **zero** `prompts/templates/` hits; remaining hits only in the guard test, a `ci.yml` comment, and historical `notes/`/handoff/`generated/` artifacts | n/a | **CLOSED** (verified swept, #566) | ml | doc/path drift |
 | **G-2** | `ecosystem.yaml` stale conda envs | `ecosystem.yaml:21-23` = JuniperCanopy1/JuniperCascor1 3.13 + JuniperData 3.14, matches live envs | n/a | **CLOSED** (#566) | ml | stale-fact injection |
@@ -225,7 +225,7 @@ landing (§4 ledger; run by the `auditor` agent or the E-2 tool once it exists).
 ## 6. Per-Enhancement Detail
 
 Each subsection carries: **design sketch · affected files (with `file:line`) · test/dogfood plan + the exact
-`tests/` gate + the `ci.yml` wiring note · acceptance criteria · risk + rollback · Overtoad repo · JR-ID**. SHAPE
+`tests/` gate + the `ci.yml` wiring note · acceptance criteria · risk + rollback · owner repo · JR-ID**. SHAPE
 decisions from the reconciliation are carried verbatim. No JR-ID is invented — where unknown, the PR author
 looks one up in `notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md` at authoring time (per the `AGENTS.md` PR conventions).
 
@@ -259,7 +259,7 @@ TTL; reuse the probe's existing `cold_cache`/`unavailable` vocabulary.
 - **Risk + rollback.** Low. Risk: a clock-skew false-positive `stale`. Mitigation: HEAD-commit-time comparison
   (monotonic w.r.t. commits) is the primary signal; TTL is the secondary. Rollback: revert the single-file PR;
   the probe reverts to today's mtime-blind behavior.
-- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
+- **Owner repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.2 E-2 — Environment floor-drift checker (the I-2 fix)
 
@@ -294,7 +294,7 @@ envs); state plainly the CI gate is structural (no conda in ubuntu CI) + a manua
 - **Risk + rollback.** Low-medium. Risk: dist-info parsing edge cases (extras, normalized names). Mitigation:
   reuse the proven `_read_dist_name` pattern (`editable_install_drift_check.py:132`). Rollback: revert the PR;
   no existing behavior changes (additive tool).
-- **The Overtoad repo.** ml (tool) + canopy (process — adopt as a post-refactor reinstall check). **JR-ID.** TBD —
+- **Owner repo.** ml (tool) + canopy (process — adopt as a post-refactor reinstall check). **JR-ID.** TBD —
   none invented.
 
 #### 6.3 E-5 — Mocked-seam gap auditor (novel `auditor` variant)
@@ -323,7 +323,7 @@ which mock an integration boundary and thereby leave the real construct/call pat
   data-client boundary and identifies at least one real construct/call path not exercised un-mocked.
 - **Risk + rollback.** Low. Risk: false positives (legitimate mocks). Mitigation: the agent reports, never
   edits or fails CI; the human triages. Rollback: delete the `.md` (and its optional test + `ci.yml` line).
-- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
+- **Owner repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.4 E-3 — Cross-repo `--target-repo` mode (the A-1 fix)
 
@@ -366,7 +366,7 @@ unchanged; fix the validator side to use `git -C <target> rev-parse HEAD` (the r
   re-introducing the CWD bug. Mitigation: additive flag; the contract test asserts *zero* CWD-relative probe
   commands; explicit default-preservation + cross-repo dogfood criteria. Rollback: revert the single PR; the
   manual cross-repo override (passing `--repo-root <sibling>`) still works as it does today.
-- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
+- **Owner repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.5 G-3 — `AGENTS.md` Repository-Structure tree refresh (Phase-1 gated rider)
 
@@ -391,7 +391,7 @@ change ships a wired gate").
   top-level dir is later added without a tree update (verify by a synthetic temp dir in the test fixture).
 - **Risk + rollback.** Negligible (doc + a self-locating lint). Rollback: revert the hunk + remove the test +
   its `ci.yml` line.
-- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
+- **Owner repo.** ml. **JR-ID.** TBD — none invented.
 
 ### Phase 2 — second wave
 
@@ -423,7 +423,7 @@ proves insufficient.
   source item (dogfood-demonstrated); both structural gates pass.
 - **Risk + rollback.** Low-medium (3→2 after fold-in shaping). Risk: R1.1 over-triggers. Mitigation: keep it
   `major` (not a blocker), so it informs rather than hard-fails. Rollback: revert the RUBRIC/validator hunks.
-- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
+- **Owner repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.7 E-4 — Per-file coverage-gap mapper (advisory-first)
 
@@ -453,7 +453,7 @@ dotted-`--cov` workaround behind a documented shim.
 - **Risk + rollback.** Medium. Risk: coverage-tool fragility across repos. Mitigation: advisory exit-0 +
   documented shim; opt-in per repo. Rollback: do not adopt per-repo; the ci-tools module is inert until
   invoked. Promotion to a blocking gate requires separate Overtoad sign-off (OQ below).
-- **The Overtoad repo.** ml → ci-tools. **JR-ID.** TBD — none invented.
+- **Owner repo.** ml → ci-tools. **JR-ID.** TBD — none invented.
 
 #### 6.8 M-1 — `known_misses.yaml` RUBRIC-consult (minimal)
 
@@ -484,7 +484,7 @@ reship); DEFER the auto-append pipeline (premature at N=1; an unvalidated write-
   gates pass.
 - **Risk + rollback.** Low. Risk: negligible at N=1. Rollback: revert the RUBRIC/validator hunks + the
   `_EXPECTED_RUBRIC_IDS` addition.
-- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
+- **Owner repo.** ml. **JR-ID.** TBD — none invented.
 
 ### Phase 3 — later / gated
 
@@ -523,7 +523,7 @@ is structural-only + a documented manual smoke-verify step.
   uncertainty. Mitigations: Stage-0 kill-criterion + the Plan-B fallback; mandatory teardown/timeout/orphan-reap
   from day one; structural-only CI + manual verify. Rollback: each stage is its own PR; delete the Skill (+ test
   + `ci.yml` line); Stage 0 commits nothing.
-- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
+- **Owner repo.** ml. **JR-ID.** TBD — none invented.
 
 #### 6.10 E-6 — Click-through test author (gated)
 
@@ -543,7 +543,7 @@ is structural-only + a documented manual smoke-verify step.
   control and asserts an observable outcome; the output is presented for review and is never auto-merged.
 - **Risk + rollback.** Medium-high (R=4). Risk: low-value or flaky generated tests. Mitigation: human review
   gate; gated behind E-1 Stage 2. Rollback: do not adopt; delete any Skill surface.
-- **The Overtoad repo.** ml. **JR-ID.** TBD — none invented.
+- **Owner repo.** ml. **JR-ID.** TBD — none invented.
 
 ### Companion (app-level, not a suite PR)
 
@@ -571,7 +571,7 @@ Plan-B. **App-level** — owned by the app (canopy first), **not** part of the s
 - **Risk + rollback.** Low-medium. Risk: a false-positive at boot blocking a legitimate start. Mitigation:
   clear message + an optional documented escape-hatch env var (Overtoad to decide). Rollback: remove the
   self-check call (single call site).
-- **The Overtoad repo.** canopy (app change) + candidate `juniper-service-core` (shared helper). **JR-ID.** TBD —
+- **Owner repo.** canopy (app change) + candidate `juniper-service-core` (shared helper). **JR-ID.** TBD —
   none invented.
 
 ---
@@ -593,25 +593,25 @@ untested" hide).
 **Phase 1 (near-term core — mutually independent, parallelizable):**
 
 - **PR-1 — D-1** test_status freshness guard: `util/prompt_discovery/test_status.py` + `tests/test_prompt_discovery.py`
-  (gate line already wired at `ci.yml:138`). The Overtoad: ml.
+  (gate line already wired at `ci.yml:138`). Owner: ml.
 - **PR-2 — E-2 (+ G-3 gated rider)** env-floor-drift checker: new `util/env_floor_drift_check.py` + new
   `tests/test_env_floor_drift_check.py` + **new `ci.yml` line**; **carries G-3** — the `AGENTS.md:130-267` tree
   refresh **plus** the new `tests/test_agents_md_tree_drift.py` guard + **its** `ci.yml` line. (Two new test
-  files + two new ci.yml lines in this PR: one for E-2, one for the G-3 tree guard.) The Overtoad: ml (tool) + canopy
+  files + two new ci.yml lines in this PR: one for E-2, one for the G-3 tree guard.) Owner: ml (tool) + canopy
   (process).
 - **PR-3 — E-5** mock-seam gap auditor: new `.claude/agents/mock-seam-auditor.md` (opus+max, read-only),
   auto-covered by `tests/test_agents_frontmatter.py` (`ci.yml:238`) + optional contract test + AGENTS.md.
-  Dogfood vs canopy `conftest.py:371`. The Overtoad: ml.
+  Dogfood vs canopy `conftest.py:371`. Owner: ml.
 - **PR-4 — E-3** cross-repo `--target-repo` mode: `util/prompt_discovery/cli.py` +
   `.claude/agents/prompt-validator.md` (freshness gate **and** the `:80-89` re-probe block) +
   `.claude/skills/template-agent/SKILL.md` +
   `tests/{test_prompt_discovery,test_prompt_validator_contract,test_template_agent_skill_lint}.py` (all gate
-  lines already wired). The Overtoad: ml.
+  lines already wired). Owner: ml.
 
 **Phase 2 (second wave — NOT fully parallel: PR-7 depends on PR-5):**
 
 - **PR-5 — E-7** intent-fidelity fold-in: `.claude/agents/prompt-validator.md` + `prompts/agent_templates/RUBRIC.md`
-  + `tests/{test_prompt_validator_contract,test_template_library_drift}.py`. The Overtoad: ml.
+  + `tests/{test_prompt_validator_contract,test_template_library_drift}.py`. Owner: ml.
 - **PR-6 — E-4** per-file coverage-gap mapper: `juniper-ci-tools` module + console script + ci-tools tests;
   dogfood/drift `tests/test_*.py` in juniper-ml + **new `ci.yml` line** + **AGENTS.md (Tests inventory)**.
   Owner: ml → ci-tools.
@@ -619,18 +619,18 @@ untested" hide).
   `.claude/agents/prompt-validator.md` + `tests/test_template_library_drift.py` (extend `_EXPECTED_RUBRIC_IDS`)
   + `tests/test_template_data_resolver.py`. **Depends on PR-5** — both edit `RUBRIC.md` and
   `prompt-validator.md`, and `test_prompt_validator_contract.py` cross-checks cited rubric IDs against
-  `RUBRIC.md`; sequence PR-7 after PR-5 to avoid a rubric-ID merge conflict. The Overtoad: ml.
+  `RUBRIC.md`; sequence PR-7 after PR-5 to avoid a rubric-ID merge conflict. Owner: ml.
 
 **Phase 3 (later / gated):**
 
 - **PR-8 — E-1 Stage 0** feasibility spike: throwaway; deliverable = a `notes/` spike record + kill/proceed
-  verdict. No committed runtime surface. The Overtoad: ml.
+  verdict. No committed runtime surface. Owner: ml.
 - **PR-9 — E-1 Stage 1** HTTP-only diagnostician Skill: new `.claude/skills/service-smoke/SKILL.md` + new
   `tests/test_service_smoke_skill_lint.py` + **new `ci.yml` line** + AGENTS.md; structural gate + manual smoke
-  note. **Depends on PR-8 proceed.** The Overtoad: ml.
-- **PR-10 — E-1 Stage 2** UI smoke: add chrome-devtools/playwright driving. **Depends on PR-9.** The Overtoad: ml.
+  note. **Depends on PR-8 proceed.** Owner: ml.
+- **PR-10 — E-1 Stage 2** UI smoke: add chrome-devtools/playwright driving. **Depends on PR-9.** Owner: ml.
 - **PR-11 — E-6** click-through test author: writes reviewed (never auto-merged) tests. **Depends on PR-3
-  (E-5) AND PR-10 (E-1 Stage 2).** The Overtoad: ml.
+  (E-5) AND PR-10 (E-1 Stage 2).** Owner: ml.
 
 **Not in the suite PR sequence:** **E-8** (app-level, canopy-owned — §6.11; the E-1 Plan-B) and **S-1** (a
 deferred ecosystem env-drift *audit*, run by the `auditor`/E-2 once **E-2 (PR-2)** has landed).
@@ -658,7 +658,7 @@ Deliberately excluded so their absence is intentional, not dropped:
 
 - **Canopy-owned issues from the debug analysis** — **C-2** (misleading commented client pins in canopy
   requirements docs, CANOPY `:154`), **D-2** (canopy demo-mode degradation choice, `:167`), **D-3** (recurrence
-  model `status="live"` + Start-enabled with no service URL, `:172`). The Overtoad: **canopy**; tracked there, not in
+  model `status="live"` + Start-enabled with no service URL, `:172`). Owner: **canopy**; tracked there, not in
   this suite plan.
 - **A lower-priority "runtime-triage auditor" variant** (a read-only triager of existing logs/tracebacks) — a
   weaker cousin of E-1; not pursued now (E-1 + E-5 cover the high-value cases).

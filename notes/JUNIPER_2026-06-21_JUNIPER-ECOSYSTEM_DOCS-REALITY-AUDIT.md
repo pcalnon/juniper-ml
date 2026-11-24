@@ -86,7 +86,7 @@ staleness is captured here rather than edited in-place:
 
 ## §3. Genuinely incomplete / not-started work register
 
-| # | Item | Status | Blocked by | The Overtoad / next |
+| # | Item | Status | Blocked by | Owner / next |
 | --- | --- | --- | --- | --- |
 | 1 | **WS-6 B3** — replace monkey-patch monitoring with `CascorModel.fit(on_event=…)` sink (retain drain side-channel for the 50 Hz `/ws/training` stream) | **NOT STARTED** (spike done; OQ-B1 = proceed) | — | **next thread** (handoff `HANDOFF_2026-06-21_ws6-bphase-b3-on-event-sink.md`) |
 | 2 | **WS-6 B4** — point native conformance at production `CascorModel`; retire the test-only adapter | NOT STARTED | B3 decision | follows B3 |

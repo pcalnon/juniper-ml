@@ -783,7 +783,7 @@ Both clients read one file, in-process, through `read_credential`. The password 
 | Value | Literal. Surrounding whitespace is dropped, and one matching pair of surrounding quotes is removed. No shell expansion |
 | Not this file | The archive passphrase is `PASSPHRASE=` in `~/.config/duplicati-backup/env`. Using that here fails login (401) |
 
-A refusal names the path, the mode, and the Overtoad, and never the file's contents. A missing file, a non-regular file (a FIFO is opened `O_NONBLOCK`, so it cannot hang the caller), zero or two key lines, and an empty value all refuse before any request. The job verbs `export`, `delete`, `run`, and `log` also require a job id before the credential is read.
+A refusal names the path, the mode, and the owner, and never the file's contents. A missing file, a non-regular file (a FIFO is opened `O_NONBLOCK`, so it cannot hang the caller), zero or two key lines, and an empty value all refuse before any request. The job verbs `export`, `delete`, `run`, and `log` also require a job id before the credential is read.
 
 ### Server API
 
@@ -4181,7 +4181,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_write_matched_settings_key.py` -- Phase D (2026-10-29): Procedure A's key write, `util/ad-hoc/2026-10-29_write_matched_settings_key.py`, re-derives the step-7 probe's match from the database copy and writes the matched variant's own text to the credential path. Pins the written bytes (no trailing newline, mode 0600) and the real wrapper's acceptance of them through `$CREDENTIALS_DIRECTORY` at the expected length; a quoted `raw` match keeping its quotes and a `noquote` match dropping them; refusals of a `newline`-only or edge-whitespace match (NUL, CR and inner newline included), of no match (with "STOP" after a probe match), of an existing path or symlink (on a dry run too, and one created between the check and the create: `O_EXCL`), of a symlinked, foreign-owned or group-writable directory, of a FIFO or non-UTF-8 `.env`, and of a database the probe would misread (no blob, a content-hash mismatch, two key hashes, the job index) or with a blob under another key in any of the gate's five columns (`Source.Path`, `ConnectionString.BaseUrl`, `BackupTargetUrl.TargetURL`, a BLOB-typed value) or a table missing its column -- each refusal by the dry run too, since step 7 routes on its exit status; nothing written on a refusal or a dry run; a failed or interrupted write or read-back removing the file it created, and both read-backs load-bearing; SIGTERM, SIGINT, SIGHUP and SIGQUIT sent inside the write and mid-read-back each landing after the verified key's line, from a driver that restores the four signals' defaults (`nohup` and background jobs inherit them ignored), with the core limit (0, 0) before the key is read (1.2.0/1.3.0, round 4); no `.pyc` beside the gate; a decode error never quoting the column; the probe's parser (CRLF, leading whitespace, `export` with a tab, a line separator inside the value, the last active line, `_OLD` and commented lines) and its `strip_quotes` / `variants` / `sha` by AST equality; matched labels equal to the probe's own verdict on the same inputs; and no value or hash in the output. `util/ad-hoc/2026-10-29_write_matched_settings_key_mutation_check.py` applies 34 mutants to a copy and requires each killed; `util/ad-hoc/2026-10-29_password_init_env_mutation_check.py` does the same for the helper's 1.4.0 environment (5 mutants).
 - `tests/test_a0_restore_scripts.py` -- round 5 of Phase B (R5A NIT-4): `util/ad-hoc/2026-09-22_confirm_a0_premise.bash` and `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash` against a `duplicati-cli` PATH stub. Pins: the frozen job index's `-wal`/`-journal` copied beside the `--dbpath` copy under its name and byte-identical (nothing when absent); every temporary copy removed; the frozen index never handed over or written; the passphrase parsed verbatim and passed by environment only; no index means exit 2; the restore directory refused inside the backup Source at any depth, existing or not, and through a symlink (against a scratch `YAMAGUCHI_SOURCE_ROOT`); the production default root `/home/pcalnon` is pinned, and a root given through a symlink is canonicalised.
 - `tests/test_clear_stop_backup_design.py` -- Phase B round-3 fold-in (R3C D-5): `util/ad-hoc/2026-10-03_clear_stop_and_sync_backup_design.py` in a scratch copy of the repository layout. Pins that the committed design is current ("no change"), that a reverted edit is re-applied byte for byte and a second run is idempotent, and the refusals: a stray fenced-block change, a line pushed over 512 characters, a `FIXFWD_PR` that is not `ml#<digits>`, a reworded deleted marker (with or without the word "held"), and a changed or unterminated STOP block (pinned by sha256). Companion ad-hoc tools: `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py` (a port of Duplicati 2.4.0.0's retention remover) and `guard_fence_probe.bash`.
-- `tests/test_duplicati_web_credential.py` -- B2 of the 2026-10-03 backup recovery plan: the ONE web-UI credential file both Duplicati API clients read, `~/.config/duplicati-backup/web-credential` (0600), through `yamaguchi_server_api.read_credential`. It replaces the primary checkout's world-readable `.env` (exposure S-5). Pins the one-line `DUPLICATI_WEB_CREDENTIAL=` format; refusal of any group or other bit, of a non-regular file (a FIFO without hanging), and of zero or two key lines, each message naming path, mode and Overtoad but never content. Also pins that the retired `DUPLICATI_PW_FILE` / `DUPLICATI_PW_KEY` are ignored, that the bare-secret fallback is gone, and that the password leaves only as the login body. `tests/duplicati_api_stub.py` replaces `urlopen`, so no socket opens.
+- `tests/test_duplicati_web_credential.py` -- B2 of the 2026-10-03 backup recovery plan: the ONE web-UI credential file both Duplicati API clients read, `~/.config/duplicati-backup/web-credential` (0600), through `yamaguchi_server_api.read_credential`. It replaces the primary checkout's world-readable `.env` (exposure S-5). Pins the one-line `DUPLICATI_WEB_CREDENTIAL=` format; refusal of any group or other bit, of a non-regular file (a FIFO without hanging), and of zero or two key lines, each message naming path, mode and owner but never content. Also pins that the retired `DUPLICATI_PW_FILE` / `DUPLICATI_PW_KEY` are ignored, that the bare-secret fallback is gone, and that the password leaves only as the login body. `tests/duplicati_api_stub.py` replaces `urlopen`, so no socket opens.
 - `tests/test_yamaguchi_server_api.py` -- The `serverstate` / `pause` / `resume` verbs P0 step 10 needs (the 2026-09-24 STOP's item 3). Pins: exit 0 Running / 2 Paused / 64 usage; `pause` indefinite and read back; a job id required before any credential read or request; `export` issuing the single-operation token 2.4.0.0 requires (`POST /api/v1/auth/issuetoken/export`, then `token=` on the export route) and printing it nowhere; a failed `export`, at either step, leaving stdout empty, since it feeds the guard dry-run's `TargetURL`; and the `status` / `log` strings the bash callers grep. `tests/duplicati_api_stub.py` answers the export flow as 2.4.0.0 does, before any canned route -- 400 token-less, 500 for a token it never signed, 401 for another operation's; its earlier 200 is how ml#2115 merged an export that failed on every call.
 - `tests/test_yamaguchi_watchdog.py` -- Design §7.6 for `util/ad-hoc/yamaguchi_watchdog.py`: `Paused` with a non-empty `SchedulerQueueIds` alerts `PAUSED_WITH_QUEUE` (YAM §8.22); freshness is anchored on the newest **Backup**, keyset-paged and bounded; the job id has no default, and an absent or empty `--backup-id` is recorded durably as `JOB_MISSING` while a usage error exits 64 (the watchdog's 2 means UNDETERMINED). Also pins the record line format, a `notify-send` child that never sees the password, and the unit / deploy-script contract, checked statically because the deploy script changes systemd user units. `util/ad-hoc/2026-10-03_b2_mutation_check.py` puts 38 defects back across the three B2 suites, one at a time, and requires the suite assigned to each to fail.
 - Operator surface for the Yamaguchi credential, API, and watchdog suites: [Yamaguchi Duplicati Server Client](#yamaguchi-duplicati-server-client).
@@ -5399,7 +5399,7 @@ A squash writes a new commit on the base. The success line's SHA is the pull req
 gh pr view <N> --repo pcalnon/<repo> --json mergeCommit --jq .mergeCommit.oid
 ```
 
-`--repo` is the bare repository name (`juniper-ml`). The Overtoad is `--owner` (default `pcalnon`). `util/wait_for_checks.py` uses the same split. Passing `pcalnon/juniper-ml` as `--repo` hands gh `pcalnon/pcalnon/juniper-ml`, which gh reads as HOST/OWNER/REPO: the first `gh pr view` fails (`error connecting to pcalnon`) and the run exits 3.
+`--repo` is the bare repository name (`juniper-ml`). The owner is `--owner` (default `pcalnon`). `util/wait_for_checks.py` uses the same split. Passing `pcalnon/juniper-ml` as `--repo` hands gh `pcalnon/pcalnon/juniper-ml`, which gh reads as HOST/OWNER/REPO: the first `gh pr view` fails (`error connecting to pcalnon`) and the run exits 3.
 
 Exit 0 with a `MERGED #` line means the pull request merged. The line is printed only after a re-read reports `state == MERGED`. Exit 1 is a refusal and disarms the net. Exit 4 is an interrupt and leaves the net armed. The squash SHA is still the `gh pr view` read above.
 
@@ -8342,7 +8342,7 @@ Dedup applies to **incoming** entries only. The v2–v4 quality passes (ARCH re-
 
 | Rule | Behaviour |
 |------|-----------|
-| Bucket | `(Overtoad, category)` — same brief in a different area is a different requirement |
+| Bucket | `(owner, category)` — same brief in a different area is a different requirement |
 | Exact | Normalized brief match folds `merged_count` into the survivor (`DEDUP exact`) |
 | Fuzzy | v3-1 overlap coefficient ≥ 0.65 (`DEDUP fuzzy`) |
 | Mint | `JR-<OWNER>-<AREA>-<NNN>` via `max(used)+1`, zero-padded to 3 |
@@ -8359,7 +8359,7 @@ Dedup applies to **incoming** entries only. The v2–v4 quality passes (ARCH re-
 | 1 | `--check-roundtrip` / `--check-views` mismatch, or `--regenerate-views` refused because `by-area` does not round-trip |
 | 2 | Post-`--apply` round-trip or derived-view check failed — the tree is inconsistent; do not ship |
 
-Malformed incoming YAML raises `ValueError` (unknown Overtoad / category / status / priority, missing field, reused ID).
+Malformed incoming YAML raises `ValueError` (unknown owner / category / status / priority, missing field, reused ID).
 
 ### Operator pitfalls
 
@@ -8370,7 +8370,7 @@ Malformed incoming YAML raises `ValueError` (unknown Overtoad / category / statu
 | `--merge` "succeeded" but nothing changed | Default is dry-run. Pass `--apply`. `--apply` with zero new IDs also writes nothing. |
 | Absolute source paths point at `.claude/worktrees/…` | `ECOSYSTEM_ROOT` walks parents for sibling `juniper-ml` + `juniper-cascor`. A worktree checkout makes `REPO_ROOT.parent` the worktrees dir; parse and render share the constant, so round-trip cannot see the corruption. |
 | Orphan `by-status/foo.md` after a status emptied | `--check-views` reports `ORPHAN` and does **not** delete. Decide deliberately. |
-| New area code / Overtoad | The 15 area codes and 9 Overtoad shortcodes are locked. A new code is a schema change, not a refresh. |
+| New area code / owner | The 15 area codes and 9 owner shortcodes are locked. A new code is a schema change, not a refresh. |
 | Grepped `id_assignments.yaml` for a brief | Briefs there are truncated. Read `by-area/<CODE>.md`. |
 
 Regression: `python3 -m unittest -v tests/test_requirements_consolidate.py` (23 tests; live tree, not a fixture — a renderer that drops one optional section fails against the shipped files).
@@ -9121,7 +9121,7 @@ The job is **not** a required status check and is **not** in Quality Gate `needs
 | Permissions | Exact map: `contents: write`, `pull-requests: write`, `issues: write`, `id-token: write`, `actions: read` |
 | Checkout | SHA-pinned `actions/checkout` with `fetch-depth: 1` (shallow) |
 | Action | SHA-pinned `anthropics/claude-code-action` with a `# vX.Y.Z` comment. Only input: `anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}` |
-| Required secret | Repo secret `ANTHROPIC_API_KEY` (personal-account Overtoad — not an org Actions secret) |
+| Required secret | Repo secret `ANTHROPIC_API_KEY` (personal-account owner — not an org Actions secret) |
 
 Read the live `# v…` comments in the workflow for the current pin — do not copy a version number out of this page.
 
@@ -9145,7 +9145,7 @@ Both `uses:` lines are SHA-pinned with a trailing `# vX.Y.Z` comment. Do not ret
 | Template "sync" rewound the pin | `notes/templates/ci/` snapshot lags Dependabot | Restore `.github/workflows/claude.yml` from `main`; leave the template as a historical snapshot |
 | Floating `@v1` / un-SHA'd tag | Mutable tag; SHA pin is the contract | Keep `uses: ...@<sha>  # vX.Y.Z` |
 | Permissions widen, auditor still green | L2/L3 bash does not pin the permissions map | `LiveClaudeWorkflowContractTests.test_job_permissions_exact` fails; do not drop that test |
-| Workflow file present, action cannot resolve the key | `ANTHROPIC_API_KEY` is a **repo** secret on this personal-account Overtoad | Set the secret on the repo; walkthrough [§1.1](../notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md) |
+| Workflow file present, action cannot resolve the key | `ANTHROPIC_API_KEY` is a **repo** secret on this personal-account owner | Set the secret on the repo; walkthrough [§1.1](../notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md) |
 
 ---
 
@@ -10108,7 +10108,7 @@ Sibling package release flow:
 3. **Verify TestPyPI Install** -- after that check, sparse-checks out the file the package version is read from (`<pkg>/pyproject.toml`, or `juniper-model-core/juniper_model_core/_version.py` for model-core), reads the package version, retries `pip install --no-deps --index-url https://test.pypi.org/simple/` up to five times with a 10s interval (~50s ceiling) to tolerate index lag, then confirms the installed version (`import` of the package, or `importlib.metadata` when `--no-deps` would leave an import broken).
 4. **Publish to PyPI** -- runs only after TestPyPI install verification and the `pypi` approval. It checks the same artifact against `SHA256SUMS` and TestPyPI's JSON again, publishes it with `packages-dir: ${{ env.PUBLISH_DIST_DIR }}/` and `verbose: true`, and then checks PyPI's JSON.
 
-These publish workflows require GitHub Actions environments named `testpypi` and `pypi`, plus matching trusted-publisher entries on TestPyPI and PyPI for the workflow file, environment, Overtoad, repository, and project name.
+These publish workflows require GitHub Actions environments named `testpypi` and `pypi`, plus matching trusted-publisher entries on TestPyPI and PyPI for the workflow file, environment, owner, repository, and project name.
 
 Release runbooks:
 

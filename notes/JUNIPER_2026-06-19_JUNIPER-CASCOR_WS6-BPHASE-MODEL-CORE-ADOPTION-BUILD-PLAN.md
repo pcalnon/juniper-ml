@@ -64,7 +64,7 @@
 - **Out of scope (6a / A-phase — separate, deferred per DR-1):** turning cascor's `src/api/**` into
   re-export shims over `juniper_service_core`. Blocked on OUT-11 being **published + soaked**. The
   B-phase aligns to the seam's *shape* only (source-level), importing nothing from service-core.
-- **The Overtoad boundaries (DO-NOT-TOUCH):** WS-5 (canopy) and OUT-11 (service-core T2) are owned by
+- **Owner boundaries (DO-NOT-TOUCH):** WS-5 (canopy) and OUT-11 (service-core T2) are owned by
   concurrent sessions. This plan reads service-core for seam shape but changes nothing there.
 
 ### §0.1 Validation record (2026-06-19)

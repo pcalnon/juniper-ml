@@ -574,10 +574,10 @@ Already recorded by the debug doc — **referenced, not re-discovered:** the
 
 - **Design gap (systemic, partially mischaracterized before):** no per-**file** gate exists, but
   `juniper-data` *does* have a per-**module** gate (K-1) — the precedent to generalize, not a greenfield.
-  *The Overtoad:* all repos; juniper-ml leads the shared tool.
+  *Owner:* all repos; juniper-ml leads the shared tool.
 - **Configuration:** the **CI-only threshold set** (K-2) — observability, model-core, ci-tools,
   config-tools, doc-tools, cascor-protocol gate **only** in CI YAML, so bare local runs are ungated.
-  *The Overtoad:* juniper-ml (sub-modules) + juniper-cascor (protocol). Folded into §7.5.
+  *Owner:* juniper-ml (sub-modules) + juniper-cascor (protocol). Folded into §7.5.
 - **Configuration — DISC-1 (CONFIRMED live this session).** The recurrence **app**
   `pyproject.toml:130-132` sets `filterwarnings = [ … "ignore::starlette.exceptions.StarletteDeprecationWarning" ]`,
   but that class is **absent** from the Starlette installed in `JuniperCascor1` (py3.13), so
@@ -586,11 +586,11 @@ Already recorded by the debug doc — **referenced, not re-discovered:** the
   reproduced first-party. The recurrence-**client** shares the pattern. This is itself an
   **env-drift instance** (the mirror of canopy: CI is presumably green on a pinned older Starlette
   that still has the class, while the live env drifted past it). It **blocks local coverage
-  measurement** for these two units until resolved. *The Overtoad:* juniper-recurrence. **Action:** now a
+  measurement** for these two units until resolved. *Owner:* juniper-recurrence. **Action:** now a
   blocking **Phase B0** step (§11) — pin/guard the filter or the Starlette version; confirm CI's
   pinned Starlette vs the live env.
 - **Release-gating inconsistency:** `juniper-cascor-model` is published to PyPI yet has **no coverage
-  gate** (`pytest -v` only) while peers enforce 90–95% — §11 B1. *The Overtoad:* juniper-cascor.
+  gate** (`pytest -v` only) while peers enforce 90–95% — §11 B1. *Owner:* juniper-cascor.
 
 **Carried from the debug doc (still open):** I-2 (env provisioning), C-2 (stale commented pins),
 D-1/D-2/D-3, A-1/A-2, S-1 — all seeded in §9.3. **Syntax errors:** none found (every cited artifact

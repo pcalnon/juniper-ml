@@ -267,7 +267,7 @@ This reuses the [migration plan](JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIG
 **Phase 2 — Stand up the new home.**
 
 1. Create the home (standalone repo **or** `juniper-cascor/juniper-cascor-core/`). Move the package tree + `publish-cascor-core.yml` + (per disposition) the drift-guard there. Under Option D, copy the `publish-protocol.yml` / `ci-protocol.yml` wiring and adjust names/paths.
-2. Register the PyPI project + **OIDC trusted publisher against the new repo** (Overtoad, repo, workflow filename, environment must match exactly — see §6.4).
+2. Register the PyPI project + **OIDC trusted publisher against the new repo** (owner, repo, workflow filename, environment must match exactly — see §6.4).
 3. Apply the migration plan's Wave-0 substance that is **not** about home: deployment-agnostic logging (`JUNIPER_CASCOR_LOG_DIR` override + stderr/no-op fallback, gap #3), the `torch`/`numpy`/`PyYAML` deps, the smoke test, and the byte-identical drift-guard.
 4. **Verify the workflow before first cron**: `gh workflow run publish-cascor-core.yml` (per the "verify new CI workflows before first cron" rule) so a hand-authored path/permission error is caught immediately.
 
@@ -293,7 +293,7 @@ Also remove or update the drift-guard `ci.yml` invocation **atomically with** de
 
 ### 6.4 Trusted-publisher / OIDC implications (why home-before-publish matters)
 
-PyPI trusted publishing binds the project to an exact **(Overtoad, repository, workflow filename, environment)** tuple. The subdir publish workflows additionally assume the monorepo layout (`working-directory:`, sparse-checkout paths). Consequences:
+PyPI trusted publishing binds the project to an exact **(owner, repository, workflow filename, environment)** tuple. The subdir publish workflows additionally assume the monorepo layout (`working-directory:`, sparse-checkout paths). Consequences:
 
 - **Publishing `juniper-cascor-core` from `juniper-ml` now would bind the PyPI project + OIDC trusted-publisher to `pcalnon/juniper-ml`.** Relocating afterward would then require migrating a *live* project and re-registering the trusted publisher — exactly the avoidable mess the strategy doc warns against.
 - Therefore **decide the home first, register the trusted publisher against the new home, and publish from there once.** The worker's `juniper-cascor-core>=0.1.0` dependency is unaffected because the **PyPI name is independent of the host repo**.

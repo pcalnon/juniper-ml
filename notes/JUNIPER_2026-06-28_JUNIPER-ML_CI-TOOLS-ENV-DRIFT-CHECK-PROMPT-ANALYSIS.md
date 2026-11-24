@@ -80,7 +80,7 @@ Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-e
 
 ### 6.2 Other Juniper issues (referenced, not re-discovered)
 
-- **DISC-1 (configuration / env-drift, CONFIRMED live; still unfiled).** `juniper-recurrence` app + client `pyproject.toml:132` filter `starlette.exceptions.StarletteDeprecationWarning`, absent from the live env's Starlette → `pytest --co` errors at config-parse. Recorded in the audit plan §14.2; Overtoad: juniper-recurrence. A separate fix, surfaced again here only because it is the same env-drift class this prompt's tool guards against.
+- **DISC-1 (configuration / env-drift, CONFIRMED live; still unfiled).** `juniper-recurrence` app + client `pyproject.toml:132` filter `starlette.exceptions.StarletteDeprecationWarning`, absent from the live env's Starlette → `pytest --co` errors at config-parse. Recorded in the audit plan §14.2; owner: juniper-recurrence. A separate fix, surfaced again here only because it is the same env-drift class this prompt's tool guards against.
 - The **env-floor-drift guard gap itself** (no shared, plain-wheel-aware checker) is the design gap this prompt closes (plan §10.1 / A-2).
 
 No syntax errors encountered; every cited artifact resolved (validator iter-2: all anchors `grounded: true`).

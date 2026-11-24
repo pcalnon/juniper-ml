@@ -1221,7 +1221,7 @@ jobs:
           # tests/test_duplicati_web_credential.py: B2 of the 2026-10-03 backup recovery plan --
           # the ONE web-UI credential file both Duplicati API clients read
           # (~/.config/duplicati-backup/web-credential, not the checkout's world-readable .env).
-          # Pins the format, refusal of any group/other bit (path, mode, Overtoad -- never content),
+          # Pins the format, refusal of any group/other bit (path, mode, owner -- never content),
           # a FIFO refused without hanging, the shared reader, the retired DUPLICATI_PW_FILE /
           # DUPLICATI_PW_KEY ignored, no bare-secret fallback, and the password sent only as the
           # login body. util/ad-hoc is outside every pre-commit Python hook, so this is the gate.
