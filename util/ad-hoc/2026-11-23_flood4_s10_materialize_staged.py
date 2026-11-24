@@ -64,7 +64,7 @@ def main(argv=None):
             with open(dst, "wb") as handle:
                 handle.write(data)
             mode = _git(args.carrier, "ls-files", "-s", "--", path).decode().split()[0]
-            os.chmod(dst, 0o755 if mode == "100755" else 0o644)
+            os.chmod(dst, 0o700 if mode == "100755" else 0o600)
             record.update(sha256=hashlib.sha256(data).hexdigest(), mode=mode, overtoad=data.count(b"Overtoad"), owner=data.count(b"owner"))
         if status != "A":
             base = _git(args.carrier, "show", f"HEAD:{path}")

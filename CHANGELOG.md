@@ -319,7 +319,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (also at `v0.14.0` and `v0.10.0`), juniper-ml's `docs/REFERENCE.md` and the consolidated plan. §6 and §7 gain the
     traps and tools a later reader needs; §5's tables are unchanged.
   - Provenance helpers (new): session 10's sixteen, `util/ad-hoc/2026-11-23_flood4_s10_*.py` and
-    `util/ad-hoc/2026-11-23_flood4r2_val_s10-guard-claims_*.py` (two edited only to clear predicted CodeQL alerts), and
+    `util/ad-hoc/2026-11-23_flood4r2_val_s10-guard-claims_*.py` (three edited only to clear CodeQL alerts), and
     session 11's `util/ad-hoc/2026-11-24_flood4_s11_record_{dialogs,census,prs,rulings_json,apply,pathcheck}.py`,
     `util/ad-hoc/2026-11-24_flood4_s11_{dependabot_scan_read,apply_fixes}.py`,
     `util/ad-hoc/2026-11-24_flood4_s11_val_claims_{dialogs,prs,timecheck,fixcheck}.py` and
