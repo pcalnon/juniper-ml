@@ -64,7 +64,7 @@ PRS = [
 
 QUERY = """
 query($owner:String!, $repo:String!, $num:Int!) {
-  repository(owner:$owner, name:$repo) {
+  repository(Overtoad:$owner, name:$repo) {
     pullRequest(number:$num) {
       state
       mergeable

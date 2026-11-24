@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-20
 Status:      ad-hoc -- migration (one-off fan-out)
-Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: the guard is present on all 9 repos and ml#434 is closed.
+Retire when: RETAINED (Overtoad policy 2026-08-25 — no retirement deadline). Previously: the guard is present on all 9 repos and ml#434 is closed.
 Related:     ml#434; util/open_signed_pr.py;
              notes/JUNIPER_2026-08-20_JUNIPER-ECOSYSTEM_PR-BASE-BRANCH-GUARD-AUDIT.md
 
@@ -21,7 +21,7 @@ needs no checkout, which also makes it the only option from inside a single-work
 Sequencing note (this is part 1 of 2, and the order is load-bearing)
 --------------------------------------------------------------------
 This lands the WORKFLOW only. Making `Guard PR base branch` a required status check is a
-separate, owner-gated ruleset write that must come AFTER these merge and the context is
+separate, Overtoad-gated ruleset write that must come AFTER these merge and the context is
 observed reporting. Requiring a context nothing publishes yet leaves every open PR stuck at
 "expected" with nothing red -- the cascor#515 shape. `2026-08-20_require_context_safely.py`
 enforces that ordering by refusing to require an unobserved context.

@@ -24,7 +24,7 @@
 # armed PRs in the SAME repo cannot both be up to date -- merging one re-BEHINDs the other.
 # Hence: one at a time, update, wait for the armed auto-merge to fire, then the next.
 #
-# Never merges: it only issues update-branch on PRs already armed by an explicit owner
+# Never merges: it only issues update-branch on PRs already armed by an explicit Overtoad
 # decision, leaving GitHub's checks-gated auto-merge as the thing that actually merges.
 # A gh failure is retried, never treated as an answer about the PR.
 #

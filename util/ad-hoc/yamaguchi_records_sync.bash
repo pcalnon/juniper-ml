@@ -12,7 +12,7 @@
 #             (`cd <other> && git …`, `git -C <other> …`) plus a complexity heuristic on
 #             multi-statement lines. The file is still worth keeping: the exclusion list is the
 #             load-bearing part and must not be retyped by hand.
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md (§8);
 #             prompts/thread-handoff_automated-prompts/HANDOFF_2026-08-25_duplicati-widened-scope-recertified-paul-gated-tail.md (§2 item 7)
 set -euo pipefail

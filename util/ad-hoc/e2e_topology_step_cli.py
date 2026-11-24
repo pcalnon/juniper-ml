@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-04
 Status: ad-hoc — extracted so tests do not import the Playwright driver
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#1709 (operator surface); M-TOPOLOGY-18 INDETERMINATE after ``topo``
 
 ``e2e_seg17_topology_driver.py --step`` is order-preserving on one browser page.

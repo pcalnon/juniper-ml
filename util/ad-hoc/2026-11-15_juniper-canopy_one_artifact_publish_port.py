@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (the juniper-canopy port of juniper-cascor#763 / #767: one artifact for TestPyPI and PyPI,
-        checked by sha256, and the owner's recovery ladder)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+        checked by sha256, and the Overtoad's recovery ladder)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_cascor_one_artifact_publish_edits.py (template_blocks, republish_job, replace_once:
          the template is extracted with them, never retyped); util/ad-hoc/2026-11-15_publish_port_template_identity.py
          (the cross-repo check the edited workflow must pass); util/open_signed_pr.py (uploads the files this writes,
@@ -15,13 +15,13 @@ Related: util/ad-hoc/2026-11-15_cascor_one_artifact_publish_edits.py (template_b
 
 Why
 ---
-The owner's directive of 2026-11-15: "deploy to pypi should send the same artifact that was already sent to testpypi.
+The Overtoad's directive of 2026-11-15: "deploy to pypi should send the same artifact that was already sent to testpypi.
 an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to
 prevent this from slipping through the cracks again." juniper-canopy's publish.yml already built once and handed both
 publish jobs one artifact, so this port is the template's checks: the build job's reuse step, ``SHA256SUMS`` and a
 90-day artifact; the dist check before each upload; TestPyPI's JSON after the TestPyPI upload and again before the
 PyPI one, and PyPI's after; ``skip-existing`` dropped; per-job permissions; and the republish dispatch (rung 1 of the
-owner's recovery ladder). Its own build commands, import smoke test, install check and attestations stay; the install
+Overtoad's recovery ladder). Its own build commands, import smoke test, install check and attestations stay; the install
 check's requirement is quoted, which clears actionlint's one finding there (SC2086, info, reported on main too), and
 (after the review of juniper-canopy#823) its import runs from $RUNNER_TEMP, so the checkout's juniper_canopy/ can no
 longer stand in for the wheel.
@@ -140,7 +140,7 @@ DESCRIPTION_NEW = (
     "#\n"
     "#    The steps marked \"one-artifact publish template\", and the republish job, are juniper-cascor's\n"
     "#    publish.yml template, copied verbatim (juniper-cascor docs/ci_cd/MANUAL.md § One Artifact,\n"
-    "#    Checked Against TestPyPI). The republish job is step 1 of the owner's recovery ladder for a\n"
+    "#    Checked Against TestPyPI). The republish job is step 1 of the Overtoad's recovery ladder for a\n"
     "#    release that never reached PyPI (docs/ci_cd/CICD_MANUAL.md § Runbook: Release publishing).\n"
     "#\n"
 )
@@ -267,7 +267,7 @@ def publish_workflow(text: str, template: str, blocks: dict, republish: str, dat
 # ─────────────────────────────────────────────────────────────────────────────────────────────
 CHANGELOG_ENTRY = """\
 - **PyPI receives only the files TestPyPI took, checked by sha256: `publish.yml` drops `skip-existing` and checks
-  every upload against TestPyPI's and PyPI's JSON** (the owner's directive of 2026-11-15: "deploy to pypi should send
+  every upload against TestPyPI's and PyPI's JSON** (the Overtoad's directive of 2026-11-15: "deploy to pypi should send
   the same artifact that was already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy
   and prior to pypi deploy, might also be helpful here to prevent this from slipping through the cracks again."; the
   port of juniper-cascor#763 and #767). This workflow already built once and handed both publish jobs one artifact, and
@@ -296,7 +296,7 @@ CHANGELOG_ENTRY = """\
   - **Only the jobs that upload hold `id-token: write`.** The workflow's `permissions` is `{}`: `Build and Validate`
     gets `contents: read` and `actions: read`, `Publish to TestPyPI` `contents: read` and `id-token: write`, and
     `Publish to PyPI` `id-token: write`.
-  - **Recovery, in the owner's order (ruling of 2026-11-15).** A `workflow_dispatch` from the release tag with
+  - **Recovery, in the Overtoad's order (ruling of 2026-11-15).** A `workflow_dispatch` from the release tag with
     `republish_from_testpypi` runs only the new job `Republish the tested files (dispatch only)`, behind the same
     `pypi` gate. It builds nothing: it copies TestPyPI's files for the version to PyPI, each checked against TestPyPI's
     JSON and, while the release run's artifact exists, its `SHA256SUMS`. If that fails, within 30 days of the release
@@ -390,7 +390,7 @@ MANUAL_RUNBOOK_NEW = """\
 
 Do not bypass TestPyPI stage; production publish is intentionally downstream. The contract: [`CICD_REFERENCE.md` § `publish.yml`](CICD_REFERENCE.md#publishyml), and juniper-cascor's [One Artifact, Checked Against TestPyPI](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#one-artifact-checked-against-testpypi), whose template steps this workflow copies verbatim.
 
-A release that did not reach PyPI follows the owner's ladder (ruling of 2026-11-15), in this order. Every rung publishes the files TestPyPI took, or nothing ([juniper-cascor's manual](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#recovering-a-release-that-did-not-reach-pypi)):
+A release that did not reach PyPI follows the Overtoad's ladder (ruling of 2026-11-15), in this order. Every rung publishes the files TestPyPI took, or nothing ([juniper-cascor's manual](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#recovering-a-release-that-did-not-reach-pypi)):
 
 1. Republish TestPyPI's files: dispatch this workflow from the release's tag.
 

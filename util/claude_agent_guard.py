@@ -6,7 +6,7 @@ Project: juniper-ml
 Sub-Project: host tooling (turing bring-up)
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-17
-Status: permanent utility. util/install_claude_agent_guard.bash (owner-run) installs it as a COPY,
+Status: permanent utility. util/install_claude_agent_guard.bash (Overtoad-run) installs it as a COPY,
         ~/.claude/hooks/juniper_agent_guard.py, so a branch switch in a checkout cannot change it.
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (D11 item 4,
          enforcement option (b); task C8; task C9: the MCP-* rules; the H3 negative tests);
@@ -32,7 +32,7 @@ Contract
 * A denied call prints exactly one JSON object on stdout and exits 0:
   ``{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
   "permissionDecisionReason": "..."}}``. The reason names the rule id and says the action is
-  owner-run (D11).
+  Overtoad-run (D11).
 * Any other call prints NOTHING and exits 0. The guard never emits ``allow``: an allow would
   short-circuit the normal permission flow.
 * Malformed input (unparseable JSON, a non-object payload, a missing or non-string ``tool_name``, a
@@ -50,10 +50,10 @@ GIT-SIGNING-FILE and MCP-REGISTER-FILE.
 Grep and Glob: CRED-PATH-SEARCH.
 Serena's edit tools (``mcp__serena__<tool>``): MCP-EDIT-PATH. Its ``execute_shell_command`` gets the Bash rules.
 
-The two GIT-SIGNING rules (commit-signing plan S9, task K12) guard the owner's signing configuration.
-Once the owner's YubiKey stubs are learned, an agent that could rewrite that configuration could get the
-owner's signature. It could point ``gpg.program`` or ``core.hooksPath`` at its own program, plant a
-local key that outranks the owner's include, drop a ``post-commit`` hook inside a cached-touch window,
+The two GIT-SIGNING rules (commit-signing plan S9, task K12) guard the Overtoad's signing configuration.
+Once the Overtoad's YubiKey stubs are learned, an agent that could rewrite that configuration could get the
+Overtoad's signature. It could point ``gpg.program`` or ``core.hooksPath`` at its own program, plant a
+local key that outranks the Overtoad's include, drop a ``post-commit`` hook inside a cached-touch window,
 or re-enable signing past D11 with ``git -c include.path=`` or ``--config-env``.
 
 Serena's edit tools and MCP registration (task C9)
@@ -73,7 +73,7 @@ one of those targets (``.git/**``, ``.claude/*``, ``**/.mcp.json``). A bare ``*`
 because Serena's own walk skips ``.git/`` and ignored files. Its ``repl`` may not set ``disableAllHooks`` or
 either MCP approval key, since an unscoped call reaches every tracked file.
 
-A registered MCP server runs a command the guard never sees, so registration is owner-run (RR-10).
+A registered MCP server runs a command the guard never sees, so registration is Overtoad-run (RR-10).
 MCP-REGISTER-BASH denies ``mcp add``, ``mcp add-json`` and ``mcp add-from-claude-desktop`` whatever the
 command word (``claude``, its versions path ``~/.local/share/claude/versions/<v>``, ``npx``), ``--mcp-config``,
 a command that names ``~/.claude.json`` or a ``.mcp.json`` file, and text that names
@@ -135,7 +135,7 @@ that mentions these paths, use the Grep tool: its ``pattern`` is a content regex
 path-checked. ``gh api`` with any field flag is denied, which also blocks a read-only
 ``gh api graphql -f query=...``; D11 accepts that.
 
-What this cannot see (the owner should weigh these)
+What this cannot see (the Overtoad should weigh these)
 ---------------------------------------------------
 A command-text hook sees only the text of the call. Known gaps:
 
@@ -158,7 +158,7 @@ A command-text hook sees only the text of the call. Known gaps:
    tools, any other server's tools, Serena registered under another name). Subagent tool calls are covered.
 7. ``disableAllHooks`` in a project ``.claude/settings*.json`` turns user hooks off. The guard
    denies writing or naming that key, but not a file holding it copied into place, nor a nested
-   ``claude --setting-sources project``. Managed settings (owner, sudo) close this fully.
+   ``claude --setting-sources project``. Managed settings (Overtoad, sudo) close this fully.
 8. Names, not contents: ``ls -R ~``, ``tree ~`` and ``du -a ~`` list file names under ``~/.ssh``.
 9. A shell edit of a repository's own ``.git/config`` (``sed -i``, ``echo >>``, ``tee``). Reading that file
    is too common to deny by mention, so only ``git config`` writes and the file tools are guarded.
@@ -258,11 +258,11 @@ class Rule(object):
 
 
 # The deny table. Tune it here: ids are stable (tests and the mutation check name them), and every
-# deny reason is "<description>. <reason>" plus the owner-run sentence built in deny_reason().
+# deny reason is "<description>. <reason>" plus the Overtoad-run sentence built in deny_reason().
 RULES = (
     Rule("CRED-PATH-BASH", "Bash", "the command references ~/.ssh or ~/.gnupg (a .ssh or .gnupg path component in any spelling, a glob that can match one, or a recursive tool rooted at home or above)", "Agents never read, list, copy or change SSH or GnuPG material on turing. To search files for text that mentions these paths, use the Grep tool instead"),
     Rule("SSH-PROBE", "Bash", "an ssh credential probe: ssh -T, ssh to a GitHub host, or ssh-add", "Live authentication and agent-key checks are credential probes. ssh -G <alias> prints the resolved config without connecting and is allowed"),
-    Rule("PRIV-ESCALATION", "Bash", "privilege escalation: sudo, su, doas, pkexec, or osascript with administrator privileges", "Anything needing the admin password is owner-run"),
+    Rule("PRIV-ESCALATION", "Bash", "privilege escalation: sudo, su, doas, pkexec, or osascript with administrator privileges", "Anything needing the admin password is Overtoad-run"),
     Rule("MACOS-DEFAULTS-WRITE", "Bash", "a macOS settings change: defaults write, delete, rename or import", "Agents measure host settings; they do not change them"),
     Rule("GPG-SECRET", "Bash", "a GnuPG secret-key or smart-card operation: gpg --card-status, --card-edit, -K, --list-secret-keys, --export-secret-keys or --export-secret-subkeys; ykman; gpg-card; gpg-connect-agent learn or scd", "Agents never touch the YubiKey or enumerate secret keys"),
     Rule(
@@ -273,20 +273,20 @@ RULES = (
         "git push --signed or an unambiguous prefix of it (--si, --sign=true); git -c *.gpgsign=true",
         "Agent commits are unsigned by construction (D11 item 1); they land signed through util/open_signed_pr.py",
     ),
-    Rule("GH-PR-WRITE", "Bash", "gh pr create, gh pr new or gh pr merge", "Agents land changes only through util/open_signed_pr.py, and merges are the owner's"),
-    Rule("GH-KEY-ADMIN", "Bash", "GitHub key administration: gh repo deploy-key, gh ssh-key add|delete, gh gpg-key add|delete", "Deploy-key and key administration stays in the owner's own session (D11 item 5)"),
+    Rule("GH-PR-WRITE", "Bash", "gh pr create, gh pr new or gh pr merge", "Agents land changes only through util/open_signed_pr.py, and merges are the Overtoad's"),
+    Rule("GH-KEY-ADMIN", "Bash", "GitHub key administration: gh repo deploy-key, gh ssh-key add|delete, gh gpg-key add|delete", "Deploy-key and key administration stays in the Overtoad's own session (D11 item 5)"),
     Rule("GH-AUTH", "Bash", "gh auth (status, token, refresh, login, logout, setup-git, switch ...)", "gh auth subcommands are credential probes or credential changes"),
     Rule("GH-API-WRITE", "Bash", "gh api with a write or field flag (-X / --method, -f / -F / --field / --raw-field, --input, a method-override header), or a gh alias that could hide one", "Agents use gh api for read-only GETs only; drop the flag (a plain gh api call is a GET). This also blocks a read-only gh api graphql -f query=..., which D11 accepts"),
     Rule("KEYCHAIN-DUMP", "Bash", "a macOS keychain read: security find-generic-password, find-internet-password, dump-keychain or export", "Keychain contents are credentials"),
-    Rule("SELF-PROTECT-BASH", "Bash", "the command references the user-level Claude settings or hooks (~/.claude/settings.json, ~/.claude/settings.local.json, ~/.claude/hooks/), moves, removes or re-permissions ~/.claude itself, sets disableAllHooks, or runs util/install_claude_agent_guard.bash other than with --dry-run or --help", "The guard and its settings are changed only by the owner"),
+    Rule("SELF-PROTECT-BASH", "Bash", "the command references the user-level Claude settings or hooks (~/.claude/settings.json, ~/.claude/settings.local.json, ~/.claude/hooks/), moves, removes or re-permissions ~/.claude itself, sets disableAllHooks, or runs util/install_claude_agent_guard.bash other than with --dry-run or --help", "The guard and its settings are changed only by the Overtoad"),
     Rule(
         "GIT-SIGNING-CONFIG",
         "Bash",
-        "a change to the owner's signing configuration or a way around D11: git -c include.* / includeIf.* / gpg.program / gpg.<format>.program, git --config-env (any key), "
+        "a change to the Overtoad's signing configuration or a way around D11: git -c include.* / includeIf.* / gpg.program / gpg.<format>.program, git --config-env (any key), "
         "a git config write at any scope of gpg.*, user.signingkey, commit.gpgsign, tag.gpgsign, include.*, includeIf.*, core.hooksPath, core.fsmonitor or core.sshCommand, "
         "git config --edit, removing or renaming those sections, a command that names ~/.gitconfig, ~/.config/git, git's system gitconfig or a .git/hooks path, "
         "or util/configure_commit_signing.py --apply / --remove without --dry-run",
-        "The owner's signing configuration and git hooks are changed only by the owner (commit-signing plan S9, task K12); agent commits stay unsigned (D11) "
+        "The Overtoad's signing configuration and git hooks are changed only by the Overtoad (commit-signing plan S9, task K12); agent commits stay unsigned (D11) "
         "and land through util/open_signed_pr.py. Read config with git config --get / --list, and the files with the Read tool",
     ),
     Rule(
@@ -294,19 +294,19 @@ RULES = (
         "Bash",
         "an MCP server registration: mcp add, mcp add-json or mcp add-from-claude-desktop after any command word (claude, its versions path, npx), --mcp-config, "
         "a command that names ~/.claude.json or a .mcp.json file, or text that names enabledMcpjsonServers or enableAllProjectMcpServers",
-        "A registered MCP server runs a command the guard never sees, so registration is owner-run (task C9, RR-10 of the H5 risk analysis); "
+        "A registered MCP server runs a command the guard never sees, so registration is Overtoad-run (task C9, RR-10 of the H5 risk analysis); "
         "util/mcp_setup.bash writes the pinned Serena entry. Read those files with the Read tool",
     ),
     Rule("CRED-PATH-FILE", "Read|Write|Edit|MultiEdit|NotebookEdit", "the target path, or the path a symlink resolves to, is inside ~/.ssh or ~/.gnupg (or has a .ssh or .gnupg component)", "Agents never read or change SSH or GnuPG material on turing"),
-    Rule("SELF-PROTECT-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude/settings.json, ~/.claude/settings.local.json or ~/.claude/hooks/, or a .claude/settings*.json write that sets disableAllHooks", "The guard and its settings are changed only by the owner. Reading them is allowed"),
-    Rule("GIT-SIGNING-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.gitconfig, anything under ~/.config/git, git's system gitconfig (/usr/local/etc, /opt/homebrew/etc, /etc), a repository's .git/config or config.worktree, or anything under a .git/hooks directory", "The owner's signing configuration and git hooks are changed only by the owner (commit-signing plan S9, task K12). Reading them is allowed"),
-    Rule("MCP-REGISTER-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude.json or to any .mcp.json, or a .claude/settings*.json write that sets enabledMcpjsonServers or enableAllProjectMcpServers", "MCP registration is owner-run (task C9, RR-10 of the H5 risk analysis); util/mcp_setup.bash writes the pinned Serena entry. Reading the files is allowed"),
+    Rule("SELF-PROTECT-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude/settings.json, ~/.claude/settings.local.json or ~/.claude/hooks/, or a .claude/settings*.json write that sets disableAllHooks", "The guard and its settings are changed only by the Overtoad. Reading them is allowed"),
+    Rule("GIT-SIGNING-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.gitconfig, anything under ~/.config/git, git's system gitconfig (/usr/local/etc, /opt/homebrew/etc, /etc), a repository's .git/config or config.worktree, or anything under a .git/hooks directory", "The Overtoad's signing configuration and git hooks are changed only by the Overtoad (commit-signing plan S9, task K12). Reading them is allowed"),
+    Rule("MCP-REGISTER-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude.json or to any .mcp.json, or a .claude/settings*.json write that sets enabledMcpjsonServers or enableAllProjectMcpServers", "MCP registration is Overtoad-run (task C9, RR-10 of the H5 risk analysis); util/mcp_setup.bash writes the pinned Serena entry. Reading the files is allowed"),
     Rule("CRED-PATH-SEARCH", "Grep|Glob", "the search root or path pattern reaches into ~/.ssh or ~/.gnupg, or the search root is home or above it (a recursive search would descend into them)", "Agents never read or list SSH or GnuPG material on turing; narrow the search root"),
     Rule(
         "MCP-EDIT-PATH",
         "mcp__serena__<edit tool>",
         "a Serena edit whose path, resolved against the project root literally or through symlinks, reaches .git/, .ssh or .gnupg, Claude's settings or hooks, "
-        "the owner's git configuration, ~/.claude.json or a .mcp.json; a replace_in_files include glob that names one of them; "
+        "the Overtoad's git configuration, ~/.claude.json or a .mcp.json; a replace_in_files include glob that names one of them; "
         "or a replace_in_files repl that sets disableAllHooks, enabledMcpjsonServers or enableAllProjectMcpServers",
         "The guard cannot see what an MCP server writes beyond its arguments, so Serena's edits stay on ordinary project files (task C9). "
         "Use the Edit or Write tool, which the guard judges path by path",
@@ -348,7 +348,7 @@ GIT_OPTS_WITH_ARG = ("-C", "-c", "--git-dir", "--work-tree", "--namespace", "--e
 # Commit-signing plan K12. Keys a `git -c` may not set: an include re-enables signing past D11's
 # command scope, and a program key swaps the signer.
 GIT_DASH_C_SIGNING_RE = re.compile(r"^(?:include\..*|includeif\..*|gpg\.(?:[^.]+\.)?program)$", re.IGNORECASE)
-# Keys a `git config` may not write, at any scope: they outrank or replace the owner's signing include.
+# Keys a `git config` may not write, at any scope: they outrank or replace the Overtoad's signing include.
 GIT_SIGNING_KEY_RE = re.compile(r"^(?:gpg\..+|user\.signingkey|commit\.gpgsign|tag\.gpgsign|include\..+|includeif\..+|core\.hookspath|core\.fsmonitor|core\.sshcommand)$", re.IGNORECASE)
 GIT_SIGNING_SECTION_RE = re.compile(r"^(?:gpg|include|includeif|user|commit|tag)(?:\..*)?$", re.IGNORECASE)
 GIT_CONFIG_READ_FLAGS = ("--get", "--get-all", "--get-regexp", "--get-urlmatch", "--get-color", "--get-colorbool", "-l", "--list")
@@ -358,7 +358,7 @@ GIT_CONFIG_EDIT_FLAGS = ("-e", "--edit")
 GIT_CONFIG_OPTS_WITH_ARG = ("-f", "--file", "--blob", "-t", "--type", "--default", "--comment", "--value", "--url")
 # git 2.46+ spells the same operations as subcommands.
 GIT_CONFIG_VERBS = {"get": "read", "list": "read", "set": "write", "unset": "write", "edit": "edit", "remove-section": "section", "rename-section": "section"}
-# git's system config: Homebrew's (owner-writable on an Intel Mac) and the distribution's.
+# git's system config: Homebrew's (Overtoad-writable on an Intel Mac) and the distribution's.
 SYSTEM_GITCONFIGS = ("/usr/local/etc/gitconfig", "/opt/homebrew/etc/gitconfig", "/etc/gitconfig")
 SIGNING_TOOL = "configure_commit_signing.py"
 SIGNING_TOOL_WRITES = ("--apply", "--remove")
@@ -461,7 +461,7 @@ _HOME_LIKE_RE = re.compile(r"^/+(?:(?:Users|home)/+[^/]+|(?:private/+)?var/+root
 _STRING_LITERAL_RE = re.compile(r"'((?:[^'\\\n]|\\.)*)'|\"((?:[^\"\\\n]|\\.)*)\"")
 _MENTION_RE = re.compile(r"[a-z][a-z0-9_.-]*")
 # D11 item 1 sets GIT_CONFIG_COUNT / KEY_n / VALUE_n so agent commits are unsigned; unsetting or
-# overriding them re-enables signing with the owner's YubiKey.
+# overriding them re-enables signing with the Overtoad's YubiKey.
 _GIT_ENV_NAMES = r"GIT_CONFIG_(?:COUNT|KEY_\w*|VALUE_\w*|PARAMETERS)\b"
 _GIT_ENV_CHANGE_RE = re.compile(r"\bunset\b[^;&|\n]*\b%s|\b%s\s*\+?=|(?:^|\s)(?:-u\s*|--unset[= ]\s*)%s" % (_GIT_ENV_NAMES, _GIT_ENV_NAMES[:-2], _GIT_ENV_NAMES))
 _ANSI_SIMPLE = {"a": "\a", "b": "\b", "e": "\x1b", "E": "\x1b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v", "\\": "\\", "'": "'", '"': '"', "?": "?"}
@@ -524,7 +524,7 @@ def brace_expand(text: str, limit: int = MAX_BRACE_ALTERNATIVES) -> list:
     The source word comes first, then the words bash makes of it. bash expands the first brace expression, then each
     of its alternatives and the rest of the word on their own, and joins the results without rescanning them:
     ``{x{.,a}.y}`` gives ``{x..y}`` and ``{xa.y}``, and the ``{x..y}`` it made stays as written. A word that expands
-    to more than ``limit`` alternatives raises ``MalformedInput``: the guard fails closed (owner ruling, 2026-11-08)
+    to more than ``limit`` alternatives raises ``MalformedInput``: the guard fails closed (Overtoad ruling, 2026-11-08)
     rather than judge a prefix of the list and pass the rest unseen, where a ``.ssh`` could sit in alternative 65.
     Each count is checked before the words are built, and a sequence is sized arithmetically in ``_brace_range``,
     so a long list or a huge range is refused without being expanded. ``_first_brace_group`` and
@@ -2176,7 +2176,7 @@ class BashAnalyzer(object):
             self.hit("GIT-SIGNING-CONFIG", "git config " + " ".join(positionals[:2]))
 
     def _check_signing_tool(self, rest: list) -> None:
-        """util/configure_commit_signing.py writes the owner's signing configuration unless --dry-run (K12)."""
+        """util/configure_commit_signing.py writes the Overtoad's signing configuration unless --dry-run (K12)."""
         texts = [w.text for w in rest]
         writes = [t for t in texts if t in SIGNING_TOOL_WRITES]
         if writes and "--dry-run" not in texts:
@@ -2979,7 +2979,7 @@ def _evidence(text: str) -> str:
 
 def deny_reason(hits: list, tool: str) -> str:
     rule = RULE_BY_ID[hits[0].rule_id]
-    reason = "%s denied this %s call. Rule %s: %s (matched: %s). %s. This action is OWNER-run under D11 of %s: do not retry it or look for a way around the guard; ask the owner to run it in their own terminal." % (GUARD_NAME, tool, rule.rule_id, rule.description, _evidence(hits[0].evidence), rule.reason, PLAN_DOC)
+    reason = "%s denied this %s call. Rule %s: %s (matched: %s). %s. This action is OWNER-run under D11 of %s: do not retry it or look for a way around the guard; ask the Overtoad to run it in their own terminal." % (GUARD_NAME, tool, rule.rule_id, rule.description, _evidence(hits[0].evidence), rule.reason, PLAN_DOC)
     others = [h.rule_id for h in hits[1:]]
     if others:
         reason += " Also matched: %s." % ", ".join(others)
@@ -3119,7 +3119,7 @@ def self_test() -> int:
 
 SETTINGS_HELP = (
     """\
-settings entry (util/install_claude_agent_guard.bash prints it, or merges it with --apply; owner-run):
+settings entry (util/install_claude_agent_guard.bash prints it, or merges it with --apply; Overtoad-run):
   "hooks": {"PreToolUse": [{"matcher": "%s",
     "hooks": [{"type": "command", "command": "/usr/bin/python3",
                "args": ["-I", "<home>/.claude/hooks/juniper_agent_guard.py"],

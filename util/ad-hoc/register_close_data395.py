@@ -7,8 +7,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-15
 Status: ad-hoc — one-off (refuses until juniper-data#395 reads MERGED)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: juniper-data#395; the owner rulings of 2026-09-09 in register §4.9
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: juniper-data#395; the Overtoad rulings of 2026-09-09 in register §4.9
 
 APD-DATA-039, -040, -041, -042, -043, -044 and -045. Four touches each (none has a §3 entry):
 the §4.9 row, a §5.1 verification row, the §2 status line, and the header date.
@@ -61,7 +61,7 @@ for row_id, opener in ROWS.items():
 VERIFICATION = {
     "APD-DATA-039": "Versioned cache key (`shares/v{N}/`) plus a 7-day TTL; an unreadable mtime is treated as expired, because failing towards a network call costs a request while failing towards the cache can serve a year-old figure forever. Existing payloads are orphaned by the new key, which is correct for a shape change and is carried as migration work.",
     "APD-DATA-040": "Every SEC fact is now an observation keyed by `(end, filed)` rather than one latest-filed value per period end, so the publication history survives and `_condition_one`'s existing as-of join — which was always correct — stops being fed a rewritten past. Pinned by a regression asserting BOTH the original publication and the restatement survive.",
-    "APD-DATA-041": "Removed from `EQUITIES_FEATURE_COLUMNS`; the matrix is 15 columns. **Bounded close:** the column is still produced but there is now no way to request it into a dataset, because `EquitiesParams` has no feature-column parameter — the option was described to the owner as leaving it requestable, and that was wrong. Restoring the capability is carried as work.",
+    "APD-DATA-041": "Removed from `EQUITIES_FEATURE_COLUMNS`; the matrix is 15 columns. **Bounded close:** the column is still produced but there is now no way to request it into a dataset, because `EquitiesParams` has no feature-column parameter — the option was described to the Overtoad as leaving it requestable, and that was wrong. Restoring the capability is carried as work.",
     "APD-DATA-042": "Rows before `purchase_date` carry no basis. Pinned by a regression asserting the absent values form a strict PREFIX, since causality is an ordering claim and a scattered set of NaNs would satisfy a naive count assertion while meaning something else.",
     "APD-DATA-043": "Expanding-window median over facts already filed, plus an absolute floor at 100,000 shares. Pinned by a regression whose two payloads share a prefix and differ only in later filings; an earlier version of that test passed against the OLD filter too, and was rebuilt with numbers where the two genuinely disagree. An absolute ceiling at 1e13 was added in the same change and is NOT part of the ruling — see `APD-DATA-047`.",
     "APD-DATA-044": "Closed by `-043`'s floor: TAP, CVNA and FOX/FOXA now return no shares at all and route into the incomplete-data contract, and PSKY and DDOG recover real counts the old filter and the old dedup respectively destroyed. **Bounded close:** Berkshire is untouched and is `APD-DATA-046` — its numbers are genuine, so no floor can reach it.",
@@ -80,7 +80,7 @@ sub(
     f"`APD-DATA-039` / `-040` / `-041` / `-042` / `-043` / `-044` / `-045` ({PR}) and three are open — **20 open in all**, 17 primer + 3 post-primer.",
     "§2 status line",
 )
-sub("**Last Updated**: 2026-09-09 (owner rulings)\n", "**Last Updated**: 2026-09-15\n", "header date")
+sub("**Last Updated**: 2026-09-09 (Overtoad rulings)\n", "**Last Updated**: 2026-09-15\n", "header date")
 
 REG.write_text(text)
 

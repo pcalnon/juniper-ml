@@ -7,7 +7,7 @@ Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (port of juniper-cascor#763 and #767, "publish one artifact to TestPyPI and PyPI", to
         juniper-recurrence)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_cascor_one_artifact_publish_edits.py (the template's extraction, ``template_blocks`` and
          ``republish_job``, and the sub-package rewrite this adapts); util/ad-hoc/2026-11-15_publish_port_template_identity.py
          (the cross-repo identity check); util/open_signed_pr.py (uploads the files this writes, whole)
@@ -36,7 +36,7 @@ The edits, on a juniper-recurrence tree:
 - ``juniper-recurrence/tests/test_publish_one_artifact.py`` is copied from ``--test-file`` (the port of juniper-cascor's
   ``src/tests/unit/test_publish_one_artifact.py``); it must not exist yet.
 - ``juniper-recurrence/CHANGELOG.md`` gets one ``[Unreleased]`` / ``### Fixed`` entry (repo-wide changes are recorded
-  there); ``juniper-recurrence/README.md`` § Publishing gets the contract and the owner's recovery ladder with the three
+  there); ``juniper-recurrence/README.md`` § Publishing gets the contract and the Overtoad's recovery ladder with the three
   dispatch commands; the root ``AGENTS.md`` (under a 20,000-character budget) and ``juniper-recurrence-client/AGENTS.md``
   get a sentence each pointing at it.
 - After the review of juniper-recurrence#236 (its second commit): the README also says what a plain dispatch is for and
@@ -241,7 +241,7 @@ CHANGELOG_ENTRY = """\
 
 - **Each PyPI publish sends TestPyPI and PyPI the same files, and checks them by sha256** (repo-wide:
   `publish-recurrence-app.yml`, `publish-recurrence-client.yml` and `publish-recurrence-model.yml`; recorded here, as
-  repo-wide CI changes are). The port of juniper-cascor#763 and #767, after the owner's directive of 2026-11-15:
+  repo-wide CI changes are). The port of juniper-cascor#763 and #767, after the Overtoad's directive of 2026-11-15:
   "deploy to pypi should send the same artifact that was already sent to testpypi. an identical hash check, of the
   artifacts after testpypi deploy and prior to pypi deploy, might also be helpful here to prevent this from slipping
   through the cracks again." These publishers already built once and gave both publish jobs one artifact, and every
@@ -259,7 +259,7 @@ CHANGELOG_ENTRY = """\
     build backend, could mint an OIDC token. The workflow level is `contents: read`.
   - A dispatch from a release tag with `-f republish_from_testpypi=true` runs a new job alone, `Republish the tested
     files (dispatch only)`: behind the `pypi` gate, it copies TestPyPI's files for that version to PyPI, each checked
-    by sha256, and builds nothing. It is the first rung of the owner's recovery ladder (the README's Publishing
+    by sha256, and builds nothing. It is the first rung of the Overtoad's recovery ladder (the README's Publishing
     section). A dispatch without the input still re-fires the whole publish.
   - The template steps and the republish job are verbatim copies of juniper-cascor's, applied by juniper-ml's
     `util/ad-hoc/2026-11-15_juniper-recurrence_one_artifact_publish_port.py`. `tests/test_publish_one_artifact.py`
@@ -294,7 +294,7 @@ copy of juniper-cascor's template:
 
 ### A release that did not reach PyPI
 
-The owner's recovery ladder (2026-11-15), in this order. Every rung publishes the files TestPyPI took, or nothing
+The Overtoad's recovery ladder (2026-11-15), in this order. Every rung publishes the files TestPyPI took, or nothing
 ([juniper-cascor's account]({MANUAL}#recovering-a-release-that-did-not-reach-pypi)).
 
 1. **Republish TestPyPI's files.** Dispatch the package's workflow from its release tag. Only the job

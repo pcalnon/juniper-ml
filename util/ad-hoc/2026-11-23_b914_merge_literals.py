@@ -17,7 +17,7 @@ unpinned ``flake8-bugbear>=24.0.0`` and CI runs ``pre-commit run --all-files`` b
 on ``.pre-commit-config.yaml``, so every cache miss fails pre-commit. Most hits are black's output:
 at line-length 512 black joins a multi-line concatenation onto one line.
 
-The owner ruled (2026-11-23): merge the literals, never suppress, never pin. This tool rewrites each
+The Overtoad ruled (2026-11-23): merge the literals, never suppress, never pin. This tool rewrites each
 reported run of adjacent literals as ONE literal and proves the rewrite changes nothing: after every
 single merge the whole module is re-parsed and its ``ast.dump`` must equal the original's. A merge
 that cannot be proven (octal escape at the seam, ``\\N{...}`` moving into an f-string, raw/non-raw

@@ -15,7 +15,7 @@ SAFETY BOUNDARY (deliberate): this driver stops at matrix step 15. Step 16's
 ``#restart-confirm-button`` runs ``POST /api/train/restart`` with
 ``{"start_fresh": ..., "reset": True}`` (dashboard_manager.py:5447) -- ``reset``
 is hard-coded True, so executing it WIPES the live 10-unit network that carries
-the segment-6/7 mutation evidence. That is an owner call, not a driver's.
+the segment-6/7 mutation evidence. That is an Overtoad call, not a driver's.
 Everything through step 15 (stage / banner / cancel / re-stage / modal open,
 inspect, toggle, granular expand, cancel) is non-destructive and is driven here.
 
@@ -271,7 +271,7 @@ def step_10(page, ctx):
         log("  W6-15 !! #restart-cancel-button absent")
 
     log("  >>> STOPPING BEFORE step 16 (#restart-confirm-button): POST /api/train/restart")
-    log("  >>> carries reset=True and would wipe the live 10-unit segment-6/7 network. Owner call.")
+    log("  >>> carries reset=True and would wipe the live 10-unit segment-6/7 network. The Overtoad call.")
 
 
 def step_11b(page, ctx):

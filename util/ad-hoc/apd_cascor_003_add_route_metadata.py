@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc -- migration (the APD-CASCOR-003 + unfiled operation_id pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md (APD-CASCOR-003 and its §4.3 note), the juniper-cascor fix PR named in its §5.1 row
 
 Two gaps over ONE set of decorators, done in one pass because splitting them rewrites all 47

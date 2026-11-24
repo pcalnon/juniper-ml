@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (publish artifact identity)
 Author: Paul Calnon
 Created: 2026-11-15
 Status: ad-hoc -- one-off (port of juniper-cascor#763 and #767, "publish one artifact to TestPyPI and PyPI", to juniper-cascor-client)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-15_cascor_one_artifact_publish_edits.py (template_blocks / republish_job / replace_once, used here);
          util/ad-hoc/2026-11-15_publish_port_template_identity.py (the cross-repo check the result must pass);
          util/ad-hoc/2026-11-15_juniper-data-client_one_artifact_publish_port.py and
@@ -17,7 +17,7 @@ Why
 ---
 juniper-cascor-client's ``publish.yml`` built the sdist and wheel in its TestPyPI job and again in its PyPI job, so PyPI
 served a second build of every release (0.8.0's wheel is ``1333cd49...`` on PyPI and ``839a547f...`` on TestPyPI). The
-owner's directive of 2026-11-15 asks that PyPI get the artifact TestPyPI got, checked by sha256, and the fix-scope ruling
+Overtoad's directive of 2026-11-15 asks that PyPI get the artifact TestPyPI got, checked by sha256, and the fix-scope ruling
 asks for the shared build and the hash check in every publish workflow. juniper-cascor's ``publish.yml`` at main
 ``675884888f5a`` (after #763 and #767) is the template; this gives juniper-cascor-client its SINGLE-PACKAGE shape:
 
@@ -31,7 +31,7 @@ asks for the shared build and the hash check in every publish workflow. juniper-
   them byte-identical.
 - ``tests/test_publish_one_artifact.py``: copied from ``--test-file`` (the port of cascor's test, reviewed separately).
 - ``CHANGELOG.md``: one ``[Unreleased]`` / ``### Fixed`` entry. ``docs/REFERENCE.md``: the ``publish.yml`` subsection
-  of § CI/CD Pipeline Reference states the contract and the owner's recovery ladder, with when its first rung applies
+  of § CI/CD Pipeline Reference states the contract and the Overtoad's recovery ladder, with when its first rung applies
   and why a broken package means a new patch version; its ``**Version:**`` moves 0.1.5 -> 0.1.6 and its
   ``**Last Updated:**`` to the day this runs (UTC), header and footer, as each of its recent edits did. AGENTS.md is
   left alone: it only names the file, and it sits 145 characters under its memory budget.
@@ -99,7 +99,7 @@ REFERENCE_NEW = """\
 
 The steps marked `One-artifact publish template`, and the `republish` job, are verbatim copies of juniper-cascor's `publish.yml` (juniper-cascor#763, #767); `tests/test_publish_one_artifact.py` pins them to its sha256, so change them there first. The contract: juniper-cascor's [`docs/ci_cd/MANUAL.md` § One Artifact, Checked Against TestPyPI](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#one-artifact-checked-against-testpypi).
 
-**A release that did not reach PyPI**: the owner's recovery ladder (ruling of 2026-11-15), in this order ([§ Recovering a Release That Did Not Reach PyPI](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#recovering-a-release-that-did-not-reach-pypi)):
+**A release that did not reach PyPI**: the Overtoad's recovery ladder (ruling of 2026-11-15), in this order ([§ Recovering a Release That Did Not Reach PyPI](https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#recovering-a-release-that-did-not-reach-pypi)):
 
 1. **Republish TestPyPI's files**: `gh workflow run publish.yml --repo pcalnon/juniper-cascor-client --ref v<version> -f republish_from_testpypi=true`. Only `Republish the tested files (dispatch only)` runs, behind the `pypi` gate; it builds nothing, and only a tag cut after this job landed carries it.
    It copies TestPyPI's files whatever the release run's jobs concluded, so use it only when that run's `Publish to TestPyPI` succeeded, or failed on index lag alone (a JSON check or the install check that gave up waiting).
@@ -138,7 +138,7 @@ def docs_edits(read) -> dict[str, str]:
 
 CHANGELOG_ENTRY = """\
 - **PyPI now receives the files TestPyPI took: `publish.yml` builds once, and the run checks every upload by sha256
-  against TestPyPI** (the owner's directive of 2026-11-15: "deploy to pypi should send the same artifact that was
+  against TestPyPI** (the Overtoad's directive of 2026-11-15: "deploy to pypi should send the same artifact that was
   already sent to testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy,
   might also be helpful here to prevent this from slipping through the cracks again."). `publish.yml` ran
   `python -m build` in its TestPyPI job and again in its PyPI job, so PyPI served a second build of every release:
@@ -160,7 +160,7 @@ CHANGELOG_ENTRY = """\
   - **Only the jobs that upload hold `id-token: write`.** The workflow's `permissions` is `{}`: `Build and Validate`
     gets `contents: read` and `actions: read`, `Publish to TestPyPI` `contents: read` and `id-token: write`, and
     `Publish to PyPI` `id-token: write`.
-  - **Recovery, in the owner's order (ruling of 2026-11-15).** A `workflow_dispatch` from the release tag with
+  - **Recovery, in the Overtoad's order (ruling of 2026-11-15).** A `workflow_dispatch` from the release tag with
     `republish_from_testpypi` runs only `Republish the tested files (dispatch only)`, behind the same `pypi` gate: it
     copies TestPyPI's files for the version to PyPI, each checked against TestPyPI's JSON and, while it exists, the
     release run's `SHA256SUMS`, and builds nothing. It copies those files whatever the release run concluded, so it
@@ -232,7 +232,7 @@ HEADER = """\
 #    The steps marked "One-artifact publish template", and the republish job, are verbatim copies of
 #    juniper-cascor's publish.yml (juniper-cascor#763, #767). tests/test_publish_one_artifact.py pins
 #    them to juniper-cascor's sha256: change them there first, then copy them here. The republish job
-#    is step 1 of the owner's recovery ladder for a release that never reached PyPI.
+#    is step 1 of the Overtoad's recovery ladder for a release that never reached PyPI.
 #
 # References:
 #    - https://github.com/pcalnon/juniper-cascor/blob/main/docs/ci_cd/MANUAL.md#one-artifact-checked-against-testpypi

@@ -8,7 +8,7 @@
 # 4x3 matrix would have been four pool sizes run three times each.
 # notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md §4, P2 plan item 2.2.
 #
-# THE INERT-AXIS BLOCKER IS DISCHARGED, 2026-09-22. The owner ruled D2 "implement, via the
+# THE INERT-AXIS BLOCKER IS DISCHARGED, 2026-09-22. The Overtoad ruled D2 "implement, via the
 # environment route" (notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md),
 # and that is now built: run_suite.runtime_block_env maps this block onto the process
 # environment and experiment_stack.bash exports CASCOR_NUM_PROCESSES per cell at cascor
@@ -58,7 +58,7 @@
 #
 # OWNER RULED 2026-09-24 (notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md
 # §6): WAIT FOR A QUIET WINDOW -- no clamscan running, and a 1-minute load that STAYS under ~6.
-# Declined: running round-robin on the loaded host now, or waiting for the owner to free the host.
+# Declined: running round-robin on the loaded host now, or waiting for the Overtoad to free the host.
 # A window opened at 02:39 local that night (4.20 / 4.09 / 3.48) and closed within minutes, when a
 # peer session's test run took the load to 8.97. So check the load at launch, and record it
 # throughout with util/ad-hoc/2026-09-08_loadavg_sampler.py beside the suite dir. One pass is ~7 h.

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-15
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: reports/2026-09-15_round-39-consensus/laneB2-amputation-exec-naming.md
 
 Lane B2 returned FAIL on amputation (10 LOST items) and on executability (the document never
@@ -115,8 +115,8 @@ sub(
     "disambiguate REFERENCE.md and CHANGELOG.md",
 )
 sub(
-    "- [x] Thirty owner rulings taken and recorded in the register (§3)",
-    "- [x] Thirty owner rulings taken and recorded in " + REG + " (§3)",
+    "- [x] Thirty Overtoad rulings taken and recorded in the register (§3)",
+    "- [x] Thirty Overtoad rulings taken and recorded in " + REG + " (§3)",
     "name the register in the checklist",
 )
 
@@ -234,8 +234,8 @@ sub(
     "- **Verify a merge in two steps**: `gh pr view <N> --json state,mergedAt,mergeCommit` **and**\n"
     "  that the content is on `main`. A MERGED badge is not ancestry, and `util/safe_merge.py`\n"
     "  prints the *head* SHA, not the squash commit.\n"
-    "- **Merge approval**: headless merges are gated on the owner's explicit approval, per memory\n"
-    "  `feedback_headless_merge_approval_policy`; deploys are the owner's, per\n"
+    "- **Merge approval**: headless merges are gated on the Overtoad's explicit approval, per memory\n"
+    "  `feedback_headless_merge_approval_policy`; deploys are the Overtoad's, per\n"
     "  `feedback_deploy_approvals_paul_manages`. A session-wide grant covers only the PRs of the\n"
     "  arc it was given for.\n"
     "\n"
@@ -331,9 +331,9 @@ sub(
     "restore the two orphan open items as a new §0.4",
 )
 sub(
-    "### 0.5 Owner decisions still owed",
-    "### 0.6 Owner decisions still owed",
-    "renumber Owner decisions -> §0.6",
+    "### 0.5 The Overtoad decisions still owed",
+    "### 0.6 The Overtoad decisions still owed",
+    "renumber The Overtoad decisions -> §0.6",
 )
 sub(
     "Only one: **`APD-DATA-047`**, whether the absolute share-count ceiling stays, and at what value.",
@@ -344,7 +344,7 @@ sub(
 sub(
     "sequenced into PR-sized units.\n\n---\n\n## 0. Remaining work",
     "sequenced into PR-sized units.\n\n"
-    "**The owner's partial-data spec exists verbatim only in the memory\n"
+    "**The Overtoad's partial-data spec exists verbatim only in the memory\n"
     "`project_partial_data_contract_arc_2026-09-05`** — its table of the three options and their\n"
     "wire forms. " + REG + " and every handoff paraphrase it. D-A\n"
     "(§0.1) implements option 3's wire form, so read the memory, not the paraphrase.\n"

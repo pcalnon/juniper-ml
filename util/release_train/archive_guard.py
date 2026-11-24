@@ -4,7 +4,7 @@
 The release-train's ONE gate-exempt PR is the one that *archives the generated release notes and
 contains no other change* (plan R5 / S7.1). This module is the required-CI-job CHECK that proves a
 PR's diff is exactly that -- so the exempt PR can (later) auto-merge behind a required status check
-without ever leaking a code/config change past the owner gate.
+without ever leaking a code/config change past the Overtoad gate.
 
 It computes a PR's changed-file set (``git diff --name-status <base>...<head>`` -- injected /
 path-invokable so the tests are hermetic) and passes ONLY if **all four** structural rules hold
@@ -18,10 +18,10 @@ path-invokable so the tests are hermetic) and passes ONLY if **all four** struct
   4. **Single-purpose**-- no other path in the diff, at all.
 
 Layering (plan S7.2 "pass trivially for non-archive PRs"): a PR whose diff does **not** touch
-``notes/releases/`` is **SKIP** -- the exempt path does not apply, the standard owner gate governs,
+``notes/releases/`` is **SKIP** -- the exempt path does not apply, the standard Overtoad gate governs,
 and this check passes (exit 0). Only a PR that *touches* ``notes/releases/`` is held to the four
 rules; if it violates any, the check **fails** (exit 1) and the PR simply falls back to the standard
-owner gate (plan S7.2: "the PR is untouched and falls back to the standard owner gate -- it never
+Overtoad gate (plan S7.2: "the PR is untouched and falls back to the standard Overtoad gate -- it never
 auto-merges"). The guard has **no side effect** beyond its own pass/fail -- it opens nothing, merges
 nothing, and mutates no environment (R7).
 
@@ -353,7 +353,7 @@ def render_report(result: GuardResult) -> str:
     lines = ["Juniper release-train -- exempt notes-archive structural guard (plan S7.2)", ""]
     if result.verdict == "SKIP":
         lines.append("  verdict: SKIP -- the diff does not touch notes/releases/; not an archive PR.")
-        lines.append("  The standard owner gate governs this PR; the exempt path does not apply.")
+        lines.append("  The standard Overtoad gate governs this PR; the exempt path does not apply.")
         return "\n".join(lines)
     if result.verdict == "OK":
         lines.append(f"  verdict: OK -- add-only, path-confined, name-valid, single-purpose ({len(result.added)} archive file(s)).")
@@ -368,7 +368,7 @@ def render_report(result: GuardResult) -> str:
             lines.append(f"    ~ waived (Allow-Archive-Edit): {w}")
         lines.append("  Carry the trailer into the SQUASH commit message when merging -- trailers travel in git history and the post-merge screens re-read them.")
         return "\n".join(lines)
-    lines.append(f"  verdict: FAIL -- {len(result.violations)} rule violation(s); the PR falls back to the standard owner gate (it never auto-merges).")
+    lines.append(f"  verdict: FAIL -- {len(result.violations)} rule violation(s); the PR falls back to the standard Overtoad gate (it never auto-merges).")
     for v in result.violations:
         lines.append(f"    - {v}")
     if result.waived:

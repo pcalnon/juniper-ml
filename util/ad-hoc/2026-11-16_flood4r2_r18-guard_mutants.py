@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-16
 Status: ad-hoc — investigation (Cursor flood-4 disposition arc, session 9: the guard's word-structure hardening)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/claude_agent_guard.py 1.4.0; tests/test_claude_agent_guard.py; tests/test_claude_agent_guard_brace_cap.py;
          util/ad-hoc/2026-11-11_flood4r2_ml-code-r3_mutants.py (the 1.3.0 carrier's mutation run).
 

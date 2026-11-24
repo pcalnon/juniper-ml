@@ -6,8 +6,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-15
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: round-39 validation lane B1 (which found the gap); owner ruling 2026-09-09
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: round-39 validation lane B1 (which found the gap); Overtoad ruling 2026-09-09
 
 The register's own 4.9 preamble already names this as a gap rather than a decision: two findings
 from the round-37/38 validation were written down ONLY in
@@ -46,7 +46,7 @@ ROW_052 = (
     "two-state `bool` whose absence and whose explicit `false` are indistinguishable downstream: the route binds "
     "deployment defaults before `generate`, and the three `or settings.*` sites then read the bound value, so an "
     "explicit `false` is overridden by the deployment on every apply. The asymmetry is deliberate and documented "
-    "today (\"A client cannot opt out of the operator's choice\") and the owner **ruled on 2026-09-09 to reverse it**: "
+    "today (\"A client cannot opt out of the operator's choice\") and the Overtoad **ruled on 2026-09-09 to reverse it**: "
     "`true | false | null`, with `null`/omitted deferring to the deployment. **Filed 2026-09-15**, six days after the "
     "ruling — it had been recorded only in the round-38 handoff, which §4.9's preamble already named as a gap; a "
     "ruled item with no row is invisible to every count this register produces | C | "
