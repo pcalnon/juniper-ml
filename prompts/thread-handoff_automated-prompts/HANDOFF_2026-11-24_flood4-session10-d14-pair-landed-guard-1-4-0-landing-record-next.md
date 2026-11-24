@@ -81,8 +81,10 @@ Remaining, in order:
   during it (resolve a CodeQL thread only when its alert instance on `refs/pull/N/merge` reads `fixed`).
 - **`SENTRY_SDK_DSN` is set in session environments**: a cascor unit lane sent 2 Sentry events; run lanes with
   `env -u SENTRY_SDK_DSN -u JUNIPER_CASCOR_LOG_DIR`.
-- cascor main carries the rename (#772): new cascor CHANGELOG text says "the Overtoad's ruling" (#776 did). ml main does
-  not yet: keep "owner"; ml#2606 regenerates from main and renames new text itself.
+- cascor main carries the rename (#772): new cascor CHANGELOG text says "the Overtoad's ruling" (#776 did). **ml main
+  carries it too since ml#2606 MERGED 2026-11-24 05:06:27Z as 5a049144** (after guard 1.4.0; this session held #2626 for
+  it, hold lifted at 05:06Z): new living text in juniper-ml follows main (read how #2606 rendered the file you edit);
+  records such as handoffs and release notes keep their original text (the owner's ruling 2 of 2026-11-23).
 
 ## Verification commands
 
