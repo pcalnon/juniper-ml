@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — one-off (a record revision of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2326 (the `[servers]` floors, where the claim started), #2349 / #2350 (the 0.11.3 cut and archive);
          util/ad-hoc/2026-10-26_consolidated_plan_v1_15_2_r_ml_servers_shipped.py (the revision this follows, and the pattern);
          util/ad-hoc/2026-10-26_plan_v1_7_21_servers_patch_path_corrected.py (the recurrence plan's matching revision)
@@ -18,7 +18,7 @@ patches its floors carry. Neither holds. canopy 0.9.0 floors both patches with n
 required it since juniper-ml 0.11.0, so a `[servers]` or `[all]` install has carried them since 0.11.0. Session
 "draft PRs" relayed the correction on 2026-10-26; every fact below was re-probed against PyPI's ``requires_dist`` and
 juniper-cascor's ``CHANGELOG.md`` at ``v0.12.0`` before it was written. Every line stays within 512 characters, the
-condition on which the owner approved v1.15.2 (2026-10-26), and the script refuses if any line is over.
+condition on which the Overtoad approved v1.15.2 (2026-10-26), and the script refuses if any line is over.
 
 Usage
 -----
@@ -44,26 +44,26 @@ MAX_LINE = 512
 _DATE_OLD = "juniper-ml 0.11.2's publish probed 2026-10-26)\n"
 _DATE_NEW = "juniper-ml 0.11.2's publish probed 2026-10-26, and `[servers]`'s patch path corrected the same day)\n"
 
-_STATUS_ANCHOR = "and the owner's ruling on ml#2330 with its fix, ml#2345 (XC-P12; §6 Group C). Like v1.15.0, no round checks it.\n"
+_STATUS_ANCHOR = "and the Overtoad's ruling on ml#2330 with its fix, ml#2345 (XC-P12; §6 Group C). Like v1.15.0, no round checks it.\n"
 _STATUS_ADD = (
     "  - v1.15.3 (2026-10-26) corrects how §5 says `[servers]` got the shared security patches: through canopy 0.9.0 since juniper-ml 0.11.0, with cascor 0.12.0 a second path from 0.11.2. "
-    "So R-ML-TOOLS reached only `[tools]` installs without `[servers]`, and R-ML-SERVERS's security content is cascor 0.12.0's own fixes. It also points at juniper-ml 0.11.3, at the owner's gate (§5; XC-P12). Like v1.15.0, no round checks it.\n"
+    "So R-ML-TOOLS reached only `[tools]` installs without `[servers]`, and R-ML-SERVERS's security content is cascor 0.12.0's own fixes. It also points at juniper-ml 0.11.3, at the Overtoad's gate (§5; XC-P12). Like v1.15.0, no round checks it.\n"
 )
 
-_FURTHER_P12_OLD = "`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.20): the recurrence-client 0.3.1 cut and the owner's open items (§6 A1, A9)."
-_FURTHER_P12_NEW = "`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.21): juniper-ml 0.11.3's `pypi` gate (the owner's), the recurrence-client 0.3.1 cut and the owner's open items (§6 A1, A9)."
+_FURTHER_P12_OLD = "`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.20): the recurrence-client 0.3.1 cut and the Overtoad's open items (§6 A1, A9)."
+_FURTHER_P12_NEW = "`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.21): juniper-ml 0.11.3's `pypi` gate (the Overtoad's), the recurrence-client 0.3.1 cut and the Overtoad's open items (§6 A1, A9)."
 
 _TOOLS_AUDIENCE_OLD = "| `[tools]` and `[all]` users whose upgrade kept observability 0.4.0 or service-core 0.7.0 |"
 _TOOLS_AUDIENCE_NEW = "| `[tools]` users without `[servers]` whose upgrade kept observability 0.4.0 or service-core 0.7.0 |"
 
-_SERVERS_CONTENT_OLD = "(ml#2326), which floor the shared security patches. Rated as 0.11.1 (owner, 2026-10-25) |"
-_SERVERS_CONTENT_NEW = "(ml#2326). Its security content is cascor 0.12.0's own fixes (note below). Rated as 0.11.1 (owner, 2026-10-25) |"
+_SERVERS_CONTENT_OLD = "(ml#2326), which floor the shared security patches. Rated as 0.11.1 (Overtoad, 2026-10-25) |"
+_SERVERS_CONTENT_NEW = "(ml#2326). Its security content is cascor 0.12.0's own fixes (note below). Rated as 0.11.1 (Overtoad, 2026-10-25) |"
 _SERVERS_AUDIENCE_OLD = "| `[servers]` and `[all]` users whose upgrade kept data 0.17.0 or cascor 0.11.0 |"
 _SERVERS_AUDIENCE_NEW = "| `[servers]` and `[all]` users whose upgrade kept cascor 0.11.0 |"
 
 _NOTES_ANCHOR = "its fix, ml#2333, merged on 2026-10-26 (`da5e8de3`) and ships in 0.11.3.\n"
 _NOTES_ADD = (
-    "  - 0.11.3 is cut: Release v0.11.3 at 10:20:47Z (tag at `a771a5b8`; archive ml#2350), and its publish run 40306687867 waits at the owner's `pypi` gate (2026-10-26; v1.15.3). Its records are session \"draft PRs\"'s.\n"
+    "  - 0.11.3 is cut: Release v0.11.3 at 10:20:47Z (tag at `a771a5b8`; archive ml#2350), and its publish run 40306687867 waits at the Overtoad's `pypi` gate (2026-10-26; v1.15.3). Its records are session \"draft PRs\"'s.\n"
     "- **Corrected in v1.15.3: how `[servers]` got the shared security patches.** canopy 0.9.0, the only canopy at or above `[servers]`'s floor, floors `juniper-observability>=0.4.1` and `juniper-service-core>=0.7.1,<0.8.0` with no extra marker, "
     "and `[servers]` has required it since 0.11.0. So `[servers]` and `[all]` have carried both patches since 0.11.0; cascor 0.12.0, whose floors are also unconditional, added a second path in 0.11.2.\n"
     "  - v1.15.0 to v1.15.2 listed `[all]` in R-ML-TOOLS's audience, and described R-ML-SERVERS by the shared patches its floors carry. An `[all]` install could not hold the unpatched pair from 0.11.0 on, so R-ML-TOOLS (0.11.1) reached only `[tools]` installs without `[servers]`.\n"
@@ -71,13 +71,13 @@ _NOTES_ADD = (
     "data 0.17.1 floors the patches only under `[api]`, which 0.11.2's `[servers]` does not request.\n"
     "  - 0.11.2's notes repeat the error. The Priority line of `notes/releases/RELEASE_NOTES_v0.11.2.md` reads \"`[tools]` and `[all]` already floor both patches, since 0.11.1\", "
     "which under-warns any `[servers]` install that also has `[tools]` (`[all]` included) still on cascor 0.11.0.\n"
-    "  - juniper-ml's `CHANGELOG.md` `[0.11.2]` (lines 223–224 on `main`, 2026-10-26) says they \"arrive through cascor 0.12.0\". An erratum to it, the notes and the Release v0.11.2 body is the owner's call.\n"
+    "  - juniper-ml's `CHANGELOG.md` `[0.11.2]` (lines 223–224 on `main`, 2026-10-26) says they \"arrive through cascor 0.12.0\". An erratum to it, the notes and the Release v0.11.2 body is the Overtoad's call.\n"
     "  - Source: session \"draft PRs\", which relayed the correction on 2026-10-26. Re-probed here against PyPI's `requires_dist` (juniper-canopy 0.9.0; juniper-ml 0.11.0 to 0.11.2; juniper-cascor 0.11.0 and 0.12.0; juniper-data 0.17.0 and 0.17.1) and juniper-cascor's `CHANGELOG.md` at `v0.12.0`.\n"
 )
 
 _VALIDATION_ANCHOR = "ml#2345's diff and `util/ad-hoc/2026-10-26_consolidated_plan_v1_15_2_r_ml_servers_shipped.py`.\n"
 _VALIDATION_ADD = (
-    "  - v1.15.3 is a correction (2026-10-26) of how §5 says `[servers]` got the shared security patches, with a pointer to juniper-ml 0.11.3 at its gate. No round checks it (owner ruling 2026-10-24); "
+    "  - v1.15.3 is a correction (2026-10-26) of how §5 says `[servers]` got the shared security patches, with a pointer to juniper-ml 0.11.3 at its gate. No round checks it (Overtoad ruling 2026-10-24); "
     "its facts cite PyPI's `requires_dist`, juniper-cascor's `CHANGELOG.md` at `v0.12.0`, Release v0.11.3, run 40306687867 and `util/ad-hoc/2026-10-26_consolidated_plan_v1_15_3_servers_patch_path_corrected.py`.\n"
 )
 

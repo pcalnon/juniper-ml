@@ -6,8 +6,8 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-03
-Status: ad-hoc — one-off (flood-3: SHA-pin agents-md-touch-up.yml's checkout in seven repositories, owner ruling 2026-11-03)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Status: ad-hoc — one-off (flood-3: SHA-pin agents-md-touch-up.yml's checkout in seven repositories, Overtoad ruling 2026-11-03)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§9); juniper-data#503 (the first pin)
 
     python3 -I util/ad-hoc/2026-11-03_fetch_main_tarballs.py <dest-dir> <repo> [<repo> ...]

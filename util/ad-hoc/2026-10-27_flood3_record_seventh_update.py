@@ -11,7 +11,7 @@
 # Description:
 #   Applies the seventh update of
 #   notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md: the
-#   owner's three open items of 2026-10-26 (the 0.11.2 notes erratum, the arc's
+#   Overtoad's three open items of 2026-10-26 (the 0.11.2 notes erratum, the arc's
 #   cleanup, and the §4 backlog). Every edit asserts its exact old text and
 #   requires exactly one match, so a record that has drifted is refused rather
 #   than half-edited; --check reports what is still owed.
@@ -19,7 +19,7 @@
 # Usage:
 #   python3 -I util/ad-hoc/2026-10-27_flood3_record_seventh_update.py <record.md> [--check]
 # -----------------------------------------------------------------------------
-"""Apply the flood-3 record's seventh update (the owner's three open items, 2026-10-26/27)."""
+"""Apply the flood-3 record's seventh update (the Overtoad's three open items, 2026-10-26/27)."""
 
 import argparse
 import sys
@@ -38,7 +38,7 @@ def edit(what: str, old: str, new: str) -> None:
 edit(
     "header",
     "has been on PyPI since 2026-10-26 17:48Z (§4, §8, §9)\n",
-    "has been on PyPI since 2026-10-26 17:48Z. On the owner's request of 2026-10-26, the 0.11.2 security notes carry an erratum, the arc's worktrees and the flood-3 `cursor/*` branches are cleaned up, and every §4 row that was open is fixed, in nine repositories (§4, §8, §9)\n",
+    "has been on PyPI since 2026-10-26 17:48Z. On the Overtoad's request of 2026-10-26, the 0.11.2 security notes carry an erratum, the arc's worktrees and the flood-3 `cursor/*` branches are cleaned up, and every §4 row that was open is fixed, in nine repositories (§4, §8, §9)\n",
 )
 
 # ---- §4 statuses ----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ edit(
 edit(
     "§4 APD-ML-002",
     "| ml | cascor headline accuracy columns are always empty — the open cascor half of APD-ML-002 | already registered (defect register §4.9) |",
-    f"| ml | cascor headline accuracy columns are always empty — the open cascor half of APD-ML-002 | **train / val fixed** — {APD_PR}, on the owner's rulings of 2026-10-26: `train_accuracy` and `val_accuracy` from `build_stats`' `final` block (`val_accuracy` documented as selected-on), `final_accuracy` refused, a new `--reaggregate` that launches nothing, and a non-finite value fails any band. Since juniper-ml#2262 the dead names had also made every cascor acceptance band read `absent`. `test_accuracy` stays, to be fed by cascor: juniper-cascor#731 makes the final evaluation compute `accuracy`, which reaches users with the next juniper-cascor release (the owner's call), and the column fills once ml#2064 carries the labelled block into `stats.json`. The recurrence half was fixed by juniper-ml#2145 (2026-10-04) |",
+    f"| ml | cascor headline accuracy columns are always empty — the open cascor half of APD-ML-002 | **train / val fixed** — {APD_PR}, on the Overtoad's rulings of 2026-10-26: `train_accuracy` and `val_accuracy` from `build_stats`' `final` block (`val_accuracy` documented as selected-on), `final_accuracy` refused, a new `--reaggregate` that launches nothing, and a non-finite value fails any band. Since juniper-ml#2262 the dead names had also made every cascor acceptance band read `absent`. `test_accuracy` stays, to be fed by cascor: juniper-cascor#731 makes the final evaluation compute `accuracy`, which reaches users with the next juniper-cascor release (the Overtoad's call), and the column fills once ml#2064 carries the labelled block into `stats.json`. The recurrence half was fixed by juniper-ml#2145 (2026-10-04) |",
 )
 edit(
     "§4 claude.yml clause",
@@ -131,8 +131,8 @@ edit(
 # ---- §6 traps -------------------------------------------------------------------------------
 edit(
     "§6 traps",
-    "  - The owner approved both inside the window, on 2026-10-23 and 2026-10-25. When handing a gate over, quote both dates, computed from the run's `created_at`.\n",
-    "  - The owner approved both inside the window, on 2026-10-23 and 2026-10-25. When handing a gate over, quote both dates, computed from the run's `created_at`.\n"
+    "  - The Overtoad approved both inside the window, on 2026-10-23 and 2026-10-25. When handing a gate over, quote both dates, computed from the run's `created_at`.\n",
+    "  - The Overtoad approved both inside the window, on 2026-10-23 and 2026-10-25. When handing a gate over, quote both dates, computed from the run's `created_at`.\n"
     "- **Making a swallowed failure loud can break a test that passed only because of it** (2026-10-26, juniper-data#498).\n"
     "  - juniper-data's suite runs the lockfile commit step on the REQUIRED macOS leg, where BSD `base64` has no `-w0`. Before the base64 fix the step \"passed\" there by committing an empty payload; after it, the encode stops the step (exit 64) and the leg went red.\n"
     "  - The remedy is in the tests, not the workflow (which runs only on `ubuntu-latest`): juniper-data#498 and juniper-data-client#248 install a stand-in for exactly `base64 -w0 FILE` when the runner's `base64` fails a probe of that form. A BSD-like simulation without the stand-in reproduces CI's failures, so the pass is not vacuous. Skipping macOS would have hidden the platform from the one check that proved useful.\n"
@@ -149,7 +149,7 @@ edit(
     "§7 tools",
     "  - `2026-10-26_juniper_ml_0_11_3_cut_cochanges.py`: the 0.11.3 cut's `docs/REFERENCE.md` co-changes, plus the #2062 entry's two controls. Its pin parser strips a PEP 508 extras marker.\n",
     "  - `2026-10-26_juniper_ml_0_11_3_cut_cochanges.py`: the 0.11.3 cut's `docs/REFERENCE.md` co-changes, plus the #2062 entry's two controls. Its pin parser strips a PEP 508 extras marker.\n"
-    "- Added by the owner's three open items (2026-10-26/27):\n"
+    "- Added by the Overtoad's three open items (2026-10-26/27):\n"
     "  - `2026-10-26_erratum_0_11_x_security_floor_probe.py` (juniper-ml#2363): resolves `[servers]`, `[servers]+[tools]`, `[tools]` and `[all]` for juniper-ml 0.10.0-0.11.3 to their members at the lowest admitted versions, from PyPI's published `requires_dist`, and asserts the erratum's nine claims.\n"
     "  - `2026-10-26_release_notes_erratum_0_11_2_0_11_3.py` (juniper-ml#2363): applies the erratum to the archives, to fetched Release bodies and to the CHANGELOG; `--check` reports what is owed.\n"
     "  - `2026-10-26_flood3_delete_closed_pr_branches.py`: deletes a closed, unmerged flood-3 PR's `cursor/*` head only when the branch is in-repo, its tip equals the PR's final head and no open PR uses it, and logs each ref and SHA for a restore.\n"
@@ -163,14 +163,14 @@ edit(
     "§8 guard + remaining",
     "- **Not done, deliberately:** a `tests/test_service_fork_drift.py` guard for the `FailedAuthThrottle` fix. That test requires every guard to cite a defect-register `APD-` id, and the register has no row for this defect. Filing one is a new row in §4.9 (\"Filed after the primer\") of `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`. The register's \"five touches\" govern closing a row, not filing one; until 2026-10-10 this bullet called the filing the five-touch protocol. Each of the three copies is pinned by its own repo's regression test.\n"
     "- **The remaining open rows in §4**, including the six that the follow-up's Sequence Safety and throttle sweeps found.\n",
-    "- **Resolved (2026-10-26/27): the owner's three open items.** The owner asked on 2026-10-26 to \"address the three open items\", granted merge approval for every PR they produced, and ruled each decision (below).\n"
+    "- **Resolved (2026-10-26/27): the Overtoad's three open items.** The Overtoad asked on 2026-10-26 to \"address the three open items\", granted merge approval for every PR they produced, and ruled each decision (below).\n"
     "  - **The 0.11.2 security-notes erratum** (ruling: \"0.11.2 + 0.11.3\"). juniper-ml#2362 corrects the 0.11.2 Priority line in place and adds a dated erratum to `notes/releases/RELEASE_NOTES_v0.11.2.md`, with one clarifying sentence in `RELEASE_NOTES_v0.11.3.md`; it is archive-only, with an `Allow-Archive-Edit` trailer, as the archive guard requires. juniper-ml#2363 carries the `CHANGELOG.md` half. The Release v0.11.2 and v0.11.3 bodies were edited to match the archives (`diff -B` clean); no publish run fired. 0.11.1's harmless over-warning stays as published.\n"
     "  - **The cleanup** (ruling: also \"Delete flood-3's only\" for the remote branches).\n"
     "    - 33 worktrees removed: juniper-ml 24 (the twelve `agent-*` and `melodic-hugging-rabin` of the 2026-10-10 handoff, and this arc's 11 centralized ones), juniper-data 3, juniper-cascor 3, juniper-canopy, juniper-recurrence and juniper-deploy one each. 11 local branches deleted.\n"
     "    - Each was inspected first (§6). 37 files that never existed on `main`, all evaluator drafts whose corrected versions landed, plus one canopy test log, were copied to juniper-ml's gitignored `tmp/worktree-cleanup-2026-10-26/` with a `MANIFEST.tsv`.\n"
     "    - 89 remote `cursor/*` heads of closed, unmerged flood-3 PRs deleted (juniper-ml 46, juniper-canopy 22, juniper-data 12, juniper-cascor 6, juniper-data-client 3); 23 were already gone. Each ref and SHA is logged in `tmp/flood3-deleted-branches.tsv`; GitHub's \"Restore branch\" on the PR page brings one back.\n"
     "  - **The backlog** (ruling: \"Fix all; rule on APD-ML-002\"). Every row open in §4 was re-probed on `main` first; none had been fixed elsewhere. The fixes, one PR per repo: juniper-cascor#730, juniper-deploy#265, juniper-recurrence#226, juniper-data#498, juniper-cascor-worker#218, juniper-data-client#248, juniper-cascor-client#188, juniper-canopy#775 and juniper-ml#2366. §4 records each row's outcome, and five new rows.\n"
-    f"  - **APD-ML-002**, on the owner's rulings: option A now (`train_accuracy`, `val_accuracy` documented as selected-on), `test_accuracy` kept and fed by cascor, a `--reaggregate` mode, and a non-finite value fails any band. {APD_PR} and juniper-cascor#731 (§4).\n"
+    f"  - **APD-ML-002**, on the Overtoad's rulings: option A now (`train_accuracy`, `val_accuracy` documented as selected-on), `test_accuracy` kept and fed by cascor, a `--reaggregate` mode, and a non-finite value fails any band. {APD_PR} and juniper-cascor#731 (§4).\n"
     "  - **Done: the fork-drift guard for the `FailedAuthThrottle` fix.** juniper-ml#2365 files `APD-ECO-015` (found already fixed) in §4.9 of `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` and adds the `throttle-check-never-inserts` guard. It is scoped by `ast` to `FailedAuthThrottle.check` in all three copies, so it is not `APD-ML-008`'s marker-text form: it fails on each copy's pre-fix code and on 21 marker-preserving regressions that a whole-file marker passes. Until 2026-10-26 this bullet read \"Not done, deliberately\", because the register had no row to cite.\n"
     "- **Still open in §4:** the four rows marked open, all found on 2026-10-26 while closing the backlog, and `test_accuracy`, which waits for a juniper-cascor release and ml#2064. Two leads from the backlog lanes are unverified and are not rows: juniper-data's `ci.yml` reads `secrets.CODECOV_TOKEN`, which is not among the repository's secrets, and juniper-cascor's `Bandit` upload step may fail while `Bandit` is a required check.\n",
 )
@@ -181,7 +181,7 @@ edit(
     "- **This record's sixth update**, juniper-ml#2358, records 0.11.3 on PyPI (2026-10-26 17:48Z) and changes only this file.\n",
     "- **This record's sixth update**, juniper-ml#2358, records 0.11.3 on PyPI (2026-10-26 17:48Z) and changes only this file.\n"
     "\n"
-    "**The owner's three open items, 2026-10-26/27 (§8):**\n"
+    "**The Overtoad's three open items, 2026-10-26/27 (§8):**\n"
     "\n"
     "- **Erratum:** juniper-ml#2362 (`notes/releases/RELEASE_NOTES_v0.11.2.md`, `notes/releases/RELEASE_NOTES_v0.11.3.md`) and juniper-ml#2363 (`CHANGELOG.md`; new `util/ad-hoc/2026-10-26_erratum_0_11_x_security_floor_probe.py` and `util/ad-hoc/2026-10-26_release_notes_erratum_0_11_2_0_11_3.py`). The Release v0.11.2 and v0.11.3 bodies were edited to match.\n"
     "- **Backlog, sibling repos:**\n"

@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author:      Paul Calnon
 Created:     2026-10-05
 Status:      ad-hoc -- provenance check for the Phase B consensus record
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-10-04_archive_phase_b_round_reports.py (writes each report's origin line)
              util/ad-hoc/2026-09-22_archive_consensus_reports.py (final_report(), reused here)
 

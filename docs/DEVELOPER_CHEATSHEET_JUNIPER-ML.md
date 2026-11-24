@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.71
-**Date**: 2026-11-16
+**Version**: 1.0.73
+**Date**: 2026-11-24
 **Project**: juniper-ml
 
 ---
@@ -17,6 +17,9 @@
 | `pip install -e ".[tools]"`                            | Install shared tooling: ci/doc/config tools + model-core + observability + service-core (editable) |
 | `pip install -e ".[recurrence]"`                       | Install Δt-native recurrence stack: model + FastAPI app + HTTP client (editable) |
 | `python -m build && twine check dist/*`                | Build and validate package                      |
+| `python3 util/run_tests.py`                            | Run every regression suite and package lane with CI's own commands (`-j auto`, past failures, failures re-run alone); `--help` for the selectors. [REFERENCE — Running tests locally](REFERENCE.md#running-tests-locally) |
+| `python3 util/run_tests.py safe_merge 'soak_*' doc-tools -k cap` | Run a subset: a suite, a glob of suites, a package lane, only the tests matching `cap`; `--list` shows what a selector picks |
+| `python3 util/run_tests.py --changed` / `--failed`     | The jobs the branch touches (vs `origin/main`; a subset, not CI parity) / the last run's failures again |
 | `python3 -m unittest -v tests/test_wake_the_claude.py` | Run launcher regression tests                   |
 | `python3 -m unittest -v tests/test_pyproject_extras.py`| Lint extras schema + docs↔pyproject pin lockstep |
 | `python3 -m unittest -v tests/test_publish_testpypi_verify.py` | Gate 1 two-phase verify + bounded TestPyPI poll (no `sleep 30`) |
@@ -43,7 +46,7 @@
 | `python util/experiments/run_suite.py --suite util/experiments/suites/p4/e-a-cascor-budget-sweep.yaml --dry-run` | Expand a P4 campaign suite (no writes); see [REFERENCE — P4 Campaign Suites](REFERENCE.md#p4-campaign-suites) |
 | `python util/experiments/read_run_metrics.py SUITE_DIR` | Read ratified perf metrics (last-row `step_count` / `step_sum`) |
 | `python util/experiments/make_baseline.py --tag TAG --suite SUITE_DIR` | Bless a suite as a named Q-8 baseline (operator-only; no `--force`) |
-| `python util/experiments/compare_baseline.py --baseline TAG --suite SUITE_DIR` | Split compare vs a baseline (exit 0/1/2). Sound since #1743; CI-wiring is an open **owner** decision. |
+| `python util/experiments/compare_baseline.py --baseline TAG --suite SUITE_DIR` | Split compare vs a baseline (exit 0/1/2). Sound since #1743; CI-wiring is an open **Overtoad** decision. |
 | `python util/experiments/make_baseline.py --tag TAG --suite SUITE_DIR --dry-run` | Validate a Q-8 baseline; writes nothing. No `--force`. |
 | `python3 -m unittest -v tests/test_read_run_metrics.py` | Perf-lane reader regressions (last-row count, fingerprint) |
 | `python3 -m unittest -v tests/test_make_baseline.py` | Baseline refusals (work invariant, mixed workload, no `--force`) |
@@ -557,7 +560,7 @@ plan-time `ALREADY_RELEASED`. Runbook §3.3 / §4.
 **Archive-guard FAIL triage:** the exempt notes-archive PR's required check (`Release-Train Archive Guard`)
 PASSes only on pure `A` adds under `notes/releases/RELEASE_NOTES_*.md`.
 Rename-OUT, Copy (`C`), and Typechange (`T`) are still archive PRs (`touches_releases` checks both rename/copy paths) and FAIL — they never SKIP.
-A FAIL drops the PR back to the standard owner gate (no auto-merge).
+A FAIL drops the PR back to the standard Overtoad gate (no auto-merge).
 Operator tables: [`notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md`](../notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md) §3.3.
 
 **R7 archive-lane `ref=` (juniper-ml#770):** a ceremony `SeamViolation` with `ref=None` / `ref=''` means
@@ -577,7 +580,7 @@ read each `verdict`. The scratch copies the checkout's `shallow` file and writes
 runs the sequence-safety CLIs; `battery` is path-gated (`tests/` \| `util/` \| `scripts/` \|
 `.github/` \| `pyproject.toml`). On failure, `notify` upserts **one** open issue titled
 `main-verify: post-merge verification failing` (later failing SHAs comment on it; not auto-closed on
-green — owner closes after adjudication) plus non-blocking Slack. G3.1 BASE = last successful
+green — Overtoad closes after adjudication) plus non-blocking Slack. G3.1 BASE = last successful
 main-verify tip when it is an ancestor of HEAD (sweeps `[skip ci]` gaps), else `event.before`, else
 `HEAD^1`. PR labels `allow-symbol-loss` / `docs-rewrite` do **not** green post-merge — use
 `Allow-Symbol-Loss:` / `Allow-Docs-Rewrite:` commit trailers. Keep the battery list in lockstep with
@@ -731,7 +734,7 @@ Tip: `compare_baseline.py` is a **split** gate (exact `step_count`, ungated spee
 the termination branch part of the precondition — a branch flip now REFUSES (2) instead of FAILing (1). #1741 + #1743
 closed the writer/comparator asymmetry, so the comparator now refuses unmeasured / `timed_out` / zero-work cells too.
 **Still do not wire it to CI** — not because it is unsound, but because *whether the run tier gates at all* is an
-decision the owner CLOSED on 2026-09-07 (§6 of the P1 design) — structurally: host identity is a
+decision the Overtoad CLOSED on 2026-09-07 (§6 of the P1 design) — structurally: host identity is a
 blocking refusal, CI is `ubuntu-latest` with no self-hosted runner, so it would exit 2 REFUSED on
 every CI run. It is an operator tool, meaningful only on the baseline host.
 Full contract: [REFERENCE — Perf-Lane Work Gate](REFERENCE.md#perf-lane-work-gate).
@@ -774,7 +777,7 @@ Tip: after a crashed Juniper pytest session, run `util/reap_pytest_orphans.bash 
 
 Tip: pointer-follow soak — `python3 util/soak_run_probe.py --dry-run` then run; **score with `--reveal` only after**.
 Default pick is least-covered (pooled estimate). For characterisation / a relocation decision pass `--probe-id`.
-The 2026-09-04 runs (#1616) showed the strata are real, but membership is mostly unresolved at these n. **The verdict is now `BET-FAILING`** (43/35, 60.5%), so a real run refuses without `--force` — and `--force` is an open owner decision. Two corrections to what that PR reported: its `p=0.0017` was a **parametric bootstrap**, not the permutation test it was labelled (a real label shuffle is far more extreme); and **nothing predicts stratum membership** — the "nearby test / owning script" account and all three successor candidates are refuted (`notes/JUNIPER_2026-09-09_JUNIPER-ML_SOAK-STRATUM-PREDICTOR-ANALYSIS.md`).
+The 2026-09-04 runs (#1616) showed the strata are real, but membership is mostly unresolved at these n. **The verdict is now `BET-FAILING`** (43/35, 60.5%), so a real run refuses without `--force` — and `--force` is an open Overtoad decision. Two corrections to what that PR reported: its `p=0.0017` was a **parametric bootstrap**, not the permutation test it was labelled (a real label shuffle is far more extreme); and **nothing predicts stratum membership** — the "nearby test / owning script" account and all three successor candidates are refuted (`notes/JUNIPER_2026-09-09_JUNIPER-ML_SOAK-STRATUM-PREDICTOR-ANALYSIS.md`).
 Keep `stream.jsonl` if `parse_events` crashes — a string `message` raises after the session is spent.
 `status` exit 1 is often an open escalation, not a broken tool.
 Full contract: [REFERENCE — Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak).
@@ -875,7 +878,7 @@ Tip: `juniper_config_tools.env_with_legacy_alias` treats `""` as set, hides its 
 Tip: `FailedAuthThrottle` keeps 10,000 source IPs and drops the oldest window starts. Prune runs from `record_failure` every 100 failures, before that row is stored, so the table can sit at 10,001 and climb to 10,100. An evicted IP is not blocked, and `check()` does not put it back — the next 401 starts a fresh budget. The expiry test (`window_seconds=0`) does not pin this; `test_failed_auth_throttle_caps_live_entries_by_dropping_the_oldest` does.
 Full contract: [REFERENCE — The failed-auth table drops the oldest source IPs](REFERENCE.md#the-failed-auth-table-drops-the-oldest-source-ips).
 
-Tip: `/ws/training` resume is continuous through the seq just before the buffer (`last_seq == oldest - 1`). One older is `resume_failed` `out_of_range` and the socket stays up with a fresh snapshot — discard the local tail. A `resume_ok` misses nothing up to the moment the socket goes live (unreleased; first in the next juniper-service-core release, 0.8.0): a broadcast is sequenced and buffered even with no socket active, one that lands during the replay reaches the client before its socket goes live, every seq up to then arrives once and in order before the first live frame, and a resume that cannot stay continuous is closed **1011** `Resume replay incomplete` (best effort). Live frames keep the ordering any active socket has: two overlapping broadcasts can interleave. Through 0.7.2 it could miss either. A live socket whose broadcast send fails or times out is closed **1011** `Broadcast send failed or timed out` (unreleased, 0.8.0): reconnect and resume, and the missed frame is replayed while it is still buffered; through 0.7.2 it was dropped and left open. The drop still releases the socket's connection and per-IP slots at once, before the socket is gone, and `endpoint_counts()` counts the socket until its handler returns. So while the close is in progress, a new socket from the same address can be admitted past `max_connections_per_ip`. A handler of your own on a `connect()` socket must drain with `receive()` after that close: a new `receive_text()` raises `RuntimeError`. Pending handshakes count toward the **1013** cap. Sockets with no client address share `"unknown"`. A broadcast whose `json.dumps` length equals 60000 is still one frame. See [REFERENCE — Training-stream resume](REFERENCE.md#training-stream-resume-and-the-connection-cap).
+Tip: `/ws/training` resume is continuous through the seq just before the buffer (`last_seq == oldest - 1`). One older (a negative cursor reads as `0` first) is `resume_failed` `out_of_range` and the socket stays up with a fresh snapshot — discard the local tail. The handshake answers as juniper-cascor's does (unreleased): a `last_seq` above the last seq numbered is `out_of_range` too (through 0.7.2, with seqs buffered, `resume_ok`), one that is not a plain integer, or a `data` that is not an object, is `malformed_resume`, and a negative one reads as `0`; `juniper-service-core/tests/fixtures/ws_resume_answers.json` pins 60 frames in four states and must match juniper-cascor's copy byte for byte. A `resume_ok` misses nothing up to the moment the socket goes live (unreleased; first in the next juniper-service-core release, 0.8.0): a broadcast is sequenced and buffered even with no socket active, one that lands during the replay reaches the client before its socket goes live, every seq up to then arrives once and in order before the first live frame, and a resume that cannot stay continuous is closed **1011** `Resume replay incomplete` (best effort). Live frames keep the ordering any active socket has: two overlapping broadcasts can interleave. Through 0.7.2 it could miss either. A live socket whose broadcast send fails or times out is closed **1011** `Broadcast send failed or timed out` (unreleased, 0.8.0): reconnect and resume, and the missed frame is replayed while it is still buffered; through 0.7.2 it was dropped and left open. The drop still releases the socket's connection and per-IP slots at once, before the socket is gone, and `endpoint_counts()` counts the socket until its handler returns. So while the close is in progress, a new socket from the same address can be admitted past `max_connections_per_ip`. A handler of your own on a `connect()` socket must drain with `receive()` after that close: a new `receive_text()` raises `RuntimeError`. Pending handshakes count toward the **1013** cap. Sockets with no client address share `"unknown"`. A broadcast whose `json.dumps` length equals 60000 is still one frame. See [REFERENCE — Training-stream resume](REFERENCE.md#training-stream-resume-and-the-connection-cap).
 
 Tip: a `/ws/control` or `/ws/workers` text frame of exactly **65536** characters is delivered (`len` of the decoded string). One more character closes control **1009** `Message too large` (next frame unread, rate limiter uncharged) or worker registration **4005**; the worker message loop reports the error and stays open.
 
@@ -944,7 +947,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Planned next segment from `e2e_row_coverage.py` | Estimator. Use `e2e_unfilled_rows.py` against the ledger. |
 | Isolated canopy live but Candidate Metrics / Decision Boundary / Topology frozen at mount defaults | 12-slot starvation, not unwired. `e2e_f027_queues.py` first (queued-and-stuck vs never queued). Do **not** add a new Interval. See [REFERENCE — F-CANOPY-027](REFERENCE.md#f-canopy-027-poller-starvation-probes). |
 | Finding triage still shows an OPEN P0 after the body says FIXED | Disposition is the last 170 chars of the **header**, not the body. Put `FIXED` / `HEALED` / `ACCEPTED` in `**F-… — …**`. |
-| Finding triage counts ACCEPTED as still blocking Phase 2 | ACCEPTED is owner-deferred, not OPEN. `--open-only` hides it; totals still list `accepted`. |
+| Finding triage counts ACCEPTED as still blocking Phase 2 | ACCEPTED is Overtoad-deferred, not OPEN. `--open-only` hides it; totals still list `accepted`. |
 | Finding triage exit 0 with open P0/P1 | Always exits 0. Read the totals block. |
 | One green topology paint "closes" F-037 | Need 11 sessions. Census exit 0 with `painted==0` is a measured miss, not a harness fail. `scope=invalid` means train first. [F-CANOPY-037](REFERENCE.md#f-canopy-037-render-census). |
 | `list_runs.py` empty but runs exist | Default `--run-root` ignores `JUNIPER_EXP_RUN_ROOT`; pass `--run-root`. Non-convention names are invisible. |
@@ -1152,7 +1155,7 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | GPU stays hot after the worker went idle | A heartbeat field omitted or sent as JSON `null` keeps the old reading. A reported `0` replaces it. [REFERENCE](REFERENCE.md#a-measured-zero-heartbeat-overwrites). |
 | Registry still lists a worker aged exactly 30 s, but the idle pool does not | `is_alive` is strict `<`. That worker is stale. The health monitor deregisters it; assignment can still happen until the sweep. |
 | Non-ASCII `X-API-Key` is a 500 | Before `juniper-service-core` 0.7.1, `hmac.compare_digest` raises on a non-ASCII `str`, which is not an `HTTPException`. The byte compare (`surrogatepass`) is first released in service-core 0.7.1; juniper-data, juniper-cascor and juniper-canopy carry their own copies, first comparing bytes in 0.17.0, 0.12.0 and 0.9.0. Do not catch the `TypeError`; do not re-enable Sentry locals. |
-| Training WS `resume_failed` `out_of_range`, then `initial_status` | The seq is older than the buffer's `oldest - 1`, the buffer is empty and `last_seq > 0`, or replay is disabled. The socket stayed up. Discard the local tail. [REFERENCE](REFERENCE.md#training-stream-resume-and-the-connection-cap). |
+| Training WS `resume_failed` `out_of_range`, then `initial_status` | The seq (a negative one read as `0`) is older than the buffer's `oldest - 1` or above the last seq numbered (unreleased), the buffer is empty and `last_seq > 0`, or replay is disabled. The socket stayed up. Discard the local tail. [REFERENCE](REFERENCE.md#training-stream-resume-and-the-connection-cap). |
 | Training WS closed 1011 `Resume replay incomplete` after `resume_ok` | A replay or catch-up send failed, a burst during the replay evicted a seq the client still needed, or the manager raised (an override of `promote_to_active` without `replayed_through` does, on every resume) or returned a false value such as `None` (an override that drops `super()`'s return does; only INFO is logged). A failed send, most often a client that hung up, is logged at INFO. What arrived is gap-free; reconnect and resume. Unreleased; first in the next juniper-service-core release (0.8.0). [REFERENCE](REFERENCE.md#training-stream-resume-and-the-connection-cap). |
 | Training WS closed **1011** `Broadcast send failed or timed out` | A live broadcast's send to it raised or timed out (`send_timeout_seconds`, default 0.5 s): a slow client, or a frame the transport refused. INFO `Broadcast of seq N failed for K socket(s)`; a timeout adds the WARNING `WebSocket send timed out`. Reconnect and resume from the last seq held. If every socket closed on the same seq, connect without resuming: that frame may be one `send_json` cannot serialise, and a resume across it is closed **1011** `Resume replay incomplete` until it leaves the buffer. Unreleased (0.8.0); through 0.7.2 the socket was left open on a stream nothing was sent to. [REFERENCE](REFERENCE.md#training-stream-resume-and-the-connection-cap). |
 | Training WS handshake refused (HTTP 403 on uvicorn; ASGI close 1013) while few training sockets show | Pending resume handshakes count toward `max_connections` (default 50). Address-less clients share the `"unknown"` per-IP bucket (default 5). |
@@ -1281,7 +1284,7 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 - [Canopy E2E Finding Triage](REFERENCE.md#canopy-e2e-finding-triage) -- header-only parser; ACCEPTED is a third disposition; WITHDRAWN (`WITHDR`) is a fourth
 - [F-CANOPY-037 Render Census](REFERENCE.md#f-canopy-037-render-census) -- 11-session topology-paint instrument; exit 2 = failed to measure; idle populated is VALID
 - [X7 Off-Loop Census](REFERENCE.md#x7-off-loop-census) -- shipped count is 58; v1 is the name-matching negative example; C5 remedy refuted
-- [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop; do not run n≈8–10; `--force` is an open owner decision; full slugs; `--class` on miss
+- [Pointer-Follow Soak](REFERENCE.md#pointer-follow-soak) -- unprimed probe loop; do not run n≈8–10; `--force` is an open Overtoad decision; full slugs; `--class` on miss
 - [Requirements Snapshot Consolidation](REFERENCE.md#requirements-snapshot-consolidation) -- `by-area` is the corpus of record; ledger has no `detail`; `--check-roundtrip` is by-area only
 - [Canopy E2E Unfilled-Rows Ledger](REFERENCE.md#canopy-e2e-unfilled-rows-ledger) -- plan re-drives from the matrix status cells, not the TSV estimator
 - [Deprecated Master Cheatsheet](../notes/legacy/DEVELOPER_CHEATSHEET-ORIGINAL.md) -- archived monolithic cross-project reference (relocated to `notes/history/` in 2026-04, consolidated into `notes/legacy/` 2026-05-05)
@@ -1295,6 +1298,6 @@ python3 util/host_state_check.py --host turing --section G-TOOLS --section G-MEM
 
 ---
 
-**Last Updated:** 2026-11-16
-**Version:** 1.0.71
+**Last Updated:** 2026-11-24
+**Version:** 1.0.73
 **Maintainer:** Paul Calnon

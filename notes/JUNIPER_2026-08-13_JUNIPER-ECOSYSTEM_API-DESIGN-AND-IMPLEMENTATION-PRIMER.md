@@ -9907,7 +9907,7 @@ the fix already sitting in juniper-data" (line 4213).
    metadata that changes value whenever a change occurs to the representation data that would be
    observable in the content of a 200 (OK) response to GET". The checksum stays put while the served
    bytes change, so it can only be weak. juniper-data therefore sends
-   `ETag: W/"<checksum>"`, per the owner's ruling of 2026-09-23. Three consequences for the passages
+   `ETag: W/"<checksum>"`, per the Overtoad's ruling of 2026-09-23. Three consequences for the passages
    linked here:
 
    - `If-None-Match` compares weakly, so revalidation works. `If-Match` compares strongly, so it can

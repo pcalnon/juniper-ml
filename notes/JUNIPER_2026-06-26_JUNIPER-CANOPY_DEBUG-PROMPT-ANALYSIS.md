@@ -167,7 +167,7 @@ Each was **documented, not fixed** during the analysis (deliverables were the pr
 - **(D-2) Canopy demo-mode degradation choice.**
   - The data client is constructed above the `try:` (`demo_mode.py:918`/`:935`) and the `except` (`:944`) only catches `JuniperDataClientError`, so a constructor `TypeError` hard-crashes despite a deprecated local fallback existing (`:1001`).
     - "No local fallback" is documented as intentional, so this is a **choice to revisit**, not a clear bug.
-  - *Recommend:* the downstream session raises it for an owner decision.
+  - *Recommend:* the downstream session raises it for an Overtoad decision.
   - **Owner: juniper-canopy (decision).**
 - **(D-3) Recurrence model `status="live"` + Start-enabled with no service URL.**
   - `model_registry.py:188` marks it live and D8 Train-gating allows Start, but `recurrence_service_url` defaults `None` (`settings.py:237`) and the demo path sets neither URL nor key → selecting "Recurrence (LMU)" and starting fails to reach a service with no obvious UX guard.

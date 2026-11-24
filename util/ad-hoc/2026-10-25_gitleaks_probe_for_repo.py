@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-25
 Status: ad-hoc -- investigation (gitleaks zero-rule configuration, fleet follow-up to juniper-ml#2203)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2203; util/ad-hoc/2026-10-10_gitleaks_probe.py (the instrument this drives);
          util/ad-hoc/2026-10-25_gitleaks_fleet_survey.py (the nine-repo survey)
 

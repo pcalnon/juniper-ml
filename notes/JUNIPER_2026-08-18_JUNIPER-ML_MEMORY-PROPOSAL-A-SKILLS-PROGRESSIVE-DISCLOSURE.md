@@ -13,7 +13,7 @@
 
 This is **Proposal A** of four independent, competing proposals for the 2026-08-18
 shared-session-memory design effort. It is not a plan of record. It argues one
-architectural bet as hard and as honestly as it can, so the owner can compare four
+architectural bet as hard and as honestly as it can, so the Overtoad can compare four
 arguments rather than four summaries.
 
 **The bet:** the bulk of `AGENTS.md` should become **Skills**, whose bodies load only when
@@ -616,7 +616,7 @@ every one of them resident and unchanged.
 It also states plainly that keeping them resident is **not the same as enforcing them**
 (doc 2 §6). The `/tmp/` rule in particular guards against a permanent data loss that has already
 happened once (`AGENTS.md:915`), and it is a `Write`-tool path predicate that a `PreToolUse` hook
-could enforce exactly. That is [open question 3](#18-open-questions-for-the-owner), and it is out
+could enforce exactly. That is [open question 3](#18-open-questions-for-the-overtoad), and it is out
 of scope here only because it is orthogonal to the Skills bet, not because it is unimportant.
 
 **Tier 2 — `paths:`-scoped rules (5 lines).** The `juniper-service-core` security invariants
@@ -983,7 +983,7 @@ listing 5,270 of 8,000 chars, 34% headroom.
   else — alphabetical, or by registration order — a `juniper-ml-` prefix could systematically
   disadvantage all eleven at once.
 
-**Risks.** *Concrete scenario:* the owner enables three claude.ai skills. The listing exceeds
+**Risks.** *Concrete scenario:* the Overtoad enables three claude.ai skills. The listing exceeds
 8,000 chars. Because all eleven reference skills share a prefix and (plausibly) a low
 invocation count, they are the block that loses descriptions together, and every session
 degrades simultaneously with no error anywhere.
@@ -1234,7 +1234,7 @@ Create one throwaway skill `.claude/skills/juniper-ml-probe/SKILL.md` with
 3. Run `/context` (or equivalent) and record the observed listing size.
 
 Record all three in `docs/REFERENCE.md`. **If (1) is negative, stop — Proposal A does not
-work as designed** and the owner should choose a different proposal. This is the cheapest
+work as designed** and the Overtoad should choose a different proposal. This is the cheapest
 possible test of the most expensive assumption. Delete the probe skill afterwards.
 
 ### Phase 1 — the gates, before any content moves
@@ -1423,9 +1423,9 @@ accept silent memory loss in roughly 35 entries' time.
 
 ---
 
-## 18. Open questions for the owner
+## 18. Open questions for the Overtoad
 
-These are decisions, not gaps. Each is marked as belonging to the owner rather than guessed.
+These are decisions, not gaps. Each is marked as belonging to the Overtoad rather than guessed.
 
 1. **Ship Phase 0 before choosing between the four proposals?** It costs half a day and settles
    whether Proposal A is viable at all. Recommended regardless of which proposal is favoured,

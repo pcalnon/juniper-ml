@@ -80,7 +80,7 @@ outputs:
 
 
 def _write_stub_launcher(path: Path, marker_dir: Path, fail_up: bool = False) -> None:
-    path.write_text("#!/usr/bin/env bash\n" f"MARKERS={marker_dir}\n" 'if [[ "$1" == "--up" ]]; then\n' f"  {'exit 1' if fail_up else ''}\n" '  touch "$MARKERS/up-$$"\n' '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then touch "$MARKERS/down-$2"; exit 0; fi\n' "exit 2\n")
+    path.write_text(f"#!/usr/bin/env bash\nMARKERS={marker_dir}\nif [[ \"$1\" == \"--up\" ]]; then\n  {'exit 1' if fail_up else ''}\n  touch \"$MARKERS/up-$$\"\n  echo \"=== Experiment run stub-run-$$ is up ===\"\n  exit 0\nfi\nif [[ \"$1\" == \"--down\" ]]; then touch \"$MARKERS/down-$2\"; exit 0; fi\nexit 2\n")
     path.chmod(path.stat().st_mode | stat.S_IEXEC)
 
 
@@ -116,7 +116,7 @@ class ExpandTest(unittest.TestCase):
         root = Path(self.tmp.name)
         (root / "base.yaml").write_text(BASE_CONFIG)
         suite_yaml = root / "suite.yaml"
-        suite_yaml.write_text("schema_version: 1\n" "suite:\n  name: s\n  app: cascor\n  base_config: [base.yaml]\n" "matrix:\n  training.params.max_hidden_units: [4, 8, 16]\n  training.params.candidate_pool_size: [4, 8]\n" + extra)
+        suite_yaml.write_text("schema_version: 1\nsuite:\n  name: s\n  app: cascor\n  base_config: [base.yaml]\nmatrix:\n  training.params.max_hidden_units: [4, 8, 16]\n  training.params.candidate_pool_size: [4, 8]\n" + extra)
         return run_suite.load_suite(suite_yaml), suite_yaml
 
     def test_product_exclude_include_and_determinism(self) -> None:
@@ -405,7 +405,7 @@ class CascorParallelFloorTest(unittest.TestCase):
             root = Path(tmp)
             self._tree(root, "0.9.0")
             path = root / "rec.yaml"
-            path.write_text("schema_version: 1\n" "suite: {name: s, app: recurrence, base_config: [b]}\n" "execution: {mode: parallel, max_parallel: 4}\n")
+            path.write_text("schema_version: 1\nsuite: {name: s, app: recurrence, base_config: [b]}\nexecution: {mode: parallel, max_parallel: 4}\n")
             doc = run_suite.load_suite(path)
             self.assertIsInstance(doc, dict)
             self.assertIsNone(run_suite.check_cascor_parallel_floor(doc))
@@ -483,7 +483,7 @@ class CascorParallelFloorTest(unittest.TestCase):
             base = root / "b"
             base.write_text(BASE_CONFIG)
             path = root / "suite.yaml"
-            path.write_text("schema_version: 1\n" f"suite: {{name: s, app: cascor, base_config: ['{base}']}}\n" "execution: {mode: parallel, max_parallel: 4}\n")
+            path.write_text(f"schema_version: 1\nsuite: {{name: s, app: cascor, base_config: ['{base}']}}\nexecution: {{mode: parallel, max_parallel: 4}}\n")
             code, text = self._run_main(path, "--dry-run")
             self.assertEqual(code, 0)
             self.assertIn("$ ", text, "a permitted dry run must actually print its plan")
@@ -949,7 +949,7 @@ class ComparisonReportingTest(MainLoopTest):
         """The load-bearing property of item 1.4.
 
         Wiring a comparator verdict to run_suite's exit status would silently make the run tier a
-        gate -- and §6 of the P1 design records that as a SEPARATE owner decision, still open. If
+        gate -- and §6 of the P1 design records that as a SEPARATE Overtoad decision, still open. If
         this test ever fails, someone has made that decision by accident.
         """
         root, suite_dir, _, _ = self._setup()
@@ -1190,7 +1190,7 @@ def _stats_run_dir(case: unittest.TestCase, stats: "dict | None", parent: "Path 
 
 
 class CascorHeadlineMetricsTest(unittest.TestCase):
-    """APD-ML-002 (owner rulings, 2026-10-26): the cascor half of ``_headline_metrics``.
+    """APD-ML-002 (Overtoad rulings, 2026-10-26): the cascor half of ``_headline_metrics``.
 
     It read ``final_accuracy`` / ``test_accuracy`` / ``val_accuracy`` off the TOP of ``stats["cascor"]``, where
     ``build_stats`` never wrote anything, so all 439 cascor registry rows on the run corpus carried
@@ -1593,7 +1593,7 @@ def _restore_environ(saved: "dict[str, str]") -> None:
 
 
 class TestRuntimeBlockEnv(unittest.TestCase):
-    """``runtime:`` -> process environment (owner decision D2).
+    """``runtime:`` -> process environment (Overtoad decision D2).
 
     The failure this pins is not a crash, it is a **silent no-op**: before
     ``runtime_block_env`` existed, ``run_experiment`` validated all three ``RUNTIME_KEYS``
@@ -1782,7 +1782,7 @@ outputs:
         # `${!v-<UNSET>}` distinguishes
         # UNSET from EMPTY, and that is the exact distinction both `runtime_block_env` (which
         # emits nothing for a cleared key) and the launcher's `runtime_env` array turn on.
-        launcher.write_text("#!/usr/bin/env bash\n" 'if [[ "$1" == "--up" ]]; then\n' "  for v in OMP_NUM_THREADS MKL_NUM_THREADS OPENBLAS_NUM_THREADS CASCOR_NUM_PROCESSES JUNIPER_CASCOR_EVAL_METRICS_ENABLED; do\n" '    val="${!v-<UNSET>}"\n' f'    printf \'%s=%s\\n\' "$v" "$val" >> "{dump}"\n' "  done\n" '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then exit 0; fi\n' "exit 2\n")
+        launcher.write_text(f'#!/usr/bin/env bash\nif [[ "$1" == "--up" ]]; then\n  for v in OMP_NUM_THREADS MKL_NUM_THREADS OPENBLAS_NUM_THREADS CASCOR_NUM_PROCESSES JUNIPER_CASCOR_EVAL_METRICS_ENABLED; do\n    val="${{!v-<UNSET>}}"\n    printf \'%s=%s\\n\' "$v" "$val" >> "{dump}"\n  done\n  echo "=== Experiment run stub-run-$$ is up ==="\n  exit 0\nfi\nif [[ "$1" == "--down" ]]; then exit 0; fi\nexit 2\n')
         launcher.chmod(launcher.stat().st_mode | stat.S_IEXEC)
         driver = root / "stub_driver.py"
         _write_stub_driver(driver)
@@ -1892,7 +1892,7 @@ outputs:
         (root / "suite.yaml").write_text(self.SUITE.format(base=root / "base.yaml", mode="sequential", par=1, suite_dir=suite_dir, extra_matrix=""))
         dump = root / "launcher-env.json"
         launcher = root / "stub_launcher.bash"
-        launcher.write_text("#!/usr/bin/env bash\n" f'touch "{dump}"\n' 'echo "=== Experiment run stub-run-$$ is up ==="\n' "exit 0\n")
+        launcher.write_text(f'#!/usr/bin/env bash\ntouch "{dump}"\necho "=== Experiment run stub-run-$$ is up ==="\nexit 0\n')
         launcher.chmod(launcher.stat().st_mode | stat.S_IEXEC)
         driver = root / "stub_driver.py"
         _write_stub_driver(driver)
@@ -1941,7 +1941,7 @@ class TestDatasetBudgetReachesDriverAndService(unittest.TestCase):
         (root / "suite.yaml").write_text(self.SUITE.format(app=app, base=base, execution_extra=execution_extra, matrix_key=matrix_key, matrix_value=matrix_value, suite_dir=suite_dir))
         dump = root / "launcher-env.txt"
         launcher = root / "stub_launcher.bash"
-        launcher.write_text("#!/usr/bin/env bash\n" 'if [[ "$1" == "--up" ]]; then\n' "  printf '%s\\n' \"${" + self.VAR + '-<UNSET>}" >> "' + str(dump) + '"\n' '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then exit 0; fi\n' "exit 2\n")
+        launcher.write_text('#!/usr/bin/env bash\nif [[ "$1" == "--up" ]]; then\n  printf \'%s\\n\' "${' + self.VAR + '-<UNSET>}" >> "' + str(dump) + '"\n  echo "=== Experiment run stub-run-$$ is up ==="\n  exit 0\nfi\nif [[ "$1" == "--down" ]]; then exit 0; fi\nexit 2\n')
         launcher.chmod(launcher.stat().st_mode | stat.S_IEXEC)
         driver = root / "stub_driver.py"
         _write_stub_driver(driver)

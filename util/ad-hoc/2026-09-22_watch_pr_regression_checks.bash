@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-09-22
 # Status:     ad-hoc -- CI observation
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/wait_for_checks.py (the blocking form; this one streams events instead)
 #
 # TWO traps this encodes, both hit on 2026-09-22:

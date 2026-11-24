@@ -8,14 +8,14 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-30
 Status: ad-hoc — one-off (flood-3 cleanup of 2026-10-30)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-26_worktree_blob_classify.py (whose ``listing`` and ``blob_id`` this reuses);
          util/ad-hoc/2026-10-26_worktree_preserve_unique.py and 2026-10-29_cleanup_skipped_suffix_sweep.py (the
          two steps this folds together); notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md (§6)
 
 Why this exists
 ---------------
-The owner ruled on 2026-10-30 that the cleanup keeps "evidence only": each target's ``tmp/`` is copied to
+The Overtoad ruled on 2026-10-30 that the cleanup keeps "evidence only": each target's ``tmp/`` is copied to
 ``juniper-ml/tmp/worktree-cleanup-2026-10-30/`` without its regenerable parts (virtualenvs, bytecode caches,
 pytest temp dirs, and canopy's export and tar of its base commit), and a MANIFEST names what was skipped. About
 480 MB of the 500 MB in those ``tmp/`` folders is regenerable. The 2026-10-26 classifier cannot express that: it

@@ -54,7 +54,7 @@ Counts by audit dimension:
 | Dimension | blocker | major | minor | total |
 |---|---:|---:|---:|---:|
 | **A** — Coverage gaps (§2) | 0 | 5 | 4 | 9 |
-| **B** — Owner-mandate coverage (§3) | — | — | — | 5 verdicts: 2 COVERED, 3 COVERED-WITH-GAPS, 0 UNCOVERED |
+| **B** — The Overtoad-mandate coverage (§3) | — | — | — | 5 verdicts: 2 COVERED, 3 COVERED-WITH-GAPS, 0 UNCOVERED |
 | **C** — Internal consistency (§4) | 1 | 3 | 9 | 13 |
 | **D** — Feasibility (§5) | 2 | 4 | 4 | 10 |
 | **E** — Suspected inventions (§6) | 0 | 1 | 5 | 6 |
@@ -183,7 +183,7 @@ what a **WS** verify means concretely (CDP `Network.webSocketFrameSent/Received`
 (W6 step 10) and via one named instance (`#restart-ds-type`, W6 step 14).
 
 This is the surface the source itself calls out as the difference between N3 (read-only VERIFY) and N3b
-(in-place MODIFY) — i.e. the *editing* half of cold migration, an owner-named fragile area. Ten of the eleven
+(in-place MODIFY) — i.e. the *editing* half of cold migration, an Overtoad-named fragile area. Ten of the eleven
 are numeric and therefore not browser-drivable at all (see FE-5).
 
 **Evidence**:
@@ -331,9 +331,9 @@ mapping from documented claims to matrix rows is both small and unstated.
 
 ---
 
-## 3. Owner-mandate coverage verdicts
+## 3. The Overtoad-mandate coverage verdicts
 
-The owner named five frequently-broken areas. For each: does the **plan** give concrete validation steps AND a
+The Overtoad named five frequently-broken areas. For each: does the **plan** give concrete validation steps AND a
 planned automated regression, and does the **matrix** give executable click paths (workflow + rows)?
 
 ### Area 1 — Network topology graph **displays** → **COVERED-WITH-GAPS**
@@ -723,9 +723,9 @@ PR-C-H's scope in §10.
 (lists W8 under LIVE unconditionally); plan §4.5.
 
 The plan establishes that `util/isolated_stack.bash` starts **data, cascor, canopy only** (independently
-verified: no `recurrence` token in the script) and makes the fourth leg a §4.5 *decision the owner may
+verified: no `recurrence` token in the script) and makes the fourth leg a §4.5 *decision the Overtoad may
 override*. The matrix carries neither the dependency nor an `N-A` fallback, and §6.4's lane table asserts W8
-runs on LIVE. If the owner declines PR-M2, W8's 15 steps are unexecutable and §6.4 is wrong.
+runs on LIVE. If the Overtoad declines PR-M2, W8's 15 steps are unexecutable and §6.4 is wrong.
 
 Note also that steps 6-10 of W8 (cascade-tab suppression, `status-iteration-segment` hidden,
 `metrics-panel-oneshot-result` shown, dataset re-gating, `oneshot-start-params-store` non-`None`) depend on
@@ -944,7 +944,7 @@ Covered as **CN-7**. Actual: 18 `ui_live` + 1 demo.
 Ordered so the three blockers land first. Each is a self-contained edit; none requires re-deriving either
 document.
 
-**Blockers — must land before owner approval**
+**Blockers — must land before Overtoad approval**
 
 1. **CN-1** — Adopt the matrix's `W1`-`W13` as the canonical workflow namespace. Rewrite plan §3.3 (the
    workflow roster), §6.2 (execution order), §8.4 (suite composition, "Workflows" row) and §13 A-3

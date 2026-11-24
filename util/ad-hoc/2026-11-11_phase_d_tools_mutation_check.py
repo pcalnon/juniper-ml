@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — investigation (test-efficacy evidence)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/yamaguchi_acceptance_probe.py, util/ad-hoc/2026-11-11_phase_d_finish.{py,bash},
          util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash,
          tests/test_yamaguchi_acceptance_probe.py, tests/test_phase_d_finish.py,
@@ -50,6 +50,7 @@ COPIED = [
     "util/ad-hoc/2026-11-09_ac4_restore_drill.py",
     RETENTION, "util/systemd/yamaguchi-acceptance-probe.service", "util/systemd/yamaguchi-acceptance-probe.timer",
     "notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md",
+    "notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md",  # the census's metadata stamps
 ]
 
 # A backslash, built: an escape typed into this file can reach it as the character it names (the BOM did, 2026-11-11).
@@ -146,6 +147,20 @@ MUTANTS = [
     (PROBE, "server: a refused login prints the server's answer", '        return f"the server refused the login (status {m.group(1)}); its answer is not printed"\n', '        return f"login refused: {text[:200]}"\n'),
     (PROBE, "server: an unknown stop prints its message", '    return "the API client stopped; its message is not printed"\n', '    return f"the API client stopped: {text}"\n'),
     (PROBE, "server: a credential refusal is not cut to 200 characters", '        return f"credential refused: {text[:200]}"\n', '        return f"credential refused: {text}"\n'),
+    # --- the probe while a run is in progress (recovery plan finding 42; probe 1.4.0) --------------------------------
+    (PROBE, "log refused: any status is excused", "            if status != LOG_REFUSED_WHILE_RUNNING or task_backup != str(backup_id):\n", "            if task_backup != str(backup_id):\n"),
+    (PROBE, "log refused: excused whichever job's task is active", "            if status != LOG_REFUSED_WHILE_RUNNING or task_backup != str(backup_id):\n", "            if status != LOG_REFUSED_WHILE_RUNNING:\n"),
+    (PROBE, "log refused: entries read before the refusal are kept", '            log_refused, entries = f"log -> {status} after {len(entries)} entries", None\n', '            log_refused = f"log -> {status} after {len(entries)} entries"\n'),
+    (PROBE, "log refused: the task's start is never read", "            task_started = fetch_task_started(tok, task_id) if task_id else None\n", "            task_started = None\n"),
+    (PROBE, "log refused: main() judges the log it does not have", '        if server["log_refused"]:  # a run of this job', '        if False:  # a run of this job'),
+    (PROBE, "task ids: any text is an id", "        return text if SERVER_ID.fullmatch(text) else None\n", "        return text or None\n"),
+    (PROBE, "task ids: the name prints whatever the server wrote", '    task = (f"task {task_id} for backup {task_backup}" if task_id and task_backup else "a task whose ids this probe cannot read") if state.get("ActiveTask") else None\n', '    active = state.get("ActiveTask")\n    task = f"task {active.get(\'Item1\')} for backup {active.get(\'Item2\')}" if isinstance(active, dict) else (str(active) if active else None)\n'),
+    (PROBE, "metadata: a stamp of any width is read", "    if not isinstance(value, str) or not METADATA_STAMP.fullmatch(value):\n", "    if not isinstance(value, str):\n"),
+    (PROBE, "RUN without the log: the age is not judged", "            if age > bound:  # exactly the bound is inside it\n", "            if False:  # exactly the bound is inside it\n"),
+    (PROBE, "RUN without the log: exactly the bound is already stale", "            if age > bound:  # exactly the bound is inside it\n", "            if age >= bound:  # exactly the bound is inside it\n"),
+    (PROBE, "RUN without the log: no extra day while a task is active", "            bound = max_age_hours + 24.0  # a task is active", "            bound = max_age_hours  # a task is active"),
+    (PROBE, "RUN without the log: a run in progress passes", '    verdict = settle(fails, errors) if fails or errors else "SKIP"', "    verdict = settle(fails, errors)"),
+    (PROBE, "RUN without the log: an unreadable start passes", "        errors.append(\"the job's metadata carries no readable LastBackupStarted", "        [].append(\"the job's metadata carries no readable LastBackupStarted"),
     (DEPLOY, "deploy: the user is read from $USER", 'ME="$(id -un)"\n', 'ME="$USER"\n'),
     # --- the finish tool: the drill's output, read strictly --------------------------------------------------------
     (FINISH, "drill: a FATAL beside a RESULT is ignored", '    if "fatal" in parsed:\n        also', '    if "fatal" in parsed and "result" not in parsed:\n        also'),

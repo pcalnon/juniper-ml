@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-11
 Status: ad-hoc — recovery (Phase D sitting, step 14, and the acceptance window after it)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (section 9: AC-1, AC-2, AC-5, AC-6, AC-7, AC-12, AC-13),
          notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md (section 6.4 step 14),
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-11_backup-phase-d-sitting-steps-11-13-done-ac4-drill-next.md ("Process change"),
@@ -31,13 +31,13 @@ WHY THIS EXISTS
 
 WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 127.0.0.1:8300)
     AC-1      the /etc/systemd/system unit, active as `duplicati`, NeedDaemonReload=no, NRestarts=0, up for 24 h
-    AC-2      server: job name, TargetURL, 5 sources, 76 filters (owner ruling 2026-11-15; 2 and 45 until then),
-              schedule 1D at 13:00 UTC (07:00 CST; 14:00 UTC until the owner moved it on 2026-11-15),
+    AC-2      server: job name, TargetURL, 5 sources, 76 filters (Overtoad ruling 2026-11-15; 2 and 45 until then),
+              schedule 1D at 13:00 UTC (07:00 CST; 14:00 UTC until the Overtoad moved it on 2026-11-15),
               blocksize 1MB
     AC-13     server: run-script-before-required is the installed guard and no other run-script option is set
     OPTIONS   server: the job's option NAMES against the recorded set; retention suspended or restored as ruled;
               keep-time and keep-versions absent; tempdir, aes-version and no-auto-compact as step 11 left them
-    AC-5      the watchdog log: three consecutive days whose every record reads OK and none reads RUNNING (owner
+    AC-5      the watchdog log: three consecutive days whose every record reads OK and none reads RUNNING (Overtoad
               ruling 2026-11-15: a check that found the job still running judged no result), and a JOB_MISSING
               record for a deliberate `--backup-id 999` on or after the recovery date
     AC-6a     the snapshot lane: reads the service's data folder, one successful run per day, file mtime = newest run
@@ -49,10 +49,14 @@ WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 1
     RUN       server: the newest finished backup -- its age (26 h, the watchdog's bound; a day more while a task is
               active), its result, its warnings by tag against the 2026-11-08 allow-list, its counts against the
               previous run -- and every backup that began off the schedule
+              While a run of this job is in progress the server refuses the job log with HTTP 400 (recovery plan
+              finding 42). RUN then names the run and reads SKIP, or FAIL on the newest finished backup's age, which
+              the job's metadata gives without the log (LastBackupStarted); OFFSCHED reads SKIP. Any other refusal
+              of the log is ERROR.
     CENSUS    server: the destination's file count and bytes against the job's own metadata (AGREE or DIVERGE)
     MODES     the destination's (kind, mode, owner) classes, and which dlists changed class since the last run
 
-    Verdicts: PASS, FAIL, PENDING (cannot be proven yet -- it needs more days), ATTN (outside a tolerance the owner has
+    Verdicts: PASS, FAIL, PENDING (cannot be proven yet -- it needs more days), ATTN (outside a tolerance the Overtoad has
     not ruled, or an unexplained observation), SKIP (not judged in this run), ERROR (the evidence could not be read),
     INFO. RESULT is FAIL on any FAIL, UNDETERMINED on any ERROR, INCOMPLETE on any PENDING, ATTN or SKIP, else PASS.
     Exit 0 = no FAIL and no ERROR, 1 = at least one FAIL, 2 = at least one ERROR and no FAIL, 64 = usage error.
@@ -97,7 +101,7 @@ import urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import yamaguchi_server_api as api  # noqa: E402 -- sibling module; path fixed one line above
 
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 SCHEMA = "yamaguchi-acceptance/1"
 UTC = dt.timezone.utc
 
@@ -108,14 +112,14 @@ SERVICE_USER = "duplicati"
 SERVICE_GROUP = "duplicati"
 JOB_NAME = "Yamaguchi"
 EXPECTED_TARGET = "file:///mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi"
-# The owner changed the job's sources and filters on purpose (ruling 2026-11-15); the design fixed 2 and 45 until then.
+# The Overtoad changed the job's sources and filters on purpose (ruling 2026-11-15); the design fixed 2 and 45 until then.
 EXPECTED_SOURCES = 5
 EXPECTED_FILTERS = 76
 EXPECTED_REPEAT = "1D"
-# The job's daily start, UTC: 13:00 since the owner moved it on 2026-11-15 (07:00 CST); 14:00 until then.
+# The job's daily start, UTC: 13:00 since the Overtoad moved it on 2026-11-15 (07:00 CST); 14:00 until then.
 EXPECTED_TIME_OF_DAY = dt.time(13, 0, 0)
 GUARD_PATH = "/usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash"
-# Owner ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
+# The Overtoad ruling 2026-10-08, amended 2026-11-14 (the sitting's question Q7): the two-week frame keeps every fileset.
 # Under `2W:1D` an off-schedule run's fileset displaced the scheduled one beside it, and a daily fileset stamped one
 # second earlier than the last kept one was deleted. `U` is Duplicati's keep-all interval.
 RULED_RETENTION = "2W:U,6M:1W,2Y:1M,5Y:2M"
@@ -164,14 +168,14 @@ EXPOSURE_GATE = 2.0
 EXPOSURE_LINE = re.compile(r"Overall exposure level for \S+: ([0-9]+(?:\.[0-9]+)?)")
 MIN_SECURITY_ROWS = 40  # the unit reports 81; far fewer means the output was not what this parser expects
 
-# Owner ruling 2026-11-08 (AC-3): "the Firefox-profile PathNotFound / MetadataProcessFailed class allow-listed".
+# The Overtoad ruling 2026-11-08 (AC-3): "the Firefox-profile PathNotFound / MetadataProcessFailed class allow-listed".
 # A key is the last two dotted segments of the log tag plus the message id, as the sitting's record names them.
 ALLOWED_WARNING_TAGS = frozenset({"FilePreFilterProcess.FileEntry-PathNotFound", "MetadataGenerator.Metadata-MetadataProcessFailed", "FileBlockProcessor.FileEntry-PathNotFound"})
 ALLOWED_WARNING_SCOPE = ".mozilla/firefox/"  # relative to the backup Source's home
 # Duplicati writes "<yyyy-MM-dd HH:mm:ss zz> - [<Level>-<tag>-<id>]: <message>". The tag is accepted only where no `[`
 # and no `/` precedes it, so a bracket inside a path (which follows the tag and starts with `/`) is never the tag.
 WARNING_TAG = re.compile(r"^[^\[/]*\[Warning-([^\]\s]+)\]:")
-BASELINE_BYTES = 301_072_989_629  # run 20261107T212908Z, the AC-3 rebaseline (owner ruling 2026-11-08)
+BASELINE_BYTES = 301_072_989_629  # run 20261107T212908Z, the AC-3 rebaseline (Overtoad ruling 2026-11-08)
 COUNT_TOLERANCE = 0.10  # per run, against the previous run -- open question Q1, not yet ruled
 SIZE_TOLERANCE = 0.05  # against the baseline -- AC-3's own size tolerance
 MAX_RUN_AGE_HOURS = 26.0  # the watchdog's --max-age-hours default: a daily job plus slack
@@ -181,6 +185,12 @@ PRECEDING_WINDOW = dt.timedelta(minutes=15)
 LOGIN_FAILED = re.compile(r"^FATAL: login failed \(([^()\s]+)\)")
 LOG_PAGE_SIZE = 20
 LOG_MAX_PAGES = 40
+# The server's answer to the job-log request on 11-19, 11-21 and 11-22, the three days a run of the job was in
+# progress at the probe's 23:30Z read, and on no other day (recovery plan finding 42). Why it refuses was not read.
+LOG_REFUSED_WHILE_RUNNING = 400
+# The job metadata's stamps, as the 2026-11-08 census read them: LastBackupStarted=20261107T212907Z.
+METADATA_STAMP = re.compile(r"[0-9]{8}T[0-9]{6}Z")
+SERVER_ID = re.compile(r"[1-9][0-9]{0,17}")  # a task or job id serverstate names; always .fullmatch()
 
 VERDICTS = ("PASS", "FAIL", "PENDING", "ATTN", "SKIP", "ERROR", "INFO")
 EXIT_FAIL, EXIT_ERROR = 1, 2
@@ -449,7 +459,7 @@ def judge_ac5(log_text, backup_id, now, need_days=3, probe_id=JOB_MISSING_PROBE_
         return any(code == "RUNNING" for _verdict, code in by_day[day])
 
     # A day counts only if every record reads OK and none reads RUNNING: a check that found the job still running
-    # judged no result (owner ruling 2026-11-15, the sitting's question Q6). The days must be consecutive, so an
+    # judged no result (Overtoad ruling 2026-11-15, the sitting's question Q6). The days must be consecutive, so an
     # OK RUNNING day ends the streak; it is not a failure.
     streak, days, day = 0, [], newest_day
     while day in by_day and all_ok(day) and not ran(day):
@@ -473,7 +483,7 @@ def judge_ac5(log_text, backup_id, now, need_days=3, probe_id=JOB_MISSING_PROBE_
     elif streak < need_days:
         counted = f"OK OK on {streak} consecutive day(s) of {need_days}" + (f": {', '.join(reversed(days))}" if days else "")
         if discounted:
-            counted += f"; the {discounted} day(s) before read OK RUNNING and do not count (owner ruling 2026-11-15)" if streak else f"; the newest check found the job running, and the {discounted} OK RUNNING day(s) do not count (owner ruling 2026-11-15)"
+            counted += f"; the {discounted} day(s) before read OK RUNNING and do not count (Overtoad ruling 2026-11-15)" if streak else f"; the newest check found the job running, and the {discounted} OK RUNNING day(s) do not count (Overtoad ruling 2026-11-15)"
         pending.append(counted)
     if not probe_seen:
         pending.append(f"no JOB_MISSING record for a deliberate --backup-id {probe_id} since {recovered_on.isoformat()}")
@@ -863,6 +873,66 @@ def judge_run(backups, retention, active_task=None, unreadable_newer=0, baseline
     return Finding("RUN", settle(fails, errors, attn=attn), "; ".join([head] + fails + errors + attn + notes), facts)
 
 
+def metadata_stamp(value):
+    """A job-metadata stamp (`20261107T212907Z`) as an aware UTC datetime; None for anything else."""
+    if not isinstance(value, str) or not METADATA_STAMP.fullmatch(value):
+        return None
+    try:
+        return dt.datetime.strptime(value, "%Y%m%dT%H%M%SZ").replace(tzinfo=UTC)
+    except ValueError:  # the shape of a stamp, not a date: month 13, day 32
+        return None
+
+
+def task_ref(active):
+    """(task id, backup id) of serverstate's ActiveTask, each a digit string or None.
+
+    The server writes the (task id, backup id) pair as {"Item1": 46, "Item2": "2"}. Only ids are kept, so nothing else
+    the server wrote reaches a request path or a printed line.
+    """
+    if not isinstance(active, dict):
+        return None, None
+
+    def server_id(value):
+        text = str(value) if isinstance(value, (int, str)) else ""  # a bool prints True, which is no id
+        return text if SERVER_ID.fullmatch(text) else None
+
+    return server_id(active.get("Item1")), server_id(active.get("Item2"))
+
+
+def judge_run_without_log(metadata, active_task, task_started, refusal, now=None, max_age_hours=MAX_RUN_AGE_HOURS):
+    """RUN when the server refused the job log while a run of this job is in progress (recovery plan finding 42).
+
+    The newest finished backup's result, warnings and counts are in the log, so they wait for the first probe that
+    finds no run in progress. What needs no log is judged here: when the newest finished backup began, from the job's
+    metadata (LastBackupStarted), against judge_run's bound while a task is active (the watchdog's 26 h and a day
+    more). The verdict is therefore SKIP or FAIL, never PASS, and ERROR when that stamp cannot be read (rule 4).
+    """
+    meta = metadata if isinstance(metadata, dict) else {}
+    started, finished = metadata_stamp(meta.get("LastBackupStarted")), metadata_stamp(meta.get("LastBackupFinished"))
+    running = [active_task or "a task of this job"]
+    if task_started is not None:
+        running.append(f"started {utc_stamp(task_started)}")
+        if now is not None:
+            running.append(f"running {hours_minutes(max(0.0, (now - task_started).total_seconds()))}")
+    head = f"a run is in progress ({', '.join(running)}): the server refuses the job log while it runs ({refusal}), so the newest finished backup's result waits for a probe that finds no run in progress"
+    fails, errors, age = [], [], None
+    if started is None:
+        errors.append("the job's metadata carries no readable LastBackupStarted, so the newest finished backup's age cannot be judged either")
+    else:
+        took = f", took {hours_minutes((finished - started).total_seconds())}" if finished is not None and finished >= started else ""
+        head += f"; by the job's metadata the newest finished backup began {utc_stamp(started)}{took}"
+        if now is not None:
+            age = (now - started).total_seconds() / 3600
+            bound = max_age_hours + 24.0  # a task is active: judge_run's extra day
+            if age > bound:  # exactly the bound is inside it
+                fails.append(f"it began {age:.1f} h ago and no newer backup has finished (a daily job allows {bound:.0f} h while a task is active)")
+    facts = {"log_refused": refusal, "active_task": active_task, "task_started": utc_stamp(task_started) if task_started else None,
+             "last_backup_started": utc_stamp(started) if started else None, "last_backup_finished": utc_stamp(finished) if finished else None,
+             "age_hours": None if age is None else round(age, 2)}
+    verdict = settle(fails, errors) if fails or errors else "SKIP"  # settle() reads no failure and no error as PASS
+    return Finding("RUN", verdict, "; ".join([head] + fails + errors), facts)
+
+
 def seconds_off_schedule(begin, time_of_day):
     """How far a start is from the daily slot, in seconds, around the clock (23:59:58 is 2 s from 00:00:00)."""
     slot = dt.datetime.combine(begin.astimezone(UTC).date(), time_of_day, UTC)
@@ -1128,9 +1198,24 @@ def refusal_reason(exc):
     return "the API client stopped; its message is not printed"
 
 
+def fetch_task_started(tok, task_id):
+    """When the active task started (`TaskStarted` of GET /api/v1/task/<id>, which the watchdog reads); None unread."""
+    try:
+        status, task = api.req("GET", f"/api/v1/task/{task_id}", tok)
+    except (urllib.error.URLError, TimeoutError, ConnectionError, ValueError):
+        return None  # a detail of the summary: its absence is said, and decides no verdict
+    return parse_iso(task.get("TaskStarted")) if status == 200 and isinstance(task, dict) else None
+
+
 def collect_server(base, backup_id, want_backups, scope_paths):
-    """Everything the server-side criteria read, or {'error': reason}. The credential never leaves the API client."""
+    """Everything the server-side criteria read, or {'error': reason}. The credential never leaves the API client.
+
+    A job log the server refuses with HTTP 400 while a task of THIS job is active (recovery plan finding 42) is not an
+    error: `entries` is then None, `log_refused` says what was refused, and the criteria that need no log are still
+    judged. Any other refusal of the log stays an error.
+    """
     api.BASE = base
+    task_started = log_refused = None
     try:
         tok = api.login()
         status, state = api.req("GET", "/api/v1/serverstate", tok)
@@ -1142,18 +1227,22 @@ def collect_server(base, backup_id, want_backups, scope_paths):
         status, export = fetch_export(tok, backup_id)
         if export is None:
             return {"error": f"export {backup_id} -> {status}"}
+        task_id, task_backup = task_ref(state.get("ActiveTask"))
         status, entries = fetch_log(tok, backup_id, want_backups, scope_paths)
         if status != 200:
-            return {"error": f"log -> {status} after {len(entries)} entries"}
+            if status != LOG_REFUSED_WHILE_RUNNING or task_backup != str(backup_id):
+                return {"error": f"log -> {status} after {len(entries)} entries"}
+            log_refused, entries = f"log -> {status} after {len(entries)} entries", None
+            task_started = fetch_task_started(tok, task_id) if task_id else None
     except SystemExit as exc:  # the API client's refusals: a missing or unsafe credential file, a failed login
         return {"error": refusal_reason(exc)}
     except (urllib.error.URLError, TimeoutError, ConnectionError, ValueError) as exc:
         return {"error": f"cannot reach {base}: {type(exc).__name__}"}
-    active = state.get("ActiveTask")
-    task = f"task {active.get('Item1')} for backup {active.get('Item2')}" if isinstance(active, dict) else (str(active) if active else None)
+    task = (f"task {task_id} for backup {task_backup}" if task_id and task_backup else "a task whose ids this probe cannot read") if state.get("ActiveTask") else None
     target = cfg["Backup"].get("TargetURL")
     return {"export": export, "entries": entries, "metadata": cfg["Backup"].get("Metadata") or {}, "active_task": task, "program_state": state.get("ProgramState"),
-            "dest": urllib.parse.unquote(urllib.parse.urlparse(target).path) if isinstance(target, str) and target.startswith("file://") else None}
+            "dest": urllib.parse.unquote(urllib.parse.urlparse(target).path) if isinstance(target, str) and target.startswith("file://") else None,
+            "log_refused": log_refused, "task_started": task_started}
 
 
 # --- assembly -------------------------------------------------------------------------------------------------------
@@ -1247,7 +1336,7 @@ def main(argv=None):
             findings.append(Finding(criterion, verdict, f"not judged: {server['error']}"))
     else:
         findings += [judge_ac2(server["export"]), judge_ac13(server["export"]), judge_options(server["export"], args.expect_retention)]
-        backups = [e for e in server["entries"] if e.get("operation") == "Backup"]
+        backups = [e for e in server["entries"] or () if e.get("operation") == "Backup"]  # None: the log was refused
     findings.append(judge_ac5(collect_watchdog_log(args.state_dir), args.backup_id, now, recovered_on=recovered_on))
     snapshot = collect_snapshot()
     findings.append(judge_ac6a(snapshot, collect_snapshot_journal(now), now, me=me))
@@ -1271,8 +1360,12 @@ def main(argv=None):
         for criterion in ("RUN", "OFFSCHED", "CENSUS"):
             findings.append(Finding(criterion, verdict, f"not judged: {server['error']}"))
     else:
-        findings.append(judge_run(backups, retention_state(server["export"]), server["active_task"], unreadable_before_first_backup(server["entries"]), now=now))
-        findings.append(judge_schedule(server["entries"], since=recovered_on))
+        if server["log_refused"]:  # a run of this job is in progress and the server refuses its log (finding 42)
+            findings.append(judge_run_without_log(server["metadata"], server["active_task"], server["task_started"], server["log_refused"], now=now))
+            findings.append(Finding("OFFSCHED", "SKIP", f"not judged: the server refuses the job log while a run of this job is in progress ({server['log_refused']})"))
+        else:
+            findings.append(judge_run(backups, retention_state(server["export"]), server["active_task"], unreadable_before_first_backup(server["entries"]), now=now))
+            findings.append(judge_schedule(server["entries"], since=recovered_on))
         findings.append(judge_census(entries, server["metadata"], server["active_task"]))
     findings.append(judge_modes(entries, read_previous_dlists(args.state_dir)))
 
@@ -1286,7 +1379,7 @@ def main(argv=None):
 
     if not args.no_write:
         document = {"schema": SCHEMA, "version": VERSION, "generated": utc_stamp(now), "host": socket.gethostname(), "backup_id": str(args.backup_id), "result": result,
-                    "server": "skipped" if args.no_server else ("error" if "error" in server else "read"), "criteria": [f.as_dict() for f in findings]}
+                    "server": "skipped" if args.no_server else ("error" if "error" in server else ("read, log refused" if server["log_refused"] else "read")), "criteria": [f.as_dict() for f in findings]}
         newest = backups[0] if backups else None
         history = {"generated": utc_stamp(now), "result": result, "verdicts": {f.criterion: f.verdict for f in findings},
                    "snapshot": None if snapshot is None else {"size": snapshot["size"], "mtime": utc_stamp(dt.datetime.fromtimestamp(snapshot["mtime"], UTC))},

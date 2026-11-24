@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — one-off (turing bring-up task G4: host tooling under BSD userland and /bin/bash 3.2)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (task G4, §9.1 test classes,
          §9.2 gate placement, §9.4 the macOS runner tradeoff; §17.3 E-LAND-2); tests/test_ci_host_tooling_macos.py;
          util/ad-hoc/2026-10-20_turing_g5_apply.py (the pattern this follows)

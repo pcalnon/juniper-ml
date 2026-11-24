@@ -11,7 +11,7 @@ Retire when: superseded by a fleet merge tool that carries BOTH guards below; de
 WHAT IT PRODUCED (2026-08-24)
 -----------------------------
 Armed or merged 17 bot PRs across 9 repos; 24 landed in total once the stragglers and two
-owner decisions were folded in. The two guards here are the whole value, and each was
+Overtoad decisions were folded in. The two guards here are the whole value, and each was
 earned by a defect found during that sweep:
 
 * ``classify`` anchors on REQUIRED contexts, not the rollup -- see its docstring for
@@ -39,7 +39,7 @@ SAFETY
 ------
 * ``--dry-run`` (default) changes nothing; ``--execute`` is required to arm.
 * Refuses any repo whose ``allow_auto_merge`` is false -- there ``--auto`` silently
-  degrades to an IMMEDIATE merge, which with the owner's ruleset bypass can land a PR
+  degrades to an IMMEDIATE merge, which with the Overtoad's ruleset bypass can land a PR
   whose checks never finished. That gate is the whole reason this is not a one-liner.
 * Refuses any PR that is draft, non-MERGEABLE, or whose rollup is not green.
 * Never force-pushes, never closes, never approves, never edits a PR body.

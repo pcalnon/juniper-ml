@@ -7,7 +7,7 @@ Author: Paul Calnon
 Created: 2026-10-10
 Status: ad-hoc — one-off (flood-3 follow-up item 3: deliver juniper-observability 0.4.1 and
         juniper-service-core 0.7.1 to the juniper-data / -cascor / -canopy / -recurrence locks)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-08_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-3-DISPOSITION.md §8
 
 Why

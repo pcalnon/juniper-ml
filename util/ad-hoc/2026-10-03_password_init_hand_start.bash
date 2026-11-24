@@ -8,7 +8,7 @@
 # Created:    2026-10-03
 # Version:    1.4.0 (2026-10-29: the server runs with the unit's environment and a private TMPDIR -- see HISTORY)
 # Status:     ad-hoc -- recovery (the assessment's B10; issues I-19, I-37)
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md
 #             section 6.4 steps 0 and 10; notes/JUNIPER_2026-09-21_...INTEGRATED-DESIGN.md section 8 P0
 #

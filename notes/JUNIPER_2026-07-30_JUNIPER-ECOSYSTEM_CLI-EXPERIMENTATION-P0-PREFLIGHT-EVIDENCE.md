@@ -6,7 +6,7 @@
 **Status**: Complete — all P0 steps executed; **Wave 1.1 gate: OPEN**
 **Plan of record**: [`JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`](JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) — §10.1 (P0), §14 Wave 0 (items 0.2 / 0.2b)
 
-This document is the evidence filing required by Wave 0 items 0.2 and 0.2b. The owner ratified the plan and every open-question recommendation (Q-1…Q-12) on 2026-07-30 before execution. All commands ran on the development host; env binaries were invoked directly (`/opt/miniforge3/envs/<env>/bin/…`), which is equivalent to `conda activate <env>` for these steps.
+This document is the evidence filing required by Wave 0 items 0.2 and 0.2b. The Overtoad ratified the plan and every open-question recommendation (Q-1…Q-12) on 2026-07-30 before execution. All commands ran on the development host; env binaries were invoked directly (`/opt/miniforge3/envs/<env>/bin/…`), which is equivalent to `conda activate <env>` for these steps.
 
 ---
 

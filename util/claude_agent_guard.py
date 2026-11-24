@@ -6,7 +6,7 @@ Project: juniper-ml
 Sub-Project: host tooling (turing bring-up)
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-17
-Status: permanent utility. util/install_claude_agent_guard.bash (owner-run) installs it as a COPY,
+Status: permanent utility. util/install_claude_agent_guard.bash (Overtoad-run) installs it as a COPY,
         ~/.claude/hooks/juniper_agent_guard.py, so a branch switch in a checkout cannot change it.
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (D11 item 4,
          enforcement option (b); task C8; task C9: the MCP-* rules; the H3 negative tests);
@@ -32,7 +32,7 @@ Contract
 * A denied call prints exactly one JSON object on stdout and exits 0:
   ``{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
   "permissionDecisionReason": "..."}}``. The reason names the rule id and says the action is
-  owner-run (D11).
+  Overtoad-run (D11).
 * Any other call prints NOTHING and exits 0. The guard never emits ``allow``: an allow would
   short-circuit the normal permission flow.
 * Malformed input (unparseable JSON, a non-object payload, a missing or non-string ``tool_name``, a
@@ -50,10 +50,10 @@ GIT-SIGNING-FILE and MCP-REGISTER-FILE.
 Grep and Glob: CRED-PATH-SEARCH.
 Serena's edit tools (``mcp__serena__<tool>``): MCP-EDIT-PATH. Its ``execute_shell_command`` gets the Bash rules.
 
-The two GIT-SIGNING rules (commit-signing plan S9, task K12) guard the owner's signing configuration.
-Once the owner's YubiKey stubs are learned, an agent that could rewrite that configuration could get the
-owner's signature. It could point ``gpg.program`` or ``core.hooksPath`` at its own program, plant a
-local key that outranks the owner's include, drop a ``post-commit`` hook inside a cached-touch window,
+The two GIT-SIGNING rules (commit-signing plan S9, task K12) guard the Overtoad's signing configuration.
+Once the Overtoad's YubiKey stubs are learned, an agent that could rewrite that configuration could get the
+Overtoad's signature. It could point ``gpg.program`` or ``core.hooksPath`` at its own program, plant a
+local key that outranks the Overtoad's include, drop a ``post-commit`` hook inside a cached-touch window,
 or re-enable signing past D11 with ``git -c include.path=`` or ``--config-env``.
 
 Serena's edit tools and MCP registration (task C9)
@@ -73,7 +73,7 @@ one of those targets (``.git/**``, ``.claude/*``, ``**/.mcp.json``). A bare ``*`
 because Serena's own walk skips ``.git/`` and ignored files. Its ``repl`` may not set ``disableAllHooks`` or
 either MCP approval key, since an unscoped call reaches every tracked file.
 
-A registered MCP server runs a command the guard never sees, so registration is owner-run (RR-10).
+A registered MCP server runs a command the guard never sees, so registration is Overtoad-run (RR-10).
 MCP-REGISTER-BASH denies ``mcp add``, ``mcp add-json`` and ``mcp add-from-claude-desktop`` whatever the
 command word (``claude``, its versions path ``~/.local/share/claude/versions/<v>``, ``npx``), ``--mcp-config``,
 a command that names ``~/.claude.json`` or a ``.mcp.json`` file, and text that names
@@ -105,6 +105,27 @@ skipping ``NAME=value`` prefixes, reserved words (``if``, ``then``, ``do``, ``!`
 basename is compared case-insensitively, so ``/usr/local/bin/gh`` is ``gh``. A command word built at
 run time (``$X api -X POST``) is checked as if it could be any of the guarded tools.
 
+Since 1.4.0 every command is read twice, and a call is denied when either reading trips a rule. The first is the
+one above, with each word brace-expanded after quote removal (it judges words bash does not make, the safe side).
+The second is bash 5.3's own: the parser's ends for ``${...}`` (its first unquoted ``}``) and ``$( )`` (a
+``case`` pattern's ``)``, a here-document and a comment do not end it), extglob groups (``@(...)``) read as part of
+their word, then every word brace-expanded AS WRITTEN, acting only on the braces bash's brace scan leaves unquoted
+(``bash_brace_expand``), then quote removal. Every rule runs on the words that reading builds, option words
+included (``gh api --{method=POST,x}`` is ``--method=POST`` to bash), and again on the words bash builds when
+each substitution prints nothing and each parameter is empty or takes its ``${x:-WORD}`` default
+(``sud"$(:)"o id`` is ``sudo id``). Its path rules read each substitution or parameter as one part that may hold
+any text or none (``.ss$(:)h`` can be ``.ssh``) wherever its path component also holds a literal character
+other than a leading dot, for the credential directories, Claude's settings, the MCP files and the signing paths
+alike, and read ``~``, ``$HOME``, ``${HOME}``, ``~+`` and ``~-`` words normalised
+(``~/X/../.ssh`` is ``~/.ssh``). When the command names ``dotglob`` or ``GLOBIGNORE``, a glob directly under a
+home can match a dot-name (``cat ~/*/config``). The second reading refuses (exit 2) what it cannot model, so a
+brace list bash really expands past ``MAX_BRACE_ALTERNATIVES`` in text the guard reads as a command still fails
+closed, while a quoted one is text and is never counted. It also refuses a command whose expansions make more
+than ``BRACE_SCAN_BUDGET`` characters of words in all, since it quote-removes and judges every one of them. Every
+command is bounded: one whose ``cd`` targets make more than ``MAX_CD_BASES`` directories to resolve relative words
+against, or whose analysis takes more than ``ANALYSIS_TIME_BUDGET`` seconds, is refused, well inside the hook's
+10 s timeout.
+
 False positives are preferred to false negatives
 ------------------------------------------------
 The path rules read the whole command text, comments and here-document bodies included, so a
@@ -114,16 +135,19 @@ that mentions these paths, use the Grep tool: its ``pattern`` is a content regex
 path-checked. ``gh api`` with any field flag is denied, which also blocks a read-only
 ``gh api graphql -f query=...``; D11 accepts that.
 
-What this cannot see (the owner should weigh these)
+What this cannot see (the Overtoad should weigh these)
 ---------------------------------------------------
 A command-text hook sees only the text of the call. Known gaps:
 
 1. What a script, binary or interpreter does internally: ``python3 x.py``, ``bash x.sh``, ``make``.
    That includes repo tools that call gh themselves (``util/open_signed_pr.py`` by design;
    ``util/safe_merge.py`` merges). Inline ``python3 -c`` / ``perl -e`` code is checked only for
-   string literals that read as a guarded command.
-2. Text assembled at run time or across calls: ``base64 -d <<< ... | bash``, a script written by
-   one call (``echo 'gh api -X POST ..' > s.sh``) and run by the next.
+   string literals that read as a guarded command. A program that hands its argument to a shell the guard does not
+   model (``script -c``, ``flock -c``, ``npx -c``, ``tmux``, ``ssh-agent``, a git ``!`` alias) is opaque too:
+   since 1.4.0 a quoted brace list such an argument holds is no longer refused.
+2. Text assembled at run time or across calls, even within one command: ``base64 -d <<< ... | bash``, a variable
+   that holds a directory and part of a name (``d=~/.ss; cat ${d}h/config``), a script written by one call
+   (``echo 'gh api -X POST ..' > s.sh``) and run by the next.
 3. Raw HTTP with the session's token (``curl -H "Authorization: token $GH_TOKEN" -X POST
    https://api.github.com/...``) and ``git credential fill``. D11 item 5's scoped PAT is the control.
 4. Directory changes the text does not show: ``tar -C``/``git -C``/``make -C`` with a relative
@@ -134,7 +158,7 @@ A command-text hook sees only the text of the call. Known gaps:
    tools, any other server's tools, Serena registered under another name). Subagent tool calls are covered.
 7. ``disableAllHooks`` in a project ``.claude/settings*.json`` turns user hooks off. The guard
    denies writing or naming that key, but not a file holding it copied into place, nor a nested
-   ``claude --setting-sources project``. Managed settings (owner, sudo) close this fully.
+   ``claude --setting-sources project``. Managed settings (Overtoad, sudo) close this fully.
 8. Names, not contents: ``ls -R ~``, ``tree ~`` and ``du -a ~`` list file names under ``~/.ssh``.
 9. A shell edit of a repository's own ``.git/config`` (``sed -i``, ``echo >>``, ``tee``). Reading that file
    is too common to deny by mention, so only ``git config`` writes and the file tools are guarded.
@@ -144,12 +168,35 @@ A command-text hook sees only the text of the call. Known gaps:
     checkout that tracks ``.claude/settings.json`` or ``.mcp.json``, only its ``repl`` is checked there.
 11. Other clients' MCP configuration: VS Code's ``mcp.json``, Claude Desktop's config and ``~/.cursor/mcp.json``
     (task H6 reviews VS Code's servers).
-12. Words bash makes that the guard's reading of the word does not (``brace_expand`` has the brace rules). Three
-    spellings are known to reach a credential directory and pass, all open: an escaped ``}`` inside a brace list
-    (``cat ~/.ss{h,b\\}c}/config``; bash keeps the list open and makes ``~/.ssh/config``); and, behind an ``X/..``
-    hop (``~/X/../``, so the name is not the first component under home), an unbalanced ``{`` inside ``$(...)`` or
-    backticks in a brace list (``.ss{h,$(:{)}``), and an empty ``$(:)``, backtick pair or ``${x}`` spliced into
-    the name (``.ss$(:)h``). Without the hop the last two are denied, because a computed first component is.
+12. Words bash makes that neither reading of the word judges. 1.4.0 reads each word as bash 5.3 builds it (above),
+    which denies these spellings, each known to pass 1.3.0: an escaped ``}`` in a brace list (``cat ~/.ss{h,b\\}c}/config``,
+    and ``su{do,x\\}y} id``); behind an ``X/..`` hop, an unbalanced ``{`` inside ``$(...)``, backticks or ``<(...)`` in
+    a brace list (``cat ~/X/../.ss{h,$(:{)}/config``) and an empty ``$(:)``, backtick pair or ``${x}`` spliced into
+    the name (``cat ~/X/../.ss$(:)h/config``); ``: ${x:-{}; sudo id; : }``, where bash ends the ``${`` at its first
+    ``}`` and runs ``sudo id``; a hop before Claude's settings, ``~/.gitconfig`` or ``~/.claude.json``
+    (``cat ~/X/../.claude/settings.json``); a hop before a bare dot-glob (``cat ~/X/../.???/config``); an extglob
+    group after ``shopt -s extglob`` on an earlier line (``cat ~/.s@(s)h/config``); a quoted ``$`` glued to a group
+    (``cat ~/X/../'$'{Y/../.ss,z}h/config``) and ``$'\\x7d'`` in a list (``cat ~/.ss{h,$'\\x7d'c}/config``); ``~+``
+    (``cat ~+/.claude/settings.json`` from home); a ``case`` or a here-document inside ``$(...)`` in a brace list,
+    and a ``case`` inside ``$(...)`` in an expanded here-document (its command runs);
+    a brace list in an option word (``gh api --{method=POST,paginate}``, ``git commit --{gpg-sign,x}``); in a
+    path word, the lists bash expands inside a quoted backtick body or a quoted ``${x:-"..."}`` default; an empty substitution or
+    parameter, or a ``${x:-WORD}`` default, spliced into a command or option word (``sud"$(:)"o id``,
+    ``gh api --meth$(:)od=POST``, ``git commit --gpg-$(:)sign``, ``pke${x:-x}ec id``); a substitution, parameter
+    or glob in a signing path (``cp hook .git/ho$(:)oks/post-commit``, ``cp x ~/.gitc?nfig``,
+    ``cat ~/.config/gi?/config``); a glob under a home in a command that names ``dotglob`` or ``GLOBIGNORE``
+    (``shopt -s dotglob; cat ~/*/config``, ``GLOBIGNORE=x; cat ~/*/config``); and an alias defined in the command
+    (``alias s=sudo``: its value is judged as the command it names). An extglob group is read whichever line enables
+    extglob; on the same line as ``shopt -s extglob`` bash refuses the group as a syntax error. Still open, not
+    modelled: a substitution that PRINTS part of a command or option word (``d$(printf %s o)as id``,
+    ``gh api repos/o/r --$(printf %s i)nput f``); a parameter expansion whose operator is quoted
+    (``s"${x$':'-"{u,Q}"}" id``); a glob with no literal character as a whole signing-path component
+    (``cat ~/.config/*/config``); a substitution, or a parameter with no ``:-`` default, that makes up a whole
+    path component or follows a lone dot, anywhere but the first component under a home or inside ``~/.claude``
+    (``cp hook .git/$(printf %s hoo ks)/post-commit``, ``cp x ~/.config/$d/config``,
+    ``cat /x/$(printf %s .s sh)/config``, ``cat /x/.$d/config``); aliases and functions from the shell's profile
+    (a command word bash replaces); a variable that holds ``..`` or ``/`` (gap 2); and the rules of shells other than bash 5.3 (zsh,
+    macOS ``/bin/bash`` 3.2).
 
 Home directory
 --------------
@@ -163,6 +210,9 @@ Settings entry (util/install_claude_agent_guard.bash writes it)
       "hooks": [{"type": "command", "command": "/usr/bin/python3",
                  "args": ["-I", "<home>/.claude/hooks/juniper_agent_guard.py"],
                  "timeout": 10, "onFailure": "block"}]}]}
+
+``onFailure`` needs Claude Code v2.1.295 or later (its hooks documentation); an older one lets a call through when
+the hook fails or times out.
 
 ``--settings-matcher`` prints the whole matcher: the eight built-in tools, then each Serena edit tool and its
 shell as ``mcp__serena__<tool>``. ``-I`` (isolated mode) keeps ``PYTHONPATH`` and friends from reaching the
@@ -179,8 +229,9 @@ import json
 import os
 import re
 import sys
+import time
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 GUARD_NAME = "juniper-agent-guard"
 PLAN_DOC = "notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md"
 HOME_OVERRIDE_ENV = "JUNIPER_GUARD_HOME"
@@ -189,6 +240,8 @@ MAX_DEPTH = 12
 MAX_BRACE_ALTERNATIVES = 64
 BRACE_SEQ_OPERAND_LIMIT = 2**61  # a brace sequence with a larger number is refused, not modelled (_brace_sequence)
 BRACE_SCAN_BUDGET = 2000000  # characters one brace_expand call may scan; a word that needs more is refused (_brace_spend)
+MAX_CD_BASES = 64  # directories one command's cd targets may make relative words resolve against; more is refused (_cd_bases)
+ANALYSIS_TIME_BUDGET = 3.0  # seconds one Bash command's analysis may take; a command that needs more is refused (_tick)
 EVIDENCE_LIMIT = 120
 
 
@@ -205,11 +258,11 @@ class Rule(object):
 
 
 # The deny table. Tune it here: ids are stable (tests and the mutation check name them), and every
-# deny reason is "<description>. <reason>" plus the owner-run sentence built in deny_reason().
+# deny reason is "<description>. <reason>" plus the Overtoad-run sentence built in deny_reason().
 RULES = (
     Rule("CRED-PATH-BASH", "Bash", "the command references ~/.ssh or ~/.gnupg (a .ssh or .gnupg path component in any spelling, a glob that can match one, or a recursive tool rooted at home or above)", "Agents never read, list, copy or change SSH or GnuPG material on turing. To search files for text that mentions these paths, use the Grep tool instead"),
     Rule("SSH-PROBE", "Bash", "an ssh credential probe: ssh -T, ssh to a GitHub host, or ssh-add", "Live authentication and agent-key checks are credential probes. ssh -G <alias> prints the resolved config without connecting and is allowed"),
-    Rule("PRIV-ESCALATION", "Bash", "privilege escalation: sudo, su, doas, pkexec, or osascript with administrator privileges", "Anything needing the admin password is owner-run"),
+    Rule("PRIV-ESCALATION", "Bash", "privilege escalation: sudo, su, doas, pkexec, or osascript with administrator privileges", "Anything needing the admin password is Overtoad-run"),
     Rule("MACOS-DEFAULTS-WRITE", "Bash", "a macOS settings change: defaults write, delete, rename or import", "Agents measure host settings; they do not change them"),
     Rule("GPG-SECRET", "Bash", "a GnuPG secret-key or smart-card operation: gpg --card-status, --card-edit, -K, --list-secret-keys, --export-secret-keys or --export-secret-subkeys; ykman; gpg-card; gpg-connect-agent learn or scd", "Agents never touch the YubiKey or enumerate secret keys"),
     Rule(
@@ -220,20 +273,20 @@ RULES = (
         "git push --signed or an unambiguous prefix of it (--si, --sign=true); git -c *.gpgsign=true",
         "Agent commits are unsigned by construction (D11 item 1); they land signed through util/open_signed_pr.py",
     ),
-    Rule("GH-PR-WRITE", "Bash", "gh pr create, gh pr new or gh pr merge", "Agents land changes only through util/open_signed_pr.py, and merges are the owner's"),
-    Rule("GH-KEY-ADMIN", "Bash", "GitHub key administration: gh repo deploy-key, gh ssh-key add|delete, gh gpg-key add|delete", "Deploy-key and key administration stays in the owner's own session (D11 item 5)"),
+    Rule("GH-PR-WRITE", "Bash", "gh pr create, gh pr new or gh pr merge", "Agents land changes only through util/open_signed_pr.py, and merges are the Overtoad's"),
+    Rule("GH-KEY-ADMIN", "Bash", "GitHub key administration: gh repo deploy-key, gh ssh-key add|delete, gh gpg-key add|delete", "Deploy-key and key administration stays in the Overtoad's own session (D11 item 5)"),
     Rule("GH-AUTH", "Bash", "gh auth (status, token, refresh, login, logout, setup-git, switch ...)", "gh auth subcommands are credential probes or credential changes"),
     Rule("GH-API-WRITE", "Bash", "gh api with a write or field flag (-X / --method, -f / -F / --field / --raw-field, --input, a method-override header), or a gh alias that could hide one", "Agents use gh api for read-only GETs only; drop the flag (a plain gh api call is a GET). This also blocks a read-only gh api graphql -f query=..., which D11 accepts"),
     Rule("KEYCHAIN-DUMP", "Bash", "a macOS keychain read: security find-generic-password, find-internet-password, dump-keychain or export", "Keychain contents are credentials"),
-    Rule("SELF-PROTECT-BASH", "Bash", "the command references the user-level Claude settings or hooks (~/.claude/settings.json, ~/.claude/settings.local.json, ~/.claude/hooks/), moves, removes or re-permissions ~/.claude itself, sets disableAllHooks, or runs util/install_claude_agent_guard.bash other than with --dry-run or --help", "The guard and its settings are changed only by the owner"),
+    Rule("SELF-PROTECT-BASH", "Bash", "the command references the user-level Claude settings or hooks (~/.claude/settings.json, ~/.claude/settings.local.json, ~/.claude/hooks/), moves, removes or re-permissions ~/.claude itself, sets disableAllHooks, or runs util/install_claude_agent_guard.bash other than with --dry-run or --help", "The guard and its settings are changed only by the Overtoad"),
     Rule(
         "GIT-SIGNING-CONFIG",
         "Bash",
-        "a change to the owner's signing configuration or a way around D11: git -c include.* / includeIf.* / gpg.program / gpg.<format>.program, git --config-env (any key), "
+        "a change to the Overtoad's signing configuration or a way around D11: git -c include.* / includeIf.* / gpg.program / gpg.<format>.program, git --config-env (any key), "
         "a git config write at any scope of gpg.*, user.signingkey, commit.gpgsign, tag.gpgsign, include.*, includeIf.*, core.hooksPath, core.fsmonitor or core.sshCommand, "
         "git config --edit, removing or renaming those sections, a command that names ~/.gitconfig, ~/.config/git, git's system gitconfig or a .git/hooks path, "
         "or util/configure_commit_signing.py --apply / --remove without --dry-run",
-        "The owner's signing configuration and git hooks are changed only by the owner (commit-signing plan S9, task K12); agent commits stay unsigned (D11) "
+        "The Overtoad's signing configuration and git hooks are changed only by the Overtoad (commit-signing plan S9, task K12); agent commits stay unsigned (D11) "
         "and land through util/open_signed_pr.py. Read config with git config --get / --list, and the files with the Read tool",
     ),
     Rule(
@@ -241,19 +294,19 @@ RULES = (
         "Bash",
         "an MCP server registration: mcp add, mcp add-json or mcp add-from-claude-desktop after any command word (claude, its versions path, npx), --mcp-config, "
         "a command that names ~/.claude.json or a .mcp.json file, or text that names enabledMcpjsonServers or enableAllProjectMcpServers",
-        "A registered MCP server runs a command the guard never sees, so registration is owner-run (task C9, RR-10 of the H5 risk analysis); "
+        "A registered MCP server runs a command the guard never sees, so registration is Overtoad-run (task C9, RR-10 of the H5 risk analysis); "
         "util/mcp_setup.bash writes the pinned Serena entry. Read those files with the Read tool",
     ),
     Rule("CRED-PATH-FILE", "Read|Write|Edit|MultiEdit|NotebookEdit", "the target path, or the path a symlink resolves to, is inside ~/.ssh or ~/.gnupg (or has a .ssh or .gnupg component)", "Agents never read or change SSH or GnuPG material on turing"),
-    Rule("SELF-PROTECT-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude/settings.json, ~/.claude/settings.local.json or ~/.claude/hooks/, or a .claude/settings*.json write that sets disableAllHooks", "The guard and its settings are changed only by the owner. Reading them is allowed"),
-    Rule("GIT-SIGNING-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.gitconfig, anything under ~/.config/git, git's system gitconfig (/usr/local/etc, /opt/homebrew/etc, /etc), a repository's .git/config or config.worktree, or anything under a .git/hooks directory", "The owner's signing configuration and git hooks are changed only by the owner (commit-signing plan S9, task K12). Reading them is allowed"),
-    Rule("MCP-REGISTER-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude.json or to any .mcp.json, or a .claude/settings*.json write that sets enabledMcpjsonServers or enableAllProjectMcpServers", "MCP registration is owner-run (task C9, RR-10 of the H5 risk analysis); util/mcp_setup.bash writes the pinned Serena entry. Reading the files is allowed"),
+    Rule("SELF-PROTECT-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude/settings.json, ~/.claude/settings.local.json or ~/.claude/hooks/, or a .claude/settings*.json write that sets disableAllHooks", "The guard and its settings are changed only by the Overtoad. Reading them is allowed"),
+    Rule("GIT-SIGNING-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.gitconfig, anything under ~/.config/git, git's system gitconfig (/usr/local/etc, /opt/homebrew/etc, /etc), a repository's .git/config or config.worktree, or anything under a .git/hooks directory", "The Overtoad's signing configuration and git hooks are changed only by the Overtoad (commit-signing plan S9, task K12). Reading them is allowed"),
+    Rule("MCP-REGISTER-FILE", "Write|Edit|MultiEdit|NotebookEdit", "a write to ~/.claude.json or to any .mcp.json, or a .claude/settings*.json write that sets enabledMcpjsonServers or enableAllProjectMcpServers", "MCP registration is Overtoad-run (task C9, RR-10 of the H5 risk analysis); util/mcp_setup.bash writes the pinned Serena entry. Reading the files is allowed"),
     Rule("CRED-PATH-SEARCH", "Grep|Glob", "the search root or path pattern reaches into ~/.ssh or ~/.gnupg, or the search root is home or above it (a recursive search would descend into them)", "Agents never read or list SSH or GnuPG material on turing; narrow the search root"),
     Rule(
         "MCP-EDIT-PATH",
         "mcp__serena__<edit tool>",
         "a Serena edit whose path, resolved against the project root literally or through symlinks, reaches .git/, .ssh or .gnupg, Claude's settings or hooks, "
-        "the owner's git configuration, ~/.claude.json or a .mcp.json; a replace_in_files include glob that names one of them; "
+        "the Overtoad's git configuration, ~/.claude.json or a .mcp.json; a replace_in_files include glob that names one of them; "
         "or a replace_in_files repl that sets disableAllHooks, enabledMcpjsonServers or enableAllProjectMcpServers",
         "The guard cannot see what an MCP server writes beyond its arguments, so Serena's edits stay on ordinary project files (task C9). "
         "Use the Edit or Write tool, which the guard judges path by path",
@@ -295,7 +348,7 @@ GIT_OPTS_WITH_ARG = ("-C", "-c", "--git-dir", "--work-tree", "--namespace", "--e
 # Commit-signing plan K12. Keys a `git -c` may not set: an include re-enables signing past D11's
 # command scope, and a program key swaps the signer.
 GIT_DASH_C_SIGNING_RE = re.compile(r"^(?:include\..*|includeif\..*|gpg\.(?:[^.]+\.)?program)$", re.IGNORECASE)
-# Keys a `git config` may not write, at any scope: they outrank or replace the owner's signing include.
+# Keys a `git config` may not write, at any scope: they outrank or replace the Overtoad's signing include.
 GIT_SIGNING_KEY_RE = re.compile(r"^(?:gpg\..+|user\.signingkey|commit\.gpgsign|tag\.gpgsign|include\..+|includeif\..+|core\.hookspath|core\.fsmonitor|core\.sshcommand)$", re.IGNORECASE)
 GIT_SIGNING_SECTION_RE = re.compile(r"^(?:gpg|include|includeif|user|commit|tag)(?:\..*)?$", re.IGNORECASE)
 GIT_CONFIG_READ_FLAGS = ("--get", "--get-all", "--get-regexp", "--get-urlmatch", "--get-color", "--get-colorbool", "-l", "--list")
@@ -408,10 +461,23 @@ _HOME_LIKE_RE = re.compile(r"^/+(?:(?:Users|home)/+[^/]+|(?:private/+)?var/+root
 _STRING_LITERAL_RE = re.compile(r"'((?:[^'\\\n]|\\.)*)'|\"((?:[^\"\\\n]|\\.)*)\"")
 _MENTION_RE = re.compile(r"[a-z][a-z0-9_.-]*")
 # D11 item 1 sets GIT_CONFIG_COUNT / KEY_n / VALUE_n so agent commits are unsigned; unsetting or
-# overriding them re-enables signing with the owner's YubiKey.
+# overriding them re-enables signing with the Overtoad's YubiKey.
 _GIT_ENV_NAMES = r"GIT_CONFIG_(?:COUNT|KEY_\w*|VALUE_\w*|PARAMETERS)\b"
 _GIT_ENV_CHANGE_RE = re.compile(r"\bunset\b[^;&|\n]*\b%s|\b%s\s*\+?=|(?:^|\s)(?:-u\s*|--unset[= ]\s*)%s" % (_GIT_ENV_NAMES, _GIT_ENV_NAMES[:-2], _GIT_ENV_NAMES))
 _ANSI_SIMPLE = {"a": "\a", "b": "\b", "e": "\x1b", "E": "\x1b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v", "\\": "\\", "'": "'", '"': '"', "?": "?"}
+# bash's own reading of a word (1.4.0; BashAnalyzer._scan judges it beside main's).
+_EXTGLOB_OPENERS = "?*+@!"
+_WORD_STOP = frozenset(" \t\n;&|()<>")
+_RESERVED_BEFORE_COMMAND = frozenset(("then", "do", "else", "elif", "if", "while", "until", "!", "{", "time"))
+# a character bash's brace scan does not act on; a hidden "$" (escaped: \${a,b} is $a $b to bash) opens no ${ level
+_MASKED = {"{": chr(0xE001), "}": chr(0xE002), ",": chr(0xE003), ".": chr(0xE004), "$": chr(0xE005)}
+_UNMASK = {ord(masked): plain for plain, masked in _MASKED.items()}
+_SPLICED = chr(0xE000)  # one computed part of a word (a substitution or a parameter): any text, or none
+_TILDE_DIR_RE = re.compile(r"^~(?:[+-][0-9]*|[0-9]+)(?=/|$)")  # ~+ is $PWD, ~- is $OLDPWD, ~N the directory stack
+_EXTGLOB_GROUP_RE = re.compile(r"[?*+@!]\([^()]*\)")
+_DOTGLOB_RE = re.compile(r"dotglob|GLOBIGNORE")  # either lets a glob that does not start with a dot match a dot-name
+_PARAM_DEFAULT_RE = re.compile(r"^\$\{[A-Za-z_][A-Za-z0-9_]*:?[-=+](.*)\}$", re.DOTALL)  # ${x:-WORD} and its kin
+_SYSTEM_GITCONFIG_PARTS = tuple(tuple(p for p in path.split("/") if p) for path in SYSTEM_GITCONFIGS)
 
 
 class MalformedInput(Exception):
@@ -458,7 +524,7 @@ def brace_expand(text: str, limit: int = MAX_BRACE_ALTERNATIVES) -> list:
     The source word comes first, then the words bash makes of it. bash expands the first brace expression, then each
     of its alternatives and the rest of the word on their own, and joins the results without rescanning them:
     ``{x{.,a}.y}`` gives ``{x..y}`` and ``{xa.y}``, and the ``{x..y}`` it made stays as written. A word that expands
-    to more than ``limit`` alternatives raises ``MalformedInput``: the guard fails closed (owner ruling, 2026-11-08)
+    to more than ``limit`` alternatives raises ``MalformedInput``: the guard fails closed (Overtoad ruling, 2026-11-08)
     rather than judge a prefix of the list and pass the rest unseen, where a ``.ssh`` could sit in alternative 65.
     Each count is checked before the words are built, and a sequence is sized arithmetically in ``_brace_range``,
     so a long list or a huge range is refused without being expanded. ``_first_brace_group`` and
@@ -468,24 +534,19 @@ def brace_expand(text: str, limit: int = MAX_BRACE_ALTERNATIVES) -> list:
     again when it is expanded. ``BRACE_SCAN_BUDGET`` bounds the sum: a word whose expansion would scan more
     characters than that is refused too (``_brace_spend``), so nesting cannot multiply the work without limit.
 
-    The text is the word after quote removal, and the result differs from bash's in both directions.
-
-    * Words bash does not make are judged, the safe side: a brace that bash leaves alone because it was quoted or
-      escaped is expanded here, and the braces inside ``${...}`` are searched (a ``{`` right after ``$`` opens no
-      group).
-    * Words bash does make can go unjudged. Quote removal is not always the safe side: an escaped ``}`` can end a
-      group here that bash keeps open (``.ss{h,b\\}c}`` is ``.ssh`` and ``.ssb}c`` to bash, ``.sshc}`` and
-      ``.ssbc}`` here), and a quoted ``$`` can hide a group that bash expands (``'$'{a,b}``). bash's ``{}`` rule is
-      not modelled (``_first_brace_group``): ``{}{},01,,-}`` is ``{}}``, ``{}01``, ``{}`` and ``{}-`` to bash and
-      ``}{}``, ``01``, an empty word and ``-`` here. And bash steps over the body of a ``$(...)`` and of
-      backticks, which this scan reads as text, so an unbalanced ``{`` inside one keeps a group open here that
-      bash closes (``.ss{h,$(:{)}``). Gap 12 of the module docstring lists the ones known to pass a credential
-      path.
+    The text is the word after quote removal (a Glob, Grep or Serena pattern, or the first reading of a Bash word),
+    and the result differs from bash's in both directions. Words bash does not make are judged, the safe side: a
+    brace that bash leaves alone because it was quoted or escaped is expanded here, and the braces inside ``${...}``
+    are searched (a ``{`` right after ``$`` opens no group). Words bash does make can go unjudged here: an escaped
+    ``}`` can end a group that bash keeps open (``.ss{h,b\\}c}`` is ``.ssh`` and ``.ssb}c`` to bash, ``.sshc}`` and
+    ``.ssbc}`` here), a quoted ``$`` can hide a group that bash expands (``'$'{a,b}``), bash's ``{}`` rule is not
+    applied, and the body of a ``$(...)`` or of backticks is read as text. For a Bash word the second reading,
+    ``bash_brace_expand`` on the word as written, judges the words bash makes (gap 12 of the module docstring).
     """
     return _unique([text] + _brace_words(text, limit, text, 0, [BRACE_SCAN_BUDGET]))
 
 
-def _brace_words(text: str, limit: int, source: str, depth: int, budget: list) -> list:
+def _brace_words(text: str, limit: int, source: str, depth: int, budget: list, faithful: bool = False) -> list:
     if depth > limit:  # every nested list adds an alternative, so a word nested this deep is past the cap anyway
         raise MalformedInput(_brace_cap_message(source, limit))
     if "{" not in text:
@@ -495,19 +556,19 @@ def _brace_words(text: str, limit: int, source: str, depth: int, budget: list) -
     pieces = []  # the word in order: each stretch of plain text as a one-item list, each group as its alternatives
     count = 1  # the words made so far: the product of the groups' sizes
     pos = 0
-    found = _first_brace_group(text, pos, closes)
+    found = _first_brace_group(text, pos, closes, faithful)
     while found is not None:
         start, end, parts, final = found
         tack = []
         for part in parts:  # counted part by part, so at most one part past the cap is ever taken in
-            tack.extend([part] if final else _brace_words(part, limit, source, depth + 1, budget))
+            tack.extend([part] if final else _brace_words(part, limit, source, depth + 1, budget, faithful))
             if count * len(tack) > limit:
                 raise MalformedInput(_brace_cap_message(source, limit))
         pieces.append([text[pos:start]])
         pieces.append(tack)
         count *= len(tack)
         pos = end + 1
-        found = _first_brace_group(text, pos, closes)
+        found = _first_brace_group(text, pos, closes, faithful)
     pieces.append([text[pos:]])
     return ["".join(word) for word in itertools.product(*pieces)]  # built once, after every count has passed
 
@@ -525,7 +586,7 @@ def _brace_spend(budget: list, amount: int, source: str) -> None:
         raise MalformedInput("a brace expansion that scans more than %d characters (BRACE_SCAN_BUDGET) cannot be analysed: %s" % (BRACE_SCAN_BUDGET, _evidence(source)))
 
 
-def _first_brace_group(text: str, pos: int, closes: dict):
+def _first_brace_group(text: str, pos: int, closes: dict, faithful: bool = False):
     """bash 5.3's first brace expression in ``text`` at or after ``pos``: (start, end, parts, final), or None.
 
     ``closes`` is ``_brace_closes(text)``. A ``{`` opens a group only when a top-level separator comes before the
@@ -534,14 +595,15 @@ def _first_brace_group(text: str, pos: int, closes: dict):
     words (``final`` True); one that bash does not accept stays as written, braces and all, and nothing inside it is
     expanded. A sequence group with a ``{`` inside it is refused: bash 5.3 skips such a group unless
     ``valid_seqterm`` passes it, bash 5.2 drops its braces when it holds a comma, and the two make different words.
-    One bash rule is left out on purpose: bash ignores a ``{`` that starts the word, a list part or the text after
-    a group when a ``}`` follows it at once, but ``{\\},a}`` is a list to bash, and the text here has lost that
-    backslash. So the guard can open a group where bash keeps the braces as text, and it then judges other words
-    than the ones bash makes (``brace_expand`` has the example).
+    bash ignores a ``{`` that starts the word, a list part or the text after a group (or follows a blank) when a
+    ``}`` follows it at once. That rule needs the word as written, since ``{\\},a}`` is a list to bash, so only the
+    ``faithful`` reading (``bash_brace_expand``, whose text still holds its quotes and escapes) applies it.
     """
     i = text.find("{", pos)
     while i != -1:
         found = None if i > pos and text[i - 1] == "$" else closes[i]
+        if found is not None and faithful and (i == pos or text[i - 1] in " \t\n") and text[i + 1 : i + 2] in ("", " ", "\t", "\n", "}", _MASKED["}"]):
+            found = None  # bash's {} rule
         if found is None:
             i = text.find("{", i + 1)
             continue
@@ -550,7 +612,7 @@ def _first_brace_group(text: str, pos: int, closes: dict):
         if kind == ",":
             return i, end, _brace_list(amble), False
         if "{" in amble.replace("${", ""):
-            raise MalformedInput("a brace sequence with a brace inside it cannot be analysed (bash 5.2 and 5.3 expand it differently): %s" % _evidence(text[pos:]))
+            raise MalformedInput("a brace sequence with a brace inside it cannot be analysed (bash 5.2 and 5.3 expand it differently): %s" % _evidence(text[pos:].translate(_UNMASK)))
         terms = _brace_sequence(amble)
         if terms is not None:
             return i, end, terms, True
@@ -637,10 +699,10 @@ def _brace_sequence(amble: str):
     if any(v < -_INTMAX - 1 or v > _INTMAX for v in numbers):
         return None
     if any(abs(v) > BRACE_SEQ_OPERAND_LIMIT for v in numbers):
-        raise MalformedInput("a brace sequence with an operand beyond 2**61 cannot be analysed: {%s}" % _evidence(amble))
+        raise MalformedInput("a brace sequence with an operand beyond 2**61 cannot be analysed: {%s}" % _evidence(amble.translate(_UNMASK)))
     terms = _brace_range(first or lo, last or hi, step)
     if "\\" in terms or "`" in terms:
-        raise MalformedInput("a letter sequence that makes a backslash or a backtick cannot be analysed (bash reads them as an escape and a command substitution): {%s}" % _evidence(amble))
+        raise MalformedInput("a letter sequence that makes a backslash or a backtick cannot be analysed (bash reads them as an escape and a command substitution): {%s}" % _evidence(amble.translate(_UNMASK)))
     return terms
 
 
@@ -718,6 +780,108 @@ def _has_cred_component(path: str) -> bool:
     return any(c.casefold() in CRED_DIR_NAMES for c in path.split("/"))
 
 
+def _spliced(word) -> str:
+    """``word``'s text with each computed part (a substitution or a parameter, ``word.spans``) as one ``_SPLICED``
+    character, so neither a ``/`` nor a ``..`` inside one reads as path structure. A home spelled ``$HOME`` or
+    ``${HOME...}`` at the start stays as written, for ``_HOME_SPELLING_RE``."""
+    text = word.text
+    home = _HOME_SPELLING_RE.match(text) if text.startswith("$") else None
+    keep = home.end() if home else 0
+    out = []
+    last = 0
+    for start, end in word.spans:
+        if end <= keep:
+            continue
+        out.append(text[last:start])
+        out.append(_SPLICED)
+        last = end
+    out.append(text[last:])
+    return "".join(out)
+
+
+def _glob_pattern(comp: str) -> str:
+    """One component as the glob bash matches after brace expansion: each computed part and each extglob group
+    (``@(s)``, which needs ``shopt -s extglob``) as ``*``, and braces literal (bash does not expand them again)."""
+    pattern = comp.replace(_SPLICED, "*")
+    reduced = _EXTGLOB_GROUP_RE.sub("*", pattern)
+    while reduced != pattern:  # nested groups, innermost first
+        pattern = reduced
+        reduced = _EXTGLOB_GROUP_RE.sub("*", pattern)
+    return pattern.replace("[^", "[!")
+
+
+def _names_b(comp: str, name: str, bare_dot: bool = False, dotglob: bool = False) -> bool:
+    """A component of a word bash builds can be ``name`` (case-insensitively): as written; with every computed part
+    empty (``.ss$(:)h``); or as a glob, each computed part and extglob group as ``*``, that starts with a literal dot
+    and holds a literal other than dots (``.ss$(printf h)``, ``.s@(s)h``) -- main's rule for a glob -- or, with
+    ``bare_dot`` (directly under a home), any dot-glob (``.???``). With ``dotglob`` (the command names ``dotglob``
+    or ``GLOBIGNORE``, which let a glob match a dot-name) any glob that matches counts (``*``)."""
+    target = name.casefold()
+    if comp.replace(_SPLICED, "").casefold() == target:
+        return True
+    pattern = _glob_pattern(comp)
+    if not any(ch in pattern for ch in GLOB_CHARS):
+        return False
+    if dotglob:
+        return fnmatch.fnmatchcase(target, pattern.casefold())
+    if not comp.startswith("."):
+        return False
+    if not bare_dot and not _glob_literal_chars(pattern).strip("."):
+        return False
+    return fnmatch.fnmatchcase(target, pattern.casefold())
+
+
+def _can_be_b(comp: str, name: str, dotglob: bool = False) -> bool:
+    """``_names_b`` for any name: a name that does not start with a dot (``git``, ``hooks``, ``etc``) is matched
+    by a glob that holds a literal character (``gi?``, ``ho$(:)oks``, ``h*``), as bash matches it; a bare ``*``
+    is not counted."""
+    if name.startswith("."):
+        return _names_b(comp, name, dotglob=dotglob)
+    if comp.replace(_SPLICED, "").casefold() == name.casefold():
+        return True
+    pattern = _glob_pattern(comp)
+    if not any(ch in pattern for ch in GLOB_CHARS) or not _glob_literal_chars(pattern):
+        return False
+    return fnmatch.fnmatchcase(name.casefold(), pattern.casefold())
+
+
+def _empty_reading(word) -> str:
+    """``word``'s text with every computed part empty: the word bash builds when each substitution prints nothing
+    and each parameter is unset or empty (``sud"$(:)"o`` is ``sudo``)."""
+    out = []
+    last = 0
+    for start, end in word.spans:
+        out.append(word.text[last:start])
+        last = end
+    out.append(word.text[last:])
+    return "".join(out)
+
+
+def _default_reading(word) -> str:
+    """``word``'s text with each ``${x:-WORD}``, ``${x-WORD}``, ``${x:=WORD}``, ``${x=WORD}``, ``${x:+WORD}`` or
+    ``${x+WORD}`` read as its WORD, quotes removed, and every other computed part empty (``pke${x:-x}ec``)."""
+    out = []
+    last = 0
+    for start, end in word.spans:
+        out.append(word.text[last:start])
+        m = _PARAM_DEFAULT_RE.match(word.text[start:end])
+        if m:
+            out.append(_empty_reading(Lexer(m.group(1), faithful=True).word_only("arg")))
+        last = end
+    out.append(word.text[last:])
+    return "".join(out)
+
+
+def _claude_protected_b(rest: list, mutating: bool, dotglob: bool = False) -> bool:
+    """``_claude_protected`` for a word bash builds: braces literal, computed parts and extglob groups as globs."""
+    if not rest or not _names_b(rest[0], CLAUDE_DIR_NAME, dotglob=dotglob):
+        return False
+    if len(rest) == 1:
+        return mutating
+    child = _glob_pattern(rest[1]).casefold()
+    return _SPLICED in rest[1] or any(fnmatch.fnmatchcase(name, child) for name in CLAUDE_PROTECTED_CHILDREN)
+
+
 def could_reach(pattern_parts: list, target_parts: list) -> bool:
     """True when a path at or below ``target_parts`` can match the glob ``pattern_parts`` (``**`` spans)."""
     memo = {}
@@ -744,15 +908,18 @@ def could_reach(pattern_parts: list, target_parts: list) -> bool:
 # The shell lexer: words and simple commands, the way bash splits them
 # ---------------------------------------------------------------------------------------------
 class Word(object):
-    """One shell word after quote removal. Expansions ($X, ${..}, $(..), `..`) stay verbatim."""
+    """One shell word after quote removal. Expansions ($X, ${..}, $(..), `..`) stay verbatim. ``raw`` is the word as
+    written (quotes in place, line continuations removed), ``spans`` the (start, end) of each expansion in ``text``."""
 
-    __slots__ = ("text", "computed", "quoted", "kind")
+    __slots__ = ("text", "computed", "quoted", "kind", "raw", "spans")
 
-    def __init__(self, text: str, computed: bool, quoted: bool, kind: str) -> None:
+    def __init__(self, text: str, computed: bool, quoted: bool, kind: str, raw=None, spans=()) -> None:
         self.text = text
         self.computed = computed
         self.quoted = quoted
         self.kind = kind  # arg | target | herestring | heredoc | heredoc-strip
+        self.raw = raw
+        self.spans = spans
 
 
 class Segment(object):
@@ -881,8 +1048,9 @@ def _ansi_c(s: str, j: int) -> tuple:
     return "".join(out), n
 
 
-def substitutions(text: str) -> list:
-    """The bodies of ``$( )`` and backtick substitutions inside text that is otherwise data."""
+def substitutions(text: str, faithful: bool = False) -> list:
+    """The bodies of ``$( )`` and backtick substitutions inside text that is otherwise data. ``faithful`` ends each
+    ``$( )`` where bash's parser does (``_comsub_close``) instead of by counting parentheses."""
     out = []
     j = 0
     n = len(text)
@@ -892,7 +1060,7 @@ def substitutions(text: str) -> list:
             j += 2
             continue
         if ch == "$" and text[j + 1 : j + 2] == "(":
-            end = _find_close(text, j + 2, "(")
+            end = _comsub_close(text, j + 2) if faithful else _find_close(text, j + 2, "(")
             out.append(text[j + 2 : end])
             j = end + 1
             continue
@@ -904,13 +1072,340 @@ def substitutions(text: str) -> list:
     return out
 
 
+# ---------------------------------------------------------------------------------------------
+# bash's own reading of a word (1.4.0). bash's parser ends ``${...}`` at its first unquoted ``}`` and parses the
+# body of ``$( )``; brace expansion then runs on the word as written, before quote removal, and acts only on the
+# braces its own scan (bash's brace_gobbler) leaves unquoted. BashAnalyzer judges the words this reading builds
+# beside the words main's reading judges, so it adds denials and never removes one.
+# ---------------------------------------------------------------------------------------------
+def _ansi_c_end(s: str, j: int) -> int:
+    """Index just past the quote that ends a ``$'...'`` body starting at ``j`` (len(s) if none)."""
+    n = len(s)
+    while j < n:
+        if s[j] == "\\":
+            j += 2
+            continue
+        if s[j] == "'":
+            return j + 1
+        j += 1
+    return n
+
+
+def _skip_double_f(s: str, j: int) -> int:
+    """``_skip_double`` with bash's own ends for a ``$( )`` and a ``${...}`` inside the quotes."""
+    n = len(s)
+    while j < n:
+        ch = s[j]
+        if ch == "\\":
+            j += 2
+            continue
+        if ch == '"':
+            return j + 1
+        if ch == "`":
+            j = _skip_backtick(s, j + 1)
+            continue
+        if ch == "$" and s[j + 1 : j + 2] == "(":
+            j = _comsub_close(s, j + 2) + 1
+            continue
+        if ch == "$" and s[j + 1 : j + 2] == "{":
+            j = _param_close(s, j + 2) + 1
+            continue
+        j += 1
+    return n
+
+
+def _step_over(s: str, j: int):
+    """The index past a quoted string, an escape or a substitution that starts at ``j``; None for any other character."""
+    ch = s[j]
+    nxt = s[j + 1 : j + 2]
+    if ch == "\\":
+        return j + 2
+    if ch == "'":
+        k = s.find("'", j + 1)
+        return len(s) if k < 0 else k + 1
+    if ch == '"':
+        return _skip_double_f(s, j + 1)
+    if ch == "`":
+        return _skip_backtick(s, j + 1)
+    if ch == "$" and nxt == "'":
+        return _ansi_c_end(s, j + 2)
+    if ch == "$" and nxt == '"':
+        return _skip_double_f(s, j + 2)
+    if ch == "$" and nxt == "(":
+        return _comsub_close(s, j + 2) + 1
+    if ch == "$" and nxt == "{":
+        return _param_close(s, j + 2) + 1
+    return None
+
+
+def _param_close(s: str, j: int) -> int:
+    """Index of the ``}`` that ends a ``${`` opened before ``j`` as bash's parser ends it: the first ``}`` that no
+    quote, escape or nested substitution hides (len(s) if none). A ``{`` inside does not nest, so ``${x:-{}`` ends at
+    its ``}``: in ``: ${x:-{}; sudo id; : }`` bash runs ``sudo id``, where counting braces reads one word."""
+    n = len(s)
+    while j < n:
+        if s[j] == "}":
+            return j
+        end = _step_over(s, j)
+        j = j + 1 if end is None else end
+    return n
+
+
+def _paren_close(s: str, j: int, depth: int) -> int:
+    """Index of the ``)`` that leaves none of ``depth`` open parentheses open (len(s) if none), stepping over quotes,
+    escapes and substitutions: the end of an arithmetic body or of an extglob group."""
+    n = len(s)
+    while j < n:
+        ch = s[j]
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+            if depth == 0:
+                return j
+        else:
+            end = _step_over(s, j)
+            if end is not None:
+                j = end
+                continue
+        j += 1
+    return n
+
+
+def _word_end(s: str, j: int) -> int:
+    """Index just past the shell word that starts at ``j``, its quotes and substitutions included. A parenthesis
+    ends it: ``_comsub_close`` counts an extglob group's parentheses as it counts a subshell's."""
+    n = len(s)
+    while j < n:
+        ch = s[j]
+        if ch in _WORD_STOP:
+            return j
+        end = _step_over(s, j)
+        j = j + 1 if end is None else end
+    return n
+
+
+def _heredoc_word(s: str, j: int) -> tuple:
+    """The here-document delimiter at or after ``j``, quotes removed: (the index past it, the delimiter or None)."""
+    n = len(s)
+    while j < n and s[j] in " \t":
+        j += 1
+    out = []
+    while j < n and s[j] not in _WORD_STOP:
+        ch = s[j]
+        if ch == "\\" and j + 1 < n:
+            out.append(s[j + 1])
+            j += 2
+        elif ch == "'":
+            k = s.find("'", j + 1)
+            k = n if k < 0 else k
+            out.append(s[j + 1 : k])
+            j = k + 1
+        elif ch == '"':
+            k = _skip_double_f(s, j + 1)
+            out.append(re.sub(r'\\([$`"\\])', r"\1", s[j + 1 : max(j + 1, k - 1)]))
+            j = k
+        else:
+            out.append(ch)
+            j += 1
+    return j, ("".join(out) or None)
+
+
+def _skip_heredoc_bodies(s: str, j: int, pending: list) -> int:
+    """Index just past the bodies of the ``pending`` here-documents, whose lines start at ``j``. Inside ``$( )`` bash
+    5.3 also ends one at its delimiter followed at once by ``)``; then the index of that ``)`` comes back, and the
+    substitution ends there."""
+    n = len(s)
+    for delim, strip in pending:
+        while j < n:
+            k = s.find("\n", j)
+            k = n if k < 0 else k
+            line = s[j:k]
+            text = line.lstrip("\t") if strip else line
+            if text == delim:
+                j = k + 1
+                break
+            if text.startswith(delim) and text[len(delim) : len(delim) + 1] == ")":
+                return j + (len(line) - len(text)) + len(delim)
+            j = k + 1
+    return min(j, n)
+
+
+def _comsub_close(s: str, j: int) -> int:
+    """Index of the ``)`` that ends a ``$(``, ``<(`` or ``>(`` opened just before ``j``, as bash's parser finds it
+    (len(s) if none). Quotes, escapes, ``$'...'``, backticks and nested substitutions are stepped over; a ``#`` that
+    starts a word starts a comment; a here-document's body is skipped to its delimiter line; ``$((...))`` and
+    ``((...))`` count parentheses only, so a ``<<`` there is a shift; and inside a ``case`` statement the ``)`` that
+    ends a pattern closes nothing. Counting parentheses (``_find_close``) ends ``$(case x in a) :;; esac)`` at the
+    first ``)``, where bash runs the whole statement."""
+    n = len(s)
+    if s[j : j + 1] == "(":
+        return _paren_close(s, j, 1)
+    frames = []  # "(" for a subshell, or a one-item list [state] for an open case statement
+    pending = []  # here-documents whose bodies start at the next newline: (delimiter, strip tabs)
+    command = True  # whether a word here is in command position
+    while j < n:
+        ch = s[j]
+        case = frames[-1] if frames and frames[-1] != "(" else None
+        if ch == "\n":
+            command = True
+            j = _skip_heredoc_bodies(s, j + 1, pending) if pending else j + 1
+            pending = []
+        elif ch in " \t":
+            j += 1
+        elif ch == "#":
+            k = s.find("\n", j)
+            j = n if k < 0 else k
+        elif ch == "(":
+            if case is not None and case[0] == "pattern":  # the optional ( before a pattern
+                j += 1
+            elif command and s[j + 1 : j + 2] == "(":
+                j = _paren_close(s, j + 2, 2) + 1
+                command = False
+            else:
+                frames.append("(")
+                j += 1
+                command = True
+        elif ch == ")":
+            if not frames:
+                return j
+            if case is None:
+                frames.pop()
+            else:
+                case[0] = "body"
+            j += 1
+            command = True
+        elif ch in ";&|":
+            if case is not None and ch == ";" and s[j + 1 : j + 2] in (";", "&"):
+                case[0] = "pattern"
+            j += 1
+            command = True
+        elif ch in "<>":
+            if s.startswith("<<<", j):  # a here-string, not a here-document
+                j += 3
+            elif s.startswith("<<", j):
+                strip = s.startswith("<<-", j)
+                j, delim = _heredoc_word(s, j + (3 if strip else 2))
+                if delim is not None:
+                    pending.append((delim, strip))
+            elif s[j + 1 : j + 2] == "(":
+                j = _comsub_close(s, j + 2) + 1
+                command = False
+            else:
+                j += 1
+        else:
+            start = j
+            j = max(_word_end(s, j), j + 1)
+            word = s[start:j]
+            if case is not None and case[0] == "subject":
+                if word == "in":
+                    case[0] = "pattern"
+                    command = True
+            elif case is not None and case[0] == "pattern":
+                if word == "esac":
+                    frames.pop()
+                    command = False
+            elif command and word == "case":
+                frames.append(["subject"])
+                command = False
+            elif command and word == "esac" and case is not None:
+                frames.pop()
+                command = False
+            else:
+                command = command and (word in _RESERVED_BEFORE_COMMAND or _ASSIGN_RE.match(word) is not None)
+    return n
+
+
+def _brace_mask(raw: str) -> str:
+    """``raw`` (a word as written) with every ``{ } , .`` that bash 5.3's brace scan does not act on replaced by a
+    placeholder: a port of brace_gobbler's quoting. A backslash hides the next character (not inside ``'...'``);
+    ``'...'``, ``"..."`` and backticks are quoted, and inside ``"..."`` a backtick quotes nothing (bash expands the
+    list in ``"`echo "{a,b}"`"``); ``$'...'`` and ``$"..."`` are one quoted string each, as bash's parser makes them
+    before brace expansion; an unquoted ``${`` opens a level, inside which nothing separates (``${x:-{a,b}}`` is
+    one word), while a quoted one hides its ``{``; and ``$( )``, ``<( )`` and ``>( )`` are stepped over, inside
+    ``"..."`` as well."""
+    out = list(raw)
+    n = len(raw)
+
+    def hide(a: int, b: int) -> None:
+        for k in range(a, min(b, n)):
+            out[k] = _MASKED.get(out[k], out[k])
+
+    quoted = ""
+    braces = []  # the braces open outside quotes: True for the { of an unquoted ${
+    params = 0  # how many of them are True
+    i = 0
+    while i < n:
+        c = raw[i]
+        nxt = raw[i + 1 : i + 2]
+        if c == "\\" and quoted != "'":
+            hide(i + 1, i + 2)
+            i += 2
+        elif c == "$" and quoted != "'" and nxt == "{":
+            if quoted:
+                hide(i + 1, i + 2)
+            else:
+                braces.append(True)
+                params += 1
+            i += 2
+        elif quoted:
+            if c == quoted:
+                quoted = ""
+                i += 1
+            elif quoted == '"' and c == "$" and nxt == "(":
+                end = _comsub_close(raw, i + 2) + 1
+                hide(i, end)
+                i = end
+            else:
+                hide(i, i + 1)
+                i += 1
+        elif c == "$" and nxt == "'":
+            end = _ansi_c_end(raw, i + 2)
+            hide(i, end)
+            i = end
+        elif c == "$" and nxt == '"':
+            quoted = '"'
+            i += 2
+        elif c in "'\"`":
+            quoted = c
+            i += 1
+        elif c in "$<>" and nxt == "(":
+            end = _comsub_close(raw, i + 2) + 1
+            hide(i, end)
+            i = end
+        else:
+            if c == "{":
+                braces.append(False)
+            elif c == "}" and braces:
+                params -= braces.pop()
+            elif params and c in ",.":
+                hide(i, i + 1)
+            i += 1
+    return "".join(out)
+
+
+def bash_brace_expand(raw: str, limit: int = MAX_BRACE_ALTERNATIVES) -> list:
+    """The words bash 5.3's brace expansion makes of ``raw``, a word as written, in bash's order; each keeps its
+    quotes for the quote removal that follows. Only the braces bash's own scan leaves unquoted act
+    (``_brace_mask``), so ``.ss{h,b\\}c}`` makes ``.ssh`` and ``.ssb\\}c``, and a quoted list is one word, never
+    counted. The cap, the scan budget and the sequences the guard does not model refuse as in ``brace_expand``, so
+    a word bash itself expands past the cap still fails closed."""
+    masked = _brace_mask(raw)
+    if "{" not in masked:
+        return [raw]
+    return [word.translate(_UNMASK) for word in _brace_words(masked, limit, raw, 0, [BRACE_SCAN_BUDGET], True)]
+
+
 _REDIRECT_OPS = (("<<<", "herestring"), ("<<-", "heredoc-strip"), ("<<", "heredoc"), ("&>>", "target"), ("&>", "target"), (">>", "target"), (">|", "target"), ("<>", "target"), (">&", "dup"), ("<&", "dup"), (">", "target"), ("<", "target"))
 
 
 class Lexer(object):
-    """Split a command string into simple commands (``Segment``) and nested command strings."""
+    """Split a command string into simple commands (``Segment``) and nested command strings.
 
-    def __init__(self, text: str) -> None:
+    ``faithful`` (1.4.0) ends a ``${...}`` and a ``$( )`` where bash's parser does (``_param_close``,
+    ``_comsub_close``) and reads an extglob group (``@(...)``) as part of its word; without it the lexer is main's."""
+
+    def __init__(self, text: str, faithful: bool = False) -> None:
         self.s = text
         self.n = len(text)
         self.i = 0
@@ -923,23 +1418,72 @@ class Lexer(object):
         self.quoted = False
         self.pending_kind = None
         self.pending_heredocs = []
+        self.faithful = faithful
+        self.word_start = 0
+        self.spans = []
+        self.buflen = 0
 
     def _open_word(self) -> None:
         if self.buf is None:
             self.buf = []
             self.computed = False
             self.quoted = False
+            self.word_start = self.i
+            self.spans = []
+            self.buflen = 0
 
     def _add(self, text: str, computed: bool = False) -> None:
         self._open_word()
         self.buf.append(text)
         if computed:
             self.computed = True
+            self.spans.append((self.buflen, self.buflen + len(text)))
+        self.buflen += len(text)
+
+    def _close(self, opener: str, j: int) -> int:
+        """The index that ends a ``$(`` / ``<(`` (``opener`` "(") or a ``${`` (``opener`` "{") opened before ``j``."""
+        if not self.faithful:
+            return _find_close(self.s, j, opener)
+        return _comsub_close(self.s, j) if opener == "(" else _param_close(self.s, j)
+
+    def word_only(self, kind: str) -> Word:
+        """The whole text as ONE word after quote removal (a word bash's brace expansion made): whitespace and
+        metacharacters in it are literal, as they were quoted or escaped in the word it came from."""
+        s = self.s
+        self._open_word()
+        while self.i < self.n:
+            ch = s[self.i]
+            nxt = s[self.i + 1 : self.i + 2]
+            if ch == "\\":
+                self.quoted = True
+                self._add(nxt or "\\")
+                self.i += 2
+            elif ch == "'":
+                k = s.find("'", self.i + 1)
+                self.quoted = True
+                self._add(s[self.i + 1 :] if k < 0 else s[self.i + 1 : k])
+                self.i = self.n if k < 0 else k + 1
+            elif ch == '"':
+                self.quoted = True
+                self.i = self._double(self.i + 1)
+            elif ch == "$":
+                self.i = self._dollar(self.i, False)
+            elif ch == "`":
+                self.i = self._backtick(self.i)
+            elif ch in "<>" and nxt == "(":
+                end = self._close("(", self.i + 2)
+                self._add(s[self.i : end + 1], computed=True)
+                self.i = end + 1
+            else:
+                self._add(ch)
+                self.i += 1
+        return Word("".join(self.buf), self.computed, self.quoted, kind, s, tuple(self.spans))
 
     def _end_word(self) -> None:
         if self.buf is None:
             return
-        word = Word("".join(self.buf), self.computed, self.quoted, self.pending_kind or "arg")
+        raw = self.s[self.word_start : self.i].replace("\\\n", "")
+        word = Word("".join(self.buf), self.computed, self.quoted, self.pending_kind or "arg", raw, tuple(self.spans))
         self.buf = None
         self.pending_kind = None
         if word.kind in ("heredoc", "heredoc-strip"):
@@ -996,7 +1540,7 @@ class Lexer(object):
                 k = s.find("\n", self.i)
                 self.i = self.n if k < 0 else k
             elif ch in "<>" and nxt == "(":
-                end = _find_close(s, self.i + 2, "(")
+                end = self._close("(", self.i + 2)
                 self.nested.append(s[self.i + 2 : end])
                 self._add(s[self.i : end + 1], computed=True)
                 self.i = end + 1
@@ -1019,6 +1563,10 @@ class Lexer(object):
             elif self.buf is None and ((ch == "{" and nxt in ("", " ", "\t", "\n")) or (ch == "}" and nxt in ("", " ", "\t", "\n", ";", "&", "|", ")"))):
                 self._end_segment(ch)
                 self.i += 1
+            elif self.faithful and ch in _EXTGLOB_OPENERS and nxt == "(":
+                end = _paren_close(s, self.i + 2, 1)  # with extglob on, bash reads the group as part of the word
+                self._add(s[self.i : end + 1])
+                self.i = end + 1
             else:
                 self._add(ch)
                 self.i += 1
@@ -1064,12 +1612,12 @@ class Lexer(object):
             self.quoted = True
             return self._double(i + 2)
         if nxt in ("(", "{"):
-            end = _find_close(s, i + 2, nxt)
+            end = self._close(nxt, i + 2)
             inner = s[i + 2 : end]
             if nxt == "(":
                 self.nested.append(inner)
             else:
-                self.nested.extend(substitutions(inner))
+                self.nested.extend(substitutions(inner, self.faithful))
             self._add(s[i : end + 1], computed=True)
             return end + 1
         if nxt and nxt in _NAME_START:
@@ -1238,38 +1786,148 @@ def _token_at(text: str, pos: int) -> str:
 # Bash rules
 # ---------------------------------------------------------------------------------------------
 class BashAnalyzer(object):
-    """Apply the Bash rules to one command string and to every command string nested in it."""
+    """Apply the Bash rules to one command string and to every command string nested in it.
+
+    Each string is read twice (1.4.0). Reading "A" is main's: its lexer, and each word brace-expanded after quote
+    removal, which judges more words than bash makes; a word that reading would refuse for a brace reason (the
+    cap, the scan budget, a sequence it does not model) is left to reading "B" instead. Reading "B" is bash's: the
+    faithful lexer, each word brace-expanded as written (``bash_brace_expand``) and then quote-removed, every rule
+    run on the words bash builds, and the path rules of ``_path_word_b``. The hits are the union, and reading B
+    refuses what it cannot model, so no denial of main's is lost and quoted text is never counted against the cap.
+    """
 
     def __init__(self, ctx: "Context") -> None:
         self.ctx = ctx
         self.hits = []
         self.all_words = []
         self.opaque = False
+        self._mode = "A"
+        self._scanned = set()
+        self._made = [BRACE_SCAN_BUDGET]  # characters of words reading B may make for one command (_bash_view)
+        self._deadline = None  # monotonic time past which the analysis is refused (_tick)
+        self._dotglob = False  # the command names dotglob or GLOBIGNORE: a glob under a home can match a dot-name
 
     def hit(self, rule_id: str, evidence: str) -> None:
         self.hits.append(Hit(rule_id, evidence))
 
     def analyze(self, command: str, bases=None) -> list:
         """``bases`` replaces the payload cwd as what relative words resolve against (Serena's shell)."""
+        self._deadline = time.monotonic() + ANALYSIS_TIME_BUDGET
+        self._dotglob = bool(_DOTGLOB_RE.search(command))
         self._scan(command, 0, list(bases) if bases is not None else ([self.ctx.cwd] if self.ctx.cwd else []))
         if self.opaque:
             self._opaque_fallback()
         return self.hits
 
+    def _tick(self) -> None:
+        """Refuse (fail closed) once the analysis has run past ``ANALYSIS_TIME_BUDGET`` seconds, well inside the
+        hook's own timeout."""
+        if self._deadline is not None and time.monotonic() > self._deadline:
+            raise MalformedInput("a command that takes more than %s s to analyse (ANALYSIS_TIME_BUDGET) cannot be analysed" % ANALYSIS_TIME_BUDGET)
+
     def _scan(self, text: str, depth: int, bases: list) -> None:
         if depth > MAX_DEPTH:
             raise MalformedInput("the command nests shell -c / eval / substitutions more than %d deep and cannot be analysed" % MAX_DEPTH)
+        self._tick()
+        key = (text, depth, tuple(bases))
+        if key in self._scanned:  # the two readings meet the same nested text; one scan judges it
+            return
+        self._scanned.add(key)
         self._raw(text)
-        lexer = Lexer(text).run()
-        bases = self._cd_bases(lexer.segments, bases)
-        for seg in lexer.segments:
-            self._segment(seg, lexer.segments, depth, bases)
-            for body, expanded in seg.heredocs:
-                if expanded:
-                    for inner in substitutions(body):
-                        self._scan(inner, depth + 1, bases)
-        for inner in lexer.nested:
-            self._scan(inner, depth + 1, bases)
+        saved = self._mode
+        nested = []  # (text, bases): each reading's nested texts, with that reading's own cd bases
+        try:
+            for mode in ("A", "B"):
+                self._mode = mode
+                lexer = Lexer(text, faithful=mode == "B").run()
+                segments = lexer.segments if mode == "A" else self._bash_view(lexer.segments)
+                mode_bases = self._cd_bases(segments, bases)
+                for seg in segments:
+                    self._mode = mode
+                    self._segment(seg, segments, depth, mode_bases)
+                    for body, expanded in seg.heredocs:
+                        if expanded:
+                            nested.extend((inner, mode_bases) for inner in substitutions(body) + substitutions(body, True))
+                if mode == "B":
+                    for view, changed in self._splice_views(segments):
+                        for k in changed:
+                            self._mode = mode
+                            self._segment(view[k], view, depth, mode_bases)
+                nested.extend((inner, mode_bases) for inner in lexer.nested)
+        finally:
+            self._mode = saved
+        for inner, inner_bases in _unique(nested):
+            self._scan(inner, depth + 1, inner_bases)
+
+    def _splice_views(self, segments: list) -> list:
+        """Reading B's segments again, read as bash builds them when a computed part makes no text: once with every
+        substitution and parameter empty (``_empty_reading``: ``sud"$(:)"o``, ``gh api --meth$(:)od=POST``), and
+        once with each ``${x:-WORD}`` as its WORD (``_default_reading``), so the command and option rules see a
+        command or option word spliced that way. Only a computed part INSIDE a word is read so: a word that would
+        come out empty, or that starts with a computed directory (``"$R"/x``), stays as it is, since the path rules
+        already read each computed part as any text or none. Each view is returned with the indexes of the segments
+        it changed; only those are judged again."""
+        views = []
+        seen = []
+        for reading in (_empty_reading, _default_reading):
+            view = []
+            changed = []
+            for k, seg in enumerate(segments):
+                new = Segment(seg.group, seg.piped)
+                new.heredocs = seg.heredocs
+                for word in seg.words:
+                    text = reading(word) if word.spans else word.text
+                    leading_dir = bool(word.spans) and word.spans[0][0] == 0 and word.text[word.spans[0][1] : word.spans[0][1] + 1] == "/"
+                    if text == word.text or not text or leading_dir:
+                        new.words.append(word)
+                        continue
+                    if not changed or changed[-1] != k:
+                        changed.append(k)
+                    new.words.append(Word(text, False, word.quoted, word.kind))
+                view.append(new)
+            texts = [[w.text for w in seg.words] for seg in view]
+            if changed and texts not in seen:
+                seen.append(texts)
+                views.append((view, changed))
+        return views
+
+    def _bash_view(self, segments: list) -> list:
+        """Each segment with the words bash builds of it: every word brace-expanded as written
+        (``bash_brace_expand``) and then quote-removed, except an assignment before the command word, a
+        here-string and a here-document delimiter, which bash does not brace-expand. A word bash expands past the
+        cap or the scan budget raises ``MalformedInput`` here (fail closed), and so does a command whose expanded
+        words come to more than ``BRACE_SCAN_BUDGET`` characters in all: each is quote-removed and judged again, so
+        64 alternatives of a long word cost 64 times its length."""
+        views = []
+        for seg in segments:
+            view = Segment(seg.group, seg.piped)
+            view.heredocs = seg.heredocs
+            prefix = True
+            for word in seg.words:
+                if word.kind == "arg" and prefix and (word.text in KEYWORDS or _ASSIGN_RE.match(word.raw or "")):
+                    view.words.append(word)
+                    continue
+                prefix = prefix and word.kind != "arg"
+                alts = [word.raw] if word.raw is None or word.kind in ("herestring", "heredoc", "heredoc-strip") else bash_brace_expand(word.raw)
+                if alts == [word.raw]:
+                    view.words.append(word)
+                else:
+                    self._made[0] -= sum(len(alt) for alt in alts)
+                    if self._made[0] < 0:
+                        raise MalformedInput("a command whose brace expansions make more than %d characters of words (BRACE_SCAN_BUDGET) cannot be analysed: %s" % (BRACE_SCAN_BUDGET, _evidence(word.raw)))
+                    view.words.extend(Lexer(alt, faithful=True).word_only(word.kind) for alt in alts)
+            views.append(view)
+        return views
+
+    def _expand(self, text: str) -> list:
+        """The words a rule judges for ``text``: reading B's words are bash's already, so [text]; reading A's are
+        main's brace expansion, and [] for a word it would refuse, which reading B judges (or refuses) instead."""
+        if self._mode == "B":
+            return [text]
+        try:
+            return brace_expand(text)
+        except MalformedInput:
+            return []
 
     def _raw(self, text: str) -> None:
         m = _CRED_COMPONENT_RE.search(text)
@@ -1294,9 +1952,12 @@ class BashAnalyzer(object):
         args = seg.args()
         res = resolve_command(args)
         mutating = res.index is not None and _basename(args[res.index].text) in MUTATING_COMMANDS
+        if self._mode == "B":  # the raw-text rules, on the words bash builds (a mention assembled by braces or quotes)
+            self._raw(" ".join(w.text for w in seg.words))
         for word in seg.words:
+            self._tick()
             self.all_words.append(word.text)
-            self._path_word(word.text, bases, mutating or word.kind == "target")
+            self._path_word(word, bases, mutating or word.kind == "target")
             # The lexed word has its quotes removed, so "$HOME"/.gitconfig reads as $HOME/.gitconfig here.
             m = self.ctx.signing_re().search(word.text)
             if m:
@@ -1313,7 +1974,10 @@ class BashAnalyzer(object):
                 self._check_signing_tool(args[k + 1 :])
 
     def _command(self, word: Word, rest: list, res: Resolved, seg: Segment, segments: list, depth: int, bases: list) -> None:
-        names = _unique([_basename(alt) for alt in brace_expand(word.text)])
+        alts = self._expand(word.text)
+        if not alts:  # reading A would refuse it: reading B dispatches the names bash makes
+            return
+        names = _unique([_basename(alt) for alt in alts])
         concrete = [name for name in names if not _is_computed(name)]
         if not concrete:
             self._opaque(word, rest, res, seg, segments, depth, bases)
@@ -1346,6 +2010,9 @@ class BashAnalyzer(object):
             self._check_shell(rest, seg, segments, depth, bases)
         elif name == "eval":
             self._scan_generated(" ".join(w.text for w in rest), depth, bases)
+        elif name == "alias":  # an alias's value replaces a later command word: judge it as the command it names
+            for value in [w.text.split("=", 1)[1] for w in rest if "=" in w.text]:
+                self._scan(value, depth + 1, bases)
         elif name in ("source", ".", INSTALLER_NAME):
             if name == INSTALLER_NAME:
                 self._check_installer(rest)
@@ -1373,7 +2040,11 @@ class BashAnalyzer(object):
     def _opaque_fallback(self) -> None:
         for text in self.all_words:
             value = text.split("=", 1)[1] if _ASSIGN_RE.match(text) else text
-            for alt in brace_expand(value):
+            try:
+                alts = brace_expand(value)
+            except MalformedInput:  # reading B has refused it already if bash expands it past the cap
+                alts = [value]
+            for alt in alts:
                 name = _basename(alt)
                 if name in PRIV_COMMANDS:
                     self.hit("PRIV-ESCALATION", text)
@@ -1505,7 +2176,7 @@ class BashAnalyzer(object):
             self.hit("GIT-SIGNING-CONFIG", "git config " + " ".join(positionals[:2]))
 
     def _check_signing_tool(self, rest: list) -> None:
-        """util/configure_commit_signing.py writes the owner's signing configuration unless --dry-run (K12)."""
+        """util/configure_commit_signing.py writes the Overtoad's signing configuration unless --dry-run (K12)."""
         texts = [w.text for w in rest]
         writes = [t for t in texts if t in SIGNING_TOOL_WRITES]
         if writes and "--dry-run" not in texts:
@@ -1632,7 +2303,7 @@ class BashAnalyzer(object):
                 return
         operands = [w.text for w in rest if not w.text.startswith("-")]
         for text in operands:
-            for alt in brace_expand(text):
+            for alt in self._expand(text):
                 if self._home_or_above(alt, bases):
                     self.hit("CRED-PATH-BASH", "%s %s (a recursive tool rooted at home or above)" % (name, alt))
                     return
@@ -1661,41 +2332,141 @@ class BashAnalyzer(object):
                 self.hit("MCP-REGISTER-BASH", texts[k])
 
     # -- path rules ------------------------------------------------------------------------
-    def _path_word(self, text: str, bases: list, mutating: bool) -> None:
-        for alt in brace_expand(text):
-            if _CRED_COMPONENT_RE.search(alt):
-                self.hit("CRED-PATH-BASH", alt)
+    def _path_word(self, word: Word, bases: list, mutating: bool) -> None:
+        if self._mode == "B":
+            self._path_word_b(word, bases, mutating)
+            return
+        for alt in self._expand(word.text):
+            try:
+                self._path_alt(alt, bases, mutating)
+            except MalformedInput:  # a component's own expansion past the cap: reading B judges the word
                 continue
-            for comp in alt.split("/"):
-                if comp.startswith(".") and _has_glob(comp) and _glob_literal_chars(comp).strip(".") and any(component_matches(comp, nm) for nm in CRED_DIR_NAMES):
-                    self.hit("CRED-PATH-BASH", alt)
-                if _has_glob(comp) and _comp_names(comp, MCP_PROJECT_FILE):
-                    self.hit("MCP-REGISTER-BASH", alt)
-            for rest in self._home_rests(alt, bases):
-                if not rest:
-                    continue
-                head = rest[0]
-                if (head.startswith(".") and _has_glob(head) and any(component_matches(head, nm) for nm in CRED_DIR_NAMES)) or _is_computed(head):
-                    self.hit("CRED-PATH-BASH", alt)
-                if _claude_protected(rest, mutating):
-                    self.hit("SELF-PROTECT-BASH", alt)
-                if len(rest) == 1 and _comp_names(head, CLAUDE_STATE_FILE):
-                    self.hit("MCP-REGISTER-BASH", alt)
-            # an absolute or cwd-relative word, against the resolved directories (a symlinked ~/.ssh)
-            if alt.startswith("/"):
-                readings = [os.path.normpath(alt)]
-            elif alt and not alt.startswith(("~", "$")):
-                readings = [os.path.normpath(os.path.join(b, alt)) for b in bases]
-            else:
-                readings = []
-            if "/" in alt and not _is_computed(alt):
-                readings = _unique(readings + [os.path.realpath(r) for r in readings])
-            if any(_has_cred_component(r) or any(_inside(r, d) for d in self.ctx.cred_dirs) for r in readings):
+
+    def _path_alt(self, alt: str, bases: list, mutating: bool) -> None:
+        """Main's path rules on one word of reading A."""
+        if _CRED_COMPONENT_RE.search(alt):
+            self.hit("CRED-PATH-BASH", alt)
+            return
+        for comp in alt.split("/"):
+            if comp.startswith(".") and _has_glob(comp) and _glob_literal_chars(comp).strip(".") and any(component_matches(comp, nm) for nm in CRED_DIR_NAMES):
                 self.hit("CRED-PATH-BASH", alt)
-            if self.ctx.is_protected(readings):
-                self.hit("SELF-PROTECT-BASH", alt)
-            if self.ctx.is_mcp_registration(readings):
+            if _has_glob(comp) and _comp_names(comp, MCP_PROJECT_FILE):
                 self.hit("MCP-REGISTER-BASH", alt)
+        for rest in self._home_rests(alt, bases):
+            if not rest:
+                continue
+            head = rest[0]
+            if (head.startswith(".") and _has_glob(head) and any(component_matches(head, nm) for nm in CRED_DIR_NAMES)) or _is_computed(head):
+                self.hit("CRED-PATH-BASH", alt)
+            if _claude_protected(rest, mutating):
+                self.hit("SELF-PROTECT-BASH", alt)
+            if len(rest) == 1 and _comp_names(head, CLAUDE_STATE_FILE):
+                self.hit("MCP-REGISTER-BASH", alt)
+        # an absolute or cwd-relative word, against the resolved directories (a symlinked ~/.ssh)
+        if alt.startswith("/"):
+            readings = [os.path.normpath(alt)]
+        elif alt and not alt.startswith(("~", "$")):
+            readings = [os.path.normpath(os.path.join(b, alt)) for b in bases]
+        else:
+            readings = []
+        if "/" in alt and not _is_computed(alt):
+            readings = _unique(readings + [os.path.realpath(r) for r in readings])
+        if any(_has_cred_component(r) or any(_inside(r, d) for d in self.ctx.cred_dirs) for r in readings):
+            self.hit("CRED-PATH-BASH", alt)
+        if self.ctx.is_protected(readings):
+            self.hit("SELF-PROTECT-BASH", alt)
+        if self.ctx.is_mcp_registration(readings):
+            self.hit("MCP-REGISTER-BASH", alt)
+
+    def _path_word_b(self, word: Word, bases: list, mutating: bool) -> None:
+        """The path rules on a word bash builds (1.4.0). Each computed part is one ``_SPLICED`` character
+        (``_spliced``), so a ``/`` or ``..`` inside a substitution is no path structure. A component with one is
+        read both ways bash can fill it (``_names_b``): empty, and as any text. A word spelled from a home (``~``,
+        ``~user``, ``$HOME``, ``${HOME}``), from ``~+``, ``~-`` or ``~N``, or relative to a base gets normalised
+        readings (``_readings_b``): ``X/..`` cancels lexically, as the kernel resolves it once ``X`` exists, so a
+        name the hop moved off the first component under home is the first again. Braces are not rescanned."""
+        text = word.text
+        if _CRED_COMPONENT_RE.search(text):
+            self.hit("CRED-PATH-BASH", text)
+            return
+        spliced = _spliced(word)
+        for comp in spliced.split("/"):
+            if any(_names_b(comp, name) for name in CRED_DIR_NAMES):
+                self.hit("CRED-PATH-BASH", text)
+            if _names_b(comp, MCP_PROJECT_FILE):
+                self.hit("MCP-REGISTER-BASH", text)
+        comps = spliced.split("/")
+        if any(_names_b(a, ".git") and _can_be_b(b, "hooks") for a, b in zip(comps, comps[1:])):
+            self.hit("GIT-SIGNING-CONFIG", text)
+        if spliced.startswith("/"):
+            parts = tuple(_components(os.path.normpath(spliced)))
+            if any(len(parts) == len(system) and all(_can_be_b(p, s) for p, s in zip(parts, system)) for system in _SYSTEM_GITCONFIG_PARTS):
+                self.hit("GIT-SIGNING-CONFIG", text)
+        readings = self._readings_b(spliced, bases)
+        dotglob = self._dotglob
+        for rest in self._home_rests_b(spliced, readings):
+            if not rest:
+                continue
+            head = rest[0]
+            if _SPLICED in head or any(_names_b(head, name, bare_dot=True, dotglob=dotglob) for name in CRED_DIR_NAMES):
+                self.hit("CRED-PATH-BASH", text)
+            if _claude_protected_b(rest, mutating, dotglob):
+                self.hit("SELF-PROTECT-BASH", text)
+            if len(rest) == 1 and _names_b(head, CLAUDE_STATE_FILE, dotglob=dotglob):
+                self.hit("MCP-REGISTER-BASH", text)
+            if _names_b(head, ".gitconfig", dotglob=dotglob) or (len(rest) > 1 and _names_b(head, ".config", dotglob=dotglob) and _can_be_b(rest[1], "git")):
+                self.hit("GIT-SIGNING-CONFIG", text)
+        if "/" in spliced and _SPLICED not in spliced and not any(ch in spliced for ch in GLOB_CHARS):
+            readings = _unique(readings + [os.path.realpath(r) for r in readings])
+        if any(_has_cred_component(r) or any(_inside(r, d) for d in self.ctx.cred_dirs) for r in readings):
+            self.hit("CRED-PATH-BASH", text)
+        if self.ctx.is_protected(readings):
+            self.hit("SELF-PROTECT-BASH", text)
+        if self.ctx.is_mcp_registration(readings):
+            self.hit("MCP-REGISTER-BASH", text)
+        if self.ctx.is_signing_mention(readings):
+            self.hit("GIT-SIGNING-CONFIG", text)
+
+    def _readings_b(self, spliced: str, bases: list) -> list:
+        """The normalised absolute paths a path word can name: an absolute word as written; ``~``, ``~user``,
+        ``$HOME`` and ``${HOME}`` against every home; ``~+`` ($PWD) against every base (the cwd and each ``cd``
+        target); ``~-`` ($OLDPWD) and ``~N`` (the directory stack), which can hold a directory from before the
+        command, against every base and home; any other word not starting with a computed part against every base."""
+        if spliced.startswith("/"):
+            return [os.path.normpath(spliced)]
+        tilde = _TILDE_DIR_RE.match(spliced)
+        home = None if tilde else _HOME_SPELLING_RE.match(spliced)
+        if tilde:
+            roots = list(bases) if spliced.startswith("~+") else list(bases) + list(self.ctx.home_variants)
+            tail = spliced[tilde.end() :]
+        elif home:
+            roots, tail = list(self.ctx.home_variants), spliced[home.end() :]
+        elif spliced.startswith(("~", "$", _SPLICED)) or not spliced:
+            return []
+        else:
+            roots, tail = list(bases), spliced
+        return _unique([os.path.normpath(os.path.join(root, tail.lstrip("/"))) for root in roots])
+
+    def _home_rests_b(self, spliced: str, readings: list) -> list:
+        """Each reading of a word as a path below a home, as a component list: main's (``_home_rests``: the word
+        as written, so ``~/$x/../y`` keeps its computed first component) and each normalised reading's."""
+        rests = []
+        m = _HOME_SPELLING_RE.match(spliced) or _HOME_LIKE_RE.match(spliced)
+        if m:
+            rests.append(_components(spliced[m.end() :]))
+        for home in self.ctx.home_variants:
+            tail = _strip_prefix_ci(spliced, home)
+            if tail is not None:
+                rests.append(_components(tail))
+        first, sep, remainder = spliced.partition("/")
+        if sep and first and _SPLICED in first and not m:
+            rests.append(_components(remainder))
+        for reading in readings:
+            for home in self.ctx.home_variants:
+                tail = _strip_prefix_ci(reading, home)
+                if tail is not None:
+                    rests.append(_components(tail))
+        return rests
 
     def _home_rests(self, text: str, bases: list) -> list:
         """Each reading of ``text`` as a path below a home directory, as a component list."""
@@ -1731,9 +2502,14 @@ class BashAnalyzer(object):
         return any(_inside(home, c) for c in candidates for home in self.ctx.home_variants)
 
     def _cd_bases(self, segments: list, bases: list) -> list:
-        """Directories a relative word may be relative to: the cwd plus every ``cd`` target."""
+        """Directories a relative word may be relative to: the cwd plus every ``cd`` target. Each relative ``cd``
+        can double them (it may or may not have run), so more than ``MAX_CD_BASES`` are refused (fail closed)."""
         out = list(bases)
         for seg in segments:
+            out = _unique(out)
+            if len(out) > MAX_CD_BASES:
+                raise MalformedInput("a command whose cd targets make more than %d directories (MAX_CD_BASES) cannot be analysed" % MAX_CD_BASES)
+            self._tick()
             args = seg.args()
             res = resolve_command(args)
             if res.index is None or _basename(args[res.index].text) not in ("cd", "pushd"):
@@ -1750,7 +2526,10 @@ class BashAnalyzer(object):
                 out.append(os.path.normpath(target.text))
             elif not target.text.startswith(("~", "$")):
                 out.extend(os.path.normpath(os.path.join(b, target.text)) for b in list(out))
-        return _unique(out)
+        out = _unique(out)
+        if len(out) > MAX_CD_BASES:
+            raise MalformedInput("a command whose cd targets make more than %d directories (MAX_CD_BASES) cannot be analysed" % MAX_CD_BASES)
+        return out
 
     def _piped_texts(self, seg: Segment, segments: list) -> list:
         """The words and here-documents of the segments piped into ``seg``."""
@@ -1909,6 +2688,19 @@ class Context(object):
                 after = parts[parts.index(".git") + 1 :]
                 if after[:1] == ["hooks"] or after in (["config"], ["config.worktree"]) or (len(after) == 3 and after[0] == "worktrees" and after[2] == "config.worktree"):
                     return True
+        return False
+
+    def is_signing_mention(self, candidates: list) -> bool:
+        """What ``signing_re`` denies by mention, on normalised paths: ~/.gitconfig, anything under ~/.config/git,
+        git's system gitconfig, or a .git/hooks path (``.git/refs/../hooks`` is one). A repository's .git/config is
+        not one: gap 9."""
+        files = [f.casefold() for f in self.signing_files]
+        for c in candidates:
+            if c.casefold() in files or any(_inside(c, d) for d in self.signing_dirs):
+                return True
+            parts = [p.casefold() for p in c.split("/")]
+            if any(a == ".git" and b == "hooks" for a, b in zip(parts, parts[1:])):
+                return True
         return False
 
     def in_cred_dir(self, candidates: list) -> bool:
@@ -2187,7 +2979,7 @@ def _evidence(text: str) -> str:
 
 def deny_reason(hits: list, tool: str) -> str:
     rule = RULE_BY_ID[hits[0].rule_id]
-    reason = "%s denied this %s call. Rule %s: %s (matched: %s). %s. This action is OWNER-run under D11 of %s: do not retry it or look for a way around the guard; ask the owner to run it in their own terminal." % (GUARD_NAME, tool, rule.rule_id, rule.description, _evidence(hits[0].evidence), rule.reason, PLAN_DOC)
+    reason = "%s denied this %s call. Rule %s: %s (matched: %s). %s. This action is OWNER-run under D11 of %s: do not retry it or look for a way around the guard; ask the Overtoad to run it in their own terminal." % (GUARD_NAME, tool, rule.rule_id, rule.description, _evidence(hits[0].evidence), rule.reason, PLAN_DOC)
     others = [h.rule_id for h in hits[1:]]
     if others:
         reason += " Also matched: %s." % ", ".join(others)
@@ -2288,6 +3080,16 @@ def self_test() -> int:
             ("mcp__serena__replace_symbol_body", {"name_path": "f", "relative_path": "src/a.py", "body": "x"}, None),
             ("mcp__serena__execute_shell_command", {"command": "cat ~/.ssh/config"}, "CRED-PATH-BASH"),
             ("mcp__serena__read_file", {"relative_path": ".git/config"}, None),
+            # 1.4.0: the words bash builds (gap 12), each measured on bash 5.3.9
+            ("Bash", {"command": "cat ~/.ss{h,b\\}c}/config"}, "CRED-PATH-BASH"),
+            ("Bash", {"command": "cat ~/X/../.ss{h,$(:{)}/config"}, "CRED-PATH-BASH"),
+            ("Bash", {"command": "cat ~/X/../.ss$(:)h/config"}, "CRED-PATH-BASH"),
+            ("Bash", {"command": ": ${x:-{}; sudo id; : }"}, "PRIV-ESCALATION"),
+            ("Bash", {"command": "gh api --{method=POST,paginate} repos/o/r"}, "GH-API-WRITE"),
+            ("Bash", {"command": "echo '{%s}'" % ",".join("n%d" % i for i in range(MAX_BRACE_ALTERNATIVES + 1))}, None),
+            ("Bash", {"command": 'sud"$(:)"o id'}, "PRIV-ESCALATION"),
+            ("Bash", {"command": "cp hook .git/ho$(:)oks/post-commit"}, "GIT-SIGNING-CONFIG"),
+            ("Bash", {"command": "shopt -s dotglob; cat ~/*/config"}, "CRED-PATH-BASH"),
         ]
         failures = []
         for tool, tool_input, expected in cases:
@@ -2317,7 +3119,7 @@ def self_test() -> int:
 
 SETTINGS_HELP = (
     """\
-settings entry (util/install_claude_agent_guard.bash prints it, or merges it with --apply; owner-run):
+settings entry (util/install_claude_agent_guard.bash prints it, or merges it with --apply; Overtoad-run):
   "hooks": {"PreToolUse": [{"matcher": "%s",
     "hooks": [{"type": "command", "command": "/usr/bin/python3",
                "args": ["-I", "<home>/.claude/hooks/juniper_agent_guard.py"],

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-28
 Status: ad-hoc — one-off (post-publication check of juniper-cascor 0.13.0)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/releases/RELEASE_NOTES_juniper-cascor_v0.13.0.md (the release this checks);
          notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (v1.15.7 records this probe);
          util/ad-hoc/2026-10-27_verify_recurrence_client_0_3_1_published_wheel.py (the pattern this follows)

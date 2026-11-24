@@ -9,7 +9,7 @@ Status: retired 2026-07-06 — migration complete (kept for provenance)
 Retire when: the notes/ naming-convention migration PR is merged and verified
 Related: notes/ naming-convention migration PR (chore/notes-naming-convention)
 
-Scope (per owner decision 2026-07-04): all tracked notes/**/*.md EXCEPT
+Scope (per Overtoad decision 2026-07-04): all tracked notes/**/*.md EXCEPT
 notes/{legacy,releases,requirements,templates}/ and README.md files.
 Date: first YYYY-MM-DD in the filename, else the file's last git-commit date.
 Tag: one of ML, CANOPY, RECURRENCE, CASCOR, CASCOR-CLIENT, CASCOR-WORKER,

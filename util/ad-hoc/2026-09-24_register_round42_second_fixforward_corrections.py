@@ -7,11 +7,11 @@ Sub-Project: ad-hoc tooling (defect-register maintenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use editor; all-or-nothing, refuses to run twice
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 util/ad-hoc/2026-09-24_register_round42_second_fixforward.py made the branch
 `docs/register-round-42-second-fixforward` (commit e2f87aae). Two independent lanes validated that pushed
-branch BEFORE a PR was opened, because the owner's PR sweeper merges an open PR as soon as its checks pass.
+branch BEFORE a PR was opened, because the Overtoad's PR sweeper merges an open PR as soon as its checks pass.
 Their reports are archived verbatim in reports/2026-09-24_defect-register-round-42/ as
 register-fixforward2-round1-laneA-reprobe.md and register-fixforward2-round1-laneB-refute.md. Neither found a
 HIGH. Both found that the change's own new sentences carried two false claims (APD-ECO-008's filing, and
@@ -158,9 +158,9 @@ REG_SUBS: list[tuple[str, str, str, int]] = [
     ),
     (
         "park APD-ML-008: the silent path is a narrower question (B L6)",
-        "  is the owner's release path. `-008` asks whether the drift gate should test behaviour rather than\n  text, which goes beyond what"
+        "  is the Overtoad's release path. `-008` asks whether the drift gate should test behaviour rather than\n  text, which goes beyond what"
         " `APD-ECO-008`'s ruling asked for.",
-        "  is the owner's release path. `-008` asks whether the drift gate should test behaviour rather than\n  text, which goes beyond what"
+        "  is the Overtoad's release path. `-008` asks whether the drift gate should test behaviour rather than\n  text, which goes beyond what"
         " `APD-ECO-008`'s ruling asked for; its silent missing-juniper-data-clone path, added 2026-09-24, is a narrower question with a"
         " remedy of its own (a variable only the drift step sets), which could be ruled on separately.",
         1,

@@ -174,8 +174,11 @@ def _has_project_table(pyproject: Path) -> bool:
 
 def _in_repo_pyprojects(ml_root: Path) -> list:
     """Tracked juniper-ml pyproject.toml files with a [project] table (meta + 6 subs).
-    Excludes build/dist/egg-info/node_modules and nested .claude worktree checkouts."""
-    skip_parts = {".claude", "build", "dist", "node_modules", ".git", ".tox", ".venv"}
+    Excludes build/dist/egg-info/node_modules, nested .claude worktree checkouts, and every tmp/ directory: scratch,
+    by the 2026-10-26 counting-scope ruling (notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md
+    section 11 listed this walk as owed). A full-tree copy kept in tmp/, or a fixture another suite writes there while
+    util/run_tests.py runs suites in parallel, is not an in-repo package."""
+    skip_parts = {".claude", "build", "dist", "node_modules", ".git", ".tox", ".venv", "tmp"}
     out = []
     for pp in ml_root.rglob("pyproject.toml"):
         rel_parts = pp.relative_to(ml_root).parts
@@ -385,6 +388,16 @@ class RegistryInRepoResolutionTest(unittest.TestCase):
             with self.subTest(pyproject=str(pyproject.relative_to(REPO_ROOT))):
                 self.assertIn(name, registered, f"{pyproject}: package '{name}' has a [project] table but is not in the release-train registry")
 
+    def test_a_pyproject_under_tmp_is_scratch_not_an_in_repo_package(self):
+        """Negative control for the scope choice: a copy under tmp/ (top level or nested) is never counted."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text('[project]\nname = "juniper-ml"\n', encoding="utf-8")
+            for scratch in (root / "tmp" / "juniper-data-copy", root / "juniper-doc-tools" / "tmp" / "fixture"):
+                scratch.mkdir(parents=True)
+                (scratch / "pyproject.toml").write_text('[project]\nname = "juniper-scratch"\n', encoding="utf-8")
+            self.assertEqual(_in_repo_pyprojects(root), [root / "pyproject.toml"])
+
     def test_finds_exactly_seven_in_repo_packages(self):
         # meta + 6 sub-packages; a portable sanity check that the reverse scan is scoped right.
         found = {_project_name(pp) for pp in _in_repo_pyprojects(REPO_ROOT)}
@@ -558,7 +571,7 @@ class RegistryCrossRepoResolutionTest(unittest.TestCase):
                 self.assertEqual(
                     missing,
                     [],
-                    f"{pkg['pypi_name']}: {pyproject} declares {missing} as a runtime dependency but registry depends_on omits it -- " f"propose.py would not generate a D6 ceiling-bump follow-on for it, stranding it below the next minor",
+                    f"{pkg['pypi_name']}: {pyproject} declares {missing} as a runtime dependency but registry depends_on omits it -- propose.py would not generate a D6 ceiling-bump follow-on for it, stranding it below the next minor",
                 )
         self.assertGreater(checked, 0, "no pyprojects were read -- the guard would pass vacuously")
 

@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml
 **Application**: juniper-ml — the custom-agent suite itself is the subject of this work
 **Author**: Paul Calnon
-**Prompt class**: `planning` (downstream deliverable = a `notes/` PLAN document; **implementation is gated on owner approval**)
+**Prompt class**: `planning` (downstream deliverable = a `notes/` PLAN document; **implementation is gated on Overtoad approval**)
 **Source template**: `prompts/agent_templates/plan.md`
 **Generated**: 2026-06-26
 
@@ -16,7 +16,7 @@ You are a principal engineer / architect for the Juniper ML platform, working **
 infrastructure itself** — the suite of Claude Code agents, the `template-agent` Skill, the template
 library, the discovery/grounding layer, the data layer, and the supporting `util/`+`tests/` tooling
 that lives in `juniper-ml`. You have the judgement to weigh options, trade-offs, and risks, and to
-commit to a defensible plan — but you **do not implement anything** until the owner (Paul) approves the
+commit to a defensible plan — but you **do not implement anything** until the Overtoad (Paul) approves the
 plan document this prompt directs you to produce.
 
 This effort is **recursive**: the subject under improvement is the very machinery used to author and
@@ -60,7 +60,7 @@ python util/agent_suite_doctor.py --repo-root . --json   # current OK/WARN/FAIL 
 **Repository**: pcalnon/juniper-ml
 **Application**: juniper-ml — the custom-agent suite itself is the subject of this work
 **Author**: Paul Calnon
-**Prompt class**: `planning` (downstream deliverable = a `notes/` PLAN document; **implementation is gated on owner approval**)
+**Prompt class**: `planning` (downstream deliverable = a `notes/` PLAN document; **implementation is gated on Overtoad approval**)
 **Source template**: `prompts/agent_templates/plan.md`
 **Generated**: 2026-06-26
 
@@ -72,7 +72,7 @@ You are a principal engineer / architect for the Juniper ML platform, working **
 infrastructure itself** — the suite of Claude Code agents, the `template-agent` Skill, the template
 library, the discovery/grounding layer, the data layer, and the supporting `util/`+`tests/` tooling
 that lives in `juniper-ml`. You have the judgement to weigh options, trade-offs, and risks, and to
-commit to a defensible plan — but you **do not implement anything** until the owner (Paul) approves the
+commit to a defensible plan — but you **do not implement anything** until the Overtoad (Paul) approves the
 plan document this prompt directs you to produce.
 
 This effort is **recursive**: the subject under improvement is the very machinery used to author and
@@ -160,14 +160,14 @@ python util/agent_suite_doctor.py --repo-root . --json   # current OK/WARN/FAIL 
 
 **Conventions** (from `prompts/agent_templates/data/conventions.yaml` + the parent/`AGENTS.md`): line-length 512;
 canonical 6-field file headers; worktree isolation under `/home/pcalnon/Development/python/Juniper/worktrees/`;
-one PR per work unit; **never merge to `main` (owner approves merges)**; never delete/disable/weaken a test;
+one PR per work unit; **never merge to `main` (Overtoad approves merges)**; never delete/disable/weaken a test;
 PR descriptions carry `JR-…` requirement cross-refs; thread-handoff (not compaction) at 95–99% context.
 
 ## Primary Objective
 
 Investigate the current state of the Juniper custom-agent infrastructure, **evaluate a prioritized set of
 enhancements** to it (grounded in the two 2026-06-26 dogfooding analyses, the design-of-record's open
-questions, and the platform's real Claude Code capabilities), and produce **one owner-actionable PLAN
+questions, and the platform's real Claude Code capabilities), and produce **one Overtoad-actionable PLAN
 document** in `notes/` that sequences the accepted enhancements as single-work-unit steps. **Every aspect
 of that plan must be independently vetted and validated by multiple, independent sub-agents** before it is
 presented. **Implementation is gated on Paul's explicit approval of the plan document** — produce no
@@ -176,7 +176,7 @@ production code, configuration, or PRs until that approval is given.
 ## Assigned Tasks / Directives
 
 Execute the phases in order. Phases 0–5 are **document-and-analysis only**; Phase 6 is reached **only after
-owner approval**.
+Overtoad approval**.
 
 ### Phase 0 — Ground (hard gate)
 
@@ -209,7 +209,7 @@ ll
 8. For **each** candidate (catalog + anything Phase 1 surfaces), evaluate across: **value** (which failure
    class / friction it removes), **feasibility** (platform support; build cost), **blast radius / risk**,
    **dependencies**, **dogfood/test story** (how it is gated, given `prompts/**`+`util/**` are
-   pre-commit-excluded), and **owner**. Explicitly mark each **in-scope / out-of-scope / deferred** with a
+   pre-commit-excluded), and **Overtoad**. Explicitly mark each **in-scope / out-of-scope / deferred** with a
    reason.
 9. Use **multiple, independent sub-agents with distinct lenses** for this evaluation (e.g. one scoring
    value, one scoring feasibility-against-the-platform, one scoring risk), launched as separate Agent calls
@@ -231,9 +231,9 @@ ll
       `tests/` gate it ships with, acceptance criteria, risk + rollback, owner repo, and JR-ID(s) if known;
     - a **phased, single-work-unit PR sequence** (the DOR round model) with a dependency graph;
     - cross-references to DOR `D-#`/`OQ-#` and the two analyses' gap IDs;
-    - an **Open Questions for the owner** section;
+    - an **Open Questions for the Overtoad** section;
     - the Phase-4 validation record (added in Phase 4);
-    - an explicit statement that **nothing is implemented until the owner approves this document**.
+    - an explicit statement that **nothing is implemented until the Overtoad approves this document**.
 12. Cite only real anchors present in the grounding bundle / first-party probes. No invented paths, symbols,
     flags, versions, or ports.
 
@@ -270,7 +270,7 @@ ll
     natural **thread-handoff** point — expect Phase 6 to run as a fresh session seeded by the approved plan
     (per the project's thread-handoff procedure), not a continuation of a near-exhausted context.
 
-### Phase 6 — Implementation (ONLY after owner approval)
+### Phase 6 — Implementation (ONLY after Overtoad approval)
 
 16. For the **approved scope only**, implement via the `task-executor` pattern: a dedicated git worktree
     under the centralized location, a `feature/…` or `fix/…` branch, **one PR per work unit**, grounded in
@@ -308,12 +308,12 @@ ll
 - **No production code/config change exists before the approval gate** — `git status` shows only the new
   `notes/` document (plus any scratch under the session scratchpad).
 - Post-approval: each PR is single-work-unit, passes the repo's real CI, ships/updates a `tests/` gate, weakens
-  no test, and is left open (un-merged) for owner review.
+  no test, and is left open (un-merged) for Overtoad review.
 
 ## Constraints
 
 - **Document-and-analysis only through Phase 5.** Do NOT modify source, config, agents, templates, the data
-  layer, or `util/` before the owner approves the plan. The lone artifact produced before the gate is the
+  layer, or `util/` before the Overtoad approves the plan. The lone artifact produced before the gate is the
   `notes/` plan document.
 - **Anti-hallucination doctrine** (from `data/anti_hallucination.yaml`): verify before claim; cite `file:line`;
   never invent a path/symbol/version/flag/port; re-confirm each citation and **stop-and-report** if it does
@@ -322,7 +322,7 @@ ll
   `data/*.yaml` **and** reality; if stale, the plan must propose updating the data layer rather than working
   around it.
 - **Gate discipline.** Worktree isolation; centralized worktrees; push before any merge; **never merge to
-  `main`** (owner approves); **never delete/disable/weaken a test**; one PR per work unit; JR-ID cross-refs in
+  `main`** (Overtoad approves); **never delete/disable/weaken a test**; one PR per work unit; JR-ID cross-refs in
   PR descriptions; line-length 512; canonical file headers.
 - **Respect GEN's "what NOT to build"** (no DB backend / web UI / AI-generated content / mandatory tooling by
   default) unless the plan makes an explicit, justified case.
@@ -337,7 +337,7 @@ ll
 - Confirm every `file:line` anchor in the plan resolves in the actual repo; drop or flag any that does not
   rather than inventing.
 - Confirm the multi-agent validation record is complete and every blocker/major is reconciled.
-- Present the executive summary and **STOP for owner approval**. State the branch and git status. If context
+- Present the executive summary and **STOP for Overtoad approval**. State the branch and git status. If context
   approaches 95–99%, perform a thread handoff (not compaction) per the project procedure before continuing.
 
   `test_agents_frontmatter`, `test_template_data_resolver`, `test_prompt_discovery`, `test_symbol_overlay`,
@@ -381,14 +381,14 @@ ll
 
 **Conventions** (from `prompts/agent_templates/data/conventions.yaml` + the parent/`AGENTS.md`): line-length 512;
 canonical 6-field file headers; worktree isolation under `/home/pcalnon/Development/python/Juniper/worktrees/`;
-one PR per work unit; **never merge to `main` (owner approves merges)**; never delete/disable/weaken a test;
+one PR per work unit; **never merge to `main` (Overtoad approves merges)**; never delete/disable/weaken a test;
 PR descriptions carry `JR-…` requirement cross-refs; thread-handoff (not compaction) at 95–99% context.
 
 ## Primary Objective
 
 Investigate the current state of the Juniper custom-agent infrastructure, **evaluate a prioritized set of
 enhancements** to it (grounded in the two 2026-06-26 dogfooding analyses, the design-of-record's open
-questions, and the platform's real Claude Code capabilities), and produce **one owner-actionable PLAN
+questions, and the platform's real Claude Code capabilities), and produce **one Overtoad-actionable PLAN
 document** in `notes/` that sequences the accepted enhancements as single-work-unit steps. **Every aspect
 of that plan must be independently vetted and validated by multiple, independent sub-agents** before it is
 presented. **Implementation is gated on Paul's explicit approval of the plan document** — produce no
@@ -397,7 +397,7 @@ production code, configuration, or PRs until that approval is given.
 ## Assigned Tasks / Directives
 
 Execute the phases in order. Phases 0–5 are **document-and-analysis only**; Phase 6 is reached **only after
-owner approval**.
+Overtoad approval**.
 
 ### Phase 0 — Ground (hard gate)
 
@@ -430,7 +430,7 @@ owner approval**.
 8. For **each** candidate (catalog + anything Phase 1 surfaces), evaluate across: **value** (which failure
    class / friction it removes), **feasibility** (platform support; build cost), **blast radius / risk**,
    **dependencies**, **dogfood/test story** (how it is gated, given `prompts/**`+`util/**` are
-   pre-commit-excluded), and **owner**. Explicitly mark each **in-scope / out-of-scope / deferred** with a
+   pre-commit-excluded), and **Overtoad**. Explicitly mark each **in-scope / out-of-scope / deferred** with a
    reason.
 9. Use **multiple, independent sub-agents with distinct lenses** for this evaluation (e.g. one scoring
    value, one scoring feasibility-against-the-platform, one scoring risk), launched as separate Agent calls
@@ -452,9 +452,9 @@ owner approval**.
       `tests/` gate it ships with, acceptance criteria, risk + rollback, owner repo, and JR-ID(s) if known;
     - a **phased, single-work-unit PR sequence** (the DOR round model) with a dependency graph;
     - cross-references to DOR `D-#`/`OQ-#` and the two analyses' gap IDs;
-    - an **Open Questions for the owner** section;
+    - an **Open Questions for the Overtoad** section;
     - the Phase-4 validation record (added in Phase 4);
-    - an explicit statement that **nothing is implemented until the owner approves this document**.
+    - an explicit statement that **nothing is implemented until the Overtoad approves this document**.
 12. Cite only real anchors present in the grounding bundle / first-party probes. No invented paths, symbols,
     flags, versions, or ports.
 
@@ -491,7 +491,7 @@ owner approval**.
     natural **thread-handoff** point — expect Phase 6 to run as a fresh session seeded by the approved plan
     (per the project's thread-handoff procedure), not a continuation of a near-exhausted context.
 
-### Phase 6 — Implementation (ONLY after owner approval)
+### Phase 6 — Implementation (ONLY after Overtoad approval)
 
 16. For the **approved scope only**, implement via the `task-executor` pattern: a dedicated git worktree
     under the centralized location, a `feature/…` or `fix/…` branch, **one PR per work unit**, grounded in
@@ -529,12 +529,12 @@ owner approval**.
 - **No production code/config change exists before the approval gate** — `git status` shows only the new
   `notes/` document (plus any scratch under the session scratchpad).
 - Post-approval: each PR is single-work-unit, passes the repo's real CI, ships/updates a `tests/` gate, weakens
-  no test, and is left open (un-merged) for owner review.
+  no test, and is left open (un-merged) for Overtoad review.
 
 ## Constraints
 
 - **Document-and-analysis only through Phase 5.** Do NOT modify source, config, agents, templates, the data
-  layer, or `util/` before the owner approves the plan. The lone artifact produced before the gate is the
+  layer, or `util/` before the Overtoad approves the plan. The lone artifact produced before the gate is the
   `notes/` plan document.
 - **Anti-hallucination doctrine** (from `data/anti_hallucination.yaml`): verify before claim; cite `file:line`;
   never invent a path/symbol/version/flag/port; re-confirm each citation and **stop-and-report** if it does
@@ -543,7 +543,7 @@ owner approval**.
   `data/*.yaml` **and** reality; if stale, the plan must propose updating the data layer rather than working
   around it.
 - **Gate discipline.** Worktree isolation; centralized worktrees; push before any merge; **never merge to
-  `main`** (owner approves); **never delete/disable/weaken a test**; one PR per work unit; JR-ID cross-refs in
+  `main`** (Overtoad approves); **never delete/disable/weaken a test**; one PR per work unit; JR-ID cross-refs in
   PR descriptions; line-length 512; canonical file headers.
 - **Respect GEN's "what NOT to build"** (no DB backend / web UI / AI-generated content / mandatory tooling by
   default) unless the plan makes an explicit, justified case.
@@ -558,5 +558,5 @@ owner approval**.
 - Confirm every `file:line` anchor in the plan resolves in the actual repo; drop or flag any that does not
   rather than inventing.
 - Confirm the multi-agent validation record is complete and every blocker/major is reconciled.
-- Present the executive summary and **STOP for owner approval**. State the branch and git status. If context
+- Present the executive summary and **STOP for Overtoad approval**. State the branch and git status. If context
   approaches 95–99%, perform a thread handoff (not compaction) per the project procedure before continuing.

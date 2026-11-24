@@ -7,7 +7,7 @@
 **Version**: 0.7.1
 **Last Updated**: 2026-08-26 (G4 + G6 CLOSED on live counts, G5 rewritten — F2 shipped/confirmed, F3 audited + merged as cascor#592 — G2 annotated with the worker-side verification; evidence in `reports/perf-lane-post-fix-2026-08-26/`)
 
-Records the owner's 2026-08-16 direction on the **§12 performance lane** — *"open engineering …
+Records the Overtoad's 2026-08-16 direction on the **§12 performance lane** — *"open engineering …
 needs design, planning, verification, and documentation before development can begin"* — and, as
 directed, **prioritises each phase against the program's other outstanding and in-progress work**.
 
@@ -41,7 +41,7 @@ premise strong enough to build from.
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
 | **P1 — Design of Rec** | DoR: "what measured, which tier, which baseline, what budget, & what regression" *means*--§12.3 scenario matrix resolved, draft -> fixed, & pick Q-8 baseline directory (name, layout, retention, author). | `notes/<DOC>` exists & reviewed.                           |
 | **P2 — Planning**      | Work items with repo, size, and dependencies — the §14-style wave table this program uses everywhere else.                                                                                                 | Items are enumerated and sequenced.                        |
-| **P3 — Verification**  | The thresholds ratified (owner), and the measurement contract demonstrated end-to-end on a real run before anything is gated on it.                                                                        | PF thresholds ratified; a dry measurement pass reproduces. |
+| **P3 — Verification**  | The thresholds ratified (Overtoad), and the measurement contract demonstrated end-to-end on a real run before anything is gated on it.                                                                        | PF thresholds ratified; a dry measurement pass reproduces. |
 | **P4 — Documentation** | Operator surface in `docs/REFERENCE.md` + the cheatsheet; the baseline directory documented as a first-class artifact location.                                                                            | Docs merged.                                               |
 
 Only then: development.
@@ -52,12 +52,12 @@ search):
 
 | phase | deliverable document | state |
 |---|---|---|
-| **P1 — Design** | [`JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md`](JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md) | written; acceptance checklist still shows `[ ] Reviewed — owner` |
-| **P2 — Planning** | [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md) | written; awaiting owner review |
+| **P1 — Design** | [`JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md`](JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PERF-LANE-P1-DESIGN.md) | written; acceptance checklist still shows `[ ] Reviewed — Overtoad` |
+| **P2 — Planning** | [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md`](JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PERF-LANE-P2-PLAN.md) | written; awaiting Overtoad review |
 | **P3 — Verification** | [`JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md`](JUNIPER_2026-09-02_JUNIPER-ECOSYSTEM_PF1-INSTRUMENT-RESOLUTION-AND-HEADROOM-SWEEP.md), building on [`JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PF1-VARIANCE-RESULTS.md`](JUNIPER_2026-08-31_JUNIPER-ECOSYSTEM_PF1-VARIANCE-RESULTS.md), [`JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-LOADED-AND-BRIDGED-RESULTS.md`](JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-LOADED-AND-BRIDGED-RESULTS.md) and [`JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-HEAVY-LOAD-AND-DURATION-RESULTS.md`](JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-HEAVY-LOAD-AND-DURATION-RESULTS.md) | measurement done and gate decisions taken; the *"dry measurement pass reproduces end-to-end"* half is Wave 1 of P2 |
 | **P4 — Documentation** | — | not started |
 
-**P3 ran before P2, at the owner's direction.** That inverts Tier 4's ordering below, and it was the
+**P3 ran before P2, at the Overtoad's direction.** That inverts Tier 4's ordering below, and it was the
 right call rather than a shortcut: P3 de-ratified `timings.drive`, which is the metric a P2 written
 in August would have planned a comparator around.
 
@@ -82,7 +82,7 @@ measure the budget rather than the workload. This is the same class of error tha
 
 ## 2. Open and in-progress work inventory (2026-08-16)
 
-| id    | work                                                                                                                 | state                                                                                                              | owner-blocked?     |
+| id    | work                                                                                                                 | state                                                                                                              | Overtoad-blocked?     |
 |-------|----------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|--------------------|
 | **A** | **D-A optimizer restore defect** — optimizer state silently dropped on every snapshot load, current version included | Ready; unblocked                                                                                                   | no                 |
 | **B** | **5.3 lift `run_suite` cascor-parallel refusal** (`run_suite.py:112`)                                                | Ready except for an **external** gate: no released cascor carries #523                                             | no                 |
@@ -200,7 +200,7 @@ Ordering rationale, highest first. Three criteria: **correctness before capabili
 3. **E-6.1 identity → E-6.2 index.** Strictly ordered, and the prerequisite for any retention
    conversation. Also the item that turns 27,869 snapshots from a heap into something queryable —
    valuable even if nothing is ever deleted.
-4. **C — W-12 `csv_import`.** Owner-requested, un-parked, and now spans both corpora. **Re-estimate
+4. **C — W-12 `csv_import`.** The Overtoad-requested, un-parked, and now spans both corpora. **Re-estimate
    before scheduling**: the plan's `S` predates the widening to recurrence, which adds a 3-D import
    path and a second matrix row.
 5. **D — the `JuniperRecurrence` env.** Small, self-contained, mostly provisioning + documentation
@@ -218,9 +218,9 @@ Ordering rationale, highest first. Three criteria: **correctness before capabili
 
 ### Tier 4 — the perf lane, in order
 
-7. **F-P1 Design**, then **F-P2 Planning**, then **F-P3 Verification** (owner ratifies thresholds), then **F-P4 Documentation**, then development.
+7. **F-P1 Design**, then **F-P2 Planning**, then **F-P3 Verification** (Overtoad ratifies thresholds), then **F-P4 Documentation**, then development.
 
-**Why §12 sits last among the engineering items** — and this is a scheduling judgement, not a demotion: it is the only item whose *first* phase is a design pass, it is the only one with an owner-ratification step inside it, and its most valuable input (the PF suites) is already banked and does not decay.
+**Why §12 sits last among the engineering items** — and this is a scheduling judgement, not a demotion: it is the only item whose *first* phase is a design pass, it is the only one with an Overtoad-ratification step inside it, and its most valuable input (the PF suites) is already banked and does not decay.
 Meanwhile items A and E-6.3 are live correctness defects. Correctness before capability.
 
 **One dependency worth pulling forward.** F-P1 must specify the Q-8 baseline directory. That is
@@ -247,7 +247,7 @@ They are listed only so the prioritisation is honest about contention:
 Tier 1   A  (optimizer fix) ─────────────── independent
          E-6.3 (load API, dir move) ─────── independent
 
-Tier 2   E-6.1 identity ──> E-6.2 index ──> E-6.4 retention proposal ──> [owner ratifies]
+Tier 2   E-6.1 identity ──> E-6.2 index ──> E-6.4 retention proposal ──> [Overtoad ratifies]
          C  (csv_import, re-estimate first)
          D  (recurrence env)
 
@@ -256,12 +256,12 @@ Tier 3   B  (cascor-parallel) ──gated on── [cascor release carrying #523
 Tier 4   F-P1 design ──> F-P2 plan ──> F-P3 verify ──> F-P4 docs ──> §12 development
              ^
              └── Q-8 (answered): dedicated baseline directory is a P1 input
-             └── PF thresholds (owner) land in F-P3
+             └── PF thresholds (Overtoad) land in F-P3
 ```
 
 ---
 
-## 5. Owner items still open after 2026-08-16
+## 5. The Overtoad items still open after 2026-08-16
 
 | item                               | note                                                                                                                                                                                                    |
 |------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

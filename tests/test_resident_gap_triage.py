@@ -13,7 +13,7 @@ Failure class this pins
 -----------------------
 A census that can bury a known-real hazard and still print success.
 
-The first version scored a 2-sentence sliding window. The owner-settled
+The first version scored a 2-sentence sliding window. The Overtoad-settled
 cascor ``max_epochs`` / ``output_epochs`` split (finding L-2) scored **2**
 and was buried, because the prohibition and the silence marker sit four
 paragraphs apart. Window scoring is the same vacuous-pass class as a
@@ -88,7 +88,7 @@ class ScoreWindowTest(unittest.TestCase):
         self.assertLess(
             max(window_scores),
             block_n,
-            f"a 2-sentence window already equals the block ({max(window_scores)} vs {block_n}); " "fixture is not the documented miss",
+            f"a 2-sentence window already equals the block ({max(window_scores)} vs {block_n}); fixture is not the documented miss",
         )
 
     def test_log_level_warning_demotes_hazard_noun_only(self):

@@ -6,7 +6,7 @@
 # Author: Paul Calnon
 # Created: 2026-09-11
 # Status: ad-hoc -- investigation
-# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related: juniper-ml#1909 (renames the module constant _ML_OWN_WORKFLOWS, a same-file rename)
 #
 # Why: a same-file rename reads as a LOST symbol to the AST screen, so the rename of

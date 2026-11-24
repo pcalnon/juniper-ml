@@ -12,7 +12,7 @@ suite:
 # the health waits (180) + dataset (120) + train, predict, crossval and save_model at the base's 900 s wall each.
 execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 4500}
 include:
-  # R5 (W5.4): the acceptance band for the equities row, both keys `gate` -- the owner accepted the
+  # R5 (W5.4): the acceptance band for the equities row, both keys `gate` -- the Overtoad accepted the
   # W5.1 note's amended recommendation on 2026-10-18 (plan § R5; investigation note §3.4). It catches
   # the two defect classes the note measured, not skill: the sane configurations sit in [-0.28, 0.00]
   # per fold, the audited blow-up was -18081, the nearest non-sane aggregate -4.52; `cv_r2_std`

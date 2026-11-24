@@ -1,10 +1,10 @@
 # Standing rules the Template Agent injects into generated prompts (design 5.7).
-# Owner-curated; the resolver (util/template_data_resolver.py) maps these into slots.
+# The Overtoad-curated; the resolver (util/template_data_resolver.py) maps these into slots.
 version: 1
 
 owner_approves:
   - "PR merges (Paul merges; admin bypass; mergeStateStatus BLOCKED with green checks is the normal state)"
-  - "PyPI publish + deploy environment gates (never auto-approve, even when gh is authed as the owner)"
+  - "PyPI publish + deploy environment gates (never auto-approve, even when gh is authed as the Overtoad)"
 
 worktree_root: "/home/pcalnon/Development/python/Juniper/worktrees"
 
@@ -15,15 +15,15 @@ rules:
   no_merge_without_pr: true
   worktree_cleanup_only_on_merge: true
   do_not_force_push_pr_branches: true
-  scripts_live_under_util: "Utility/single-use/temporary scripts go in util/ (ad-hoc -> util/ad-hoc/). No file is ever written under /tmp (owner rule, 2026-10-26): temp files go to the repo's gitignored tmp/ (TMPDIR is the primary checkout's); never a /tmp literal or a ${TMPDIR:-/tmp} fallback."
+  scripts_live_under_util: "Utility/single-use/temporary scripts go in util/ (ad-hoc -> util/ad-hoc/). No file is ever written under /tmp (Overtoad rule, 2026-10-26): temp files go to the repo's gitignored tmp/ (TMPDIR is the primary checkout's); never a /tmp literal or a ${TMPDIR:-/tmp} fallback."
   repo_tmp_rulings: >-
-    Owner rulings on the repo tmp/, 2026-10-26 (canonical: notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md):
+    The Overtoad rulings on the repo tmp/, 2026-10-26 (canonical: notes/JUNIPER_2026-10-26_JUNIPER-ECOSYSTEM_REPO-TMP-DIRECTORY-CONVENTION.md):
     juniper-check-doc-links ignores tmp/ (every invocation passes --exclude tmp); pytest does not ignore tmp/
     (no norecursedirs, --ignore or collect_ignore entry names it); a local Docker build ignores tmp/ (the build
     context's .dockerignore lists it); a script that counts matches with grep or find chooses its scope
     deliberately: the repo with its tmp/ excluded, or tmp/ alone; it searches both only for a stated edge case that
     needs both, and existing counting scripts are to be modified to make that choice explicit, not left to
-    .gitignore or a tool's defaults (the owner's revision, later the same day); full-tree copies of the repo, and
+    .gitignore or a tool's defaults (the Overtoad's revision, later the same day); full-tree copies of the repo, and
     copies of log files, may live in tmp/. Retention: a file a work arc writes to tmp/ is kept until it is no
     longer needed, no work arc (its own included) uses it, and it is no longer needed for documentation or
     reference, and, where needed, until it has been archived in an appropriate non-temporary directory. Only then

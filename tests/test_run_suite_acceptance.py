@@ -105,7 +105,7 @@ def _suite_yaml(base: Path, suite_dir: Path, *, row_bands: Any = None, suite_ban
 
 
 def _write_stub_launcher(path: Path, marker_dir: Path) -> None:
-    path.write_text("#!/usr/bin/env bash\n" f"MARKERS={marker_dir}\n" 'if [[ "$1" == "--up" ]]; then\n' '  touch "$MARKERS/up-$$"\n' '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then touch "$MARKERS/down-$2"; exit 0; fi\n' "exit 2\n")
+    path.write_text(f'#!/usr/bin/env bash\nMARKERS={marker_dir}\nif [[ "$1" == "--up" ]]; then\n  touch "$MARKERS/up-$$"\n  echo "=== Experiment run stub-run-$$ is up ==="\n  exit 0\nfi\nif [[ "$1" == "--down" ]]; then touch "$MARKERS/down-$2"; exit 0; fi\nexit 2\n')
     path.chmod(path.stat().st_mode | stat.S_IEXEC)
 
 
@@ -461,7 +461,7 @@ class SuiteLoopAcceptanceTest(unittest.TestCase):
 
 
 class CascorBandMetricsTest(unittest.TestCase):
-    """APD-ML-002 (owner rulings 1 and 2, 2026-10-26): which names a band may use, now that cascor has columns.
+    """APD-ML-002 (Overtoad rulings 1 and 2, 2026-10-26): which names a band may use, now that cascor has columns.
 
     ``val_accuracy`` became a column (from ``stats["cascor"]["final"]``), so a band on it judges a number
     instead of reading ``absent`` on every cascor cell; ``train_accuracy`` joined it. ``test_accuracy`` stayed

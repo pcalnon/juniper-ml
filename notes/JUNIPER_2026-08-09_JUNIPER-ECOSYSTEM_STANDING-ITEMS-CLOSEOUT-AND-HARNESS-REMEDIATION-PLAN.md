@@ -3,8 +3,8 @@
 **Project**: Juniper — Cascade Correlation Neural Network Research Platform
 **Repository**: pcalnon/juniper-ml (subject spans the 9-repo ecosystem)
 **Author**: Paul Calnon
-**Document Type**: Implementation Plan + owner decision package
-**Status**: DRAFT — owner decisions pending (§11); nothing in this document has been executed
+**Document Type**: Implementation Plan + Overtoad decision package
+**Status**: DRAFT — Overtoad decisions pending (§11); nothing in this document has been executed
 **Last Updated**: 2026-08-09
 
 ---
@@ -13,7 +13,7 @@
 
 This is a **plan only**. The authoring session executed nothing: no ruleset was edited, no PR was opened, no
 config file was modified, no `activate_project` call was made. Every command in this document is written for
-the owner (or a later, explicitly-approved session) to run.
+the Overtoad (or a later, explicitly-approved session) to run.
 
 Three evidence classes are used, and they are labelled inline:
 
@@ -32,7 +32,7 @@ not a second inventory.
 
 Two related prior documents are load-bearing and are cited rather than restated:
 
-- [`notes/JUNIPER_2026-08-05_JUNIPER-ML_BYPASS-ACTOR-RESEARCH.md`](JUNIPER_2026-08-05_JUNIPER-ML_BYPASS-ACTOR-RESEARCH.md) — the per-actor analysis of ruleset `13805432`, the `code_quality` deadlock diagnosis (its line 32), and the owner agenda (its §6, lines 48-51).
+- [`notes/JUNIPER_2026-08-05_JUNIPER-ML_BYPASS-ACTOR-RESEARCH.md`](JUNIPER_2026-08-05_JUNIPER-ML_BYPASS-ACTOR-RESEARCH.md) — the per-actor analysis of ruleset `13805432`, the `code_quality` deadlock diagnosis (its line 32), and the Overtoad agenda (its §6, lines 48-51).
 - [`notes/JUNIPER_2026-08-07_JUNIPER-ECOSYSTEM_SEQUENCE-SAFETY-ROLLOUT-PLAN.md`](JUNIPER_2026-08-07_JUNIPER-ECOSYSTEM_SEQUENCE-SAFETY-ROLLOUT-PLAN.md) — the all-advisory rollout whose decision **D8** ("promote any advisory workflow to required — later, per-repo, after soak") is the open item this plan closes (its line 347).
 
 ---
@@ -41,7 +41,7 @@ Two related prior documents are load-bearing and are cited rather than restated:
 
 ### 1.1 Purpose
 
-Turn two loosely-tracked bodies of work into executable, reversible, owner-gated steps:
+Turn two loosely-tracked bodies of work into executable, reversible, Overtoad-gated steps:
 
 - **Part A — the standing-items arc.** Six open items carried since the 2026-08-07/08 storm drain and the
   bypass-actor research. Each gets verified state, options, a recommendation, exact execution steps, a
@@ -49,19 +49,19 @@ Turn two loosely-tracked bodies of work into executable, reversible, owner-gated
 - **Parts B and C — two agentic-harness remediations.** (B) headless code signing has no preflight, so a
   blocked signature can silently stall or mis-sign a flow; (C) the Serena MCP harness is connected but
   project-less, and every layer that could have surfaced that is silent.
-- **Part D — sequencing.** How the above is sliced into PRs, which slices may merge under the owner's new
+- **Part D — sequencing.** How the above is sliced into PRs, which slices may merge under the Overtoad's new
   conditional gate, and the per-slice verification/rollback matrix.
 
 ### 1.2 Scope
 
-`pcalnon/juniper-ml` plus the 8 sibling repos for the ruleset/branch-protection items; the owner's workstation
+`pcalnon/juniper-ml` plus the 8 sibling repos for the ruleset/branch-protection items; the Overtoad's workstation
 (`yamaguchi`) for the signing and MCP items, which are **local machine state**, not repository content.
 
 ### 1.3 Non-goals
 
 - **Not** a re-audit. The audit document is authoritative for findings; contradicting it is a defect in one of
   the two, to be resolved before either is ratified (§10.4).
-- **Not** a change to the owner-gated deploy posture. PyPI / environment approvals stay owner-only; nothing
+- **Not** a change to the Overtoad-gated deploy posture. PyPI / environment approvals stay Overtoad-only; nothing
   here touches `publish*.yml`, the `pypi` environment, or the release-train's Gate 2.
 - **Not** an expansion of the release-train's `gh` surface (R7). No new verbs, no new write scopes.
 - **Not** key-material work. No key generation, rotation, `keytocard`, or GitHub GPG-key upload is proposed;
@@ -77,10 +77,10 @@ Restated only where it constrains a step below.
 
 | # | Rule | Effect on this plan |
 |---|---|---|
-| D-1 | Ruleset / branch-protection edits are **owner-gated**. | Every Part-A mutation is written as a dry-run-first helper the owner runs, or a UI procedure. No session applies one on its own initiative. |
-| D-2 | PyPI / environment approvals are owner-only. | Untouched. Noted because A3/A4 interact with the release-train, whose Gate 2 stays as-is. |
-| D-3 | Headless merges only on the owner's explicit per-PR (or per-group) approval. | Part D's merge column is "eligible", never "will merge". |
-| D-4 | **New conditional gate (owner, 2026-08-09):** arc PRs merge headlessly only once code signing verifiably uses the correct ed25519 key. | §5.6 operationalizes this as a machine-checkable preflight; §7.3 states exactly which slices it unlocks. |
+| D-1 | Ruleset / branch-protection edits are **Overtoad-gated**. | Every Part-A mutation is written as a dry-run-first helper the Overtoad runs, or a UI procedure. No session applies one on its own initiative. |
+| D-2 | PyPI / environment approvals are Overtoad-only. | Untouched. Noted because A3/A4 interact with the release-train, whose Gate 2 stays as-is. |
+| D-3 | Headless merges only on the Overtoad's explicit per-PR (or per-group) approval. | Part D's merge column is "eligible", never "will merge". |
+| D-4 | **New conditional gate (Overtoad, 2026-08-09):** arc PRs merge headlessly only once code signing verifiably uses the correct ed25519 key. | §5.6 operationalizes this as a machine-checkable preflight; §7.3 states exactly which slices it unlocks. |
 | D-5 | `gh pr list` dup-guard before opening any PR. | §7.2. Current open-PR set re-probed **[live 2026-08-09]**: 4 open (`#1048`, `#1043`, `#1041`, `#1039`) — none overlaps this plan's slices. |
 | D-6 | Headless PR-branch work uses GitHub-signed API commits (`createCommitOnBranch`). | Distinguished from local-commit flows in §5.5; the preflight gates only the latter. |
 | D-7 | Per-agent scratch subdirectories; never run release-train live seams from a shared clone. | The Part-A helper (§3.7) writes snapshots under an explicit `--snapshot-dir`, never into a checkout. |
@@ -125,7 +125,7 @@ All 8 additionally carry `DeployKey`/always and `RepositoryRole 5`/always; junip
 
 **Identification method (new, and it works).** A ruleset `bypass_actors[].actor_id` of type `Integration` is the
 **GitHub App ID**, not an installation ID — proved by `gh api /apps/dependabot` returning `id: 29110`, which is
-exactly the census value. Public Apps can therefore be named without owner UI by probing `/apps/<slug>` and
+exactly the census value. Public Apps can therefore be named without Overtoad UI by probing `/apps/<slug>` and
 matching the returned `id`. **[live 2026-08-09]** a ~190-slug sweep resolved:
 
 | App ID | Slug | Name | Status |
@@ -134,7 +134,7 @@ matching the returned `id`. **[live 2026-08-09]** a ~190-slug sweep resolved:
 | 1143301 | `copilot-swe-agent` | **Copilot SWE Agent** | identified |
 | 1210556 | `cursor` | Cursor | identified |
 | 1236702 | `claude` | Claude | identified |
-| 4362741 | *(private/unlisted; `/apps/juniper-release-train` → 404)* | the owner's release-train App | identified by behaviour: `juniper-release-train[bot]` is a PR author and commit author on juniper-ml **[live 2026-08-09]**, and the ID equals `vars.RELEASE_TRAIN_APP_ID` used at `.github/workflows/release-train.yml:399-402` [audit / research §1] |
+| 4362741 | *(private/unlisted; `/apps/juniper-release-train` → 404)* | the Overtoad's release-train App | identified by behaviour: `juniper-release-train[bot]` is a PR author and commit author on juniper-ml **[live 2026-08-09]**, and the ID equals `vars.RELEASE_TRAIN_APP_ID` used at `.github/workflows/release-train.yml:399-402` [audit / research §1] |
 | **1276151** | — | — | **UNIDENTIFIED** |
 | **946600** | — | — | **UNIDENTIFIED — not previously recorded anywhere** |
 
@@ -145,7 +145,7 @@ This is a net-new identify-first item.
 Both unidentified IDs behave like the release-train App: `/apps/<slug>` 404s for every candidate slug tried,
 which is the signature of a **private / unlisted** GitHub App. `/user/installations` is unavailable to the
 session token (**[live 2026-08-09]**: HTTP 403, "You must authenticate with an access token authorized to a
-GitHub App"), and `/app/installations/<id>` requires an App JWT (**[live 2026-08-09]**: HTTP 401). Owner UI is
+GitHub App"), and `/app/installations/<id>` requires an App JWT (**[live 2026-08-09]**: HTTP 401). The Overtoad UI is
 therefore genuinely required (§3.3).
 
 ### 3.3 Deploy keys
@@ -159,7 +159,7 @@ therefore genuinely required (§3.3).
 | juniper-cascor | 143581480 | `juniper-cascor deploy key` | 2026-02-21 | 2026-08-06 |
 | juniper-cascor | 144170557 | `Juniper Cascor Deploy Key - Turing` | 2026-02-28 | 2026-05-07 |
 
-Owner decision 2026-08-09 (session record): **Turing keys RETAINED.** This plan therefore does not propose
+The Overtoad decision 2026-08-09 (session record): **Turing keys RETAINED.** This plan therefore does not propose
 removing any deploy key, and does not propose removing the `DeployKey` bypass entry — see §3.4/A1 for the
 residual note.
 
@@ -218,7 +218,7 @@ Job / context names **[repo]**:
 > an organization on Team/GHEC — the same change that would make merge queues available — would arm
 > this rule live on all 9 with no soak period. Drop or downgrade it in that same change.
 
-Three independent signals, none of which requires owner UI:
+Three independent signals, none of which requires Overtoad UI:
 
 1. **[research]** `notes/JUNIPER_2026-08-05_JUNIPER-ML_BYPASS-ACTOR-RESEARCH.md:32` states the rule has no reporting tool behind it, and that this is *why* the release-train App (`4362741`) holds a `pull_request` bypass.
 2. **[live 2026-08-09]** `gh api repos/pcalnon/juniper-ml/commits/b64eaaf/check-suites` returns exactly two apps — `cursor` (1210556) and `github-actions` (15368, ×4). No code-quality producer posts on a merged commit.
@@ -274,17 +274,17 @@ Neither `1276151` nor `946600` resolves through any public-App endpoint reachabl
 
 | Option | Description | Trade-off |
 |---|---|---|
-| **O1** | Owner names them in the UI, then decide KEEP / REMOVE per identity class. | Requires ~5 minutes of owner UI time. Only option that produces a *name*. |
-| O2 | Remove both blind ("unknown ⇒ untrusted"). | Fast, but can silently break an integration the owner deliberately installed; the failure surfaces later as an unexplained blocked automation. Violates identify-first. |
+| **O1** | The Overtoad names them in the UI, then decide KEEP / REMOVE per identity class. | Requires ~5 minutes of Overtoad UI time. Only option that produces a *name*. |
+| O2 | Remove both blind ("unknown ⇒ untrusted"). | Fast, but can silently break an integration the Overtoad deliberately installed; the failure surfaces later as an unexplained blocked automation. Violates identify-first. |
 | O3 | Leave as-is. | The status quo: two unnamed actors with unconditional authority to push, force-push, or delete `main` past all 8 rules on up to 8 repos. |
 
 ### A1.3 RECOMMENDATION
 
 **O1 — identify first, then act.** This is the doctrine the research note already set (`…BYPASS-ACTOR-RESEARCH.md:48`),
 and the census result strengthens it: an actor present on *every* repo is far more likely to be something the
-owner installed on purpose than a stray.
+Overtoad installed on purpose than a stray.
 
-### A1.4 Execution steps (owner UI; ~5 minutes)
+### A1.4 Execution steps (Overtoad UI; ~5 minutes)
 
 The single most direct path — the **ruleset bypass list renders App names**, while the API returns only IDs:
 
@@ -292,10 +292,10 @@ The single most direct path — the **ruleset bypass list renders App names**, w
    Record the display name shown beside each of the three unnamed rows (`1210556`/`1236702` will render as
    *Cursor* / *Claude*, which confirms the reading is correct; the third is `1276151`).
 2. Repeat on `https://github.com/pcalnon/juniper-data/settings/rules` to name `946600` (it is absent from ml).
-3. Cross-check the App ID (the UI shows names, not IDs). For an App **the owner created**:
+3. Cross-check the App ID (the UI shows names, not IDs). For an App **the Overtoad created**:
    `https://github.com/settings/apps` → open the app → its settings page shows **App ID**. Match against
    `1276151` / `946600`. This is exactly how `4362741` is confirmable as the release-train App.
-4. If it is *not* one of the owner's own Apps: `https://github.com/settings/installations` lists third-party
+4. If it is *not* one of the Overtoad's own Apps: `https://github.com/settings/installations` lists third-party
    Apps installed on the personal account; and `https://github.com/pcalnon/juniper-ml/settings/installations`
    lists Apps with access to that repo. Cross-reference by name.
 5. Record the answer in this file's §11 decision table and in the bypass-actor research note.
@@ -310,8 +310,8 @@ gh api repos/pcalnon/juniper-data/commits/main/check-suites --jq '.check_suites[
 
 | Identity class | Action | Rationale |
 |---|---|---|
-| An App **the owner created** that pushes or merges `main` (a second automation like the release-train App) | **KEEP**, but narrow `always` → `pull_request` if it only ever lands via PR. | Mirrors the `4362741` posture: the narrowest mode that still works. |
-| An App the owner created that only *reads* (dashboards, notifications, sync) | **REMOVE the bypass** (keep the installation). | A read-only App never needs to bypass branch rules; the entry is pure blast radius. |
+| An App **the Overtoad created** that pushes or merges `main` (a second automation like the release-train App) | **KEEP**, but narrow `always` → `pull_request` if it only ever lands via PR. | Mirrors the `4362741` posture: the narrowest mode that still works. |
+| An App the Overtoad created that only *reads* (dashboards, notifications, sync) | **REMOVE the bypass** (keep the installation). | A read-only App never needs to bypass branch rules; the entry is pure blast radius. |
 | A third-party code-agent App (the Cursor/Claude/Copilot class) | **REMOVE the bypass**, same reasoning as A2. | Fleet PRs already traverse the full check battery; the grant adds risk, not capability. |
 | A CI/security scanner that posts checks | **REMOVE the bypass**; a check producer never needs to skip rules. | — |
 | Not identifiable even in the UI (orphaned installation) | **Uninstall the App**, which removes its ability to act; then remove the now-dead bypass row. | An unidentifiable actor with `always` on 8 repos is the worst case; removing the installation is stronger than removing the row. |
@@ -335,10 +335,10 @@ data; the only cost of a wrong removal is a blocked automation, which fails loud
 
 ### A1.8 Residual note — the `DeployKey` bypass
 
-Not proposed for change (owner retained the Turing keys, §3.3). Recorded for completeness: the
+Not proposed for change (Overtoad retained the Turing keys, §3.3). Recorded for completeness: the
 `DeployKey`/`always` row grants *any* holder of *any* writable deploy key on that repo the ability to push,
 force-push, or delete `main` past all 8 rules, and `last_used` counts fetches, so an idle timestamp is not
-evidence of non-use. If the owner later wants to keep the keys but drop the grant, the two are independent: the
+evidence of non-use. If the Overtoad later wants to keep the keys but drop the grant, the two are independent: the
 bypass row can be removed while both keys stay installed, and the only flows that would break are ones that push
 `main` over SSH with a deploy key — none was found in `util/`, `scripts/`, or `docs/` [research §3].
 
@@ -348,7 +348,7 @@ bypass row can be removed while both keys stay installed, and the only flows tha
 
 ### A2.1 Verified current state
 
-Both hold `always` on juniper-ml (§3.1) and on most siblings (§3.2). Tracking issue **ml#1012** — *"[owner-decision]
+Both hold `always` on juniper-ml (§3.1) and on most siblings (§3.2). Tracking issue **ml#1012** — *"[Overtoad-decision]
 Implement the ml#925 bypass-actor recommendations (remove cursor/claude always-bypass)"* — is **open** **[live 2026-08-09]**
 and already carries the recommendation, so this section supplies the mechanics, not a new proposal. Do not open a
 duplicate issue (D-5).
@@ -384,12 +384,12 @@ Create `util/ad-hoc/2026-08-09_ruleset_edit.py` (single-use ⇒ `util/ad-hoc/` p
 
 ```python
 #!/usr/bin/env python3
-"""2026-08-09_ruleset_edit.py -- owner-gated ruleset editor (single-use, snapshot-first).
+"""2026-08-09_ruleset_edit.py -- Overtoad-gated ruleset editor (single-use, snapshot-first).
 
 Derives every PATCH body from the LIVE GET so no field is hand-transcribed. Writes a timestamped
 rollback snapshot before any mutation. --execute is required; default is a dry run that prints the
 body and sends nothing. Ruleset edits are OWNER-GATED (plan D-1): a session runs this only on the
-owner's explicit, per-invocation approval.
+Overtoad's explicit, per-invocation approval.
 """
 from __future__ import annotations
 
@@ -455,7 +455,7 @@ def main(argv=None) -> int:
 
     print(json.dumps(body, indent=2))
     if not a.execute:
-        print("DRY RUN -- nothing sent. Re-run with --execute after owner approval.")
+        print("DRY RUN -- nothing sent. Re-run with --execute after Overtoad approval.")
         return 0
 
     p = subprocess.run(
@@ -478,7 +478,7 @@ Invocation for A2 (dry run first, always):
 
 ```bash
 python3 util/ad-hoc/2026-08-09_ruleset_edit.py --repo pcalnon/juniper-ml --ruleset 13805432 --snapshot-dir ~/.local/state/juniper-ruleset-snapshots --drop-integration 1210556 --drop-integration 1236702
-# review the printed body, then, on owner approval:
+# review the printed body, then, on Overtoad approval:
 python3 util/ad-hoc/2026-08-09_ruleset_edit.py --repo pcalnon/juniper-ml --ruleset 13805432 --snapshot-dir ~/.local/state/juniper-ruleset-snapshots --drop-integration 1210556 --drop-integration 1236702 --execute
 ```
 
@@ -498,7 +498,7 @@ at execution time rather than pasted:
 
 (`1276151` stays until A1 names it. `4362741` stays at `pull_request` — see A3.)
 
-UI equivalent, if the owner prefers: `Settings → Rules → juniper-ml-rules → Bypass list` → remove the *Cursor*
+UI equivalent, if the Overtoad prefers: `Settings → Rules → juniper-ml-rules → Bypass list` → remove the *Cursor*
 and *Claude* rows → Save.
 
 ### A2.5 Verification probe
@@ -548,7 +548,7 @@ ceremony opens and auto-merges hands-free — would wait forever on a check that
 
 ### A3.3 RECOMMENDATION
 
-**Ob — drop the rule on juniper-ml now**, and treat Oa as a separate, later evaluation if the owner wants a
+**Ob — drop the rule on juniper-ml now**, and treat Oa as a separate, later evaluation if the Overtoad wants a
 code-quality gate. Reasons, in order:
 
 1. A rule that can never be satisfied is not a control; it is a latent outage that manifests as "auto-merge hangs
@@ -567,7 +567,7 @@ experiment (§A3.6).
 
 ```bash
 python3 util/ad-hoc/2026-08-09_ruleset_edit.py --repo pcalnon/juniper-ml --ruleset 13805432 --snapshot-dir ~/.local/state/juniper-ruleset-snapshots --drop-rule code_quality
-# then, on owner approval, re-run with --execute
+# then, on Overtoad approval, re-run with --execute
 ```
 
 UI equivalent: `Settings → Rules → juniper-ml-rules` → uncheck **Require code quality** → Save.
@@ -587,7 +587,7 @@ gh api repos/pcalnon/juniper-ml/rulesets/13805432 --jq '.rules[]|select(.type=="
 Expect `code_quality` gone, seven rules remaining, CodeQL parameters unchanged (`errors` / `high_or_higher`), and
 `strict` still `true`.
 
-### A3.6 Follow-up experiment (separate, owner-gated, after one clean release-train cycle)
+### A3.6 Follow-up experiment (separate, Overtoad-gated, after one clean release-train cycle)
 
 Remove `4362741`'s `pull_request` bypass and observe the next ceremony's archive PR. Expected: it now runs the 13
 required contexts (a notes-only PR should pass all of them, and the `Release-Train Archive Guard` job is
@@ -625,7 +625,7 @@ juniper-ml [repo]:
 
 `allow_auto_merge: true` on juniper-ml **[live 2026-08-09]**.
 
-**Availability is the open question.** The owner reports having seen a `422` when adding a merge-queue rule on a
+**Availability is the open question.** The Overtoad reports having seen a `422` when adding a merge-queue rule on a
 personal repository, possibly plan-gated. This session cannot test it without mutating a config, which is out of
 scope. What *is* established: `MERGE_QUEUE` exists in the live GraphQL rule-type enum (§3.7), and juniper-ml is a
 **public** repo owned by a **User** (§3.1) — the configuration most likely to be supported, but not proof.
@@ -642,15 +642,15 @@ scope. What *is* established: `MERGE_QUEUE` exists in the live GraphQL rule-type
 
 **O1, coupled to A2, and only if the UI confirms availability.** The coupling is the whole point: the queue binds
 non-bypassing actors, so it takes effect on fleet PRs exactly when (and only when) the Cursor/Claude always-bypass
-rows are gone. Conversely `RepositoryRole 5`/always **stays**, so the owner's admin batch-merge path is *not*
-queued — which is the desired asymmetry (fleet PRs queue; owner batches do not).
+rows are gone. Conversely `RepositoryRole 5`/always **stays**, so the Overtoad's admin batch-merge path is *not*
+queued — which is the desired asymmetry (fleet PRs queue; Overtoad batches do not).
 
 If the UI shows the rule is unavailable, **stop**: record the observation in §11 and keep `strict=true` as the
 fallback. Do not attempt an API-only workaround for a feature the UI says is not offered.
 
 ### A4.4 Execution steps
 
-**Step 1 — availability verification (UI, owner, ~2 minutes).**
+**Step 1 — availability verification (UI, Overtoad, ~2 minutes).**
 `https://github.com/pcalnon/juniper-ml/settings/rules` → **juniper-ml-rules** → **Add rule**. Look for
 **"Require merge queue"** in the rule list.
 
@@ -668,7 +668,7 @@ gh api repos/pcalnon/juniper-ml/rulesets/13805432 --jq '.rules[]|select(.type=="
 Paste that object into §11 of this document and into `docs/REFERENCE.md`'s merge-queue subsection so the rollback
 and any sibling rollout use observed values.
 
-**Step 3 — API-only alternative** (use only if the owner prefers scripting and Step 1 confirmed availability).
+**Step 3 — API-only alternative** (use only if the Overtoad prefers scripting and Step 1 confirmed availability).
 The rule object has this shape, with parameter names **derived** from the live GraphQL schema (§3.7) and therefore
 to be confirmed by the Step-2 read-back before being relied on:
 
@@ -726,7 +726,7 @@ helper). Any PR already sitting in the queue merges or is ejected normally; noth
    `merge_queue` rule, so the ceremony's archive PR still merges immediately. If A3.6's follow-up experiment
    removes that bypass *while a queue is live*, the archive PR joins the queue and the ceremony's
    `--monitor-timeout 900` (`release-train.yml:740`) must absorb the extra latency. **Do not do both at once.**
-2. **Owner "Update branch" habit.** With a queue, manually updating a branch before merge is redundant and adds
+2. **The Overtoad "Update branch" habit.** With a queue, manually updating a branch before merge is redundant and adds
    churn; the queue builds the merge itself.
 3. **Consumers are not ready.** No sibling `sequence-safety.yml` listens on `merge_group` (§3.5). Enabling a queue
    on a sibling *after* promoting that context to required (A5) would stall it. Order there is: wire
@@ -740,7 +740,7 @@ helper). Any PR already sitting in the queue merges or is ejected normally; noth
 
 Advisory everywhere. Soak evidence in §3.5: **60 successes, 1 cancellation, 0 failures** across the 8 standalone
 consumer workflows, plus **15/15** on juniper-ml's in-`ci.yml` job. Tracking issue **ml#1011** —
-*"[owner-decision] Promote per-PR Sequence Safety to a required check"* — is **open** **[live 2026-08-09]** and
+*"[Overtoad-decision] Promote per-PR Sequence Safety to a required check"* — is **open** **[live 2026-08-09]** and
 already states the exact change and rollback; this section supplies the per-repo mechanics it does not have. Do
 not open a duplicate (D-5).
 
@@ -791,7 +791,7 @@ protection**, and only there. `docs/REFERENCE.md:1593` states the same rule.
 | **juniper-recurrence** | **CLASSIC branch protection** (no ruleset) | `Sequence Safety (Advisory)` | `sequence-safety.yml:85`. Different API surface — see A5.5. |
 
 The "(Advisory)" suffix is part of the **name**, so it stays in the required context string even after promotion.
-Renaming the job to drop the word would be a cosmetic change that breaks the required context — if the owner wants
+Renaming the job to drop the word would be a cosmetic change that breaks the required context — if the Overtoad wants
 the rename, it must be a separate PR that lands the rename and the context edit atomically, and it is not
 recommended.
 
@@ -827,7 +827,7 @@ gh api repos/pcalnon/juniper-recurrence/branches/main/protection --jq . > /dev/n
 
 Caveat to record: the three existing entries appear in the `checks` form pinned to `app_id: 15368` (GitHub
 Actions). A context added through the `contexts` endpoint is stored with **no app pinning**, so any app could in
-principle satisfy it. If the owner wants parity, use the `checks` form on the sub-resource instead:
+principle satisfy it. If the Overtoad wants parity, use the `checks` form on the sub-resource instead:
 
 ```bash
 gh api -X PATCH repos/pcalnon/juniper-recurrence/branches/main/protection/required_status_checks --input -
@@ -839,7 +839,7 @@ Build that body by filtering the live GET, never by hand — same doctrine as A2
 creates a **new, never-satisfied** required context and blocks the repo. Deriving from the GET eliminates that
 class entirely.
 
-Also note `enforce_admins: false` on recurrence, so the owner is not bound by the new context there — the same
+Also note `enforce_admins: false` on recurrence, so the Overtoad is not bound by the new context there — the same
 asymmetry as `RepositoryRole 5` elsewhere.
 
 ### A5.6 Verification probe
@@ -990,7 +990,7 @@ that carries it. A preflight that compared serials would false-fail today on the
 | `731302a` | **`G`** | **`BA18D1A733B1831A`** | locally signed with the correct ed25519 subkey |
 | `5ff81d8`, `1d2e376`, `386c78e` | `G` | `BA18D1A733B1831A` | same |
 
-Two signing paths coexist and must not be conflated: **local** commits (owner host, ed25519 card) and **GitHub**
+Two signing paths coexist and must not be conflated: **local** commits (Overtoad host, ed25519 card) and **GitHub**
 commits (API/merge, web-flow key). Only the first needs a preflight.
 
 ### 4.4 The gap
@@ -1140,10 +1140,10 @@ verbatim in structure, adapted for a locally-run script:
 - **The issue upsert can never mask the verdict.** Any `gh` failure prints `preflight: tracking issue could not be
   filed (<reason>)` to stderr and the script still exits `1`. This inverts `main-verify.yml:472-473` (where a failed
   create *is* the failure) because here the tracker is a notification, not the point.
-- **Never auto-close on recovery.** Same convention as `main-verify.yml:460-461`: the owner closes after
+- **Never auto-close on recovery.** Same convention as `main-verify.yml:460-461`: the Overtoad closes after
   adjudication. A subsequent green run does not touch the issue.
 
-**Post-restore behaviour.** The script is idempotent and read-only, so after the owner re-inserts the card and/or
+**Post-restore behaviour.** The script is idempotent and read-only, so after the Overtoad re-inserts the card and/or
 warms the PIN, re-running it returns `0` and the blocked flow proceeds with **no** manual intervention beyond that
 re-run. Callers should therefore invoke it at flow start, not cache a result.
 
@@ -1189,9 +1189,9 @@ with a new `--require-signing` flag (default off) so a caller that knows it will
 pushes (`:244`, `:250`) and Phase 3's `push` (`:364`) move **already-signed** objects and need no preflight — the
 gate belongs before the object is created, not before it is transmitted.
 
-### 5.7 The owner's conditional-merge gate, operationalized
+### 5.7 The Overtoad's conditional-merge gate, operationalized
 
-**Gate (owner, 2026-08-09):** *arc PRs merge headlessly only once code signing verifiably uses the correct ed25519
+**Gate (Overtoad, 2026-08-09):** *arc PRs merge headlessly only once code signing verifiably uses the correct ed25519
 key.*
 
 Operational rule, stated so a session can apply it without interpretation:
@@ -1206,8 +1206,8 @@ Two clarifications that prevent the gate from being misapplied:
    actually asserts is that *this host is in a known-good signing state* — so the arc's own local commits are
    correctly signed and there is no chance of a stale-key commit entering the arc under a headless flow. That is
    the risk the gate exists to close, and the preflight is a faithful, machine-checkable proxy for it.
-2. **The gate is additive, never substitutive.** D-3 stands: the owner's explicit per-PR approval is still
-   required. Green preflight + owner approval ⇒ eligible; green preflight alone ⇒ not eligible.
+2. **The gate is additive, never substitutive.** D-3 stands: the Overtoad's explicit per-PR approval is still
+   required. Green preflight + Overtoad approval ⇒ eligible; green preflight alone ⇒ not eligible.
 
 Recording: paste the `--json` verdict into the merge-approval comment (or the session log) so the gate is
 auditable after the fact.
@@ -1260,7 +1260,7 @@ Fixture: a tempdir `bin/` prepended to `PATH` containing
 | 8 | sign stub prints `SIG_CREATED` naming a *different* fingerprint | exit `1` |
 | 9 | `gpg2` hangs; `--timeout 2` | exit `1` within ~2 s + slack; proves no pinentry hang |
 | 10 | `--file-issue`, no existing issue | exactly one `issue create` with the stable title; `label create` tolerated-failing |
-| 11 | `--file-issue`, existing owner-authored open issue with the exact title | `issue comment`, **no** second `issue create` |
+| 11 | `--file-issue`, existing Overtoad-authored open issue with the exact title | `issue comment`, **no** second `issue create` |
 | 12 | `--file-issue`, `gh` fails entirely | still exit `1`; stderr contains the "could not be filed" line (never masks) |
 | 13 | `--timeout abc` | exit `2` |
 | 14 | contract: `bash -n` clean; exactly one 40-hex fingerprint literal in the file; the literal equals the documented constant | guards against a second/stale key creeping in |
@@ -1269,14 +1269,14 @@ Wire into **both** batteries, matching the house pattern:
 `.github/workflows/ci.yml` tests job (beside `python3 -m unittest -v tests/test_check_conda_env_torch.py` at
 `:631` [repo]) and `.github/workflows/main-verify.yml` battery (beside `:367` [repo]).
 
-### 5.10 Keyring hygiene — options, all owner calls, none recommended as blocking
+### 5.10 Keyring hygiene — options, all Overtoad calls, none recommended as blocking
 
 | Item | Evidence | Option | Recommendation |
 |---|---|---|---|
 | Legacy rsa4096 `B5AFCD0686585249` stub (old card `0006 09258397`) | §4.1 | Keep (harmless — a card-bound stub with no card present cannot sign) or `gpg --delete-secret-keys` + `--delete-keys`. | **Keep.** It is inert, and it is the only local means of *verifying* pre-2026-07-14 commits signed with it. Removing it would make historical signatures unverifiable on this host for no security gain. Revisit only if the ambiguity class (audit `A1-F6`) causes a concrete misresolution. |
-| ed448 `93E8591643C507FF` with **on-disk** signing-capable secret | §4.1; audit `A1-F7` | Keep / move the secret offline / delete. | **Owner call.** It is the only signing-capable private key on this disk (the ed25519 signing key is card-resident), so it is the one whose theft would allow forged Juniper-attributable signatures. Moving the secret to offline media preserves the key while removing the standing exposure. Not urgent, not this arc — but it should not be forgotten, and §11 tracks it. |
-| GPG-key registration on GitHub | audit `A1-F12`, `§8` item 1 | Confirm whether the legacy RSA key is still registered. | Blocked on token scope: `gh api /user/gpg_keys` needs `admin:gpg_key`. If the owner wants it resolved: `gh auth refresh -h github.com -s admin:gpg_key` then re-query. Low priority — it only affects whether a *future* stale-key signature would fail loudly. |
-| `~/.gnupg` backup archive + `*-DELETE_ME` dirs at 664/775 | audit `A1-F8`, `L1` | Move offline / tighten modes. | **Owner call**, out of this arc's scope. Flagged because key-backup material inside a live keyring directory at group-readable modes is the higher-consequence of the hygiene items. |
+| ed448 `93E8591643C507FF` with **on-disk** signing-capable secret | §4.1; audit `A1-F7` | Keep / move the secret offline / delete. | **The Overtoad call.** It is the only signing-capable private key on this disk (the ed25519 signing key is card-resident), so it is the one whose theft would allow forged Juniper-attributable signatures. Moving the secret to offline media preserves the key while removing the standing exposure. Not urgent, not this arc — but it should not be forgotten, and §11 tracks it. |
+| GPG-key registration on GitHub | audit `A1-F12`, `§8` item 1 | Confirm whether the legacy RSA key is still registered. | Blocked on token scope: `gh api /user/gpg_keys` needs `admin:gpg_key`. If the Overtoad wants it resolved: `gh auth refresh -h github.com -s admin:gpg_key` then re-query. Low priority — it only affects whether a *future* stale-key signature would fail loudly. |
+| `~/.gnupg` backup archive + `*-DELETE_ME` dirs at 664/775 | audit `A1-F8`, `L1` | Move offline / tighten modes. | **The Overtoad call**, out of this arc's scope. Flagged because key-backup material inside a live keyring directory at group-readable modes is the higher-consequence of the hygiene items. |
 
 ---
 
@@ -1593,7 +1593,7 @@ Rollback for all of C: restore the `.bak-*` copies of `.mcp.json`, `~/.serena/se
 ### 7.1 Dependency order
 
 ```text
-A1 identify (owner UI)  ──┐
+A1 identify (Overtoad UI)  ──┐
                           ├─▶ A2 remove cursor/claude bypass ──▶ A4 merge queue (if available)
 A3 drop code_quality  ────┘                                              │
                                                                          ▼
@@ -1618,7 +1618,7 @@ of the rest.
 
 Dup-guard **[live 2026-08-09]**: `gh pr list --repo pcalnon/juniper-ml --state open` → 4 PRs (`#1048`
 docs/handoff, `#1043` / `#1041` / `#1039` release-notes archives). **No overlap** with any slice below. Re-run the
-dup-guard immediately before opening each PR (D-5). Owner-decision issues **ml#1011** and **ml#1012** already exist
+dup-guard immediately before opening each PR (D-5). The Overtoad-decision issues **ml#1011** and **ml#1012** already exist
 and must be *referenced*, never duplicated.
 
 | Slice | Contents | Artifacts | Kind | Est. effort |
@@ -1628,11 +1628,11 @@ and must be *referenced*, never duplicated.
 | **S2 — signing repoint** | Per the audit's final §3.1 list: repoint/annotate `notes/JUNIPER_2026-07-16_…_CODE-SIGNING-KEY-MIGRATION-STATUS.md`, fix `notes/JUNIPER_2026-08-03_…_KEYTOCARD-PROCEDURE.md:64`, plus anything else the audit names | PR | ~1-2 h |
 | **S3 — serena guardrails** | `check_serena_wiring` in `util/agent_suite_doctor.py`; honest provenance in `util/prompt_discovery/symbol_overlay.py`; test extensions in both existing test files; `SKILL.md:47` doctrine; `AGENTS.md` Conventions bullet; `docs/REFERENCE.md` § Serena MCP Wiring | PR | **~half a day** |
 | **S4 — serena machine state** | `.mcp.json` `--project` per repo; user-scope entry; `~/.serena/serena_config.yml` registration; `~/.claude.json` prune | **NO PR — documented operator step** (§6.1/§6.2/§A6.2). All files are gitignored or outside the repo. | ~30 min + a session restart |
-| **S5 — ruleset A3+A2 (+A4)** | `util/ad-hoc/2026-08-09_ruleset_edit.py`; then owner-run edits | Helper lands as a PR; **the edits are owner-gated API/UI actions, not a PR** | helper ~2 h; edits ~30 min incl. verification |
-| **S6 — A5 promotion** | 8 ruleset context additions + 1 classic-protection addition | **No PR** — owner-gated config, on ~2026-08-21 after the §A5.2 checklist | ~45 min for all 9 |
+| **S5 — ruleset A3+A2 (+A4)** | `util/ad-hoc/2026-08-09_ruleset_edit.py`; then Overtoad-run edits | Helper lands as a PR; **the edits are Overtoad-gated API/UI actions, not a PR** | helper ~2 h; edits ~30 min incl. verification |
+| **S6 — A5 promotion** | 8 ruleset context additions + 1 classic-protection addition | **No PR** — Overtoad-gated config, on ~2026-08-21 after the §A5.2 checklist | ~45 min for all 9 |
 | **S7 — A6 housekeeping** | 3 ff-pulls; `~/.claude.json` prune | **No PR** — local operator steps | ~10 min |
 
-Note the shape: **only S0, S1, S2, S3 and the S5 helper are PRs.** Everything else is owner-gated config or local
+Note the shape: **only S0, S1, S2, S3 and the S5 helper are PRs.** Everything else is Overtoad-gated config or local
 machine state, which is exactly why this document exists — those changes have no diff to review, so the review
 happens here.
 
@@ -1640,13 +1640,13 @@ happens here.
 
 | Slice | May merge headlessly? |
 |---|---|
-| **S0** | **Yes**, once S1's preflight is green on this host *or* the owner merges it manually. S0 is docs-only and is the natural first candidate for the A4 behavioural test (§A4.5). |
-| **S1** | Chicken-and-egg by construction. Resolve it explicitly: run the preflight **from the branch, before merge** (`bash util/headless_signing_preflight.bash --json` in the PR checkout). Green ⇒ the gate is satisfied by the very artifact being merged, and S1 may merge headlessly on the owner's approval. Red ⇒ **owner merges manually** after fixing the host; do not merge a preflight that cannot pass on the host it is written for. |
+| **S0** | **Yes**, once S1's preflight is green on this host *or* the Overtoad merges it manually. S0 is docs-only and is the natural first candidate for the A4 behavioural test (§A4.5). |
+| **S1** | Chicken-and-egg by construction. Resolve it explicitly: run the preflight **from the branch, before merge** (`bash util/headless_signing_preflight.bash --json` in the PR checkout). Green ⇒ the gate is satisfied by the very artifact being merged, and S1 may merge headlessly on the Overtoad's approval. Red ⇒ **Overtoad merges manually** after fixing the host; do not merge a preflight that cannot pass on the host it is written for. |
 | **S2, S3** | **Yes**, once S1 is merged and the preflight is green in the session doing the merging. |
 | **S5 helper** | **Yes**, same condition as S2/S3. |
-| **S4, S6, S7** | Not applicable — no PR. Each is an owner action or an owner-approved session action against local/config state. |
+| **S4, S6, S7** | Not applicable — no PR. Each is an Overtoad action or an Overtoad-approved session action against local/config state. |
 
-In all cases D-3 stands: green preflight makes a PR *eligible*; the owner's explicit approval makes it *merge*.
+In all cases D-3 stands: green preflight makes a PR *eligible*; the Overtoad's explicit approval makes it *merge*.
 
 ### 7.4 Slice-specific hazards
 
@@ -1701,8 +1701,8 @@ snapshot-protected config PATCH, or a backed-up local file.
 | # | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|---|
 | R1 | Merge queue turns out to be unavailable (the reported `422`) | Medium | Low | A4 stops at Step 1 with a recorded observation; `strict=true` remains the fallback and is already on. Nothing else in the plan depends on A4. |
-| R2 | Removing the Cursor/Claude bypass blocks something unforeseen | Low | Low | Neither App self-merges [research line 522]; the owner retains `RepositoryRole 5`/always. Rollback is seconds (§A2.6). Land A3 first so nothing is stranded behind the deadlock. |
-| R3 | Dropping `code_quality` removes a control the owner wanted | Low | Low | Nothing reports it (§3.6), so no control is lost today. If GitHub Code Quality later goes GA, re-add the rule *with* a tool attached — the better end state anyway. |
+| R2 | Removing the Cursor/Claude bypass blocks something unforeseen | Low | Low | Neither App self-merges [research line 522]; the Overtoad retains `RepositoryRole 5`/always. Rollback is seconds (§A2.6). Land A3 first so nothing is stranded behind the deadlock. |
+| R3 | Dropping `code_quality` removes a control the Overtoad wanted | Low | Low | Nothing reports it (§3.6), so no control is lost today. If GitHub Code Quality later goes GA, re-add the rule *with* a tool attached — the better end state anyway. |
 | R4 | Promoting sequence-safety produces a false block during a busy window | Low | Medium | 60/60 + 15/15 clean (§3.5); label hatch and trailer escapes are live and proven; per-repo promotion means one repo's flake never blocks the fleet; rollback is one context removal. |
 | R5 | `1276151` / `946600` turn out to be load-bearing and were removed | Low | Medium | Identify-first (A1) exists precisely to prevent this; no removal happens before a name exists. |
 | R6 | The preflight itself becomes a false blocker (e.g. an agent-cache expiry mid-flow) | Medium | Medium | It is a *precondition* check, not a per-commit hook, and it fails in ≤20 s with a remediation banner. `--require-signing` defaults off. The post-restore re-run needs no manual steps (§5.5). |
@@ -1727,7 +1727,7 @@ Three tiers, matching house practice:
 3. **Live smoke, once.** The card-present/card-absent preflight pair; the Serena activation + `find_symbol run_fix`
    round trip; the ruleset probes after each owner edit; one PR through the merge queue if A4 lands.
 
-What is deliberately **not** automated: the ruleset/branch-protection edits. They are owner-gated (D-1), infrequent,
+What is deliberately **not** automated: the ruleset/branch-protection edits. They are Overtoad-gated (D-1), infrequent,
 and snapshot-protected; a CI job that could mutate branch protection would be a larger risk than the drift it
 guards against. The compensating control is the §A1.6 / §A3.5 / §A5.6 probes, which are cheap enough to run
 whenever the posture is in doubt.
@@ -1758,7 +1758,7 @@ open PR and issue sets.
 
 ### 10.3 Known unknowns (stated, not guessed)
 
-- The identities of `1276151` and `946600` — owner UI only (§3.2).
+- The identities of `1276151` and `946600` — Overtoad UI only (§3.2).
 - Merge-queue availability on this account — UI only (§3.7).
 - REST spellings of `merge_queue` parameters — derived from GraphQL; read back from GitHub after a UI apply (§A4.4 Step 2).
 - MCP scope precedence between project and user scope — confirm with `claude mcp list` (§6.1).
@@ -1766,7 +1766,7 @@ open PR and issue sets.
 
 ### 10.4 Recommended cross-validation before ratification
 
-This plan proposes changes to branch protection on 9 repos and to the owner's signing gate. Before it is treated as
+This plan proposes changes to branch protection on 9 repos and to the Overtoad's signing gate. Before it is treated as
 ratified, an **independent pass** should confirm, at minimum: (a) the §3.1 ruleset snapshot and the §3.2 census
 against a fresh probe; (b) that the §A5.3 context strings match the live job names character-for-character
 (including the em dash in recurrence's existing context); and (c) that this plan and the sibling audit do not
@@ -1775,20 +1775,20 @@ unsatisfiable required check.
 
 ---
 
-## 11. Owner decisions and open questions
+## 11. The Overtoad decisions and open questions
 
 | # | Decision / question | Recommendation | Status |
 |---|---|---|---|
-| Q1 | Name Integration `1276151` (all 8 repos) | Identify in the UI (§A1.4), then act per §A1.5; expect REMOVE | **OPEN — owner UI** |
-| Q2 | Name Integration `946600` (data / cascor-client / deploy) | Same procedure; new finding | **OPEN — owner UI** |
-| Q3 | Remove Cursor `1210556` + Claude `1236702` always-bypass | **Yes**, juniper-ml first, then the other 7 (ml#1012) | **OPEN — owner-gated** |
-| Q4 | `code_quality` deadlock | **Drop the rule** (Ob); keep `4362741` at `pull_request` for now | **OPEN — owner-gated** |
+| Q1 | Name Integration `1276151` (all 8 repos) | Identify in the UI (§A1.4), then act per §A1.5; expect REMOVE | **OPEN — Overtoad UI** |
+| Q2 | Name Integration `946600` (data / cascor-client / deploy) | Same procedure; new finding | **OPEN — Overtoad UI** |
+| Q3 | Remove Cursor `1210556` + Claude `1236702` always-bypass | **Yes**, juniper-ml first, then the other 7 (ml#1012) | **OPEN — Overtoad-gated** |
+| Q4 | `code_quality` deadlock | **Drop the rule** (Ob); keep `4362741` at `pull_request` for now | **OPEN — Overtoad-gated** |
 | Q5 | Remove `4362741`'s bypass after Q4 | Later, as the §A3.6 single-ceremony experiment; **not** together with A4 | **DEFERRED** |
-| Q6 | Merge queue | Verify availability in the UI; if available, add **with** Q3, params per §A4.4 | **OPEN — owner UI** |
+| Q6 | Merge queue | Verify availability in the UI; if available, add **with** Q3, params per §A4.4 | **OPEN — Overtoad UI** |
 | Q7 | Record the canonical `merge_queue` rule JSON | Paste the §A4.4 Step-2 read-back here and into `docs/REFERENCE.md` | **PENDING Q6** |
 | Q8 | Promote sequence-safety to required | **Yes**, on ~2026-08-21 after the §A5.2 checklist; per-repo; contexts per §A5.3 (ml#1011) | **OPEN — dated** |
 | Q9 | Keep the legacy RSA stub in the keyring | **Keep** (inert; needed to verify historical signatures) | Recommendation stands |
-| Q10 | The ed448 key's on-disk signing-capable secret | **Owner call** — move offline or accept; it is the only signing-capable private key on this disk | **OPEN** |
+| Q10 | The ed448 key's on-disk signing-capable secret | **The Overtoad call** — move offline or accept; it is the only signing-capable private key on this disk | **OPEN** |
 | Q11 | Confirm whether the legacy RSA key is still registered on GitHub | `gh auth refresh -h github.com -s admin:gpg_key`, then `gh api /user/gpg_keys`; low priority | **OPEN — optional** |
 | Q12 | Create `.serena/project.yml` for data-client / deploy / recurrence | **Defer** until symbol tooling is actually needed there | **DEFERRED** |
 | Q13 | Reconcile the Serena project-name eras (`juniper_ml` vs `juniper-canopy`) | **Defer** — path-based activation makes it cosmetic | **DEFERRED** |
@@ -1847,4 +1847,4 @@ claude mcp list ; claude mcp add --help
 - [`notes/JUNIPER_2026-07-16_JUNIPER-ECOSYSTEM_CODE-SIGNING-KEY-MIGRATION-STATUS.md`](JUNIPER_2026-07-16_JUNIPER-ECOSYSTEM_CODE-SIGNING-KEY-MIGRATION-STATUS.md) — **stale**; S2 corrects it.
 - [`notes/JUNIPER_2026-08-03_JUNIPER-ECOSYSTEM_YUBIKEY-GPG-ED448-KEYTOCARD-PROCEDURE.md`](JUNIPER_2026-08-03_JUNIPER-ECOSYSTEM_YUBIKEY-GPG-ED448-KEYTOCARD-PROCEDURE.md) — the hardware constraint; its line 64 needs the same correction.
 - `docs/REFERENCE.md` § *Flood-Remediation CI Gates* (`:1529`), § *YubiKey GPG Provisioning* (`:1631`), § *Agent Suite Doctor* (`:524`) — the three operator surfaces this plan extends.
-- GitHub issues **ml#1011** (promote sequence-safety) and **ml#1012** (bypass removal) — the pre-existing owner-decision trackers for A5 and A2; reference, never duplicate.
+- GitHub issues **ml#1011** (promote sequence-safety) and **ml#1012** (bypass removal) — the pre-existing Overtoad-decision trackers for A5 and A2; reference, never duplicate.

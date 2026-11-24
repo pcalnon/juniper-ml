@@ -88,7 +88,7 @@ Statuses reflect as-built reality at proposal time (most items shipped before th
 
 **Status**: deferred  **Priority**: P3  **Category**: DEP  **Owner**: rec
 **Sources**: CLI experimentation plan §15 Q-10
-**Detail**: Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an owner call; nothing blocks on it.
+**Detail**: Recurrence currently rides `JuniperCascor1` (works today; editable install + console script live there). A dedicated lighter env is probably right for hygiene — explicitly an Overtoad call; nothing blocks on it.
 
 ## 3. Process notes
 

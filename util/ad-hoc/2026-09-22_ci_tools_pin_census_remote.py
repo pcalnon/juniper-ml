@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-22
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md
          (its "want 0 and 0" pin check), juniper-cascor#646, juniper-ml#1909, juniper-cascor-worker#193
 
@@ -966,7 +966,7 @@ def main(argv: list[str] | None = None) -> int:
     failing = {b.split("  (")[0] for b in bad}
     unread = [h for h in all_hits if h.cls == "AMBIGUOUS" and f"{h.repo}/{h.path}:{h.line}  {h.spec}  [{h.cls}]" not in failing]
     if unread:
-        print(f"\n--- AMBIGUOUS, matching {args.expect}: passes, but the owner is unproven -- read each ---")
+        print(f"\n--- AMBIGUOUS, matching {args.expect}: passes, but the Overtoad is unproven -- read each ---")
         print("\n".join(f"  {h.repo}/{h.path}:{h.line}  {h.spec}" for h in unread))
     adjudicated = [h for h in all_hits if h.cls == "ADJUDICATED"]
     print(f"\n({len(adjudicated)} adjudicated ranges not listed; see ADJUDICATED in this script for each verdict)")

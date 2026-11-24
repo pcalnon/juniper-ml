@@ -6,12 +6,12 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-25
 Status: ad-hoc — migration
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: R-ML-SERVERS in §5 of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md;
          juniper-ml#2314 (the [tools] half of the same security floors, released as juniper-ml 0.11.1);
          util/ad-hoc/2026-10-18_raise_recurrence_canopy_pins_w1_13.py (the W1.13 raise this follows, ml#2232);
          written by the recurrence-arc session (worktree cuddly-knitting-stardust) and adopted, after review,
-         by the session that opened R-ML-SERVERS's PR, when the owner assigned the PR there (2026-10-25)
+         by the session that opened R-ML-SERVERS's PR, when the Overtoad assigned the PR there (2026-10-25)
 
 Why this exists
 ---------------
@@ -20,7 +20,7 @@ juniper-ml#2314 floored the two shared security patches under ``[tools]`` (``jun
 PyPI, because a floor on an unpublished release makes an extra unresolvable. juniper-data 0.17.1 reached PyPI on
 2026-10-23 and juniper-cascor 0.12.0 on 2026-10-25, so this raises ``[servers]`` to them.
 
-Like the W1.13 script it follows: no version bump, no new release section (the owner's cut carries this), the
+Like the W1.13 script it follows: no version bump, no new release section (the Overtoad's cut carries this), the
 entry goes into ``[Unreleased]`` -> ``### Security``, and no compatibility-matrix row (the ``0.11.x`` row is
 labelled with the juniper-ml release, so it moves with the cut). Every pin edit asserts its exact expected text
 and must match exactly once. ``AGENTS.md``'s ``**Last Updated**:`` is set to the run's UTC date.
@@ -87,7 +87,7 @@ _CL_ENTRY = f"""- **{_ENTRY_MARKER}**, up from `>=0.11.0` and `>=0.17.0`: the tw
     cascor 0.12.0. The data floor keeps `[servers]` level with the image juniper-deploy#258 pins.
   - The extras tables in `README.md` (both), `AGENTS.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md` move with
     the pins. The `0.11.x` row of `docs/REFERENCE.md`'s compatibility matrix moves with the release that carries
-    this, which is the owner's cut. Applied by `{_SELF}`, which asserts each site's exact text and requires exactly
+    this, which is the Overtoad's cut. Applied by `{_SELF}`, which asserts each site's exact text and requires exactly
     one match apiece.
   - **Pre-flighted against real PyPI** on 2026-10-25 with `{_PREFLIGHT}`, which resolves Linux x86_64 wheels and
     installs nothing. `[servers]` resolves in 61 packages and `[all]` in 95, on Python 3.12, 3.13 and 3.14, with

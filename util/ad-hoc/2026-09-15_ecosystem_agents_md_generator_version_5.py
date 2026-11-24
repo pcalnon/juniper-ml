@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-15
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#404 (merged 2026-09-16, squash 1bbb6976)
 
 ``Juniper/AGENTS.md`` sits in the ecosystem parent, which is **not a git repository**: no PR, no
@@ -29,13 +29,13 @@ AGENTS = Path("/home/pcalnon/Development/python/Juniper/AGENTS.md")
 OLD = """- Generator `generator_version` is **`3.0.0`, except `equities` and `equities_seq`,
   which are at `4.0.0`** since 2026-09-11. It went `1.x -> 2.0.0` when `val` was added
   and `2.0.0 -> 3.0.0` when `*_full` was removed; the equities pair went to `4.0.0` for
-  the owner rulings on causal share history and the feature set (juniper-data#395).
+  the Overtoad rulings on causal share history and the feature set (juniper-data#395).
 """
 
 NEW = """- Generator `generator_version` is **`3.0.0`, except `equities` and `equities_seq`,
   which are at `5.0.0`** since 2026-09-16. It went `1.x -> 2.0.0` when `val` was added
   and `2.0.0 -> 3.0.0` when `*_full` was removed; the equities pair went to `4.0.0` for
-  the owner rulings on causal share history and the feature set (juniper-data#395), and
+  the Overtoad rulings on causal share history and the feature set (juniper-data#395), and
   to `5.0.0` because **#395 shipped a regression and the corrected values must not be
   served under the id that carried the wrong ones** (juniper-data#404). #395's causal
   median included the point it was judging, so a scale typo in a series' opening filings

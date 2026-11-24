@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-06
 Status: ad-hoc — one-off (the juniper-ml 0.11.4 release proposal)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-10-26_juniper_ml_0_11_3_cut_cochanges.py (the 0.11.3 cut this follows);
          util/release_train/propose.py (its co-change checklist leaves docs/REFERENCE.md to the cut);
          util/ad-hoc/2026-11-06_raise_recurrence_floor_0_8_1.py (the [recurrence] floor 0.11.4 ships)
@@ -21,7 +21,7 @@ places, and no test guards either of them:
 * the "Ecosystem Compatibility" sentence, which says 0.11.3 declares the matrix's pins.
 
 0.11.4 moves one floor: ``[recurrence]``'s ``juniper-recurrence>=0.8.0`` becomes ``>=0.8.1`` (the release
-that floors ``juniper-model-core[crossval]>=0.3.0``; owner ruling 2026-11-06). The recurrence pins have no
+that floors ``juniper-model-core[crossval]>=0.3.0``; Overtoad ruling 2026-11-06). The recurrence pins have no
 column in the matrix, so the ``0.11.x`` row stays as 0.11.2's cut wrote it, and the sentence records the
 move. The row is still rendered from ``pyproject.toml`` and asserted against the row on disk, so a column
 floor that did move stops the cut instead of being missed.

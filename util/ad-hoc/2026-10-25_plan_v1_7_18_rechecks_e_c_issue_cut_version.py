@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Plan v1.7.18: the #2316 and #2320 post-merge re-checks passed, juniper-ml#2330 (the p4/e-c wall budget) is filed, and the cut stays 0.11.2 by the owner's ruling.
+"""Plan v1.7.18: the #2316 and #2320 post-merge re-checks passed, juniper-ml#2330 (the p4/e-c wall budget) is filed, and the cut stays 0.11.2 by the Overtoad's ruling.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-25
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.17 -> v1.7.18);
          juniper-ml#2330 (the finding it files into Next); juniper-ml#2328 (v1.7.17, which this follows);
          util/ad-hoc/2026-10-25_plan_v1_7_17_juniper_ml_0_11_1_published.py (the revision this follows)
@@ -44,20 +44,20 @@ CHECKED = (
     "`899796d2`, and CI never sees it because the sibling base does not resolve there. The issue sets out three options: "
     "raise the budget, exempt the suite on its own 517 s-per-cell measurement, or re-derive the threshold. "
     "`util/release_train/detect.py` now proposes 0.12.0 for the cut, because `[Unreleased]` carries an `### Added` entry "
-    "(juniper-ml#2327) and juniper-ml#2322's subject is `feat(guard)`, either of which it reads as a minor; the owner "
+    "(juniper-ml#2327) and juniper-ml#2322's subject is `feat(guard)`, either of which it reads as a minor; the Overtoad "
     "ruled on 2026-10-25 that the cut is 0.11.2 regardless (consolidated plan v1.15.1, juniper-ml#2334)"
 )
 
 NEXT_OLD = (
     "  - **Next**: R-ML-SERVERS: the `[servers]` floors are on `main` (juniper-ml#2326), so what remains is the 0.11.2 cut, driven to `PENDING_PYPI_APPROVAL` with "
-    "0.11.1's rating, as the owner ruled; its `pypi` gate stays the owner's. juniper-ml#2062's fix (`[servers]` installs no client) gets its own PR and a later release. "
+    "0.11.1's rating, as the Overtoad ruled; its `pypi` gate stays the Overtoad's. juniper-ml#2062's fix (`[servers]` installs no client) gets its own PR and a later release. "
 )
 
 NEXT_NEW = (
     "  - **Next**: R-ML-SERVERS: the `[servers]` floors are on `main` (juniper-ml#2326), so what remains is the 0.11.2 cut, driven to `PENDING_PYPI_APPROVAL` with "
-    "0.11.1's rating, as the owner ruled; the owner kept 0.11.2 on 2026-10-25 although the release train proposes 0.12.0. Its `pypi` gate stays the owner's. "
+    "0.11.1's rating, as the Overtoad ruled; the Overtoad kept 0.11.2 on 2026-10-25 although the release train proposes 0.12.0. Its `pypi` gate stays the Overtoad's. "
     "juniper-ml#2062's fix (`[servers]` installs no client) is juniper-ml#2333, open, for a later release. juniper-ml#2330 (the `p4/e-c` wall budget) waits on "
-    "the owner's choice of option. "
+    "the Overtoad's choice of option. "
 )
 
 _STATUS_TAIL = "it names 0.11.1 as the latest release and both server releases as served). The v1.4.0 plan edits follow that record"
@@ -80,8 +80,8 @@ def row() -> str:
     return (
         f"| 2026-10-25 | 1.7.18 | **{HEADLINE[0].upper()}{HEADLINE[1:]}**: {CHECKED}. "
         "Updated: Status line, the Progress block (a turing session 11 bullet; Next's head rewritten). "
-        "Owed: the 0.11.2 cut (its `pypi` gate is the owner's); juniper-ml#2330 (the owner's option); juniper-ml#2062's fix (juniper-ml#2333); "
-        "the client 0.3.1 release; juniper-data's next release (W5.7); juniper-config-tools 0.2.0 (owner); W0.1's service-core half; the snapshot path's first live run. "
+        "Owed: the 0.11.2 cut (its `pypi` gate is the Overtoad's); juniper-ml#2330 (the Overtoad's option); juniper-ml#2062's fix (juniper-ml#2333); "
+        "the client 0.3.1 release; juniper-data's next release (W5.7); juniper-config-tools 0.2.0 (Overtoad); W0.1's service-core half; the snapshot path's first live run. "
         "| Paul Calnon |\n"
     )
 

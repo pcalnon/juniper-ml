@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (cross-repo release hygiene, APD-ML-007's failure cl
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use; writes one file for util/push_signed_commit.py to upload
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 juniper-data v0.16.0 was tagged at `39d1cab2` at 08:52Z on 2026-09-24. juniper-data#437 (the
 `equities_seq` relabel, generator 6.0.0) merged at 09:14Z and filed its entry under `## [0.16.0]`, so

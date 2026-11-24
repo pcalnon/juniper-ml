@@ -7,8 +7,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-11
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: the 2026-09-09 owner rulings (register §4.9); the ecosystem data contract in
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: the 2026-09-09 Overtoad rulings (register §4.9); the ecosystem data contract in
          Juniper/AGENTS.md, which states every generator is at 3.0.0 and must now say otherwise
 
 MAJOR, not minor, and the version is load-bearing rather than cosmetic: `generator_version` is

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4 consolidation; tmp/flood4/canopy/val-round2/findings.json (F2, F3, F4, F5)
 
 Usage: 2026-11-07_flood4_canopy_validator_fixes_round2.py <worktree> tests|docs

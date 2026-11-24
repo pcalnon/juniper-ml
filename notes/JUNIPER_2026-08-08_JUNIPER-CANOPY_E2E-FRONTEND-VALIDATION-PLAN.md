@@ -33,7 +33,7 @@ discrepancy is recorded in §5 (T-14 … T-17).
 
 ---
 
-## 1. Objective & Owner Mandate
+## 1. Objective & The Overtoad Mandate
 
 ### 1.1 Mandate (reproduced faithfully)
 
@@ -44,12 +44,12 @@ discrepancy is recorded in §5 (T-14 … T-17).
 > graph displays; network topology graph interactions; front-page training status indicators; snapshots
 > saving/loading/replaying; dataset loading, hot and cold new-dataset migration. The full application must
 > be exercised click-by-click. A full test suite must be implemented to exercise the validated features.
-> Headless merges of all PRs in this arc are pre-authorized, BUT all execution is gated on the owner's
+> Headless merges of all PRs in this arc are pre-authorized, BUT all execution is gated on the Overtoad's
 > approval of this finalized planning documentation.
 
 ### 1.2 Approval gate
 
-**No execution begins until the owner approves this document** (§14). That includes Phase 0 — the
+**No execution begins until the Overtoad approves this document** (§14). That includes Phase 0 — the
 `isolated_stack.bash` port fix (§5 T-1) is a real code change and waits with everything else. Until then
 this arc produces documents only.
 
@@ -62,7 +62,7 @@ plan does not and cannot relax:
 |---|---|
 | Green CI | Every canopy PR must land with canopy CI green, **including the `ui-tests` job** (`juniper-canopy/.github/workflows/ci.yml:353-415`), which the quality gate treats as `failure = error` (`:928-932`). |
 | Scope | Only PRs enumerated or derived in §10. A defect discovered outside this arc's scope is filed, not silently fixed. |
-| Deploy/PyPI gates | Unchanged and owner-only. This arc cuts no release and approves no `pypi` environment. |
+| Deploy/PyPI gates | Unchanged and Overtoad-only. This arc cuts no release and approves no `pypi` environment. |
 | Test-first fixes | Every Phase-2 fix PR carries the regression test that fails before it and passes after (§6.3). |
 | Doc drift | Never silently "corrected" in a code PR; batched into the Phase-4 docs-truth-up PR (§11). |
 
@@ -83,7 +83,7 @@ plan does not and cannot relax:
    only for demo-only surfaces (§4.4).
 4. **Both models** — `cascor` and `recurrence` (`juniper-canopy/src/model_registry.py:167-193`), with the
    recurrence lane scoped by the decision in §4.5.
-5. **The five owner-named fragile areas** — §7.
+5. **The five Overtoad-named fragile areas** — §7.
 6. **A durable automated UI suite** — §8.
 
 ### 2.2 Non-goals
@@ -237,7 +237,7 @@ the env satisfies every `juniper-*` floor.
 | Covers | W1…W8, W10–W14 (plus W9's live-lane 400-mirror step), all five fragile areas, both topology sources, real snapshots, real staging/restart/live-swap | only the surfaces that are **demo-only by design**: the Dataset View **Generate** modal (`main.py:1414-1418`, 400 in service mode), **Import File** (`:1478-1482`) and **Import URL** (`:1572`) which are likewise demo-gated, the fabricated snapshot list (`:1818-1828`, `_demo_snapshots` session store `:1892-1899`), and the welcome modal / theme / static tabs where mode is irrelevant |
 | Automation | new `ui_live` marker, local runner only (§8) | existing `@pytest.mark.ui` suite + CI `ui-tests` job |
 
-Rule: **a surface is validated in the lane where it is honest.** Nothing owner-named as fragile is signed
+Rule: **a surface is validated in the lane where it is honest.** Nothing Overtoad-named as fragile is signed
 off from the demo lane alone.
 
 ### 4.5 Model matrix — decision on recurrence
@@ -252,7 +252,7 @@ off from the demo lane alone.
 suppression never engages. (The docstring at `src/backend/__init__.py:116-118` asserts the picker gates an
 unconfigured recurrence model out; `model_is_trainable` does not implement that — see F-CANDIDATE in §7.5.)
 
-**Decision (owner may override at approval):**
+**Decision (Overtoad may override at approval):**
 
 - **Default**: Phase 0 adds an **optional fourth leg** to `isolated_stack.bash` behind `--with-recurrence`,
   launching juniper-recurrence on **8211** (`JUNIPER_RECURRENCE_PORT=8211`, flat prefix per §4.2) and
@@ -264,7 +264,7 @@ unconfigured recurrence model out; `model_is_trainable` does not implement that 
   `port: int = 8210  # container port; deploy maps host 8211 -> ctr 8210` — so the fourth leg must check
   8211 for a live listener before `--up` (mirroring the §12 8050/8051 mitigation) and abort loudly on a
   collision.
-- **Fallback** (if the owner declines the fourth leg): every recurrence matrix row (all of W8) is
+- **Fallback** (if the Overtoad declines the fourth leg): every recurrence matrix row (all of W8) is
   annotated `N-A (no recurrence service)` rather than PASS — an honest reduction the §9 vocabulary
   already supports. **The previously drafted self-URL trick is REJECTED on the record** (coverage audit
   FE-4): pointing `JUNIPER_CANOPY_RECURRENCE_SERVICE_URL` at the stack's own canopy port is not
@@ -311,7 +311,7 @@ unconfigured recurrence model out; `model_is_trainable` does not implement that 
 
 ### 6.1 Phase 0 — Prerequisites & stack fixes
 
-**Entry**: owner approval of this document.
+**Entry**: Overtoad approval of this document.
 **Steps**
 
 1. **PR-M1 (juniper-ml)** — fix `util/isolated_stack.bash:252` to export
@@ -361,10 +361,10 @@ documented behaviour) / P2 (cosmetic or drift).
 **Steps**: one PR per defect or per tight defect cluster, each carrying (a) the fix, (b) a regression test
 that fails on the parent commit, (c) a matrix-row reference. After each merge, re-run the affected matrix
 rows on a fresh live stack and update the row status to `PASS (re-validated @ <sha>)`.
-**Exit**: every P0 and P1 closed or explicitly deferred with owner sign-off; no matrix row left FAIL
+**Exit**: every P0 and P1 closed or explicitly deferred with Overtoad sign-off; no matrix row left FAIL
 without a linked issue. Count that mechanically with `python3 util/ad-hoc/e2e_finding_triage.py` (operator
 contract: [`docs/REFERENCE.md` § Canopy E2E Finding Triage](../docs/REFERENCE.md#canopy-e2e-finding-triage));
-`ACCEPTED` is owner-deferred and is **not** OPEN. **Deliverables**: fix PRs + regression tests. **PR count**: unknown a priori —
+`ACCEPTED` is Overtoad-deferred and is **not** OPEN. **Deliverables**: fix PRs + regression tests. **PR count**: unknown a priori —
 budget 3–10 (juniper-canopy), sized after Phase 1.
 
 ### 6.4 Phase 3 — Automated UI test-suite implementation
@@ -384,7 +384,7 @@ by the default addopts — §8.2); CI `ui-tests` job unchanged in scope and with
 **Steps**: (1) publish `JUNIPER_2026-08-XX_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md` in juniper-ml
 `notes/` (matrix outcomes, ledger, environment header, screenshots index); (2) land the companion matrix
 document; (3) one docs-truth-up PR per §11; (4) closeout note against the acceptance criteria (§13).
-**Exit**: owner accepts the evidence report. **PR count**: 1 (juniper-ml notes) + 1–2 (juniper-canopy docs).
+**Exit**: Overtoad accepts the evidence report. **PR count**: 1 (juniper-ml notes) + 1–2 (juniper-canopy docs).
 
 ---
 
@@ -726,7 +726,7 @@ Any additional drift found in Phase 1 is appended to this table before the Phase
 | Last-known-good `no_update` masking (T-5) turns a broken panel into a "stale but plausible" one | False PASS on the top fragile area | Every fragile-area assertion requires an **observed change** (node count grows, epoch advances), never a static snapshot |
 | Long live workflows exceed the 120 s WS idle timeout (T-17) | Spurious badge FAILs | Bounded waits sized under 120 s; badge transitions across an idle boundary are expected, not FAIL |
 | Live tests become flaky and erode trust | Suite gets disabled | Live lane is local-only (never gating CI), uses explicit `wait_for_function` gates modelled on `conftest.py:110-125`, and any test that flakes twice is quarantined with a ledger entry rather than retried blindly |
-| Phase-2 defect count is unknown until Phase 1 completes | Schedule uncertainty | Phases 2/3 are budget-ranged, not fixed; the owner re-approves scope if P0 count exceeds ~5 |
+| Phase-2 defect count is unknown until Phase 1 completes | Schedule uncertainty | Phases 2/3 are budget-ranged, not fixed; the Overtoad re-approves scope if P0 count exceeds ~5 |
 | Cross-repo defect surfaces (cascor/data) | Arc scope creep | Filed as `F-CASCOR-` / `F-DATA-` issues in their own repos; this arc only records the UI-visible symptom |
 | Concurrent sessions collide on the same worktree/branch space | Lost work / duplicate PRs | `gh pr list` dup-guard before opening any PR; per-agent scratchpad subdirectories; one agent owns the arc's branch namespace |
 | The port fix lands but an operator canopy already holds 8050/8051 | Bring-up confusion | Phase-0 step 3 explicitly checks both ports before `--up` |
@@ -735,7 +735,7 @@ Any additional drift found in Phase 1 is appended to this table before the Phase
 
 ## 13. Acceptance Criteria
 
-| # | Owner requirement | Measurable criterion |
+| # | The Overtoad requirement | Measurable criterion |
 |---|---|---|
 | **A-1** | (a) All top-tab-menu pages open and display contents as expected | All 15 tabs in §3.2 have a `PASS` row in both the tab-open and content-render matrix columns on the LIVE lane, plus the cascade-suppression variant for a one-shot model; zero rows left at the initial `—`. |
 | **A-2** | (b) All documented functionality works from the front end | Every behavioural claim in the enumerated claim set — the §11 drift table (D-1…D-8) plus any USER_MANUAL / REFERENCE claim found and appended during Phase 1 — has a matrix row (or ledger entry) with a terminal status; each divergence is either a `FIXED-IN <PR>` ledger entry or a §11 drift row. (The matrix is code-derived; §11 is the doc-claim denominator, kept current as Phase 1 finds more.) |
@@ -749,8 +749,8 @@ Any additional drift found in Phase 1 is appended to this table before the Phase
 
 ## 14. Approval Gate & Amendment Protocol
 
-1. **Gate.** The owner reviews this document together with the companion matrix and the two audit reports
-   (§15). Execution — including Phase 0 — begins only on the owner's explicit approval. No agent message,
+1. **Gate.** The Overtoad reviews this document together with the companion matrix and the two audit reports
+   (§15). Execution — including Phase 0 — begins only on the Overtoad's explicit approval. No agent message,
    including this one, constitutes that approval.
 2. **Cross-validation before ratification.** Because this arc authorizes headless merges, two independent
    auditors re-probe every `file:line` claim here (grounding audit) and every mandate clause against
@@ -758,8 +758,8 @@ Any additional drift found in Phase 1 is appended to this table before the Phase
 3. **Amendments.** Once approved, this document is the design of record. Changes arrive as **follow-up
    PRs against this file** with a dated `## Amendment N` section stating what changed and why; the original
    text is never rewritten in place. Scope-expanding amendments (new phases, new repos, new merge
-   authority) require fresh owner approval.
-4. **Status transitions.** `DRAFT — AWAITING OWNER APPROVAL` → `APPROVED — IN EXECUTION` (owner edits the
+   authority) require fresh Overtoad approval.
+4. **Status transitions.** `DRAFT — AWAITING OWNER APPROVAL` → `APPROVED — IN EXECUTION` (Overtoad edits the
    header) → `COMPLETE` (on acceptance of the evidence report) or `SUPERSEDED BY <doc>`.
 
 ---

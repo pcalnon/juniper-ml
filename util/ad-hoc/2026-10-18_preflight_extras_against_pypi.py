@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-18
 Status: ad-hoc — one-off (the W1.13 extras raise, util/ad-hoc/2026-10-18_raise_recurrence_canopy_pins_w1_13.py)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: W1.13 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md;
          ml#2190 (the W1.11 floor raise, pre-flighted the same way on another host with uv)
 

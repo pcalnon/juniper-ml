@@ -49,7 +49,7 @@ Its cost is that PRs repeatedly go `BEHIND` under concurrent merges and must be 
 
 This is **not a new proposal**. The merge queue is the flagship P1 recommendation of
 [`JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md`](JUNIPER_2026-07-28_JUNIPER-ML_CURSOR-PR-FLOOD-REMEDIATION-ANALYSIS.md)
-§4 owner decision 1, where the recorded answer is *"i concur with recommendation."* That decision left
+§4 Overtoad decision 1, where the recorded answer is *"i concur with recommendation."* That decision left
 exactly two unblockers: a **UI availability check** and a **`merge_group` smoke test**. Step 0 (the
 `merge_group` wiring) is now complete.
 
@@ -252,7 +252,7 @@ Both queue and strict rules are **skipped by bypass actors**. Every recorded byp
 rule-suite window is `pcalnon` on `RepositoryRole 5`, which stays. So the queue's teeth come from
 routing merges through "Merge when ready", **not** from enforcement — it does not bind the
 admin-batch path. Making it binding is [juniper-ml#1012](https://github.com/pcalnon/juniper-ml/issues/1012),
-a separate owner decision.
+a separate Overtoad decision.
 
 ---
 
@@ -296,10 +296,10 @@ a required context (ml#1011).~~ **Stale — ml#1011 CLOSED 2026-08-18:** `Sequen
 **required** context on all 9 repos (and was renamed to drop the `(Advisory)` suffix on the 8
 siblings). Prefer update-branch over a local rebase; do not treat either as self-verifying.
 
-> **Required still does not mean enforced for the owner.** `RepositoryRole 5` holds an `always`
+> **Required still does not mean enforced for the Overtoad.** `RepositoryRole 5` holds an `always`
 > bypass on all 9, and the census measured it exercised **614 times in one month**
 > ([`…_BYPASS-ACTOR-CENSUS.md`](JUNIPER_2026-08-20_JUNIPER-ECOSYSTEM_BYPASS-ACTOR-CENSUS.md)), so a
-> required check does not constrain the owner's own merges. ml#1011 was never the fix for that
+> required check does not constrain the Overtoad's own merges. ml#1011 was never the fix for that
 > failure mode. `util/safe_merge.py` is the discipline that covers it.
 
 ### 8.2 Batch merges into quiet windows (free, behavioural)

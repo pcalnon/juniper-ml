@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Read-only: scan #2089's 73 new probes (fizzy copies, byte-identical to a64d72fe) for credential-shaped
-text and the owner's configured email. Prints counts, lengths and 7-char prefixes only."""
+text and the Overtoad's configured email. Prints counts, lengths and 7-char prefixes only."""
 import os
 import re
 import subprocess

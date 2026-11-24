@@ -7,7 +7,7 @@ Application: ad-hoc soak analysis
 Author:      Paul Calnon
 License:     MIT License
 Created:     2026-08-31
-Status:      ad-hoc -- impact analysis for the owner's 2026-08-31 decision to
+Status:      ad-hoc -- impact analysis for the Overtoad's 2026-08-31 decision to
              re-score source-recovery as its own outcome.
 Retire when: the re-score has landed in util/soak_ledger.py and this is history.
 

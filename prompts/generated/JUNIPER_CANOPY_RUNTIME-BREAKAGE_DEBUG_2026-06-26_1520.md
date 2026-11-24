@@ -81,11 +81,11 @@ Restore basic, working juniper-canopy functionality by finding **all** of the se
    Re-confirm each cited `file:line`/symbol in-repo before relying on it; if a path/symbol/flag does not resolve, **stop and report** rather than inventing one.
 4. **Fix the root causes; generate the code/config changes.** At minimum: correct the env to satisfy the floors (recommended: `conda run -n JuniperCanopy1 python -m pip install -r requirements.lock`, which pins `juniper-data-client==0.4.1` and `juniper-cascor-client==0.5.0`; confirm the signature check now returns `True`).
    Then, with a healthy env, re-run the app and fix any **genuine code defects** that remain (e.g. adapter signature mismatches against cascor-client 0.5.0, recurrence routing when the service URL is unset).
-   Decide — and justify — whether to also harden `demo_mode.py` so a client construction/transport error degrades gracefully instead of hard-crashing (the current "no local fallback" is explicit; treat changing it as an owner-relevant design choice, not a default).
+   Decide — and justify — whether to also harden `demo_mode.py` so a client construction/transport error degrades gracefully instead of hard-crashing (the current "no local fallback" is explicit; treat changing it as an Overtoad-relevant design choice, not a default).
    Make the smallest correct change set; match canopy's idiom (line-length 512, canonical file headers).
 5. **Guard against silent recurrence.** Add a regression guard that **fails before and passes after**: e.g. a canopy test asserting the active env's installed `juniper-*` versions satisfy the `pyproject.toml` floors (the class of defect that juniper-ml's `editable_install_drift_check.py` misses, because it only covers *editable* installs, not plain wheels). Do not disable, skip, or weaken any existing test to make the suite pass.
 6. **Document any other Juniper issues you discover** (design gaps, config problems, syntax errors, architectural weaknesses, incomplete development) — including whether sibling envs (`JuniperCascor1`, `JuniperData`) show the same plain-wheel-vs-lockfile drift. **Note these; do not fix them here** (keep this session's blast radius to canopy + its guard).
-7. **Land the fix and document results.** Open a PR against canopy `main` (never merge — the owner merges); include a `## Requirements` section with any applicable `JR-CANOPY-*` IDs. Write a short root-cause writeup (what broke, when, why, the fix, the guard) into canopy `notes/`.
+7. **Land the fix and document results.** Open a PR against canopy `main` (never merge — the Overtoad merges); include a `## Requirements` section with any applicable `JR-CANOPY-*` IDs. Write a short root-cause writeup (what broke, when, why, the fix, the guard) into canopy `notes/`.
 
 ## Key Deliverables & Requirements
 
@@ -100,7 +100,7 @@ Restore basic, working juniper-canopy functionality by finding **all** of the se
 - Do NOT disable, skip, or weaken any test to make the suite pass (CRITICAL and ABSOLUTE).
 - Do not invent the introducing commit, paths, APIs, versions, or flags — every reference must resolve in the grounding bundle or the live repo; STOP and report if unverifiable.
 - Keep scope to **juniper-canopy** plus its regression guard. Sibling-repo drift and any juniper-ml tooling gap (e.g. a plain-wheel drift checker) are to be **documented, not fixed** in this session.
-- One PR per work-unit; never merge (the owner merges and approves any deploy/PyPI gates); worktree cleanup only after the PR merges.
+- One PR per work-unit; never merge (the Overtoad merges and approves any deploy/PyPI gates); worktree cleanup only after the PR merges.
 
 ## Finalize / Validation
 

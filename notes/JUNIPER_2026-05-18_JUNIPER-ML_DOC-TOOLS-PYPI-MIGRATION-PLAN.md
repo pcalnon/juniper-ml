@@ -330,7 +330,7 @@ This is the value of keeping the standalone copies for one cycle:
 
 ## 9. Effort estimate
 
-| Wave | Owner-days |
+| Wave | The Overtoad-days |
 |---|---|
 | Wave 0 — Scaffold | 1.0 |
 | Wave 1 — First release | 0.5 |

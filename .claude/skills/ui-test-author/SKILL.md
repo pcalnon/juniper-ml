@@ -14,7 +14,7 @@ You **author a click-through UI test by driving the real app**: boot the target 
 `playwright` MCP to exercise a live control and observe its outcome, then emit a pytest-playwright
 test modeled on the target repo's existing UI harness — **for human review, never auto-merged**. You
 run as a **Skill in the main conversation** so you can hold the live browser session across tool
-calls and **ask the owner which control/outcome to capture**. **Teardown is non-negotiable** (close
+calls and **ask the Overtoad which control/outcome to capture**. **Teardown is non-negotiable** (close
 the browser, reap the booted app) and runs in a `finally`-style path.
 
 You **observe, then reproduce**. The emitted test is a reviewed artifact: you write it into the target
@@ -28,7 +28,7 @@ boot/teardown discipline (E-1) and its proven live-UI drive.
   (`juniper-canopy/src/tests/ui/`, ~10 pytest-playwright tests); another target's harness is confirmed
   at runtime, never assumed.
 - `--control` — the control to test: a selector like `#apply-params-button`, or a description you
-  resolve to a selector by exploring the live DOM. If omitted, **ask the owner** which control and what
+  resolve to a selector by exploring the live DOM. If omitted, **ask the Overtoad** which control and what
   observable outcome to capture.
 - `--port` (default `8050`) and `--mode` (`demo` default / `full`) — the boot mode, as in the
   `service-smoke` Skill; `demo` boots canopy standalone (`JUNIPER_CANOPY_DEMO_MODE=true`).
@@ -41,7 +41,7 @@ selector against the real repo before you author — never invent a selector, a 
 Run these steps in order. Step 8 (teardown) is mandatory and runs in a `finally`-style path: if any of
 steps 3–7 fails or raises, you still tear down the browser AND the booted app before terminating.
 
-1. **Ingest** `--target` / `--control` / `--port` / `--mode`. If `--control` is unset, ask the owner
+1. **Ingest** `--target` / `--control` / `--port` / `--mode`. If `--control` is unset, ask the Overtoad
    which control + observable outcome to capture.
 2. **Model on the harness (hard gate).** Read the target repo's `src/tests/ui/` first-party: the
    `conftest.py` fixtures (canopy exposes `canopy_url` + `dashboard_page`), an exemplar
@@ -71,7 +71,7 @@ steps 3–7 fails or raises, you still tear down the browser AND the booted app 
    exemplar; keep it to one focused behaviour.
 7. **Write for review (never merge).** Write the file to the target repo's
    `src/tests/ui/test_<name>.py` **uncommitted**; refuse to overwrite an existing file (pick a fresh
-   name and report). Present the test, state that it is uncommitted, and remind the owner to review, run
+   name and report). Present the test, state that it is uncommitted, and remind the Overtoad to review, run
    (`pytest -m ui src/tests/ui/test_<name>.py`), and PR it themselves → `TEST_DRAFTED`. **Never** `git
    add` / commit / PR / merge it, and never touch any other file in the target repo.
 8. **Teardown (MANDATORY — `finally`-style).** Close the browser (`mcp__playwright__browser_close`),
@@ -101,7 +101,7 @@ free and reuse the parent-PID-safe, Juniper-env-scoped matching in
 last resort only** (it `sudo kill -9`s every python on the host). **Never commit `.playwright-mcp/`
 artifacts** — the `playwright` MCP writes page snapshots there and it is a tracked dir.
 
-## Manual smoke-verify (owner-run; cannot run in CI)
+## Manual smoke-verify (Overtoad-run; cannot run in CI)
 
 CI runs only the structural lint (`tests/test_ui_test_author_skill_lint.py`); the live authoring path
 needs conda + the app + a browser MCP, which ubuntu CI does not have. Verify locally:
@@ -117,7 +117,7 @@ needs conda + the app + a browser MCP, which ubuntu CI does not have. Verify loc
 ## Guardrails
 
 - **Reviewed, never auto-merged.** Write the drafted test **uncommitted**; never `git add` / commit /
-  PR / merge it, and never edit any other file in the target repo. The owner reviews, runs, and PRs it.
+  PR / merge it, and never edit any other file in the target repo. The Overtoad reviews, runs, and PRs it.
 - **Observe before you author.** Every assertion must come from a real observed outcome — never invent a
   selector, a value, or an outcome. If you cannot observe it, report `NO_OBSERVABLE_OUTCOME`.
 - **Model on the real harness.** Reuse the repo's fixtures (`dashboard_page`) and `@pytest.mark.ui`;

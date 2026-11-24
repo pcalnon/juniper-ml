@@ -7,7 +7,7 @@ Application:  canopy E2E validation arc -- item 32 (F-CANOPY-069: dash 3.x rende
 Author:       Paul Calnon
 Created:      2026-10-20
 Status:       ad-hoc -- investigation
-Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when:  RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:      notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md (Phase 14, F-CANOPY-069; item 32);
               util/ad-hoc/2026-10-20_f069_pair_members_probe.py (which member of each pair runs, per dash);
               util/ad-hoc/2026-10-20_canopy_dash_duplicate_outputs_probe.py (the per-dash ALIVE/INERT verdict);

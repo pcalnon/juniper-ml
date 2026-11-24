@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-Extract, verbatim, the two owner rulings on juniper-cascor's mixed-provenance gap from the session transcripts.
+Extract, verbatim, the two Overtoad rulings on juniper-cascor's mixed-provenance gap from the session transcripts.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling (defect-register provenance)
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- single-use extractor
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
-Two sessions working defect-register round 42 each asked the owner how juniper-cascor should annotate a
+Two sessions working defect-register round 42 each asked the Overtoad how juniper-cascor should annotate a
 run whose partitions came from different sources (a partial fetch, then an inline train-only start that
-keeps the fetched val/test). The register records the rulings, so it needs the exact question the owner
+keeps the fetched val/test). The register records the rulings, so it needs the exact question the Overtoad
 saw, the exact options, and the exact answer -- not a session's paraphrase of them. This reads each
 session's transcript JSONL, finds every AskUserQuestion call whose text matches the gap, pairs it with its
 tool_result by tool_use_id, and prints both unaltered (JSON-dumped, so nothing is re-flowed). The whole call
@@ -22,7 +22,7 @@ The transcripts are split on "\\n" only: str.splitlines() also splits on U+0085 
 inside JSON string values and would tear a record in half.
 
 Extended the same day for the "Key leaks" ruling (--topic key-leaks): session bc31e993 asked it at 10:22:00Z, and
-the owner's answer is the tool_result recorded at 18:30:09Z, with no earlier answer anywhere in that transcript. That
+the Overtoad's answer is the tool_result recorded at 18:30:09Z, with no earlier answer anywhere in that transcript. That
 topic selects by the question's header, "Key leaks", because other calls mention a key leak in passing (the
 follow-up split's options do).
 
@@ -107,12 +107,12 @@ def extract(session: str, path: Path, topic: str = "mixed-provenance") -> list[d
 
 def render(calls: list[dict], topic: str = "mixed-provenance") -> str:
     if topic == "key-leaks":
-        out = ["# Defect-register round 42 -- the owner's \"Key leaks\" ruling, verbatim", ""]
+        out = ["# Defect-register round 42 -- the Overtoad's \"Key leaks\" ruling, verbatim", ""]
         out.append("Extracted by `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py --topic key-leaks` from the session transcripts. It")
         out.append(f"selects every AskUserQuestion call with a question headed \"{KEY_LEAKS_HEADER}\" and keeps the WHOLE call. The questions and options")
         out.append("are the call's input as sent, JSON-dumped; the answer is the tool_result as returned. Nothing is paraphrased.")
         return _render_calls(out, calls)
-    out = ["# Defect-register round 42 -- the owner's rulings, verbatim", ""]
+    out = ["# Defect-register round 42 -- the Overtoad's rulings, verbatim", ""]
     out.append("Extracted by `util/ad-hoc/2026-09-24_extract_mixed_provenance_rulings.py` from the two session transcripts. It selects every")
     out.append("AskUserQuestion call that mentions juniper-cascor's mixed-provenance gap and keeps the WHOLE call, so the rulings asked beside it")
     out.append("(the PR sweeper, juniper-data 0.16.0's contents, which session does the follow-ups) are recorded too. The questions and options")

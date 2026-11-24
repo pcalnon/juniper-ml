@@ -872,12 +872,185 @@ async def test_the_catch_up_sends_a_buffered_frame_exactly_as_the_live_fan_out_d
 
 @pytest.mark.asyncio
 async def test_replay_since_returns_exactly_the_tail_after_every_cut_point() -> None:
-    """``replay_since`` copies only the tail after the cut: pinned at every cut the buffer allows."""
+    """``replay_since`` copies only the tail after the cut: pinned at every cut the buffer allows.
+
+    Past the newest seq there is no cut: a cursor no seq has reached is refused, as one older
+    than the buffer is (through 0.7.2 it returned ``[]``).
+    """
     mgr = _manager(max_replay_buffer_size=5)
     for i in range(8):  # seqs 1-8; the buffer keeps 4-8
         await mgr.broadcast(_metrics(i))
 
-    for last_seq in range(3, 11):  # oldest - 1 through two past the newest
+    for last_seq in range(3, 9):  # oldest - 1 through the newest
         assert [m["seq"] for m in mgr.replay_since(last_seq)] == list(range(last_seq + 1, 9)), last_seq
+    for last_seq in (2, 9, 10):  # one older than oldest - 1; one and two past the newest
+        with pytest.raises(ReplayOutOfRange):
+            mgr.replay_since(last_seq)
+
+
+# ======================================================================================
+# A cursor that matches no seq this server sent is refused, never answered resume_ok
+# (juniper-cascor's four cursor rules, juniper-cascor#754; the owner's rulings of 2026-11-12
+# and 2026-11-13). tests/test_websocket_resume_answer_table.py pins every answer on the wire.
+# ======================================================================================
+
+
+def _raw_resume_frame(mgr: WebSocketManager, raw_last_seq: str, *, server_instance_id: str | None = None) -> str:
+    """A resume frame whose ``last_seq`` is the raw JSON text given, which ``json.dumps`` could not write (``NaN``)."""
+    frame = json.dumps({"type": "resume", "data": {"last_seq": "@LAST_SEQ@", "server_instance_id": server_instance_id or mgr.server_instance_id}})
+    return frame.replace('"@LAST_SEQ@"', raw_last_seq)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw_last_seq", ["NaN", "Infinity", "-Infinity", "2.5", "2.0", "true", '"2"', "[2]"])
+async def test_a_last_seq_that_is_not_a_plain_integer_is_refused_as_malformed(raw_last_seq: str) -> None:
+    """``json.loads`` accepts ``NaN`` and ``Infinity``, and a bool is an int to Python; no seq is any of them.
+
+    Through 0.7.2, ``NaN``, ``Infinity``, ``2.5``, ``2.0`` and ``true`` were answered ``resume_ok``
+    (nothing compares above ``NaN`` or ``Infinity``, so for those two nothing was replayed), and a
+    string or a list raised inside the handshake: a fresh connect, with no ``resume_failed``.
+    """
+    mgr = _manager()
+    await _observer(mgr)
+    for i in range(3):  # seqs 1-3
+        await mgr.broadcast(_metrics(i))
+
+    ws = FakeWS(app=_app(mgr), incoming=[_raw_resume_frame(mgr, raw_last_seq)])
+    task = asyncio.create_task(training_stream_handler(ws))
+    await _settle(task, ws)
+    await _finish(task, ws)
+
+    assert "resume_ok" not in ws.types()
+    assert ws.frame("resume_failed")["data"] == {"reason": "malformed_resume"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw_last_seq", ['"3"', "2.5"])
+async def test_a_cursor_that_is_not_an_integer_is_malformed_before_its_server_instance_id_is_compared(raw_last_seq: str) -> None:
+    """The integer check comes first: with a stale ``server_instance_id`` too, the answer is ``malformed_resume``."""
+    mgr = _manager()
+    await _observer(mgr)
+    await mgr.broadcast(_metrics(0))  # seq 1
+
+    ws = FakeWS(app=_app(mgr), incoming=[_raw_resume_frame(mgr, raw_last_seq, server_instance_id="stale-id")])
+    task = asyncio.create_task(training_stream_handler(ws))
+    await _settle(task, ws)
+    await _finish(task, ws)
+
+    assert ws.frame("resume_failed")["data"] == {"reason": "malformed_resume"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("ahead_by", [1, 100])
+async def test_a_last_seq_above_the_last_seq_numbered_is_refused_out_of_range(ahead_by: int) -> None:
+    """No client can hold a seq the server has not numbered yet, so ``resume_ok`` would vouch for nothing.
+
+    Through 0.7.2 such a resume was answered ``resume_ok`` with nothing replayed, and the next
+    ``ahead_by`` broadcasts then carried seqs at or below the client's own cursor.
+    """
+    mgr = _manager()
+    await _observer(mgr)
+    for i in range(3):  # seqs 1-3
+        await mgr.broadcast(_metrics(i))
+
+    ws, task = _start_resume(mgr, last_seq=mgr.current_seq + ahead_by)
+    await _settle(task, ws)
+    await _finish(task, ws)
+
+    assert "resume_ok" not in ws.types()
+    assert ws.frame("resume_failed")["data"] == {"reason": "out_of_range"}
+
+
+@pytest.mark.asyncio
+async def test_replay_since_and_the_catch_up_refuse_a_cursor_above_the_last_seq_numbered() -> None:
+    mgr = _manager()
+    for i in range(3):  # seqs 1-3, nobody connected
+        await mgr.broadcast(_metrics(i))
+
+    assert mgr.replay_since(3) == []  # the newest seq itself: nothing missed
     with pytest.raises(ReplayOutOfRange):
-        mgr.replay_since(2)
+        mgr.replay_since(4)
+
+    ws = FakeWS()
+    assert await mgr.connect_pending(ws)
+    assert await mgr.promote_to_active(ws, replayed_through=4) is False
+    assert ws in mgr._pending_connections  # left for the caller to close
+    assert await mgr.promote_to_active(ws, replayed_through=3) is True
+    assert ws in mgr._active_connections
+
+
+@pytest.mark.asyncio
+async def test_replay_since_itself_does_not_read_a_negative_cursor_as_zero() -> None:
+    """Only the handshake reads a negative ``last_seq`` as 0; the public ``replay_since`` still raises for it.
+
+    With seq 1 buffered, a negative cursor is older than ``oldest_seq - 1``, as ``replay_since``'s docstring says.
+    """
+    mgr = _manager()
+    for i in range(3):  # seqs 1-3, all still buffered
+        await mgr.broadcast(_metrics(i))
+
+    assert [message["seq"] for message in mgr.replay_since(0)] == [1, 2, 3]
+    with pytest.raises(ReplayOutOfRange, match="older than oldest"):
+        mgr.replay_since(-1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("negative", [-1, -5, -(10**29)])
+async def test_a_negative_last_seq_is_read_as_zero_whatever_the_buffer_holds(negative: int) -> None:
+    """Seqs start at 1, so a cursor below 0 holds no more than 0 does: it is answered as 0 is.
+
+    Unclamped, the answer depended on the buffer and not on the value: ``resume_ok`` with nothing
+    buffered, ``out_of_range`` once anything was, even with seq 1 still buffered, where
+    ``last_seq`` 0 got a full replay.
+    """
+    mgr = _manager()
+    await _observer(mgr)
+    for i in range(3):  # seqs 1-3, all still buffered
+        await mgr.broadcast(_metrics(i))
+
+    ws, task = _start_resume(mgr, last_seq=negative)
+    await _settle(task, ws)
+    await mgr.broadcast(_metrics("live"))  # seq 4
+    await _finish(task, ws)
+
+    assert ws.frame("resume_ok")["data"]["replayed_count"] == 3
+    assert ws.seqs() == [1, 2, 3, 4]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("last_seq", [-1, 0])
+async def test_a_negative_last_seq_is_out_of_range_once_seq_1_has_left_the_buffer_as_zero_is(last_seq: int) -> None:
+    """A control for the test above: reading a negative cursor as 0 vouches for no more than 0 does."""
+    mgr = _manager(max_replay_buffer_size=3)
+    await _observer(mgr)
+    for i in range(5):  # seqs 1-5; the buffer keeps 3-5
+        await mgr.broadcast(_metrics(i))
+
+    ws, task = _start_resume(mgr, last_seq=last_seq)
+    await _settle(task, ws)
+    await _finish(task, ws)
+
+    assert "resume_ok" not in ws.types()
+    assert ws.frame("resume_failed")["data"] == {"reason": "out_of_range"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("raw_data", ["null", "[]", '"last_seq"', "7"])
+async def test_a_resume_frame_whose_data_is_not_an_object_is_refused_as_malformed(raw_data: str) -> None:
+    """``data`` that is null, a list, a string or a number carries no cursor: ``malformed_resume``.
+
+    Through 0.7.2, ``data.get`` raised ``AttributeError``, which the handshake's broad ``except``
+    read as "no resume frame": a fresh connect, with no ``resume_failed``.
+    """
+    mgr = _manager()
+    await _observer(mgr)
+    for i in range(3):  # seqs 1-3
+        await mgr.broadcast(_metrics(i))
+
+    ws = FakeWS(app=_app(mgr), incoming=['{"type": "resume", "data": ' + raw_data + "}"])
+    task = asyncio.create_task(training_stream_handler(ws))
+    await _settle(task, ws)
+    await _finish(task, ws)
+
+    assert "resume_ok" not in ws.types()
+    assert ws.frame("resume_failed")["data"] == {"reason": "malformed_resume"}

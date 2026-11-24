@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-10
 Status: ad-hoc -- one-off (backup recovery B9 / design P0.5a item 6)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: .gitleaks.toml; .gitleaksignore; tests/test_gitleaks_secret_assignment_rule.py
 
 A suite that stays green when the thing it guards is broken is a vacuous pass. This copies the suite and the files

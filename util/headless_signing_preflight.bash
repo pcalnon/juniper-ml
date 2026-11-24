@@ -23,7 +23,7 @@
 #
 # The original design also checked the card and made a test signature (--card-timeout).
 # Under plan D11 an agent never touches the YubiKey, so those checks are not implemented
-# here; they stay owner-run (plan tasks B3 and B5).
+# here; they stay Overtoad-run (plan tasks B3 and B5).
 #
 # Usage:
 #   bash util/headless_signing_preflight.bash [--repo DIR] [--require-signed-head] [--timeout SECONDS]

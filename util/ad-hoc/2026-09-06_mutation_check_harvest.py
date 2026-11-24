@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-06
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#1625 / #1735 harvest; `2026-09-06_harvest_methods.py`
 
 A harvested test that passes on first run has proved nothing yet. It may be pinning a real

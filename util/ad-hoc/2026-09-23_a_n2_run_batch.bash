@@ -6,7 +6,7 @@
 # Author:     Paul Calnon
 # Created:    2026-09-23
 # Status:     ad-hoc — investigation
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    util/ad-hoc/2026-09-23_a_n2_drive.py, util/ad-hoc/2026-09-23_a_n2_screenshot.py;
 #             evidence in reports/2026-09-23_canopy-a-n2-generate-stage-train-render/
 #

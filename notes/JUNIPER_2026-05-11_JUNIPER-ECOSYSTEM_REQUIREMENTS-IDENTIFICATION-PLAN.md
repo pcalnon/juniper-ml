@@ -111,7 +111,7 @@ The **canonical** definition of each requirement lives once in `by-area/<area>.m
 > content readers use — which was never the point of the constraint.
 >
 > Keep the sentence above as the recorded intent; treat the projection as the shipped design. The
-> owner decision that chose it is in
+> Overtoad decision that chose it is in
 > [`JUNIPER_2026-08-26_JUNIPER-ECOSYSTEM_REQUIREMENTS-CROSS-VIEW-MEASUREMENT.md`](JUNIPER_2026-08-26_JUNIPER-ECOSYSTEM_REQUIREMENTS-CROSS-VIEW-MEASUREMENT.md).
 >
 > **A limit worth carrying with it:** `--check-views` compares the families against each other, so
@@ -480,7 +480,7 @@ This section is the canonical record of where the effort stands. Update at each 
 
 | Date | Decision | Rationale | Phase |
 |---|---|---|---|
-| 2026-05-11 | All five plan-locking questions answered (see §3) | Reviewed by owner | 0 |
+| 2026-05-11 | All five plan-locking questions answered (see §3) | Reviewed by Overtoad | 0 |
 | 2026-05-12 | First Phase-1 inventory agent produced authentic TSV but hallucinated `.md` report (chat summary self-contradicted with the file). Discarded `.md`; rebuilt deterministically from TSV via Bash with row-count and LOC/score sample cross-validation against filesystem. | Hallucination caught early; TSV is the canonical Phase-1 artifact. Reinforces §8 risk: Explore agents may fabricate summary tables independently from their search results. Phase-3 extraction agents must therefore produce machine-checkable artifacts (YAML with source line ranges) — never free-form prose — to make hallucination detectable by post-hoc grep. | 1 |
 | 2026-05-12 | Added required `Priority` field to schema (P0-P3, source-doc-cue inference; see §5.1). | Total Phase-1 density score is 12,926 keyword hits across 625 files → conservative 3-5 hits/req → 2,500-4,300 candidate requirements pre-dedup. Well over the 1,500 threshold in §3-Q2 that triggers the priority field. Without priority, the index is unnavigable at this volume. | 2 |
 | 2026-05-12 | Locked the area-code enum at 15 codes: the original 10 (OBS, SEC, API, DEP, UI, DATA, TRAIN, WS, TEST, LOCK) plus 5 new (ARCH, PERF, TOOL, DOC, OPS). | Phase-1 top-density files include large bodies of architectural design work (interface_proposals/R1-R5, microservices roadmap), performance/scalability roadmaps, operational runbooks, dev-tooling procedures (worktree, claudey), and process documentation (link validation, conventions). The original enum had no clean home for these and would have forced lossy bucketing. Phase 4 may still add codes after dedup if needed. | 2 |

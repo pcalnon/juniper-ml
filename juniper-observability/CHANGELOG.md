@@ -8,6 +8,14 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`sentry-sdk` is capped below 3** in the `sentry` and `test` extras (`>=2.35.0,<3`). sentry-sdk
+  3.0.0 (PyPI, 2026-11-23 09:30Z) removed the `send_default_pii` option and the `sentry_sdk.scrubber`
+  module, so `configure_sentry` raised `TypeError: Unknown option 'send_default_pii'` and 20 tests in
+  `tests/test_sentry.py` failed on any fresh install. The published 0.4.2 still admits 3.x; a
+  release carrying this cap is what protects consumers. Moving to 3.x needs a port of `sentry.py`.
+
 ## [0.4.2] - 2026-11-08
 
 ### Security
@@ -36,7 +44,7 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
   (2026-11-08) and is not in the round-42 register. juniper-data neither sets nor reads a cookie,
   but a client's cookies reached its events whenever `send_pii` was on.
 - **Four more headers are scrubbed: `Proxy-Authorization`, `Sec-WebSocket-Protocol`,
-  `X-CSRF-Token` and `X-XSRF-Token`** (owner ruling, 2026-11-08). `Sec-WebSocket-Protocol` carries
+  `X-CSRF-Token` and `X-XSRF-Token`** (Overtoad ruling, 2026-11-08). `Sec-WebSocket-Protocol` carries
   juniper-canopy's WebSocket key (`bearer, <key>`) when its opt-in `ws_auth_enabled` is on. It and
   the two CSRF tokens are on neither of the SDK's own lists, so they reached Sentry in every error
   event and transaction, under either `send_pii` value (measured on sentry-sdk 2.35.0 and 2.74.0).
@@ -138,7 +146,7 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
   loop's local `candidate`: the **real configured key**. The SDK's own `EventScrubber` did not
   catch it, because it redacts locals by name. `api_key`, the presented key, is on its default
   denylist; `candidate` is not. No name list can be complete, so no locals are captured at all, and
-  there is deliberately no parameter to turn them back on. Owner ruling "Fix everywhere now"
+  there is deliberately no parameter to turn them back on. The Overtoad ruling "Fix everywhere now"
   (2026-09-24).
 - **The `before_send` hook also deletes frame `vars`**, as defence in depth. It covers every
   `exception.values[*].stacktrace`, every `threads.values[*].stacktrace` and the top-level

@@ -3,7 +3,7 @@
 **Project**: Juniper
 **Sub-Project**: juniper-ml
 **Author**: Paul Calnon
-**Status**: Analysis — one recommendation is an owner decision, nothing implemented
+**Status**: Analysis — one recommendation is an Overtoad decision, nothing implemented
 **Created**: 2026-09-02
 **Subject**: `util/soak_run_probe.py`, `util/soak_next_probe.py`, `util/soak_ledger.py`
 **Protocol of record**: `notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md`
@@ -27,9 +27,9 @@ away the measurement itself.
 | 1 | **Subject** | answers the probe task | **Never** — it *is* the measurement |
 | 2 | **Orchestrator** | select probe, dispatch, capture, classify channel | **Done** (ml#1561) |
 | 3 | **Scorer** | judge the answer against the frozen discriminator | **Candidate** — see §4 |
-| 4 | **Interpreter** | verdict semantics, escalations, scoring-model changes | **No** — owner policy |
+| 4 | **Interpreter** | verdict semantics, escalations, scoring-model changes | **No** — Overtoad policy |
 | 5 | **Registry author** | writes probes, discriminators, `must_be_absent_from_source` | **No** — and it is the highest-leverage judgement here |
-| 6 | **Analyst** | writes the document the owner acts on (this note is an instance) | **No** — and it is where self-interest bites |
+| 6 | **Analyst** | writes the document the Overtoad acts on (this note is an instance) | **No** — and it is where self-interest bites |
 
 Rows 5 and 6 were missing from the first version of this table, which claimed to
 enumerate every point a session appears. Row 5 matters most: a badly scoped

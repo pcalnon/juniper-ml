@@ -89,7 +89,7 @@ class FleetListDriftTest(unittest.TestCase):
         self.assertEqual(
             set(guard.FLEET),
             publishers | {"juniper-deploy"},
-            "FLEET must equal the release-train registry's publishing repos plus " "juniper-deploy (which ships no package but carries the same rulesets). " "Adding a sibling repo means updating this list too.",
+            "FLEET must equal the release-train registry's publishing repos plus juniper-deploy (which ships no package but carries the same rulesets). Adding a sibling repo means updating this list too.",
         )
 
     def test_self_repo_is_in_the_fleet(self):
@@ -208,7 +208,7 @@ class ScopeContractTest(unittest.TestCase):
         self.assertNotIn(
             'get("bypass_actors")',
             src,
-            "the token-free guard must not read bypass_actors -- it is redacted " "unauthenticated. Row checking belongs in the authenticated verifier.",
+            "the token-free guard must not read bypass_actors -- it is redacted unauthenticated. Row checking belongs in the authenticated verifier.",
         )
         self.assertIn("bypass rows are NOT checked", src)
 

@@ -8,7 +8,7 @@ Author:      Paul Calnon
 License:     MIT License
 Created:     2026-09-08
 Status:      ad-hoc -- measurement (re-run whenever the required-context list changes)
-Retire when: RETAINED (owner policy 2026-08-25 -- no retirement deadline), as for the v1 tool.
+Retire when: RETAINED (Overtoad policy 2026-08-25 -- no retirement deadline), as for the v1 tool.
 Related:     util/ad-hoc/2026-08-20_measure_required_check_span.py (v1, superseded by this);
              util/safe_merge.py REPO_TIMEOUTS; util/wait_for_checks.py (the canonical waiter).
 

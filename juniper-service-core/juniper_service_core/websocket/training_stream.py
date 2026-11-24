@@ -338,17 +338,28 @@ async def _handle_resume(websocket: WebSocket, ws_manager, msg: dict) -> bool:
     in the live fan-out. If that cannot be kept after ``resume_ok`` -- a send fails, the replay
     buffer evicts a frame the client still needs, or the manager raises -- the socket is closed
     1011 and ``WebSocketDisconnect`` is raised instead.
+
+    The cursor is read as juniper-cascor reads it. A ``data`` that is not an object holds no
+    cursor, and a ``last_seq`` that is not a plain integer (``NaN``, ``Infinity``, a fraction, a
+    boolean, a string) cannot be a seq this server sent: both are ``resume_failed``
+    ``malformed_resume``, checked before ``server_instance_id``. A negative ``last_seq`` is read as
+    ``0``: seqs start at 1, so it holds no more than ``0`` does. One above the last seq numbered is
+    ``out_of_range`` (:meth:`~juniper_service_core.websocket.manager.WebSocketManager.replay_since`).
     """
-    data = msg.get("data", {})
+    data = msg.get("data")
+    if not isinstance(data, dict):
+        data = {}  # null, a list, a string or a number carries no cursor
     last_seq = data.get("last_seq")
     client_server_id = data.get("server_instance_id")
 
-    if last_seq is None or client_server_id is None:
+    # ``json.loads`` accepts ``NaN`` and ``Infinity``, and Python counts a bool as an int, so a
+    # cursor that is not a plain integer is malformed, as a missing one is.
+    if client_server_id is None or not isinstance(last_seq, int) or isinstance(last_seq, bool):
         await ws_manager.send_personal_message(
             websocket,
             {"type": "resume_failed", "timestamp": time.time(), "data": {"reason": "malformed_resume"}},
         )
-        logger.debug("Resume failed: malformed resume frame (missing last_seq or server_instance_id)")
+        logger.debug("Resume failed: malformed resume frame (data is not an object, server_instance_id is missing, or last_seq is missing or not an integer)")
         return False
 
     # Server-restart detection via UUID mismatch.
@@ -361,7 +372,10 @@ async def _handle_resume(websocket: WebSocket, ws_manager, msg: dict) -> bool:
         return False
 
     try:
-        events = ws_manager.replay_since(last_seq)
+        # A cursor below 0 is read as 0, as promote_to_active's catch-up reads it. Unclamped,
+        # replay_since answers it by buffer state: [] on an empty buffer, out of range once
+        # anything is buffered, seq 1 included.
+        events = ws_manager.replay_since(max(last_seq, 0))
     except ReplayOutOfRange as e:
         await ws_manager.send_personal_message(
             websocket,

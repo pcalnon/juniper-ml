@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (Cursor flood-4 session 4: landing the fix carriers)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-08_flood4r2_fix_apply_edits.py (applies the spec this writes)
 
 Usage:

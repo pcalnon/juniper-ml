@@ -7,7 +7,7 @@
 - **Status**: VALIDATED.
   - Round 1 returned 3 × ACCEPT-WITH-CHANGES and no BLOCKER. All 10 MAJOR findings were applied, and every MINOR or NIT was either applied or declined with a reason.
   - Round 2 returned ACCEPT-WITH-CHANGES and no BLOCKER. All 18 findings were applied, including its one new MAJOR (N1).
-  - Tasks marked **OWNER** need the owner at the keyboard, at a YubiKey, or in an IDE.
+  - Tasks marked **OWNER** need the Overtoad at the keyboard, at a YubiKey, or in an IDE.
 - **Owner**: Paul Calnon
 - **Extends**: `notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md` (the bring-up plan), arc B: decisions D3 and D11, tasks B2–B5.
   - This plan replaces the git-config half of task B4 and adds the IDE half, which the bring-up plan does not cover.
@@ -18,15 +18,15 @@
 
 ## 1. Executive summary
 
-**Goal.** Every commit the owner makes in a Juniper checkout is signed with the YubiKey signing subkey. That holds whether the commit starts in a terminal, in the Source Control view of Cursor or VS Code, or in either IDE's integrated terminal.
+**Goal.** Every commit the Overtoad makes in a Juniper checkout is signed with the YubiKey signing subkey. That holds whether the commit starts in a terminal, in the Source Control view of Cursor or VS Code, or in either IDE's integrated terminal.
 
-No existing check or test is weakened. **Claude Code agents still cannot sign.** An IDE agent signs only after a per-command owner approval and a physical touch (S7, S11).
+No existing check or test is weakened. **Claude Code agents still cannot sign.** An IDE agent signs only after a per-command Overtoad approval and a physical touch (S7, S11).
 
 **What turing has today** (measured 2026-10-19, §3):
 
 1. **No signing configuration at any scope.** The global config holds only `user.name`, `user.email`, the credential helper and an alias. The system config holds only `credential.helper`. None of the 10 checkouts has a local signing or identity key, and there is no XDG config file.
 2. **The GUI half is in place.** Bring-up task B1 set `pinentry-program /usr/local/bin/pinentry-mac` and `no-allow-external-cache`.
-3. **turing cannot sign or verify yet.** The owner's public key is not in turing's keyring. Commit `be9f1319`, signed on yamaguchi, reads `E BA18D1A733B1831A`. So B2 (import and trust) and B3 (card stubs) are still open.
+3. **turing cannot sign or verify yet.** The Overtoad's public key is not in turing's keyring. Commit `be9f1319`, signed on yamaguchi, reads `E BA18D1A733B1831A`. So B2 (import and trust) and B3 (card stubs) are still open.
 4. **Both IDEs defer to git's own configuration.**
    - Cursor 3.25.9 and VS Code 1.108.2 each bundle a `vscode.git` extension. It adds `-S` to its `git commit` only when `git.enableCommitSigning` is true, and neither copy contains `--no-gpg-sign`.
    - Cursor's fork also appends its own `GIT_CONFIG_*` keys to every git spawn and keeps any it inherits. None of those keys touches signing, but an inherited D11 environment would (§7.3).
@@ -61,14 +61,14 @@ Items 6 to 8 together lead to **the sequencing rule: no card goes into turing un
   - planted repository-local keys;
   - IDE settings;
   - whether IDE agents can commit or bypass signing unprompted.
-- **The owner's steps.** The YubiKey and approval steps stay with the owner, in a safe order (§13).
+- **The Overtoad's steps.** The YubiKey and approval steps stay with the Overtoad, in a safe order (§13).
 - **The AGENTS.md hazard.** It gains one sentence: an IDE agent must never "fix" a signing failure with `--no-gpg-sign`.
 
 ## 2. Scope
 
 **In scope**
 
-- Owner commits on a developer host in any checkout under the Juniper root, including linked worktrees, from:
+- The Overtoad commits on a developer host in any checkout under the Juniper root, including linked worktrees, from:
   - a terminal;
   - the Source Control views of Cursor and VS Code: commit, amend, and the merge, rebase and cherry-pick commands that create commits;
   - both IDEs' integrated terminals.
@@ -99,7 +99,7 @@ Items 6 to 8 together lead to **the sequencing rule: no card goes into turing un
 | Repo-local config | no signing or identity keys in any of the 10 `.git/config` files. juniper-ml's `core.hooksPath` is the only `[core]` extra, and it names juniper-ml's own `.git/hooks` | `grep` |
 | This session | `GIT_CONFIG_COUNT=2`: `commit.gpgsign=false` and `tag.gpgsign=false` in the `command` scope (D11 item 1) | `git config --show-scope --get-regexp` |
 | Scoped reads ignore D11 | `git config --global --get commit.gpgsign` exits 1 (unset); plain `--get` prints `false`; `--show-scope` prints `command false` | measured |
-| Public keyring | the owner's key is absent: `be9f1319` → `E BA18D1A733B1831A`. Web-flow commits on `origin/main` → `E B5690EEEBB952194` | `git log --format='%h %G? %GK'` |
+| Public keyring | the Overtoad's key is absent: `be9f1319` → `E BA18D1A733B1831A`. Web-flow commits on `origin/main` → `E B5690EEEBB952194` | `git log --format='%h %G? %GK'` |
 | Card state (yamaguchi, 2026-08-09) | `Signature PIN: not forced`, `UIF Sign=off`, PIN retry counter `3 0 3`, no reset code. Cards `24955323` (the stubs' serial) and `24955114` (backup) hold the same subkeys | audit :279-283, A1-F4 (:256-304), A1-F11 (:419-423) |
 | UIDs | the 3c key's UID ends `<paul.calnon@gmail.com>` (audit :169, as of 2026-08-09). `util/juniper-backup.bash:211-214` lists a second, 3a UID (`…Yubikey-3a_2026-08-11`), also with that email | audit; script |
 | Shell profile | `~/.bash_profile:63-75` starts gpg-agent, runs `updatestartuptty` and points `SSH_AUTH_SOCK` at gpg-agent's ssh socket. `GPG_TTY` is set nowhere, and `~/.bashrc` is empty | `grep`, Read |
@@ -113,7 +113,7 @@ Items 6 to 8 together lead to **the sequencing rule: no card goes into turing un
 | VS Code approval order | the 1.108.2 workbench checks every `false` (deny) entry before any allow entry, and denies a command that carries inline environment assignments. Rule keys are parsed with `^\/(?<pattern>.+)\/(?<flags>[dgimsuvy]*)$` (`g` dropped); plain keys become `^<key>\b`, case-sensitive except for PowerShell. The legacy `chat.agent.terminal.autoApprove` is merged in. Session auto-approval and `chat.tools.global.autoApprove` approve before the rules are consulted. The built-in defaults allow `git status`, `log`, `show`, `diff`, `ls-files`, `grep` and `branch`, and allow no commit-creating command | `…/out/vs/workbench/workbench.desktop.main.js` |
 | Cursor agent | no `~/.cursor/sandbox.json` and no `<repo>/.cursor/sandbox.json`. The run mode and allowlist live in Cursor's own state store, not in `settings.json` | `ls` |
 | Other git work on the host | `~/Development` also holds `Boost`, `c++`, `Dash`, `data`, `Docker`, `googletest`, `rust`, `PythonBook`, `Router_work` and `python/{dynamic_nn,yamaguchi}` | `ls` |
-| Local commits by owner tools | `util/worktree_cleanup.bash:372` runs `git merge` in the primary checkout. No `util/` script creates a tag; release tags come from GitHub Releases (AGENTS.md § Publishing) | `grep`, Read |
+| Local commits by Overtoad tools | `util/worktree_cleanup.bash:372` runs `git merge` in the primary checkout. No `util/` script creates a tag; release tags come from GitHub Releases (AGENTS.md § Publishing) | `grep`, Read |
 
 **yamaguchi's target** (`notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_HEADLESS-SIGNING-AND-SERENA-HARNESS-AUDIT.md`, the audit)
 
@@ -125,10 +125,10 @@ Items 6 to 8 together lead to **the sequencing rule: no card goes into turing un
 
 | ID | Requirement |
 |---|---|
-| R1 | **Signed by default.** In any checkout under the Juniper root, the owner's commit-creating git commands sign with the pinned subkey. Those commands are commit (and `--amend`), merge, rebase, cherry-pick, revert, `am`, `pull` (merge or rebase), and annotated tags. This holds from a terminal, from the IDE Source Control view and from the IDE's integrated terminal. **Not covered**, because git ignores `commit.gpgSign` for them: `commit-tree` (GitLens adds `-S` itself), stash, notes and fast-import. |
+| R1 | **Signed by default.** In any checkout under the Juniper root, the Overtoad's commit-creating git commands sign with the pinned subkey. Those commands are commit (and `--amend`), merge, rebase, cherry-pick, revert, `am`, `pull` (merge or rebase), and annotated tags. This holds from a terminal, from the IDE Source Control view and from the IDE's integrated terminal. **Not covered**, because git ignores `commit.gpgSign` for them: `commit-tree` (GitLens adds `-S` itself), stash, notes and fast-import. |
 | R2 | **Scoped.** Repositories outside the Juniper root gain no signing requirement. |
 | R3 | **GUI-safe.** Signing needs neither a TTY nor the shell's PATH: `gpg.program` is absolute and the pinentry is a GUI build. |
-| R4 | **No new agent signing.** Claude Code sessions stay unsigned by construction (D11). Nothing here edits `~/.claude/settings.json` or weakens the C8 guard, and no Claude Code agent reads `~/.gnupg` or `~/.ssh` or runs a card or secret-key command. An IDE agent's commit signs only after a per-command owner approval and a touch (S7, S11, an owner ruling). IDE agents can read the filesystem, which includes the exported key files on disk; bring-up task C3 removes those. |
+| R4 | **No new agent signing.** Claude Code sessions stay unsigned by construction (D11). Nothing here edits `~/.claude/settings.json` or weakens the C8 guard, and no Claude Code agent reads `~/.gnupg` or `~/.ssh` or runs a card or secret-key command. An IDE agent's commit signs only after a per-command Overtoad approval and a touch (S7, S11, an Overtoad ruling). IDE agents can read the filesystem, which includes the exported key files on disk; bring-up task C3 removes those. |
 | R5 | **No check removed.** No test, pre-commit hook, CI job or ruleset is disabled, skipped or removed, and `required_signatures` is untouched. |
 | R6 | **Fail closed.** Inside the Juniper tree a commit that cannot be signed fails rather than landing unsigned. The exception is a *missing* include file, which git skips silently. `--check` fails that case. |
 | R7 | **Verifiable without credentials.** An agent can verify the configuration without signing, without touching the card and without reading key material. Signature verification (`%G?`) uses public keys only. |
@@ -156,7 +156,7 @@ These are primary sources. WebFetch timed out on turing (§14.1), so each statem
 
 ## 6. Decisions
 
-The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each decision takes its recommendation unless it is marked as an owner ruling.
+The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each decision takes its recommendation unless it is marked as an Overtoad ruling.
 
 ### S1 — Where the signing configuration lives
 
@@ -172,7 +172,7 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
 - **Rendering.** The pattern and the include path are rendered from realpaths: under `realpath($HOME)` they are written `~/` plus the relative path, and elsewhere as the realpath. git realpaths `$HOME` when it expands `~` and compares against the physical `.git` location, so a root spelled through a symlink still matches (R-S15).
 - **Refusals.** The tool exits 2 for a root that is `$HOME` or an ancestor of it (that would sign everything), for a root containing a glob character, and for an include file under the root or inside any git work tree. Any branch could rewrite an include that lives in a work tree.
 - **Worktrees.** A linked worktree's git directory is `<main>/.git/worktrees/<name>`, so it matches wherever it is checked out (R-S11).
-- **Position is not the guarantee.** An owner section with the same pattern, or a later global `commit.gpgsign=false`, can still win. The guarantee is that `--check` judges the deciding value in every checkout (R-S3).
+- **Position is not the guarantee.** An Overtoad section with the same pattern, or a later global `commit.gpgsign=false`, can still win. The guarantee is that `--check` judges the deciding value in every checkout (R-S3).
 
 ### S2 — The signing-key spec
 
@@ -198,7 +198,7 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
 
   `--gpg-program` vouches for one other program.
 - **Known installs** (round 2, N4) are `gnupg/<version>/bin/gpg` in Homebrew's own Cellar directories (`/usr/local/Cellar`, `/opt/homebrew/Cellar`, `/home/linuxbrew/.linuxbrew/Cellar`), `/usr/local/MacGPG2/bin/gpg[2]` and `/usr/bin/gpg[2]`. A Cellar-shaped path under `/tmp` or `~/.cache` does not count. `COMMIT_SIGNING_GNUPG_CELLARS` replaces the Cellar list, for the hermetic tests.
-- **What this does not stop.** It catches another user's tampering, mode drift, and a program planted outside those installs. It **cannot** stop an agent running as the owner, who owns the Homebrew prefix (`/usr/local/bin` and the Cellar are writable by the owner and by `admin`). Directory writability is therefore not judged, because the real layout would fail. The controls for that threat are C8 and K12 (S9) plus the touch policy (S11).
+- **What this does not stop.** It catches another user's tampering, mode drift, and a program planted outside those installs. It **cannot** stop an agent running as the Overtoad, who owns the Homebrew prefix (`/usr/local/bin` and the Cellar are writable by the owner and by `admin`). Directory writability is therefore not judged, because the real layout would fail. The controls for that threat are C8 and K12 (S9) plus the touch policy (S11).
 
 ### S4 — `tag.gpgsign`
 
@@ -223,7 +223,7 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
 
 ### S6 — `GPG_TTY`
 
-**Recommendation: an optional owner step, neither automated nor a gate.**
+**Recommendation: an optional Overtoad step, neither automated nor a gate.**
 
 - GitHub's macOS steps and gpg-agent(1) recommend it.
 - With pinentry-mac it has no effect on prompting. GnuPG falls back to the TTY of stdin, and pinentry-mac ignores the TTY.
@@ -238,7 +238,7 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
 | Option | Strengths | Weaknesses |
 |---|---|---|
 | a. Widen Cursor's sandbox (`sandbox.json` adds `~/.gnupg`) | agent commits sign unattended | every sandboxed command gains read and write access to the keyring directory, against D11. The socket may still be blocked |
-| **b. An IDE agent's history-writing git command needs the owner's per-command approval; the touch is the second factor** | owner-mediated, the same as committing agent-written changes from the Source Control view | one approval per commit |
+| **b. An IDE agent's history-writing git command needs the Overtoad's per-command approval; the touch is the second factor** | Overtoad-mediated, the same as committing agent-written changes from the Source Control view | one approval per commit |
 | c. IDE agents land only through `util/open_signed_pr.py` | no card | no IDE can make its agent unsigned by construction |
 
 **Recommendation: b, in four layers.**
@@ -262,8 +262,8 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
      Never add a deny pattern that matches the empty string (a stray `|`). VS Code turns such a rule into one that never matches (round 2, N3).
    - **VS Code, always:** never turn on session auto-approval or `chat.tools.global.autoApprove`; both approve before any rule is consulted.
    - **Amp:** remove the unconditional `Bash allow` rules 28 and 39 (required). In the interim, put the same two patterns first in `amp.permissions` as `ask` entries.
-   - **Cursor:** set Approvals & Execution to **Allowlist** with the sandbox on, and keep history-writing git commands off the allowlist. `--check` cannot read Cursor's state store, so the owner records this attestation **at K13** (round 2, N11).
-3. **Touch (S11).** A signature needs the owner's physical touch.
+   - **Cursor:** set Approvals & Execution to **Allowlist** with the sandbox on, and keep history-writing git commands off the allowlist. `--check` cannot read Cursor's state store, so the Overtoad records this attestation **at K13** (round 2, N11).
+3. **Touch (S11).** A signature needs the Overtoad's physical touch.
 
 **Residual risk.** Until K13, VS Code and Amp agents can commit, or bypass signing, with no prompt. That is why no card goes into turing before K13 (§1). A bypassed commit fails at merge; `main` is never silently unsigned.
 
@@ -271,7 +271,7 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
 
 **Recommendation: now, failing closed (R6).**
 
-- Until B2/B3 are done, an owner commit in the tree fails with "gpg failed to sign the data". It would otherwise land unsigned, and so be unmergeable.
+- Until B2/B3 are done, an Overtoad commit in the tree fails with "gpg failed to sign the data". It would otherwise land unsigned, and so be unmergeable.
 - Agent sessions are unaffected (D11).
 - **Recovery:**
   - a commit fails with no change to HEAD;
@@ -282,9 +282,9 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
 
 ### S9 — Who writes the host configuration
 
-- **This session runs `--apply` once (K5)**, because the owner asked for the change to be implemented. That moves B4's git half from OWNER to AGENT, and K4 records the actor change. The dry-run plan is recorded verbatim in the PR, and `--remove` undoes the change exactly.
-- **The C8 guard covers neither file today.** As written, it does not cover `~/.gitconfig` or `~/.config/git/`. A Claude Code agent able to write them could set `gpg.program`, `core.sshCommand`, `core.fsmonitor` or `core.hooksPath` to a program that later runs in owner sessions.
-- **The same agent can outrank the include.** It can write repo-local config or `.git/hooks/` directly. A `post-commit` hook runs right after the owner's touched signature, inside a `cached` touch window.
+- **This session runs `--apply` once (K5)**, because the Overtoad asked for the change to be implemented. That moves B4's git half from OWNER to AGENT, and K4 records the actor change. The dry-run plan is recorded verbatim in the PR, and `--remove` undoes the change exactly.
+- **The C8 guard covers neither file today.** As written, it does not cover `~/.gitconfig` or `~/.config/git/`. A Claude Code agent able to write them could set `gpg.program`, `core.sshCommand`, `core.fsmonitor` or `core.hooksPath` to a program that later runs in Overtoad sessions.
+- **The same agent can outrank the include.** It can write repo-local config or `.git/hooks/` directly. A `post-commit` hook runs right after the Overtoad's touched signature, inside a `cached` touch window.
 - **D11's environment can be overridden** with `git -c include.path=<file>` or `git --config-env=commit.gpgsign=…`. Before K12 the guard checked only `-c *gpgsign*` (`util/claude_agent_guard.py:1105-1111` in 1.0.0). In 1.1.0, GIT-SIGNING-CONFIG denies both forms (:1155-1164).
 - **K12 (AGENT) extends the guard to deny the following.** It is a follow-up PR, and it must be merged and re-installed before any card goes into turing (§1).
   - `git -c include.path=…`, `-c includeIf.*…` and `-c gpg.*program=…`;
@@ -320,7 +320,7 @@ The S1–S12 numbers avoid colliding with the bring-up plan's D-numbers. Each de
 **Recommendation: rule this before K8.**
 
 - yamaguchi's agents commit signed today ("Commit normally (signed)", `prompts/thread-handoff_automated-prompts/HANDOFF_2026-08/HANDOFF_2026-08-07_pr-backlog-processing-fleet-merge-waves.md:13`), with touch off (audit :282).
-- Under any touch policy those commits block on the card and then time out. Either yamaguchi's agents go unsigned by construction and land through the API (D11 there), or the owner accepts touching for them.
+- Under any touch policy those commits block on the card and then time out. Either yamaguchi's agents go unsigned by construction and land through the API (D11 there), or the Overtoad accepts touching for them.
 
 ## 7. Design
 
@@ -336,7 +336,7 @@ At the end of `~/.gitconfig`:
 `~/.config/git/juniper-signing.gitconfig`, with the directory created at mode 0700 and the file at 0600. Git reads it as the owner. The K5 build created turing's copy at 0644, before CodeQL's `py/overly-permissive-file` rule flagged that mode (bring-up E-CQ2's class). It was tightened to 0600 the same day. `--check` accepts either mode, because it fails only group or other *write*:
 
 ```ini
-# Managed by util/configure_commit_signing.py (juniper-ml): the owner's commit signing for the Juniper tree.
+# Managed by util/configure_commit_signing.py (juniper-ml): the Overtoad's commit signing for the Juniper tree.
 # The global git config includes this file through an includeIf on the Juniper root.
 # Plan: notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md
 [user]
@@ -368,8 +368,8 @@ At the end of `~/.gitconfig`:
 
 | Condition | Symptom | Fix |
 |---|---|---|
-| B2 not done (no public key) | `gpg: skipped "B5619…!": No secret key`, then `error: gpg failed to sign the data` | owner K6 |
-| B3 not done (no card stub) | the same | owner K7 |
+| B2 not done (no public key) | `gpg: skipped "B5619…!": No secret key`, then `error: gpg failed to sign the data` | Overtoad K6 |
+| B3 not done (no card stub) | the same | Overtoad K7 |
 | Card absent | pinentry-mac asks for the card by serial | insert it |
 | No touch in time | the signature fails with a card error or timeout | retry, then touch |
 | Cursor sandbox | `gpg: signing failed`, or an agent-socket error | an unsandboxed run, with approval |
@@ -421,12 +421,12 @@ The conventions follow bring-up plan §8: exit 0 / 1 / 2, `--help`, `--dry-run` 
 
 **Checks**
 
-`git` runs without the variables that `git rev-parse --local-env-vars` lists, which include D11's `GIT_CONFIG_COUNT`. So an agent session judges the owner's configuration.
+`git` runs without the variables that `git rev-parse --local-env-vars` lists, which include D11's `GIT_CONFIG_COUNT`. So an agent session judges the Overtoad's configuration.
 
 | Check | FAIL when |
 |---|---|
 | `include` | the file is wired but missing (it fails open, §7.3); it is a symlink, not a regular file, not the user's, unreadable, or writable by group or others; its directory is not the user's or is writable by group or others; or it holds any key beyond the four managed ones |
-| `repo:<name>` | the owner-effective `commit.gpgsign` or `tag.gpgsign` is not true; `user.signingkey` is not the expected spec; `gpg.format` is not `openpgp`; the deciding `gpg.program` or `gpg.openpgp.program` is not sound (S3); `user.email` is unset; a local or worktree `gpg.program`, `gpg.openpgp.program`, `include.*`, `includeIf.*` or `core.sshCommand` is set; `core.fsmonitor` names a program; or `core.hooksPath` is not the checkout's own hooks directory. The planted-key test also runs on **every linked worktree's** `config.worktree`, since agents work there (round 2, N13). The message names the scope and file that decided each value |
+| `repo:<name>` | the Overtoad-effective `commit.gpgsign` or `tag.gpgsign` is not true; `user.signingkey` is not the expected spec; `gpg.format` is not `openpgp`; the deciding `gpg.program` or `gpg.openpgp.program` is not sound (S3); `user.email` is unset; a local or worktree `gpg.program`, `gpg.openpgp.program`, `include.*`, `includeIf.*` or `core.sshCommand` is set; `core.fsmonitor` names a program; or `core.hooksPath` is not the checkout's own hooks directory. The planted-key test also runs on **every linked worktree's** `config.worktree`, since agents work there (round 2, N13). The message names the scope and file that decided each value |
 | `ide:<label>` | the file cannot be parsed, even as JSONC (a string-aware tokenizer: BOM, `//`, `/* */`, trailing commas); an injected terminal variable (S5); a dead user-level `git.path`; or `chat.tools.global.autoApprove` is on |
 | INFO | the include layout; executable hooks per checkout, with sha256 (a hooks path inside a credential directory is never listed or read); hook, monitor, ssh and include settings at **global or system** scope, which apply to every repository (round 2, N13); the D11 override; environment variables that redirect git's config (`GIT_CONFIG_GLOBAL`, `GIT_CONFIG_SYSTEM`, `GIT_CONFIG_NOSYSTEM`, `XDG_CONFIG_HOME`); the agent verdicts below; Cursor's attestation reminder; missing checkouts |
 
@@ -472,15 +472,15 @@ The conventions follow bring-up plan §8: exit 0 / 1 / 2, `--help`, `--dry-run` 
 | K1 | This plan, with consensus rounds 1 and 2 | AGENT | — | §14 records both; every MAJOR applied |
 | K2 | The tool and `tests/test_configure_commit_signing.py`; `ci.yml`'s regression step; `main-verify.yml`'s battery (its SYNC NOTE asks for it); `docs/REFERENCE.md` (Test Suite Reference, "Running every suite", Utility Script Reference); `CHANGELOG.md`; mutation evidence (`util/ad-hoc/2026-10-19_commit_signing_mutation_check.py`) | AGENT | K1 | the suite is green in CI and locally under JuniperPython and `/usr/bin/python3` 3.9.6; flake8, bandit and the CodeQL pre-screen are clean; every mutant is killed by its own pin; the wiring drift gates are green |
 | K3 | AGENTS.md: one sentence in the unsigned-commit hazard plus the tool's name; the suite count at :79, recomputed from `main` at upload (217 → 218 on 2026-10-20); `Last Updated` set to the **UTC** date at upload | AGENT | K1 | the memory budget, header schema and version-drift gates are green |
-| K4 | Bring-up plan §19 (v1.4.0). It builds on the Session 3 record's §18 (v1.3.0), which the bring-up session claimed on 2026-10-20, and adds: B4 split into B4a (this tool, AGENT, at the owner's request) and B4b (OWNER); errata E-B4-KEY, E-B4-SCOPE, E-B4-GPG, E-G-SIGN, E-ACTIVE, E-D11-S and E-D5-LINE; B5 widened | AGENT | K1, the Session 3 record merged | merged with K2 and K3; the apply script refuses to write §19 until §18 is on `main` |
+| K4 | Bring-up plan §19 (v1.4.0). It builds on the Session 3 record's §18 (v1.3.0), which the bring-up session claimed on 2026-10-20, and adds: B4 split into B4a (this tool, AGENT, at the Overtoad's request) and B4b (OWNER); errata E-B4-KEY, E-B4-SCOPE, E-B4-GPG, E-G-SIGN, E-ACTIVE, E-D11-S and E-D5-LINE; B5 widened | AGENT | K1, the Session 3 record merged | merged with K2 and K3; the apply script refuses to write §19 until §18 is on `main` |
 | K5 | `--apply` on turing, then `--check` | AGENT | K2 | every `repo:*` check and the `include` check pass. B2/B3 are not a precondition (S8). The dry-run plan is recorded in the PR |
 | C8 | Install the agent guard: `bash util/install_claude_agent_guard.bash --apply` (bring-up §16.2) | OWNER | — | the guard's `--self-test` passes; `git commit -S` is denied to an agent |
-| K12 | Guard rules (S9), in a follow-up PR | AGENT | K5 | merged; the owner re-runs the C8 line from an up-to-date `main` (§13), and the installed guard's `--self-test` passes; the guard's suite pins each new denial, including both `--config-env` forms (`--config-env=K=V` and `--config-env K=V`) |
-| K13 | IDE agent approvals (S7): VS Code, Amp, Cursor | OWNER | — | VS Code's `"/.*/": true`, `"xargs": true` and the fragment keys are deleted; Amp's rules 28 and 39 are removed; `--check` INFO reports "needs approval" for every probe in VS Code and Amp and names no catch-all; the owner records the Cursor attestation (Allowlist, sandbox on, no history-writing git command allowlisted) **at K13**, and K11 files it |
+| K12 | Guard rules (S9), in a follow-up PR | AGENT | K5 | merged; the Overtoad re-runs the C8 line from an up-to-date `main` (§13), and the installed guard's `--self-test` passes; the guard's suite pins each new denial, including both `--config-env` forms (`--config-env=K=V` and `--config-env K=V`) |
+| K13 | IDE agent approvals (S7): VS Code, Amp, Cursor | OWNER | — | VS Code's `"/.*/": true`, `"xargs": true` and the fragment keys are deleted; Amp's rules 28 and 39 are removed; `--check` INFO reports "needs approval" for every probe in VS Code and Amp and names no catch-all; the Overtoad records the Cursor attestation (Allowlist, sandbox on, no history-writing git command allowlisted) **at K13**, and K11 files it |
 | K8 | Rulings S11 and S12, then the touch policy, card by card (§13) | OWNER | S12 ruled; C8, K12, K13 (the first card insertion, §1) | `ykman openpgp info` shows the ruled policy on the sign slot of each card |
 | K6 (= B2) | Import the public key and verify it against an independent source; ultimate trust gated on that check; the web-flow key imported with no trust | OWNER | C8, K12, K13 (the card's own fingerprint line is one of the sources, §1) | `be9f1319` shows `G` |
 | K7 (= B3) | Per card: `--card-status`, `learn --force`, and a test clearsign with the pinned spec. Signing is live from the first step that has both the public key and a card stub (§1), which may be K6 | OWNER | K6, K8, C8, K12, K13 | the clearsign succeeds on each card |
-| K9 | `bash util/headless_signing_preflight.bash` and `--check`, from a **real owner terminal**, never `! <cmd>`. The session's D11 environment fails the preflight by design; `--check` strips it, so it reports the same either way | OWNER | K5, K7 | both exit 0 |
+| K9 | `bash util/headless_signing_preflight.bash` and `--check`, from a **real Overtoad terminal**, never `! <cmd>`. The session's D11 environment fails the preflight by design; `--check` strips it, so it reports the same either way | OWNER | K5, K7 | both exit 0 |
 | K10 (= B5) | The I-SIGN matrix (§10.2) | OWNER | K9, bring-up A3 (at least juniper-ml's A2/A3 rows) | T1–T5 `verified: true, reason: valid`; T7 reads `command false`, and its commit is `N`; T8–T10 each showed an approval prompt |
 | K11 | Record the results in `reports/<run-date>_turing-signing-probe/`, with the K13 Cursor attestation. Change the AGENTS.md hazard's "turing, as of 2026-10-15" to the verified date. Claude Code agents keep landing through the API (D11) | AGENT | K10 | merged |
 | K14 | The hazard sentence in the other nine repos' AGENTS.md | AGENT | K3 | optional follow-up |
@@ -503,12 +503,12 @@ The conventions follow bring-up plan §8: exit 0 / 1 / 2, `--help`, `--dry-run` 
 |---|---|
 | R-S1 | an unpinned or malformed key spec exits 2 with nothing written; an unpinned key in the include fails; normalisation |
 | R-S2 | a relative, missing, non-executable or group-writable `--gpg-program` exits 2 with nothing written; those values in the config fail; a later `gpg.openpgp.program` decides and is judged |
-| R-S3 | a repo-local `commit.gpgsign=false` fails that repo, naming its scope; a later global `false` fails every repo, even when an owner section with the same pattern exists |
-| R-S4 | D11 keeps a plain agent commit and tag from calling gpg, and `--check` still judges the owner-effective values. **The boundary:** `-S`, `-c include.path=` and `--config-env` under D11 *do* call gpg; that gap is K12's |
+| R-S3 | a repo-local `commit.gpgsign=false` fails that repo, naming its scope; a later global `false` fails every repo, even when an Overtoad section with the same pattern exists |
+| R-S4 | D11 keeps a plain agent commit and tag from calling gpg, and `--check` still judges the Overtoad-effective values. **The boundary:** `-S`, `-c include.path=` and `--config-env` under D11 *do* call gpg; that gap is K12's |
 | R-S5 | IDE settings: an injected variable fails (in `env` and in profile `env`); `null` unsets; JSONC parses (`//` and `/*` inside strings survive); an unparseable file, a dead user-level `git.path` and global auto-approve fail; a workspace-level `git.path` is not judged; workspace, root, folder and profile files are scanned, on both platforms' paths |
 | R-S6 | `--apply --dry-run` writes nothing and exits 1 while anything fails, 0 when nothing is left to do |
 | R-S7 | a second `--apply` writes nothing and changes no byte |
-| R-S8 | backups are made once and never overwritten; an existing include is backed up before it is edited; an owner include with the same pattern survives |
+| R-S8 | backups are made once and never overwritten; an existing include is backed up before it is edited; an Overtoad include with the same pattern survives |
 | R-S9 | an audit hook proves the tool opens nothing under `~/.gnupg` or `~/.ssh`, never executes the gpg program, and writes only the include and the backups (nothing at all under `--check` or `--dry-run`). git's own writes are outside the hook, so a snapshot of the temp `HOME` before and after `--apply` must differ only in those files. A hooks path planted inside `~/.ssh` fails as planted and is never listed or read (round 2, N6 and N18) |
 | R-S10 | **end to end:** a terminal commit, the IDE's exact argv with and without `-S`, Cursor's injected keys, a merge, a cherry-pick and an annotated tag all produce a signature from the pinned key; a lightweight tag fails (S4); an IDE that inherited D11's env commits unsigned |
 | R-S11 | a linked worktree checked out outside the root signs |
@@ -523,7 +523,7 @@ The conventions follow bring-up plan §8: exit 0 / 1 / 2, `--help`, `--dry-run` 
 
 **Also pinned:**
 
-- `--remove` restores `~/.gitconfig` byte for byte and keeps an owner include;
+- `--remove` restores `~/.gitconfig` byte for byte and keeps an Overtoad include;
 - it refuses to delete an edited include, including one where only a comment was added (round 2, N18);
 - it keeps an include that another root's wiring still uses, and that root still signs (round 2, N5);
 - `--help` and `--check` run under `/usr/bin/python3`;
@@ -533,7 +533,7 @@ The conventions follow bring-up plan §8: exit 0 / 1 / 2, `--help`, `--dry-run` 
 
 **Mutation evidence.** `util/ad-hoc/2026-10-19_commit_signing_mutation_check.py` re-introduces each defect class: 40 mutants from round 1, plus 10 for the classes round 2 found. Every mutant is killed by the suite, and by its own pin test alone (§14.4).
 
-### 10.2 Integration (owner-run: the I-SIGN matrix)
+### 10.2 Integration (Overtoad-run: the I-SIGN matrix)
 
 **Procedure.**
 
@@ -544,7 +544,7 @@ The conventions follow bring-up plan §8: exit 0 / 1 / 2, `--help`, `--dry-run` 
 
 | Row | Origin | Required |
 |---|---|---|
-| T1 | a real owner terminal: `git commit --allow-empty -m "probe T1"` | yes |
+| T1 | a real Overtoad terminal: `git commit --allow-empty -m "probe T1"` | yes |
 | T2 | Cursor Source Control view (Git: Commit Empty) | yes |
 | T3 | VS Code Source Control view (Git: Commit Empty) | yes |
 | T4 | Cursor integrated terminal | yes |
@@ -565,7 +565,7 @@ The conventions follow bring-up plan §8: exit 0 / 1 / 2, `--help`, `--dry-run` 
 - **E-B4-SCOPE.** `git config --global` becomes the S1 include.
 - **E-B4-GPG.** `$(brew --prefix)/bin/gpg` stands, as the literal `/usr/local/bin/gpg`.
 - **E-G-SIGN.** As above.
-- **E-ACTIVE.** Owner commits in the tree fail closed until B2 and B3 (S8).
+- **E-ACTIVE.** The Overtoad commits in the tree fail closed until B2 and B3 (S8).
 - **E-D11-S.** D11's environment does not stop an explicit `-S`, `-c include.path=` or `--config-env`. So no card goes into turing until C8 and K12 are in place, which holds B2 and B3 (K6, K7) back too, and B4's touch policy follows the S11 ruling.
 - **E-D5-LINE.** The D5 row's `~/.bash_profile:87` is now `:92`.
 
@@ -587,7 +587,7 @@ The conventions follow bring-up plan §8: exit 0 / 1 / 2, `--help`, `--dry-run` 
 
 No `Allow-*` trailer is needed: every shared-file edit is additive.
 
-**Rollback** restores today's state exactly, keeping any owner edits:
+**Rollback** restores today's state exactly, keeping any Overtoad edits:
 
 ```bash
 python3 util/configure_commit_signing.py --remove     # --dry-run first to see the plan
@@ -606,8 +606,8 @@ Delete the include by hand only when no other include still points at it. `--rem
 
 | Risk | L | I | Mitigation |
 |---|---|---|---|
-| The owner's Juniper commits fail until B2/B3 | H | L | intended (S8); recovery steps; `--remove` |
-| An IDE agent commits (owner-signed) or bypasses signing with no prompt | H until K13 | M | no card before K13 (§1); S11 touch; the AGENTS.md sentence (1 of 10 repos) and the IDEs' built-in rule; a bypass fails at merge, loudly |
+| The Overtoad's Juniper commits fail until B2/B3 | H | L | intended (S8); recovery steps; `--remove` |
+| An IDE agent commits (Overtoad-signed) or bypasses signing with no prompt | H until K13 | M | no card before K13 (§1); S11 touch; the AGENTS.md sentence (1 of 10 repos) and the IDEs' built-in rule; a bypass fails at merge, loudly |
 | A Claude Code agent signs through `-S`, `-c include.path=`, `--config-env`, a planted local `gpg.program` or a `post-commit` hook | L | **H** | no card before C8 and K12 (§1); `--check` fails planted keys and lists hooks; S11 `on` |
 | A same-user process replaces `/usr/local/bin/gpg` or the Cellar binary | L | H | not detectable by file checks (S3); C8, K12 and S11 |
 | The include goes missing, and commits land unsigned | L | M | `--check` FAILs it (R6 exception) |
@@ -616,7 +616,7 @@ Delete the include by hand only when no other include still points at it. `--rem
 | A clone outside the root lands unsigned commits | L | M | clone into the root; the hazard's `%G?` check |
 | A concurrent session's whole-file upload reverts the shared-file edits | M | M | build from fresh `origin/main`; an idempotent apply script; re-check after merge |
 
-## 13. Owner checklist (credential-bearing)
+## 13. The Overtoad checklist (credential-bearing)
 
 **Run every line in a real terminal**, not as `! <cmd>`. The Claude Code session carries D11's environment, which disables signing and fails K9's preflight by design. Run the steps in this order.
 
@@ -644,7 +644,7 @@ awk -F': *' '$1 == "PIN tries remaining" {p = $2} $1 == "Admin PIN tries remaini
   || echo 'STOP: a PIN counter is below 3, or set-touch failed. Do not retry the Admin PIN.'
 ykman openpgp info                             # "Touch policies" shows the ruled policy (never 'fixed') on the signature key
 
-# K6 (B2) -- import from a file, then gate the trust on a fingerprint the owner reads from an
+# K6 (B2) -- import from a file, then gate the trust on a fingerprint the Overtoad reads from an
 #            INDEPENDENT source: yamaguchi's `gpg --fingerprint 084FA27B796DABC4` (the primary), or the
 #            "Signature key" line of `gpg --card-status` on turing (the signing subkey; the card may go in now).
 curl -fsSL https://github.com/pcalnon.gpg -o "$TMPDIR/pcalnon.gpg"
@@ -673,7 +673,7 @@ bash util/headless_signing_preflight.bash --repo .
 gh api repos/pcalnon/juniper-ml/commits/<sha> --jq .commit.verification
 ```
 
-The trust gate needs three values to agree: the owner's reading from the independent source, a fingerprint in the imported key, and the repo text (§3). An agent that edited the repo text still could not get trust set. `gpg --card-status` prints the signing subkey's fingerprint, not the primary's, so the gate accepts either.
+The trust gate needs three values to agree: the Overtoad's reading from the independent source, a fingerprint in the imported key, and the repo text (§3). An agent that edited the repo text still could not get trust set. `gpg --card-status` prints the signing subkey's fingerprint, not the primary's, so the gate accepts either.
 
 ## 14. Validation record
 
@@ -719,7 +719,7 @@ The trust gate needs three values to agree: the owner's reading from the indepen
   - mkdir 0700 and a Python-written header; R-S8 with the same-pattern layout; an exact rollback (`--remove`, `--fixed-value`);
   - the global-file rule; the dry-run exit; the key grammar; `--include-file` refusals;
   - platform-independent IDE paths and profiles; JSONC cases; an injectable date; the YOLO FAIL.
-- **Owner steps:**
+- **The Overtoad steps:**
   - landing via the retry pusher; the `:75` count; the `main-verify.yml` mirror;
   - I-SIGN with Commit Empty, Dock launches, T7 under the root, and agent prompt rows;
   - K12's command forms; the K6 verification and gated trust; the PIN-lockout guard; the yamaguchi ruling; S8 recovery;
@@ -732,7 +732,7 @@ The trust gate needs three values to agree: the owner's reading from the indepen
   - **Evaluating VS Code's default rules.** They allow only read-only git commands, so leaving them out can only over-report.
   - **Ignoring `COMMIT_SIGNING_GPG_CANDIDATES` without `--gpg-program`.** Candidates still pass the soundness rule, the chosen program is printed, and the hermetic tests need the variable.
   - **Failing a group-writable directory on the path.** turing's real `/usr/local/bin` and Cellar are `admin`-writable, and so would fail. That is recorded as a residual risk (S3), as R3 advised.
-- **R2, modified:** the owner reviews `--apply --dry-run` before K5. K5 runs at the owner's explicit request instead. It fails closed, and nothing can sign before the owner's K7. The plan is recorded in the PR, and `--remove` undoes it.
+- **R2, modified:** the Overtoad reviews `--apply --dry-run` before K5. K5 runs at the Overtoad's explicit request instead. It fails closed, and nothing can sign before the Overtoad's K7. The plan is recorded in the PR, and `--remove` undoes it.
 - **R3:**
   - **Running K5 after merge from an up-to-date checkout.** It runs from this PR's worktree, the identical code, so the PR's record is true; re-running is idempotent.
   - **Amp's evaluation spec.** Implemented best-effort from Amp's first-match rule, which its legacy permissions page states.
@@ -760,7 +760,7 @@ The trust gate needs three values to agree: the owner's reading from the indepen
 | N7 | MINOR | the PIN-counter guard fired on the reset code's `0`, and it was only a comment | a conditional on the PIN and Admin PIN counters, which skips `set-touch` (§13). Tested on canned `ykman openpgp info` text under `/bin/bash` 3.2.57 |
 | N8 | MINOR | scdaemon may still hold the card after `--card-status`, so ykman cannot connect | `gpgconf --kill scdaemon` first (§13) |
 | N9 | MINOR | no fast-forward before C8 and K9, and the primary checkout lacked the tool | `git switch main && git pull --ff-only` before both (§13) |
-| N10 | MINOR | the trust gate compared against repo text, and the independent check was only a comment | the gate needs three values to agree: the owner's reading from an independent source, the imported key and the repo text. It also accepts the card's subkey line (§13). Tested on canned key listings |
+| N10 | MINOR | the trust gate compared against repo text, and the independent check was only a comment | the gate needs three values to agree: the Overtoad's reading from an independent source, the imported key and the repo text. It also accepts the card's subkey line (§13). Tested on canned key listings |
 | N11 | MINOR | K13 deferred the Cursor attestation to K11, which runs after K7 | recorded at K13; K11 files it (§9, S7) |
 | N12 | MINOR | K12's acceptance was "merged", but the guard is installed as a copy | merged; re-installed by re-running C8, whose installer self-tests the copy; both `--config-env` forms denied (§9, S9) |
 | N13 | MINOR | planted keys were judged only in the 10 primary checkouts, at local or worktree scope, and K12 lacked direct file writes | each linked worktree's `config.worktree` is judged. Global and system hook, monitor, ssh and include settings are an INFO. K12 covers `.git/config`, `config.worktree` and the system gitconfigs (§8, S9) |
@@ -810,7 +810,7 @@ Round 2's tool changes moved the anchors of S23, S26 and S29. The defects those 
 - `util/headless_signing_preflight.bash` (B7): the D11 override detection (:253-273) and the commit-gpgsign check (:288-299)
 - `util/claude_agent_guard.py` 1.1.0: CRED-PATH-BASH (:165), GPG-SIGN (:170), K12's GIT-SIGNING-CONFIG (:177-186) and GIT-SIGNING-FILE (:189), the `-c`/`--config-env` handling (:1155-1164)
 - `util/git_remote_alias_check.py`: the repository-local environment scrub this tool copies (:193-211, :386-395)
-- `util/worktree_cleanup.bash:372`: the owner tool's `git merge`
+- `util/worktree_cleanup.bash:372`: the Overtoad tool's `git merge`
 - `util/juniper-backup.bash:211-214`: the 3c and 3a recipient UIDs
 - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-08/HANDOFF_2026-08-07_pr-backlog-processing-fleet-merge-waves.md:13`: yamaguchi's signed agent commits
 - `AGENTS.md:47-56`: the unsigned-commit hazard, with this plan's sentence (K3)

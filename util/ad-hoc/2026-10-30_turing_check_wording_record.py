@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-30
 Status: ad-hoc — one-off (the record PR of the "t1" session)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18, §18.3's E-H3);
          util/host_state_check.py; util/ad-hoc/2026-10-30_turing_check_wording_mutation_check.py;
          util/ad-hoc/2026-10-27_turing_h3_record.py (the pattern)
@@ -49,15 +49,15 @@ VERSION_NEW = (
     "E-H3 in §18.3; 2026-10-30). v1.4.10 was v1.4.9 plus"
 )
 
-INTRO_OLD = f"The former ran H3 (v1.4.10) once the owner had installed C8; its handoff, `{PREV_HANDOFF}`, is now the arc's main handoff."
+INTRO_OLD = f"The former ran H3 (v1.4.10) once the Overtoad had installed C8; its handoff, `{PREV_HANDOFF}`, is now the arc's main handoff."
 INTRO_NEW = (
-    f"The former ran H3 (v1.4.10) once the owner had installed C8; its handoff is `{PREV_HANDOFF}`. The \"t1\" session "
+    f"The former ran H3 (v1.4.10) once the Overtoad had installed C8; its handoff is `{PREV_HANDOFF}`. The \"t1\" session "
     f"(8161e3) landed E-H3's wording follow-up (v1.4.11); its handoff, `{THIS_HANDOFF}`, is now the arc's main handoff."
 )
 
 WORDING_OLD = "Both are candidate follow-ups for `util/host_state_check.py`."
 WORDING_NEW = (
-    "Both were fixed by juniper-ml#@PR@ (`@SHA@`, v1.4.11). The kubectl fix now reads \"task D3 (owner) first: upgrade "
+    "Both were fixed by juniper-ml#@PR@ (`@SHA@`, v1.4.11). The kubectl fix now reads \"task D3 (Overtoad) first: upgrade "
     "Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl 1.36.x, which needs "
     "re-planning under the D6 ruling (erratum E-D6)\". On turing that link is the only kubectl on PATH, and it points into "
     "Docker.app, at v1.22.4. The memory message reads \"free + speculative + inactive\"; `util/macvm_ctl.bash` keeps its "
@@ -70,7 +70,7 @@ WORDING_NEW = (
 PREV_OLD = '\n\n- **From:** the 2026-10-26/27 session on turing named "cached-enchanting-cosmos-84"'
 PREV_NEW = (
     '\n\n- **Continued (2026-10-30, plan v1.4.11).** "t1" (8161e3) landed "Agent next" item 2, the check\'s wording '
-    f"(juniper-ml#@PR@). The arc's main handoff is now `{THIS_HANDOFF}`, which carries this file's owner steps forward." + PREV_OLD
+    f"(juniper-ml#@PR@). The arc's main handoff is now `{THIS_HANDOFF}`, which carries this file's Overtoad steps forward." + PREV_OLD
 )
 
 

@@ -492,7 +492,7 @@ unmatched. **The safe form is one G3 run per destination with the results unione
 cascor is unaffected — it is a single-destination cut into a `docs/REFERENCE.md` that must first be
 created.
 
-## 7. Decisions — ALL RESOLVED (owner, 2026-08-29)
+## 7. Decisions — ALL RESOLVED (Overtoad, 2026-08-29)
 
 1. **canopy's destination — TWO SEQUENTIAL SINGLE-DESTINATION PRs.** The split agreed with the
    owning session is by *subject*, not convenience: documentation-about-documentation goes to

@@ -4,13 +4,13 @@
 **Repository**: pcalnon/juniper-ml (plan document); execution spans 8 ecosystem repos
 **Author**: Paul Calnon
 **Date**: 2026-07-21
-**Status**: APPROVED as-is (owner, 2026-07-21) — implementation in flight in the authoring session
+**Status**: APPROVED as-is (Overtoad, 2026-07-21) — implementation in flight in the authoring session
 
 ---
 
 ## 1. Context
 
-The SEC-F01 auth-posture arc completed 2026-07-20 (ten PRs: per-service `enforce_auth_posture` adoption, the `JUNIPER_<SVC>_REQUIRE_AUTH` flag tail, and the juniper-deploy fail-closed stack posture). Three follow-ons remain, ordered by the owner:
+The SEC-F01 auth-posture arc completed 2026-07-20 (ten PRs: per-service `enforce_auth_posture` adoption, the `JUNIPER_<SVC>_REQUIRE_AUTH` flag tail, and the juniper-deploy fail-closed stack posture). Three follow-ons remain, ordered by the Overtoad:
 
 1. **pytest env-repr key leak** — juniper test suites build `env = os.environ.copy()` and pass it to `subprocess.run`; an observed failure paste rendered the full env dict with live secrets (`ANTHROPIC_API_KEY`, `ALPHA_VANTAGE_TOKEN` — alphabetically early keys, visible even in truncated reprs). Close the class at the source so no failure output can render secret values.
 2. **CodeQL subaction mismatch** (3rd recurrence of the known class) — `github/codeql-action` subaction pins split within a repo, producing `Loaded a configuration file for version '4.37.0', but running version '4.37.1'`. Red on juniper-cascor and juniper-data `main` as of 2026-07-20.
@@ -61,7 +61,7 @@ All factual anchors below were re-probed at current mains on 2026-07-20/21 by th
 - juniper-ml co-changes: register the new test file in `.github/workflows/ci.yml`'s unittest list and in `AGENTS.md` (test-command list + tests-section bullet), per house convention.
 - Gates: juniper-ml full unittest battery + pre-commit; juniper-deploy `pytest tests/ -v --tb=short` + pre-commit.
 
-### 3.2 Item 2 — CodeQL align + prevention (fleet-wide, 7 PRs; owner decision 2026-07-21)
+### 3.2 Item 2 — CodeQL align + prevention (fleet-wide, 7 PRs; Overtoad decision 2026-07-21)
 
 One small PR in each of: juniper-cascor, juniper-data (red), juniper-canopy (skew), juniper-ml, juniper-cascor-worker, juniper-cascor-client, juniper-data-client (latent). Each PR:
 
@@ -78,14 +78,14 @@ Execute the section-2.3 gap list in a single PR (branch `feature/recurrence-auth
 
 - Item 1 (both repos): grep proves zero raw `os.environ`-derived sites remain under `tests/`; the lint gate's synthetic-violation self-test bites; `repr()` of a built `RedactedEnv` shows no values; juniper-ml full unittest battery and juniper-deploy pytest lane green; pre-commit green.
 - Item 2 (7 repos): per-repo grep shows exactly one distinct sha across all codeql refs; pre-commit/yamllint green; post-merge CodeQL run green on `main` (cascor and data flip red-to-green), triggered or observed via `gh` per the verify-new-CI-workflows feedback rule.
-- Item 3: `docker compose --profile "*" config` clean and renders the new secret + env on all four touched blocks; `bash scripts/prepare_secrets.bash` creates the 10th file; `scripts/doctor.sh` full-set derivation intact. Post-merge bring-up (owner): recurrence returns 401 for keyless protected routes, health stays 200, canopy-to-recurrence A1 flow works with the shared token.
+- Item 3: `docker compose --profile "*" config` clean and renders the new secret + env on all four touched blocks; `bash scripts/prepare_secrets.bash` creates the 10th file; `scripts/doctor.sh` full-set derivation intact. Post-merge bring-up (Overtoad): recurrence returns 401 for keyless protected routes, health stays 200, canopy-to-recurrence A1 flow works with the shared token.
 
-## 5. Delivery and sequencing (10 implementation PRs + this plan doc; all owner-merge, no auto-merge)
+## 5. Delivery and sequencing (10 implementation PRs + this plan doc; all Overtoad-merge, no auto-merge)
 
 1. **Wave 1 (parallel, independent)**: juniper-ml env-redaction PR; juniper-deploy env-redaction PR; 7 CodeQL align+group PRs. The juniper-ml env and CodeQL PRs use separate branches/worktrees.
-2. **Wave 2** (after wave 1 is open, per the owner's sequencing): the juniper-deploy recurrence-parity PR (separate branch from deploy's env PR; trivial rebase expected if one merges first).
+2. **Wave 2** (after wave 1 is open, per the Overtoad's sequencing): the juniper-deploy recurrence-parity PR (separate branch from deploy's env PR; trivial rebase expected if one merges first).
 3. House rules throughout: centralized worktrees, `-c commit.gpgsign=false` headless commits, `gh pr list` dup-guard per repo before opening, one tidy commit per PR.
 
 ## 6. Validation record
 
-Discovery performed 2026-07-20/21 by the authoring session (direct probes: CodeQL pin survey across all 8 repos, dependabot group audit, canopy main CodeQL state) plus two read-only Explore agents: (a) recurrence-parity discovery across juniper-canopy / juniper-deploy / juniper-service-core — which overturned the working assumption that canopy needed outbound-key code (it exists since A1) and produced the section-2.3 gap list with file:line evidence; (b) env-leak forensics across all repos — which pinned the saferepr frame-local mechanism, bounded the scope to juniper-ml + juniper-deploy, and cleared mock/msg/bash channels. Owner approved the plan as-is on 2026-07-21, selecting fleet-wide CodeQL scope (7 repos) and the two-repo redaction scope.
+Discovery performed 2026-07-20/21 by the authoring session (direct probes: CodeQL pin survey across all 8 repos, dependabot group audit, canopy main CodeQL state) plus two read-only Explore agents: (a) recurrence-parity discovery across juniper-canopy / juniper-deploy / juniper-service-core — which overturned the working assumption that canopy needed outbound-key code (it exists since A1) and produced the section-2.3 gap list with file:line evidence; (b) env-leak forensics across all repos — which pinned the saferepr frame-local mechanism, bounded the scope to juniper-ml + juniper-deploy, and cleared mock/msg/bash channels. The Overtoad approved the plan as-is on 2026-07-21, selecting fleet-wide CodeQL scope (7 repos) and the two-repo redaction scope.

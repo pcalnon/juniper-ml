@@ -16,7 +16,7 @@ package. It is the plan I would stake the project on: what to adopt, what to rej
 order, with the gates that make each step verifiable and the risks that survive full execution.
 
 **Status**: RECOMMENDED PLAN — not ratified. It proposes deleting ~89% of the file that governs
-every session in this repo. It should be read against synthesis 2 and decided by the owner.
+every session in this repo. It should be read against synthesis 2 and decided by the Overtoad.
 
 Inputs (this document does not re-derive them and must not contradict them):
 
@@ -311,7 +311,7 @@ Two hard rules:
   job to WARN-only and is invisible to `main-verify` (`docs/REFERENCE.md:828`).
 
 The trailer is a *classification* waiver, never a *loss* waiver. The 2026-08-18 lesson stands:
-a net −4-line reflow destroyed 116 tokens of owner decisions and was nearly waived as cosmetic;
+a net −4-line reflow destroyed 116 tokens of Overtoad decisions and was nearly waived as cosmetic;
 the fix was restoration (ml#1165), not a waiver. §6 G3 makes "prove it was relocated" mechanical
 rather than conventional.
 
@@ -533,7 +533,7 @@ Mechanical gates prove the bytes moved. They cannot prove an agent still finds t
   project's own standing method rule: on a stochastic effect, report rates over N ≥ 20.)
 - **Metric**: did the session open the relocated destination before editing the component?
   Observable in the transcript.
-- **Pass bar (owner, OD-6)**: recommended ≥80%, with **zero** incidents in which a session
+- **Pass bar (Overtoad, OD-6)**: recommended ≥80%, with **zero** incidents in which a session
   contradicted a relocated contract.
 - **On failure, the ladder — and it is not "re-inline"**: (a) add the missing `## Where To Look`
   row; (b) wire the pinning gate; (c) only then consider a path-scoped rule, accepting that it
@@ -541,7 +541,7 @@ Mechanical gates prove the bytes moved. They cannot prove an agent still finds t
 
 ---
 
-## 7. Owner decisions
+## 7. The Overtoad decisions
 
 | # | Decision | Options | Recommendation |
 |---|----------|---------|----------------|
@@ -552,7 +552,7 @@ Mechanical gates prove the bytes moved. They cannot prove an agent still finds t
 | **OD-4** | `claudeMdExcludes` for the parent | adopt · decline | **Decline.** 10,818 chars for an exclusion predicate MECH §8 item 3 lists as unconfirmed, a nine-repo blast radius, and — decisively — the setting would have to live somewhere that reaches worktrees, which today it does not (see OD-7). Treat the bytes as unbanked. |
 | **OD-5** | Put `/home/pcalnon/Development/python/Juniper/` under version control | own repo · vendored snapshot + drift test in juniper-ml · leave | **Own repo, with the same four `AGENTS.md` gates.** 11,016 additive bytes, nine repos, no history, no diff, no revert, no CI. Not a blocker for Phases 0–8 — this plan deliberately deletes *nothing* on the parent's strength — but it is the largest ungoverned surface in the ecosystem. |
 | **OD-6** | Soak pass bar and rollback trigger | ≥80% / other | **≥80% with zero contradicted-contract incidents**, ladder as §6.1. |
-| **OD-7** | The settings asymmetry | do nothing · track a project `.claude/settings.json` | **Do nothing for this plan** — nothing here depends on settings. If hooks are ever adopted, note that `.claude/settings.json` is gitignored by `.gitignore:177`, that the main checkout has an active `settings.local.json` (1,801 B) which worktrees do not inherit, and that a settings file also carries **permissions**, so it must be owner-authored. |
+| **OD-7** | The settings asymmetry | do nothing · track a project `.claude/settings.json` | **Do nothing for this plan** — nothing here depends on settings. If hooks are ever adopted, note that `.claude/settings.json` is gitignored by `.gitignore:177`, that the main checkout has an active `settings.local.json` (1,801 B) which worktrees do not inherit, and that a settings file also carries **permissions**, so it must be Overtoad-authored. |
 | **OD-8** | Run A's model-invocable-skill probe as an independent experiment | yes · no | **Yes, off the critical path.** Half a day, revertible by deleting one directory, and the answer is useful to any future design. |
 | **OD-9** | `MEMORY.md` per-entry discipline | 120-byte cap · 150-byte cap · none | **150 bytes as a stated discipline, not a rewrite campaign.** 120 frees 3,873 bytes but touches 113 of 139 entries; 150 frees 1,892 by touching 20. The eviction pass (5,471 bytes of candidates) is the real lever. |
 

@@ -8,7 +8,7 @@ Author: Paul Calnon
 Created: 2026-08-25
 Status: ad-hoc — wip (candidate B for plan §7 criterion 4, "failure notification observed firing";
         promote to util/ + util/systemd/ once Paul picks the alerting architecture)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md (§8, §8.22),
          notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (§7.6),
          util/duplicati_backup_failure.bash (the user lane's reporter this replaces for the server job)
@@ -34,7 +34,10 @@ WHY A POLLING WATCHDOG AND NOT ONLY --run-script-after
       NO_RUNS            the job has no run log at all
       NOT_SUCCESS        the newest log entry of ANY operation, or the newest BACKUP, is
                          not ParsedResult=Success (a newer successful Test or Compact must
-                         not hide a failed backup)
+                         not hide a failed backup), unless it is a Warning whose every
+                         warning is of a class the Overtoad accepted (below). The details
+                         count a run's warnings by tag, never by their text
+      (WARNINGS_ACCEPTED OK -- such a Warning run, which counts toward AC-5 as OK does)
       STALE              the newest BACKUP began more than --max-age-hours ago, or no
                          Backup entry was found in the pages examined
       STUCK              a task is active and has been running longer than --max-run-hours
@@ -50,6 +53,15 @@ WHY A POLLING WATCHDOG AND NOT ONLY --run-script-after
     EMPTY queue is not an alert -- a startup-delay pause looks exactly like that -- but
     the OK line names it, and an indefinite pause turns into PAUSED_WITH_QUEUE at the
     next check after a run comes due.
+
+    The warning allow-list is Q6's other half, the Overtoad's ruling of 2026-11-23 (recovery
+    plan §6.6, "Allow-list after review"): the Overtoad reads a run's warnings, and a Warning
+    run whose every warning is of a class the Overtoad accepted counts as OK toward AC-5; any
+    other warning still alerts and ends the streak. ACCEPTED_WARNING_CLASSES is EMPTY until
+    the Overtoad names classes, so until then every Warning run alerts. A warning is
+    classified by its `[Warning-<tag>]` tag, never by its text (recovery plan finding 35),
+    and a run with an untagged warning, a warning the result counts but does not list, or an
+    error is never accepted.
 
     Durable record FIRST (append-only log + a status file), desktop
     notification best-effort (notify-send may have no session bus). Exit 0 = OK,
@@ -105,6 +117,14 @@ import yamaguchi_server_api as api  # noqa: E402 -- sibling module; path fixed o
 JOB_ID = re.compile(r"[1-9][0-9]*")  # always .fullmatch(): `$` would also accept "7\n"
 LOG_PAGE_SIZE = 20
 LOG_MAX_PAGES = 10
+# The classes of warning the Overtoad accepted for AC-5 after reading them (Q6, ruled 2026-11-23). Each is (key, scope):
+# the key as the acceptance probe names it -- the last two dotted segments of the tag, then the message id, e.g.
+# "FilePreFilterProcess.FileEntry-PathNotFound" -- and the scope a path prefix under the backup Source's home (e.g.
+# ".mozilla/firefox/"), or None for any path. EMPTY until the Overtoad names classes.
+ACCEPTED_WARNING_CLASSES = ()
+# "<when> - [Warning-<tag>-<id>]: <message>": the acceptance probe's own pattern. The tag is accepted only where no `[`
+# and no `/` precedes it, so a bracket inside a path (which follows the tag and starts with `/`) is never the tag.
+WARNING_TAG = re.compile(r"^[^\[/]*\[Warning-([^\]\s]+)\]:")
 
 
 def parse_iso(s):
@@ -195,6 +215,52 @@ def _run(result):
     return f"{result.get('MainOperation')} {result.get('BeginTime')} ParsedResult={result.get('ParsedResult')}"
 
 
+def warning_key(text):
+    """`FilePreFilterProcess.FileEntry-PathNotFound` from a warning's `[Warning-<tag>-<id>]`; None without a tag.
+
+    The acceptance probe's own rule: the key is taken from the tag alone, and nothing after the bracket is read.
+    """
+    m = WARNING_TAG.match(text) if isinstance(text, str) else None
+    if not m:
+        return None
+    tag, sep, message_id = m.group(1).rpartition("-")
+    if not sep or not tag or not message_id:
+        return None
+    return ".".join(tag.split(".")[-2:]) + "-" + message_id
+
+
+def _count(value):
+    return value if isinstance(value, int) and not isinstance(value, bool) and value > 0 else 0
+
+
+def judge_warnings(result, home, accepted=None):
+    """(acceptable, note) for a run result that is not ParsedResult=Success.
+
+    Acceptable: a Warning whose every warning is of an accepted class, with none untagged, none the result counts but
+    does not list, and no error. The note counts the warnings by key; the text of a warning is read only to test a
+    class's path scope, after the tag decided, and is never returned.
+    """
+    accepted = ACCEPTED_WARNING_CLASSES if accepted is None else accepted
+    warnings = result.get("Warnings")
+    listed = [w for w in warnings if isinstance(w, str)] if isinstance(warnings, list) else []
+    total = max(len(listed), _count(result.get("WarningsActualLength")))
+    errors = result.get("Errors")
+    n_errors = max(len(errors) if isinstance(errors, list) else 0, _count(result.get("ErrorsActualLength")))
+    counts, unaccepted = {}, 0
+    for text in listed:
+        key = warning_key(text)
+        counts[key or "untagged"] = counts.get(key or "untagged", 0) + 1
+        body = text[WARNING_TAG.match(text).end() :] if key else ""
+        if not any(key == class_key and (scope is None or re.search(r"(?<![\w./-])" + re.escape(home.rstrip("/") + "/" + scope), body)) for class_key, scope in accepted):
+            unaccepted += 1
+    if total > len(listed):
+        counts["not listed in the result"] = total - len(listed)
+    by_key = ", ".join(f"{key} x{n}" for key, n in sorted(counts.items()))
+    if result.get("ParsedResult") == "Warning" and total and not unaccepted and total == len(listed) and not n_errors:
+        return True, f"; {total} warning(s), all of accepted classes ({by_key})"
+    return False, (f"; warnings by tag: {by_key}" if total else "") + (f"; {n_errors} error(s)" if n_errors else "")
+
+
 def check(args):
     """Return (verdict, code, details) without side effects."""
     backup_id = str(args.backup_id)
@@ -255,8 +321,13 @@ def check(args):
     if not newest:
         # An old-format entry whose Message is not a JSON result: whether it succeeded is unknown.
         return "UNDETERMINED", "LOG_UNAVAILABLE", "the newest log entry carries no JSON run result"
+    home = os.path.expanduser("~")  # the backup Source: a class's scope lies under it
+    accepted_notes = []
     if newest.get("ParsedResult") != "Success":
-        return "ALERT", "NOT_SUCCESS", f"newest log entry {_run(newest)}"
+        acceptable, note = judge_warnings(newest, home)
+        if not acceptable:
+            return "ALERT", "NOT_SUCCESS", f"newest log entry {_run(newest)}{note}"
+        accepted_notes.append(note)
     if backup is None:
         if st != 200:
             return "UNDETERMINED", "LOG_UNAVAILABLE", f"log -> {st} before a Backup entry was found ({examined} entries examined)"
@@ -268,11 +339,17 @@ def check(args):
     if newest is not backup:
         summary += f" (newest log entry: {_run(newest)})"
     if result != "Success":
-        return "ALERT", "NOT_SUCCESS", summary
+        acceptable, note = judge_warnings(backup, home)
+        if not acceptable:
+            return "ALERT", "NOT_SUCCESS", summary + note
+        if backup is not newest:  # the newest entry's note is in hand already
+            accepted_notes.append(note)
     if age_h is None or age_h > args.max_age_hours:
         return "ALERT", "STALE", f"{summary} > {args.max_age_hours} h"
     if program == "Paused":
         summary += f" ProgramState=Paused pause={_pause_end(state)} queue empty"
+    if accepted_notes:  # Q6: counts toward AC-5 as OK does
+        return "OK", "WARNINGS_ACCEPTED", summary + "".join(accepted_notes)
     return "OK", "OK", summary
 
 

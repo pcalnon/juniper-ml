@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9 ledger validation, round-10 record)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md, Phase 9;
          reports/e2e-canopy-2026-09-02/consensus/2026-09-24_validator_reports_phase9_ledger_round10.md;
          util/ad-hoc/2026-09-24_phase9_ledger_round9_corrections.py (the pass round 10 reviewed)

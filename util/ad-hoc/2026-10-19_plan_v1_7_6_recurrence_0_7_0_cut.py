@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-19
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.5 -> v1.7.6);
          juniper-recurrence#212 (the service half), #213 (the 0.7.0 proposal); juniper-ml#2254 (the archive);
          util/ad-hoc/2026-10-19_plan_v1_7_5_w5_9_w5_8b_landed.py (the revision this follows)
@@ -24,7 +24,7 @@ from pathlib import Path
 _REPO = Path(__file__).resolve().parents[2]
 _PLAN = _REPO / "notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md"
 
-CUT = "juniper-recurrence#212 merged as `5fb7dbff` once model 0.5.0 was on PyPI (its `requires_dist` equals 0.4.0's); proposal juniper-recurrence#213 merged as `5c576da4`; Release `juniper-recurrence-v0.7.0` cut at that commit, archive juniper-ml#2254, publish run 39194767443 approved by the owner and green — **0.7.0 is on PyPI and GHCR**"
+CUT = "juniper-recurrence#212 merged as `5fb7dbff` once model 0.5.0 was on PyPI (its `requires_dist` equals 0.4.0's); proposal juniper-recurrence#213 merged as `5c576da4`; Release `juniper-recurrence-v0.7.0` cut at that commit, archive juniper-ml#2254, publish run 39194767443 approved by the Overtoad and green — **0.7.0 is on PyPI and GHCR**"
 
 EDITS: list[tuple[str, str]] = [
     ("- **Version**: 1.7.5", "- **Version**: 1.7.6"),
@@ -45,8 +45,8 @@ EDITS: list[tuple[str, str]] = [
     ),
     # Progress block: one more bullet.
     (
-        "  - **Next**: merge the service PR once 0.5.0 is on PyPI, then cut recurrence 0.7.0 (proposal → ceremony → the owner's `pypi` gate); W5.2 and W5.4 (round 3 of the CV-blowup note's review first); W5.7.",
-        f"  - **Later the same session**: {CUT}. W5.2 designed (recorded in the handoff), not started.\n  - **Next**: the juniper-ml `[recurrence]` extras and the Compose pin (both admit `<0.7.0`) are owner rulings again; W5.2 and W5.4 (round 3 of the CV-blowup note's review first); W5.7.",
+        "  - **Next**: merge the service PR once 0.5.0 is on PyPI, then cut recurrence 0.7.0 (proposal → ceremony → the Overtoad's `pypi` gate); W5.2 and W5.4 (round 3 of the CV-blowup note's review first); W5.7.",
+        f"  - **Later the same session**: {CUT}. W5.2 designed (recorded in the handoff), not started.\n  - **Next**: the juniper-ml `[recurrence]` extras and the Compose pin (both admit `<0.7.0`) are Overtoad rulings again; W5.2 and W5.4 (round 3 of the CV-blowup note's review first); W5.7.",
     ),
 ]
 
@@ -54,7 +54,7 @@ _ROW_ANCHOR = "the parent AGENTS.md paragraph; the W1.12 / W1.11 smokes on the 0
 _ROW = (
     f"| 2026-10-19 | 1.7.6 | **The W5.8 (B) service half merged and recurrence 0.7.0 is published; P5 is done**: {CUT}. "
     "Updated: Status line, W5.8 row, P5 status row, the Progress 2026-10-19 block. "
-    "Owed: the juniper-ml `[recurrence]` extras ceiling (`<0.7.0`) and the Compose pin (owner rulings); W5.2 (designed), W5.4, W5.7; W0.1's service-core half; the parent AGENTS.md paragraph; the W1.12 / W1.11 smokes. | Paul Calnon |\n"
+    "Owed: the juniper-ml `[recurrence]` extras ceiling (`<0.7.0`) and the Compose pin (Overtoad rulings); W5.2 (designed), W5.4, W5.7; W0.1's service-core half; the parent AGENTS.md paragraph; the W1.12 / W1.11 smokes. | Paul Calnon |\n"
 )
 
 

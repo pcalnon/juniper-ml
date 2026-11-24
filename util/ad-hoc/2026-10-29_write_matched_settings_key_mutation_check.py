@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-29
 Status: ad-hoc — investigation (Phase D round-1 fold-in: the mutants lane B found surviving)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: tests/test_write_matched_settings_key.py; Phase D's design, round 1 (lane B, B-3 and its mutation table),
          and rounds 2 to 4 (lanes R2-A, R3 and R4), which added mutants
 

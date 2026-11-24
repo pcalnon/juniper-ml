@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-20
 Status: ad-hoc — investigation (turing bring-up task E2; a negative result, see below)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18.3 E-BLAS);
          conf/hosts/turing/conda-envs/JuniperCanopy1.yml; util/ad-hoc/2026-10-19_turing_e2_validate_envs.py
 

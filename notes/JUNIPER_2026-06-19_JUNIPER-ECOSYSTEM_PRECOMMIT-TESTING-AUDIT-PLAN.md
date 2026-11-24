@@ -4,7 +4,7 @@
 **Author**: Paul Calnon
 **Prepared by**: Claude Code (Opus 4.8)
 **Date**: 2026-06-19
-**Status**: **v1.1** — validated by 4 independent sub-agents (V1–V4) and corrected (see §11); pending owner review
+**Status**: **v1.1** — validated by 4 independent sub-agents (V1–V4) and corrected (see §11); pending Overtoad review
 **License**: MIT License
 
 ---
@@ -45,7 +45,7 @@ fresh evidence in P0; collectors trust none of this table verbatim.
 | 8 | `juniper-ml` | 06-19 | ✅ | yes | meta-package + 6 internal sub-packages |
 | 9 | `juniper-recurrence` | 06-19 | ❌ **none** | yes | **current with origin (HEAD 2fd2b81 #27, 0/0)**; **3 sub-packages** (app, client, model) |
 
-### 1.2 Audit units (granularity = per-package, per owner decision)
+### 1.2 Audit units (granularity = per-package, per Overtoad decision)
 
 - **Pre-commit checks** → audited per **git repository** (one config governs the repo).
   8 repos have a config; **`juniper-recurrence` has none** (a finding — §C5; note it also has **no root
@@ -61,14 +61,14 @@ fresh evidence in P0; collectors trust none of this table verbatim.
 
 ### 1.3 Out of scope
 
-- **`juniper-slacker`** — excluded (owner decision): zero commits (`git log` → exit 128, unborn `main`),
+- **`juniper-slacker`** — excluded (Overtoad decision): zero commits (`git log` → exit 128, unborn `main`),
   no `pyproject.toml` / tests / pre-commit / `AGENTS.md`. A single "pre-project, non-compliant" line in
   D1 (OQ-3); not scored.
 - **`juniper-legacy`** — no top-level git repo (contains nested legacy git repos); out of scope.
 - **CI internals** beyond local↔CI parity (§A7/§B12/§C7/§C8).
 - **Applying fixes** — backlog only.
 
-### 1.4 Verify depth = **hybrid** (owner decision), with a realistic dynamic fraction
+### 1.4 Verify depth = **hybrid** (Overtoad decision), with a realistic dynamic fraction
 
 Static review for **every** unit; **dynamic** verification only where a healthy env exists. Per §B11
 discovery, only **canopy, cascor, data** document an env, and ~6/9 repos document none — so dynamic
@@ -203,7 +203,7 @@ Rollups: per-unit (area means + min), per-repo, ecosystem.
 
 ## 5. Methodology (execution — after approval)
 
-**Waves (V4-08), with an owner checkpoint between each:**
+**Waves (V4-08), with an Overtoad checkpoint between each:**
 - **Wave 1** — static + parity for all 9 repos / ~17 surfaces (cheap, parallel).
 - **Wave 2** — dynamic only for healthy-env repos (canopy/cascor/data + env-agnostic pure-Python pkgs in the default audit env), worktree + timeout bounded.
 - **Wave 3** — bounded adversarial verification (§P5).
@@ -247,7 +247,7 @@ a **fixed random sample (20%, seed logged per §8.8)** of score-0/1 findings. Th
 **claim + repo only** (not the original agent's evidence trail) and must **re-derive** evidence from
 scratch; a finding survives only if independently-derived evidence matches (§8.6). The two-source rule
 (§8.7) requires evidence of **different classes** (static config + dynamic behavior), not two agents
-reading the same line. Residual conflicts → owner is final arbiter.
+reading the same line. Residual conflicts → Overtoad is final arbiter.
 
 ### 5.1 Execution shape (multi-agent) + frozen output contract
 
@@ -347,7 +347,7 @@ The same four-lens structure is reused in P5 to validate the **findings**. §11 
 | ~6/9 repos have no documented env → hybrid skews static | Default audit env for pure-Python pkgs; rubric doesn't penalize static-only (§1.4/§4) |
 | torch / SIGSEGV / orphan / loop-leak / ~15s import | `--co` first; `timeout`+`--maxfail`+autoload guard; reap orphans; UI suites excluded |
 | **Same-day ground-truth drift** (concurrent sessions) | §2 re-derived in P0; instant SHA capture; concurrent-session race flagged |
-| Scope (9 × ~17 × ~35 dims × modes) | Wave staging + frozen schema + bounded P5 (all-high-sev + 20% of 0/1) + owner checkpoints |
+| Scope (9 × ~17 × ~35 dims × modes) | Wave staging + frozen schema + bounded P5 (all-high-sev + 20% of 0/1) + Overtoad checkpoints |
 | Scoring subjectivity | Per-dimension predicate table + shared calibration artifact before Wave 1 |
 
 ## 11. Validation corrections log (V1–V4 → dispositions)
@@ -387,7 +387,7 @@ trims were to avoid rubric bloat, recorded above.)
 
 ---
 
-## Appendix A — Owner decisions (this session)
+## Appendix A — The Overtoad decisions (this session)
 
 1. **Repo scope:** 9 (8 documented + `juniper-recurrence`); exclude `juniper-slacker`.
 2. **Verify depth:** hybrid (static all + dynamic where env healthy; realistic minority-dynamic — §1.4).

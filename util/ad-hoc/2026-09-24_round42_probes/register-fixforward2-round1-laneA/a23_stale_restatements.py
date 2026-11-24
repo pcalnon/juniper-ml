@@ -20,7 +20,7 @@ PATTERNS = {
     "seventh of the kind (end)": r"seventh of the kind, one where the shared package was itself among the drifted copies\. The other",
     "#2059 closed 09-24": r"#2059[^.]{0,80}closed 2026-09-24\)",
     "row-level sentence": r"row-level sentence",
-    "reads (ruling quote)": r"which the owner was shown, reads",
+    "reads (ruling quote)": r"which the Overtoad was shown, reads",
     "43 anchors": r"43 anchors",
 }
 EXCL = re.compile(r"^(reports/|prompts/|notes/history/|notes/legacy/|CHANGELOG\.md)")

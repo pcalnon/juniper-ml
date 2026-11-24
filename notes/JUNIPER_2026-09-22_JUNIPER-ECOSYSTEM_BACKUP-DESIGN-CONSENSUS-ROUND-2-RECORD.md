@@ -12,7 +12,7 @@
 ## What round 2 was for
 
 Round 1's six lanes produced 13 + 15 + 12 + 17 + 32 + 20 findings. Lane A2's and A3's were
-applied on 2026-09-21; the owner then paused the arc, and the remaining four lanes — A1, B1, B2
+applied on 2026-09-21; the Overtoad then paused the arc, and the remaining four lanes — A1, B1, B2
 and B3 — were reconciled into the design on **2026-09-22** by
 `util/ad-hoc/2026-09-22_reconcile_backup_design.py`.
 
@@ -53,7 +53,7 @@ Two consequences stand, and they qualify everything below: **any line number in 
 void**, and a finding may be stale in either direction. Where a report disagrees with the design
 as it now stands, the design was re-measured against the host before the disagreement was
 resolved. The right fix is procedural, and the consensus procedure should say it: **freeze the
-artifact for the duration of a round.** Round 1 did not hit this only because the owner paused
+artifact for the duration of a round.** Round 1 did not hit this only because the Overtoad paused
 the arc before reconciliation began.
 
 ## Secrets screen
@@ -110,7 +110,7 @@ $ ps -o pid,ppid,user,lstart,etime,stat,args -p 3117158
 Design §6 sink-checklist row 1 (pids **3065639**, **3117158**, started 09-19 18:24:50 / 18:52:00) — **AGREE, and
 still live 2 days 8 h later.** `/home/duplicati/.bash_history` is still `0600 duplicati:duplicati`, 310 B,
 mtime **2026-09-19 18:51:58** — i.e. every command of the 09-20 migration is still only in memory and will be
-appended on exit. The owner action (`history -c; unset HISTFILE` in each shell before it exits) is still
+appended on exit. The Overtoad action (`history -c; unset HISTFILE` in each shell before it exits) is still
 available and still unperformed. The `vim` (pid 2318515, root) on `/usr/lib/systemd/system/duplicati.service`
 is also still open — §4.1 note (a) AGREE — and its swap file is still there.
 
@@ -1263,7 +1263,7 @@ Three of my instruments could have, and one did.
 
 ## What I could not determine
 
-1. **Whether the server rejects an unknown option under a configuration I did not test.** I proved warn-and-continue from source and from `duplicati-cli`; I never ran `duplicati-server`. If the owner wants D-1 confirmed on the server itself, it needs a sandboxed run (`systemd-run` on a scratch `--server-datafolder`, a bogus option, a 30 s timeout) — which is a Lane-B-shaped action, not a Lane-A read.
+1. **Whether the server rejects an unknown option under a configuration I did not test.** I proved warn-and-continue from source and from `duplicati-cli`; I never ran `duplicati-server`. If the Overtoad wants D-1 confirmed on the server itself, it needs a sandboxed run (`systemd-run` on a scratch `--server-datafolder`, a bogus option, a 30 s timeout) — which is a Lane-B-shaped action, not a Lane-A read.
 2. **Whether the "Unknown option supplied" warning reaches the journal under the design's unit as written.** It is a `Log.WriteWarningMessage`, so visibility depends on `--log-level` / `--log-file` / `--log-console`, none of which the §7.3.2 unit or `/etc/default/duplicati` sets. I did not establish the default console/journal log level for a `duplicati-server` started under systemd. D-1's replacement text therefore prescribes a journal grep without promising the line will be there — that has to be verified once on the first post-recovery start.
 3. **The non-read-only side effect of `wipe-encryption --dry-run`.** The design's §8/A2 says `--dry-run` is not read-only. My test database had no `Version` table, so the code returned at "Error reading database … no such table: Version" before reaching any backup-copy step. Confirming or refuting the side effect needs a structurally real server database, which I would not create under the read-only rule.
 4. **Whether Ubuntu patched `path.c`.** See above — symbols and literals match upstream v259; the predicate body was not byte-verified against the distro source.
@@ -1325,7 +1325,7 @@ I have everything. Writing up the report now.
 | 17 | `yamaguchi_server_api.py` hard-codes the checkout `.env` (§7.6) | **AGREE** | `CRED_FILE = "/home/pcalnon/Development/python/Juniper/juniper-ml/.env"`; `duplicati_api.py`: `PW_FILE = os.environ.get("DUPLICATI_PW_FILE", ".env")` — a **relative** path, worse than §7.6 states |
 | 18 | Watchdog default `--backup-id 2` (step 7's warning) | **AGREE** | `util/ad-hoc/yamaguchi_watchdog.py:160` → `ap.add_argument("--backup-id", default="2")` |
 | 19 | §7.8: "P3 adds `juniper-backup-failure.service`, whose reporter takes the unit name as `$1`" | **AGREE but already done** | `util/duplicati_backup_failure.bash:31` → `UNIT="${1:-duplicati-backup.service}"`; installed copy at `~/.local/bin/` is `IDENTICAL` |
-| 20 | Header "Status: VALIDATED (round 2) … fully reconciled" | **REFUTED by §11 of the same document** | §11: *"reconciliation paused by the owner on 2026-09-21 before Lanes A1, B1, B2 and B3 were folded in"*; *"Lane A1 …, Lane B1 …, Lane B2 … and Lane B3 … are **not applied**"* |
+| 20 | Header "Status: VALIDATED (round 2) … fully reconciled" | **REFUTED by §11 of the same document** | §11: *"reconciliation paused by the Overtoad on 2026-09-21 before Lanes A1, B1, B2 and B3 were folded in"*; *"Lane A1 …, Lane B1 …, Lane B2 … and Lane B3 … are **not applied**"* |
 | 21 | Header cites `JUNIPER_2026-09-22_…BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md` | **REFUTED — file does not exist** | `ls notes/ \| grep BACKUP-DESIGN` → only `…ROUND-1-RECORD.md` and `…STEP-REPORTS-RECORD.md` |
 | 22 | "the warning at the top of §8" (§11 ×2, §12 ×2) | **REFUTED — dangling** | §8 opens with *"Phases are ordered; nothing in a later phase…"*; no warning block exists (the change list confirms "the STOP block **removed**") |
 | 23 | O-3 / O-11 resolve to a defined open item | **REFUTED — collision and out-of-range** | `HANDOFF_2026-08-21_backup-systematization-design-arc.md` defines **O-0…O-8**; its **O-3** is *"PARTLY ANSWERED. Archive encryption uses YubiKey-backed public keys…"*, not "the confinement directives are untested". No O-11 anywhere |
@@ -1652,7 +1652,7 @@ and to P0 step 10, as the first sentence:
 
 ### D10. D-14 is a fifth decision P0 applies provisionally, and step 0(a) does not name it
 
-**Location**: §8 preamble (*"P0 applies the recommendations of D-1 …, D-4 …, D-6 … and D-9 … before the owner has ruled"*), P0 step **0(a)**, against §7.1 principle 5, §7.3.2's `UMask=0007`, and §10 D-14.
+**Location**: §8 preamble (*"P0 applies the recommendations of D-1 …, D-4 …, D-6 … and D-9 … before the Overtoad has ruled"*), P0 step **0(a)**, against §7.1 principle 5, §7.3.2's `UMask=0007`, and §10 D-14.
 
 §7.1 principle 5 and the unit's `UMask=0007` encode the **group-write** model. D-14 recommends the **read-only** form with `UMask=0027`. P0 step 8 installs that unit; a read-only ruling therefore means re-installing it — exactly the cost step 0(a) exists to surface for D-1/D-4/D-6/D-9. `systemd-analyze security` flags it independently: the unit's single remaining style failure is `✗ UMask= — Files created by service are group-writable by default`.
 
@@ -1660,7 +1660,7 @@ The same applies to **D-2**, marked *"Re-decide"* in §10 but re-decided only in
 
 **Exact replacement** — §8 preamble, first paragraph:
 
-> …P0 applies the recommendations of D-1 (credstore + `--require-db-encryption-key`), D-4 (`AmbientCapabilities`), D-6 (installed copy), D-9 (loopback) **and D-14 (the unit's `UMask=`, which the §7.3.2 unit sets to the group-write value `0007` while D-14 recommends the read-only `0027`)** before the owner has ruled on any of them. **D-2 is a sixth**: P0 step 11 runs a full backup under the passphrase D-2 asks whether to retire, and P1 step 5 re-decides it afterwards. Either rule those six first, or accept that P0 applies them **provisionally** — a contrary ruling on D-1/D-4/D-6/D-9/D-14 means re-installing the unit, and a contrary ruling on D-2 means the first post-recovery fileset is written under a passphrase that is then replaced. Step 0 makes that explicit.
+> …P0 applies the recommendations of D-1 (credstore + `--require-db-encryption-key`), D-4 (`AmbientCapabilities`), D-6 (installed copy), D-9 (loopback) **and D-14 (the unit's `UMask=`, which the §7.3.2 unit sets to the group-write value `0007` while D-14 recommends the read-only `0027`)** before the Overtoad has ruled on any of them. **D-2 is a sixth**: P0 step 11 runs a full backup under the passphrase D-2 asks whether to retire, and P1 step 5 re-decides it afterwards. Either rule those six first, or accept that P0 applies them **provisionally** — a contrary ruling on D-1/D-4/D-6/D-9/D-14 means re-installing the unit, and a contrary ruling on D-2 means the first post-recovery fileset is written under a passphrase that is then replaced. Step 0 makes that explicit.
 
 and P0 step 0(a): *"Rule D-1, D-4, D-6, D-9 **and D-14**, and decide whether D-2 is re-decided before or after the first run, or record that P0 applies their recommendations provisionally."*
 
@@ -1795,9 +1795,9 @@ All by heading text. Each was checked against its target.
 
 | # | Where | Says | Target actually |
 |---|---|---|---|
-| a | Header **Status** | "VALIDATED (round 2) … COMPLETE and **fully reconciled**: every Lane A1, A2, A3, B1, B2 and B3 correction is applied or recorded as dissent in §11" | **§11 says the opposite**: *"reconciliation paused by the owner on 2026-09-21 before Lanes A1, B1, B2 and B3 were folded in"* and *"Lane A1 …, Lane B1 …, Lane B2 … and Lane B3 … are **not applied**"*. The only place a reader checks whether §8 is safe to execute now contradicts the banner authorising it. |
+| a | Header **Status** | "VALIDATED (round 2) … COMPLETE and **fully reconciled**: every Lane A1, A2, A3, B1, B2 and B3 correction is applied or recorded as dissent in §11" | **§11 says the opposite**: *"reconciliation paused by the Overtoad on 2026-09-21 before Lanes A1, B1, B2 and B3 were folded in"* and *"Lane A1 …, Lane B1 …, Lane B2 … and Lane B3 … are **not applied**"*. The only place a reader checks whether §8 is safe to execute now contradicts the banner authorising it. |
 | b | Header **Status** | cites `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md` | **does not exist** (`ls notes/`) |
-| c | Header **Status** | "the owner gates in §8's **preamble**" | the gates are **P0 step 0**; the preamble names the decisions but issues no gate |
+| c | Header **Status** | "the Overtoad gates in §8's **preamble**" | the gates are **P0 step 0**; the preamble names the decisions but issues no gate |
 | d | §11 ×2, §12 ×2 | "the warning at the top of §8", "the §8 warning" | **no warning exists** — the STOP block was removed |
 | e | §12 last row | "§8 warning (**steps 3/5/7/9**; Procedure A0; …)" | old numbering. P0 is now 0–11 plus P0.5; today's 3/5/7/9 are the hash test / Procedure A / Procedure B / pre-first-run |
 | f | §11 | "**P1 step 2's `chmod 0600`** (B2 D15)" applied | P1 step 2 now reads *"**Mode: `0640 root:duplicati` as recommended**, or `0600 duplicati:duplicati`"* — the stated applied change is no longer what the target says |
@@ -1811,9 +1811,9 @@ All by heading text. Each was checked against its target.
 
 **Exact replacement for (a)/(b)/(c)/(d)** — header **Status** block:
 
-> **Status**: ROUND-2 RECONCILED — consensus round 1 (six validators) is applied in full or recorded as dissent in §11; round 2 (four lanes) has reported and its corrections are reflected here. Verbatim reports: `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`. **Round 2's verbatim reports are not yet archived**; when they are, the file is `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md` and this line names it. §8 may be executed once **P0 step −1** has landed the nine scripts it invokes and **P0 step 0's owner gates** are cleared; nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named in P1 step 4.
+> **Status**: ROUND-2 RECONCILED — consensus round 1 (six validators) is applied in full or recorded as dissent in §11; round 2 (four lanes) has reported and its corrections are reflected here. Verbatim reports: `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`. **Round 2's verbatim reports are not yet archived**; when they are, the file is `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md` and this line names it. §8 may be executed once **P0 step −1** has landed the nine scripts it invokes and **P0 step 0's Overtoad gates** are cleared; nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named in P1 step 4.
 
-and §11's first line must be rewritten to match, replacing *"reconciliation paused by the owner on 2026-09-21 before Lanes A1, B1, B2 and B3 were folded in"* and the whole *"are **not applied** — except…"* clause with the actual applied/dissent split. Every *"the warning at the top of §8"* becomes *"the owner gates in §8 P0 step 0"*.
+and §11's first line must be rewritten to match, replacing *"reconciliation paused by the Overtoad on 2026-09-21 before Lanes A1, B1, B2 and B3 were folded in"* and the whole *"are **not applied** — except…"* clause with the actual applied/dissent split. Every *"the warning at the top of §8"* becomes *"the Overtoad gates in §8 P0 step 0"*.
 
 **For (g)/(h)** — either renumber to `O-12` / `O-13` (continuing past the handoff's O-8) **and add an open-item table to §11**, or drop the O-prefix: *"open item **O-12** (this document's numbering continues `HANDOFF_2026-08-21_backup-systematization-design-arc.md`'s O-0…O-8)"*.
 
@@ -1845,7 +1845,7 @@ The B3 confinement set moves the score from 5.2 to **1.7**. "At or below 5.2" is
 |---|---|---|
 | AC-1 | no (by design) | `NRestarts=0` over 24 h; correctly omitted from step 11 |
 | AC-2 | yes, **but** | `export 2` is wrong after Procedure B (D16 i/j); needs the step-9/10 credential (D7) |
-| AC-3 | yes | its pre-flight `systemd-run -p AmbientCapabilities=… cat ~/.ssh/known_hosts` sits in note AC-3a marked "owner action — it needs root" and **no P0 step schedules it**; the capability is untested when the run starts |
+| AC-3 | yes | its pre-flight `systemd-run -p AmbientCapabilities=… cat ~/.ssh/known_hosts` sits in note AC-3a marked "Overtoad action — it needs root" and **no P0 step schedules it**; the capability is untested when the run starts |
 | AC-4 | yes | drills `duplicati-20260918T140000Z`; unaffected by D2 because `yamaguchi_drill_watch.bash` exists and uses `--dbpath` |
 | AC-5 | 3 days | fine |
 | AC-6 | **no, until P2 step 3** | D8 — the snapshot lane still reads `/usr/lib/duplicati/data`; nothing in §9 or §8 records that AC-6 is a P2 criterion |
@@ -2014,7 +2014,7 @@ Format: threat/actor | claim in the design | attack or gap | evidence | severity
 
 **Threat/actor**: (c) a compromised Duplicati server, or any run-script an API principal names (§7.3.1 table row 3).
 
-**Claim**: §8 preamble — *"Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved by any step below, with exactly one exception, and it needs owner sign-off"*. §7.3.2 — `ReadWritePaths=/home/duplicati /mnt/Backups/Ubuntu/Dropbox/Backups` (heading "Data folder, defaults file, unit").
+**Claim**: §8 preamble — *"Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved by any step below, with exactly one exception, and it needs Overtoad sign-off"*. §7.3.2 — `ReadWritePaths=/home/duplicati /mnt/Backups/Ubuntu/Dropbox/Backups` (heading "Data folder, defaults file, unit").
 
 **Gap**: `ReadWritePaths=` is set one directory level above the job's destination. The tree it opens is not just `Yamaguchi/`:
 
@@ -2258,7 +2258,7 @@ and move P4 item 3 (`usermod -s /usr/sbin/nologin duplicati`) into P0.5 as item 
 
 **Severity**: MEDIUM. `/var/spool/cups` is the sharp one — it is the only entry whose contents the design itself says may be a live passphrase.
 
-**Exact replacement text**: the single `InaccessiblePaths=` line given in R2B-4 above, plus in §6's CUPS sink row, change the Action cell to: *"owner: `grep -i PreserveJobFiles /etc/cups/cupsd.conf`; `sudo ls -la /var/spool/cups`. Independently, mask `/var/spool/cups` in §7.3.2 — this row identifies it as a possible cleartext-passphrase sink and the service holds `CAP_DAC_READ_SEARCH`."*
+**Exact replacement text**: the single `InaccessiblePaths=` line given in R2B-4 above, plus in §6's CUPS sink row, change the Action cell to: *"Overtoad: `grep -i PreserveJobFiles /etc/cups/cupsd.conf`; `sudo ls -la /var/spool/cups`. Independently, mask `/var/spool/cups` in §7.3.2 — this row identifies it as a possible cleartext-passphrase sink and the service holds `CAP_DAC_READ_SEARCH`."*
 
 ---
 
@@ -2413,7 +2413,7 @@ of it, which is true of five of the six items and false of the one that closes S
 
 1. **Persisted tool-result files.** Large tool outputs are written to disk as separate files, not just into the transcript: this session alone produced `/home/pcalnon/.claude/projects/-home-…-buzzing-painting-meteor/<session>/tool-results/bd2fx0i2k.txt`. `find /home/pcalnon/.claude/projects -maxdepth 3 -type d -name tool-results | wc -l` → **67**. These are exactly where the oversized `journalctl` dumps land — *because* they were too large to inline. The checklist's transcript row does not name them.
 2. **They are inside the backup source.** The design's own note **(AC-3a)** lists `.claude/projects` among the **unfiltered** 0700 trees that the capability exists to capture. So every persisted `journalctl` capture from this arc is (a) cloud-linked *and* (b) in every T1 fileset *and* (c) in Dropbox as ciphertext. §6's row says only "cloud-linked".
-3. **The lanes' scratch trees.** `/tmp/claude-1000/-home-pcalnon-…-juniper-ml/` holds **95** per-session roots (`drwx------ pcalnon`). B3's own closing line says its scratch held "help-text captures, the extracted unit, the security-analysis output, and a copy of the archived owner prompt". Mitigating: `/tmp` is tmpfs, so a reboot clears them — that is worth *stating*, not leaving to inference.
+3. **The lanes' scratch trees.** `/tmp/claude-1000/-home-pcalnon-…-juniper-ml/` holds **95** per-session roots (`drwx------ pcalnon`). B3's own closing line says its scratch held "help-text captures, the extracted unit, the security-analysis output, and a copy of the archived Overtoad prompt". Mitigating: `/tmp` is tmpfs, so a reboot clears them — that is worth *stating*, not leaving to inference.
 4. **The ad-hoc instruments.** `util/ad-hoc/2026-09-21_env_value_equality.py`, `…_duplicati_settings_key_hash_probe.py`, `duplicati_api.py` (whose bare-secret fallback S-5a already flags) read secret files. Nothing in §6 says "an instrument that reads a secret file is itself a sink if it writes an artifact".
 
 **Secret-shaped content scan** (counts only, as required; scripts in `…/scratchpad/r2_B_sec/`):

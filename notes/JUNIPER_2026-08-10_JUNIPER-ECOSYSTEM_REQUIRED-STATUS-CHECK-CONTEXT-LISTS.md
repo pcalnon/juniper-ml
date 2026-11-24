@@ -307,7 +307,7 @@ adopted the fleet naming. **Fix the CI structure first** (§5), then require the
 
 ### 4a. Post-application state (2026-08-12)
 
-Tier 1 applied by the owner via the web UI. Re-audit result — **200 blocking contexts
+Tier 1 applied by the Overtoad via the web UI. Re-audit result — **200 blocking contexts
 reduced to 9**, all one systematic cause:
 
 | Repo                  | Required | Blocking | Remaining issue                                     |

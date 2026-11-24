@@ -29,6 +29,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`create_app` switches FastAPI's native telemetry off.** FastAPI 0.142 added OpenTelemetry
+  instrumentation (tracing, metrics, logs and operation spans), on by default, and the factory passed
+  no `telemetry=`. On FastAPI 0.142 or later an app it built stayed dormant only until something
+  registered an OpenTelemetry provider, or (`auto_configure`) an OTLP endpoint was set; from then it
+  would instrument itself beside the service's own observability: Sentry, Prometheus and
+  juniper-observability's logging. It now passes `telemetry=` with `tracing`, `metrics`, `logs`,
+  `operation_spans` and `auto_configure` all `False`, as juniper-data (juniper-data#454),
+  juniper-cascor and juniper-canopy do. Below 0.142 the keyword is not a parameter and FastAPI keeps
+  it in `app.extra`, so nothing changes there.
+  - **A consumer can no longer opt in.** `create_app` takes no parameter for it, and from 0.143 the
+    explicit `auto_configure: False` also overrides an operator's `FASTAPI_OTEL_AUTO_CONFIGURE=true`,
+    which only sets the default. The one consumer, juniper-recurrence, uses no OpenTelemetry; a
+    service that needs FastAPI's telemetry would need a new parameter.
+  - juniper-recurrence builds its app with `create_app`. Its lock pins FastAPI 0.141.1, but its
+    floor, `fastapi>=0.110`, is uncapped, so the next regeneration of that lock would have crossed
+    0.142 with every switch on.
+  - `tests/test_app.py`'s new `test_fastapi_native_telemetry_is_off_on_every_fastapi` reads
+    `app._telemetry` where FastAPI has it and `app.extra["telemetry"]` below 0.142. It sets
+    `FASTAPI_OTEL_AUTO_CONFIGURE=true` first, because from 0.143 an omitted `auto_configure` takes
+    its default from that variable. So it runs on every FastAPI the floor admits, and fails when any
+    switch is dropped or turned on.
+
 - **`training_stream_handler` needs a manager whose `promote_to_active` accepts `replayed_through`
   and returns `True` on success.** A resume answered `resume_ok` now promotes through it, and is
   closed 1011 when that returns a false value or raises. A `WebSocketManager` subclass that
@@ -47,11 +69,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   read with `receive()` until `websocket.disconnect`, as `/ws/training`'s receive loop now does.
   None of the shipped handlers registers a socket with `connect()`.
 
+- **`/ws/training` answers a resume frame as juniper-cascor does: juniper-cascor#754's four cursor rules**
+  (the Overtoad's rulings of 2026-11-12, "Match cascor's resume answers", and of 2026-11-13, "Four rules + shared
+  table" and, for a negative cursor, "Read as 0"). Driven over a real WebSocket, the two copies answered 131 of
+  240 (frame, state) cases differently; now none do.
+  - A `data` that is not an object is `resume_failed` `malformed_resume`. It raised `AttributeError`, which the
+    handshake's broad `except` turned into a fresh connect with no reply.
+  - A `last_seq` that is not a plain integer (a float, `NaN`, `Infinity`, a boolean, a string, a list, an
+    object) is `malformed_resume`, checked before `server_instance_id`. A float, a boolean, `NaN` or `Infinity`
+    was answered by its numeric value (with seqs 1-5 buffered, `2.5` replayed from seq 3, and `NaN` and `Infinity`
+    were `resume_ok` with nothing replayed), and the others, unless replay was disabled (then `out_of_range`),
+    raised: a fresh connect with no reply.
+  - A negative `last_seq` is read as `0`, as `promote_to_active`'s catch-up already read it. It was `resume_ok`
+    on an empty buffer and `out_of_range` once anything was buffered, seq 1 included.
+  - **`WebSocketManager.replay_since` raises `ReplayOutOfRange` for a `last_seq` above the last seq numbered**
+    (`Requested seq N is above the last seq numbered, M`), where, with seqs buffered, it returned `[]`. A resume with such a cursor
+    is `out_of_range` and a fresh snapshot instead of `resume_ok` with nothing replayed, after which a broadcast
+    made before the socket went live with a seq at or below the claimed cursor was never sent to it.
+    `promote_to_active(..., replayed_through=...)` with such a cursor returns `False` and leaves the socket
+    pending; the handler never passes one, since its handshake has checked the cursor first.
+  - **One table of frames and answers, tested on the wire in both repositories.**
+    `tests/fixtures/ws_resume_answers.json` holds 60 resume frames and the reply frames a client reads in four
+    server states. `tests/test_websocket_resume_answer_table.py` serves the package's app with uvicorn on a loopback port and
+    drives all 240 cases with the `websockets` client; the `[test]` extra gains both. juniper-cascor holds the
+    same bytes at `src/tests/fixtures/ws_resume_answers.json` and drives its own app against them, and
+    juniper-ml's `tests/test_ws_resume_answer_table_drift.py` compares the two copies. A new `MANIFEST.in` puts
+    `tests/fixtures/` in the sdist beside the test that reads it; the wheel still holds no tests.
+  - **Tests**: `tests/test_websocket_resume_continuity.py` gains 23 cases (juniper-cascor's 20, two for the
+    order of the checks, and one that pins `replay_since` itself still raising for a negative cursor, which only
+    the handshake reads as `0`), and `test_replay_since_returns_exactly_the_tail_after_every_cut_point` now
+    expects the two cursors past the newest seq to raise. Against the code before this change, that test, 20 of
+    the 23 (the other three are controls) and 131 of the 240 table cases fail.
+
 ### Fixed
 
 - **A `fit` that returns while the run is paused settles `COMPLETED` instead of wedging the
   lifecycle** (the "paused-fit wedge" in §4 of
-  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`; owner ruling "Fix
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`; Overtoad ruling "Fix
   now", 2026-11-08). Pause is cooperative: `ServiceLifecycleManager`'s event sink waits at the
   model's next event. A pause that arrives after the model's last event, or during a `fit` that
   emits none, is never waited on, so `fit` returns while the machine is still `PAUSED`.
@@ -91,7 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `monitor.status` `ended` while the new run trains. The pause gate is shared too, so the release
   on a paused completion or failure also wakes a stopped run's `fit` that is waiting at it, and a
   start is then accepted beside that `fit`; after a paused completion, 0.7.2's wedge had kept it
-  waiting. The owner has ruled that the stop-then-start race behind both gets
+  waiting. The Overtoad has ruled that the stop-then-start race behind both gets
   its own fix, in its own PR (§8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
 - **Tests**: `tests/test_lifecycle_paused_fit_return.py` (11 tests) pins both entries. With
@@ -104,7 +158,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stop** (the stop-then-start race; §8, ruling 11 of
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, "Fix all four now").
   The ruling names the defect, not a mechanism; the refusal is this change's choice, and the
-  owner's ruling of 2026-11-12 accepts it (that record's next update adds it to its §8). A stop is
+  Overtoad's ruling of 2026-11-12 accepts it (that record's next update adds it to its §8). A stop is
   seen at `fit`'s next event, and a `fit` that emits no events runs until it returns.
   `start_training` cleared the stop, so a start sent before then cancelled it: the stopped run's
   `fit` ran on beside the new run, on the same model, and its events went through the shared sink
@@ -161,7 +215,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **A `resume_ok` on `/ws/training` now means the client missed nothing up to the moment its socket
   goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
   juniper-ml `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`, ruled "Fix
-  now" by the owner on 2026-11-08. A resumed client could be answered `resume_ok` and still have
+  now" by the Overtoad on 2026-11-08. A resumed client could be answered `resume_ok` and still have
   missed broadcasts, two ways:
   - **A broadcast with no socket active was never sequenced or buffered.**
     `WebSocketManager.broadcast` returned at once when no socket was active, including while a
@@ -233,7 +287,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - juniper-cascor carries its own copies of the manager and handler, with both defects. They are
     not changed here.
 
-- **A socket a broadcast drops is closed 1011 instead of being left open on a dead stream** (owner
+- **A socket a broadcast drops is closed 1011 instead of being left open on a dead stream** (Overtoad
   ruling 11 in §8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`,
   "Fix all four now"). `WebSocketManager.broadcast` dropped a socket whose send raised or timed out
   with `disconnect()` alone, which forgets a socket but never closes it. The `/ws/training`
@@ -403,7 +457,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   value, say) encodes instead of raising, and no two distinct strings share bytes. So `validate`
   matches exactly when the strings are equal. `surrogateescape` fails on both counts: it raises on
   `"\ud800"`, and it maps `"\xe9"` and `"\udcc3\udca9"` to the same bytes. The
-  `blank-api-key-filter` and `nonshortcircuit-key-compare` drift-gate markers are unchanged. Owner
+  `blank-api-key-filter` and `nonshortcircuit-key-compare` drift-gate markers are unchanged. The Overtoad
   ruling "Fix everywhere now" (2026-09-24). juniper-observability stops Sentry capturing locals in
   the same change, and juniper-data and juniper-cascor carry the same compare in their forks.
   Pinned by 64 new tests: `tests/test_security.py` covers the non-ASCII mismatch and a 7x7

@@ -2,7 +2,7 @@
 
 **Date**: 2026-11-07 (investigated 2026-11-07 23:30 CST to 2026-11-08 02:30 UTC)
 **Host**: yamaguchi (Ubuntu 26.04.1 LTS, kernel 7.0.0-31-generic, systemd 259.5, docker-ce 29.7.2, snapd 2.77.1)
-**Status**: root cause established; **remediated 2026-11-08 at 08:28:29Z** by the owner (runbook steps 1–3), validated 08:51–08:58Z, every check passing (§14)
+**Status**: root cause established; **remediated 2026-11-08 at 08:28:29Z** by the Overtoad (runbook steps 1–3), validated 08:51–08:58Z, every check passing (§14)
 **Author**: Paul Calnon (investigation session `piped-exploring-raven`)
 **Remediation**: `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md`
 **Evidence**: `reports/2026-11-07_yamaguchi-securityfs-unmount/` (its `README.md` lists every file and the command that made it)
@@ -38,7 +38,7 @@ The fix is three `mount` commands with systemd's own options. Before running the
 snap k8s services, which the remount would otherwise bring back to life. Neither step touches the
 ongoing kubeadm install (§10). The runbook has the steps and a before/after validator.
 
-**Remediated 2026-11-08.** The owner ran the runbook's root steps, and the three filesystems have been
+**Remediated 2026-11-08.** The Overtoad ran the runbook's root steps, and the three filesystems have been
 mounted since 08:28:29Z. The validator passes, all seven containers run confined by
 `docker-default`, and juniper-deploy's suite has no failures (409 passed, where 17 had failed). §14
 is the record. It includes a correction to this analysis (F1) and two defects that the execution
@@ -46,12 +46,12 @@ exposed in the validator, both fixed (F2, F3).
 
 ## 2. The report
 
-The owner ran `make up` in juniper-deploy (the paste says `make up`; the Makefile has no `go`
+The Overtoad ran `make up` in juniper-deploy (the paste says `make up`; the Makefile has no `go`
 target). All four preflights passed: bind posture, image provenance, and the snapshot root with one
 warning. Then `docker compose up` failed on `juniper-data` and `juniper-redis`, the first two
 containers it starts.
 
-The owner read this as "the docker daemon is missing an AppArmor profile". The error says something
+The Overtoad read this as "the docker daemon is missing an AppArmor profile". The error says something
 narrower. The daemon could not *check* whether the profile is loaded, because the file it reads to
 check does not exist.
 
@@ -172,12 +172,12 @@ What the evidence fixes:
    `--rbind` or `make-r*` command ran anywhere near the event. The commands at 22:55:2x were `git`,
    `gh api` and `sed` reads. The only `unshare … --mount` (2026-10-30) ran in an unprivileged user
    namespace, three days later.
-4. **The logs that would name it are gone** (RC-4). The owner's `~/.bash_history` has no `umount`
+4. **The logs that would name it are gone** (RC-4). The Overtoad's `~/.bash_history` has no `umount`
    line, but it holds only the last 2,000 commands of shells that have *exited*. Four root sessions
    from before the event are still open (pts/14, pts/16, pts/20, pts/22, per `loginctl`), and a shell
    still running has not written its history.
 
-**To confirm it** (owner, optional; this changes nothing): run `history | grep -n umount` in each open
+**To confirm it** (Overtoad, optional; this changes nothing): run `history | grep -n umount` in each open
 root terminal, and `sudo grep -n umount /root/.bash_history`. Knowing the actor changes the
 prevention advice, not the remediation.
 
@@ -194,7 +194,7 @@ prevention advice, not the remediation.
 
 ## 9. Remediation
 
-Owner-executed, root, no reboot. It takes under ten minutes:
+The Overtoad-executed, root, no reboot. It takes under ten minutes:
 `notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-API-FILESYSTEM-REMOUNT-RUNBOOK.md`. In short:
 
 1. Capture the before-state.
@@ -249,7 +249,7 @@ Pis and turing's VM. yamaguchi is the workstation, and carries the held 1.36.5 d
 
 ## 12. Recommendations not done here
 
-1. **Retire the legacy snap k8s components** (owner). They predate the primer, conflict with a future
+1. **Retire the legacy snap k8s components** (Overtoad). They predate the primer, conflict with a future
    kubeadm node on this host, and are the journal's largest writer. The runbook only disables them.
 2. **Journal retention.** The 4 GB cap gives an ~8-day horizon at the current write rate. Stopping the
    kubelet loop (runbook step 2) removes most of it. A `MaxRetentionSec=` floor, or a larger
@@ -290,7 +290,7 @@ The committed copies were regenerated with `--public` and the redaction.
 
 ## 14. Remediation record (2026-11-08)
 
-The owner ran runbook steps 1–4 from 08:23Z. Their terminal output is
+The Overtoad ran runbook steps 1–4 from 08:23Z. Their terminal output is
 `…T0823Z_owner-run-runbook-steps-1-to-4.txt`, with times taken from the host. This session then ran
 the rest of step 4 and steps 5–6, from 08:51Z. Every file named below is in
 `reports/2026-11-07_yamaguchi-securityfs-unmount/`, whose `README.md` gives the command for each.
@@ -301,7 +301,7 @@ the rest of step 4 and steps 5–6, from 08:51Z. Every file named below is in
 |---|---|---|
 | Validator E1–E5 | All `PASS`: every API filesystem is mounted and AppArmor is consistent; the interface is present; juniper-deploy's preflight prints `[OK]`; a container starts confined (`docker-default (enforce)`); `snap run helm version` gives v4.3.1. | `…T0851Z_remount-validate-after-remediation-vs-incident-fingerprint.txt` |
 | Validator regression diff | `PASS` against the incident-state fingerprint captured at 02:15Z: only the three `mount.*` and six `snap_service.*` keys changed. Unchanged: the held kube debs, `kubelet.service`, `/etc/kubernetes`, `/var/lib/kubelet`, containerd's config, the k8s listeners (none), `juniper-k8s` HEAD, and the identities of PID 1, containerd and dockerd. That baseline predates the remount by 6 h 13 min, so a clean diff over the longer window covers the remount. | same file |
-| `make up` | First refused by the image-provenance preflight (F6). With the owner's choice, all four preflights pass, the AppArmor one with `[OK]`, and all seven containers start. | `…T0852Z_make-up-refused-by-image-provenance-preflight.txt`, `…T0857Z_make-up-after-remediation-released-images.txt` |
+| `make up` | First refused by the image-provenance preflight (F6). With the Overtoad's choice, all four preflights pass, the AppArmor one with `[OK]`, and all seven containers start. | `…T0852Z_make-up-refused-by-image-provenance-preflight.txt`, `…T0857Z_make-up-after-remediation-released-images.txt` |
 | `make health`, `docker inspect` | All four services ready. All seven containers `running`, `healthy`, with AppArmor profile `docker-default`. | `…T0858Z_make-health-after-remediation.txt`, `…T0913Z_stack-containers-apparmor-profile.txt` |
 | juniper-deploy `pytest tests/`, at `53b948d8` | **409 passed, 48 skipped, 0 failed.** In the incident state: 17 failed, 392 passed. 392 + 17 = 409: the 17 helm tests now pass, and no other result changed. | `…T0853Z_juniper-deploy-full-suite-after-remediation.txt`, `…T0225Z_juniper-deploy-full-suite-main-vs-branch.txt` |
 | juniper-ml `tests/test_host_api_filesystems_check.py`, and the live check | 25 tests pass. `util/host_api_filesystems_check.py` exits 0. | E1 above |
@@ -318,7 +318,7 @@ the rest of step 4 and steps 5–6, from 08:51Z. Every file named below is in
 | snapd refresh | Not observed yet. The next auto-refresh is due at 15:45Z (`snap refresh --time`); `sudo snap refresh` (runbook step 6c) would run one now. |
 | AppArmor userspace | The interface is back (E2). `aa-status` needs root and was not run. |
 | bpffs, pstore | Mounted (E1). |
-| Snap CUPS | Still `failed`: a unit stopped at its start limit does not restart by itself. Owner: `sudo snap restart cups`, if the snap's CUPS is used (runbook §4). |
+| Snap CUPS | Still `failed`: a unit stopped at its start limit does not restart by itself. The Overtoad: `sudo snap restart cups`, if the snap's CUPS is used (runbook §4). |
 | Desktop session | Still unmounted (runbook §4; user units, no root). |
 | ExpressVPN | Unchanged, unverified. |
 | Journal | The kubelet loop's ~4,200 lines an hour have stopped. The hour to 08:53Z held 2,270, all from the half hour before step 2 stopped it. |
@@ -365,14 +365,14 @@ policy stayed loaded in the kernel throughout, and only its interface was unreac
   CST, are still `failed`. Both are now in §6.
 - **F6. `make up` then stopped at an unrelated preflight.** The image-provenance preflight refused
   canopy 0.9.0 and data 0.17.1, each 2 commits behind its checkout. Those commits touch only tests,
-  docs, CI configuration and CHANGELOG (juniper-canopy#797, #802; juniper-data#518, #519). The owner
+  docs, CI configuration and CHANGELOG (juniper-canopy#797, #802; juniper-data#518, #519). The Overtoad
   chose to run the released images (`JUNIPER_IMAGE_STALE_OK=1 make up`), so `make health` labels the
   two `STALE`. That is drift against the checkouts, not a fault.
 
 ### 14.4 Still open
 
 - The actor (§7) is unconfirmed.
-- The owner-only residue (runbook §4): the snap CUPS, the desktop FUSE mounts, ExpressVPN.
+- The Overtoad-only residue (runbook §4): the snap CUPS, the desktop FUSE mounts, ExpressVPN.
 - §12's recommendations.
 - The next snapd auto-refresh, due 15:45Z, should be the first to succeed since 2026-10-27.
   `snap changes` will show it.

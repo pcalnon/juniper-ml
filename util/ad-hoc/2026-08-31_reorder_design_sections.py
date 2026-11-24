@@ -20,7 +20,7 @@ import sys
 
 DOC = pathlib.Path(__file__).resolve().parents[2] / "notes" / "JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md"
 
-ANCHOR = "### 9.2 PLACEHOLDER-MOVE-ANCHOR Owner decisions"
+ANCHOR = "### 9.2 PLACEHOLDER-MOVE-ANCHOR The Overtoad decisions"
 END_OF_BLOCK = "### 9.1 Still open — carried forward"
 NEXT_SECTION = "## 10. Naming"
 
@@ -34,7 +34,7 @@ def main() -> int:
     start = text.index(ANCHOR)
     end = text.index(END_OF_BLOCK, start)
     block = text[start:end].rstrip("\n")
-    block = block.replace("### 9.2 PLACEHOLDER-MOVE-ANCHOR Owner decisions", "### 9.2 Owner decisions")
+    block = block.replace("### 9.2 PLACEHOLDER-MOVE-ANCHOR The Overtoad decisions", "### 9.2 The Overtoad decisions")
 
     # Excise the block from its wrong position.
     remainder = text[:start] + text[end:]
@@ -47,7 +47,7 @@ def main() -> int:
 
     # Verify the ordering actually came out right rather than trusting the splice.
     out = DOC.read_text(encoding="utf-8")
-    order = [h for h in ("### 9.1 Still open", "### 9.2 Owner decisions", "### 9.3 Derived requirement", "## 10. Naming") if h in out]
+    order = [h for h in ("### 9.1 Still open", "### 9.2 The Overtoad decisions", "### 9.3 Derived requirement", "## 10. Naming") if h in out]
     positions = [out.index(h) for h in order]
     if positions != sorted(positions) or len(order) != 4:
         print(f"ORDER STILL WRONG: {order}", file=sys.stderr)

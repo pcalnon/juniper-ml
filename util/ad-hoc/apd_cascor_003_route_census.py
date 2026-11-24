@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc -- investigation (grounding for the APD-CASCOR-003 / operation_id pass)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md (APD-CASCOR-003 and its §4.3 note)
 
 ``APD-CASCOR-003`` says 46 of 47 routes declare no ``response_model``; the register's §4.3 note

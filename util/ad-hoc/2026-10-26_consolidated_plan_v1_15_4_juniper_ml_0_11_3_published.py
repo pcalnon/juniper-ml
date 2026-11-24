@@ -6,18 +6,18 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — one-off (a record revision of notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2333 (ml#2062's fix), #2349 / #2350 (the 0.11.3 cut and archive), publish run 40306687867;
          util/ad-hoc/2026-10-26_consolidated_plan_v1_15_3_servers_patch_path_corrected.py (the revision this follows, and the pattern);
          util/ad-hoc/2026-10-26_plan_v1_7_22_juniper_ml_0_11_3_published.py (the recurrence plan's matching revision)
 
 Why
 ---
-v1.15.3 left §5's 0.11.3 note at the owner's `pypi` gate and pointed XC-P12's item 6 at that gate. §4's and §5's R-ML-a
-entries still called ml#2062's fix open, and §6 still asked P4 D-1, which the owner ruled on 2026-10-25 (option (a+),
-as juniper-ml's ``CHANGELOG.md`` ``[0.11.3]`` records). The owner approved the gate on 2026-10-26 and PyPI serves 0.11.3
+v1.15.3 left §5's 0.11.3 note at the Overtoad's `pypi` gate and pointed XC-P12's item 6 at that gate. §4's and §5's R-ML-a
+entries still called ml#2062's fix open, and §6 still asked P4 D-1, which the Overtoad ruled on 2026-10-25 (option (a+),
+as juniper-ml's ``CHANGELOG.md`` ``[0.11.3]`` records). The Overtoad approved the gate on 2026-10-26 and PyPI serves 0.11.3
 from 17:48Z; the publish was probed here against PyPI's and TestPyPI's version JSON and the run's jobs and approvals.
-Every line stays within 512 characters, the condition on which the owner approved v1.15.2 (2026-10-26), and the script
+Every line stays within 512 characters, the condition on which the Overtoad approved v1.15.2 (2026-10-26), and the script
 refuses if any line is over.
 
 Usage
@@ -44,15 +44,15 @@ MAX_LINE = 512
 _DATE_OLD = "juniper-ml 0.11.2's publish probed 2026-10-26, and `[servers]`'s patch path corrected the same day)\n"
 _DATE_NEW = "juniper-ml 0.11.2's publish probed 2026-10-26, `[servers]`'s patch path corrected the same day, and 0.11.3's publish probed later that day)\n"
 
-_STATUS_ANCHOR = "It also points at juniper-ml 0.11.3, at the owner's gate (§5; XC-P12). Like v1.15.0, no round checks it.\n"
-_STATUS_ADD = "  - v1.15.4 (2026-10-26) records juniper-ml 0.11.3's publish, which ships ml#2062's fix, ml#2333, and the owner's ruling on P4 D-1 (§4; §5; §6; XC-P12). Like v1.15.0, no round checks it.\n"
+_STATUS_ANCHOR = "It also points at juniper-ml 0.11.3, at the Overtoad's gate (§5; XC-P12). Like v1.15.0, no round checks it.\n"
+_STATUS_ADD = "  - v1.15.4 (2026-10-26) records juniper-ml 0.11.3's publish, which ships ml#2062's fix, ml#2333, and the Overtoad's ruling on P4 D-1 (§4; §5; §6; XC-P12). Like v1.15.0, no round checks it.\n"
 
 _FURTHER_P12_OLD = (
-    "`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.21): juniper-ml 0.11.3's `pypi` gate (the owner's), the recurrence-client 0.3.1 cut and the owner's open items (§6 A1, A9). "
+    "`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.21): juniper-ml 0.11.3's `pypi` gate (the Overtoad's), the recurrence-client 0.3.1 cut and the Overtoad's open items (§6 A1, A9). "
     "The juniper-ml 0.11.2 cut is done (R-ML-SERVERS; v1.15.2), and the W1.11"
 )
 _FURTHER_P12_NEW = (
-    "`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.22): an erratum to 0.11.2's notes (the owner's call; §5), the recurrence-client 0.3.1 cut and the owner's open items (§6 A1, A9). "
+    "`…EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md` (v1.7.22): an erratum to 0.11.2's notes (the Overtoad's call; §5), the recurrence-client 0.3.1 cut and the Overtoad's open items (§6 A1, A9). "
     "The juniper-ml 0.11.2 cut is done (R-ML-SERVERS; v1.15.2), 0.11.3 is published (§5; v1.15.4), and the W1.11"
 )
 
@@ -63,13 +63,13 @@ _RMLA_NEW = "ml#2062's `[servers]` fix (P4 D-1; not in 0.11.0, and shipped in 0.
 _WAVE1_OLD = "ml#2062's fix did not ride it, and its issue is open (§5).\n"
 _WAVE1_NEW = "ml#2062's fix did not ride it; it shipped in 0.11.3 as ml#2333 (§5).\n"
 
-#: §6's mid-wave sitting still asked P4 D-1; juniper-ml's CHANGELOG.md [0.11.3] records the owner's ruling.
+#: §6's mid-wave sitting still asked P4 D-1; juniper-ml's CHANGELOG.md [0.11.3] records the Overtoad's ruling.
 _SITTING_OLD = "- P4 D-1 (ml#2062, which shapes R-ML-a).\n"
 _SITTING_NEW = "- P4 D-1 (ml#2062, which shapes R-ML-a). **Ruled 2026-10-25: option (a+)** (juniper-ml's `CHANGELOG.md` `[0.11.3]`; v1.15.4). Its fix, ml#2333, shipped in 0.11.3 (§5).\n"
 
-_NOTES_OLD = "  - 0.11.3 is cut: Release v0.11.3 at 10:20:47Z (tag at `a771a5b8`; archive ml#2350), and its publish run 40306687867 waits at the owner's `pypi` gate (2026-10-26; v1.15.3). Its records are session \"draft PRs\"'s.\n"
+_NOTES_OLD = "  - 0.11.3 is cut: Release v0.11.3 at 10:20:47Z (tag at `a771a5b8`; archive ml#2350), and its publish run 40306687867 waits at the Overtoad's `pypi` gate (2026-10-26; v1.15.3). Its records are session \"draft PRs\"'s.\n"
 _NOTES_NEW = (
-    "  - 0.11.3 is published. Release v0.11.3 was cut at 10:20:47Z (tag at `a771a5b8`; archive ml#2350; v1.15.3), and the owner approved the `pypi` gate of publish run 40306687867: "
+    "  - 0.11.3 is published. Release v0.11.3 was cut at 10:20:47Z (tag at `a771a5b8`; archive ml#2350; v1.15.3), and the Overtoad approved the `pypi` gate of publish run 40306687867: "
     "PyPI serves its wheel from 17:48:05Z, with the sha256 TestPyPI took (2026-10-26; v1.15.4). Its records are session \"draft PRs\"'s.\n"
     "  - 0.11.3's `[servers]` requests `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`, `juniper-cascor[api,juniper-data]>=0.12.0` and `juniper-data[api]>=0.17.1` (PyPI's metadata). "
     "So it installs both clients (ml#2062), and data 0.17.1's `[api]` floors on the shared patches apply to it too.\n"
@@ -77,7 +77,7 @@ _NOTES_NEW = (
 
 _VALIDATION_ANCHOR = "run 40306687867 and `util/ad-hoc/2026-10-26_consolidated_plan_v1_15_3_servers_patch_path_corrected.py`.\n"
 _VALIDATION_ADD = (
-    "  - v1.15.4 is a record of juniper-ml 0.11.3's publish (2026-10-26) and of the owner's P4 D-1 ruling (2026-10-25). No round checks it (owner ruling 2026-10-24); "
+    "  - v1.15.4 is a record of juniper-ml 0.11.3's publish (2026-10-26) and of the Overtoad's P4 D-1 ruling (2026-10-25). No round checks it (Overtoad ruling 2026-10-24); "
     "its facts cite PyPI's and TestPyPI's 0.11.3 metadata, run 40306687867's jobs and approvals, juniper-ml's `CHANGELOG.md` `[0.11.3]`, and `util/ad-hoc/2026-10-26_consolidated_plan_v1_15_4_juniper_ml_0_11_3_published.py`.\n"
 )
 

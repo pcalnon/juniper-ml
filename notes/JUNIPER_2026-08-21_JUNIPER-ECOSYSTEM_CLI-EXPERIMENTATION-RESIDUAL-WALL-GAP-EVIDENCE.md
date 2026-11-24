@@ -564,7 +564,7 @@ not the allocator, not scheduling. It is `inspect.getmodule`.
 
 #### Why `getmodule` is slower on one path
 
-> **Correction (owner review).** An earlier version of this section said the workers are "forked, so
+> **Correction (Overtoad review).** An earlier version of this section said the workers are "forked, so
 > each inherits its parent's `sys.modules` wholesale". **That is wrong.** Candidate workers are
 > created from a **forkserver**, verified in source:
 > `_PROJECT_MODEL_CANDIDATE_TRAINING_CONTEXT = "forkserver"`

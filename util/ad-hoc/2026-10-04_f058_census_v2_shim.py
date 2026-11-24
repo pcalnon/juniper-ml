@@ -6,7 +6,7 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-04
-# Status      : ad-hoc — instrument; RETAINED as provenance (owner policy 2026-08-25)
+# Status      : ad-hoc — instrument; RETAINED as provenance (Overtoad policy 2026-08-25)
 # ---------------------------------------------------------------------------
 """The F-CANOPY-058 census v2 in-page shim: dash-renderer's callback lifecycle, read at the DISPATCH.
 

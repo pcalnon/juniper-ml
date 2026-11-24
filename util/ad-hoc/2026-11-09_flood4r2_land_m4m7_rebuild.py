@@ -8,7 +8,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — one-off (Cursor flood-4 session 4: landing M-4/M-7, the service-core training-stream resume losses)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: <carrier>/tmp/flood4-fix/m4m7-r3/stamps.json (the re-derive rules this applies),
          util/ad-hoc/2026-11-09_flood4r2_land_snapshot.py (takes the rebuilt files via --prebuilt)
 

@@ -269,7 +269,7 @@ def main(argv: list[str]) -> int:
         cur = run(["git", "-C", str(primary), "rev-parse", "--abbrev-ref", "HEAD"]).stdout.strip()
         pdirty = run(["git", "-C", str(primary), "status", "--porcelain"]).stdout.strip()
         if cur != "main":
-            print(f"   primary is on {cur!r}, not main — NOT pulling (owner's call)")
+            print(f"   primary is on {cur!r}, not main — NOT pulling (Overtoad's call)")
         elif pdirty:
             print(f"   primary tree is dirty ({len(pdirty.splitlines())} entries) — NOT pulling (F-6 stale-checkout guard)")
         else:

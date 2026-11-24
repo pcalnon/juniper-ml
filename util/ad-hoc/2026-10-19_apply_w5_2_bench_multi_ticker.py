@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-19
 Status: ad-hoc — one-off (the juniper-recurrence bench PR for W5.2)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: W5.2 of notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md
          ("Bench gains a multi-ticker row"; "Owed: the bench's multi-ticker row");
          util/ad-hoc/2026-10-19_apply_w5_2_model.py (model 0.6.0: the composed ``trainval`` view and the window keys);
@@ -26,7 +26,7 @@ row-index cut puts ticker A's 2021 in train and ticker B's 2015 in eval (F-P7), 
 - a new informational row ``equities_seq_panel`` (``AAPL`` + ``MSFT``) sits beside the single-ticker row;
 - Band 2b and the report's per-dataset header cover both equities rows.
 
-Runs against a tree laid out like the juniper-recurrence repo root (the scratch copy), never the owner's checkout.
+Runs against a tree laid out like the juniper-recurrence repo root (the scratch copy), never the Overtoad's checkout.
 Each edit asserts its exact old text and must match exactly once; "new present once" counts as applied. The
 CHANGELOG entry goes first under ``[Unreleased]`` -> ``### Changed`` (created when absent), so it applies on
 ``main`` before or after juniper-recurrence#215 lands.

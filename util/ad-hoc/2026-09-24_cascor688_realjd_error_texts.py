@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- investigation
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-cascor#688's validation, finding 1 (a 400 that NAMES a truncation field was read as a
          shortfall refusal); the fix-forward's tests quote the texts this prints, so they are
          juniper-data's own words rather than a stand-in.

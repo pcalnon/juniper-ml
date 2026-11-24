@@ -89,7 +89,7 @@ hyphen. Pinned by `TestPackagingExcludesArtifacts`.
 
 ---
 
-## 2. The owner's constraints, and what each one forbids
+## 2. The Overtoad's constraints, and what each one forbids
 
 Recorded in effect, because a later reader will otherwise re-propose the rejected option.
 
@@ -373,7 +373,7 @@ out-of-band and user-driven anyway — which is the stated policy for moving sna
 6. **The external backup tool is unverified.** No backup script, config, or manifest exists anywhere
    in the tree, so whether it actually walks `Juniper/`, whether it honours `.gitignore`, and whether
    it preserves uid/gid on restore are all unconfirmed. **Every C-1/C-2 claim rests on it.** This is
-   the highest-leverage thing left to verify, and it is an owner question, not a code question.
+   the highest-leverage thing left to verify, and it is an Overtoad question, not a code question.
 7. **The 27,896 existing artifacts are not re-verified** by this change. They moved with the
    directory rename and are expected to load unchanged; nothing here revalidates them. (The frozen
    census figure is 27,869 files / 27,863 loadable; the count has grown since.)

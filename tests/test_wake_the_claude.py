@@ -38,7 +38,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
         invocations_log = Path(temp_dir) / "claude_invocations.log"
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
-            "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then\n' '  echo "claude-test-version"\n' "  exit 0\n" "fi\n" "{\n" '  echo "__CALL__"\n' '  echo "ARGC=$#"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$CLAUDE_ARGS_LOG"\n',
+            '#!/usr/bin/env bash\nif [[ "$1" == "--version" ]]; then\n  echo "claude-test-version"\n  exit 0\nfi\n{\n  echo "__CALL__"\n  echo "ARGC=$#"\n  for arg in "$@"; do\n    printf \'ARG=%s\\n\' "$arg"\n  done\n} >> "$CLAUDE_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
@@ -46,7 +46,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
         if failing_uuidgen:
             fake_uuidgen = bin_dir / "uuidgen"
             fake_uuidgen.write_text(
-                "#!/usr/bin/env bash\n" "exit 1\n",
+                "#!/usr/bin/env bash\nexit 1\n",
                 encoding="utf-8",
             )
             fake_uuidgen.chmod(0o755)
@@ -492,7 +492,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self._install_fake_command(
                 temp_dir,
                 "cat",
-                "#!/usr/bin/env bash\n" f'if [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n' f'  echo "{fallback_uuid}"\n' "  exit 0\n" "fi\n" '/usr/bin/cat "$@"\n',
+                f'#!/usr/bin/env bash\nif [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n  echo "{fallback_uuid}"\n  exit 0\nfi\n/usr/bin/cat "$@"\n',
             )
 
             result = self._run_script(
@@ -519,12 +519,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self._install_fake_command(
                 temp_dir,
                 "cat",
-                "#!/usr/bin/env bash\n" 'if [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n' '  echo "not-a-uuid"\n' "  exit 0\n" "fi\n" '/usr/bin/cat "$@"\n',
+                '#!/usr/bin/env bash\nif [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n  echo "not-a-uuid"\n  exit 0\nfi\n/usr/bin/cat "$@"\n',
             )
             self._install_fake_command(
                 temp_dir,
                 "python3",
-                "#!/usr/bin/env bash\n" f'echo "{python_fallback_uuid}"\n',
+                f'#!/usr/bin/env bash\necho "{python_fallback_uuid}"\n',
             )
 
             result = self._run_script(
@@ -545,12 +545,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self._install_fake_command(
                 temp_dir,
                 "cat",
-                "#!/usr/bin/env bash\n" 'if [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n' '  echo "still-not-a-uuid"\n' "  exit 0\n" "fi\n" '/usr/bin/cat "$@"\n',
+                '#!/usr/bin/env bash\nif [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n  echo "still-not-a-uuid"\n  exit 0\nfi\n/usr/bin/cat "$@"\n',
             )
             self._install_fake_command(
                 temp_dir,
                 "python3",
-                "#!/usr/bin/env bash\n" 'echo "bad-python-uuid-output"\n',
+                '#!/usr/bin/env bash\necho "bad-python-uuid-output"\n',
             )
 
             result = self._run_script(
@@ -704,7 +704,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertLess(session_id_index + 1, len(last_invocation_args))
             self.assertRegex(last_invocation_args[session_id_index + 1], UUID_REGEX)
             self.assertIn("--worktree", last_invocation_args)
-            # Bare, as claudey sends it (owner ruling, 2026-11-06): the next argument is an option, never a value
+            # Bare, as claudey sends it (Overtoad ruling, 2026-11-06): the next argument is an option, never a value
             self.assertIn("--remote-control", last_invocation_args)
             self.assertTrue(last_invocation_args[last_invocation_args.index("--remote-control") + 1].startswith("-"))
             self.assertNotIn("--dangerously-skip-permissions", last_invocation_args)
@@ -921,7 +921,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         invocations_log = Path(temp_dir) / "claude_invocations.log"
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
-            "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then\n' '  echo "claude-test-version"\n' "  exit 0\n" "fi\n" "{\n" '  echo "__CALL__"\n' '  echo "ARGC=$#"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$CLAUDE_ARGS_LOG"\n',
+            '#!/usr/bin/env bash\nif [[ "$1" == "--version" ]]; then\n  echo "claude-test-version"\n  exit 0\nfi\n{\n  echo "__CALL__"\n  echo "ARGC=$#"\n  for arg in "$@"; do\n    printf \'ARG=%s\\n\' "$arg"\n  done\n} >> "$CLAUDE_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
@@ -1495,7 +1495,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         self.assertEqual(args, ["--resume", VALID_UUID, "--worktree", "--effort", "high", "--", "hello"])
 
     def test_remote_control_goes_bare_and_refuses_a_value(self) -> None:
-        """``--remote-control`` never takes a value (owner ruling, 2026-11-04): a word after it is refused, not forwarded.
+        """``--remote-control`` never takes a value (Overtoad ruling, 2026-11-04): a word after it is refused, not forwarded.
 
         Claude Code reads a word after ``--remote-control`` as the session's name. A following flag or the end of the input
         leaves the flag bare; ``0`` (true) turns it on and ``1`` (false) off, as for the other flags here.
@@ -1670,7 +1670,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertEqual(invocations, [])
 
     def test_usage_flag_prints_usage_and_exits_with_failure(self) -> None:
-        """``-u`` / ``--usage`` print the usage text and exit 1 (owner ruling, 2026-11-04); ``-h`` / ``--help`` exit 0."""
+        """``-u`` / ``--usage`` print the usage text and exit 1 (Overtoad ruling, 2026-11-04); ``-h`` / ``--help`` exit 0."""
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
             for flag, expected_status in (("-u", 1), ("--usage", 1), ("-h", 0), ("--help", 0)):
@@ -1684,7 +1684,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
     def test_version_flags_report_claude_codes_version_only(self) -> None:
         """``-v``, ``--version``, ``-V`` and ``--claude-version`` report Claude Code's version, never this script's.
 
-        Owner rulings: ``--version`` on 2026-11-04, and ``-v``, as ``claude -v`` does, on 2026-11-06 -- until then ``-v`` printed this
+        The Overtoad rulings: ``--version`` on 2026-11-04, and ``-v``, as ``claude -v`` does, on 2026-11-06 -- until then ``-v`` printed this
         script's version. ``--version`` once sat in this script's version pattern as well, and ``-V`` / ``--claude-version`` were
         checked against ``--version`` alone, so both exited 1.
         """
@@ -1823,7 +1823,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         """``--effort 0`` (true) sends the script default, ``EFFORT_DEFAULT``, which is ``max`` again.
 
         juniper-ml#2396 had made the default ``auto``, which Claude Code 2.1.316-2.1.319 answers with "Unknown --effort
-        value 'auto'" and ignores. The owner ruled on 2026-11-08: restore ``max``, and send no flag for ``auto``.
+        value 'auto'" and ignores. The Overtoad ruled on 2026-11-08: restore ``max``, and send no flag for ``auto``.
         """
         args = self._launch_and_get_args(["--resume", VALID_UUID, "--effort", "0", "--prompt", "hello"])
         self.assertEqual(args, ["--resume", VALID_UUID, "--effort", "max", "--", "hello"])
@@ -1943,7 +1943,7 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
         args_log = Path(temp_dir) / "default_launcher_args.log"
         fake_wake = scripts_dir / "wake_the_claude.bash"
         fake_wake.write_text(
-            "#!/usr/bin/env bash\n" "{\n" '  echo "__CALL__"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$WTC_WRAPPER_ARGS_LOG"\n',
+            '#!/usr/bin/env bash\n{\n  echo "__CALL__"\n  for arg in "$@"; do\n    printf \'ARG=%s\\n\' "$arg"\n  done\n} >> "$WTC_WRAPPER_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_wake.chmod(0o755)

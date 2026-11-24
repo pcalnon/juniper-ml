@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-04
 Status: ad-hoc — investigation; its --scan-dir mode is the interim pre-push gate named by the plan below
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md (XC-LEAKS, XC-PRESERVE);
          reports/2026-10-04_consolidated-development-plan/round4-*.md .. round11-*.md (how it was tested and broken);
          util/ad-hoc/2026-10-05_gate_regression.py (its regression cases)

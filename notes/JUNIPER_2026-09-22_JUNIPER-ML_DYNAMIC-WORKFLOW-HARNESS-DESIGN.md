@@ -6,10 +6,10 @@
 **License**: MIT License
 **Document Type**: Design (design-of-record candidate; nothing here is implemented)
 **Document Version**: v3 (round-1 Lane A and Lane B applied; the maps are Appendix D and Appendix E)
-**Status**: DRAFT — consensus round 1 complete (Lane A ×3, Lane B ×2, all applied or recorded as dissent); round 2 on the corrections pending; owner decisions D-1..D-12 (§10) open
+**Status**: DRAFT — consensus round 1 complete (Lane A ×3, Lane B ×2, all applied or recorded as dissent); round 2 on the corrections pending; Overtoad decisions D-1..D-12 (§10) open
 **Last Updated**: 2026-09-23
 **Measured at**: juniper-ml `25b78f55` (#2013); Claude Code `2.1.280`; host `yamaguchi`, 16 CPUs; every count in §2 carries its instant because every one of them moved during the round
-**Seed**: branch `design/dynamic-workflow` (`27ea09a1`) carries the owner's requirements text as `notes/dynamic_workflow_design.out`; Appendix A reproduces it (whitespace-normalised) and it is the requirement set this design answers
+**Seed**: branch `design/dynamic-workflow` (`27ea09a1`) carries the Overtoad's requirements text as `notes/dynamic_workflow_design.out`; Appendix A reproduces it (whitespace-normalised) and it is the requirement set this design answers
 **Companions**:
 [`JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`](JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md) (the agent suite this extends, "SUITE"),
 [`JUNIPER_2026-09-12_JUNIPER-ML_WORKTREE-CLEANUP-PROTOCOL-V3-DESIGN.md`](JUNIPER_2026-09-12_JUNIPER-ML_WORKTREE-CLEANUP-PROTOCOL-V3-DESIGN.md) (the removal gates this adopts, with one amendment, "V3"),
@@ -43,26 +43,26 @@ What this document is **not**: it is not a plan of record, nothing in it is buil
 
 ### 1.1 Purpose
 
-Extend the juniper-ml Claude Code harness (SUITE) so that, without a human choosing each task, agents are dispatched against the *current* set of active design-path documents, those documents are kept current as work lands, consumption is paced against the account's 5-hour and 7-day usage windows, every executing agent gets a fresh worktree whose removal is ordered when its arc completes, and every owner decision is routed to the owner while work continues on what is not blocked.
+Extend the juniper-ml Claude Code harness (SUITE) so that, without a human choosing each task, agents are dispatched against the *current* set of active design-path documents, those documents are kept current as work lands, consumption is paced against the account's 5-hour and 7-day usage windows, every executing agent gets a fresh worktree whose removal is ordered when its arc completes, and every Overtoad decision is routed to the Overtoad while work continues on what is not blocked.
 
-### 1.2 Requirements (from the seed, Appendix A) and the three re-scopings the owner must ratify by name
+### 1.2 Requirements (from the seed, Appendix A) and the three re-scopings the Overtoad must ratify by name
 
 | ID | Seed clause (condensed) | Where answered | Re-scoping, if any (Lane B2) |
 | --- | --- | --- | --- |
 | R1 | a dynamic workflow dispatches agents to perform prompts, written and validated dynamically **if necessary** | §6 | validation is *always* run (a prompt validated against an older HEAD is stale by the rubric's own rule); writing is skipped when the ledger names a prompt |
-| R2 | given an initial set of notes design-path documents that define current, active goals | §4 | the initial set is the owner's pick from INV I3 §3's arc table, seeded as §4.2 |
-| R3 | as work is performed, the documents are kept up to date | §4.4, §6.5 | "up to date" = append-only state lines and task lists on a per-document dispatch branch, visible on `main` only after the owner merges that branch (§6.5) |
-| R4 | as docs complete or are superseded, the goal set updates | §4.3 | automatic only for the design's own append form and for a successor's `Supersedes` line; every other transition is a drift flag the owner confirms |
-| R5 | dispatch optimises progress while the session and weekly limits are **met but not exceeded** by their expiry | §8, D-5, D-10 | "met" = the *binding* window (in practice the weekly one) reaches an owner-set target at its reset; the non-binding window is necessarily under-used; "optimises" = greedy first-fit in owner priority order with a retry budget |
+| R2 | given an initial set of notes design-path documents that define current, active goals | §4 | the initial set is the Overtoad's pick from INV I3 §3's arc table, seeded as §4.2 |
+| R3 | as work is performed, the documents are kept up to date | §4.4, §6.5 | "up to date" = append-only state lines and task lists on a per-document dispatch branch, visible on `main` only after the Overtoad merges that branch (§6.5) |
+| R4 | as docs complete or are superseded, the goal set updates | §4.3 | automatic only for the design's own append form and for a successor's `Supersedes` line; every other transition is a drift flag the Overtoad confirms |
+| R5 | dispatch optimises progress while the session and weekly limits are **met but not exceeded** by their expiry | §8, D-5, D-10 | "met" = the *binding* window (in practice the weekly one) reaches an Overtoad-set target at its reset; the non-binding window is necessarily under-used; "optimises" = greedy first-fit in Overtoad priority order with a retry budget |
 | R6 | every agent is handed a fresh worktree | §7.1 | the agents that *edit repository content* (executor, prompt-writer, doc-maintainer) get one; read-only validators and refuters do not; a decision-blocked task's redo reuses its own worktree by design |
 | R7 | when the arc is complete and the worktree meets the removal criteria, the workflow specifies removal | §7.2–§7.3 | as written; the criteria are V3's with one amendment (§7.3) and nothing executes before ratification |
-| R8 | open decisions go to the owner, their tasks listed as blocked, the agents reassigned so cadence continues | §9 | "reassigned" = the freed cost is spent on a standby task in the same cycle (§6.2) and the blocked task is excluded from selection until ruled |
+| R8 | open decisions go to the Overtoad, their tasks listed as blocked, the agents reassigned so cadence continues | §9 | "reassigned" = the freed cost is spent on a standby task in the same cycle (§6.2) and the blocked task is excluded from selection until ruled |
 
 Cross-cutting (from the request that produced this document): reuse the existing harness, apply the repo's best practices, minimise tokens, respect session limits, and validate by consensus (§6.4, §12).
 
 ### 1.3 Scope and non-goals
 
-In scope: juniper-ml as the orchestration home; tasks may target any of the nine ecosystem repos, because every existing agent already does (`.claude/agents/task-executor.md:3`, "1-3 repos"), and §7.1 creates the task's worktree in the task's repo. Out of scope: cloud Routines and Projects (they cannot reach this host's conda environments, services, or the parent `Juniper/AGENTS.md`, which is not in any repository); Agent Teams (§3.3); merging PRs (`prompts/agent_templates/data/standing_rules.yaml:6`, `:15`: the owner merges); executing any worktree removal before V3 (as amended) is ratified.
+In scope: juniper-ml as the orchestration home; tasks may target any of the nine ecosystem repos, because every existing agent already does (`.claude/agents/task-executor.md:3`, "1-3 repos"), and §7.1 creates the task's worktree in the task's repo. Out of scope: cloud Routines and Projects (they cannot reach this host's conda environments, services, or the parent `Juniper/AGENTS.md`, which is not in any repository); Agent Teams (§3.3); merging PRs (`prompts/agent_templates/data/standing_rules.yaml:6`, `:15`: the Overtoad merges); executing any worktree removal before V3 (as amended) is ratified.
 
 ---
 
@@ -82,7 +82,7 @@ Three independent signals exist; none is used by anything in the repo today (Lan
 
 `rateLimitType` is `five_hour` or `seven_day`; `resetsAt` is Unix epoch seconds; the text is `You've hit your session limit · resets 5:40pm (America/Chicago)`. A second shape adds `lowPriorityOffer` (`control`/`treatment`), `lowPriorityMaxWaitSeconds` (1200), `lowPriorityRetryAfterSeconds` (20). **`overageDisabledReason: out_of_credits` on every record means usage credits are not a fallback for this account**: a hit is a hard stop until `resetsAt`.
 
-**The record is not written when the limit is hit.** Lane A3 traced a transcript whose 429 burst is timestamped 02:20Z, absent from an all-file scan at 05:14Z and present at 05:19Z, right after the owner's resume prompt at 05:15Z: a session waiting at a limit flushes its records only when it next writes. A reader of Signal 1 learns **when a window resets**; it must never conclude "no hit" from absence (§5.2).
+**The record is not written when the limit is hit.** Lane A3 traced a transcript whose 429 burst is timestamped 02:20Z, absent from an all-file scan at 05:14Z and present at 05:19Z, right after the Overtoad's resume prompt at 05:15Z: a session waiting at a limit flushes its records only when it next writes. A reader of Signal 1 learns **when a window resets**; it must never conclude "no hit" from absence (§5.2).
 
 **Signal 2 — the status line JSON.** Claude Code passes a status-line script, on stdin, `rate_limits.five_hour.used_percentage`, `rate_limits.five_hour.resets_at`, `rate_limits.seven_day.used_percentage`, `rate_limits.seven_day.resets_at` ("from 0 to 100, and `resets_at`, the Unix epoch seconds when the window resets"), which "appears only for claude.ai Pro and Max subscribers, or behind a Claude apps gateway …, and only after the first API response in the session"; Claude Code "drops a window once its `resets_at` time passes", re-runs the script on a documented trigger list and an optional `refreshInterval` timer (1 s minimum), and warns that "the event-driven triggers can go quiet when the main session is idle" (https://code.claude.com/docs/en/statusline). Each session's payload is **that session's** snapshot, so the values differ across the 7–8 concurrent sessions and a timer re-render repeats a possibly old payload (Lane B1 #5; §5.1). This is the only documented *continuous* utilisation signal, and it exists only in interactive sessions. **No status line is configured on this host** (`~/.claude/settings.json` keys at 2026-09-23 05:3xZ: `agentPushNotifEnabled, autoMode, editorMode, effortLevel, model, skipDangerousModePermissionPrompt, tui`).
 
@@ -105,7 +105,7 @@ What the transcripts measured, per window, with the Chicago date each window was
 | **Weekly** Thu Sep 10 07:00pm | Sep 9 | 3 |
 | **Weekly** Wed Sep 23 10:00pm | Sep 22, 23:52Z–00:03Z | 9 in the slug, 17 across all slugs |
 
-Weekly reset times are not a fixed weekday or hour; the reset must always be read from the record. Two consequences drive the design: the windows are account-wide and shared with the seven or eight interactive sessions the owner runs concurrently (`/home/pcalnon/Development/python/Juniper/AGENTS.md:147`), so "met but not exceeded" cannot be satisfied by counting the dispatcher's own tokens; and the weekly window is the binding constraint roughly every second week (three hits in four weeks) — the owner alone reached the weekly wall in three of the last four weeks, which is what makes D-10 a real question.
+Weekly reset times are not a fixed weekday or hour; the reset must always be read from the record. Two consequences drive the design: the windows are account-wide and shared with the seven or eight interactive sessions the Overtoad runs concurrently (`/home/pcalnon/Development/python/Juniper/AGENTS.md:147`), so "met but not exceeded" cannot be satisfied by counting the dispatcher's own tokens; and the weekly window is the binding constraint roughly every second week (three hits in four weeks) — the Overtoad alone reached the weekly wall in three of the last four weeks, which is what makes D-10 a real question.
 
 ### 2.2 What Claude Code documents about each primitive at a limit
 
@@ -124,7 +124,7 @@ Re-derived by Lane A2 from the raw pages on 2026-09-23 (R1 Report A2 quotes the 
 | Cross-session messaging | a message to an idle session starts a new turn; a bypass-permissions receiver delivers a message only from a sender that is also bypassing, otherwise holds it; a `-p` receiver drops held messages after `dialogExpiry` (5 min); a script can post to a session's own socket (`CLAUDE_CODE_MESSAGING_SOCKET`) | `notify_when_idle` one-shot, 12 h | — | — | — |
 | Routines (cloud) | n/a | cloned repo only; cannot reach this host | — | — | — |
 
-Three documented facts constrain the executor path: `--bare` "never reads OAuth credentials" and is unusable on this subscription-authenticated host (SOAK unsets `ANTHROPIC_API_KEY` for the same reason, `util/soak_run_probe.py:345-354`); worktree isolation checks "apply to the repository you launched Claude Code from", so `isolation: worktree` can never hand an agent a worktree of another repo (Lane B1 #11); and every session the owner launches through `claudey` runs with `--dangerously-skip-permissions` (`scripts/claude_interactive.bash:84`, forced by `DEBUG` at `:17`), which is the permission mode this design assumes (§3.2, D-1).
+Three documented facts constrain the executor path: `--bare` "never reads OAuth credentials" and is unusable on this subscription-authenticated host (SOAK unsets `ANTHROPIC_API_KEY` for the same reason, `util/soak_run_probe.py:345-354`); worktree isolation checks "apply to the repository you launched Claude Code from", so `isolation: worktree` can never hand an agent a worktree of another repo (Lane B1 #11); and every session the Overtoad launches through `claudey` runs with `--dangerously-skip-permissions` (`scripts/claude_interactive.bash:84`, forced by `DEBUG` at `:17`), which is the permission mode this design assumes (§3.2, D-1).
 
 ### 2.3 What the harness has, and what it lacks
 
@@ -132,7 +132,7 @@ Re-derived by Lane A1 against `25b78f55`; the full inventory is INV I1.
 
 | Exists | Reused as |
 | --- | --- |
-| `/template-agent` skill: discovery (`util/prompt_discovery/cli.py`: JSON on stdout, `schema_version: 1`, `ttl_seconds: 900`, `head_sha`; `--target-repo`, `--subject`) → template selection (`prompts/agent_templates/manifest.yaml`, 10 templates: execution 4, analysis 2, planning 2, review 1, generic 1; placeholders `{{NAME}}` / `{{!NAME: hint}}` / `{{?NAME: hint}}`) → fill → `Agent(prompt-validator)` → "max 3 rounds" → `prompts/generated/…`, terminal states `EMIT_CLEAN`, `EMIT_WITH_CAVEATS`, `ESCALATE_TO_PAUL` (`.claude/skills/template-agent/SKILL.md:59-74`; `disable-model-invocation: true` at `:8`) | the prompt-writer stage (§6.3) follows `SKILL.md`'s steps by reference; because the skill is deliberately user-only, invoking its procedure from an unattended agent is an owner decision (D-11) |
+| `/template-agent` skill: discovery (`util/prompt_discovery/cli.py`: JSON on stdout, `schema_version: 1`, `ttl_seconds: 900`, `head_sha`; `--target-repo`, `--subject`) → template selection (`prompts/agent_templates/manifest.yaml`, 10 templates: execution 4, analysis 2, planning 2, review 1, generic 1; placeholders `{{NAME}}` / `{{!NAME: hint}}` / `{{?NAME: hint}}`) → fill → `Agent(prompt-validator)` → "max 3 rounds" → `prompts/generated/…`, terminal states `EMIT_CLEAN`, `EMIT_WITH_CAVEATS`, `ESCALATE_TO_PAUL` (`.claude/skills/template-agent/SKILL.md:59-74`; `disable-model-invocation: true` at `:8`) | the prompt-writer stage (§6.3) follows `SKILL.md`'s steps by reference; because the skill is deliberately user-only, invoking its procedure from an unattended agent is an Overtoad decision (D-11) |
 | `prompt-validator` with the pinned verdict schema `tests/fixtures/prompt_validator/verdict.schema.json` (`overall ∈ {PASS, FAIL}`; hard gates R2.0, R3.4 at `prompt-validator.md:83`, `RUBRIC.md:20`) | the validate stage, unchanged |
 | `task-executor` (`isolation: worktree` at frontmatter line 5; opens a PR, never merges; `Agent` in tools, "may nest") | the execute stage's *body*; §7.1 explains why the dispatcher uses a copy without `isolation` |
 | `planner`, `auditor`, `mock-seam-auditor` | analysis-class tasks |
@@ -140,7 +140,7 @@ Re-derived by Lane A1 against `25b78f55`; the full inventory is INV I1.
 | `util/soak_run_probe.py`: `claude -p <task> --output-format stream-json --verbose --session-id <uuid>` (`:772-775`), a run directory with `task.txt`, `meta.json`, `stream.jsonl`, `status.json`, pidfile; exit **3 = refused by design**, distinct from 2 (misuse) so `SuccessExitStatus=3` in `util/systemd/juniper-soak-probe.service:114` never reads a typo as success; `util/systemd/juniper-soak-probe.timer` (`OnCalendar=*-*-* 03,09,15,21:23:00`), units present but not installed | the cycle child's invocation shape, run directory, exit-code contract and timer unit (§3.1, §8.5) |
 | CON procedure; `reports/<date>_round-NN-consensus/` precedent (rounds 37, 38, 39) | §6.4 and §12 |
 | `util/open_signed_pr.py` (`createCommitOnBranch` at `:68`; `expectedHeadOid` pinned to the resolved *remote* base at `:49-50`, `:83-84`, `:146`; `find_open_pr(owner, repo, branch)` at `:175`, called at `:251` — the DUP-GUARD is keyed on the **branch name**; refuses an existing branch at `:276`; whole-file `--add`) | the only signing route for an unattended executor (§6.5); §6.5 and §7.4 add two modes it lacks |
-| `util/wait_for_checks.py` (`--json`; exit 0 also for `pr_closed`), `util/safe_merge.py` | owner-side merge path; the dispatcher reads `gh pr view --json state,mergedAt` |
+| `util/wait_for_checks.py` (`--json`; exit 0 also for `pr_closed`), `util/safe_merge.py` | Overtoad-side merge path; the dispatcher reads `gh pr view --json state,mergedAt` |
 | Defect register close protocol (`**FIXED (<pr>)**`, register `:57`; `register_open_set.py:22`; three `tests/test_register_*.py` in CI) and its lesson at `:51-52` | the ledger keeps status resident, not in the handoff chain (§4) |
 
 | Absent (grep-verified) | Added by |
@@ -163,9 +163,9 @@ Claude Code's own worktrees: `.claude/worktrees/<name>` on branch `worktree-<nam
 
 ### 2.5 How design paths carry status today
 
-627 tracked markdown files under `notes/` (Lane A1, `find notes -name '*.md'`); the naming convention is ratified but ungated. **The header Status is not a controlled vocabulary**: 153 distinct leading tokens over 366 docs that carry a Status in their first 30 lines (261 do not); 42 of those headers use `**Status:**` (colon inside the bold) and 3 plain `Status:`, which a `**Status**:`-only regex misses (Lane B2). Lane B1 applied v2's class rules to 629 notes: 20 headers whose leading token is an ACTIVE-class word were classified terminal by a later word in the line — among them V3 itself ("DESIGN, revision 2. Revision 1 was REJECTED …") and "Analysis — owner decisions required, nothing implemented" — so a terminal keyword *anywhere* in the line is not a usable transition signal (§4.3). There is no `Superseded-by` field anywhere; supersession is a banner in the older doc or a `**Supersedes…**:` header line in the newer one (18 such lines, 3 in the exact spelling). Owner decisions are per-document tables whose rulings are appended with the chosen and rejected options (defect register §2.4, `:325-326`); decision ids are local to each document (every arc has a D-1). The live state of an arc sits in its handoff chain (210 handoffs). Edits are effectively append-only: the Sequence Safety docs screen (`juniper-ci-tools/juniper_ci_tools/docs_additions_check.py`) fails a PR that deletes a heading unless the same hunk adds one, or deletes ≥5 consecutive lines with no adjacent addition, absent an `Allow-Docs-Rewrite: <path>` trailer.
+627 tracked markdown files under `notes/` (Lane A1, `find notes -name '*.md'`); the naming convention is ratified but ungated. **The header Status is not a controlled vocabulary**: 153 distinct leading tokens over 366 docs that carry a Status in their first 30 lines (261 do not); 42 of those headers use `**Status:**` (colon inside the bold) and 3 plain `Status:`, which a `**Status**:`-only regex misses (Lane B2). Lane B1 applied v2's class rules to 629 notes: 20 headers whose leading token is an ACTIVE-class word were classified terminal by a later word in the line — among them V3 itself ("DESIGN, revision 2. Revision 1 was REJECTED …") and "Analysis — Overtoad decisions required, nothing implemented" — so a terminal keyword *anywhere* in the line is not a usable transition signal (§4.3). There is no `Superseded-by` field anywhere; supersession is a banner in the older doc or a `**Supersedes…**:` header line in the newer one (18 such lines, 3 in the exact spelling). The Overtoad decisions are per-document tables whose rulings are appended with the chosen and rejected options (defect register §2.4, `:325-326`); decision ids are local to each document (every arc has a D-1). The live state of an arc sits in its handoff chain (210 handoffs). Edits are effectively append-only: the Sequence Safety docs screen (`juniper-ci-tools/juniper_ci_tools/docs_additions_check.py`) fails a PR that deletes a heading unless the same hunk adds one, or deletes ≥5 consecutive lines with no adjacent addition, absent an `Allow-Docs-Rewrite: <path>` trailer.
 
-Design consequence: the goal ledger holds an **explicit, owner-owned class** per path; the document's prose is read only for two unambiguous transition signals (§4.3).
+Design consequence: the goal ledger holds an **explicit, Overtoad-owned class** per path; the document's prose is read only for two unambiguous transition signals (§4.3).
 
 ---
 
@@ -174,7 +174,7 @@ Design consequence: the goal ledger holds an **explicit, owner-owned class** per
 ### 3.1 The shape (v3)
 
 ```text
- owner (interactive sessions, bypass mode)                              GitHub
+ Overtoad (interactive sessions, bypass mode)                              GitHub
    │ rules decisions; merges PRs                                          ▲ PRs (API-signed commits)
    ▼                                                                      │
  systemd --user timer  util/systemd/juniper-dispatch.timer (every 10 min; zero tokens when idle)
@@ -187,15 +187,15 @@ Design consequence: the goal ledger holds an **explicit, owner-owned class** per
                       in the juniper-ml MAIN checkout, run dir under ~/.claude/juniper-dispatch/cycles/<stamp>/  (§6.1)
                       └─ the saved workflow runs the per-task pipeline: prompt → validate → execute → verify → maintain
         6. apply      cycle_report from the child's result → ledger, manifest, decisions, cycle record (§6.9, §9)
-        7. notify     owner: cycle record appended on the docs branch + cross-session message to live sessions (§9.2)
- heartbeat (interactive, only outside the owner's hours): keeps the odometer fresh at ~one turn per 45 min (§5.1)
+        7. notify     Overtoad: cycle record appended on the docs branch + cross-session message to live sessions (§9.2)
+ heartbeat (interactive, only outside the Overtoad's hours): keeps the odometer fresh at ~one turn per 45 min (§5.1)
 ```
 
 Six components, each a single-PR roadmap step (§11): **goal ledger** (§4), **usage odometer and calibration** (§5), **cycle workflow** (§6), **worktree manifest + reaper** (§7), **cadence controller** (§8), **decision routing** (§9). One rule governs the split: *everything that can be decided by code is decided by code, and agents are spent only on judgement*. In v3 the controller is entirely code and the only model-bearing process is the cycle child, which exists only while a cycle runs.
 
 ### 3.2 Why the controller is a timer and the cycle is a `-p` child running the saved workflow
 
-v2 made the controller an interactive `/loop` session because it is the only surface where a running workflow *pauses* at a usage limit. Lane B1 refuted that choice on the design's own criteria (R1 Report B1 §3, Appendix E rows 9, 10, 16, 17): the pause is bounded (two waits per run, none for the weekly wall, none at all in three of the six surfaces), so §8 already forbids relying on it; every idle tick of an interactive dispatcher sends its full context (≥25 K tokens of `AGENTS.md` + parent `Juniper/AGENTS.md` + user `CLAUDE.md` before the first tool), which at the illustrative `k` of §8.3 costs as much per day as the loop dispatches; a self-paced loop must be re-armed after every resume; permission prompts stall the run unless the session bypasses them; the synchronised auto-continue of 8 sessions at a reset re-hits the wall; and the runtime's replay re-runs every agent started after a failed one. The timer surface has none of these and loses only the pause. What it keeps is the owner's stated primitive: the cycle child invokes the **saved dynamic workflow** by name, which is documented for `-p` ("Workflows are available in … non-interactive mode with `claude -p`"; the `Workflow(<name>)` allow rule "approves one saved workflow by name"; a `-p` process "stays open until that work completes").
+v2 made the controller an interactive `/loop` session because it is the only surface where a running workflow *pauses* at a usage limit. Lane B1 refuted that choice on the design's own criteria (R1 Report B1 §3, Appendix E rows 9, 10, 16, 17): the pause is bounded (two waits per run, none for the weekly wall, none at all in three of the six surfaces), so §8 already forbids relying on it; every idle tick of an interactive dispatcher sends its full context (≥25 K tokens of `AGENTS.md` + parent `Juniper/AGENTS.md` + user `CLAUDE.md` before the first tool), which at the illustrative `k` of §8.3 costs as much per day as the loop dispatches; a self-paced loop must be re-armed after every resume; permission prompts stall the run unless the session bypasses them; the synchronised auto-continue of 8 sessions at a reset re-hits the wall; and the runtime's replay re-runs every agent started after a failed one. The timer surface has none of these and loses only the pause. What it keeps is the Overtoad's stated primitive: the cycle child invokes the **saved dynamic workflow** by name, which is documented for `-p` ("Workflows are available in … non-interactive mode with `claude -p`"; the `Workflow(<name>)` allow rule "approves one saved workflow by name"; a `-p` process "stays open until that work completes").
 
 | Criterion | v2: interactive `/loop` dispatcher | v3: timer → `-p` child running `/juniper-cycle` |
 | --- | --- | --- |
@@ -206,8 +206,8 @@ v2 made the controller an interactive `/loop` session because it is the only sur
 | Worktrees | `isolation: worktree` = juniper-ml only; agents' cwd fixed | code-created ecosystem worktree per task in the task's repo, absolute paths in every brief; no isolation checks in the child (it launches from the main checkout, edits nothing there) |
 | Replay / idempotence | the runtime replays failed-and-later agents inside the session | each cycle is a fresh run; idempotence comes from deterministic branch names and DUP-GUARD (§6.5) |
 | Handoff | needed after N ticks (context growth) | none: the controller has no context; each child starts fresh |
-| Owner visibility | `/workflows` live view | the run directory (`stream.jsonl`, `status.json`) and the cycle record; no live view |
-| Odometer | refreshed by the dispatcher's own turns | needs an interactive heartbeat when no owner session is live (§5.1) |
+| The Overtoad visibility | `/workflows` live view | the run directory (`stream.jsonl`, `status.json`) and the cycle record; no live view |
+| Odometer | refreshed by the dispatcher's own turns | needs an interactive heartbeat when no Overtoad session is live (§5.1) |
 | Precedent in repo | none | SOAK (`util/soak_run_probe.py`, timer unit, exit-code contract) |
 
 **D-1** presents both; the recommendation is v3's. The one property the timer cannot supply on its own — an odometer refreshed while every human session sleeps — is the heartbeat's job and costs about one small turn per 45 minutes (§5.1).
@@ -234,7 +234,7 @@ paths:
   - id: DP-CASCOR-001                     # DP-<REPO token of the doc's filename>-<NNN>; never reused; split → -001a/-001b
     doc: notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md
     repo: juniper-cascor                  # the repo the tasks' worktrees are created in (§7.1)
-    class: ACTIVE                         # ACTIVE | BLOCKED | COMPLETE | SUPERSEDED — owner-owned (§4.3)
+    class: ACTIVE                         # ACTIVE | BLOCKED | COMPLETE | SUPERSEDED — Overtoad-owned (§4.3)
     header_status: "ROADMAP — phases, steps, dependencies, concurrency and guardrails for cascor#573"
                                           # the doc's Status line verbatim (this one is list-form `- **Status**:`)
     superseded_by: null
@@ -252,7 +252,7 @@ paths:
         blocked_on: null
         prompt: generate                  # generate | prompts/generated/<file>.md
         state: READY                      # READY | RUNNING | PROMPT_VALIDATED | PR_OPEN | VERIFY_PENDING | LANDED | BLOCKED | PROPOSED | ABANDONED
-        retries: 0                        # refutation returns; at 2 the task becomes BLOCKED on an owner review (Lane B2 row 6)
+        retries: 0                        # refutation returns; at 2 the task becomes BLOCKED on an Overtoad review (Lane B2 row 6)
         pr: null
         worktree: null                    # manifest id (§7)
         last_cycle: null
@@ -277,25 +277,25 @@ The ledger holds no prose; `header_status` is a verbatim copy that the drift che
 
 ### 4.2 Seeding
 
-The initial goal set is the owner's pick from the arc table in INV I3 §3 (eleven arcs, each with its main document and latest handoff). Pilot recommendation (D-9): the two entries above — the logging roadmap's P0.4 as a planning-class task whose deliverable is a validated prompt, and one register row as an analysis-class task — so the first cycles exercise every stage without opening code PRs. Perf lane, backup migration and container registry are excluded because each is owner-gated on host actions.
+The initial goal set is the Overtoad's pick from the arc table in INV I3 §3 (eleven arcs, each with its main document and latest handoff). Pilot recommendation (D-9): the two entries above — the logging roadmap's P0.4 as a planning-class task whose deliverable is a validated prompt, and one register row as an analysis-class task — so the first cycles exercise every stage without opening code PRs. Perf lane, backup migration and container registry are excluded because each is Overtoad-gated on host actions.
 
 ### 4.3 Reconciliation (R4): how the goal set updates
 
-`util/dispatch/design_path_ledger.py reconcile` runs at the start of every tick and, as `reconcile --check`, in CI (`tests/test_design_path_ledger.py`). It changes `class` in exactly three cases; everything else is a **drift flag** surfaced to the owner and never a guess (v2's "terminal keyword anywhere in the line" rule is withdrawn: Lane B1 #3 measured it retiring 20 live documents):
+`util/dispatch/design_path_ledger.py reconcile` runs at the start of every tick and, as `reconcile --check`, in CI (`tests/test_design_path_ledger.py`). It changes `class` in exactly three cases; everything else is a **drift flag** surfaced to the Overtoad and never a guess (v2's "terminal keyword anywhere in the line" rule is withdrawn: Lane B1 #3 measured it retiring 20 live documents):
 
 1. **Supersession, from the successor.** A tracked note whose header carries `^\*\*Supersedes\b[^*]*\*\*\s*:` (qualified spellings count) naming a ledger `doc` marks that entry `SUPERSEDED` with `superseded_by` set and its `READY` tasks `ABANDONED`; a parenthetical qualifier such as `(on ratification)` is recorded as *conditional* and does not flip the class.
 2. **The design's own append form.** A header Status line that **ends** with ` — (COMPLETE|SUPERSEDED) \d{4}-\d{2}-\d{2}$` — the only form the doc-maintainer writes (§4.4) and one no existing header uses — flips the class accordingly. Any other terminal-looking word, anywhere, is a drift flag.
-3. **Task exhaustion with no proposals.** `apply_report.py` marks a path `COMPLETE` only when its `tasks[]` has no `READY`/`RUNNING`/`VERIFY_PENDING`/`PR_OPEN`/`BLOCKED` entry **and no `PROPOSED` entry** (Lane B1 #2); new tasks enter as `PROPOSED` from the doc-maintainer's `tasks_proposed[]` (§6.5) and the owner promotes them to `READY`.
+3. **Task exhaustion with no proposals.** `apply_report.py` marks a path `COMPLETE` only when its `tasks[]` has no `READY`/`RUNNING`/`VERIFY_PENDING`/`PR_OPEN`/`BLOCKED` entry **and no `PROPOSED` entry** (Lane B1 #2); new tasks enter as `PROPOSED` from the doc-maintainer's `tasks_proposed[]` (§6.5) and the Overtoad promotes them to `READY`.
 
-`--check` exits 1 when `header_status` differs from the current header of any entry without a recorded drift flag, and it checks that every `doc`, `handoff` and `prompt` path exists (the archive test `tests/test_thread_handoff_archive.py` scans only top-level `notes/*.md`, never `conf/`). The `handoff` field is maintained by the owner or by a `PROPOSED` update from the maintainer; the reconciler does not guess which newer handoff belongs to which path (Lane B2 P1-7). A `COMPLETE` or `SUPERSEDED` path is never selected and its worktrees become removal candidates (§7.3). The reconciler never edits a design document.
+`--check` exits 1 when `header_status` differs from the current header of any entry without a recorded drift flag, and it checks that every `doc`, `handoff` and `prompt` path exists (the archive test `tests/test_thread_handoff_archive.py` scans only top-level `notes/*.md`, never `conf/`). The `handoff` field is maintained by the Overtoad or by a `PROPOSED` update from the maintainer; the reconciler does not guess which newer handoff belongs to which path (Lane B2 P1-7). A `COMPLETE` or `SUPERSEDED` path is never selected and its worktrees become removal candidates (§7.3). The reconciler never edits a design document.
 
 ### 4.4 Keeping documents current (R3)
 
-The doc-maintainer appends, under the task's `source_section`, one line per state change in the register's proven shape, `**<STATE> (<pr or cycle id>)** — <one sentence>`, on the path's `docs_branch` (§6.5), and bumps `Last Updated`. It never rewrites or deletes (the docs screen would fail the PR, and append-only is what keeps rulings distinguishable from drift). When a path transitions class, the maintainer appends ` — COMPLETE <date>` (or `SUPERSEDED`) to the existing Status line: that suffix is §4.3 case 2's only trigger. What the document does **not** show, by design: tasks dropped, deferred or `ABANDONED` are tracked in the ledger only; the document on `main` lags the docs branch by one owner merge.
+The doc-maintainer appends, under the task's `source_section`, one line per state change in the register's proven shape, `**<STATE> (<pr or cycle id>)** — <one sentence>`, on the path's `docs_branch` (§6.5), and bumps `Last Updated`. It never rewrites or deletes (the docs screen would fail the PR, and append-only is what keeps rulings distinguishable from drift). When a path transitions class, the maintainer appends ` — COMPLETE <date>` (or `SUPERSEDED`) to the existing Status line: that suffix is §4.3 case 2's only trigger. What the document does **not** show, by design: tasks dropped, deferred or `ABANDONED` are tracked in the ledger only; the document on `main` lags the docs branch by one Overtoad merge.
 
 ### 4.5 Status map
 
-`conf/design_path_status_map.yaml` classifies a *new* entry the owner seeds without a class, and labels drift flags; it never changes a class. Rules are ordered regexes over the whole line, first match wins, precedence SUPERSEDED → BLOCKED → COMPLETE → ACTIVE:
+`conf/design_path_status_map.yaml` classifies a *new* entry the Overtoad seeds without a class, and labels drift flags; it never changes a class. Rules are ordered regexes over the whole line, first match wins, precedence SUPERSEDED → BLOCKED → COMPLETE → ACTIVE:
 
 ```yaml
 version: 1
@@ -306,7 +306,7 @@ rules:
   - {class: ACTIVE,     pattern: '\bACTIVE\b|\bDESIGN OF RECORD\b|\bPLAN OF RECORD\b|\bDESIGN\b|\bPLAN\b|\bROADMAP\b|\bRATIFIED\b|\bADOPTED\b|\bACCEPTED\b|\bAPPROVED\b|\bIN PROGRESS\b|\bVALIDATED\b|\bREADY TO EXECUTE\b|\bOPEN\b|\bLIVING REGISTER\b|\bANALYSIS\b|\bFINDINGS\b|\bAUDIT\b|\bEVIDENCE\b|\bRESULTS\b'}
 ```
 
-A line no rule matches is `UNMAPPED`; `tests/test_design_path_ledger.py` reports the UNMAPPED and dual-match shares over the Aug/Sep notes (Lane A3 measured 52–74 % unmapped under v1's table; the residue is why the class is owner-owned).
+A line no rule matches is `UNMAPPED`; `tests/test_design_path_ledger.py` reports the UNMAPPED and dual-match shares over the Aug/Sep notes (Lane A3 measured 52–74 % unmapped under v1's table; the residue is why the class is Overtoad-owned).
 
 ---
 
@@ -325,7 +325,7 @@ A line no rule matches is `UNMAPPED`; `tests/test_design_path_ledger.py` reports
 
 Merge rule per window (Lane B1 #5, Lane B2 P0-3): among session files whose `resets_at` equals the newest `resets_at` seen, take the **maximum** `used_percentage` (usage is monotone within a window; a stale re-render can only be lower); a session file whose window has passed is ignored; `seen_at` is the time that session's *values* last changed (`payload_hash` differs), not the time its script ran. Three further rules, each from a documented behaviour: (a) when `rate_limits` is absent (before the first API response) the script writes nothing about the windows and prints `limits n/a`; (b) when a window is absent because its `resets_at` passed, the session file keeps the last value with `reset_seen: true`; (c) `context_window.used_percentage` goes to the session file only, never to the shared file (it is that session's context). Lane A3 built and timed the single-writer version on this host: `jq` 1.8.1, 42–124 ms per render.
 
-**Heartbeat.** The percentages change only on API responses, and only interactive sessions render the status line (§2.2). During the owner's hours their sessions refresh the file; outside them, `util/dispatch/heartbeat.bash` starts `claude` in `~/.claude/juniper-dispatch/heartbeat/` (an empty directory: no project `AGENTS.md`, so the turn carries only the user `CLAUDE.md`) with `/loop 45m` and a one-word prompt, so one small turn per 45 minutes keeps the odometer fresh inside the cache TTL. This is the one interactive process the design needs, and its cost is the price of Signal 2.
+**Heartbeat.** The percentages change only on API responses, and only interactive sessions render the status line (§2.2). During the Overtoad's hours their sessions refresh the file; outside them, `util/dispatch/heartbeat.bash` starts `claude` in `~/.claude/juniper-dispatch/heartbeat/` (an empty directory: no project `AGENTS.md`, so the turn carries only the user `CLAUDE.md`) with `/loop 45m` and a one-word prompt, so one small turn per 45 minutes keeps the odometer fresh inside the cache TTL. This is the one interactive process the design needs, and its cost is the price of Signal 2.
 
 ### 5.2 Reader and fallback
 
@@ -333,7 +333,7 @@ Merge rule per window (Lane B1 #5, Lane B2 P0-3): among session files whose `res
 
 ### 5.3 Calibration: tokens per percent, measured actively, class-resolved
 
-`k_w`, the tokens the account may spend per percentage point of window `w`, has no default (Lane A3 F3) and cannot be identified from passive account-wide sums: cache reads draw usage "at the cached token rate", the owner's all-day sessions serve "91 % of input tokens from cache" while the dispatcher's agents are fresh-context and thinking-heavy, and usage from other devices or claude.ai is inside `Δused_percentage` but not in any local transcript (Lane B1 #8). The design therefore calibrates **actively**: in a quiet `dispatch_window` (§8.1) with no owner session live, `util/dispatch/calibrate.py` records `used_percentage` before, runs one known S-class agent (`claude -p`, fixed prompt, fixed effort), reads its transcript's `message.usage` totals by class (uncached input, cache creation, cache read, output), records `used_percentage` after from the heartbeat's next render, and stores the burst; a handful of bursts across both windows fits the four per-class weights `ω_c` and `k_w` by least squares with a residual `σ_w`. Passive samples (Δu between consecutive heartbeat renders, tokens from all local transcripts since the previous render, byte cursors kept in `calibration.json`) are recorded too, but only to monitor **drift** of the external term, never fitted into `k`; a sample containing a reset is discarded. `calibrate.py` runs at most once per 5 minutes, never per render. **The controller refuses to dispatch until `calibration.json` holds ≥5 bursts per window with `σ_w / k_w ≤ 0.35`** (`calibration: none | provisional | ok`); a refusal is a logged outcome (exit 3), a guessed `k` is not.
+`k_w`, the tokens the account may spend per percentage point of window `w`, has no default (Lane A3 F3) and cannot be identified from passive account-wide sums: cache reads draw usage "at the cached token rate", the Overtoad's all-day sessions serve "91 % of input tokens from cache" while the dispatcher's agents are fresh-context and thinking-heavy, and usage from other devices or claude.ai is inside `Δused_percentage` but not in any local transcript (Lane B1 #8). The design therefore calibrates **actively**: in a quiet `dispatch_window` (§8.1) with no Overtoad session live, `util/dispatch/calibrate.py` records `used_percentage` before, runs one known S-class agent (`claude -p`, fixed prompt, fixed effort), reads its transcript's `message.usage` totals by class (uncached input, cache creation, cache read, output), records `used_percentage` after from the heartbeat's next render, and stores the burst; a handful of bursts across both windows fits the four per-class weights `ω_c` and `k_w` by least squares with a residual `σ_w`. Passive samples (Δu between consecutive heartbeat renders, tokens from all local transcripts since the previous render, byte cursors kept in `calibration.json`) are recorded too, but only to monitor **drift** of the external term, never fitted into `k`; a sample containing a reset is discarded. `calibrate.py` runs at most once per 5 minutes, never per render. **The controller refuses to dispatch until `calibration.json` holds ≥5 bursts per window with `σ_w / k_w ≤ 0.35`** (`calibration: none | provisional | ok`); a refusal is a logged outcome (exit 3), a guessed `k` is not.
 
 ---
 
@@ -384,7 +384,7 @@ const RULES = 'Rules: never merge; never delete a worktree; never put a CI-skip 
   'if a shell command is refused by an isolation check, write it to a script under your evidence directory and run that.'
 const promptWriter  = t => `Follow .claude/skills/template-agent/SKILL.md steps 1-5 by reference for task ${t.id} (${t.title}), working in the worktree ${t.worktree_path} (repo ${t.repo}, HEAD ${t.base_sha}). Discovery bundle already at ${t.bundle_path} (run by the tick; re-run cli.py yourself only if it is older than 900 s). Write the prompt to ${t.prompt_path}. If the procedure would ESCALATE_TO_PAUL, return escalate=true with the reason instead of asking. ${RULES}`
 const validatorBrief= (p, t) => `Validate ${t.prompt_path} against prompts/agent_templates/RUBRIC.md with bundle ${p.bundle_path}; target worktree ${t.worktree_path}, expected head ${t.base_sha}. Return only the verdict JSON; write a copy to ${t.evidence_dir}/verdict.json.`
-const executorBrief = (v, t) => `Execute the validated prompt ${t.prompt_path} for task ${t.id} in the worktree ${t.worktree_path} on branch ${t.branch} (base ${t.base_sha}). Land the change with util/open_signed_pr.py --branch ${t.branch} --expect-base ${t.base_sha} (reuse the branch and PR if they exist). Before returning, write your EXEC_OUT JSON to ${t.evidence_dir}/exec_out.json. If you hit a genuine owner decision, commit WIP locally with -c commit.gpgsign=false, do not push, and return it in decisions_raised with the question and the options. ${RULES}`
+const executorBrief = (v, t) => `Execute the validated prompt ${t.prompt_path} for task ${t.id} in the worktree ${t.worktree_path} on branch ${t.branch} (base ${t.base_sha}). Land the change with util/open_signed_pr.py --branch ${t.branch} --expect-base ${t.base_sha} (reuse the branch and PR if they exist). Before returning, write your EXEC_OUT JSON to ${t.evidence_dir}/exec_out.json. If you hit a genuine Overtoad decision, commit WIP locally with -c commit.gpgsign=false, do not push, and return it in decisions_raised with the question and the options. ${RULES}`
 const refuteBrief   = (x, t, lens) => `Lens ${lens}: try to refute the result of task ${t.id} (PR ${x.pr}, head ${x.head_sha}) from the worktree ${t.worktree_path} and the PR diff, never from any report. Default to refuted=true when uncertain. ${lens === 're-probe' ? 'Re-derive every path, symbol, number and test claim.' : lens === 'conclusion' ? 'Grant the premises; attack whether the deliverable meets the acceptance criteria and whether the tests could catch a wrong implementation.' : 'List what the task asked for that the PR omits, and what the PR contains that the task did not ask for.'}`
 const maintainBrief = (r, t) => `In the worktree ${t.docs_worktree_path} (branch ${t.docs_branch}, the path's long-lived docs branch), append to ${t.doc} under ${t.source_section} one state line **<STATE> (<pr>)** — <sentence> for task ${t.id} (${r.launched} refuters launched, ${r.votes.filter(v => !v.refuted).length} not refuted${r.decision ? '; decision raised: ' + r.decision.id : ''}). ${r.decision ? 'Also append the decision row (id, question, why it cannot be defaulted, options) to the document\'s decision table.' : ''} If the document\'s next steps changed, list them in tasks_proposed; never rewrite or delete existing text; bump Last Updated; land with util/open_signed_pr.py --branch ${t.docs_branch} --append (reuse the open docs PR). ${RULES}`
 
@@ -420,17 +420,17 @@ The discovery bundle is produced **by the tick** (`cli.py` is pure code) for eve
 
 ### 6.4 Verify stage: consensus inside the loop
 
-Refuters per task come from `lensesFor(t)`: execution-class tasks get three lenses (**re-probe**: re-derive every claim from the worktree and the PR diff; **conclusion**: grant the premises and attack the deliverable against its acceptance criteria; **amputation**: what was asked and omitted, what was delivered and not asked), docs/analysis/planning tasks get one (CON §3 sizing). Rule: `PR_OPEN` requires every launched refuter to have returned and at least ⌈launched/2⌉+… concretely 2 of 3, or 1 of 1, `refuted: false`. A refuter that died (null) does **not** count as a refutation (v2's rule turned a usage-limit death into a correctness verdict, Lane B1 #17); the task goes to `VERIFY_PENDING` with its `pr`/`head_sha` kept and re-enters at Verify next cycle. A refuted task returns to `READY` with `retries += 1`, the PR left open and labelled `needs-rework`; at `retries == 2` the task becomes `BLOCKED` on an owner review (Lane B2 row 6). Refuters run with CLAUDE.md loaded (they need the hazards) and without the executor's report until they have re-derived the facts.
+Refuters per task come from `lensesFor(t)`: execution-class tasks get three lenses (**re-probe**: re-derive every claim from the worktree and the PR diff; **conclusion**: grant the premises and attack the deliverable against its acceptance criteria; **amputation**: what was asked and omitted, what was delivered and not asked), docs/analysis/planning tasks get one (CON §3 sizing). Rule: `PR_OPEN` requires every launched refuter to have returned and at least ⌈launched/2⌉+… concretely 2 of 3, or 1 of 1, `refuted: false`. A refuter that died (null) does **not** count as a refutation (v2's rule turned a usage-limit death into a correctness verdict, Lane B1 #17); the task goes to `VERIFY_PENDING` with its `pr`/`head_sha` kept and re-enters at Verify next cycle. A refuted task returns to `READY` with `retries += 1`, the PR left open and labelled `needs-rework`; at `retries == 2` the task becomes `BLOCKED` on an Overtoad review (Lane B2 row 6). Refuters run with CLAUDE.md loaded (they need the hazards) and without the executor's report until they have re-derived the facts.
 
 ### 6.5 Execute and Maintain stages
 
 **Execute** runs `dispatch-executor` — a copy of `task-executor` without `isolation: worktree` (the frontmatter field would create a juniper-ml worktree regardless of the task's repo), pinned opus/max like every agent — in the code-created worktree named in the brief, on branch `dispatch/<task-id>` (deterministic, so a replayed or re-queued executor finds the branch and the DUP-GUARD refuses a duplicate PR instead of opening one). It lands the change through `util/open_signed_pr.py` with two modes this design adds to that script (P4, with tests): `--expect-base <sha>` refuses when the remote base has moved **and** GitHub's compare shows any `--add` path changed between `base_sha` and the current base (the v2 pre-check compared two local refs that API pushes never advance, Lane B1 #12), and `--reuse` returns the existing PR when the branch and an open PR already exist. After the upload the executor resets its local branch to the remote (`git fetch origin dispatch/<task-id> && git reset --hard FETCH_HEAD`) so the worktree carries the API-minted commits and V3's B1 sees nothing unpushed. It writes `exec_out.json` to the evidence directory **before** returning, so a structured-output failure after the PR exists loses nothing (Lane B1 #18). A raised decision ends execution with a local WIP commit (`-c commit.gpgsign=false`, never pushed).
 
-**Maintain** runs in the path's **docs worktree**, a second code-created worktree on the long-lived branch `dispatch/docs/<DP-id>` that every cycle appends to (v2 opened a fresh whole-file PR per cycle from `origin/main`, so each cycle's append conflicted with the previous unmerged one, Lane B1 #4). The open docs PR for that branch stays open across cycles; the owner merges it when they choose; `open_signed_pr.py --append` (P3) commits on the existing branch with `expectedHeadOid` = that branch's head. It appends the state line, the decision row when one was raised, and `tasks_proposed[]` for the ledger; the same PR carries the cycle record (§6.9) and the ledger diff, which is the one-PR-per-work-unit answer for a cycle's documentation (`standing_rules.yaml:14`).
+**Maintain** runs in the path's **docs worktree**, a second code-created worktree on the long-lived branch `dispatch/docs/<DP-id>` that every cycle appends to (v2 opened a fresh whole-file PR per cycle from `origin/main`, so each cycle's append conflicted with the previous unmerged one, Lane B1 #4). The open docs PR for that branch stays open across cycles; the Overtoad merges it when they choose; `open_signed_pr.py --append` (P3) commits on the existing branch with `expectedHeadOid` = that branch's head. It appends the state line, the decision row when one was raised, and `tasks_proposed[]` for the ledger; the same PR carries the cycle record (§6.9) and the ledger diff, which is the one-PR-per-work-unit answer for a cycle's documentation (`standing_rules.yaml:14`).
 
-### 6.6 Merge readiness (owner-side)
+### 6.6 Merge readiness (Overtoad-side)
 
-The workflow never merges. When a tick finds a task's PR `OPEN` with checks green (`util/wait_for_checks.py --json`, reading `status`), it runs `predict_merge.py --pr N --json` and lists the PR to the owner with its verdict. Merging remains the owner's explicit act (`standing_rules.yaml:6`).
+The workflow never merges. When a tick finds a task's PR `OPEN` with checks green (`util/wait_for_checks.py --json`, reading `status`), it runs `predict_merge.py --pr N --json` and lists the PR to the Overtoad with its verdict. Merging remains the Overtoad's explicit act (`standing_rules.yaml:6`).
 
 ### 6.7 Isolated headless children, when a task must be unprimed
 
@@ -476,11 +476,11 @@ A task reaches `LANDED` when the PR the manifest names reports `state == "MERGED
 
 ### 7.3 Removal orders (R7), the reaper, and the V3 amendment
 
-The workflow **specifies**; a script **executes**, never inside an agent. `apply_report.py` writes `removal_order` into the manifest row and the tick runs `util/dispatch/reap_worktrees.py --manifest … --dry-run`, which implements V3's gates as written — G1 not locked; G2 clean by the `--no-optional-locks … -uall` command, empty **and** exit 0; G3 ignored files judged by type, any `*.env` / SOPS-covered file refuses at any size; G4 HEAD and every per-worktree ref reachable, no rebase/merge/bisect in progress; G5 no nested repository; B1 nothing unpushed; B4 no armed auto-merge; V3 §6.5's admin-directory dump; V3 §7's 7-day recent-mtime veto — **with one amendment for B3**: "content landed" is tested by patch identity, `git diff origin/main...<branch> | git patch-id --stable` equal to the merged PR's squash commit's patch-id (`gh pr view --json mergeCommit`, then `git show <sha> | git patch-id --stable`), because the three-dot diff of a squash-merged branch is never empty (§2.4). The amendment is proposed to V3's owner as D-12; until V3 as amended is ratified, `--execute` does not exist and the owner message reports "N worktrees removable under V3-as-amended (dry-run passed)". Removal, when it exists, is `git worktree remove` without `--force`, `branch -d`, then `git worktree prune` (`docs/REFERENCE.md:2297`), reusing `util/worktree_cleanup.bash`'s stop-and-print sequence (`:427-431`).
+The workflow **specifies**; a script **executes**, never inside an agent. `apply_report.py` writes `removal_order` into the manifest row and the tick runs `util/dispatch/reap_worktrees.py --manifest … --dry-run`, which implements V3's gates as written — G1 not locked; G2 clean by the `--no-optional-locks … -uall` command, empty **and** exit 0; G3 ignored files judged by type, any `*.env` / SOPS-covered file refuses at any size; G4 HEAD and every per-worktree ref reachable, no rebase/merge/bisect in progress; G5 no nested repository; B1 nothing unpushed; B4 no armed auto-merge; V3 §6.5's admin-directory dump; V3 §7's 7-day recent-mtime veto — **with one amendment for B3**: "content landed" is tested by patch identity, `git diff origin/main...<branch> | git patch-id --stable` equal to the merged PR's squash commit's patch-id (`gh pr view --json mergeCommit`, then `git show <sha> | git patch-id --stable`), because the three-dot diff of a squash-merged branch is never empty (§2.4). The amendment is proposed to V3's owner as D-12; until V3 as amended is ratified, `--execute` does not exist and the Overtoad message reports "N worktrees removable under V3-as-amended (dry-run passed)". Removal, when it exists, is `git worktree remove` without `--force`, `branch -d`, then `git worktree prune` (`docs/REFERENCE.md:2297`), reusing `util/worktree_cleanup.bash`'s stop-and-print sequence (`:427-431`).
 
 ### 7.4 Hazards the manifest and the executor path close
 
-A worktree behind `origin/main` is a clobber source for a whole-file API upload; `--expect-base` (§6.5) makes the check remote-side, so a local `origin/main` that API pushes never advanced cannot pass it. A decision-blocked task's unpushed WIP commit fails B1 by design and keeps its tree alive until the owner rules. A crashed executor leaves a `CREATED` row with a path the code knows, distinguishable from a task dropped at Validate (whose row stays `PLANNED`).
+A worktree behind `origin/main` is a clobber source for a whole-file API upload; `--expect-base` (§6.5) makes the check remote-side, so a local `origin/main` that API pushes never advanced cannot pass it. A decision-blocked task's unpushed WIP commit fails B1 by design and keeps its tree alive until the Overtoad rules. A crashed executor leaves a `CREATED` row with a path the code knows, distinguishable from a task dropped at Validate (whose row stays `PLANNED`).
 
 ---
 
@@ -492,9 +492,9 @@ A worktree behind `origin/main` is a clobber source for a whole-file API upload;
 | --- | --- | --- |
 | `u_w`, `r_w` | odometer `used_percentage` and seconds to `resets_at` for window `w ∈ {five_hour, seven_day}` | fresh within `max_age_s` = 600 |
 | `k_w`, `σ_w` | tokens per percent and residual SE, from active calibration (§5.3); no default | `calibration: ok` required |
-| `reserve_w`, `slack_w` | headroom left for the owner's sessions; estimation slack | 10 / 15; 5 / 5 |
+| `reserve_w`, `slack_w` | headroom left for the Overtoad's sessions; estimation slack | 10 / 15; 5 / 5 |
 | `wall_w = 100 − reserve_w`; `target_w = wall_w − slack_w` | the plan never crosses the wall; the allowance drips toward the target at reset | 90 / 85; 85 / 80 |
-| `H_w = max(0, target_w − u_w) × k_w` | headroom in tokens, recomputed every tick from the account-wide `u_w` (already net of everyone's consumption, so it is never debited for the owner's usage) | — |
+| `H_w = max(0, target_w − u_w) × k_w` | headroom in tokens, recomputed every tick from the account-wide `u_w` (already net of everyone's consumption, so it is never debited for the Overtoad's usage) | — |
 | `d_w = H_w / r_w` | drip toward even pacing | — |
 | `A_w` | allowance bucket: `A_w := min(H_w, max(0, A_w(prev) + d_w × Δt))`, `Δt` = seconds since the previous tick; on a reset, `A_w := 0` then accrue only from `resets_at_old` | persisted in `controller_state.json` |
 | debit | `A_w −= tokens the cycle actually spent`, from the child's transcripts (Signal 3, class-weighted with the calibrated `ω_c`), never from `Δu × k` (which is account-wide, Lane B1 #6) | — |
@@ -513,7 +513,7 @@ A worktree behind `origin/main` is a clobber source for a whole-file API upload;
 3. **Accrue.** Update `A_w`; `A = min_w A_w`; if `u_w ≥ wall_w` for any window, `A := 0`.
 4. **Weekly wall.** If `u_seven_day ≥ target_seven_day` and `r_seven_day > 24 h` → exit 3 (`weekly_wall`); the timer keeps firing, and the first tick after `resets_at + 300 + jitter(≤600 s)` proceeds (the jitter avoids the synchronised re-hit of every auto-continuing session at the reset, Lane B1 #10).
 5. **Select.** Walk `READY` and `VERIFY_PENDING` tasks in order (path `priority`, `depends_on` satisfied, oldest first), adding task `i` while `Σc ≤ A` and `max(D)` ≤ `r_binding − margin` (20 %; concurrent tasks overlap in time, so the guard uses the longest, not the sum); list the rest as `deferred: allowance | duration`. If nothing fits → exit 3 (`allowance`), with the estimated wait `(c_min − A) / d_binding` written to `status.json`.
-6. **Dispatch.** Create worktrees, write `plan.json` (with `standby[]`), launch the child (§6.1), wait, apply the report, debit `A_w` by the measured spend, record a calibration drift sample, write the cycle record and owner message, exit 0 (or 1 when the child produced no usable result).
+6. **Dispatch.** Create worktrees, write `plan.json` (with `standby[]`), launch the child (§6.1), wait, apply the report, debit `A_w` by the measured spend, record a calibration drift sample, write the cycle record and Overtoad message, exit 0 (or 1 when the child produced no usable result).
 7. **Hit inside the cycle.** `system/api_retry` with `error: rate_limit` or a result naming a reset: parse `resetsAt`, set `A_w := 0` for that window, mark dropped tasks `READY`/`VERIFY_PENDING` with `not_before: resetsAt`, and `--resume` the child's session once after the reset if its turn was unfinished (documented for `-p`).
 
 ### 8.3 Size classes, durations, and a worked example
@@ -524,7 +524,7 @@ A worktree behind `origin/main` is a clobber source for a whole-file API upload;
 | M | 900 K | 45 min | + code executor + three refuters; this session's inventory agents cost 337–358 K and ran 15–16 min each; the round-1 validators cost 225–305 K over ≈20–35 min each |
 | L | 2.0 M | 120 min | + sub-agent fan-out inside the executor, or a document-of-record deliverable with round 2 |
 
-**No execution-class run has been measured**; P8 replaces both columns with measured medians, and `c_M` can be estimated before then from the 558 existing `task-executor`-type transcripts (Lane B1 #19). Worked example, **illustrative only because `k` is unmeasured**: `u_5h = 23.5 %` with 4 h to reset, `u_7d = 41.2 %` with 3 days to reset, `k = 100,000` tokens/percent. `H_5h = (85 − 23.5) × 100 K = 6.15 M` over 14,400 s, `d_5h ≈ 427` tok/s; `H_7d = (80 − 41.2) × 100 K = 3.88 M` over 259,200 s, `d_7d ≈ 15` tok/s. The weekly bucket affords an S task (300 K with `m` = 1.2) after ≈5.6 h and an M task (1.08 M) after ≈20 h; the 5-hour bucket affords the same M in 42 min. Under that `k` the weekly window binds and throughput is roughly one M task per day: **the dispatcher's value would lie in using idle hours the owner does not, not in adding capacity**. A `k` ten times larger changes that tenfold; a smaller one argues for stopping at P0. That is D-10's question.
+**No execution-class run has been measured**; P8 replaces both columns with measured medians, and `c_M` can be estimated before then from the 558 existing `task-executor`-type transcripts (Lane B1 #19). Worked example, **illustrative only because `k` is unmeasured**: `u_5h = 23.5 %` with 4 h to reset, `u_7d = 41.2 %` with 3 days to reset, `k = 100,000` tokens/percent. `H_5h = (85 − 23.5) × 100 K = 6.15 M` over 14,400 s, `d_5h ≈ 427` tok/s; `H_7d = (80 − 41.2) × 100 K = 3.88 M` over 259,200 s, `d_7d ≈ 15` tok/s. The weekly bucket affords an S task (300 K with `m` = 1.2) after ≈5.6 h and an M task (1.08 M) after ≈20 h; the 5-hour bucket affords the same M in 42 min. Under that `k` the weekly window binds and throughput is roughly one M task per day: **the dispatcher's value would lie in using idle hours the Overtoad does not, not in adding capacity**. A `k` ten times larger changes that tenfold; a smaller one argues for stopping at P0. That is D-10's question.
 
 ### 8.4 Bounding the run, not only the plan
 
@@ -534,7 +534,7 @@ The cap `H_w` bounds the plan; nothing in a workflow bounds the run's *rate* exc
 
 - Never dispatch on a stale odometer, an uncalibrated `k`, outside a window, into a reset, or with a cycle in flight.
 - Never rely on a pause: none exists in the `-p` child; a hit fails the affected agents and the tick re-queues them.
-- The weekly wall ends dispatch until `resets_at + 300 + jitter`; the owner is told once.
+- The weekly wall ends dispatch until `resets_at + 300 + jitter`; the Overtoad is told once.
 - Exit codes follow SOAK: `0` ran, `1` no usable result, `2` misuse, `3` refused by design (`SuccessExitStatus=3` in the unit, so a refusal never fires `OnFailure=`); the timer unit is `util/systemd/juniper-dispatch.{service,timer}` with `OnCalendar=*:0/10`.
 
 ---
@@ -545,9 +545,9 @@ The cap `H_w` bounds the plan; nothing in a workflow bounds the run's *rate* exc
 
 A decision is a row in the **design document's own decision table**, appended on the docs branch by the doc-maintainer from the `decision` the pipeline carries (§6.2), with a qualified id `<DP-id>/<doc-local id>` echoed into the ledger's `decisions_open[]` and every blocked task's `blocked_on`. Rulings are appended later with chosen and rejected options (register §2.4). There is no separate inbox file.
 
-### 9.2 What the owner receives
+### 9.2 What the Overtoad receives
 
-Each cycle's owner message lists: new decisions with the document and section that holds each, the task ids blocked on each, drift flags and `PROPOSED` tasks from the reconciler, PRs ready with their `predict_merge` verdict, worktrees that passed the V3-as-amended dry run, the allowance state per window, and the next possible dispatch time. It is delivered three ways (D-6): appended to the cycle record on the docs branch; posted as a cross-session message to every live owner session that is also in bypass mode (documented delivery rule; a script can post to a session's socket); and, when enabled, as a push notification. Nothing is asked mid-run. A ruling is given by editing the document's Rulings subsection or by telling any owner session, which appends it; the next tick's reconciler clears `blocked_on`.
+Each cycle's Overtoad message lists: new decisions with the document and section that holds each, the task ids blocked on each, drift flags and `PROPOSED` tasks from the reconciler, PRs ready with their `predict_merge` verdict, worktrees that passed the V3-as-amended dry run, the allowance state per window, and the next possible dispatch time. It is delivered three ways (D-6): appended to the cycle record on the docs branch; posted as a cross-session message to every live Overtoad session that is also in bypass mode (documented delivery rule; a script can post to a session's socket); and, when enabled, as a push notification. Nothing is asked mid-run. A ruling is given by editing the document's Rulings subsection or by telling any Overtoad session, which appends it; the next tick's reconciler clears `blocked_on`.
 
 ### 9.3 Reassignment
 
@@ -555,22 +555,22 @@ The freed cost of a task that raises a decision is spent in the same cycle on a 
 
 ---
 
-## 10. Owner decisions
+## 10. The Overtoad decisions
 
 | ID | Decision | Recommendation | Why it cannot be defaulted |
 | --- | --- | --- | --- |
-| D-1 | Controller surface: (a) interactive `/loop` dispatcher running the workflow in-session (v2), or (b) a systemd timer running a pure-code tick that launches a `claude -p` child per cycle, the child running the saved workflow (v3) | **(b)**, with `--dangerously-skip-permissions` as every `claudey` session already runs, teams off, `ultracode` off | (a) alone offers the pause, which is bounded and which §8.5 forbids relying on; (b) costs nothing while idle, needs no re-arm or handoff, and creates worktrees in the right repo; the owner loses the `/workflows` live view |
+| D-1 | Controller surface: (a) interactive `/loop` dispatcher running the workflow in-session (v2), or (b) a systemd timer running a pure-code tick that launches a `claude -p` child per cycle, the child running the saved workflow (v3) | **(b)**, with `--dangerously-skip-permissions` as every `claudey` session already runs, teams off, `ultracode` off | (a) alone offers the pause, which is bounded and which §8.5 forbids relying on; (b) costs nothing while idle, needs no re-arm or handoff, and creates worktrees in the right repo; the Overtoad loses the `/workflows` live view |
 | D-2 | Worktree location for what the design creates: ecosystem `Juniper/worktrees/` with the naming convention (as specified) — and an explicit acknowledgement that Claude Code's native `isolation: worktree`, which `task-executor` uses today, puts trees inside the repo | **As specified**; no waiver needed for the dispatcher | the ecosystem rule "Never create worktrees inside the repo directory" |
-| D-3 | Ledger shape: `conf/design_paths.yaml` with an owner-owned class, `conf/design_path_status_map.yaml`, `conf/dispatch.yaml` | **As specified** | it fixes where "the goal set" is and who may write it |
+| D-3 | Ledger shape: `conf/design_paths.yaml` with an Overtoad-owned class, `conf/design_path_status_map.yaml`, `conf/dispatch.yaml` | **As specified** | it fixes where "the goal set" is and who may write it |
 | D-4 | Worktree removal: dry-run only until V3 as amended is ratified | **Dry-run only now** | the repo has no safe remover; V3's own B1/B3 cannot pass on squash merges |
-| D-5 | `reserve` (10 / 15), `slack` (5 / 5), `dispatch_windows`, and ratifying that "met" means the binding window reaching `target_w` while the other is under-used | **Defaults; windows = the owner's sleeping hours at first** | the windows are shared with 7–8 interactive sessions |
+| D-5 | `reserve` (10 / 15), `slack` (5 / 5), `dispatch_windows`, and ratifying that "met" means the binding window reaching `target_w` while the other is under-used | **Defaults; windows = the Overtoad's sleeping hours at first** | the windows are shared with 7–8 interactive sessions |
 | D-6 | Decision delivery: cycle record + cross-session message to live bypass sessions + push | **All three** | reach vs noise |
 | D-7 | (retired: no handoff relaunch exists in v3) | — | — |
 | D-8 | Model/effort tiering: call-time `effort` overrides only vs relaxing the six frontmatter pins for a dispatcher agent set | **Call-time only for the pilot** | six CI tests; the saving is unmeasured |
 | D-9 | Pilot goal set | **The two §4.1 entries**, docs/analysis/planning tasks only | the first cycles must exercise every stage without code PRs |
-| D-10 | Go / no-go after measurement: inputs are the active-calibration `k_7d`, the end-of-window `u_7d` the owner's own sessions reach over ≥3 weekly windows, and `c_M` from existing executor transcripts; the resulting M-tasks-per-day figure decides whether P4–P8 are worth building | **Measure first; decide with the numbers**; below roughly one M task per day, stop at P0–P3 | the design's value hinges on unmeasured quantities and the owner alone hit the weekly wall in 3 of 4 weeks |
+| D-10 | Go / no-go after measurement: inputs are the active-calibration `k_7d`, the end-of-window `u_7d` the Overtoad's own sessions reach over ≥3 weekly windows, and `c_M` from existing executor transcripts; the resulting M-tasks-per-day figure decides whether P4–P8 are worth building | **Measure first; decide with the numbers**; below roughly one M task per day, stop at P0–P3 | the design's value hinges on unmeasured quantities and the Overtoad alone hit the weekly wall in 3 of 4 weeks |
 | D-11 | Invoking the `/template-agent` procedure from an unattended agent, although the skill is `disable-model-invocation: true` by SUITE's ratified design | **Allow for the dispatcher only**, by reference to `SKILL.md` steps, with the validator gate unchanged | a ratified suite decision is being widened |
-| D-12 | Amend V3's B3 to the patch-id landed test (§7.3) and record the squash-merge finding in V3 | **Amend** | V3 is unratified and its author is the owner |
+| D-12 | Amend V3's B3 to the patch-id landed test (§7.3) and record the squash-merge finding in V3 | **Amend** | V3 is unratified and its author is the Overtoad |
 
 Rulings will be recorded in §10.1 (to be added) with the chosen and rejected options; the sections above are not rewritten.
 
@@ -589,7 +589,7 @@ Every step wires its tests into `ci.yml`'s regression job (`tests/test_ci_test_w
 | P4 | `.claude/agents/dispatch-executor.md`, the Execute stage, `open_signed_pr.py --expect-base` and `--reuse` with tests, the decision early-exit, `exec_out.json`; `tests/test_worktree_manifest.py`; exercised on a juniper-ml sandbox task (a `util/ad-hoc/` change), not on the pilot paths | P3, D-10 | a task ends with a `CREATED` row, a PR on `dispatch/<task-id>`, a re-queued executor finds the same PR, and a raised decision exits with WIP preserved and a decision row appended |
 | P5 | Verify stage (`lensesFor`, the "every launched refuter returned" rule, `VERIFY_PENDING`, retries) | P4 | a fixture report with a fabricated path is refuted; a dead refuter yields `VERIFY_PENDING`, not `needs-rework` |
 | P6 | `reap_worktrees.py --dry-run` implementing V3 G1–G5, B1, B4, V3 §6.5 dump, V3 §7 veto, the manifest gate and the patch-id landed test; `tests/test_reap_worktrees.py` with a tmp repo including a squash-merged branch and a 0-byte `.env` | P4, D-4, D-12 | every gate has a failing and a passing fixture; the squash-merged branch passes the landed test and fails V3's original B3; `--execute` absent |
-| P7 | `util/systemd/juniper-dispatch.{service,timer}` (`SuccessExitStatus=3`), the standby child, the owner message and cross-session delivery, `heartbeat` scheduling | P2–P5, D-1, D-6 | a dry week on the pilot set with a run directory per cycle and zero tokens on idle ticks |
+| P7 | `util/systemd/juniper-dispatch.{service,timer}` (`SuccessExitStatus=3`), the standby child, the Overtoad message and cross-session delivery, `heartbeat` scheduling | P2–P5, D-1, D-6 | a dry week on the pilot set with a run directory per cycle and zero tokens on idle ticks |
 | P8 | measured medians replace the class table; `predict_merge` readiness screen; retention cap for `~/.claude/juniper-dispatch/` | P7 | per-class medians and the drift monitor reported after 20 cycles |
 | P9 | `reap_worktrees.py --execute` | V3 as amended ratified, D-4 | not before |
 
@@ -619,13 +619,13 @@ Minimum record (CON §7), to be completed after round 2: instruments and adequac
 
 - **`k` may be small.** If the weekly headroom yields less than about one M task per day, the dispatcher adds little beyond the status line; D-10 decides that from measurement.
 - **Active calibration is itself spend**, and `ω_c` may drift with model or cache changes; the passive drift monitor exists to say so, not to correct it.
-- **The heartbeat is a single point of failure for the odometer** outside the owner's hours; a stale odometer stops dispatch (fail-closed), which is the intended failure.
+- **The heartbeat is a single point of failure for the odometer** outside the Overtoad's hours; a stale odometer stops dispatch (fail-closed), which is the intended failure.
 - **`used_percentage` is account-wide**: any target the dispatcher meets can starve interactive work; `dispatch_windows` is the mitigation.
 - **A `-p` child has no pause**: every hit costs the affected agents' work; the duration guard and the allowance exist so hits are rare, and idempotent branches make the re-queue cheap.
 - **A workflow cannot ask**: every escalation becomes a decision row and a blocked task; the pilot measures the escalation rate.
 - **Signed commits via whole-file API uploads**: `--expect-base` is the only defence and depends on GitHub's compare being consulted before every upload.
 - **V3 is unratified and one of its gates is wrong for squash merges**; nothing is removed until D-12 and ratification, so the worktree count (168 at last measurement) grows by two per execution-class task (task + docs) per cycle beyond the pilot.
-- **The Status vocabulary is uncontrolled**: the map will leave residue; the class is owner-owned at the cost of reviewing drift flags.
+- **The Status vocabulary is uncontrolled**: the map will leave residue; the class is Overtoad-owned at the cost of reviewing drift flags.
 - **This account hit the weekly wall on 2026-09-22 and four 5-hour walls across Sep 21–22**: any pilot before Sep 23, 10pm Chicago runs into a wall the design predicts and cannot cross.
 
 ---
@@ -730,7 +730,7 @@ SAMPLE message content: [{"type": "text", "text": "You've hit your session limit
 | 3 | **BLOCKER** terminal-keyword-anywhere retires live paths, V3 included (B1 #3; B2 P1-2) | §4.3 case 2 restricted to the design's own append form; §4.5 never changes a class |
 | 4 | stacked whole-file docs PRs conflict (B1 #4) | long-lived `dispatch/docs/<DP-id>` branch and `--append` (§6.5) |
 | 5 | **BLOCKER** shared odometer file with last-writer-wins and hash-refreshed staleness (B1 #5; B2 P0-3, P0-4) | per-session files, max-within-window merge, `context_window` per session (§5.1) |
-| 6 | bucket double-charged the owner's usage, went negative, undefined across a reset (B1 #6) | own-token debit, floor 0, reset semantics (§8.1) |
+| 6 | bucket double-charged the Overtoad's usage, went negative, undefined across a reset (B1 #6) | own-token debit, floor 0, reset semantics (§8.1) |
 | 7 | nothing bounds the run's rate (B1 #7) | concurrency cap 4, `budget` ceiling, executor re-reads the odometer (§8.4) |
 | 8 | passive calibration unidentifiable on a shared account (B1 #8; B2 P0-5) | active class-resolved bursts; passive samples monitor drift only (§5.3) |
 | 9 | idle ticks cost as much as the loop dispatches (B1 #9) | timer + pure-code tick: zero idle tokens (§3.2) |

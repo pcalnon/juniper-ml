@@ -100,9 +100,9 @@ in full**. The methodological lesson survives — three measurement agents, two 
 a reconciler all hunted for those files and missed them — but a design may not cite a recovered
 near-miss as proof of irreversibility.
 
-### 0.3 The reversal that matters for the owner's proposal
+### 0.3 The reversal that matters for the Overtoad's proposal
 
-Revision 1 said the owner's checks 4/5/7 were *"aimed at the wrong operation"*, because branches
+Revision 1 said the Overtoad's checks 4/5/7 were *"aimed at the wrong operation"*, because branches
 survive `git worktree remove`. True of bare git; **false of the operation this protocol governs.**
 
 `scripts/cleanup_session_worktrees.py` — which revision 1 nominated as V3's primary vehicle —
@@ -136,10 +136,10 @@ for the 21 never-locked `Juniper/worktrees/` trees.)*
 3. **`push origin --delete` destroys an armed auto-merge** and closes the PR (§6.4) — the strongest
    of the three, and invisible to every other check.
 
-So the owner's checks are still correctly aimed; the accurate charge is *"gated by a merge test that
+So the Overtoad's checks are still correctly aimed; the accurate charge is *"gated by a merge test that
 cannot see post-merge commits, then forced"*, not *"ungated"*.
 
-**The owner's instinct was better than revision 1 credited.** Checks 4/5/7 were aimed at the
+**The Overtoad's instinct was better than revision 1 credited.** Checks 4/5/7 were aimed at the
 composite operation the tooling performs. §6 reinstates them as gates on that operation, and
 **reinstates check 6 as well** (§6.4) — revision 1's argument for dropping it was self-refuting.
 
@@ -704,7 +704,7 @@ worktrees (§7.1).
 
 ## 6. Branch and remote deletion — the actually-ungated destructive operation
 
-**This is where the owner's checks 4/5/7 belong, and it is now the highest-value part of the
+**This is where the Overtoad's checks 4/5/7 belong, and it is now the highest-value part of the
 document** — because §0.3 establishes that the sanctioned vehicle force-deletes the local branch
 **and the remote ref** with no gate whatsoever, while revision 1 spent four gates on the removal half
 that git already partly protects.
@@ -858,7 +858,7 @@ roughly 118 − 38 ≈ **80 trees**, and the 11 locked are a subset of the recen
 **Revision 1's sole stated cost was a category error.** It claimed *"the real documented cost is the
 memory budget — a diverging worktree `AGENTS.md` causes both copies to load."* `conf/memory_budget.json`
 contains **zero** occurrences of "worktree"; it caps character counts on always-loaded files and counts
-no worktrees. The diverging-`AGENTS.md` effect is real but **per-live-session**, borne by the owner,
+no worktrees. The diverging-`AGENTS.md` effect is real but **per-live-session**, borne by the Overtoad,
 and not a cost of the stale pile.
 
 **The one real ongoing cost is backup volume** (§5), and its fix is three Duplicati filters.
@@ -1028,7 +1028,7 @@ deletion.
 
 ---
 
-## 10. Open questions for the owner
+## 10. Open questions for the Overtoad
 
 | # | question | status |
 |---|---|---|
@@ -1038,7 +1038,7 @@ deletion.
 | **Q4** | Accept §5's conclusion that no backup change is needed beyond the three Duplicati filters? | **OPEN** |
 | **Q5** | Given **~7 days** of real restore depth for a short-lived file (§0.1.1), should `reports/soak/runs/` be committed rather than gitignored? | **OPEN — and the question that actually matters.** Committing the evidence closes the exposure at source and makes G3 nearly moot. §0.1.1 strengthens this considerably over revision 2's first draft |
 | **Q8** | Should a restore drill be run against a worktree-resident path? | **OPEN — NEW.** None has ever been run (§5); the 2026-08-25 drills predate the current fileset and targeted other paths |
-| **Q6** | Should a peer session ever sweep, or only the owner plus the mtime veto? | **OPEN.** §7.2 argues owner-plus-veto |
+| **Q6** | Should a peer session ever sweep, or only the Overtoad plus the mtime veto? | **OPEN.** §7.2 argues Overtoad-plus-veto |
 | **Q7** | Extend to the other 9 repos' 129 worktrees, or leave this juniper-ml-scoped? | **OPEN** (§1.3) |
 
 ---

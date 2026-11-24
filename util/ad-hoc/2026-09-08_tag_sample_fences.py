@@ -2,7 +2,7 @@
 """2026-09-08_tag_sample_fences.py -- label a bare fence that holds a markdown SAMPLE.
 
 Project: juniper-ml
-Sub-Project: docs structure debt (owner decision: repair live notes/, ratify the rest)
+Sub-Project: docs structure debt (Overtoad decision: repair live notes/, ratify the rest)
 Application: ad-hoc repair (documentation integrity)
 Author: Paul Calnon
 License: MIT License

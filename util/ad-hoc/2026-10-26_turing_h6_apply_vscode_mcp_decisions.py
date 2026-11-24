@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-Apply the owner's H6 decisions to VS Code's user MCP configuration (turing bring-up task H6, the audit's §8).
+Apply the Overtoad's H6 decisions to VS Code's user MCP configuration (turing bring-up task H6, the audit's §8).
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-26
 Status: ad-hoc — one-off (H6's application on turing; --check re-runs on any synced host)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-25_JUNIPER-ML_TURING-H6-VSCODE-MCP-SERVERS-AUDIT.md (§8; SER-P1, HF-P1, H6-X3 to H6-X5);
          notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18.1, the 2026-10-25 ruling on H6);
          util/ad-hoc/2026-10-25_turing_h6_vscode_mcp_inventory.py (the independent, value-free verification)
 
-The owner's ruling: the changes cover every synced host, the agent makes them, and mcp.json and settings.json are
+The Overtoad's ruling: the changes cover every synced host, the agent makes them, and mcp.json and settings.json are
 backed up first with the token redacted. Settings Sync carries the user mcp.json (H6-X3) and both settings below (each
 is window-scoped with no ignoreSync in VS Code 1.108.2), so an edit made here reaches the other hosts once VS Code runs
 here with Settings Sync on, and each of them takes it at its own next sync.
@@ -472,7 +472,7 @@ def self_test() -> int:
 
 
 def main(argv: list | None = None) -> int:
-    ap = argparse.ArgumentParser(description="Apply the owner's H6 decisions to VS Code's user MCP configuration.")
+    ap = argparse.ArgumentParser(description="Apply the Overtoad's H6 decisions to VS Code's user MCP configuration.")
     group = ap.add_mutually_exclusive_group()
     group.add_argument("--apply", action="store_true", help="back up (redacted), then edit both files")
     group.add_argument("--check", action="store_true", help="verify every decision; exit 1 if one does not hold")

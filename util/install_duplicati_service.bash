@@ -199,7 +199,7 @@ if ! wrapper_accepts "${ENV_SRC}"; then
     echo "REFUSING: the wrapper refuses ${ENV_SRC} (see its lines above); it would exit 78 at the next start" >&2
     exit 2
 fi
-# The modes an existing env file may have. Which one is RIGHT is the owner's open decision O-12
+# The modes an existing env file may have. Which one is RIGHT is the Overtoad's open decision O-12
 # (the contract header, D's P1 item 2, A's O-12 row); this installer does NOT settle it, so it
 # accepts either documented form and nothing else (R5A DEFECT-2):
 #   root:duplicati 0640 -- what this installer creates, and what the design recommends;

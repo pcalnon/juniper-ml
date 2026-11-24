@@ -148,7 +148,7 @@ landed in its own `RUN_DIR/logs/`. The hazard H-7 described did not occur.
 
 | arm                                          | before                                  | now                                                   |
 |----------------------------------------------|-----------------------------------------|-------------------------------------------------------|
-| **F-P1-2**                                   | Owner decision, parked since 2026-08-07 | **CLOSED — premise false; no action taken or needed** |
+| **F-P1-2**                                   | The Overtoad decision, parked since 2026-08-07 | **CLOSED — premise false; no action taken or needed** |
 | **P1.6** interactive render                  | the only non-PASS arm of P1 smoke       | **PASS** (§2.4)                                       |
 | **P3 criterion 6** Grafana sub-arm           | "pending the F-P1-2 decision"           | **PASS** (§2.3, §2.4)                                 |
 | **P3 criterion 8** "both visible in Grafana" | "shares the F-P1-2 shadow"              | **PASS** — both services visible, run-scoped (§2.4)   |
@@ -165,7 +165,7 @@ succeed: it is configured for `:3000`, which the Domotz snap owns. It burns CPU 
 journal indefinitely. It is unrelated to Juniper — no Juniper component uses it, and the deploy
 stack's Grafana on `:3001` is unaffected.
 
-*Owner-directed remedy: repoint it to a free port* (`:3002` verified free). The reversible form is a
+*The Overtoad-directed remedy: repoint it to a free port* (`:3002` verified free). The reversible form is a
 systemd drop-in rather than editing the apt-managed `/etc/grafana/grafana.ini`, which a package
 upgrade may overwrite:
 
@@ -182,7 +182,7 @@ sudo systemctl daemon-reload && sudo systemctl restart grafana-server
 Requires sudo, so it is left for the operator; nothing in this program depends on it.
 
 > **Update (2026-08-17) — the port IS configurable at start time, proven three ways; and the drop-in
-> above is NOT the best form.** The owner asked (correctly) whether the port could be set at server
+> above is NOT the best form.** The Overtoad asked (correctly) whether the port could be set at server
 > start via command line, environment variable, or config file, rather than settling for a
 > hard-coded root-level fix. **All three are natively supported**, and two were demonstrated on this
 > host **without root**, by running the packaged binary as an unprivileged user against scratch dirs:

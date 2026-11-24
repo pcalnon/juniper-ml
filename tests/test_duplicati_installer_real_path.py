@@ -23,7 +23,7 @@ the host:
 * ``stat -c %U:%a`` (and ``%U:%G:%a``) answers for the scratch data folder, credential and env file only (their real owner
   is the test user), and is the real ``stat`` otherwise.
 
-Hermetic, including on the owner's host after the installer has really run there (R3C D-4's
+Hermetic, including on the Overtoad's host after the installer has really run there (R3C D-4's
 class): every path is under the scratch prefix, and nothing under ``/etc`` or ``/usr/local`` is
 read. The snapshot class runs the snapshot script on a scratch WAL-mode database it creates.
 """

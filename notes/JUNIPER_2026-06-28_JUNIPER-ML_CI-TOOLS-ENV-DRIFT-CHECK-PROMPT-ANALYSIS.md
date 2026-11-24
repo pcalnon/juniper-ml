@@ -41,9 +41,9 @@ This session was asked to **develop a validated, correct, effective prompt** (no
 
 ## 3. How the prompt was developed (work performed)
 
-1. **Owner scoping (two `AskUserQuestion` rounds).** The plan is multi-phase; the owner first chose the **entry point** (Canopy A1 — the env-floor guard, the plan's mandated canopy-first start). Grounding then discovered A1's canopy deliverable already exists (§5), so a second question confirmed the **rescope** to §10.1's shared tool.
+1. **The Overtoad scoping (two `AskUserQuestion` rounds).** The plan is multi-phase; the Overtoad first chose the **entry point** (Canopy A1 — the env-floor guard, the plan's mandated canopy-first start). Grounding then discovered A1's canopy deliverable already exists (§5), so a second question confirmed the **rescope** to §10.1's shared tool.
 2. **Grounding (two read-only `Explore` sub-agents + the discovery CLI).** Re-confirmed at current HEAD: the floor drift the guard targets, the crash sites, the mocked seams, the existing canopy floor test, the `juniper-ci-tools` packaging/console-script idiom, the CI gate, the publish flow, the canopy CI insertion point, and the consumer-pin guards.
-3. **Authoring.** Filled a copy of `task.md`, mapping the owner's intent to ordered directives + measurable acceptance criteria, injecting only grounded anchors.
+3. **Authoring.** Filled a copy of `task.md`, mapping the Overtoad's intent to ordered directives + measurable acceptance criteria, injecting only grounded anchors.
 4. **Validation (`prompt-validator` subagent).** Iter-1 FAIL → fix → iter-2 PASS (§2).
 5. **Emission.** Written to `prompts/generated/` under the convention `JUNIPER_<APP>_<SUBJECT>_<TYPE>_<DATE>_<HHMM>.md` (confirmed parseable by `util/generated_prompt_index.py`).
 
@@ -53,7 +53,7 @@ Agents employed — all via the Agent tool: `Explore` ×2 (grounding), `prompt-v
 
 ## 4. Scope evolution (the load-bearing discovery)
 
-The owner's chosen entry point — **Canopy A1, "a dependency-satisfaction check + canopy `test_env_satisfies_floors`"** — turned out **partly shipped**: `juniper-canopy/src/tests/unit/test_client_version_floors.py` already implements the floor check (reads installed versions via `importlib.metadata` — bypassing the conftest mocks — and compares against `pyproject.toml` floors parsed with `tomllib` + `packaging`; its docstring even cites the 2026-06-26 incident).
+The Overtoad's chosen entry point — **Canopy A1, "a dependency-satisfaction check + canopy `test_env_satisfies_floors`"** — turned out **partly shipped**: `juniper-canopy/src/tests/unit/test_client_version_floors.py` already implements the floor check (reads installed versions via `importlib.metadata` — bypassing the conftest mocks — and compares against `pyproject.toml` floors parsed with `tomllib` + `packaging`; its docstring even cites the 2026-06-26 incident).
 
 What is **genuinely missing** (plan §10.1's durable guard) and therefore what the prompt targets:
 
@@ -66,7 +66,7 @@ The prompt therefore directs **generalize, do not duplicate** (the canopy test s
 
 ## 5. The downstream task in one line
 
-Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-env-drift-check`** console script in `juniper-ci-tools` (plain wheels included; `--check-lock` validates `requirements.lock` vs floors), with its own unit tests (≥85% gate) and a `juniper-ml/tests/` dogfood test, landed as a **self-contained juniper-ml PR1**; then — after the owner publishes `juniper-ci-tools` — wire canopy to run it as a preflight (**PR2**). PR1 also widens juniper-ml's own three `<0.5.0` workflow pins alongside the `0.5.0` bump.
+Generalize canopy's proven client-floor-drift guard into a reusable **`juniper-env-drift-check`** console script in `juniper-ci-tools` (plain wheels included; `--check-lock` validates `requirements.lock` vs floors), with its own unit tests (≥85% gate) and a `juniper-ml/tests/` dogfood test, landed as a **self-contained juniper-ml PR1**; then — after the Overtoad publishes `juniper-ci-tools` — wire canopy to run it as a preflight (**PR2**). PR1 also widens juniper-ml's own three `<0.5.0` workflow pins alongside the `0.5.0` bump.
 
 ---
 

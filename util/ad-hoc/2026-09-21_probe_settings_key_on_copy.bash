@@ -23,7 +23,7 @@
 # Author:     Paul Calnon
 # Created:    2026-09-21
 # Status:     ad-hoc — migration
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:    notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md §8 P0
 set -euo pipefail
 # Default to the P0 step 1 DATA-FOLDER FREEZE, not the live folder: the step that introduces

@@ -1,22 +1,22 @@
-# Owner decision #7 — the trigger fired on 2026-09-07 and nothing has happened since
+# The Overtoad decision #7 — the trigger fired on 2026-09-07 and nothing has happened since
 
 **Project**: juniper-ml
 **Date**: 2026-09-11
 **Status**: DECISION BRIEF — assembles the evidence; decides nothing
-**For**: owner decision #7 of `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md:654`
+**For**: Overtoad decision #7 of `notes/JUNIPER_2026-08-18_JUNIPER-ML_SHARED-SESSION-MEMORY-PLAN.md:654`
 
 ---
 
 ## 1. Why this document exists
 
 `notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md` prescribes one action on
-a failed bet: **"Revisit owner decision #7. Never re-inline."** The verdict turned
+a failed bet: **"Revisit Overtoad decision #7. Never re-inline."** The verdict turned
 `BET-FAILING` on 2026-09-07, and `python3 util/soak_ledger.py status` has printed that
 instruction on every invocation since. Neither the plan nor the ledger has been touched.
 
 That is not neglect so much as friction: revisiting #7 requires assembling evidence from
 seven documents, three of which were corrected in the last four days. This brief does the
-assembly. **It rules nothing** — #7 is the owner's, and so are the eight decisions listed in
+assembly. **It rules nothing** — #7 is the Overtoad's, and so are the eight decisions listed in
 §7 of the 2026-09-09 handoff.
 
 ## 2. What decision #7 actually says
@@ -95,7 +95,7 @@ for which facts those are.
    hypothesis that a different carrier does better is never tested.
 2. **Probe A's skills.** Cost is not small: the registry is **frozen** (`conf/soak_probes.json`
    rule 1 — *"Add a new probe with a new id; never edit a run one"*), so this needs new probe
-   ids, i.e. the registry change that is owner decision §7.1 of the 09-09 handoff — **and** a
+   ids, i.e. the registry change that is Overtoad decision §7.1 of the 09-09 handoff — **and** a
    skills carrier to test against, which does not exist. It would also need a ruling on
    whether `--force` may run at all (§7.5), since the verdict is terminal.
 3. **Re-aim at the real finding.** The arc's own design document calls the predictor gap
@@ -105,7 +105,7 @@ for which facts those are.
 
 ## 6. What this brief does not do
 
-It does not rule #7, and it does not touch the seven other owner decisions in §6 of
+It does not rule #7, and it does not touch the seven other Overtoad decisions in §6 of
 `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_soak-arc-evidence-recovered-predictors-refuted.md`.
 It changes no code, runs no probe, and leaves `reports/soak/pointer_follow_soak.jsonl` and
 `conf/soak_probes.json` unmodified.

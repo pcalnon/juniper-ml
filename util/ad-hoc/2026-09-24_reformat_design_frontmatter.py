@@ -6,7 +6,7 @@ Sub-Project: backup infrastructure
 Author:      Paul Calnon
 Created:     2026-09-24
 Status:      ad-hoc -- document-of-record edit
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-09-23_pr2045_net_effect.py (proved this was #2045's ONLY net change)
 
 #2045 carried 669 files and, measured against main rather than against its stale merge-base, changed
@@ -40,7 +40,7 @@ both reported, and every finding is applied or recorded as dissent in §11. Verb
 `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`.
 **§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and
 merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s
-owner gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder). Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named
+Overtoad gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder). Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named
 in P1 step 4.
 **Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
 **Companions**:
@@ -57,7 +57,7 @@ NEW = """- **Project**: Juniper (workstation backup infrastructure, host `yamagu
   Verbatim reports:
   - `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`
   - `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`
-- **§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s owner gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder).
+- **§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s Overtoad gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder).
   - Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named in P1 step 4.
 - **Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
 - **Companions**:

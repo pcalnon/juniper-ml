@@ -7,7 +7,7 @@ Sub-Project: backup infrastructure
 Author:      Paul Calnon
 Created:     2026-10-08
 Status:      ad-hoc -- validation instrument (round-3 fold-in, lane C2; R3C D-5)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-10-04_backup-phase-b-round3/r3c-harness/t6_mutations.py (the round-3 mutants
              M01-M13 this re-runs; its anchors are reused verbatim for the BEFORE tree)
              tests/test_backup_rekey_real_path.py, tests/test_duplicati_wrapper_contract.py

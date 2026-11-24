@@ -17,9 +17,9 @@ G-SIGN, G-SEC, G-TOOLS, G-ENV, G-NET and G-MEM of §9.3). The suite pins:
 - expected.yaml's validation, which exits 2 before anything runs. That includes R-G1, the X2 class: a
   VM that cannot fit the machine (vm.mem_gib plus G-MEM's reserve over hw.memsize, or more vCPUs than
   cores), checked on a synthetic file and on the committed turing file;
-- C2's block-all form (owner ruling 2026-10-25): G-SEC's firewall condition passes only when the firewall
+- C2's block-all form (Overtoad ruling 2026-10-25): G-SEC's firewall condition passes only when the firewall
   is on (state 1 or 2) and the separate ``socketfilterfw --getblockall`` capture reports block all, in the
-  sentence turing's getter printed once the owner applied C2 (2026-10-26). Turing's state-2
+  sentence turing's getter printed once the Overtoad applied C2 (2026-10-26). Turing's state-2
   ``--getglobalstate`` line contains that same sentence and is not the block-all capture: paired with
   block all disabled, the gate fails and names only ``--setblockall``. A disabled firewall fails even
   when ``--getblockall`` prints the ON sentence. ``--setblockall``'s confirmation and the unknown and
@@ -91,7 +91,7 @@ RESERVED = "192.168.50.222"
 
 # Captures from turing, 2026-10-20.
 TURING_PREFLIGHT = """\
-headless signing preflight: non-credential checks only (card and PIN checks are owner-run; see --help)
+headless signing preflight: non-credential checks only (card and PIN checks are Overtoad-run; see --help)
 repo       /Users/pcalnon/Development/python/Juniper/juniper-ml
 gnupghome  /Users/pcalnon/.gnupg (from gpgconf --list-dirs homedir)
 
@@ -122,7 +122,7 @@ JuniperPython        *   /usr/local/miniforge3/envs/JuniperPython
 TURING_KUBECTL = json.dumps({"clientVersion": {"major": "1", "minor": "22", "gitVersion": "v1.22.4", "platform": "darwin/amd64"}})
 TURING_EN7 = f"en7: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500\n\tether {MAC}\n\tmedia: autoselect (none)\n\tstatus: inactive\n"
 # socketfilterfw: turing's captures, the firewall off with block all disabled (2026-10-25) and on, blocking all
-# incoming connections (2026-10-26, once the owner applied C2); and the binary's "set to block all" sentence, which
+# incoming connections (2026-10-26, once the Overtoad applied C2); and the binary's "set to block all" sentence, which
 # sits beside "Block all DISABLED!" in its strings as --setblockall's confirmation.
 TURING_FIREWALL = "Firewall is disabled. (State = 0)\n"
 TURING_BLOCKALL = "Firewall has block all state set to disabled.\n"
@@ -448,7 +448,7 @@ class FailureTest(CheckTestCase):
         code, out, _ = self.main()
         self.assertEqual(code, 0)
         self.assertIn("FAIL  G-SEC  1 of 6 fail: firewall", out)
-        self.assertIn("  FAIL  firewall           Firewall is disabled. (State = 0); Firewall has block all state set to disabled.; Firewall stealth mode is on -- fix: task C2 (owner)", out)
+        self.assertIn("  FAIL  firewall           Firewall is disabled. (State = 0); Firewall has block all state set to disabled.; Firewall stealth mode is on -- fix: task C2 (Overtoad)", out)
         self.assertIn("readiness: 6 of 7 gates pass (G-ALIAS, G-SIGN, G-TOOLS, G-ENV, G-NET, G-MEM); 1 fail: G-SEC", out)
 
     def test_the_kubectl_fix_puts_task_d3_before_d4(self) -> None:
@@ -459,7 +459,7 @@ class FailureTest(CheckTestCase):
                 _, result = self.result()
                 self.assertEqual(
                     self.condition(result, "G-TOOLS", "kubectl")["remediation"],
-                    "task D3 (owner) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl 1.36.x, which needs re-planning under the D6 ruling (erratum E-D6)",
+                    "task D3 (Overtoad) first: upgrade Docker Desktop, which installs its own /usr/local/bin/kubectl (decision D7); then task D4: kubectl 1.36.x, which needs re-planning under the D6 ruling (erratum E-D6)",
                 )
 
     def test_the_memory_figure_names_every_count_it_adds(self) -> None:
@@ -475,7 +475,7 @@ class FailureTest(CheckTestCase):
 
 
 class FirewallTest(CheckTestCase):
-    """G-SEC's firewall condition under C2's block-all form (owner ruling 2026-10-25)."""
+    """G-SEC's firewall condition under C2's block-all form (Overtoad ruling 2026-10-25)."""
 
     def firewall(self, globalstate: str, blockall=None, stealth: str | None = None) -> dict:
         set_path(self.probe, "security.firewall", cap(globalstate))

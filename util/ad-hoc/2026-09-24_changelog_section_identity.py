@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#437 (X8), whose CHANGELOG entry merged under the RELEASED ``## [0.16.0]``
          heading 22 minutes after v0.16.0 was cut at ``39d1cab2``. The fix moves it to
          ``[Unreleased]``; this script is the evidence that the fix restored the released section

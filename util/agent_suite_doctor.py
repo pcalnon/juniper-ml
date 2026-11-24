@@ -2,7 +2,7 @@
 
 One read-only command that reports the existence + structural validity of every suite
 component -- agents, the Template Agent Skill, the template library, RUBRIC, the data layer,
-the discovery CLI, and the ``~/.claude`` mirror -- plus the owner-directed frontmatter
+the discovery CLI, and the ``~/.claude`` mirror -- plus the Overtoad-directed frontmatter
 defaults (``model: opus`` + ``effort: max``). Because it CONSUMES every layer's contract at
 runtime, running it validates the suite end-to-end. It writes nothing.
 

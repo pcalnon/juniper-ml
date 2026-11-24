@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-08
 Status: ad-hoc — validation of the doc-link hook's `--exclude tmp` (test and test-efficacy evidence)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: .pre-commit-config.yaml (hook `juniper-check-doc-links`); juniper-ml#2360, which carries the same
          hunk with the rest of the 2026-10-26 tmp/ rule; juniper-doc-tools/juniper_doc_tools/check_doc_links.py
          (`_find_markdown_files` skips any path component named in --exclude)

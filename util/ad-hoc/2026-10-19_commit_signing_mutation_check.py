@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-19
 Status: ad-hoc — investigation (suite strength evidence for the commit-signing PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-IDE-PLAN.md (§8, §10.1,
          regressions R-S1..R-S19); util/configure_commit_signing.py; tests/test_configure_commit_signing.py
 
@@ -19,7 +19,7 @@ Each mutant re-introduces one defect into a COPY of the tool. Examples:
 - a planted local gpg.program ignored;
 - a missing include passed;
 - allow rules evaluated before deny rules;
-- --remove deleting the owner's own include.
+- --remove deleting the Overtoad's own include.
 
 The suite then runs against that copy in a scratch tree that mirrors the repo layout (the suite
 locates the tool relative to its own file). A mutant is KILLED when the suite fails. Each mutant also
@@ -87,8 +87,8 @@ MUTANTS = [
     ("S25", "R-S17: a symlinked include passes", "IncludeIntegrityTest.test_r_s17_a_symlinked_or_writable_include_or_directory_fails", [('    if os.path.islink(path):\n        return f"the {what} {path} is a symlink"\n', '    if False:\n        return f"the {what} {path} is a symlink"\n')]),
     ("S26", "R-S18: a program outside a known GnuPG install passes", "RefusalTest.test_r_s18_a_program_outside_a_known_gnupg_install_fails_unless_vouched_for", [("    if not known_gnupg(target):\n", "    if False:\n")]),
     ("S27", "R-S19: an unmanaged key in the include passes", "IncludeIntegrityTest.test_r_s19_an_unmanaged_key_in_the_include_fails", [("        extra = sorted({k for k, _ in git.file_keys(include_file)} - set(SIGNING_KEYS))\n", "        extra = []\n")]),
-    ("S28", "--remove unsets without --fixed-value and drops the owner's include", "ApplyTest.test_remove_undoes_apply_exactly_and_keeps_the_owner_include", [('            git.checked("config", "--global", "--fixed-value", "--unset-all", write.key or "", write.old or "")\n', '            git.checked("config", "--global", "--unset-all", write.key or "")\n')]),
-    ("S29", "--remove deletes an include the owner edited", "ApplyTest.test_remove_refuses_to_delete_an_edited_include_and_dry_run_writes_nothing", [("        elif managed_only(git, include_file):\n", "        elif True:\n")]),
+    ("S28", "--remove unsets without --fixed-value and drops the Overtoad's include", "ApplyTest.test_remove_undoes_apply_exactly_and_keeps_the_owner_include", [('            git.checked("config", "--global", "--fixed-value", "--unset-all", write.key or "", write.old or "")\n', '            git.checked("config", "--global", "--unset-all", write.key or "")\n')]),
+    ("S29", "--remove deletes an include the Overtoad edited", "ApplyTest.test_remove_refuses_to_delete_an_edited_include_and_dry_run_writes_nothing", [("        elif managed_only(git, include_file):\n", "        elif True:\n")]),
     ("S30", "--apply --dry-run skips the checks and exits 0", "ApplyTest.test_r_s6_dry_run_writes_nothing_and_exits_like_check", [("        if not args.remove:\n            run_checks(", "        if not args.remove and not args.dry_run:\n            run_checks(")]),
     ("S31", "chat.tools.global.autoApprove passes", "IdeSettingsTest.test_r_s5_unparseable_files_dead_git_paths_and_global_auto_approve_fail", [('    if settings.get("chat.tools.global.autoApprove"):\n        problems.append(', '    if False:\n        problems.append(')]),
     ("S32", "a null terminal env value counts as an injection", "IdeSettingsTest.test_r_s5_injected_variables_fail_null_unsets_and_jsonc_parses", [(" and value is not None)", ")")]),
@@ -109,7 +109,7 @@ MUTANTS = [
     ("S46", "N6: --apply writes through a symlinked include", "RefusalTest.test_apply_refuses_to_write_through_an_unsafe_include_or_directory", [("                if os.path.lexists(path):\n                    problem = file_problem(path, what)\n", "                if False:\n                    problem = file_problem(path, what)\n")]),
     ("S47", "N13: a planted key in a linked worktree passes", "OverrideTest.test_r_s16_a_planted_key_in_a_linked_worktree_fails", [("    for worktree in linked_worktrees(git, checkout):\n", "    for worktree in []:\n")]),
     ("S48", "N13: global and system hook or include settings go unreported", "OverrideTest.test_wider_scope_hook_and_include_settings_are_reported", [("        check_wider_scopes(git, checkouts[0][1], include_file, report)\n", "        pass\n")]),
-    ("S49", "N18: --remove deletes an include whose comments the owner edited", "ApplyTest.test_remove_refuses_an_include_with_a_comment_added", [("    return normalize_keyspec(key) is not None and text == canonical_include(key, program)\n", "    return normalize_keyspec(key) is not None and set(values) == set(SIGNING_KEYS)\n")]),
+    ("S49", "N18: --remove deletes an include whose comments the Overtoad edited", "ApplyTest.test_remove_refuses_an_include_with_a_comment_added", [("    return normalize_keyspec(key) is not None and text == canonical_include(key, program)\n", "    return normalize_keyspec(key) is not None and set(values) == set(SIGNING_KEYS)\n")]),
     ("S50", "N18: a hooks path inside ~/.ssh is listed and its hooks read", "ContractTest.test_r_s9_apply_changes_only_its_own_files_and_never_lists_a_credential_directory", [('    listable = os.path.isdir(active_hooks) and not any(part.casefold() in (".ssh", ".gnupg") for part in active_hooks.split(os.sep))\n', "    listable = os.path.isdir(active_hooks)\n")]),
 ]
 

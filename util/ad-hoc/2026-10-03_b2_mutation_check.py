@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-03
 Status: ad-hoc — investigation (verification evidence for the B2 PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md §6.2 row B2;
          tests/test_duplicati_web_credential.py, tests/test_yamaguchi_server_api.py,
          tests/test_yamaguchi_watchdog.py
@@ -99,6 +99,19 @@ MUTATIONS = [
     ("unit passes the id unbraced (splits / vanishes)", UNIT, "--backup-id ${YAMAGUCHI_BACKUP_ID}", "--backup-id $YAMAGUCHI_BACKUP_ID", "wd"),
     ("unit takes no id at all (pre-B2)", UNIT, " --backup-id ${YAMAGUCHI_BACKUP_ID}", "", "wd"),
     ("deploy script defaults the id", DEPLOY, 'BACKUP_ID=""', 'BACKUP_ID="2"', "wd"),
+    # 2026-11-24, Q6's warning allow-list (the Overtoad's ruling of 2026-11-23): empty until classes are named; a class
+    # is the tag's, never the text's; a run with anything unclassifiable is never accepted.
+    ("Q6: the empty allow-list already accepts the Firefox class", WATCHDOG, "ACCEPTED_WARNING_CLASSES = ()", 'ACCEPTED_WARNING_CLASSES = (("FilePreFilterProcess.FileEntry-PathNotFound", ".mozilla/firefox/"), ("MetadataGenerator.Metadata-MetadataProcessFailed", ".mozilla/firefox/"))', "wd"),
+    ("Q6: a warning is classed by text that names a key", WATCHDOG, '        body = text[WARNING_TAG.match(text).end() :] if key else ""', "        key, body = next((k for k, _scope in accepted if k in text), key), text", "wd"),
+    ("Q6: a scope matches inside a longer path", WATCHDOG, r're.search(r"(?<![\w./-])" + re.escape(home', "re.search(re.escape(home", "wd"),
+    ("Q6: a class's scope is not checked", WATCHDOG, "(scope is None or re.search(", "(True or re.search(", "wd"),
+    ("Q6: an Error result of accepted classes is accepted", WATCHDOG, 'if result.get("ParsedResult") == "Warning" and total and', "if total and", "wd"),
+    ("Q6: a Warning with no warning listed is accepted", WATCHDOG, '== "Warning" and total and not unaccepted', '== "Warning" and not unaccepted', "wd"),
+    ("Q6: warnings the result does not list are accepted", WATCHDOG, " and total == len(listed) and not n_errors:", " and not n_errors:", "wd"),
+    ("Q6: an error beside accepted warnings is accepted", WATCHDOG, " and total == len(listed) and not n_errors:", " and total == len(listed):", "wd"),
+    ("Q6: the alert carries the warnings' text", WATCHDOG, 'return False, (f"; warnings by tag: {by_key}"', 'return False, (f"; warnings by tag: {by_key} {listed}"', "wd"),
+    ("Q6: an accepted run reads plain OK", WATCHDOG, 'return "OK", "WARNINGS_ACCEPTED",', 'return "OK", "OK",', "wd"),
+    ("Q6: a bracket in a path can be the tag", WATCHDOG, r'WARNING_TAG = re.compile(r"^[^\[/]*\[Warning-([^\]\s]+)\]:")', r'WARNING_TAG = re.compile(r"^.*?\[Warning-([^\]\s]+)\]:?")', "wd"),
 ]
 
 

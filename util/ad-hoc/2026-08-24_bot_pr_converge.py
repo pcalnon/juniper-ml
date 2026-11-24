@@ -18,7 +18,7 @@ sibling merge causes -- stays armed forever instead of merging. 7 of 17 swept PR
 (they were CLEAN at arming); the other 10 sat armed+BEHIND indefinitely.
 
 The systemic fix is ``allow_update_branch: true``, which is a repo-settings change and
-therefore the owner's call. This script is the no-settings-change alternative: it issues
+therefore the Overtoad's call. This script is the no-settings-change alternative: it issues
 the ``update-branch`` GitHub will not, then lets the ALREADY-ARMED auto-merge fire once the
 re-test is green.
 
@@ -43,7 +43,7 @@ repo run strictly in sequence.
 
 SAFETY
 ------
-* Never merges. Only calls ``update-branch`` on PRs that are ALREADY armed by their owner's
+* Never merges. Only calls ``update-branch`` on PRs that are ALREADY armed by their Overtoad's
   earlier explicit decision -- the merge itself is still GitHub's checks-gated auto-merge.
 * Refuses to touch a PR that is not both OPEN and armed.
 * ``--dry-run`` default.

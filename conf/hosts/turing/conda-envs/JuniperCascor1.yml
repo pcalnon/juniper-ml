@@ -2,7 +2,7 @@
 # turing conda env JuniperCascor1: plan task E2 (decision D8), juniper-cascor's own env spec ported to osx-64.
 #
 # Source: pcalnon/juniper-cascor conf/conda_environment.yaml at main 4c26919f19068f34f126e4f10e04ed09629ad7cb
-# (blob 978117f8), a `conda list --export` of 87 packages from a linux-64 host (conda 25.11.1). The owner's
+# (blob 978117f8), a `conda list --export` of 87 packages from a linux-64 host (conda 25.11.1). The Overtoad's
 # checkout (~/Development/python/Juniper/juniper-cascor) was at that same commit, its tracked files identical.
 #
 # Derivation rules (2026-10-19):

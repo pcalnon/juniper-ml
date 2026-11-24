@@ -260,7 +260,7 @@ ceiling 37,277 → 18,414),
 [juniper-cascor-worker#164](https://github.com/pcalnon/juniper-cascor-worker/pull/164) (`9abbe3cc`),
 [juniper-deploy#197](https://github.com/pcalnon/juniper-deploy/pull/197) (`4d2a66fa`).
 [juniper-recurrence#135](https://github.com/pcalnon/juniper-recurrence/pull/135) (`315d014b`) took a
-**policy ceiling raise instead of a cut** (13,698 → 20,000, owner decision): an 11.5K file across 6
+**policy ceiling raise instead of a cut** (13,698 → 20,000, Overtoad decision): an 11.5K file across 6
 sections with no `docs/REFERENCE.md` has too little to relocate to be worth splitting. Tracking
 issue: [juniper-ml#1326](https://github.com/pcalnon/juniper-ml/issues/1326) — its comment thread is
 the live per-repo ledger; read it before trusting this banner. Ports merged 2026-08-25:
@@ -269,7 +269,7 @@ the live per-repo ledger; read it before trusting this banner. Ports merged 2026
 — **corrected 2026-08-31**: this read `c83c3407` for five days, which is the PR *head* (a test fix,
 "drop the `Version:` header") and is **not an ancestor of `origin/main`**, so it resolves locally
 while pointing at nothing in the shipped history);
-merged 2026-08-26 under the owner's arc-wide authorization, squash-of-one each:
+merged 2026-08-26 under the Overtoad's arc-wide authorization, squash-of-one each:
 [juniper-cascor-client#139](https://github.com/pcalnon/juniper-cascor-client/pull/139) (`b1c1acd7`, 34,695),
 [juniper-recurrence#131](https://github.com/pcalnon/juniper-recurrence/pull/131) (`369d8f59`, 11,578; standalone workflow),
 [juniper-data-client#173](https://github.com/pcalnon/juniper-data-client/pull/173) (`918f1dee`, 28,369),
@@ -292,7 +292,7 @@ job, and raised the ceiling with an `Allow-Ceiling-Raise: AGENTS.md` trailer siz
 `Memory Budget` reported SUCCESS on every one of those PR heads through the non-advisory job
 (`[RAISE-WAIVED] … headroom=<slack>`), and every squash SHA above was re-probed against the ceiling in that
 repo's `conf/memory_budget.json` and the checker's invocation line in its workflow. For all eight, all four
-preconditions held, and **promotion followed on 2026-08-27 ~21:17 CDT on the owner's explicit go** — one
+preconditions held, and **promotion followed on 2026-08-27 ~21:17 CDT on the Overtoad's explicit go** — one
 ruleset PUT per repo via `require_context_safely.py --apply` (dry-run first; every invariant held; pre-write
 snapshots under `~/.local/state/juniper-ruleset-snapshots/`, rollback = `gh api … -X PUT --input <snapshot>`):
 canopy 20 → 21 contexts (ruleset 14249530), cascor 23 → 24 (15081045), data 21 → 22 (14748749),
@@ -395,7 +395,7 @@ the right one, which is how `Sequence Safety` was promoted.
 | `Allow-Budget-Overrun: <path>` trailer | exit 0 |
 
 **A blocking gate that cannot fail is worse than none** — it converts an unmeasured risk into
-a measured-looking one. Promotion to a required context is a governance change (owner-approved)
+a measured-looking one. Promotion to a required context is a governance change (Overtoad-approved)
 with **four preconditions, all of them**:
 
 1. the port is merged to that repo's `main`;
@@ -641,7 +641,7 @@ that was always the load-bearing half.
 
 ---
 
-## 5. Owner decisions
+## 5. The Overtoad decisions
 
 | # | Decision                                | Recommendation                                                                                              |
 |---|-----------------------------------------|-------------------------------------------------------------------------------------------------------------|

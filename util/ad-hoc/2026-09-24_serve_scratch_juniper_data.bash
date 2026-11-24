@@ -4,7 +4,7 @@
 # Author:      Paul Calnon
 # Created:     2026-09-24
 # Status:      ad-hoc — investigation
-# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 #
 # Serve a SCRATCH EXPORT of juniper-data on 127.0.0.1:<port>, for the real-juniper-data probes of the
 # round-42 follow-up lane: util/ad-hoc/2026-09-24_round42_probes/cascor688-v688/probe_realjd_*.py and

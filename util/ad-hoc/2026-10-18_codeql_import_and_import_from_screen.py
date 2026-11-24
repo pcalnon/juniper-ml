@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-18
 Status: ad-hoc — one-off (screening the turing Session 1 Python files after juniper-ml#2242)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-ml#2242; util/ad-hoc/2026-10-05_codeql_python_prescreen.py (the general pre-screen, which
          does not cover this query); util/ad-hoc/README.md § CodeQL scans this directory
 

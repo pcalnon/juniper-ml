@@ -66,7 +66,7 @@ class TestRecordedCliRerunContract(unittest.TestCase):
         quoted_log = shlex.quote(str(self.log))
         _write_executable(
             python,
-            "#!/bin/bash\n" 'if [[ "${1-}" == "-c" ]]; then\n' f"  printf 'probe_url=[%s]\\n' \"${{JUNIPER_DATA_URL-__UNSET__}}\" >> {quoted_log}\n" f"  printf 'probe_ld=[%s]\\n' \"${{LD_LIBRARY_PATH-__UNSET__}}\" >> {quoted_log}\n" f"  printf '%s\\n' {shlex.quote(SERVED_VERSION)}\n" "  exit 0\n" "fi\n" 'exec /bin/bash "$@"\n',
+            f'#!/bin/bash\nif [[ "${{1-}}" == "-c" ]]; then\n  printf \'probe_url=[%s]\\n\' "${{JUNIPER_DATA_URL-__UNSET__}}" >> {quoted_log}\n  printf \'probe_ld=[%s]\\n\' "${{LD_LIBRARY_PATH-__UNSET__}}" >> {quoted_log}\n  printf \'%s\\n\' {shlex.quote(SERVED_VERSION)}\n  exit 0\nfi\nexec /bin/bash "$@"\n',
         )
         cli = bindir / "juniper-recurrence"
         _write_executable(cli, f"#!{python}\n{body}")

@@ -453,7 +453,7 @@ Each new finding must use §6 and §7.
 | 3 | Prioritized backlog exists                                                   | **Met** — §13–§14                                                                 |
 | 4 | CI baseline green or waived                                                  | **Green** — unit test run passed                                                  |
 
-**Sign-off:** Program can move from **Phase 1 complete** to **Phases 2–6 deep review** when owner assigns reviewers and calendar time. Tooling items CR-001–CR-003 recommended before large refactors (better signal from mypy/flake8).
+**Sign-off:** Program can move from **Phase 1 complete** to **Phases 2–6 deep review** when Overtoad assigns reviewers and calendar time. Tooling items CR-001–CR-003 recommended before large refactors (better signal from mypy/flake8).
 
 ---
 

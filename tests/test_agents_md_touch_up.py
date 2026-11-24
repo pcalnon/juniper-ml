@@ -204,7 +204,7 @@ class AgentsMdDateCheckRehearsalTest(unittest.TestCase):
 
             date = stub_bin / "date"
             date.write_text(
-                "#!/usr/bin/env bash\n" "set -euo pipefail\n" 'if [ "$*" = "-u +%Y-%m-%d" ]; then\n' f'  printf "%s\\n" "{FIXED_TODAY}"\n' "  exit 0\n" "fi\n" 'echo "unexpected date argv: $*" >&2\n' "exit 99\n",
+                f'#!/usr/bin/env bash\nset -euo pipefail\nif [ "$*" = "-u +%Y-%m-%d" ]; then\n  printf "%s\\n" "{FIXED_TODAY}"\n  exit 0\nfi\necho "unexpected date argv: $*" >&2\nexit 99\n',
                 encoding="utf-8",
             )
             date.chmod(date.stat().st_mode | stat.S_IXUSR)
@@ -213,7 +213,7 @@ class AgentsMdDateCheckRehearsalTest(unittest.TestCase):
             # anti-mutation assertions can prove no commit/push was attempted.
             git = stub_bin / "git"
             git.write_text(
-                "#!/usr/bin/env bash\n" "set -euo pipefail\n" f'REAL_GIT="{self.real_git}"\n' f'LOG="{git_log}"\n' 'printf "%s\\n" "$*" >>"$LOG"\n' 'exec "$REAL_GIT" "$@"\n',
+                f'#!/usr/bin/env bash\nset -euo pipefail\nREAL_GIT="{self.real_git}"\nLOG="{git_log}"\nprintf "%s\\n" "$*" >>"$LOG"\nexec "$REAL_GIT" "$@"\n',
                 encoding="utf-8",
             )
             git.chmod(git.stat().st_mode | stat.S_IXUSR)

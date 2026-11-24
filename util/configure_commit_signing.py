@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install and verify the owner's commit signing for the Juniper tree: terminal and IDEs alike.
+"""Install and verify the Overtoad's commit signing for the Juniper tree: terminal and IDEs alike.
 
 Project: juniper-ml
 Sub-Project: host tooling (commit signing)
@@ -13,7 +13,7 @@ Related: notes/JUNIPER_2026-10-19_JUNIPER-ECOSYSTEM_COMMIT-SIGNING-TERMINAL-AND-
 Why this exists
 ---------------
 The Juniper repos carry ``required_signatures``: one unsigned commit makes a branch unmergeable. The
-owner commits from a terminal, from the Source Control view of Cursor or VS Code, and from either
+Overtoad commits from a terminal, from the Source Control view of Cursor or VS Code, and from either
 IDE's integrated terminal, and signing has to hold for every one of those paths. Both IDEs run the
 system git with the user's config. Their git extension adds ``-S`` only when
 ``git.enableCommitSigning`` is true, and it never passes ``--no-gpg-sign``. So git's config is the
@@ -42,7 +42,7 @@ What it installs (``--apply``)
    directory is ``<main>/.git/worktrees/<name>``, so a worktree signs wherever it is checked out. A
    repository outside the root gains nothing (plan S1, R2).
 
-   Position in the file is not the guarantee: an owner section with the same pattern, or a later
+   Position in the file is not the guarantee: an Overtoad section with the same pattern, or a later
    global entry, can still win. The guarantee is that ``--check`` judges the deciding value in
    every checkout.
 
@@ -66,7 +66,7 @@ and it exits like ``--check``.
 
 ``--remove`` undoes exactly what ``--apply`` adds:
 
-- It unsets the include's ``path`` value with ``--fixed-value``, which leaves an owner include of the
+- It unsets the include's ``path`` value with ``--fixed-value``, which leaves an Overtoad include of the
   same pattern alone, and drops the section if that leaves it empty.
 - It deletes the include file only if the file is byte for byte what ``--apply`` writes and no other
   global include still points at it. Deleting it in that case would make the other include fail open.
@@ -79,7 +79,7 @@ What it checks (``--check``, the default)
 ``--check`` only reads. Every git call runs without the variables ``git rev-parse --local-env-vars``
 lists, so a hook's ``GIT_DIR`` cannot redirect a read. The same scrub removes an agent session's D11
 override (``GIT_CONFIG_COUNT`` with ``commit.gpgsign=false``, which keeps agent commits unsigned by
-construction), so the override cannot mask the owner's values. The override is reported on its own
+construction), so the override cannot mask the Overtoad's values. The override is reported on its own
 INFO line.
 
 ``include``
@@ -94,7 +94,7 @@ INFO line.
 ``repo:juniper-<name>``, one check per active checkout present under the root
     FAIL unless all of the following hold:
 
-    - the owner-effective ``commit.gpgsign`` and ``tag.gpgsign`` are true;
+    - the Overtoad-effective ``commit.gpgsign`` and ``tag.gpgsign`` are true;
     - ``user.signingkey`` is the expected pinned spec;
     - ``gpg.format`` is unset or ``openpgp``;
     - ``user.email`` is set (the IDEs commit with ``user.useConfigOnly=true``);
@@ -208,7 +208,7 @@ Exit codes
 0  every check passed. For ``--remove``: the layout is removed, or there was nothing to remove.
 1  at least one check failed, and every failure is listed. ``--apply --dry-run`` changes nothing, so
    it exits 1 while anything is still failing. ``--remove`` exits 1 when it refuses to delete an
-   include file the owner has edited.
+   include file the Overtoad has edited.
 2  usage or environment. That covers:
 
    - a bad argument;
@@ -295,7 +295,7 @@ LOCAL_FORBIDDEN_PREFIXES = ("include.", "includeif.")
 DEFEATING_ENV = ("GIT_CONFIG_COUNT", "GIT_CONFIG_PARAMETERS", "GIT_CONFIG_GLOBAL", "GNUPGHOME", "HOME")
 CONFIG_REDIRECT_ENV = ("GIT_CONFIG_GLOBAL", "GIT_CONFIG_SYSTEM", "GIT_CONFIG_NOSYSTEM", "XDG_CONFIG_HOME")
 OS_KEYS = ("osx", "linux", "windows")
-# An agent's plain commit (owner-signed once a card is learned), then the bypass spellings (plan S7).
+# An agent's plain commit (Overtoad-signed once a card is learned), then the bypass spellings (plan S7).
 PLAIN_PROBE = "git commit -m probe"
 AGENT_PROBES = (
     "git commit --no-gpg-sign -m probe",
@@ -317,7 +317,7 @@ AGENT_PROBES = (
     "git config core.fsmonitor /tmp/probe",
 )
 INCLUDE_HEADER = (
-    "# Managed by util/configure_commit_signing.py (juniper-ml): the owner's commit signing for the Juniper tree.\n"
+    "# Managed by util/configure_commit_signing.py (juniper-ml): the Overtoad's commit signing for the Juniper tree.\n"
     "# The global git config includes this file through an includeIf on the Juniper root.\n"
     f"# Plan: {PLAN_NOTE}\n"
 )
@@ -624,7 +624,7 @@ def program_problem(path: str, vouched: str | None = None) -> str | None:
     """Why ``path`` is not a sound gpg program, or None. Only paths and modes are checked; nothing runs.
 
     This catches another user's tampering, mode drift and a program planted outside a GnuPG
-    install. It cannot stop an agent running as the owner, who owns the Homebrew prefix; the C8
+    install. It cannot stop an agent running as the Overtoad, who owns the Homebrew prefix; the C8
     guard and K12 do that (plan S3, S9).
     """
     if not os.path.isabs(path):
@@ -1164,10 +1164,10 @@ def check_environment(report: Report) -> None:
     if re.search(r"commit\.gpgsign'?=\s*'?(false|no|off|0)\b", os.environ.get("GIT_CONFIG_PARAMETERS", ""), re.IGNORECASE):
         hits.append("GIT_CONFIG_PARAMETERS sets commit.gpgsign false")
     if hits:
-        report.add("session", "info", "this session cannot sign, by construction (D11): " + "; ".join(hits) + ". The repo checks judge an owner session, which this override does not reach. It does not stop an explicit -S (the C8 guard does) or -c include.path= / --config-env (the K12 rules do)")
+        report.add("session", "info", "this session cannot sign, by construction (D11): " + "; ".join(hits) + ". The repo checks judge an Overtoad session, which this override does not reach. It does not stop an explicit -S (the C8 guard does) or -c include.path= / --config-env (the K12 rules do)")
     redirects = [f"{name}={os.environ[name]}" for name in CONFIG_REDIRECT_ENV if os.environ.get(name)]
     if redirects:
-        report.add("environment", "info", "this run's environment redirects git's config files (" + ", ".join(redirects) + "), so an owner session without them may differ")
+        report.add("environment", "info", "this run's environment redirects git's config files (" + ", ".join(redirects) + "), so an Overtoad session without them may differ")
 
 
 # --------------------------------------------------------------------------------------- apply, remove
@@ -1220,7 +1220,7 @@ def canonical_include(signing_key: str, gpg_program: str) -> str:
 
 
 def managed_only(git: Git, include_file: str) -> bool:
-    """Is the include byte for byte what --apply writes, so that deleting it loses no owner edit?"""
+    """Is the include byte for byte what --apply writes, so that deleting it loses no Overtoad edit?"""
     with open(include_file, encoding="utf-8") as fh:
         text = fh.read()
     values = dict(git.file_keys(include_file))
@@ -1241,7 +1241,7 @@ def plan_remove(git: Git, root: str, include_file: str, report: Report) -> list[
     others = [v for k, v in global_keys if k == prefix + "path" and v not in wired]
     if wired and not others and not [k for k, _ in global_keys if k.startswith(prefix) and k != prefix + "path"]:
         writes.append(Write("remove-section", gcfg, section))
-    # Another include (another root, or the owner's own) may still point at the file: deleting it
+    # Another include (another root, or the Overtoad's own) may still point at the file: deleting it
     # then would make that include fail open (plan R6).
     still = [k for k, v in global_keys if (k == "include.path" or (k.startswith("includeif.") and k.endswith(".path"))) and not (k == prefix + "path" and v in wired) and resolve_include_value(v or "", gcfg) == os.path.realpath(include_file)]
     if os.path.isfile(include_file) and not os.path.islink(include_file):
@@ -1332,7 +1332,7 @@ def validate_paths(git: Git, root: str, include_file: str) -> None:
         raise UsageError(f"the Juniper root {root} is $HOME or an ancestor of it, so the include would sign every repository there")
     real_include = os.path.realpath(include_file)
     if under(real_include, os.path.realpath(root)):
-        raise UsageError(f"the include file {include_file} is under the Juniper root; a branch could then rewrite the owner's signing config")
+        raise UsageError(f"the include file {include_file} is under the Juniper root; a branch could then rewrite the Overtoad's signing config")
     probe = os.path.dirname(real_include)
     while not os.path.isdir(probe) and os.path.dirname(probe) != probe:
         probe = os.path.dirname(probe)
@@ -1342,7 +1342,7 @@ def validate_paths(git: Git, root: str, include_file: str) -> None:
 
 
 def print_text(report: Report) -> None:
-    print("commit signing: the owner's signing for the Juniper tree, terminal and IDEs. No credential is read or used.")
+    print("commit signing: the Overtoad's signing for the Juniper tree, terminal and IDEs. No credential is read or used.")
     print(f"root           {report.root}")
     print(f"include file   {report.include_file}")
     print(f"global config  {report.global_config}")

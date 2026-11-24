@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-10-26
 Status: ad-hoc — one-off (one plan revision)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END-AUDIT-AND-DEVELOPMENT-PLAN.md (v1.7.19 -> v1.7.20);
          util/ad-hoc/2026-10-26_plan_v1_7_19_juniper_ml_0_11_2_cut_parked_at_gate.py (the revision this follows, and the pattern);
          util/ad-hoc/2026-10-26_consolidated_plan_v1_15_2_r_ml_servers_shipped.py (the consolidated plan's matching revision)
@@ -38,7 +38,7 @@ _PLAN = _REPO / "notes/JUNIPER_2026-10-03_JUNIPER-RECURRENCE_EQUITIES-END-TO-END
 _HEADLINE = "juniper-ml 0.11.2 published, juniper-ml#2330 ruled"
 
 RECORD = (
-    "the owner approved the `pypi` gate of publish run 40247789317 on 2026-10-26, and `Publish to PyPI` succeeded "
+    "the Overtoad approved the `pypi` gate of publish run 40247789317 on 2026-10-26, and `Publish to PyPI` succeeded "
     "(08:38:21Z-08:38:43Z). `https://pypi.org/pypi/juniper-ml/0.11.2/json` serves the wheel (08:38:39Z) and the sdist "
     "(08:38:40Z), and its 17 `requires_dist` entries equal, as requirements, `pyproject.toml`'s at the tag `e8d38732`: "
     "`[servers]` floors `juniper-cascor>=0.12.0` and `juniper-data>=0.17.1`, beside `juniper-canopy>=0.9.0`. "
@@ -51,7 +51,7 @@ RECORD = (
     "was served an index that listed versions only to 0.11.1; `--no-cache-dir` cleared it. The parent "
     "`Juniper/AGENTS.md` RELEASED paragraph names 0.11.2 the latest and its `[servers]` floors (re-probed against PyPI "
     "on 2026-10-26; nothing else in it had moved), and the consolidated plan records R-ML-SERVERS shipped (v1.15.2). "
-    "juniper-ml#2330: the owner chose the issue's option 1 on 2026-10-26 (ruled in a turing session, relayed here), "
+    "juniper-ml#2330: the Overtoad chose the issue's option 1 on 2026-10-26 (ruled in a turing session, relayed here), "
     "and juniper-ml#2345, FIX_STATE, sets `util/experiments/suites/p4/e-c-cascor-noise-robustness.yaml`'s "
     "`execution.max_wall_seconds` to 5400, so E-C's worst-case driver budget is 5,850 s against its 7,200 s "
     "`per_run_timeout_seconds`; every cell id and `config_sha256` is unchanged, and "
@@ -61,20 +61,20 @@ RECORD = (
 _STATUS_ANCHOR = "(the turing session's erratum E-CUT)). The v1.4.0 plan edits follow that record"
 
 NEXT_HEAD_OLD = (
-    "  - **Next**: the owner's `pypi` approval of juniper-ml 0.11.2's publish run 40247789317 (re-runnable until "
+    "  - **Next**: the Overtoad's `pypi` approval of juniper-ml 0.11.2's publish run 40247789317 (re-runnable until "
     "2026-11-25 00:07Z; GitHub cancels it on 2026-11-30 00:07Z). Once it publishes, confirm "
     "`https://pypi.org/pypi/juniper-ml/0.11.2/json`, then bring the parent `Juniper/AGENTS.md` RELEASED paragraph up "
     "to date (`[servers]` ships in 0.11.2) and the consolidated plan's §5 R-ML-SERVERS row, whose revision is the "
     "owner's call. juniper-ml#2062's fix (`[servers]` installs no client) is juniper-ml#2333, open, for a later "
-    "release. juniper-ml#2330 (the `p4/e-c` wall budget) waits on the owner's choice of option. "
+    "release. juniper-ml#2330 (the `p4/e-c` wall budget) waits on the Overtoad's choice of option. "
 )
 NEXT_HEAD_NEW = (
     "  - **Next**: juniper-ml#2062's fix (`[servers]` installs no client, as 0.11.2's still does), juniper-ml#2333, "
-    "merged as `da5e8de3` (2026-10-26 09:10Z); it ships in juniper-ml 0.11.3 (owner ruling 2026-10-25), whose `pypi` "
-    "gate is the owner's. FIX_NEXT"
+    "merged as `da5e8de3` (2026-10-26 09:10Z); it ships in juniper-ml 0.11.3 (Overtoad ruling 2026-10-25), whose `pypi` "
+    "gate is the Overtoad's. FIX_NEXT"
 )
 #: The unchanged tail of the Next bullet, asserted so the head edit cannot land on a rewritten bullet.
-_NEXT_TAIL = "The juniper-recurrence-client 0.3.1 release (owner's cut) carries the embargo fix."
+_NEXT_TAIL = "The juniper-recurrence-client 0.3.1 release (Overtoad's cut) carries the embargo fix."
 
 _ROW_ANCHOR_START = "| 2026-10-26 | 1.7.19 | **juniper-ml 0.11.2 cut, parked at the `pypi` gate**:"
 _ROW_START = "| 2026-10-26 | 1.7.20 | "

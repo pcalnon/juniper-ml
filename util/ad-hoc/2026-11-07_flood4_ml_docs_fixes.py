@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc -- one-off (Cursor flood-4 docs-carrier build)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/2026-11-07_flood4_ml_docs_apply.py (consumes the JSON this writes via --fixes)
 
 Each entry replaces text that a draft added (or, for pr 0, adds the carrier's own Version History row).

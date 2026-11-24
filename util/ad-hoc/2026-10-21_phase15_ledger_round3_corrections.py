@@ -6,8 +6,8 @@
 # Author      : Paul Calnon
 # License     : MIT License
 # Created     : 2026-10-21
-# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (owner policy 2026-08-25)
-# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Status      : ad-hoc — one-off correction pass; RETAINED as provenance (Overtoad policy 2026-08-25)
+# Retire when : RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related     : ledger Phase 15 (notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md);
 #               util/ad-hoc/2026-10-21_phase15_ledger_round2_corrections.py (the pass before this one);
 #               reports/e2e-canopy-2026-09-02/consensus/2026-10-21_validator_reports_phase15_round3.md (the report)
@@ -40,7 +40,7 @@ HANDOFF = "prompts/thread-handoff_automated-prompts/HANDOFF_2026-10-21_canopy-ph
 _PRI_RE = re.compile(r"\b(P0/P1|P0|P1|P2|CRITICAL|LEDGER)\b")
 FREEZE_R3 = "`71417d33`"
 
-ITEM33_ONE_RUN = """ Once the owner has pulled the canopy primary to `main`,
+ITEM33_ONE_RUN = """ Once the Overtoad has pulled the canopy primary to `main`,
     `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py canopy --phase all` does the re-sync, that install
     (with the `[test,juniper-cascor,observability]` extras) and the lanes the E2 record cites in one run; on this
     route the conda env itself keeps dash 3.3.0, shadowed by the venv."""
@@ -124,7 +124,7 @@ HANDOFF_SUBS = [
     (
         "D8: item 33's one-run route (handoff)",
         "   `comm` and `janus`). Or rebuild the conda env",
-        "   `comm` and `janus`). Once the owner has pulled the canopy primary to `main`,\n   `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py canopy --phase all` does the re-sync, that install\n   (with the `[test,juniper-cascor,observability]` extras) and the lanes the E2 record cites in one run; on this route\n   the conda env itself keeps dash 3.3.0, shadowed by the venv. Or rebuild the conda env",
+        "   `comm` and `janus`). Once the Overtoad has pulled the canopy primary to `main`,\n   `python3 -I util/ad-hoc/2026-10-19_turing_e2_validate_envs.py canopy --phase all` does the re-sync, that install\n   (with the `[test,juniper-cascor,observability]` extras) and the lanes the E2 record cites in one run; on this route\n   the conda env itself keeps dash 3.3.0, shadowed by the venv. Or rebuild the conda env",
     ),
     (
         "D9: item 27's interpreter and the chrome channel",

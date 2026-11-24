@@ -11,7 +11,7 @@
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 # Status:        ad-hoc -- one-off
-# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+# Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 # Related:       juniper-canopy#650, juniper-ml#1966
 # Superseded:    for new use by util/push_signed_commit.py (append to an existing branch) and util/open_signed_pr.py (create a branch); RETAINED here as provenance.
 #

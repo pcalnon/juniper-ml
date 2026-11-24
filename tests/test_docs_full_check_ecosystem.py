@@ -93,7 +93,7 @@ class DocsFullCheckEcosystemReposTest(unittest.TestCase):
         self.assertEqual(
             ecosystem,
             expected,
-            "docs-full-check env.ECOSYSTEM_REPOS must equal registry publishing " "repos minus juniper-ml, plus juniper-deploy " f"(extra={sorted(ecosystem - expected)}, missing={sorted(expected - ecosystem)}).",
+            f"docs-full-check env.ECOSYSTEM_REPOS must equal registry publishing repos minus juniper-ml, plus juniper-deploy (extra={sorted(ecosystem - expected)}, missing={sorted(expected - ecosystem)}).",
         )
         self.assertNotIn("juniper-ml", ecosystem, "juniper-ml is the workflow checkout, not an ECOSYSTEM_REPOS clone")
         self.assertIn(

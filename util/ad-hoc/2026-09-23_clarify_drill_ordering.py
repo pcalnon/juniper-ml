@@ -6,7 +6,7 @@ Sub-Project: backup infrastructure
 Author:      Paul Calnon
 Created:     2026-09-23
 Status:      ad-hoc -- document-of-record edit
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     util/ad-hoc/2026-09-23_record_smart_result.py (wrote the row this corrects)
 
 THE AMBIGUITY THIS CLOSES. Section 10.2 opens "it runs *after* the recovery, not during it", and its

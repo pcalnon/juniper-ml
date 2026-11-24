@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling (memory governance)
 Author: Paul Calnon
 Created: 2026-10-05
 Status: ad-hoc — one-off
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: memory/feedback_memory_index_target_is_20kb.md; util/ad-hoc/2026-09-23_memory_index_editorial_compaction.py;
          util/ad-hoc/2026-09-12_memory_index_linkset.py
 

@@ -9,7 +9,7 @@ Version: 0.1.0
 License: MIT License
 Created: 2026-11-07
 Status: ad-hoc — investigation (a flood-4 validator's probe)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md; juniper-ml#2519 docs carrier, validation round 4 (findings: tmp/flood4/ml-docs/val-round4/)
 
 Loads juniper-service-core/juniper_service_core/workers/security.py from a named commit's blob

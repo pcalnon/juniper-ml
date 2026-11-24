@@ -1,7 +1,7 @@
 """
 Census of the network connects a juniper-canopy pytest run makes, recorded per test by a C-level audit hook.
 
-Builder helper for the owner's ruling 17 ("canopy: tests hit :8050"): canopy's unit lane made unmocked connects
+Builder helper for the Overtoad's ruling 17 ("canopy: tests hit :8050"): canopy's unit lane made unmocked connects
 to 127.0.0.1:8050 (a live canopy listener on this host) and to :8100 (juniper-data's port). This runs pytest
 in-process in a canopy worktree with ``sys.addaudithook`` watching the ``socket.connect`` event, which CPython
 raises for every ``socket.connect`` / ``connect_ex`` (asyncio's non-blocking connects included), and records each
@@ -36,8 +36,8 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
-Related: owner ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
+Related: Overtoad ruling 17 (flood-4 session 4), juniper-canopy unit-lane network guard
 """
 
 from __future__ import annotations

@@ -142,7 +142,7 @@ and its caveat travel together.
 
 ---
 
-## 6. For P3 (owner)
+## 6. For P3 (Overtoad)
 
 1. **Ratify the metric before the number.** `timings.drive`, not `wall_seconds` — §2.
 2. **Decide whether to run the loaded-repeat test** in §3.1 before fixing a threshold. It is one

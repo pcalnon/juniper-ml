@@ -68,7 +68,7 @@ This plan accepts and sequences the reconciliation's ranked enhancement set:
 
 **The cut line** is drawn at risk × demonstrated need: everything static, additive, and default-preserving is
 near-term; everything that boots a live process, writes tests, or adds a backend is gated behind a feasibility
-proof or rejected outright. **Nothing in this plan is implemented until the owner approves this document** (see
+proof or rejected outright. **Nothing in this plan is implemented until the Overtoad approves this document** (see
 §11). The recommended approved near-term scope is **Phase 1 alone** (4 PRs, with G-3 gated on PR-2); Phases 2
 and 3 are presented for direction but should be re-confirmed at their own gates.
 
@@ -163,7 +163,7 @@ tests / dead app" class.
 | **E-4** | Per-file coverage-gap mapper | TAUDIT §6.1.1 (`:149`); "No per-file coverage gate exists **anywhere**" (`:123-124`); cascor-model `ci-cascor-model.yml:67` = `python -m pytest -v`, zero gate (verified). Host in `juniper-ci-tools`. | proposed | **BUILD** (Phase 2, advisory) | ml → ci-tools | coverage blind spots |
 | **E-5** | Mocked-seam gap auditor (novel `auditor` variant) | TAUDIT §6.1.2; dogfood target canopy `src/tests/conftest.py:371` `mock_juniper_data_client` (session-scoped `autouse=True` fixture, `:370-371`, verified) that mocks the data-client integration boundary. | proposed | **BUILD** (Phase 1) | ml | green tests / dead app — **detection** (mocked seam hides real path) |
 | **E-6** | Click-through test author (Playwright) | TAUDIT §6.1.3; canopy is the **only** repo with click-through tests (`:89`); model on `juniper-canopy/src/tests/ui/` (verified: `test_apply_button_flow.py`, `test_dashboard_loads.py`, +8 — 10 total). | proposed | **BUILD** (Phase 3, gated) | ml | UI-path coverage |
-| **E-7** | Requirement-coverage / intent-fidelity reviewer | Companion analysis §6.1 (`:144`): the `prompt-validator` PASSed anchor-grounding yet missed a dropped owner-sourced finding (became **G-3**) and flattened a source disagreement (**G-1**) on this very prompt — faithfulness defects invisible to anchor-grounding by construction. | proposed | **BUILD** (Phase 2, fold-in) | ml | intent/faithfulness drift |
+| **E-7** | Requirement-coverage / intent-fidelity reviewer | Companion analysis §6.1 (`:144`): the `prompt-validator` PASSed anchor-grounding yet missed a dropped Overtoad-sourced finding (became **G-3**) and flattened a source disagreement (**G-1**) on this very prompt — faithfulness defects invisible to anchor-grounding by construction. | proposed | **BUILD** (Phase 2, fold-in) | ml | intent/faithfulness drift |
 | **E-8** | App startup self-check (shift-left of E-2) | The app validates its **installed** `juniper-*` wheel versions against its **own** `pyproject.toml` floors at boot and **fails loud** — would have caught the actual canopy incident at first start, zero human action. Companion to E-2; app-level (not a suite unit). | proposed | **BUILD** (app-level) | canopy (+ candidate `juniper-service-core` helper) | green tests / dead app — **prevention** (fail-loud at boot) |
 
 ---
@@ -239,7 +239,7 @@ TTL; reuse the probe's existing `cold_cache`/`unavailable` vocabulary.
 
 - **Design sketch.** In `probe()`, after locating `lastfailed`, read its mtime. Compare against the current
   HEAD's commit time (`git -C <repo_root> show -s --format=%ct HEAD`); if the cache predates the current
-  commit, OR if `age_seconds` exceeds a configurable TTL (default proposal: the bundle's existing 900 s, owner
+  commit, OR if `age_seconds` exceeds a configurable TTL (default proposal: the bundle's existing 900 s, Overtoad
   to confirm in OQ below), return `status: "stale"` (new value within the established vocabulary) with
   `failing_count: None` and a `reason`. A genuinely fresh cache keeps returning `ok` + the real
   `failing_count`. This makes "no failures" impossible to assert when the truth is "measured against an old
@@ -285,7 +285,7 @@ envs); state plainly the CI gate is structural (no conda in ubuntu CI) + a manua
   pyproject floor, `OK` when ≥, `MISSING` when absent, exit-code semantics, and `--json` shape. **ci.yml wiring
   note (MANDATORY):** add `python3 -m unittest -v tests/test_env_floor_drift_check.py` to the hardcoded list in
   `ci.yml` **in this same PR** (else F14 repeats). **The real conda path cannot run in ubuntu CI** — state this
-  in the tool docstring and AGENTS.md, and add a documented **manual-verify** invocation for the owner.
+  in the tool docstring and AGENTS.md, and add a documented **manual-verify** invocation for the Overtoad.
 - **Acceptance criteria.** The **synthetic dist-info fixture is the real gate**: a synthetic `juniper-x` below
   its floor → `BELOW_FLOOR` (exit non-zero), at/above → `OK`, absent → `MISSING`; the tool **never** hardcodes
   an env name (greps clean for `JuniperCanopy1` as a literal). *Optional manual spot-check (not a CI criterion;
@@ -428,7 +428,7 @@ proves insufficient.
 #### 6.7 E-4 — Per-file coverage-gap mapper (advisory-first)
 
 **SHAPE (verbatim):** *advisory first.* Read-only reporter (exit 0) hosted in `juniper-ci-tools` + dogfood test
-in juniper-ml; promote to a blocking per-file gate per-repo with owner sign-off only. Isolate the numpy-2.x
+in juniper-ml; promote to a blocking per-file gate per-repo with Overtoad sign-off only. Isolate the numpy-2.x
 dotted-`--cov` workaround behind a documented shim.
 
 - **Design sketch.** New module + console script in `juniper-ci-tools/juniper_ci_tools/` (mirroring the existing
@@ -452,7 +452,7 @@ dotted-`--cov` workaround behind a documented shim.
   isolated and documented; the juniper-ml dogfood/drift test passes.
 - **Risk + rollback.** Medium. Risk: coverage-tool fragility across repos. Mitigation: advisory exit-0 +
   documented shim; opt-in per repo. Rollback: do not adopt per-repo; the ci-tools module is inert until
-  invoked. Promotion to a blocking gate requires separate owner sign-off (OQ below).
+  invoked. Promotion to a blocking gate requires separate Overtoad sign-off (OQ below).
 - **Owner repo.** ml → ci-tools. **JR-ID.** TBD — none invented.
 
 #### 6.8 M-1 — `known_misses.yaml` RUBRIC-consult (minimal)
@@ -514,7 +514,7 @@ is structural-only + a documented manual smoke-verify step.
   `tests/test_template_agent_skill_lint.py`) asserting frontmatter (opus+max, user-only, declared MCP/tools)
   and that the bounded state machine wires to real artifacts + a teardown step. **ci.yml wiring note:** add its
   `python3 -m unittest -v` line in the same PR. **The live boot cannot run in ubuntu CI (no conda, no
-  services)** — gate is **structural-only**; ship a documented **manual smoke-verify** step the owner runs.
+  services)** — gate is **structural-only**; ship a documented **manual smoke-verify** step the Overtoad runs.
 - **Acceptance criteria.** Stage 0: a recorded proceed/kill verdict with first-party evidence. Stage 1: against
   a deliberately-broken canopy, the Skill boots, fails the health probe, and reports the live traceback
   `file:line` (the "green tests / dead app" catch); teardown leaves no orphan python (verify via the reaper
@@ -567,9 +567,9 @@ Plan-B. **App-level** — owned by the app (canopy first), **not** part of the s
   `juniper-service-core`, it carries its own tests + `ci.yml` there. **Not** a juniper-ml `tests/` gate.
 - **Acceptance criteria.** Booting canopy with a deliberately-downgraded `juniper-*` wheel **fails loud** at
   startup with a clear dep/floor/installed message; a satisfied env boots normally; an escape-hatch env var (if
-  the owner wants one) is honored and documented.
+  the Overtoad wants one) is honored and documented.
 - **Risk + rollback.** Low-medium. Risk: a false-positive at boot blocking a legitimate start. Mitigation:
-  clear message + an optional documented escape-hatch env var (owner to decide). Rollback: remove the
+  clear message + an optional documented escape-hatch env var (Overtoad to decide). Rollback: remove the
   self-check call (single call site).
 - **Owner repo.** canopy (app change) + candidate `juniper-service-core` (shared helper). **JR-ID.** TBD —
   none invented.
@@ -578,7 +578,7 @@ Plan-B. **App-level** — owned by the app (canopy first), **not** part of the s
 
 ## 7. Phased Single-Work-Unit PR Sequence + Dependency Graph
 
-One PR per unit. **Never merge to main — the owner approves every merge** (and all PyPI/deploy gates). Every
+One PR per unit. **Never merge to main — the Overtoad approves every merge** (and all PyPI/deploy gates). Every
 `util/`- or `prompts/`-surface PR ships its `tests/test_*.py` gate **and** its `ci.yml` line **and** its
 `AGENTS.md` update (tree + Tests inventory) in the **same** PR. Where CI cannot exercise the real path, the gate
 is structural-only and the PR carries a documented manual-verify note (do not let "test passes / reality
@@ -693,7 +693,7 @@ Each enhancement mapped to the design-of-record decisions/open-questions
 
 ---
 
-## 9. Open Questions for the Owner
+## 9. Open Questions for the Overtoad
 
 1. **Near-term scope.** Is **Phase 1 alone** (PR-1..PR-4, with G-3 gated on PR-2) the approved near-term scope,
    with Phases 2 and 3 re-confirmed at their own gates? (Recommended.)
@@ -704,7 +704,7 @@ Each enhancement mapped to the design-of-record decisions/open-questions
    not a separate `intent-reviewer` subagent — promote to a standalone agent only if the fold-in proves
    insufficient.
 4. **E-4 host + posture.** Confirm E-4 is hosted in **`juniper-ci-tools`** and ships **advisory-first**
-   (exit 0), with promotion to a blocking per-file gate requiring separate per-repo owner sign-off.
+   (exit 0), with promotion to a blocking per-file gate requiring separate per-repo Overtoad sign-off.
 5. **OQ resolutions.** Confirm **OQ-2 reject** (no DB backend — escalated from DOR "future work"), **OQ-5 keep
    user-only** (retain `disable-model-invocation: true`), and **OQ-3 defer** (no new agent types beyond
    E-5/E-7 now).
@@ -740,11 +740,11 @@ Anchor-grounding and convention/RUBRIC fidelity **passed**; the feasibility and 
 
 ## 11. Approval Gate Statement
 
-**Nothing in this plan is implemented until the owner explicitly approves this document.** Implementation
-(Phase 6 of the enhancement effort) begins **only** on the owner's explicit approval, and **only** for the
+**Nothing in this plan is implemented until the Overtoad explicitly approves this document.** Implementation
+(Phase 6 of the enhancement effort) begins **only** on the Overtoad's explicit approval, and **only** for the
 approved scope (recommended: Phase 1 alone — PR-1..PR-4, with G-3 gated on PR-2). Each accepted unit then
 proceeds as a single-work-unit PR under worktree isolation
-(`/home/pcalnon/Development/python/Juniper/worktrees/`), **never merged to main without owner sign-off**, each
+(`/home/pcalnon/Development/python/Juniper/worktrees/`), **never merged to main without Overtoad sign-off**, each
 shipping its `tests/` gate + `ci.yml` line + `AGENTS.md` update in the same PR. This approval gate is the
 natural **thread-handoff point**: the implementing thread starts fresh from the approved scope, verifying its
 starting state with `git rev-parse --short HEAD` (expect a descendant of `79a9eda`),

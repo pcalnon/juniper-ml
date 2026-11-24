@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: Cursor flood-4 consolidation, canopy#792 (BSD base64 refuses `base64 -w0 FILE`); flood-3 record §6
 
 Load with -p 2026-11-07_flood4_canopy_force_not_linux. FLOOD4_SIM_MODE selects:

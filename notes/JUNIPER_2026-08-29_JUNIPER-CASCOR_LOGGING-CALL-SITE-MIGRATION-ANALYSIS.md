@@ -6,7 +6,7 @@
 **License**: MIT License
 **Version**: 0.7.1
 **Last Updated**: 2026-08-29
-**Status**: ANALYSIS — **RECONCILED 2026-09-02**; answers Q5 of [`JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-REDESIGN-DESIGN.md`](JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-REDESIGN-DESIGN.md), **and owner decision 5 is still open**
+**Status**: ANALYSIS — **RECONCILED 2026-09-02**; answers Q5 of [`JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-REDESIGN-DESIGN.md`](JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-REDESIGN-DESIGN.md), **and Overtoad decision 5 is still open**
 **Tracks**: [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573)
 **Measured at**: cascor `67d7ea35`
 

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-08-26
 Status: ad-hoc -- investigation (T6 tail §4: the requirements cross-view inconsistency)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md §11 and
          the v5-1 row of its status table (where the 52 / 149 / trailing-period counts are recorded);
          util/requirements_consolidate.py (--check-roundtrip, which covers by-area ONLY)

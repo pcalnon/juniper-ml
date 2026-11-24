@@ -1,12 +1,12 @@
 """
-Record H2's and H4's landing, the owner's 2026-10-21 rulings and the new task C9 in the turing bring-up plan (v1.4.3).
+Record H2's and H4's landing, the Overtoad's 2026-10-21 rulings and the new task C9 in the turing bring-up plan (v1.4.3).
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon (authored via Claude Code)
 Created: 2026-10-21
 Status: ad-hoc — one-off (the H2 / H4 record PR)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-10-15_JUNIPER-ML_TURING-HOST-BRINGUP-DEVELOPMENT-PLAN.md (§18, §18.1, §18.2, §18.3);
          juniper-ml#2294 (H2), juniper-ml#2295 (H4); util/ad-hoc/2026-10-20_turing_g1_g4_record.py (the pattern)
 
@@ -18,7 +18,7 @@ upload (E-LAND-2). Each edit reports `present`, `applied` or `MISSING`; if any a
 The edits, all in the plan:
   1. the Version line, 1.4.2 -> 1.4.3. Only from 1.4.2: another version is reported and left alone;
   2. §18's opening paragraph names the following session and its handoff;
-  3. §18.1 gains the owner's two rulings of 2026-10-21: the split of H2, H4 and H5, and Serena's edit tools;
+  3. §18.1 gains the Overtoad's two rulings of 2026-10-21: the split of H2, H4 and H5, and Serena's edit tools;
   4. §18.2 gains rows for H2 and H4 (landed), C9 (new) and H5 (with the "mac dev" session);
   5. §18.3 gains errata E-SPLIT, E-H4-WHEEL and E-SERENA-EDIT.
 
@@ -41,7 +41,7 @@ H4_PR, H4_SHA = "juniper-ml#2295", "a005063e"
 
 VERSION_OLD = "- **Version**: 1.4.2 — v1.4.1 plus G1's landing and G4's promotion (§18.2's G1 and G4 rows; errata E-G1 and E-DUP in §18.3; 2026-10-20). v1.4.1 was"
 VERSION_NEW = (
-    "- **Version**: 1.4.3 — v1.4.2 plus H2's and H4's landing and the owner's rulings of 2026-10-21 (§18.1; §18.2's H2, H4, C9 and H5 rows;"
+    "- **Version**: 1.4.3 — v1.4.2 plus H2's and H4's landing and the Overtoad's rulings of 2026-10-21 (§18.1; §18.2's H2, H4, C9 and H5 rows;"
     " errata E-SPLIT, E-H4-WHEEL and E-SERENA-EDIT in §18.3; 2026-10-21). v1.4.2 was v1.4.1 plus G1's landing and G4's promotion (§18.2's G1 and G4"
     " rows; errata E-G1 and E-DUP in §18.3; 2026-10-20). v1.4.1 was"
 )
@@ -49,7 +49,7 @@ VERSION_NEW = (
 INTRO_ANCHOR = f"G1 and G4's promotion landed in the following session (v1.4.2), whose handoff is `{PICKED_UP}`."
 INTRO_ADDED = f" H2 and H4 landed in the session after that (v1.4.3), whose handoff is `{THIS_HANDOFF}`."
 
-RULINGS_ANCHOR = "- No new decision ruling. The E2-first order of §17.1 stood. E2 went first, and the G-arc ran while E2 waited on the owner's Little Snitch approval.\n"
+RULINGS_ANCHOR = "- No new decision ruling. The E2-first order of §17.1 stood. E2 went first, and the G-arc ran while E2 waited on the Overtoad's Little Snitch approval.\n"
 RULINGS_ADDED = (
     "- **The split of H2, H4 and H5 (2026-10-20).** H2 and H4 to the \"code signing\" session, H5 to the \"mac dev\" session (E-SPLIT).\n"
     "- **Serena's edit tools (2026-10-21).** H4 follows D10 as written: the stock claude-code context, which excludes the shell tool, with Serena's"
@@ -65,7 +65,7 @@ ROWS = (
     " `util/claude_agent_guard.py` to show the guard denies each item under the rule the agent cites (43 cases) and passes the agent's own"
     " procedure (25). `util/ad-hoc/2026-10-20_turing_h2_mutation_check.py` kills 28 of 28 mutants, six of them in the guard. G-AGENT's static"
     " half holds; its H3 denials wait on C8 and C9. **Install pending:** the primary checkout still has 6 agents, so `bash util/install_agents.bash`"
-    " (9 links) follows the owner's C8 step 1 fast-forward |\n"
+    " (9 links) follows the Overtoad's C8 step 1 fast-forward |\n"
     f"| H4 | landed; **live check blocked** | {H4_PR} (`{H4_SHA}`). `util/mcp_setup.bash [checkout]` writes `<checkout>/.mcp.json`'s Serena entry:"
     " `uvx --from git+https://github.com/oraios/serena@<commit> serena start-mcp-server --context <context> --project <checkout>"
     " --open-web-dashboard False`. The pin is `conf/hosts/turing/mcp.json`: v1.7.0 at `949a27ef1e5fda1a6e7b561e777bcece345c6ffd`, on the claude-code"
@@ -74,13 +74,13 @@ ROWS = (
     f" `--project` fixes audit A2-F1 and running it per checkout fixes A2-F4 (`{AUDIT}`). 35 tests in `tests/test_mcp_setup.py`, also on"
     " `host-tooling-macos`; `util/ad-hoc/2026-10-21_turing_h4_mutation_check.py` kills 20 of 20 mutants. **`timeout 30 claude mcp list` waits on"
     " E-H4-WHEEL** |\n"
-    "| C9 | **new** (owner ruling 2026-10-21; AGENT) | Extend `util/claude_agent_guard.py` and its settings matcher to MCP file-writing tools, Serena's"
+    "| C9 | **new** (Overtoad ruling 2026-10-21; AGENT) | Extend `util/claude_agent_guard.py` and its settings matcher to MCP file-writing tools, Serena's"
     " first: `replace_content`, `replace_symbol_body`, `insert_after_symbol`, `insert_before_symbol`, `rename_symbol`, `replace_in_files`, the line"
     " tools and the memory writers. Deny a call whose path, resolved against the server's project root, reaches `.git/`, `~/.ssh`, `~/.gnupg` or"
-    " the Claude settings, with a test per tool and rule in `tests/test_claude_agent_guard.py`. The owner re-installs the guard (C8's path)."
+    " the Claude settings, with a test per tool and rule in `tests/test_claude_agent_guard.py`. The Overtoad re-installs the guard (C8's path)."
     " H3 depends on it (E-SERENA-EDIT) |\n"
     "| H5 | with the \"mac dev\" session | The `auditor` agent audits `~/.claude/mcp-servers/`'s two unvetted entries, one `notes/` audit. Its"
-    " record (PR, merge, the owner's enable-or-remove decision) joins the next revision. A server it would enable with file-writing tools"
+    " record (PR, merge, the Overtoad's enable-or-remove decision) joins the next revision. A server it would enable with file-writing tools"
     " falls under C9 |\n"
 )
 
@@ -88,9 +88,9 @@ ERRATA_ANCHOR = (
     "Before starting a handoff's task, check `gh pr list` for it and `ListAgents` for another session on the same handoff.\n"
 )
 ERRATA_ADDED = (
-    "- **E-SPLIT (two answers to one question).** The \"code signing\" and \"mac dev\" sessions each asked the owner how to split H2, H4 and H5."
+    "- **E-SPLIT (two answers to one question).** The \"code signing\" and \"mac dev\" sessions each asked the Overtoad how to split H2, H4 and H5."
     " \"code signing\" got H2 and H4 for itself and H5 for \"mac dev\" (2026-10-20). \"mac dev\" got all three for itself, about 10 hours later"
-    " and after H2 had merged. The sessions kept the first split by cross-session message, and the owner was told. One session asks; the"
+    " and after H2 had merged. The sessions kept the first split by cross-session message, and the Overtoad was told. One session asks; the"
     " other hears the answer by message.\n"
     "- **E-H4-WHEEL (Serena on Intel macOS).** Serena v1.7.0, like 2.0.0 and 2.1.0, pins `cryptography==50.0.0` exactly (\"transitive deps pinned"
     " for security\"), and cryptography ships no x86_64 or universal2 macOS wheel from 49 on. On turing, `uvx` therefore builds 50.0.0 from"
@@ -109,7 +109,7 @@ ERRATA_ADDED = (
     " therefore writable through Serena: the class signing plan K12's GIT-SIGNING-FILE rule closes for Claude Code's own tools. In a worktree"
     " `.git` is a file, and the hooks sit outside the root.\n"
     "  - Serena's `read_only: true` (in `.serena/project.yml`, or per checkout in `.serena/project.local.yml`) removes every editing tool, the"
-    " shell tool included. The owner kept the tools and ruled C9 instead (§18.1).\n"
+    " shell tool included. The Overtoad kept the tools and ruled C9 instead (§18.1).\n"
 )
 
 

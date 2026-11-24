@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-15
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: reports/2026-09-15_round-39-consensus/ (the lane reports);
          juniper-data#404 (merged 2026-09-16, squash 1bbb6976)
 
@@ -27,7 +27,7 @@ Four corrections, each re-verified against the repos before being written:
 4. ``APD-DATA-047``'s updated text quotes two figures that lane A and lane B1 both refuted, and
    which juniper-data#404 corrected in the code: the largest genuine count is Citigroup's 2.92e10
    (not AAPL's 1.70e10, which is the largest in the DEFAULT 14-SYMBOL PREFIX), and the (1e11, 1e13]
-   band holds 18 observations across 9 series, not 24. The owner was being asked to ratify a bound
+   band holds 18 observations across 9 series, not 24. The Overtoad was being asked to ratify a bound
    against two wrong numbers.
 """
 
@@ -95,7 +95,7 @@ sub(
     "the 5.9× an earlier draft of this row claimed against AAPL's 1.70e10, which is the largest in the "
     "DEFAULT 14-SYMBOL PREFIX and not in the universe. 18 observations across **9** series sit in "
     "(1e11, 1e13]; the 24 belongs with the 39 observations above 1e11, and this row conflated the two "
-    "bands. **What the owner is really choosing:** the four largest values that PASS the 1e11 ceiling "
+    "bands. **What the Overtoad is really choosing:** the four largest values that PASS the 1e11 ceiling "
     "are themselves typos — Pentair 9.84e10 (592× its own median), Packaging Corp 8.99e10 (949×), "
     "Regency Centers 8.19e10 (483×), Mid-America 7.50e10 (659×) — and the relative filter catches every "
     "one, delivering all four correctly. The ceiling cannot be tightened to reach them without crossing "

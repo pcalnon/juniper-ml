@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-15
 Status: ad-hoc -- one-off
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: juniper-data#404; [[register_round39_head_typo]] (the sibling script that filed the rows)
 
 A row filed without a sentence in this block is a row with no stated status, which is the
@@ -33,13 +33,13 @@ def sub(old: str, new: str, label: str) -> None:
     print(f"  ok  {label}")
 
 
-OLD_047 = """- `APD-DATA-047` — **owner decision owed: ratify or remove.** It was added by the session
+OLD_047 = """- `APD-DATA-047` — **Overtoad decision owed: ratify or remove.** It was added by the session
   implementing the `-043` ruling, not by a ruling, and a bound nobody chose is exactly the kind
   of thing that becomes load-bearing by accident. Removing it re-opens the early-typo blind
   spot the causal median created; keeping it needs the number owned.
 """
 
-NEW_047 = """- `APD-DATA-047` — **owner decision owed: ratify or remove.** It was added by the session
+NEW_047 = """- `APD-DATA-047` — **Overtoad decision owed: ratify or remove.** It was added by the session
   implementing the `-043` ruling, not by a ruling, and a bound nobody chose is exactly the kind
   of thing that becomes load-bearing by accident. Removing it re-opens the early-typo blind
   spot the causal median created; keeping it needs the number owned.

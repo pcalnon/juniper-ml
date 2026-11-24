@@ -6,7 +6,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-09-24
 Status: ad-hoc -- one-off (canopy E2E arc, Phase 9: landing the ledger's PR)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/push_signed_commit.py (each group is one call of its ``main``);
          memory reference_signed_commit_api_499_on_large_payloads.md
 

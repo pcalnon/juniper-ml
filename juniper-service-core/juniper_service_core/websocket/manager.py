@@ -396,8 +396,9 @@ class WebSocketManager:
         Returns:
             ``True`` once the socket is active. ``False`` when ``replayed_through`` was given and
             continuity cannot be kept -- a frame the client still needs was evicted from the
-            replay buffer before it could be sent (or replay is disabled), a send failed, or the
-            socket was disconnected or closed meanwhile. The socket is then not promoted: close
+            replay buffer before it could be sent (or replay is disabled), ``replayed_through`` is
+            above the last seq numbered, a send failed, or the socket was disconnected or closed
+            meanwhile. The socket is then not promoted: close
             it so the client reconnects, and :meth:`disconnect` it (if nothing has yet) to release
             its connection and per-IP slots. Without ``replayed_through`` the promotion is
             unconditional, as it always was, and returns ``True``.
@@ -505,9 +506,14 @@ class WebSocketManager:
     def replay_since(self, last_seq: int) -> list[dict]:
         """Return buffered messages with ``seq > last_seq``, in order.
 
+        ``last_seq`` equal to the last seq numbered returns ``[]``: the client holds everything.
+
         Raises:
-            ReplayOutOfRange: If ``last_seq`` is older than the oldest buffered message, or if
-                the replay buffer is disabled (size 0).
+            ReplayOutOfRange: If ``last_seq`` is older than the oldest buffered message, if it is
+                above the last seq numbered (no client can hold such a seq, so nothing can vouch
+                for its continuity), or if the replay buffer is disabled (size 0). Through
+                juniper-service-core 0.7.2, with messages buffered, a ``last_seq`` above the last
+                seq numbered returned ``[]``.
         """
         with self._seq_lock:
             if self._replay_buffer_max_size <= 0:
@@ -519,6 +525,9 @@ class WebSocketManager:
             oldest_seq = self._replay_buffer[0].get("seq", 0)
             if last_seq < oldest_seq - 1:
                 raise ReplayOutOfRange(f"Requested seq {last_seq} older than oldest buffered seq {oldest_seq}")
+            newest_seq = self._next_seq - 1
+            if last_seq > newest_seq:
+                raise ReplayOutOfRange(f"Requested seq {last_seq} is above the last seq numbered, {newest_seq}")
             # Replay-buffer seqs are monotonically increasing (assigned under ``_seq_lock``), so
             # a bisect_right over the deque finds the cut in O(log n) probes, and only the tail
             # after it is copied. A resume catch-up reads the buffer once per pass, and copying

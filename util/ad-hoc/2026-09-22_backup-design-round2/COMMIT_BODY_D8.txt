@@ -1,4 +1,4 @@
-Records three owner rulings of 2026-09-24 in the backup design of record
+Records three Overtoad rulings of 2026-09-24 in the backup design of record
 (notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md):
 
 - D-8 amended: the one log scrub runs before P0, as P0.5a item 4, not "after P1";
@@ -8,7 +8,7 @@ Records three owner rulings of 2026-09-24 in the backup design of record
 
 Consensus rounds 4 to 8 (archived verbatim in
 notes/JUNIPER_2026-09-24_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-4-RECORD.md) found defects
-in section 8's procedure itself. The owner ruled this change narrow, so section 8 goes behind a
+in section 8's procedure itself. The Overtoad ruled this change narrow, so section 8 goes behind a
 STOP block that lists them, and a follow-up change fixes the procedure. The design reads two of
 the release's phrases narrowly and says so (note 10.1g): "Read-only steps" are read as reads that
 change nothing outside a scratch directory and run no Duplicati binary, which holds P0 step 0(c);
@@ -16,7 +16,7 @@ the transcript limit covers every round of the arc, archived and merged.
 
 Also: text the 2026-09-22 rulings left stale is repaired; "all 877 dindex volumes" is corrected
 (434 dindex, 434 dblock, 9 dlist); six owed section-12 rows are added; the round-2 record's
-"15 defects, all applied" becomes 13 of 15; note 10.2b moves ahead of 10.2c; and the owner's
+"15 defects, all applied" becomes 13 of 15; note 10.2b moves ahead of 10.2c; and the Overtoad's
 SMART-script refactor that closing ml#2045 dropped is adopted, with one clock read instead of two.
 
 Rounds 4 to 8 ran on 2026-09-24; round 8's corrections were folded into the edit script and the

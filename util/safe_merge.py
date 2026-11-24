@@ -24,7 +24,7 @@ benefit thrown away. Two concrete cases:
   CI ever run on that head. It introduced the lint violation that reddened ``main``.
 
 Both are *worse than not syncing at all*: the stale-but-tested head was replaced by a
-fresh-but-untested one. GitHub did not stop either merge because the owner holds an
+fresh-but-untested one. GitHub did not stop either merge because the Overtoad holds an
 ``always`` ruleset bypass, which makes every required check advisory for that actor.
 
 This tool is the discipline that bypass removes. It refuses to merge unless the required
@@ -33,7 +33,7 @@ contexts for the PR's **current head** have all finished and none failed.
 What it is NOT
 --------------
 **It is not enforcement.** A script can be skipped. Enforcement would mean narrowing the
-owner's ``RepositoryRole 5`` bypass, which is a separate decision with its own costs (that
+Overtoad's ``RepositoryRole 5`` bypass, which is a separate decision with its own costs (that
 entitlement is genuinely load-bearing -- see the bypass analysis in ml#1012). Use this
 because merging untested code is undesirable, not because something forces you to.
 
@@ -55,7 +55,7 @@ same checks-green guarantee this tool enforces locally.
 
 The net is **gated on the repo's ``allow_auto_merge``**, and that gate is load-bearing: where
 the setting is false, ``--auto`` does not arm at all -- it silently falls back to an
-**immediate merge**, which with the owner's ``always`` ruleset bypass can land a PR whose
+**immediate merge**, which with the Overtoad's ``always`` ruleset bypass can land a PR whose
 checks never finished. Arming blind would reintroduce the exact bug this tool prevents.
 (Enabled fleet-wide 2026-08-19; the gate stays because a setting can be turned off again.)
 
@@ -324,7 +324,7 @@ REPO_TIMEOUTS = {
     # max 1061: #1981, a 2005 s healthy pass, had slid out -- one head at the window's edge halves
     # this max. At 680, 2800 exceeds 4x p90 (2720) by 80 s. NOT re-pinned: a window edge moving is
     # not evidence the worst case improved, and while the handoff's OWNER DECISION 2 is open a
-    # stale-reading row goes to the owner rather than being re-pinned.
+    # stale-reading row goes to the Overtoad rather than being re-pinned.
     "juniper-ml": 2800,
     # RAISED 2400 -> 3300 on 09-22: p90 1651, max 2589 (#405, a single healthy pass) -> window
     # (2589, 6604], mid 4596, so TIMEOUT_CEILING binds first. Was p90 955 / max 2126 on 09-09.
@@ -362,7 +362,7 @@ REPO_TIMEOUTS = {
     #
     # 09-22: p90 1264, max 1626 (30 healthy heads) -> window (1626, 5056], which now CONTAINS
     # 3300. So the row would pass the pin today. Recorded, not acted on: the ruling above
-    # stands, and re-including the row is the owner's call.
+    # stands, and re-including the row is the Overtoad's call.
     "juniper-cascor-client": 3300,
     # RAISED 2400 -> 3300 on 09-22: p90 1545, max 2565 (#206, a single healthy pass) -> window
     # (2565, 6180], mid 4372, so TIMEOUT_CEILING binds first. Was p90 896 / max 1725 when first
@@ -573,7 +573,7 @@ def repo_allows_auto_merge(owner: str, repo: str) -> bool:
     """Is server-side auto-merge available on this repo?
 
     Load-bearing gate. Where `allow_auto_merge` is FALSE, `gh pr merge --auto` does not arm
-    -- it silently falls back to an IMMEDIATE merge, which combined with the owner's `always`
+    -- it silently falls back to an IMMEDIATE merge, which combined with the Overtoad's `always`
     ruleset bypass can land a PR whose required checks never finished. That is the exact
     failure this tool exists to prevent, so the net must never be armed blind.
 

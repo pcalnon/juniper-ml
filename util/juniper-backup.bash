@@ -456,7 +456,7 @@ function validate_external_media() {
 
 #######################################################################################################################################################################################################################################################
 # Verify an archive WITHOUT a YubiKey. `--list-packets` parses the OpenPGP structure and confirms the recipient key ids, so it is safe to run unattended.
-#   It does NOT prove the tar inside is intact. The PIPELINE that produces it was proven byte-for-byte on 2026-08-26 by util/ad-hoc/2026-08-26_backup_restore_drill.bash; what remains unproven is that the owner's YubiKey-backed key can decrypt a REAL archive. See the lifecycle design SS6.4.2 q3.
+#   It does NOT prove the tar inside is intact. The PIPELINE that produces it was proven byte-for-byte on 2026-08-26 by util/ad-hoc/2026-08-26_backup_restore_drill.bash; what remains unproven is that the Overtoad's YubiKey-backed key can decrypt a REAL archive. See the lifecycle design SS6.4.2 q3.
 function verify_archive() {
     local path="$1"
     [[ -s "${path}" ]] || { echo "FATAL: archive is empty: ${path}" >&2; return 1; }

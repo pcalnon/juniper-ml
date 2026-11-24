@@ -107,7 +107,7 @@ token it never signed — except two findings that belong elsewhere:
 - **F1 D-2** asks the guard dry-run to refuse an empty URL. That is design text, so it belongs to Phase B and is
   done in P0 step 10's fence.
 - **F2 D-3** asks for fleet-PR actions — closing #2129, and the stale statements in #2128 and #2119. Those are
-  the owner's, and were put to the owner rather than taken.
+  the Overtoad's, and were put to the Overtoad rather than taken.
 
 ## What round 3 was for
 
@@ -159,7 +159,7 @@ Lane B adds four defects. All four are in the procedure on `main` as well, outsi
 
 Lane C adds:
 
-- the re-key's dry-run test is not hermetic on the owner's host;
+- the re-key's dry-run test is not hermetic on the Overtoad's host;
 - the real code paths have too few tests (the mutant survivors).
 
 ## The handoff validations
@@ -213,7 +213,7 @@ Folded in on 2026-10-08 by session 097ae87b, in three lanes that owned disjoint 
 installer, the env contract and the units), C2 (the re-key, its gate and the password-init hand start) and P
 (the clearing script, the design and the assessment). Their briefs and reports are archived below. Every one of
 round 3's 15 DEFECTs and 32 NITs is fixed, or recorded in the assessment's §8 as residue with a reason. The
-assessment's §8 "Round 3" entry gives the disposition by finding id. The owner made one ruling (R3B DEFECT-1, 2026-10-08): retention is
+assessment's §8 "Round 3" entry gives the disposition by finding id. The Overtoad made one ruling (R3B DEFECT-1, 2026-10-08): retention is
 **suspended** through recovery, so step 10's edits remove `retention-policy`; after AC-4's first drill passes it is
 restored as `2W:1D,6M:1W,2Y:1M,5Y:2M`, replacing `1W:1D,1M:1W,1Y:1M,3Y:2M`.
 
@@ -256,7 +256,7 @@ The assessment's §8 "Round 4" entry has the disposition by finding id.
 
 A two-lane confirmation round on round 4's delta (local commit `9ce2f602`), code and procedure: 0 BLOCKER,
 4 DEFECT, 12 NIT. The code lane found the installer's hint still said "pause" where round 4 says stop, and an
-env-file mode check that settled the owner's open decision O-12. The installer now accepts either of O-12's two
+env-file mode check that settled the Overtoad's open decision O-12. The installer now accepts either of O-12's two
 forms. The procedure lane found two gaps:
 
 - the server's default options (`BackupID` −1) are invisible to `export`, so step 8 now clears them with
@@ -351,7 +351,7 @@ negatives).
   lane needs it (none does).
 - Never touch anything under `/mnt/Backups/`.
 - Never print environment variables, tokens or credential files, including in debugging listings.
-  Never send the owner's email address or any credential to an external service (no network calls
+  Never send the Overtoad's email address or any credential to an external service (no network calls
   are needed for this round at all).
 - Never `git stash`, `git checkout`, `git commit`, `git push`, or modify a tracked file. Read-only
   git (`git show`, `git diff`, `git log`) is fine.
@@ -636,7 +636,7 @@ Every `--option` used or asserted (the installer's `--dry-run`/`--update-backup-
 
 - **`--dry-run` of `wipe-encryption` flips the copy to WAL.** `SQLiteLoader.LoadConnectionAsync` (`WipeEncryption.cs:106`, `Helper.cs:71,111`) is not in the snapshot. Corroboration only: `journal_mode` is a UTF-16LE literal in `/usr/lib/duplicati/SQLiteHelper.dll` (not the `=WAL` spelling, which is only in `SQLite-net.dll`). Test: `PRAGMA journal_mode` on a scratch copy before/after one `--dry-run` — requires running `duplicati-database-tool`, which this round forbids.
 - **`ComputeHashToHex` hashes the UTF-8 bytes of the key** (what `rekey:176` assumes). The extension lives in `Duplicati.Library.Utility.dll` (not in the snapshot; no IL tools on the box). If wrong, the gate reports every blob `under-another-key` and refuses to shred — fail-closed. Test: on a root-made copy of a database known to be encrypted under a known key, compare the 64-char slice with `sha256(key.encode())`.
-- **`DirectoryHasPermissionUserRWOnly`'s exact predicate** (e.g. whether 0600 or 0500 passes): outside the snapshot; only its message literals were read (above). Test: the owner's rehearsal in step 0.
+- **`DirectoryHasPermissionUserRWOnly`'s exact predicate** (e.g. whether 0600 or 0500 passes): outside the snapshot; only its message literals were read (above). Test: the Overtoad's rehearsal in step 0.
 - **Whether `ConnectionString` has rows in the Yamaguchi database** (DEFECT-4's reach): no document in the set states it, and reading the live database is outside this lane.
 
 ## Host-state observations (stat / read-only queries only; no action taken)
@@ -677,7 +677,7 @@ Tree: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cac
 
 ### BLOCKER-1 — `systemctl revert duplicati.service` deletes the installed D-6 unit on this host; the encrypt start then runs the vendor unit
 
-- **Where**: `util/ad-hoc/2026-10-03_rekey_settings_key.bash:156` (`run systemctl revert "${UNIT}"`), `:109` (pre-flight tells the owner to run `systemctl revert` by hand), `:38-41` (header: "the drop-in is removed; the unit is back to the installed text"); D §8 clearing block L1875-1878 ("removes with `systemctl revert`"), D P1 step 1 L2374, A note 6a L233; pinned by `tests/test_duplicati_wrapper_contract.py:198` (`order` requires the string `systemctl revert duplicati.service`).
+- **Where**: `util/ad-hoc/2026-10-03_rekey_settings_key.bash:156` (`run systemctl revert "${UNIT}"`), `:109` (pre-flight tells the Overtoad to run `systemctl revert` by hand), `:38-41` (header: "the drop-in is removed; the unit is back to the installed text"); D §8 clearing block L1875-1878 ("removes with `systemctl revert`"), D P1 step 1 L2374, A note 6a L233; pinned by `tests/test_duplicati_wrapper_contract.py:198` (`order` requires the string `systemctl revert duplicati.service`).
 - **Claim**: the revert removes only the runtime drop-in and leaves the unit "back to the installed text".
 - **Evidence**: `man systemctl` (systemd 259.5 on this host): *"if the unit file has a vendor-supplied version (i.e. a unit file located below /usr/) any matching persistent or runtime unit file that overrides it is removed, too."* A vendor unit exists and will still exist on the recovery day: `dpkg -L duplicati` lists `/lib/systemd/system/duplicati.service` (= `/usr/lib/systemd/system/duplicati.service`, 461 B, edited in place 09-21, flagged by `dpkg -V duplicati`); nothing in Phase C or P0 removes it (A I-25 L169 relies on it being *shadowed* by `/etc/systemd/system/duplicati.service`, D §4.3 item 10 L267 records it). The installer installs to `UNIT_DST=/etc/systemd/system/duplicati.service` (`util/install_duplicati_service.bash:44`). So line 156 removes the D-6 copy; line 158 reloads; line 160 starts the **vendor** unit (`User=duplicati`, `Restart=always`, no `LoadCredential=`, `ExecStart=/home/duplicati/bin/duplicati-wrapper.bash '--daemon-opts="${DAEMON_OPTS}"'`). The enablement symlink `/etc/systemd/system/multi-user.target.wants/duplicati.service -> /usr/lib/systemd/system/duplicati.service` survives, so a reboot also runs the vendor unit.
 - **Consequence, walked** (Procedure A, P0.5b, after the decrypt start — every field cleartext on disk, keys already swapped at `:153-154`):
@@ -714,7 +714,7 @@ Tree: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/cac
   - `:121` stop fails → paused (persisted `paused-until`=0, `ServerSettings.cs` L240 / `LiveControls.cs` Init), keys intact, no drop-in.
   - `:132` no `ExecStart=` → stopped, paused, nothing else; recoverable (installer, start, resume by hand — not said).
   - `:144` start fails / `:88` / `:94` (wait) → **drop-in present in `/run/systemd/system/duplicati.service.d/`**, old key in place; the unit may be retrying under `Restart=on-failure` (RestartSec 30 s, burst 5/10 min) and a later success runs **decrypted** with the drop-in; or the server is up, cleartext, paused. The only instruction naming the drop-in is `:109` — `systemctl revert` (BLOCKER-1).
-  - `:153-154` the swap is two `mv`s (D L1877 "one `mv`"); a failure between them leaves `…-key` absent → `LoadCredential=` fails every start until the owner moves `.old` back.
+  - `:153-154` the swap is two `mv`s (D L1877 "one `mv`"); a failure between them leaves `…-key` absent → `LoadCredential=` fails every start until the Overtoad moves `.old` back.
   - `:156-158` → keys swapped, drop-in present or (on this host) the installed unit deleted; DB cleartext.
   - `:160-161` → vendor unit (BLOCKER-1); DB cleartext; keys swapped.
   - `:172-190` gate fails → `sys.exit` under `set -e` skips `:191`: the **copy of the server database stays in `/root/.cache/duplicati-rekey/gate-<ts>.sqlite`** (+ `-wal`/`-shm`). If the encrypt start did not run, that copy is **cleartext and holds the job passphrase** — a new §6-class sink the design's own step 4 (L2259-2262) says must be shredded. Root-only 0700, but new.
@@ -897,7 +897,7 @@ $ … blessed.equal5 (the 5 destinations absent on this host or identical to it)
 48c48  < ENV_DST=/etc/duplicati/env  > ENV_DST=…/inst/existing-env
 12:kept existing …/inst/existing-env (not overwritten; …)     # and NO `would: install -m 0640` line -> :137 fails
 ```
-So `test_first_install_runs_to_the_end_without_a_blessed_file` goes red on the owner's host after P0 step 9, and no test can create an installed file, so the DRIFT branch (`:135-138`) has no rehearsal; today it fires on this host only by accident (the pre-existing `/etc/default/duplicati`) and nothing asserts it.
+So `test_first_install_runs_to_the_end_without_a_blessed_file` goes red on the Overtoad's host after P0 step 9, and no test can create an installed file, so the DRIFT branch (`:135-138`) has no rehearsal; today it fires on this host only by accident (the pre-existing `/etc/default/duplicati`) and nothing asserts it.
 Correction: a test-only destination prefix (`DUPLICATI_INSTALL_PREFIX`, same pattern as `DUPLICATI_INSTALL_BLESSED` at `:54-56`) applied to every `*_DST`, `ENV_DIR`, `DATA_FOLDER`, `CRED_DST`; then write real DRIFT and "kept existing" tests, and reword `:11-20`.
 
 **C-5. The re-key order test is blind to three dangerous re-orderings because it matches FIRST occurrences and `systemctl stop`/`start` each occur three times.**
@@ -965,7 +965,7 @@ Correction: D's clearing block item 3 and note 8a should say "lands with ml#2115
 - **Re-key dry run** (`07_…`): `exit=0`; the 25 lines name every step in the required order — pause (4-6) → stop (7) → drop-in `… $DAEMON_OPTS --disable-db-encryption` (8) → daemon-reload → start (10) → wait (11) → stop (13) → `mv …key …key.old (0600) ; mv …key.new …key` (14) → revert (15) → start (17) → wait → stop (19) → copy + `encrypted-fields=True, every enc-v1 blob …, no drop-in` (20) → `PRAGMA wal_checkpoint(TRUNCATE); VACUUM;` (21) → start (22) → resume (24) → serverstate/shred (25). Nothing executed (`would:` only; no `sudo`, no `systemctl`). `--bogus` → usage `exit=2`; non-root → `FATAL: run with sudo (or --dry-run)` `exit=1`. Pre-flights exercised in dry-run: credential files (only if visible — here "not visible", by design), the installed unit's `ExecStart=` (absent here → fallback, N-6). Skipped (root-only or gated by `DRY_RUN == 0`): root (`:99`), unit active (`:107`), timer disabled (`:108`), stale drop-in (`:109`), API verbs (`:110`, C-7), DB present (`:111`).
 - **Gate in isolation** (`08_…`; the 17-line heredoc extracted verbatim — occurs exactly once in the script — run against scratch SQLite with blobs built as `"enc-v1:" + sha256hex(ct) + sha256hex(key) + ct`): G1 all under K1, flag True, key K1 → PASS (`blobs=5 under-new-key=5`); G2 same DB, K2 → FAIL (`under-another-key=5`); G3 one blob under K2 → FAIL; G4 `Backup.TargetURL` under K2 → FAIL; G5 flag `False` → FAIL; G6 flag absent → FAIL; G7 flag True, zero blobs → FAIL; G8 truncated blob → FAIL; G9 flag `true` lowercase → PASS; G10 blob keyed with a trailing newline vs a cred file without → FAIL (the `rstrip("\n")` at `:175` is load-bearing and consistent with the wrapper's `$(<file)`).
 - **Document of record reproduced** (`09_…`, tree `val/PB/C/repro/`: `git show HEAD:…D` as `notes/…` (sha256 prefix `5d875ed9…` == `origin/main`'s), the four scripts and the 14 STAGE files at their relative paths): `--from-repo` → `5 block(s) rewritten from the repository, 9 already identical, 1 marker(s) retagged`; clearing script → `applied 26, already-present 0; 9 line(s) wrapped; fenced blocks unchanged: 20; … now 2956 lines`; second run → `no change (26 edit(s) already applied) -- idempotent`; `cmp repro/D worktree/D` → `exit=0`, both `f80230470baaf3a0…` (the manifest's hash); `--check` → `0 staged, 14 already current, 0 skipped`; pinned `markdownlint --config .markdownlint.yaml` → exit 0, no output; `awk 'length($0) > 512'` → 0 lines (HEAD's D also 0).
-- **Secret-shape sweep** over the 18 files (`10_…`, `10b_…`): no `hf_`, `pypi-`, `AgEIcHlwaS`, `ghp_`, `github_pat_`, `AKIA`, `xox[abp]-`, `-----BEGIN` hit; a deliberately broad 40+-char base64-alphabet probe hit 78 places, all classified without printing values: 31 forty-hex action SHA pins in `ci.yml`, 46 paths (`/` is in the alphabet), 1 camel-case identifier at `docs/REFERENCE.md:1002` (pre-existing; this set's only REFERENCE.md change is `:2831`). `KEY=`/`PASSPHRASE=`/`PASSWORD=`/`TOKEN=`/`SECRET=` assignments with a non-placeholder value: none — the 11 regex hits are `'x'`/`'y'` (assessment `:342`), `%s`/`(.*` (D `:481, :2018, :2058, :2141, :2239`) and Python code fragments (`key = open(…`, `key = self.tmp`, `SECRET_SHAPED = re.compile(`). E-mail addresses of any domain: none in the 18 files. Owner's local-part: none.
+- **Secret-shape sweep** over the 18 files (`10_…`, `10b_…`): no `hf_`, `pypi-`, `AgEIcHlwaS`, `ghp_`, `github_pat_`, `AKIA`, `xox[abp]-`, `-----BEGIN` hit; a deliberately broad 40+-char base64-alphabet probe hit 78 places, all classified without printing values: 31 forty-hex action SHA pins in `ci.yml`, 46 paths (`/` is in the alphabet), 1 camel-case identifier at `docs/REFERENCE.md:1002` (pre-existing; this set's only REFERENCE.md change is `:2831`). `KEY=`/`PASSPHRASE=`/`PASSWORD=`/`TOKEN=`/`SECRET=` assignments with a non-placeholder value: none — the 11 regex hits are `'x'`/`'y'` (assessment `:342`), `%s`/`(.*` (D `:481, :2018, :2058, :2141, :2239`) and Python code fragments (`key = open(…`, `key = self.tmp`, `SECRET_SHAPED = re.compile(`). E-mail addresses of any domain: none in the 18 files. The Overtoad's local-part: none.
 - **Lint** (`11_…`): `bash -n` + `shellcheck -x -S style` clean on the two new ad-hoc scripts, the installer and the wrapper; `flake8 --max-line-length 512` clean on the five Python files. `util/yamaguchi-pre-backup-guard.bash` (blessed set, not in the manifest) and `2026-09-21_wrap_long_markdown_lines.py` are byte-identical to `origin/main` and clean in the tree.
 
 ## Unverifiable
@@ -1001,7 +1001,7 @@ Archived verbatim (23,918 characters, sha256 `2ca5b4797d59c710`), lifted from th
 **Head**: `5a849222` on `fix/backup-tier2-run-media-installer-failure-unit`, base `main` (branch base `79dc36d5`, rebased on `c01c837e` = merge of ml#2113)
 **Worktree read**: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/agent-ae6bdb203f422cdfa` (nothing written there)
 **Probe scripts and raw outputs**: `<scratch>/val/PB/pr2114/probe{1,2,3,5,6}*` with `probe*.out`, `mutation_check.out`, `pr_body.md`
-**Verdict**: **REFUTED on claims, not on code.** The code changes do what the diff says and the defaults are right for the owner's host (`/run/media/pcalnon`, the two UUID names, `Juniper-8.0.0.python`; Linger=yes; nothing of this lane installed yet). Three things the PR *says* are not what the lane *does*, and one of them is the owner's acceptance instruction, which as written produces `FAILED`. Fixes are small (text in the installer/docs, one validation clause, one reporter title) but they are in files this PR ships.
+**Verdict**: **REFUTED on claims, not on code.** The code changes do what the diff says and the defaults are right for the Overtoad's host (`/run/media/pcalnon`, the two UUID names, `Juniper-8.0.0.python`; Linger=yes; nothing of this lane installed yet). Three things the PR *says* are not what the lane *does*, and one of them is the Overtoad's acceptance instruction, which as written produces `FAILED`. Fixes are small (text in the installer/docs, one validation clause, one reporter title) but they are in files this PR ships.
 
 ---
 
@@ -1009,7 +1009,7 @@ Archived verbatim (23,918 characters, sha256 `2ca5b4797d59c710`), lifted from th
 
 ### BLOCKER-1 — "Mount a stick … Expect result=OK" is false: with the default two-device list, a one-stick run is `FAILED` (runner rc 4), never stamps, and re-runs the whole archive set on every plug-in
 
-The PR's acceptance instruction (installer closing message, `util/install_juniper_backup_timer.bash:208-209`: *"Mount a stick. The .path unit should start a due run … Expect result=OK and verified archives on every mounted stick."*; PR body "Test plan" owner item 2 "the OK (plugged) run"; `docs/REFERENCE.md:722` "Do the first OK run") does not say both configured sticks must be mounted, and the lane cannot reach OK otherwise:
+The PR's acceptance instruction (installer closing message, `util/install_juniper_backup_timer.bash:208-209`: *"Mount a stick. The .path unit should start a due run … Expect result=OK and verified archives on every mounted stick."*; PR body "Test plan" Overtoad item 2 "the OK (plugged) run"; `docs/REFERENCE.md:722` "Do the first OK run") does not say both configured sticks must be mounted, and the lane cannot reach OK otherwise:
 
 - Runner, unchanged accounting: `CONFIGURED_COUNT="${#MEDIA_NAMES[@]}"` (`util/juniper-backup.bash:458`) is the *configured* count (2 by default), `TOTAL_EXPECTED += CONFIGURED_COUNT` per repo (`:576`), and `TOTAL_WRITTEN < TOTAL_EXPECTED` → `exit 4` PARTIAL (`:636-638`).
 - Scheduler, unchanged: only `rc == 0` writes stamps and `result=OK` (`util/juniper-backup-scheduled.bash:86-93`); any other rc → `result=FAILED "runner rc=N"`, no stamp, exit rc → `juniper-backup.service` fails → `OnFailure=` fires.
@@ -1017,9 +1017,9 @@ The PR's acceptance instruction (installer closing message, `util/install_junipe
   - ONE stick: `written and verified: 1 of 2 expected archive copies` → `PARTIAL` → scheduler `FAILED rc=4 (no stamp written)`; `last-run.status` = `FAILED | runner rc=4`; stamps `[]`; the archive IS on the stick.
   - BOTH sticks: `COMPLETE` → `OK (stamped EBC5-F0A3 DFF3-2782)`.
 
-Consequence on the owner's host if the message is followed with one stick: a multi-hour run that ends `FAILED`, a desktop alert (titled for the wrong lane, DEFECT-3), no stamp — so the lane stays "never succeeded", every subsequent `.path`/timer trigger reads `FAILED`, and the next plug-in of the same stick is "due" again and rebuilds the full set (new UUID; nothing prunes — design §7.8 last paragraph, D-10). Right now neither stick is mounted (`findmnt`: only `/mnt/Backups` and the NTFS partition `/run/media/pcalnon/848099D78099CFD2`), so the plan's "(the sticks are plugged in)" (`…RECOVERY-PLAN.md:238`) is not currently true either.
+Consequence on the Overtoad's host if the message is followed with one stick: a multi-hour run that ends `FAILED`, a desktop alert (titled for the wrong lane, DEFECT-3), no stamp — so the lane stays "never succeeded", every subsequent `.path`/timer trigger reads `FAILED`, and the next plug-in of the same stick is "due" again and rebuilds the full set (new UUID; nothing prunes — design §7.8 last paragraph, D-10). Right now neither stick is mounted (`findmnt`: only `/mnt/Backups` and the NTFS partition `/run/media/pcalnon/848099D78099CFD2`), so the plan's "(the sticks are plugged in)" (`…RECOVERY-PLAN.md:238`) is not currently true either.
 
-The design shares the ambiguity (§7.8 `:1506` "fires the same service when either drive appears"; AC-10 `:2306` "produces verified archives on every mounted drive" — satisfied, yet the lane status is FAILED). Minimal PR fix: say "mount BOTH configured sticks (`EBC5-F0A3` and `DFF3-2782`) for the OK run; one stick is rc 4 PARTIAL = FAILED, not OK" in `install_juniper_backup_timer.bash:208-209`, `docs/REFERENCE.md` (Scheduled lane subsection, `:722`), CHANGELOG and the PR body. Whether the scheduler should instead hand the runner only the mounted set (`JUNIPER_BACKUP_DEVICES="${mounted[*]}"`) is a change to a tagged block and an owner decision; flag it to the parent, do not make it here.
+The design shares the ambiguity (§7.8 `:1506` "fires the same service when either drive appears"; AC-10 `:2306` "produces verified archives on every mounted drive" — satisfied, yet the lane status is FAILED). Minimal PR fix: say "mount BOTH configured sticks (`EBC5-F0A3` and `DFF3-2782`) for the OK run; one stick is rc 4 PARTIAL = FAILED, not OK" in `install_juniper_backup_timer.bash:208-209`, `docs/REFERENCE.md` (Scheduled lane subsection, `:722`), CHANGELOG and the PR body. Whether the scheduler should instead hand the runner only the mounted set (`JUNIPER_BACKUP_DEVICES="${mounted[*]}"`) is a change to a tagged block and an Overtoad decision; flag it to the parent, do not make it here.
 
 ### DEFECT-1 — For an absolute `JUNIPER_BACKUP_DEVICES` entry the mount guard does NOT stand between it and the system disk; the only remaining discriminator is "BACKUP_DIR already exists and is writable"
 
@@ -1040,11 +1040,11 @@ Today no `Juniper-8.0.0.python` exists at `/`, `/home`, `/tmp` or `$HOME` (check
 PR body decision 2 says the scheduler does not take the `/` form and documents the `MEDIA_ROOT=/mnt` + `DEVICES=JuniperArchive` workaround (`docs/REFERENCE.md:664`). True, and measured through the installed copies (`probe3.out`):
 - (3b/3c) `JUNIPER_BACKUP_DEVICES="EBC5-F0A3 <abs>/mnt/JuniperArchive"` with only the absolute drive mounted: the scheduler probes `-q /run/media/<user>/<abs>/mnt/JuniperArchive` (root-prefixed, `scheduled.bash:68`), silently `continue`s (`:69`, no log line), and reports `no configured drive usable … (wanted: EBC5-F0A3 <abs>/…)` → `FAILED` before the first success, `SKIPPED` forever after a stick has succeeded.
 - (3a) With a stick due, the runner (same env) also `OK`s and copies to the absolute entry; stamps written: `last-success.EBC5-F0A3` only. So the runner's device set is a superset of the scheduler's and the claim "cannot name different paths" (`docs/REFERENCE.md:659`, runner `:140-142`, CHANGELOG) is an overclaim for this form.
-Not the PR's code, but the PR implements the `/` form the design pairs with the scheduler; the parent's doc fix should either make §7.9 say the `MEDIA_ROOT=/mnt` form, or the T3 step must teach the scheduler. The scheduler could also log an absolute entry as "unsupported" instead of `continue` — a tagged block, owner's call.
+Not the PR's code, but the PR implements the `/` form the design pairs with the scheduler; the parent's doc fix should either make §7.9 say the `MEDIA_ROOT=/mnt` form, or the T3 step must teach the scheduler. The scheduler could also log an absolute entry as "unsupported" instead of `continue` — a tagged block, Overtoad's call.
 
 ### DEFECT-3 — A tier-2 failure's desktop notification is titled "Duplicati backup FAILED"
 
-`util/duplicati_backup_failure.bash:53-54` hard-codes `notify-send … "Duplicati backup FAILED"`; nothing in the unit's `Environment=` or `$1` reaches the title. The record in `failures.log` is correct (unit=juniper-backup.service, this lane's state dir — verified by the PR's `test_unit_as_written_records_into_this_lanes_state_dir` and by reading `:28-49`), but the ANNOUNCE half of "Record and announce a Juniper USB archive (tier 2) failure" (`juniper-backup-failure.service:2`) names the other lane — the exact class §7.8 `:1568-1571` condemns ("a report about a lane that is not running"). The design's "no reporter change is needed" (P3 step 2) and the PR's "Unchanged: util/duplicati_backup_failure.bash" are wrong on this point. With BLOCKER-1 the owner would see this alert after the first one-stick run. Fix: title from `$1`/a second argument or an env var the unit sets. The test's `notify-send` stub discards its arguments, so the suite cannot see it.
+`util/duplicati_backup_failure.bash:53-54` hard-codes `notify-send … "Duplicati backup FAILED"`; nothing in the unit's `Environment=` or `$1` reaches the title. The record in `failures.log` is correct (unit=juniper-backup.service, this lane's state dir — verified by the PR's `test_unit_as_written_records_into_this_lanes_state_dir` and by reading `:28-49`), but the ANNOUNCE half of "Record and announce a Juniper USB archive (tier 2) failure" (`juniper-backup-failure.service:2`) names the other lane — the exact class §7.8 `:1568-1571` condemns ("a report about a lane that is not running"). The design's "no reporter change is needed" (P3 step 2) and the PR's "Unchanged: util/duplicati_backup_failure.bash" are wrong on this point. With BLOCKER-1 the Overtoad would see this alert after the first one-stick run. Fix: title from `$1`/a second argument or an env var the unit sets. The test's `notify-send` stub discards its arguments, so the suite cannot see it.
 
 ### NIT-1 — `util/juniper-backup.bash:143` claims a hand run under `env -i` "resolves the same root instead of dying on set -u"; it dies three lines later
 
@@ -1094,9 +1094,9 @@ It exits at `install_juniper_backup_timer.bash:198-201`, before `:204-212`. The 
 
 ## Unverifiable
 
-- **That the owner's sticks mount as `/run/media/pcalnon/EBC5-F0A3` and `/run/media/pcalnon/DFF3-2782` and already hold `Juniper-8.0.0.python`.** Neither is mounted now and `/run/media/` is off-limits. Supporting evidence: udisks names unlabeled volumes by UUID (the live NTFS mount `/run/media/pcalnon/848099D78099CFD2`), and the names worked under `/media/pcalnon/` in August.
+- **That the Overtoad's sticks mount as `/run/media/pcalnon/EBC5-F0A3` and `/run/media/pcalnon/DFF3-2782` and already hold `Juniper-8.0.0.python`.** Neither is mounted now and `/run/media/` is off-limits. Supporting evidence: udisks names unlabeled volumes by UUID (the live NTFS mount `/run/media/pcalnon/848099D78099CFD2`), and the names worked under `/media/pcalnon/` in August.
 - **That `enable --now` on `juniper-backup.timer` (`Persistent=true`, never run) does not fire immediately.** From systemd `timer.c` as I recall it: a persistent timer with no stamp file creates one at start and schedules from the activation time, so the first elapse is Sunday 03:00 (+≤15 min). Cannot start a unit to confirm. `PathChanged=` not triggering at activation is settled by the design's own path.c reading.
-- **Real `install(1)` behaviour on the owner's installed symlink-free files** — tested only in scratch (uutils and GNU controls both green).
+- **Real `install(1)` behaviour on the Overtoad's installed symlink-free files** — tested only in scratch (uutils and GNU controls both green).
 - **A real (non-dry) run of the PR runner against a mounted drive** — forbidden; the archive pipeline is unchanged by the diff (`tar | gpg`, verify, copy loop) and was exercised only with a gpg stub (probe 6).
 
 ## Slips
@@ -1140,12 +1140,12 @@ Verdict: **REFUTED on one claim** (the client is not step-10-ready against the i
 
 - The host today (read-only `systemctl --user`): `yamaguchi-watchdog.timer` is active, next fire `Sat 2026-10-03 12:00 CDT`; the loaded unit's `ExecStart` has **no** `--backup-id`; no `yamaguchi-watchdog.service.d/` drop-in exists; the status file's last line is a daily `ALERT UNREACHABLE … login failed (401)` record.
 - The unit executes the PRIMARY checkout's script. Once the primary checkout is synced past this merge, the next fire runs the new `yamaguchi_watchdog.py` with no `--backup-id` → argparse usage error, exit 2, **no record** (`record()` is never reached). `tests/test_yamaguchi_watchdog.py:266` pins exactly that ("a usage error writes no record"); `cli_probe.out` `[watchdog no --backup-id] rc=2 stdout=''`. The daily durable signal stops; the only trace is a failed unit. `yamaguchi_reboot_verify.bash:131-143` notices a stale status timestamp only at a reboot.
-- The deploy script's stale-unit guard (`yamaguchi_watchdog_deploy.bash:86-89`) forces the order sync → deploy, and the PR body tells the owner to deploy "after this merges and the primary checkout is synced, **and once the credential file exists**" — the credential file is P0 step 9, behind the STOP. That reads as "wait", which leaves the watchdog dark for the whole interval. The deploy script does not need the credential: its first check would record `ALERT UNREACHABLE … does not exist` durably (proven: `[watchdog credential absent] rc=1 … ALERT UNREACHABLE`).
+- The deploy script's stale-unit guard (`yamaguchi_watchdog_deploy.bash:86-89`) forces the order sync → deploy, and the PR body tells the Overtoad to deploy "after this merges and the primary checkout is synced, **and once the credential file exists**" — the credential file is P0 step 9, behind the STOP. That reads as "wait", which leaves the watchdog dark for the whole interval. The deploy script does not need the credential: its first check would record `ALERT UNREACHABLE … does not exist` durably (proven: `[watchdog credential absent] rc=1 … ALERT UNREACHABLE`).
 - Remedy: make an absent `--backup-id` take the same durable `JOB_MISSING` path as an empty one (`default=""` instead of `required=True` at `yamaguchi_watchdog.py:296`, adjusting the test at `:266`), and/or state in the PR body and plan §6.4 that `yamaguchi_watchdog_deploy.bash --backup-id <id>` is run immediately after the primary sync, not after step 9. Also: the watchdog's usage exit 2 is indistinguishable from its UNDETERMINED exit 2 — the CLI fixed the analogous collision with 64; the watchdog did not.
 
 ### NIT
 
-- **N-1. A symlink is followed, not refused; no owner or parent-directory check.** `read_credential` opens without `O_NOFOLLOW` (`yamaguchi_server_api.py:145`) and judges the target (`cred_probe.out`: `symlink to 0600 target: ACCEPTED`; `symlink to 0640 target: REFUSED mode 0640`); `st_uid` is never compared to `getuid()`; a 0600 file inside a 0777 directory is accepted. The brief expected refusal; the PR documents and pins following (`tests/test_duplicati_web_credential.py:158`). Practical exposure is nil — any target must still be a regular 0600 file with exactly one key line, and a non-root client cannot open another user's 0600 file — so a design choice, not a leak. `O_NOFOLLOW` plus an `st_uid == os.getuid()` check is a two-line hardening if the owner wants the brief's semantics.
+- **N-1. A symlink is followed, not refused; no owner or parent-directory check.** `read_credential` opens without `O_NOFOLLOW` (`yamaguchi_server_api.py:145`) and judges the target (`cred_probe.out`: `symlink to 0600 target: ACCEPTED`; `symlink to 0640 target: REFUSED mode 0640`); `st_uid` is never compared to `getuid()`; a 0600 file inside a 0777 directory is accepted. The brief expected refusal; the PR documents and pins following (`tests/test_duplicati_web_credential.py:158`). Practical exposure is nil — any target must still be a regular 0600 file with exactly one key line, and a non-root client cannot open another user's 0600 file — so a design choice, not a leak. `O_NOFOLLOW` plus an `st_uid == os.getuid()` check is a two-line hardening if the Overtoad wants the brief's semantics.
 - **N-2. `yamaguchi_server_api.py` has no `--base`/`DUPLICATI_URL` override** (`BASE` hard-coded at `:67`), unlike the watchdog (`--base`) and `duplicati_api.py` (`DUPLICATI_URL`). The CLI cannot be exercised against a scratch listener without patching the module (I had to subprocess `python3 -c "…a.BASE=…"`), and any future test that runs the script as a subprocess past argument validation would hit `:8300`.
 - **N-3. `log` asks `pagesize=5`; the server clamps to 10** (`src/LogData.cs:71`, `Math.Max(10, Math.Min(500, pagesize))`). Harmless; callers read the first line.
 - **N-4. Size TOCTOU in the reader**: `st_size` is checked on the opened descriptor, then `os.read` loops until EOF (`:163-165`); a file growing after `fstat` is read in full. Only the owner can write it; a bound on the loop would close it.
@@ -1181,7 +1181,7 @@ Each item names the instrument that failed to refute it.
 
 - Two **gitignored** bytecode caches in the PR worktree, `util/ad-hoc/__pycache__/{yamaguchi_server_api,duplicati_api}.cpython-314.pyc`, were regenerated at 07:08 by `cred_probe.py` importing the modules without `PYTHONDONTWRITEBYTECODE` (pre-existing files of the same names, overwritten; no tracked file touched; all other runs set the variable).
 - Read-only host look at the live unit to assess D-1: `systemctl --user list-timers` / `cat yamaguchi-watchdog.service`, `ls` of the (absent) drop-in dir, and the last two lines of `~/.local/state/duplicati/server-watchdog.status` (a status line, not on the prohibited list; it carried a 401 error body and no secret). Nothing started, stopped, enabled or installed.
-- Network: fetched 8 Duplicati source files from `raw.githubusercontent.com` at the 2.4.0.0 tag commit and used `gh api` read-only on `duplicati/duplicati` and `pcalnon/juniper-ml`; the scratch HTTP listener was on an ephemeral loopback port (asserted `!= 8300`). No credential, e-mail or owner data left the host.
+- Network: fetched 8 Duplicati source files from `raw.githubusercontent.com` at the 2.4.0.0 tag commit and used `gh api` read-only on `duplicati/duplicati` and `pcalnon/juniper-ml`; the scratch HTTP listener was on an ephemeral loopback port (asserted `!= 8300`). No credential, e-mail or Overtoad data left the host.
 - No `sudo`, no `git stash/checkout/commit/push`; writes confined to `<scratch>/val/PB/pr2115/` and probe-created temp dirs that the probes removed.
 
 <!-- markdownlint-enable -->
@@ -1196,7 +1196,7 @@ Archived verbatim (21,753 characters, sha256 `56d6aff5a2559616`), lifted from th
 
 # Validation of `HANDOFF_2026-10-03_backup-phase-b-fold-in-pending.md`
 
-**Verdict: REFUTED — two BLOCKERs.** The file's headline state ("two executor PRs are open and must merge FIRST", "do NOT merge #2115 as it stands") was already false when the file was last written: the owner merged #2114 at 2026-10-03T19:27Z and #2115 at 20:24Z, and the file's mtime is 2026-10-04 14:02 CDT. #2115 merged WITHOUT the lane's fix, so its BLOCKER and DEFECT now live on `main`. Everything else below is a correction to apply before committing; the artifact claims (versions, features, 33 tests, paths) all hold.
+**Verdict: REFUTED — two BLOCKERs.** The file's headline state ("two executor PRs are open and must merge FIRST", "do NOT merge #2115 as it stands") was already false when the file was last written: the Overtoad merged #2114 at 2026-10-03T19:27Z and #2115 at 20:24Z, and the file's mtime is 2026-10-04 14:02 CDT. #2115 merged WITHOUT the lane's fix, so its BLOCKER and DEFECT now live on `main`. Everything else below is a correction to apply before committing; the artifact claims (versions, features, 33 tests, paths) all hold.
 
 Probe time: 2026-10-04 ~14:05–14:40 CDT. Worktree `cached-swinging-summit` at `6a1514e4` (`wip/backup-phase-a`); `origin/main` at `b0598cae`. Read-only throughout (see Slips).
 
@@ -1217,7 +1217,7 @@ Both merged by `pcalnon` (`--json mergedBy`). Merge order was #2114 THEN #2115, 
 
 The handoff file itself: `stat` → mtime `2026-10-04 14:02:43 -0500`, ~23 h after both merges. Whatever its authoring time, the committed version must reflect the live state.
 
-Correction: rewrite the opener and item 1. "#2114 and #2115 were merged by the owner on 2026-10-03 (19:27Z `7ec4c7e8`, 20:24Z `77ef6692`); `git diff 0bef9d67 7ec4c7e8 -- <10 files>` and `git diff dd3b8060 77ef6692 -- <12 files>` are both empty (verified 2026-10-04). #2115 merged WITHOUT the lane's fix — see BLOCKER-2." Replace the `gh pr view` lines in "Verify first" with `gh pr view 2114 2115 --json state,mergeCommit` → expect MERGED / `7ec4c7e8`, `77ef6692`. Drop "Two executor PRs are open and must merge FIRST".
+Correction: rewrite the opener and item 1. "#2114 and #2115 were merged by the Overtoad on 2026-10-03 (19:27Z `7ec4c7e8`, 20:24Z `77ef6692`); `git diff 0bef9d67 7ec4c7e8 -- <10 files>` and `git diff dd3b8060 77ef6692 -- <12 files>` are both empty (verified 2026-10-04). #2115 merged WITHOUT the lane's fix — see BLOCKER-2." Replace the `gh pr view` lines in "Verify first" with `gh pr view 2114 2115 --json state,mergeCommit` → expect MERGED / `7ec4c7e8`, `77ef6692`. Drop "Two executor PRs are open and must merge FIRST".
 
 ### BLOCKER-2 — the #2115 BLOCKER and DEFECT are now ON MAIN, unfixed; the "fix in the B2 branch / resume the B2 agent" path is void
 
@@ -1230,7 +1230,7 @@ The lane's finding is confirmed in the merged code:
 - The watchdog DEFECT, reproduced from main's copies in scratch (no network reached; the id check precedes login): `python3 yamaguchi_watchdog.py --no-notify --base http://127.0.0.1:1` → `error: the following arguments are required: --backup-id`, **rc=2, no record written**; with `--backup-id ""` → `ALERT JOB_MISSING backup=INVALID`, rc=1, three state files written. Main's `argparse` has `--backup-id` `required=True` (L296). The pre-#2115 unit in this worktree (`util/systemd/yamaguchi-watchdog.service:13`, unmodified since `b7840a14`) is `ExecStart=/usr/bin/python3 /home/pcalnon/…/juniper-ml/util/ad-hoc/yamaguchi_watchdog.py` — no `--backup-id`, and it runs the PRIMARY checkout's script. So once the primary syncs past `77ef6692`, the installed unit exits 2 with no durable record, exactly as the handoff says — but this is now a main defect, not a PR defect.
 - No follow-up exists: `gh pr list --state all --search "issuetoken in:title,body"` and `gh issue list --search "issuetoken OR \"single-operation token\""` → empty. The B2 worktree (`agent-ac10a004bba79b35d`) still sits at `d941f186` on the now-merged branch `fix/backup-b2-web-credential-serverstate-backup-id`.
 
-Correction: replace "Fix in the B2 branch … Resume the B2 agent … re-validate narrowly, then merge" with a fix-forward item: "ml#2115 merged with the `export` BLOCKER and the watchdog DEFECT. Open a fix-forward PR from current main (new branch; the B2 branch is merged): (a) `export` issues `POST /api/v1/auth/issuetoken/export` and passes `&token=`, or is backed by the Bearer-authorised `GET /api/v1/backup/{id}` that `yamaguchi_config_record.py:50` / `yamaguchi_census.py:83` use (both verified on main); fix `tests/duplicati_api_stub.py` + `tests/test_yamaguchi_server_api.py:216,323`; (b) `--backup-id` `default=""` so a missing id takes the `JOB_MISSING` path; say 'deploy the unit immediately after the sync'. One narrow lane on the delta, then merge. Until it lands, P0 step 10's guard dry-run must assert a non-empty URL." Keep "Record B2's six job-id-defaulting scripts as residue" — the six are listed in the #2115 body's "Residue for the owner" (`yamaguchi_census.py:78`, `yamaguchi_edit_setting.py:184`, `yamaguchi_edit_sources.py:104`, `yamaguchi_edit_target.py:139`, `yamaguchi_config_record.py:45`, `duplicati_build_fresh_job.py:118`).
+Correction: replace "Fix in the B2 branch … Resume the B2 agent … re-validate narrowly, then merge" with a fix-forward item: "ml#2115 merged with the `export` BLOCKER and the watchdog DEFECT. Open a fix-forward PR from current main (new branch; the B2 branch is merged): (a) `export` issues `POST /api/v1/auth/issuetoken/export` and passes `&token=`, or is backed by the Bearer-authorised `GET /api/v1/backup/{id}` that `yamaguchi_config_record.py:50` / `yamaguchi_census.py:83` use (both verified on main); fix `tests/duplicati_api_stub.py` + `tests/test_yamaguchi_server_api.py:216,323`; (b) `--backup-id` `default=""` so a missing id takes the `JOB_MISSING` path; say 'deploy the unit immediately after the sync'. One narrow lane on the delta, then merge. Until it lands, P0 step 10's guard dry-run must assert a non-empty URL." Keep "Record B2's six job-id-defaulting scripts as residue" — the six are listed in the #2115 body's "Residue for the Overtoad" (`yamaguchi_census.py:78`, `yamaguchi_edit_setting.py:184`, `yamaguchi_edit_sources.py:104`, `yamaguchi_edit_target.py:139`, `yamaguchi_config_record.py:45`, `duplicati_build_fresh_job.py:118`).
 
 ### DEFECT-1 — git state is miscounted and mis-classified
 
@@ -1303,7 +1303,7 @@ Each re-derived from the tree or `gh`:
 
 ## Unverifiable
 
-- The owner's quoted merge approval ("merge approval granted. let's merge the PRs…") — transcript only; consistent with the owner personally merging #2113/#2114/#2115 on 10-03.
+- The Overtoad's quoted merge approval ("merge approval granted. let's merge the PRs…") — transcript only; consistent with the Overtoad personally merging #2113/#2114/#2115 on 10-03.
 - "Session cut by the usage limit", "Nothing on the host was touched" — no host probe allowed; `C.md`'s Slips record only read-only `systemctl cat/show`.
 - The Duplicati 2.4.0.0 source cites (`BackupGet.cs:68-82`, `Auth.cs:123-137`, vendor CLI/UI two-step) — no vendor source tree on this machine (`find … BackupGet.cs` empty) and reading the installed DLL is out of bounds; corroborated by the certification note on main (L1687) and the lane's literal scan.
 - That the LIVE installed watchdog unit lacks `--backup-id` — host state; the repo's pre-#2115 unit lacks it, which is what the handoff's premise rests on.
@@ -1316,7 +1316,7 @@ Each re-derived from the tree or `gh`:
 - Ran `origin/main`'s `yamaguchi_watchdog.py` from scratch copies against `http://127.0.0.1:1` with `--no-notify` and `--state-dir ./state` in scratch; both runs exited before any request (argparse / the id check), wrote three files under `<scratch>/wd/state/`, and sent nothing.
 - Ran the 33-test suite (hermetic: `DUPLICATI_INSTALL_PREFIX`, `DUPLICATI_SERVER=/bin/true`), markdownlint, flake8 and shellcheck; `sha256sum -c` on the manifest; `gh` read-only (`pr view`, `pr list`, `issue list`, `api …/commits`, `…/check-runs`).
 - No `sudo`, no unit or Duplicati binary touched, no secret file read, no environment printed, no edit in the worktree, no `git stash/checkout/commit/push`. The isolation shim refused several compound commands; the equivalents ran as Python scripts in scratch (`paths_check.py`, `design_lines2.py`, `design_grep.py`, `long_lines_main.py`).
-- New since the handoff (not its fault, but the successor needs it): fleet PRs #2119 (touches `docs/REFERENCE.md`) and #2121 (touches `ci.yml`, `docs/REFERENCE.md`, `CHANGELOG.md`) opened 2026-10-04 and are OPEN — the same shared files the Phase B PR edits; the owner's sweeper arms open PRs.
+- New since the handoff (not its fault, but the successor needs it): fleet PRs #2119 (touches `docs/REFERENCE.md`) and #2121 (touches `ci.yml`, `docs/REFERENCE.md`, `CHANGELOG.md`) opened 2026-10-04 and are OPEN — the same shared files the Phase B PR edits; the Overtoad's sweeper arms open PRs.
 - Scratch now also holds `val/PB/HANDOFF_PR_BODY.md` / `HANDOFF_COMMIT_BODY.txt` (written 14:04–14:05 today by the parent session) — the handoff is about to be committed; apply the corrections above first.
 
 <!-- markdownlint-enable -->
@@ -1621,7 +1621,7 @@ this change makes false.**
     routes issuetoken by default;
   - this change's suite run against #2129's client: 10 FAIL (the issuetoken message format and the
     missing `Backup` check).
-  - If the owner's PR sweeper un-drafts #2129 and it lands first, this change needs reworking.
+  - If the Overtoad's PR sweeper un-drafts #2129 and it lands first, this change needs reworking.
 - **#2128** builds its whole argument on the pre-fix state. When merged against this change, these
   statements fall outside the single conflicting hunk and would land silently:
   - "never calls `POST /api/v1/auth/issuetoken/export`" (merged REFERENCE.md :764);
@@ -1815,7 +1815,7 @@ fenced block (P0 step 10's guard dry-run).
   127.0.0.1:8300. No `sudo`.
 - NEVER read secret files: `~/.config/duplicati-backup/*`, any `.env` / `*.env`, `/etc/default/duplicati`
   content beyond `stat`, `/etc/credstore`, `/etc/duplicati`, the Duplicati data folders' databases. Never print
-  environment variables, tokens or credential files. Never send the owner's email address or any credential to
+  environment variables, tokens or credential files. Never send the Overtoad's email address or any credential to
   an external service. Log reads are COUNT-ONLY (`grep -c`), never values.
 - Nothing under `/mnt/Backups/Ubuntu/` is read beyond `stat`, and nothing there is touched.
 - Do NOT modify anything in the worktree above or in any other worktree: no edits, no `git
@@ -2324,7 +2324,7 @@ None.
 
 ## Slips
 
-- **Writes to the shell history file.** Two `bash -i` runs of the guard test (in scratch) appended their piped input to `~/.bash_history`. Five lines match my markers. They are stub commands only (`url=file:///typed/by/hand`, the test block with `export 2`/`<id>` and `bash ./bin/guard.bash`), with no secret. I left them in place rather than edit the owner's history a second time. This was a write outside the scratch directory.
+- **Writes to the shell history file.** Two `bash -i` runs of the guard test (in scratch) appended their piped input to `~/.bash_history`. Five lines match my markers. They are stub commands only (`url=file:///typed/by/hand`, the test block with `export 2`/`<id>` and `bash ./bin/guard.bash`), with no secret. I left them in place rather than edit the Overtoad's history a second time. This was a write outside the scratch directory.
 - **Python without `PYTHONDONTWRITEBYTECODE=1`.** Several `python3 -c` one-liners (stdlib `json` over the fetched tree listing in scratch) ran without that variable. They imported no local module, so no bytecode was written.
 - **Network.** GitHub reads were limited to `duplicati/duplicati` at the tag (the tree listing through `gh api`, and raw files).
 - **Host metadata reads.** `stat` of `/home/pcalnon/.cache/duplicati-tmp`, and a read-only `find` over `/usr/lib/duplicati` that skipped `data/`. Metadata only.
@@ -2356,7 +2356,7 @@ These are refuted:
 - the re-key's EXIT trap misreports the state, and gives the wrong recovery command, in four states;
 - round 2's A DEFECT-4 is only half folded in;
 - the env-file deny list can be bypassed through `--parameters-file`;
-- the re-key dry-run test fails on the owner's host once the installer has run;
+- the re-key dry-run test fails on the Overtoad's host once the installer has run;
 - 14 of 25 mutants of the fold-in's new code survive the suites.
 
 Every full output is under `$S` = `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/c9277a65-ade5-4846-8663-19cc9b311f97/scratchpad/val/R3C/`.
@@ -2441,7 +2441,7 @@ Exploiting it needs root, because `/etc/duplicati/env` is root-owned.
 
 **Remedy:** add `parameters-file|parameterfile` to both lists, and pin them in the suite.
 
-**D-4. The re-key dry-run test is not hermetic, and fails on the owner's host after assessment step 9.**
+**D-4. The re-key dry-run test is not hermetic, and fails on the Overtoad's host after assessment step 9.**
 - The suite's docstring says no test "touches /etc"
   (`tests/test_duplicati_wrapper_contract.py:30-32`).
 - But `INSTALLED_UNIT` has no override (`:84`), and `:221-227` read the installed unit when it is readable.
@@ -2564,7 +2564,7 @@ harness, and the attacks). Round 2's C N-5 was closed by deleting the docstring'
 - **Linter and screen:**
   - the snapshot linter reports 14 blocks, 0 failures;
   - the archiver's own screen finds 0 hits in the record or its header;
-  - the owner's email address occurs 0 times in the record.
+  - the Overtoad's email address occurs 0 times in the record.
 
 ## Unverifiable
 
@@ -2776,7 +2776,7 @@ lane B's unreported leads about damage to the sole copy, while scoping round 4 t
     The handoff's "and Appendix C, whose item 4 is now applied" reads as a residue addition instead.
   - R3C D-5 notes that `docs/REFERENCE.md:3203` claims the suite pins the drift copy-aside.
   - R3A D-1's alternative, an env-file allow-list of tunables, is not mentioned.
-- **N-4. Two parts of ml#2134's owner notes are dropped.**
+- **N-4. Two parts of ml#2134's Overtoad notes are dropped.**
   - After the deploy, every check records `ALERT UNREACHABLE` durably until the web credential exists.
     That is the intended signal, not a failure.
   - #2121, #2124 and #2127 each conflict once in `docs/REFERENCE.md`: keep both sides (F2 D-3).
@@ -2791,7 +2791,7 @@ lane B's unreported leads about damage to the sole copy, while scoping round 4 t
 - **N-6. Problems in the `R3/PR_BODY.md` draft.**
   - It lists five files as "Added": the record, the header and the three `2026-10-04_*` scripts. They
     reach `main` first, through the archive PR.
-  - Its last line, "Merge approval … was granted by the owner in this session", is false in the next
+  - Its last line, "Merge approval … was granted by the Overtoad in this session", is false in the next
     session.
   - Its "pinned hook binary" (`repo2m2h173s`) is markdownlint-cli 0.48.0. juniper-ml pins v0.42.0
     (`repoft72ba_k`). Both are clean on D, A, the record and the handoff.
@@ -2821,7 +2821,7 @@ The predecessor is `git show origin/main:prompts/thread-handoff_automated-prompt
    - (b) `--backup-id` defaults to `""` and records JOB_MISSING: DONE (`yamaguchi_watchdog.py:313`; usage
      errors exit 64).
    - "Deploy the watchdog immediately after the sync": DONE in code (the deploy script's WHEN block) and
-     CARRIED as the urgent owner action. It is **not yet done on the host**:
+     CARRIED as the urgent Overtoad action. It is **not yet done on the host**:
      - the primary checkout's `util/ad-hoc/yamaguchi_watchdog.py` is `77ef6692`'s version, mtime
        2026-10-03 17:09:10, with `required=True` at line 296;
      - the deployed unit (installed 08-26) passes no id and has no drop-in;
@@ -2868,7 +2868,7 @@ The predecessor is `git show origin/main:prompts/thread-handoff_automated-prompt
   R3A N-1, are carried by name.
 - No round-3 finding is left neither carried nor covered.
 
-**ml#2134's owner notes:**
+**ml#2134's Overtoad notes:**
 
 - CARRIED: deploy with `--backup-id 2`, why 2, re-run after Procedure B, close #2129, and the stale
   statements in #2128/#2119.
@@ -3180,7 +3180,7 @@ All attacks ran on copies (`$S/attack_record*.py`).
 
 - First: is there a `-wal` or `-journal` file beside `/usr/lib/duplicati/data/BMXWPAOGLP.sqlite`? It is the sole-copy index, and D step 8 copies only the main file.
 - Second: the stored `startup-delay` and `paused-until` values decide how far DEFECT-2 reaches.
-- Neither is in handoff:112-117 or in the owner's actions.
+- Neither is in handoff:112-117 or in the Overtoad's actions.
 - **Remedy.** Add both to round 4's consequence lane and to Phase C's listing.
 
 ## HV's findings
@@ -3259,7 +3259,7 @@ Each item names the instrument that failed to refute it.
   - DEFECT-4: §7.3.6's `DELETE` (:1260-1268);
   - §8 is held (:6 and :1733).
 - **The F-lane disposition.**
-  - ml#2134's body has the job-2 list and both owner notes.
+  - ml#2134's body has the job-2 list and both Overtoad notes.
   - F1 N-1 and N-2 are fixed on `main`.
 - **D regenerates byte for byte.** Checked on a `git archive` copy:
   - `--from-repo` gives 5/9/1 and the clearing script applies 54 edits, yielding `890d8a1b…`.
@@ -3292,21 +3292,21 @@ Each item names the instrument that failed to refute it.
   - #2128 and #2119 carry statements that ml#2134 made false.
   - The newer #2160 touches docs only.
 - **Secrets.** `$S/credscan.py` and `$S/credclass.py` ran count- and shape-only.
-  - There is no owner address, email-shaped string, token or key.
+  - There is no Overtoad address, email-shaped string, token or key.
   - Every base64-shaped hit is a path.
   - One hit is a 16-character test fixture in round 2 lane C's report.
 - **Hygiene.**
   - On all ten PR files, `$S/wscheck.py` finds no trailing whitespace, missing final newline, CR or AST error.
   - `shellcheck` is clean.
   - The header's links resolve on `main`.
-- **"owner-accepted residue"** in PRB:3 is A's own wording, from B7 at A:226.
+- **"Overtoad-accepted residue"** in PRB:3 is A's own wording, from B7 at A:226.
 
 ## Unverifiable
 
 - **The archive PR's merge date**, which header:9 already asserts. It needs the merge.
 - **Verify lines 4-5 for the next session.** They need the merge and a fetch.
 - **"The running server defines no backups".** Testing it needs the server, and contacting 127.0.0.1:8300 is forbidden.
-- **R3B's five lines in `~/.bash_history`.** I deliberately did not read the owner's history. A count-only grep for R3B's markers would test it.
+- **R3B's five lines in `~/.bash_history`.** I deliberately did not read the Overtoad's history. A count-only grep for R3B's markers would test it.
 - **"Every hook" over the 26 frozen files.** pre-commit runs with `--fix` in the worktree. A scratch git repository would test it.
 - **R3B's retention table.** I did not re-derive it. That needs a port of `DeleteHandler` and the 9 dlist timestamps.
 
@@ -3529,14 +3529,14 @@ None.
 **N-8. HV2's N-11 is only partly routed.**
 
 - **What.** handoff:150-153 gives both of R3B's open questions to a round-4 lane, then says "Both need the
-  owner's Phase C listing".
+  Overtoad's Phase C listing".
   - **The first question fits.** Phase C step 6 already answers it with `sudo ls -la …
     /usr/lib/duplicati/data/` (A:257 in `c3d0e890`, :253 on `main`).
   - **The second question does not fit.** R3B:210 says the stored `startup-delay` and `paused-until` values
     need "reading the database". Those values live in the databases P0 restores, which is Phase D, not
     Phase C.
   - **Neither is answerable as routed.** A lane under the standing limits can answer neither, and neither is
-    among the owner actions.
+    among the Overtoad actions.
 - **Remedy.**
   - Route the first question to Phase C step 6.
   - Route the second to the step-8 read-back that DEFECT-2's own remedy adds (handoff:136).
@@ -3739,9 +3739,9 @@ D is **generated**, never hand-edited:
 So a change to the wrapper/installer/contract reaches D through step 2, and every prose change to D is an
 edit added to the clearing script. A is hand-edited directly.
 
-## Owner ruling (2026-10-08, this session) — R3B DEFECT-1
+## The Overtoad ruling (2026-10-08, this session) — R3B DEFECT-1
 
-The owner chose: **suspend retention during recovery** — step 10's edits remove the job's
+The Overtoad chose: **suspend retention during recovery** — step 10's edits remove the job's
 `retention-policy`, so the first backup after recovery deletes nothing; it is restored only after AC-4's
 first drill has passed. **When it is restored, it is set to the NEW policy `2W:1D,6M:1W,2Y:1M,5Y:2M`**
 (replacing `1W:1D,1M:1W,1Y:1M,3Y:2M`). Record both changes.
@@ -3765,10 +3765,10 @@ never edit them; report what they need (e.g., a new suite to wire into CI).
 - nothing under `/mnt/Backups/Ubuntu/` is read beyond `stat`, and nothing there is touched;
 - never read a secret file: `~/.config/duplicati-backup/*`, any `.env` or `*.env`, `/etc/default/duplicati`
   beyond `stat`, `/etc/credstore`, `/etc/duplicati`, or a data-folder database;
-- never print an environment variable or a token, and never send the owner's email or any credential to an
+- never print an environment variable or a token, and never send the Overtoad's email or any credential to an
   external service;
 - no `git stash`; log greps are count-only; no interactive shells (`bash -i` writes `~/.bash_history`);
-- no session performs host actions: those are the owner's.
+- no session performs host actions: those are the Overtoad's.
 
 Also: **no git command that changes state** — no `add`, `commit`, `checkout`, `switch`, `reset`, `restore`,
 `stash`, `rebase`, `push` (the one exception is the D reset in "How D is built", run only by the lane that
@@ -3832,7 +3832,7 @@ All lane C1 work items are done. One mutant survives, and it is equivalent (expl
 - `systemctl` and `systemd-analyze` only log their arguments;
 - `stat` answers only for the scratch data folder and credential path.
 
-It never reads `/etc`, so it stays hermetic on the owner's host after a real install (the R3C D-4 class of failure). The re-key and clearing-script mutants (M01-M09, M22-M24) belong to other lanes.
+It never reads `/etc`, so it stays hermetic on the Overtoad's host after a real install (the R3C D-4 class of failure). The re-key and clearing-script mutants (M01-M09, M22-M24) belong to other lanes.
 
 **NITs:**
 - **R3C N-2 (CR in a key file): FIXED on the wrapper side.** A new `check_key_shape` refuses a carriage return anywhere in the key, and leading or trailing whitespace. It applies to both the credential path and the environment path.
@@ -4055,14 +4055,14 @@ The evidence comes from `c2_rekey_mutations.py fail-before`, run against a `git 
 
 **Prose for D (via the clearing script) and A**
 - **Trap (D §8 P0.5b, and A note 6a, replacing "an EXIT trap removes the drop-in and reports what an interrupted run left"):** "an EXIT trap stops the unit while a drop-in is present, removes the drop-in, names each key file by hash (swapped / not swapped / unexpected), reports the database as UNKNOWN once a decrypt or encrypt start was attempted without its 'Server has started' line, prints the gate's counts on a gate failure, and prints only the recovery that applies, never 'start the unit' after a FragmentPath refusal; a refusal before the pause says nothing changed (round 3: R3A D-4, R3B N-11, R3C D-1)."
-- **Pre-flight count (D P0.5b, A step 12, and A §8 listing round 2's A DEFECT-4 as now folded in):** "Before the first stop it counts, on a copy of the database, the `enc-v1:` blobs the product's re-encryption never rewrites: any in `ConnectionString`, and in `BackupTargetUrl` rows of no backup (a live backup's rows are rewritten: `Backup.cs:54`, `Connection.cs:892-893`). It refuses if there is one, because such a blob would stay under the old key and fail the exit gate only after the key swap. Remedy, the owner's: record and delete the saved connection strings through the web UI, re-key, then re-create them."
+- **Pre-flight count (D P0.5b, A step 12, and A §8 listing round 2's A DEFECT-4 as now folded in):** "Before the first stop it counts, on a copy of the database, the `enc-v1:` blobs the product's re-encryption never rewrites: any in `ConnectionString`, and in `BackupTargetUrl` rows of no backup (a live backup's rows are rewritten: `Backup.cs:54`, `Connection.cs:892-893`). It refuses if there is one, because such a blob would stay under the old key and fail the exit gate only after the key swap. Remedy, the Overtoad's: record and delete the saved connection strings through the web UI, re-key, then re-create them."
 - **Timer (D P0.5b, A step 12):** "and refuses unless the snapshot timer is neither enabled (in any form, `enabled-runtime` and `linked` included) nor active (R3B N-8)."
 - **Hand start (R3A N-3, at D:2019, D:2411 and A:238, replacing "sets the password and nothing else"):** "sets the password, upgrades the schema and re-encrypts the password-named server settings under the settings key; the backups' fields and `encrypted-fields` are unchanged until the unit's first start."
 
 ## 5. Out of scope
 
 - **R3C N-2, wrapper side (C1).** `scripts/duplicati-wrapper.bash` still passes a CR in the key file through to the server. My gate and hand start now refuse such a file, so the wrapper should refuse it too.
-- **Whether to refuse on `ConnectionString` rows is the owner's call.** The remedy text assumes saved connection strings can be deleted through the UI and re-created afterwards; I did not verify that against the product. Nobody has read the Yamaguchi database to see whether it holds any such rows.
+- **Whether to refuse on `ConnectionString` rows is the Overtoad's call.** The remedy text assumes saved connection strings can be deleted through the UI and re-created afterwards; I did not verify that against the product. Nobody has read the Yamaguchi database to see whether it holds any such rows.
 - **No slips** against the standing limits. GitHub reads were two files at the Duplicati tag (`Connection.cs`, `Backup.cs`); writes went only under scratch and the files I own.
 
 <!-- markdownlint-enable -->
@@ -4084,7 +4084,7 @@ I've finished all nine work items in the prose lane. D is regenerated from origi
 
 ## 1. Per finding
 
-**R3B DEFECT-1 (owner's ruling): FIXED.**
+**R3B DEFECT-1 (Overtoad's ruling): FIXED.**
 - D step 10's edits remove `retention-policy` (web UI: Keep all backups). D step 11 restores it as `2W:1D,6M:1W,2Y:1M,5Y:2M`, only after AC-4's first drill has passed, and says what the first pass keeps and deletes and that the deletions reach Dropbox.
 - §7.5's option list records both changes.
 - Every "nothing under `/mnt/Backups/Ubuntu/` is deleted" statement now names the second exception: D front matter (:16), the §8 preamble, P1 step 4 ("single exception"), §10.2 hazard 1, and A §6.0 item 5. A §6.4 steps 11 and 14 mirror the remove and the restore.
@@ -4137,7 +4137,7 @@ A §6.4 step 8 mirrors it.
 - R3A N-7's A NIT-6 and R3C N-8: snapshot-script NITs; the script is outside the fold-in's file set.
 - R4 line 153: P0 step 8's file-mode sentence, which needs a ruling rather than a prose fix.
 
-A §8 also gains a Round 3 entry (the owner's ruling and the prose fold-in) and a §9 history row.
+A §8 also gains a Round 3 entry (the Overtoad's ruling and the prose fold-in) and a §9 history row.
 
 ## 2. Tests
 `tests/test_clear_stop_backup_design.py` has 7 tests, all passing. It runs the script in a scratch copy of the repository layout and covers:
@@ -4204,12 +4204,12 @@ Second pass is done: every D/A prose item in `C1.md` and `C2.md` (both in `util/
   - "refuses security options there" now reads "accepts only allow-listed tunables there", and the old wording is on the stale-phrase list so it cannot come back.
   - A new paragraph covers wrapper 2.3.0's eight-tunable allow-list and the wider deny list, installer 1.3.0 judging the contract and any existing `/etc/duplicati/env` by running the wrapper, the `.pre-install-<UTC>` copy-aside, the snapshot's single DELETE-mode file (1.2.0), and `ReadWritePaths=` without `-` failing closed with a NOTE.
 - **D step 8 and A §6.4 step 9:**
-  - An owner caution: before the install, check any existing `/etc/duplicati/env` (option names only, never values). An `--option` line outside the allow-list stops the install and would make every start exit 78.
+  - An Overtoad caution: before the install, check any existing `/etc/duplicati/env` (option names only, never values). An `--option` line outside the allow-list stops the install and would make every start exit 78.
   - The BEHAVIOUR CHANGE sentence, naming the three changed blessed files and `--update-backup-behavior`.
 
 **C2 items, in D and A**
 - **Trap prose:** in the clearing note's item 2, P0.5b, and A note 6a.
-- **Pre-flight count:** refuses on any `enc-v1:` blob in `ConnectionString`, and in `BackupTargetUrl` rows of no backup only, with the reason (`Backup.cs:54`, `Connection.cs:892-893`) and the owner's remedy. It is in the clearing note, P0.5b, A note 6a and A §6.4 step 12.
+- **Pre-flight count:** refuses on any `enc-v1:` blob in `ConnectionString`, and in `BackupTargetUrl` rows of no backup only, with the reason (`Backup.cs:54`, `Connection.cs:892-893`) and the Overtoad's remedy. It is in the clearing note, P0.5b, A note 6a and A §6.4 step 12.
 - **Timer prose:** the timer must be neither enabled in any form nor active.
 - **Hand start:** C2's "sets the password, upgrades the schema and re-encrypts…" replaces the old wording in the clearing note, D step 6 and A note 6b. "sets the password and nothing else" now occurs 0 times in D and A.
 
@@ -4239,7 +4239,7 @@ Second pass is done: every D/A prose item in `C1.md` and `C2.md` (both in `util/
 - flake8: 0.
 - `tests.test_clear_stop_backup_design` plus `tests.test_duplicati_wrapper_contract`: 50 tests, OK.
 
-**Not folded exactly as asked: the BEHAVIOUR CHANGE sentence.** The installer reports BEHAVIOUR CHANGE only when a `.blessed.sha256` already exists. So D and A say it applies "where a `.blessed.sha256` from an earlier install exists", and that a never-blessed host (I-36) has nothing to compare. I don't know whether the owner's host has ever been blessed. Everything else from both reports' "Needed elsewhere" sections that targets D or A is in.
+**Not folded exactly as asked: the BEHAVIOUR CHANGE sentence.** The installer reports BEHAVIOUR CHANGE only when a `.blessed.sha256` already exists. So D and A say it applies "where a `.blessed.sha256` from an earlier install exists", and that a never-blessed host (I-36) has nothing to compare. I don't know whether the Overtoad's host has ever been blessed. Everything else from both reports' "Needed elsewhere" sections that targets D or A is in.
 
 <!-- markdownlint-enable -->
 
@@ -4262,7 +4262,7 @@ the hot files CHANGELOG.md, docs/REFERENCE.md, ci.yml, AGENTS.md were rebuilt fr
 against origin/main).
 
 Read `util/ad-hoc/2026-10-08_backup-phase-b-fold-in/BRIEF_COMMON.md` for the names (D, A, R4, record, R3A–C,
-re-key, gate, wrapper, installer, contract …), how D is generated, and the **owner ruling of 2026-10-08**
+re-key, gate, wrapper, installer, contract …), how D is generated, and the **Overtoad ruling of 2026-10-08**
 (retention suspended through recovery; restored after AC-4's first drill as `2W:1D,6M:1W,2Y:1M,5Y:2M`).
 The fold-in lanes' own reports are `C1.md`, `C2.md`, `P.md` in the same directory — treat their claims as
 claims to verify, not facts.
@@ -4280,10 +4280,10 @@ claims to verify, not facts.
   - nothing under `/mnt/Backups/Ubuntu/` is read beyond `stat`, and nothing there is touched;
   - never read a secret file: `~/.config/duplicati-backup/*`, any `.env` or `*.env`, `/etc/default/duplicati`
     beyond `stat`, `/etc/credstore`, `/etc/duplicati`, or a data-folder database;
-  - never print an environment variable or a token, and never send the owner's email or any credential to an
+  - never print an environment variable or a token, and never send the Overtoad's email or any credential to an
     external service;
   - no `git stash`; log greps are count-only; no interactive shells (`bash -i` writes `~/.bash_history`);
-  - no session performs host actions: those are the owner's.
+  - no session performs host actions: those are the Overtoad's.
 - Public Duplicati source at tag `v2.4.0.0_stable_2026-09-03` may be fetched read-only from GitHub to verify
   product behaviour; cite file:line.
 
@@ -4422,7 +4422,7 @@ None.
 - **Collateral damage of C1's allow-list.**
   - Judged only from the repo's history: the env file has only ever shipped `--webservice-port=8300`, which is allowed. The old in-data-folder `.env` carried assignments only (`SETTINGS_ENCRYPTION_KEY`, `_OLD`; D:176, :192), and that file is shredded, not migrated (A:300).
   - So no documented legitimate line is newly refused, apart from D-2's real welcome-page option.
-  - The owner is warned before it bites: D step 8 (D:2606) and A step 9 (A:296) say to check option names before the install.
+  - The Overtoad is warned before it bites: D step 8 (D:2606) and A step 9 (A:296) say to check option names before the install.
   - The installer refuses an existing `/etc/duplicati/env` that the new wrapper would reject, before it installs anything (install:178-184), and the wrapper's refusal names DAEMON_OPTS.
 - **C1's Program.cs citations** hold at the tag: 49-51, 226-237, 1679-1680, 658-659, 690-692 and 986-987.
 
@@ -4472,7 +4472,7 @@ I walked Procedures A0, A, A2 and B at `a0ff619c` in D §8 (`notes/JUNIPER_2026-
   - The retention ruling is present on all four paths, and `retention_table.py` matches `DeleteHandler.cs`.
 - **The new defect.** On A0 and A2, the backup that step 10's `resume` fires is a copy of the job taken at the unit's first start. That is before step 10's edits. So that run carries the old retention policy, the old tempdir and no guard.
   - Nothing is damaged today, but only by accident: A0's old tempdir is read-only under the unit, and A2's copy has an empty `TargetURL`.
-  - So for that run, the owner's ruling and "the guard aborts the first backup" are true only by luck.
+  - So for that run, the Overtoad's ruling and "the guard aborts the first backup" are true only by luck.
 
 ## Findings
 
@@ -4616,7 +4616,7 @@ I checked the code at `a0ff619c` by running it, in scratch extractions under `�
 
 **0 BLOCKER, 2 DEFECT, 9 NIT.**
 
-The serious one is DEFECT-1. The two new suites pass only on a host where `/mnt/Backups` is a mountpoint. On CI's `ubuntu-latest`, `/mnt/Backups` is not a mountpoint, so they fail. Every lane so far ran them on the owner's host, where it is.
+The serious one is DEFECT-1. The two new suites pass only on a host where `/mnt/Backups` is a mountpoint. On CI's `ubuntu-latest`, `/mnt/Backups` is not a mountpoint, so they fail. Every lane so far ran them on the Overtoad's host, where it is.
 
 Check results:
 
@@ -5037,7 +5037,7 @@ Evidence from `c2_rekey_mutations.py fail-before` on an `a0ff619c` extraction. T
 ## 4. Needed elsewhere
 
 **D, P0.5b pre-flight sentence** (replaces round 3's "any in `ConnectionString`, and in `BackupTargetUrl` rows of no backup …"):
-> Before the first stop it counts, on a copy of the database, the `enc-v1:` blobs the product's re-encryption never rewrites: any in `ConnectionString`, and any in an `Option`, `Source` or `BackupTargetUrl` row whose BackupID names no backup. `Option` and `Source` have no foreign key (`Schema.sql:44-45, 72-73`), so a deleted job's rows can outlive it. The settings rows at -1 and -2 are rewritten (`Connection.cs:145`; `ServerSettings.cs:851-855` → `SetSettings(-2)`), and so are a live backup's rows. It refuses if there is one, or if the count itself fails, because such a blob would stay under the old key and fail the exit gate only after the key swap (R3A D-5, R3C D-2, R4C DEFECT-2). Remedy, the owner's: saved connection strings are deleted through the web UI and re-created after the re-key; an orphaned row, which the UI cannot reach, is deleted with sqlite3 while the server is stopped and a copy is kept.
+> Before the first stop it counts, on a copy of the database, the `enc-v1:` blobs the product's re-encryption never rewrites: any in `ConnectionString`, and any in an `Option`, `Source` or `BackupTargetUrl` row whose BackupID names no backup. `Option` and `Source` have no foreign key (`Schema.sql:44-45, 72-73`), so a deleted job's rows can outlive it. The settings rows at -1 and -2 are rewritten (`Connection.cs:145`; `ServerSettings.cs:851-855` → `SetSettings(-2)`), and so are a live backup's rows. It refuses if there is one, or if the count itself fails, because such a blob would stay under the old key and fail the exit gate only after the key swap (R3A D-5, R3C D-2, R4C DEFECT-2). Remedy, the Overtoad's: saved connection strings are deleted through the web UI and re-created after the re-key; an orphaned row, which the UI cannot reach, is deleted with sqlite3 while the server is stopped and a copy is kept.
 
 **A, step 12 and note 6a:**
 > The re-key refuses, before anything changes, on an `enc-v1:` blob the product never rewrites: a `ConnectionString` row, or an `Option`/`Source`/`BackupTargetUrl` row of no backup (round 4, R4C DEFECT-2).
@@ -5054,7 +5054,7 @@ Evidence from `c2_rekey_mutations.py fail-before` on an `a0ff619c` extraction. T
 ## 5. Out of scope
 
 - **R4C NIT-6, wrapper side (C1).** The wrapper's `$(<file)` still drops a NUL. My readers now refuse such a file, so the wrapper should refuse it too (R4C's suggestion: compare `wc -c` against `${#key}`).
-- **The `Option` orphan remedy is a host action for the owner.** It deletes rows with sqlite3. Whether the Yamaguchi database holds any orphaned or `ConnectionString` rows is still unknown, since reading it is forbidden.
+- **The `Option` orphan remedy is a host action for the Overtoad.** It deletes rows with sqlite3. Whether the Yamaguchi database holds any orphaned or `ConnectionString` rows is still unknown, since reading it is forbidden.
 
 <!-- markdownlint-enable -->
 
@@ -5169,7 +5169,7 @@ C1's and C2's round-4 prose is folded into D and A, and D is regenerated with ev
   - wrapper 2.4.0: the mount override, `--webservice-suppress-welcome-page`, the vendored fixture, CR and NUL handling;
   - installer 1.4.0;
   - re-key 1.3.0, gate 1.2.0 and hand start 1.3.0: the orphan refusal and NUL refusal.
-- **Pre-flight sentence:** C2's text is in both the clearing note's item 2 and P0.5b. It covers `Option`, `Source` and `BackupTargetUrl` rows that belong to no backup, a failed count, and the owner's remedy for orphaned rows.
+- **Pre-flight sentence:** C2's text is in both the clearing note's item 2 and P0.5b. It covers `Option`, `Source` and `BackupTargetUrl` rows that belong to no backup, a failed count, and the Overtoad's remedy for orphaned rows.
 - **Note 12c:** versions are now 2.4.0, 1.4.0, 1.3.0, 1.2.0 and 1.3.0, and it lists the fixture alongside the three suites.
 - **§7.7:** the snapshot script is "1.1.0; 1.2.0 since 2026-10-08".
 - **Stale-phrase list:** the placeholder and the old "nothing to compare" sentence are added, so neither can come back.
@@ -5274,7 +5274,7 @@ None.
 - **Not caught by tests:** the hint test (`test_the_next_steps_print_…`) does not check this sentence.
 - **Remedy:** print "if it reads Running, stop the unit at once (`sudo systemctl stop duplicati.service`) and record it — do not pause", and assert that sentence in the hint test.
 
-**DEFECT-2. The new owner/mode check on an existing env file enforces one side of an owner decision that is still open (O-12). VERIFIED.**
+**DEFECT-2. The new owner/mode check on an existing env file enforces one side of an Overtoad decision that is still open (O-12). VERIFIED.**
 
 - **What the code does:** `install:205-214` refuses on a real run (exit 2) unless the file is `root:duplicati`, group-readable and not group- or other-writable. The test pins `duplicati:duplicati:640` as refused (`tests/test_duplicati_installer_real_path.py`, `…cannot_read_stops_the_install`).
 - **The decision is still open in four places:**
@@ -5282,8 +5282,8 @@ None.
   - D P1 item 2 (D:2817): "`0640 root:duplicati` as installed, or `0600 duplicati:duplicati` — the open dissent";
   - A's open-items table, row O-12 (A:359);
   - and D step 8, the round-4 sentence at D:2697, now states the installer "refuses any other owner or mode", which contradicts D:2817.
-- **Consequence:** if the owner rules for `0600 duplicati:duplicati`, which is a mode the service can read, every later installer run exits 2 with "make it root:duplicati 0640 first".
-- **Remedy (owner's choice):**
+- **Consequence:** if the Overtoad rules for `0600 duplicati:duplicati`, which is a mode the service can read, every later installer run exits 2 with "make it root:duplicati 0640 first".
+- **Remedy (Overtoad's choice):**
   - either accept both documented modes (the service user can read either);
   - or record that the installer settles O-12, and update the contract header, D:2817 and A's O-12 row.
 - **Related, part of the same check:** `stat` without `-L` reads the symlink's own `777`, so a symlinked `/etc/duplicati/env` is refused forever with a remedy (`chmod`) that cannot work. It fails closed; the message should say "symlink".
@@ -5500,7 +5500,7 @@ None.
 
 ## Unverifiable
 
-- The `BackupID=-1` default options in the restored or root-era database (DEFECT-1's actual exposure). Reading it is the owner's.
+- The `BackupID=-1` default options in the restored or root-era database (DEFECT-1's actual exposure). Reading it is the Overtoad's.
 - Whether 2.4's ngclient "Keep all backups" removes all three options. D's "only the legacy UI" asserts that it does not, and that is unverified.
 - The ACLs on `/mnt/Backups/Ubuntu/` that the aside directory would inherit (reading them is beyond `stat`).
 - Whether the index has extra or missing volumes against the destination (DEFECT-2's trigger).
@@ -5545,13 +5545,13 @@ All five round-5 items are done. The four Phase B suites pass on a simulated hos
 - A symlink is caught before `stat` runs and refused with the word "symlink" in the message.
 - Every message names both forms through one variable, `ENV_MODES_ACCEPTED`: "root:duplicati 0640 or duplicati:duplicati 0600 (O-12 is open; either form is accepted)".
 - The code comment cites O-12 and says the installer does not settle it.
-- One judgement call: I took the modes as exact, so variants such as `root:duplicati 0440` or `duplicati:duplicati 0400` are also refused. Widening is a one-line change if the owner prefers it.
+- One judgement call: I took the modes as exact, so variants such as `root:duplicati 0440` or `duplicati:duplicati 0400` are also refused. Widening is a one-line change if the Overtoad prefers it.
 
 **R5A NIT-2 (Procedure A's second key): FIXED.** The key NOTE now says: "on Procedure A, place the accepted 09-18 key here instead, and a random one at `<cred>.new`, which P0.5b swaps in -- the same command with .new". This matches D step 8 at `9ce2f602`.
 
 **R5A NIT-3 F01 (production default mount unpinned): FIXED.**
 - New test `test_unset_the_production_default_requires_mnt_backups` puts a `mountpoint` stub first on PATH that records its arguments and exits 1. With the variable unset, the wrapper must exit 78 with "FATAL: /mnt/Backups is not a mountpoint", and the stub must have been asked exactly `-q /mnt/Backups`.
-- It passes on the owner's host, where the mount exists, and on CI, where it does not, and never reads the real mount table.
+- It passes on the Overtoad's host, where the mount exists, and on CI, where it does not, and never reads the real mount table.
 - **Consequence:** R5A's way of simulating CI (editing the wrapper's default to a nonexistent path, as in `mk_cisim.bash`) now fails this pin by design. The ci-sim mode of `c1_mutations.py` (now 1.2.0) therefore simulates the absent mount with the same `mountpoint` stub on PATH instead.
 
 **F07 (root:root 0640 accepted): KILLED** by item 2's tests. R5A's F07–F10 have no anchor in the rewritten check, so I re-anchored them:
@@ -5745,7 +5745,7 @@ Round 5 is folded into D and A, and D is regenerated. The edit count stays at 78
   3. deletes exactly those rows;
   4. runs the `SELECT` again, which must return nothing.
 
-  The reason given in D is that these rows join every run (`GetCommonOptions`) but never appear in `export`. Step 11 restores them only together with the job's policy, and only if the owner wants server-wide defaults at all. The step-10 read-back now covers the job only, and says why. A mirrors this in step 9 (clear), step 11 (read-back) and step 14 (restore).
+  The reason given in D is that these rows join every run (`GetCommonOptions`) but never appear in `export`. Step 11 restores them only together with the job's policy, and only if the Overtoad wants server-wide defaults at all. The step-10 read-back now covers the job only, and says why. A mirrors this in step 9 (clear), step 11 (read-back) and step 14 (restore).
 - **R5B DEFECT-2 (Repair deletes extra volumes):** on B, Repair now runs:
   1. with `--dry-run` first;
   2. then every `WouldDeleteFile` line is read;
@@ -5936,11 +5936,11 @@ D's B text (D:2746-2747) and A §6.4 say: queue Repair "with `--dry-run`", "read
 - **The test fails off this host.** `test_refuses_a_restore_directory_inside_the_backup_source` passes `/home/pcalnon/a0-restore-must-not-be-created` to the restore script. The script's refusal is `case "$(readlink -f "${OUT}")/" in /home/pcalnon/*)` (`restore_server_db_from_fileset.bash:25-27`). `readlink -f` prints nothing and exits 1 when a parent directory is missing, so the case word becomes `/` and the refusal never fires. `install -d` then fails with EACCES and the script exits 1, not 2.
   - **Reproduction:** `scratchpad/r6/bin/ci_home_absent.bash` replaces `/home/pcalnon` with a nonexistent root directory in copies of the script and the test. Result: `AssertionError: 1 != 2 : install: cannot create directory …: Permission denied`.
   - **Effect:** GitHub runners have no `/home/pcalnon`, and `ci.yml` now runs this suite, so CI goes red. The suite's docstring claims it is hermetic, which this test is not.
-- **The script's guard has a real hole.** On the owner's host, any `OUT` two or more new levels under `/home/pcalnon` gets past the refusal: `readlink -f` fails, `install -d` creates the directory, and cleartext key material is restored into the backup Source.
+- **The script's guard has a real hole.** On the Overtoad's host, any `OUT` two or more new levels under `/home/pcalnon` gets past the refusal: `readlink -f` fails, `install -d` creates the directory, and cleartext key material is restored into the backup Source.
   - **Reproduction:** `readlink -f srcroot/missing/sub` gives rc=1 and empty output → NOT-REFUSED.
   - D:2687-2688 says "The script refuses a restore path under `/home/pcalnon/`".
   - This predates round 5. D does not name a path under home, so it needs operator error, which is why it is not a BLOCKER.
-- **A regressed refusal writes into the real home.** If the refusal ever regresses, this test creates a directory in the owner's home and never cleans it up.
+- **A regressed refusal writes into the real home.** If the refusal ever regresses, this test creates a directory in the Overtoad's home and never cleans it up.
 
 **Remedy:**
 - In the script, use `realpath -m` (canonicalise even when components are missing), and refuse if that fails.
@@ -5948,7 +5948,7 @@ D's B text (D:2746-2747) and A §6.4 say: queue Repair "with `--dry-run`", "read
 
 **DEFECT-3. Restoring the server-wide defaults "with" the new policy voids D's five/four prediction. Mechanism VERIFIED; exposure PLAUSIBLE (the contents of the `-1` rows are unknown).**
 
-- **What D and A allow:** D step 11 and A step 14 say the deleted `BackupID -1` retention defaults "come back only with it, and only if the owner wants defaults at all".
+- **What D and A allow:** D step 11 and A step 14 say the deleted `BackupID -1` retention defaults "come back only with it, and only if the Overtoad wants defaults at all".
 - **What the product does:** the removers form a union. `KeepTimeRemover`, `RetentionPolicyRemover` and then `KeepVersionsRemover` all contribute deletions (`DeleteHandler.cs:82-87`). A default is only overridden when the job sets the same name (`Runner.cs:1505-1513`, `:1584-1590`).
 - **Consequence:** a restored default `keep-time` or `keep-versions` combines with the job's `retention-policy`. The first pass can then delete pre-recovery filesets beyond the five that were copied aside. Those are the sole copies, and the "keeps four, deletes five" statement and the aside list would both be false.
 - **Remedy:** say "never restore `keep-time` / `keep-versions` / `retention-policy` as server defaults while the job carries its own policy (they combine, `DeleteHandler.cs:82-87`)". Or require a `retention_table.py` re-run that includes them, and a matching aside copy.
@@ -6158,7 +6158,7 @@ Round 6 is folded into D and A, D is regenerated last, and every check passes. O
 
   Step 10's read-back now also checks for no `--dry-run`, `--log-file` or `--log-file-log-level`. The third exception is widened everywhere to "the remote files a Repair deletes": volumes the index does not know, the index's own temporary, deleting or incompletely uploaded files, and empty or replaced index files.
 - **DEFECT-2:** FIXED by C2. D step 4 uses C2's sentence: the refusal holds at any depth, whether the path exists or not, and through a symlink (`realpath -m`). A records the A0 suite as 15 tests.
-- **DEFECT-3:** D step 11 and A step 14 say `keep-time` and `keep-versions` defaults are never restored, because they combine with the policy (`DeleteHandler.cs:82-87`, verified). A `retention-policy` default comes back only if the owner wants one, with the table and the aside copy recomputed against it first. The owner's ruling is unchanged.
+- **DEFECT-3:** D step 11 and A step 14 say `keep-time` and `keep-versions` defaults are never restored, because they combine with the policy (`DeleteHandler.cs:82-87`, verified). A `retention-policy` default comes back only if the Overtoad wants one, with the table and the aside copy recomputed against it first. The Overtoad's ruling is unchanged.
 - **NIT-1:** the step-8 `SELECT` and `DELETE` now match on `lower(ltrim("Name",'-'))`.
 - **NIT-2:** A's Round 5 entry now cites R17 for F01.
 - **NIT-3:** FIXED by C1 (installer 1.5.1). The new hint line reaches D through `--from-repo` (D:1529).

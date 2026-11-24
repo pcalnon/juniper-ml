@@ -8,7 +8,7 @@ Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Created:     2026-11-09
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 For each tree fetched by ``2026-11-09_lock_round_2_fetch_consumers.py`` it prints:
 

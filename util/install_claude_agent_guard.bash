@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install_claude_agent_guard.bash -- owner-run installer for the D11 item 4 PreToolUse guard.
+# install_claude_agent_guard.bash -- Overtoad-run installer for the D11 item 4 PreToolUse guard.
 #
 # Project:     juniper-ml
 # Sub-Project: host tooling (turing bring-up, task C8)

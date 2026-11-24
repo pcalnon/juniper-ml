@@ -38,6 +38,7 @@ import io
 import json
 import os
 import pwd
+import re
 import stat
 import subprocess
 import tempfile
@@ -65,6 +66,7 @@ PATH_MARKER = "places-withheld-path-marker.sqlite"
 VALUE_MARKER = "withheld-option-value-marker"
 TAG_PREFIX = "Duplicati.Library.Main.Operation.Backup."
 DESIGN = REPO_ROOT / "notes" / "JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md"
+PLAN = REPO_ROOT / "notes" / "JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md"
 SNAPSHOT_SCRIPT = AD_HOC / "yamaguchi_server_db_snapshot.py"
 
 
@@ -288,7 +290,7 @@ class ExportTest(unittest.TestCase):
         self.assertIn("schedule time of day is 14:00:00 UTC (want 13:00:00)", finding.summary)
 
     def test_ac2_counts_are_the_2026_11_15_ruling(self) -> None:
-        # The owner changed the sources and filters on purpose; the design fixed 2 and 45 until then.
+        # The Overtoad changed the sources and filters on purpose; the design fixed 2 and 45 until then.
         self.assertEqual((probe.EXPECTED_SOURCES, probe.EXPECTED_FILTERS), (5, 76))
 
     def test_ac2_fails_for_each_deviation(self) -> None:
@@ -368,7 +370,7 @@ class ExportTest(unittest.TestCase):
         self.assertIn("set more than once: blocksize", probe.judge_options(twice).summary)
 
     def test_the_ruled_policy_is_the_2026_11_14_amendment(self) -> None:
-        # Q7: the two-week frame keeps every fileset. The read-back judges the string the owner types, exactly.
+        # Q7: the two-week frame keeps every fileset. The read-back judges the string the Overtoad types, exactly.
         self.assertEqual(probe.RULED_RETENTION, "2W:U,6M:1W,2Y:1M,5Y:2M")
         restored = probe.judge_options(export(retention="2W:U,6M:1W,2Y:1M,5Y:2M"), "restored")
         self.assertEqual(restored.verdict, "PASS")
@@ -423,12 +425,12 @@ class Ac5Test(unittest.TestCase):
 
     def test_the_sittings_own_sequence_is_one_day_pending(self) -> None:
         # 2026-11-08 to 11-14 as recorded: OK, RUNNING, ALERT NOT_SUCCESS, RUNNING three times, OK. The handoff's grep
-        # could not show the ALERT. Under the owner's 2026-11-15 ruling the three RUNNING days do not count.
+        # could not show the ALERT. Under the Overtoad's 2026-11-15 ruling the three RUNNING days do not count.
         running = [watchdog_line(noon(day), code="RUNNING", details=f"task {task} for backup 2 running 4.0 h") for day, task in ((11, 46), (12, 48), (13, 49))]
         lines = [watchdog_line(noon(8)), watchdog_line(noon(9), code="RUNNING", details="task 43 for backup 2 running 4.0 h"), watchdog_line(noon(10), "ALERT", "NOT_SUCCESS", details="newest log entry Backup x ParsedResult=Warning [notify-send rc=0]")] + running + [watchdog_line(noon(14))]
         finding = self.judge(lines, now=noon(14) + dt.timedelta(hours=7))
         self.assertEqual(finding.verdict, "PENDING")
-        self.assertIn("OK OK on 1 consecutive day(s) of 3: 2026-11-14 OK; the 3 day(s) before read OK RUNNING and do not count (owner ruling 2026-11-15)", finding.summary)
+        self.assertIn("OK OK on 1 consecutive day(s) of 3: 2026-11-14 OK; the 3 day(s) before read OK RUNNING and do not count (Overtoad ruling 2026-11-15)", finding.summary)
         self.assertEqual((finding.facts["streak_days"], finding.facts["running_days"]), (1, 3))
         self.assertIn("no JOB_MISSING record", finding.summary)
 
@@ -898,6 +900,87 @@ class RunTest(unittest.TestCase):
         self.assertIn("this is the newest FINISHED backup", finding.summary)
 
 
+class RunWithoutLogTest(unittest.TestCase):
+    """Recovery plan finding 42: while a run of the job is in progress the server refuses the job log with HTTP 400."""
+
+    REFUSAL = "log -> 400 after 0 entries"
+
+    def judge(self, metadata: object, now: dt.datetime | None, task_started: dt.datetime | None = None, task: str = "task 5 for backup 2"):
+        return probe.judge_run_without_log(metadata, task, task_started, self.REFUSAL, now=now)
+
+    def test_the_run_is_named_and_the_newest_finished_backups_age_is_read_from_the_metadata(self) -> None:
+        # 2026-11-22 23:30:30Z: the run begun off its slot at 19:28:47Z was in progress; the 11-21 run had finished.
+        now = dt.datetime(2026, 11, 22, 23, 30, 30, tzinfo=UTC)
+        finding = self.judge({"LastBackupStarted": "20261121T130001Z", "LastBackupFinished": "20261122T190012Z"}, now, dt.datetime(2026, 11, 22, 19, 28, 47, tzinfo=UTC))
+        self.assertEqual(finding.verdict, "SKIP", "a run in progress is neither a pass nor unread evidence")
+        self.assertIn("a run is in progress (task 5 for backup 2, started 2026-11-22T19:28:47Z, running 4h01m)", finding.summary)
+        self.assertIn("the server refuses the job log while it runs (log -> 400 after 0 entries)", finding.summary)
+        self.assertIn("by the job's metadata the newest finished backup began 2026-11-21T13:00:01Z, took 30h00m", finding.summary)
+        self.assertEqual((finding.facts["age_hours"], finding.facts["last_backup_finished"], finding.facts["log_refused"]), (34.51, "2026-11-22T19:00:12Z", self.REFUSAL))
+
+    def test_a_lost_slot_still_fails_while_the_next_run_is_in_progress(self) -> None:
+        # 2026-11-21 23:30:30Z: the 11-21 run was in progress, and the newest finished one had begun on 11-19.
+        lost = self.judge({"LastBackupStarted": "20261119T130000Z"}, dt.datetime(2026, 11, 21, 23, 30, 30, tzinfo=UTC), task="task 4 for backup 2")
+        self.assertEqual(lost.verdict, "FAIL")
+        self.assertIn("it began 58.5 h ago and no newer backup has finished (a daily job allows 50 h while a task is active)", lost.summary)
+        self.assertIn("a run is in progress (task 4 for backup 2):", lost.summary, "without the task's start, no start is claimed")
+
+    def test_the_bound_is_judge_runs_while_a_task_is_active_and_its_edge_is_inside(self) -> None:
+        started = dt.datetime(2026, 11, 20, 13, 0, 0, tzinfo=UTC)
+        meta = {"LastBackupStarted": "20261120T130000Z"}
+        bound = dt.timedelta(hours=probe.MAX_RUN_AGE_HOURS + 24)
+        self.assertEqual(self.judge(meta, started + bound).verdict, "SKIP", "exactly the bound is inside it")
+        self.assertEqual(self.judge(meta, started + bound + dt.timedelta(seconds=1)).verdict, "FAIL")
+        with_log = probe.judge_run([summarized(begin=started, fraction="0000000")], "restored", active_task="task 5 for backup 2", now=started + bound + dt.timedelta(seconds=1))
+        self.assertEqual(with_log.verdict, "FAIL", "the same bound judge_run applies while a task is active")
+        clockless = self.judge(meta, None)
+        self.assertEqual((clockless.verdict, clockless.facts["age_hours"]), ("SKIP", None), "without a clock nothing is claimed about its age")
+
+    def test_an_unreadable_start_is_an_error_never_a_pass(self) -> None:
+        unreadable: list[object] = [None, {}, {"LastBackupStarted": None}, {"LastBackupStarted": 20261121130001}, {"LastBackupStarted": "2026-11-21T13:00:01Z"}, {"LastBackupStarted": "20261121T130001"}, {"LastBackupStarted": "20261321T130001Z"}, {"LastBackupStarted": "20261121T130001Z\n"}, {"LastBackupFinished": "20261121T130001Z"}]
+        for meta in unreadable:
+            with self.subTest(meta=meta):
+                finding = self.judge(meta, NOW)
+                self.assertEqual(finding.verdict, "ERROR")
+                self.assertIn("no readable LastBackupStarted", finding.summary)
+
+    def test_a_finish_before_the_start_is_not_a_duration(self) -> None:
+        finding = self.judge({"LastBackupStarted": "20261111T140001Z", "LastBackupFinished": "20261111T140000Z"}, NOW)
+        self.assertIn("began 2026-11-11T14:00:01Z;", finding.summary + ";")
+        self.assertNotIn("took", finding.summary)
+
+    def test_metadata_stamps_are_read_strictly(self) -> None:
+        self.assertEqual(probe.metadata_stamp("20261107T212907Z"), dt.datetime(2026, 11, 7, 21, 29, 7, tzinfo=UTC))
+        bad: list[object] = ["2026117T21297Z", "20261107T212907", " 20261107T212907Z", "20261107T212907Z ", "20261332T000000Z", "", None, 20261107]
+        for value in bad:
+            with self.subTest(value=value):
+                self.assertIsNone(probe.metadata_stamp(value))
+
+    def test_the_stamp_is_the_form_the_census_read(self) -> None:
+        # Rule 1: the recovery plan records the metadata the 2026-11-08 census read (finding 42).
+        recorded = re.findall(r"`LastBackup(Started|Finished)=([^`]*)`", PLAN.read_text(encoding="utf-8"))
+        self.assertEqual(sorted(key for key, _value in recorded), ["Finished", "Started"], "the plan names each stamp once")
+        for key, value in recorded:
+            with self.subTest(key=key):
+                self.assertIsNotNone(probe.metadata_stamp(value), value)
+
+    def test_only_ids_are_read_from_the_active_task(self) -> None:
+        cases: list[tuple[object, tuple[str | None, str | None]]] = [
+            ({"Item1": 46, "Item2": "2"}, ("46", "2")),
+            ({"Item1": "46", "Item2": 2}, ("46", "2")),
+            ({"Item1": True, "Item2": "2"}, (None, "2")),
+            ({"Item1": 46, "Item2": "2\n"}, ("46", None)),
+            ({"Item1": 46, "Item2": "0"}, ("46", None)),
+            ({"Item1": 4.0, "Item2": "²"}, (None, None)),
+            ({}, (None, None)),
+            ([46, "2"], (None, None)),
+            (None, (None, None)),
+        ]
+        for active, expected in cases:
+            with self.subTest(active=active):
+                self.assertEqual(probe.task_ref(active), expected)
+
+
 class ScheduleTest(unittest.TestCase):
     def at(self, day: int, hour: int, minute: int, second: int = 0, operation: str = "Backup") -> dict:
         return summarized(operation=operation, begin=dt.datetime(2026, 11, day, hour, minute, second, tzinfo=UTC), fraction="0000000")
@@ -943,7 +1026,7 @@ class ScheduleTest(unittest.TestCase):
 
 
 class ScheduleMoveTest(unittest.TestCase):
-    """The owner moved the job from 14:00Z to 13:00Z (07:00 CST), and the snapshot from 13:45Z to 12:45Z, on 2026-11-15."""
+    """The Overtoad moved the job from 14:00Z to 13:00Z (07:00 CST), and the snapshot from 13:45Z to 12:45Z, on 2026-11-15."""
 
     def at(self, day: int, hour: int, minute: int = 0, second: int = 0) -> dict:
         return summarized(operation="Backup", begin=dt.datetime(2026, 11, day, hour, minute, second, tzinfo=UTC), fraction="0000000")
@@ -1036,7 +1119,7 @@ class _Stubbed(unittest.TestCase):
 
         def page(query: dict) -> tuple[int, object]:
             if log_status != 200:
-                return log_status, {"Error": "log unavailable"}
+                return log_status, {"Error": "log unavailable: " + PATH_MARKER}  # the answer is never printed
             ids = [e["ID"] for e in self.entries]
             start = ids.index(int(query["offset"])) + 1 if "offset" in query else 0
             return 200, self.entries[start : start + 2]  # a server that pages two at a time, whatever pagesize asks
@@ -1112,6 +1195,48 @@ class ServerTest(_Stubbed):
         status, entries = probe.fetch_log("tok", JOB, 5, SCOPE)
         self.assertEqual((status, len(entries)), (200, 1))
         self.assertLessEqual(len([p for p in self.paths() if p.endswith("/log")]), 2)
+
+    RUNNING = {"ProgramState": "Running", "ActiveTask": {"Item1": 5, "Item2": JOB}, "SchedulerQueueIds": []}
+
+    def test_a_log_refused_while_this_jobs_run_is_in_progress_keeps_everything_else(self) -> None:
+        # Recovery plan finding 42: on 11-19, 11-21 and 11-22 the first log request answered 400 while a run was in progress.
+        self.serve(state=self.RUNNING, log_status=400)
+        self.fake.route("GET", "/api/v1/task/5", 200, {"TaskStarted": "2026-11-22T19:28:47.2583411Z", "Status": "Running"})
+        data = probe.collect_server(STUB_BASE, JOB, 3, SCOPE)
+        self.assertNotIn("error", data)
+        self.assertEqual((data["log_refused"], data["entries"], data["active_task"]), ("log -> 400 after 0 entries", None, "task 5 for backup 2"))
+        self.assertEqual(data["task_started"], dt.datetime(2026, 11, 22, 19, 28, 47, 258341, tzinfo=UTC))
+        self.assertEqual((data["export"], data["metadata"]), (export(), {"TargetFilesCount": "10", "TargetFilesSize": "10000"}), "what needs no log is still read")
+        writes = [p for p in self.paths() if not p.startswith("GET ") and p not in ("POST /api/v1/auth/login", "POST /api/v1/auth/issuetoken/export")]
+        self.assertEqual(writes, [], "the task is read with a GET")
+        self.fake.route("GET", "/api/v1/task/5", 404, {"Error": "x"})
+        self.assertIsNone(probe.collect_server(STUB_BASE, JOB, 3, SCOPE)["task_started"], "an unread start is left out, and is no error")
+
+    def test_entries_read_before_the_refusal_are_not_judged(self) -> None:
+        def first_page_only(query: dict) -> tuple[int, object]:
+            return (400, {"Error": "busy"}) if "offset" in query else (200, self.entries[:2])
+
+        self.serve(state=self.RUNNING)
+        self.fake.route("GET", f"/api/v1/backup/{JOB}/log", handler=first_page_only)
+        data = probe.collect_server(STUB_BASE, JOB, 3, SCOPE)
+        self.assertEqual((data["log_refused"], data["entries"]), ("log -> 400 after 2 entries", None))
+
+    def test_any_other_refusal_of_the_log_is_still_an_error(self) -> None:
+        cases: dict[str, tuple[dict, int]] = {
+            "no task is active": ({"ProgramState": "Running", "ActiveTask": None}, 400),
+            "another job's task": ({"ProgramState": "Running", "ActiveTask": {"Item1": 5, "Item2": "3"}}, 400),
+            "a status other than the 400 observed": (self.RUNNING, 500),
+            "a backup id that is not an id": ({"ProgramState": "Running", "ActiveTask": {"Item1": 5, "Item2": JOB + "\n"}}, 400),
+        }
+        for label, (state, status) in cases.items():
+            with self.subTest(case=label):
+                self.serve(state=state, log_status=status)
+                self.assertEqual(probe.collect_server(STUB_BASE, JOB, 3, SCOPE).get("error"), f"log -> {status} after 0 entries")
+        self.assertFalse([p for p in self.paths() if p.startswith("GET /api/v1/task/")], "the task is read only for a refusal it explains")
+
+    def test_an_active_task_is_named_by_its_ids_only(self) -> None:
+        self.serve(state={"ProgramState": "Running", "ActiveTask": {"Item1": "46\nRESULT: PASS", "Item2": "2"}})
+        self.assertEqual(probe.collect_server(STUB_BASE, JOB, 2, SCOPE)["active_task"], "a task whose ids this probe cannot read")
 
 
 class MainTest(_Stubbed):
@@ -1214,6 +1339,38 @@ class MainTest(_Stubbed):
         self.assertIn("1 log entry newer than this backup carry no readable result", out)
         self.assertEqual(code, probe.EXIT_ERROR)
         never_leaks(self, out)
+
+    def test_a_run_in_progress_whose_log_is_refused_is_reported_not_undetermined(self) -> None:
+        # Recovery plan finding 42: until 1.4.0 the refusal read ERROR for AC-2, AC-13, OPTIONS, RUN, OFFSCHED and CENSUS.
+        for name, criterion in (("judge_ac5", "AC-5"), ("judge_ac6a", "AC-6a")):
+            patcher = mock.patch.object(probe, name, return_value=probe.Finding(criterion, "PASS", "stand-in"))
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        now = dt.datetime.now(UTC)
+
+        def serve_running(newest_finished_began: dt.datetime) -> None:
+            self.serve(state={"ProgramState": "Running", "ActiveTask": {"Item1": 5, "Item2": JOB}, "SchedulerQueueIds": []}, log_status=400, metadata={"TargetFilesCount": "10", "TargetFilesSize": "10000", "LastBackupStarted": newest_finished_began.strftime("%Y%m%dT%H%M%SZ")})
+            self.fake.route("GET", "/api/v1/task/5", 200, {"TaskStarted": (now - dt.timedelta(hours=3)).isoformat()})
+
+        serve_running(now - dt.timedelta(hours=30))
+        code, out, _err = self.run_probe("--backup-id", JOB, "--base", STUB_BASE, "--state-dir", str(self.state_dir), "--dest", "/mnt/dest")
+        verdicts = self.lines(out)
+        self.assertEqual({c: verdicts[c] for c in ("AC-2", "AC-13", "OPTIONS", "RUN", "OFFSCHED", "CENSUS")}, {"AC-2": "PASS", "AC-13": "PASS", "OPTIONS": "PASS", "RUN": "SKIP", "OFFSCHED": "SKIP", "CENSUS": "PASS"}, out)
+        self.assertIn(f"RUN      SKIP     a run is in progress (task 5 for backup {JOB}, started ", out)
+        self.assertIn("OFFSCHED SKIP     not judged: the server refuses the job log while a run of this job is in progress (log -> 400 after 0 entries)", out)
+        self.assertIn("RESULT: INCOMPLETE", out)
+        self.assertEqual(code, 0, "a run in progress is neither a failure nor unread evidence")
+        self.assertNotIn("\n  run 20", out, "no run table without the log")
+        self.assertEqual(json.loads((self.state_dir / "acceptance.json").read_text())["server"], "read, log refused")
+        history = json.loads((self.state_dir / "acceptance-history.jsonl").read_text().splitlines()[-1])
+        self.assertEqual((history["newest_backup"], history["verdicts"]["RUN"]), (None, "SKIP"))
+        never_leaks(self, out, (self.state_dir / "acceptance.json").read_text(), (self.state_dir / "acceptance-history.jsonl").read_text())
+        # The age is still judged without the log: a newest finished backup begun 51 h ago fails, run or no run.
+        serve_running(now - dt.timedelta(hours=51))
+        code, out, _err = self.run_probe("--backup-id", JOB, "--base", STUB_BASE, "--no-write", "--state-dir", str(self.state_dir), "--dest", "/mnt/dest")
+        self.assertEqual(self.lines(out)["RUN"], "FAIL")
+        self.assertIn("no newer backup has finished (a daily job allows 50 h while a task is active)", out)
+        self.assertEqual(code, probe.EXIT_FAIL)
 
     def test_an_unreachable_server_is_an_error_for_its_criteria_only(self) -> None:
         self.fake.route("POST", "/api/v1/auth/login", 401, {"Error": "Failed to log in"})

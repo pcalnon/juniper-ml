@@ -178,7 +178,7 @@ class PyTypedMarkerTests(unittest.TestCase):
                 marker = subdir / _import_name(subdir) / "py.typed"
                 self.assertTrue(
                     marker.is_file(),
-                    f"{subdir.name}: missing PEP 561 marker at {marker.relative_to(self.repo_root)} -- " "consumers will see [import-untyped] and discard every annotation",
+                    f"{subdir.name}: missing PEP 561 marker at {marker.relative_to(self.repo_root)} -- consumers will see [import-untyped] and discard every annotation",
                 )
 
     def test_every_subpackage_declares_py_typed_as_package_data(self) -> None:
@@ -190,7 +190,7 @@ class PyTypedMarkerTests(unittest.TestCase):
                 self.assertIn(
                     pkg,
                     package_data,
-                    f"{subdir.name}: [tool.setuptools.package-data] does not declare '{pkg}' -- " "the marker would reach the wheel only through setuptools' implicit py.typed pattern, not a declaration",
+                    f"{subdir.name}: [tool.setuptools.package-data] does not declare '{pkg}' -- the marker would reach the wheel only through setuptools' implicit py.typed pattern, not a declaration",
                 )
                 self.assertIn(
                     "py.typed",
@@ -217,7 +217,7 @@ class PyTypedMarkerTests(unittest.TestCase):
                 strays = PACKAGES_FIND_KEYS & set(package_data)
                 self.assertFalse(
                     strays,
-                    f"{subdir.name}: {sorted(strays)} appears under [tool.setuptools.package-data] -- " "it belongs to [tool.setuptools.packages.find]; a table header was inserted mid-table, " "so packaging discovery silently lost it",
+                    f"{subdir.name}: {sorted(strays)} appears under [tool.setuptools.package-data] -- it belongs to [tool.setuptools.packages.find]; a table header was inserted mid-table, so packaging discovery silently lost it",
                 )
 
     def test_every_built_wheel_ships_py_typed(self) -> None:

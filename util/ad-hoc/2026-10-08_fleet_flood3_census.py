@@ -8,7 +8,7 @@ Author: Paul Calnon
 License: MIT License
 Created: 2026-10-08
 Status: ad-hoc -- investigation (cursor-fleet PR disposition)
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: `2026-09-07_fleet_backlog_census.py` (counts only), `2026-09-05_fleet_harvest_triage.py`
          (per-file NEW/DIVERGED/SAME against main), `util/fleet_triage/predict_merge.py`
 

@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-11-07
 Status: ad-hoc — investigation
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-07_JUNIPER-ECOSYSTEM_YAMAGUCHI-SECURITYFS-UNMOUNT-ROOT-CAUSE-ANALYSIS.md
 
 Why this exists
@@ -26,7 +26,7 @@ An entry is kept when its ISO ``timestamp`` falls inside [--since, --until] and 
 carries one of:
 
 * an assistant ``tool_use`` block for ``Bash`` (its ``input.command``),
-* a user ``<bash-input>`` block (a ``!`` command typed by the owner),
+* a user ``<bash-input>`` block (a ``!`` command typed by the Overtoad),
 * a ``tool_result`` whose text matches ``--result-regex`` (default: mount/umount
   vocabulary), so a command's *output* that mentions an unmount is also seen.
 
@@ -98,7 +98,7 @@ def iter_blocks(entry: dict):
     if isinstance(content, str):
         if "<bash-input>" in content:
             for match in re.finditer(r"<bash-input>(.*?)</bash-input>", content, re.S):
-                yield "owner-!", match.group(1)
+                yield "Overtoad-!", match.group(1)
         return
     if not isinstance(content, list):
         return
@@ -114,7 +114,7 @@ def iter_blocks(entry: dict):
             text = block.get("text")
             if isinstance(text, str) and "<bash-input>" in text:
                 for match in re.finditer(r"<bash-input>(.*?)</bash-input>", text, re.S):
-                    yield "owner-!", match.group(1)
+                    yield "Overtoad-!", match.group(1)
         elif btype == "tool_result":
             inner = block.get("content")
             if isinstance(inner, list):
@@ -169,7 +169,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=os.path.expanduser("~/.claude/projects"))
     parser.add_argument("--since", required=True, help="ISO-8601 UTC, e.g. 2026-10-27T22:40:00Z")
     parser.add_argument("--until", required=True, help="ISO-8601 UTC")
-    parser.add_argument("--command-regex", default=".", help="filter for bash / owner-! commands")
+    parser.add_argument("--command-regex", default=".", help="filter for bash / Overtoad-! commands")
     parser.add_argument("--result-regex", default=DEFAULT_RESULT_REGEX, help="filter for tool_result text")
     parser.add_argument("--no-results", action="store_true", help="skip tool_result matching")
     parser.add_argument("--width", type=int, default=400)

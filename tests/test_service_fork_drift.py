@@ -7,7 +7,7 @@ the key-handling code, which this gate could not name until ``APD-ECO-008``
 (2026-09-22) -- and its own ``RateLimiter``. Canopy is a site of the two
 key-handling guards and of ``retry-after-rounds-up`` (``APD-ECO-016``), and of
 nothing else. The shared package's own copy is a site of four guards: the two
-key-handling guards (owner ruling 2026-09-23), ``throttle-check-never-inserts``
+key-handling guards (Overtoad ruling 2026-09-23), ``throttle-check-never-inserts``
 and ``retry-after-rounds-up``. ``juniper-recurrence`` imports it, so a regression
 there reaches a service with no change of its own. That is the single most
 productive defect shape in the 2026-08-14 ecosystem defect register: **a guard
@@ -280,7 +280,7 @@ GUARDS: tuple[Guard, ...] = (
             ForkSite("juniper-cascor", _CASCOR_SECURITY, ("isinstance(k, str)", "k.strip()")),
             # APD-ECO-008: canopy's copy, fixed by juniper-canopy#660.
             ForkSite("juniper-canopy", _CANOPY_SECURITY, ("isinstance(k, str)", "k.strip()")),
-            # The canonical copy itself (owner ruling 2026-09-23). Unwatched until then,
+            # The canonical copy itself (Overtoad ruling 2026-09-23). Unwatched until then,
             # although recurrence imports it and would inherit a regression unseen.
             ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, ("isinstance(k, str)", "k.strip()")),
         ),
@@ -309,7 +309,7 @@ GUARDS: tuple[Guard, ...] = (
             # exactly one key, so this changes no timing there today; it holds the copy
             # to the same shape as its siblings, which is the class this gate exists for.
             ForkSite("juniper-canopy", _CANOPY_SECURITY, ("matched = False", "return matched")),
-            # The shared package, which recurrence imports (owner ruling 2026-09-23).
+            # The shared package, which recurrence imports (Overtoad ruling 2026-09-23).
             ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, ("matched = False", "return matched")),
         ),
     ),
@@ -747,7 +747,7 @@ class ServiceForkDriftTest(unittest.TestCase):
                     code = site_code(source, site)
                     self.assertIsNotNone(
                         code,
-                        f"Guard '{guard.guard_id}' is missing from {site.repo}/{site.path}: it is scoped to {site.scope}, and the file holds no such definition or does not parse. " f"Until the registry's scope is corrected the guard checks nothing there. Register: {', '.join(guard.register_ids)}. " f"What it protects: {guard.summary}",
+                        f"Guard '{guard.guard_id}' is missing from {site.repo}/{site.path}: it is scoped to {site.scope}, and the file holds no such definition or does not parse. Until the registry's scope is corrected the guard checks nothing there. Register: {', '.join(guard.register_ids)}. What it protects: {guard.summary}",
                     )
                     missing = [m for m in site.markers if m not in code]
                     present = [m for m in site.forbidden if m in code]
@@ -755,16 +755,16 @@ class ServiceForkDriftTest(unittest.TestCase):
                     scope_note += f"; forbidden code there too: {present}" if present else ""
                     self.assertFalse(
                         missing,
-                        f"Guard '{guard.guard_id}' is missing from {site.repo}/{site.path} " f"(absent markers: {missing}{scope_note}). This guard is ENFORCED because it was " f"already fixed there; its disappearance is a regression of " f"{', '.join(guard.register_ids)}. Canonical implementation: {guard.canonical}. " f"What it protects: {guard.summary}",
+                        f"Guard '{guard.guard_id}' is missing from {site.repo}/{site.path} (absent markers: {missing}{scope_note}). This guard is ENFORCED because it was already fixed there; its disappearance is a regression of {', '.join(guard.register_ids)}. Canonical implementation: {guard.canonical}. What it protects: {guard.summary}",
                     )
                     self.assertFalse(
                         present,
-                        f"Guard '{guard.guard_id}' is broken in {site.repo}/{site.path}: the code of {site.scope} contains {present}, which the guard forbids there. " f"This is a regression of {', '.join(guard.register_ids)}. Canonical implementation: {guard.canonical}. " f"What it protects: {guard.summary}",
+                        f"Guard '{guard.guard_id}' is broken in {site.repo}/{site.path}: the code of {site.scope} contains {present}, which the guard forbids there. This is a regression of {', '.join(guard.register_ids)}. Canonical implementation: {guard.canonical}. What it protects: {guard.summary}",
                     )
                     disordered = markers_out_of_order(code, site)
                     self.assertFalse(
                         disordered,
-                        f"Guard '{guard.guard_id}' has all its markers in {site.repo}/{site.path} " f"but in the WRONG ORDER (first out of place: {disordered}). For an ordered " f"site the sequence IS the guard -- every marker being present proves nothing. " f"This is a regression of {', '.join(guard.register_ids)}. " f"What it protects: {guard.summary}",
+                        f"Guard '{guard.guard_id}' has all its markers in {site.repo}/{site.path} but in the WRONG ORDER (first out of place: {disordered}). For an ordered site the sequence IS the guard -- every marker being present proves nothing. This is a regression of {', '.join(guard.register_ids)}. What it protects: {guard.summary}",
                     )
 
     def test_known_gaps_are_still_open_or_get_promoted(self):
@@ -783,7 +783,7 @@ class ServiceForkDriftTest(unittest.TestCase):
                         self.skipTest(f"{site.repo}/{site.path} not readable")
                     self.assertFalse(
                         guard_is_present(source, site),
-                        f"Guard '{guard.guard_id}' now appears IMPLEMENTED in " f"{site.repo}/{site.path}, but the registry still lists it as a " f"KNOWN_GAP. If you just fixed it: change that row's status to " f"ENFORCED in this file so the fix is protected against future " f"regression, and close {', '.join(guard.register_ids)} in the " f"defect register.",
+                        f"Guard '{guard.guard_id}' now appears IMPLEMENTED in {site.repo}/{site.path}, but the registry still lists it as a KNOWN_GAP. If you just fixed it: change that row's status to ENFORCED in this file so the fix is protected against future regression, and close {', '.join(guard.register_ids)} in the defect register.",
                     )
 
     def test_fork_files_named_by_the_registry_exist(self):
@@ -795,7 +795,7 @@ class ServiceForkDriftTest(unittest.TestCase):
                     path = _site_path(site, self.juniper_ml_root, self.ecosystem_root)
                     self.assertTrue(
                         path.is_file(),
-                        f"{site.repo}/{site.path} does not exist. Either the registry is stale -- " f"until the path is corrected, guard '{guard.guard_id}' is checking nothing -- or the " f"{site.repo} checkout is missing (docs-full-check.yml's clone step swallows a failed clone). " f"This fails rather than skips on purpose: see _ROOT_ANCHOR_REPOS.",
+                        f"{site.repo}/{site.path} does not exist. Either the registry is stale -- until the path is corrected, guard '{guard.guard_id}' is checking nothing -- or the {site.repo} checkout is missing (docs-full-check.yml's clone step swallows a failed clone). This fails rather than skips on purpose: see _ROOT_ANCHOR_REPOS.",
                     )
 
 
@@ -820,12 +820,12 @@ class SharedPackageGuardTest(unittest.TestCase):
                 if guard.status == ENFORCED:
                     self.assertTrue(
                         guard_is_present(source, site),
-                        f"Guard '{guard.guard_id}' is missing from the shared package's {site.path} " f"(required: {site_requirement(site)}). juniper-recurrence imports " f"this copy, so the regression reaches it without any change of its own. " f"Register: {', '.join(guard.register_ids)}. What it protects: {guard.summary}",
+                        f"Guard '{guard.guard_id}' is missing from the shared package's {site.path} (required: {site_requirement(site)}). juniper-recurrence imports this copy, so the regression reaches it without any change of its own. Register: {', '.join(guard.register_ids)}. What it protects: {guard.summary}",
                     )
                 else:
                     self.assertFalse(
                         guard_is_present(source, site),
-                        f"Guard '{guard.guard_id}' now appears IMPLEMENTED in the shared package's " f"{site.path}, but the registry still lists it as a KNOWN_GAP. Promote the row to ENFORCED.",
+                        f"Guard '{guard.guard_id}' now appears IMPLEMENTED in the shared package's {site.path}, but the registry still lists it as a KNOWN_GAP. Promote the row to ENFORCED.",
                     )
 
 

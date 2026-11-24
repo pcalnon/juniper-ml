@@ -7,7 +7,7 @@ Sub-Project: ad-hoc tooling (Cursor-fleet flood-4 consolidation)
 Author: Paul Calnon
 Created: 2026-11-09
 Status: ad-hoc — investigation (round 4 of the juniper-data pull-request Gitleaks fix: finding R3-02's git filter)
-Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md §4 (the juniper-data row)
 
 WHY THIS EXISTS

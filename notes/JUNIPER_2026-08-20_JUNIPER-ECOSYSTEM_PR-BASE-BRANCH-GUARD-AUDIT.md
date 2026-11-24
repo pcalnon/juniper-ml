@@ -18,7 +18,7 @@ ahead. Nothing below has been rewritten to match the outcome.
 Found by an independent fact-check run against live state after the rollout, not by the audit
 and not by the rollout author. It matters more than any other correction here, because F-03 was
 used to argue the guard had ~zero protective value, and that argument was written into the
-workflow header, the rollout PR bodies, and the owner-facing recommendation.
+workflow header, the rollout PR bodies, and the Overtoad-facing recommendation.
 
 **F-03 claimed:** a base≠`main` PR triggers none of the repo's 10–22 required contexts, they sit
 at `expected`, and *"a stacked PR is already unmergeable; the guard only replaces a silent stall
@@ -131,7 +131,7 @@ Three results dominate:
 
 3. **`required` does not constrain the actor whose mistake this catches.** Independently measured on
    juniper-ml over the last month: **401 of 612 rule-suite evaluations (65.5%) were `bypass`, all of them
-   on `refs/heads/main`** (F-14). The stranded-PR defect class is an owner-merge defect; the owner
+   on `refs/heads/main`** (F-14). The stranded-PR defect class is an Overtoad-merge defect; the Overtoad
    bypasses the ruleset roughly two updates in three.
 
 **Recommendation**: adopt the workflow on all 8 repos **as an advisory (non-required) check first**, fix
@@ -654,8 +654,8 @@ Full bypass roster, identical on 7 of 8 targets:
 
 **Portability delta**: `juniper-deploy`'s ruleset omits the `4362741` row (4 bypass actors, not 5).
 
-**Consequence**: the stranded-PR incident (juniper-recurrence #7/#8) was an owner-merge defect. Making
-this a required check adds a gate the owner steps over roughly two default-branch updates in three. The
+**Consequence**: the stranded-PR incident (juniper-recurrence #7/#8) was an Overtoad-merge defect. Making
+this a required check adds a gate the Overtoad steps over roughly two default-branch updates in three. The
 guard's real value is the **annotation on the PR**, which an advisory check delivers identically.
 
 ---

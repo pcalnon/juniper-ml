@@ -8,7 +8,7 @@ Author:      Paul Calnon
 Version:     0.1.0
 License:     MIT License
 Created:     2026-11-09
-Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
+Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 
 The four consumer CHANGELOGs differ: juniper-data's and juniper-canopy's ``[Unreleased]`` already
 hold a ``### Security`` subsection (the entry goes first in it), juniper-cascor's has none, and

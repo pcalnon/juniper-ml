@@ -730,7 +730,7 @@ if __name__ == "__main__":
 class RescoreSourceRecovered(unittest.TestCase):
     """Re-scoring must reclassify a run WITHOUT flattering the follow rate.
 
-    Owner decision 2026-08-31: a run where the agent produced the correct answer
+    The Overtoad decision 2026-08-31: a run where the agent produced the correct answer
     from source rather than through the relocated pointer is not the same event
     as failing to obtain the fact. The dangerous implementation is the one that
     also drops the run from the denominator: 9 of the real ledger's 11
@@ -881,7 +881,7 @@ class RescoreSourceRecovered(unittest.TestCase):
         self.assertGreaterEqual(
             len(distinct),
             sl.MIN_DISTINCT_PROBES,
-            f"distinct live probes {len(distinct)} < MIN_DISTINCT_PROBES " f"{sl.MIN_DISTINCT_PROBES}: the verdict has fallen back to IN-PROGRESS and " "the spend control no longer refuses terminal runs",
+            f"distinct live probes {len(distinct)} < MIN_DISTINCT_PROBES {sl.MIN_DISTINCT_PROBES}: the verdict has fallen back to IN-PROGRESS and the spend control no longer refuses terminal runs",
         )
 
     def test_an_invalidate_that_would_reopen_spending_is_refused(self) -> None:

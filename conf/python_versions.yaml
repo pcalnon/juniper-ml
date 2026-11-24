@@ -9,7 +9,7 @@
 #              tests/test_python_version_matrix_drift.py (holds CI's matrices to these lists);
 #              juniper-ml#2567 (the CI half: informational Python 3.15 legs)
 #
-# Owner ruling, 2026-11-14 (phase 1 of the Python 3.15 migration): 3.12, 3.13 and 3.14 are
+# The Overtoad ruling, 2026-11-14 (phase 1 of the Python 3.15 migration): 3.12, 3.13 and 3.14 are
 # BLOCKING; 3.15 is INFORMATIONAL -- its checks report results and block no commit, merge or
 # deployment. Every Python-version matrix in juniper-ml's own workflows (ci.yml's `tests` job and
 # the six ci-<pkg>.yml `test` jobs; pre-commit is exempt) runs each informational version as an
@@ -115,8 +115,9 @@ repos:
       # tests/test_python_version_matrix_drift.py fails when the two differ.
       - python -m pip install "pyyaml>=6.0" "packaging>=22.0" "juniper-ci-tools>=0.9.0,<0.10.0" "numpy>=1.26" "matplotlib>=3.8" "h5py>=3.11" "setuptools>=68" wheel "cryptography>=44.0.1"
     test:
-      # Every suite of ci.yml's "Run Python regression tests" step, past failures.
-      regression: python util/ad-hoc/2026-11-15_run_ci_regression_list_locally.py --python "$VIRTUAL_ENV/bin/python"
+      # ci.yml's tests job through the local test runner, which reads its two steps from ci.yml on every run:
+      # one job per command of "Run Python regression tests", plus "Run bash regression tests", past failures.
+      regression: python util/run_tests.py regression --python "$VIRTUAL_ENV/bin/python"
 
   juniper-recurrence:
     install:

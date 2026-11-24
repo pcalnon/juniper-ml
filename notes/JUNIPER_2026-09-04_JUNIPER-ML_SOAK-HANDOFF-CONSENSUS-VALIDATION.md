@@ -24,7 +24,7 @@ instrument, universal quantifiers) × **high criticality** (gates a merge; sanct
 spend guard) → top-right cell, so **3+ Lane A on distinct entry points, 2+ Lane B on opposing
 briefs, ≥2 iterations**.
 
-**This document decides no owner question.** §8 records the open ones unchanged.
+**This document decides no Overtoad question.** §8 records the open ones unchanged.
 
 ## 2. Verdict
 
@@ -220,7 +220,7 @@ The handoff calls `--force` "expected and sanctioned" per §8.3 of
 §8.3 says: *"The guard is not harmful — it still prevents unattended runaway spend … **Left in
 place for now; flagged so it is changed deliberately rather than discovered later.**"* Its
 conclusion is *leave it and change it deliberately*. §10.5 of the same document lists the
-`--force` question as an **open owner decision**, which the handoff's own "do not decide these"
+`--force` question as an **open Overtoad decision**, which the handoff's own "do not decide these"
 list omits and then decides.
 
 ### 4.10 Not executable as written — MAJOR
@@ -286,7 +286,7 @@ the reconciler.**
   positions above will drift again.
 - **The other two amputation leads** (Lane B2), spot-checked in round 2 and both holding:
   `util/ad-hoc/2026-08-21_soak_probe_evidence.py` is genuinely uninvoked by any script (every
-  other hit is prose), and BET-FAILING's prescribed action really is *"Revisit owner decision #7.
+  other hit is prose), and BET-FAILING's prescribed action really is *"Revisit Overtoad decision #7.
   Never re-inline"* — neither quoted nor acted on anywhere in this arc.
 - **Reconciler errors, recorded because they cut the same way.** Two of the reconciler's own
   re-derivations were wrong before they were right, and both errors made a validator look wrong:
@@ -322,7 +322,7 @@ Separately: `p = 0.0017` reproduces as a **parametric bootstrap**, not the permu
 labelled; a true label-shuffle gives p ≈ 0.0002–0.0006. The conclusion (p ≪ 0.05) survives; the
 label does not.
 
-## 8. Open owner decisions — NOT decided here
+## 8. Open Overtoad decisions — NOT decided here
 
 Carried forward unchanged from the handoff, plus one it omitted:
 
@@ -332,7 +332,7 @@ Carried forward unchanged from the handoff, plus one it omitted:
 4. P06's discriminator under-specifies. Registry-author item.
 5. **(omitted by the handoff)** Whether to `--force` past a terminal verdict at all — §10.5 of
    `notes/JUNIPER_2026-09-03_JUNIPER-ML_SOAK-TRIGGER-DESIGN-CONVERSATION.md` records this as
-   owner-facing and open.
+   Overtoad-facing and open.
 
 Given §4.1, a sixth is now live: **whether the per-probe campaign runs at all**, since it cannot
 resolve P21 or P23 at the sample size proposed.

@@ -20,7 +20,7 @@ That table's P1 deliverable: *"Design-of-record note: what is measured, on which
 baseline, at what budget, and what regression means. Must resolve §12.3 scenario matrix, draft →
 fixed, and specify Q-8 baseline directory (name, layout, retention, who writes it)."*
 
-**Does not close**: P2 (work items), P3 (**threshold ratification** — owner), P4 (docs). §12 development
+**Does not close**: P2 (work items), P3 (**threshold ratification** — Overtoad), P4 (docs). §12 development
 remains gated. This document is the specification P2 plans against, not permission to build.
 
 **Plan §12** = [`JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md`](JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md)
@@ -131,7 +131,7 @@ re-surveyed; the survey is the acceptance test for that property.
 
 ## 4. Q-8 — the run-level baseline directory
 
-Q-8 was answered by the owner on 2026-08-16: **a dedicated, new directory**, with location, layout
+Q-8 was answered by the Overtoad on 2026-08-16: **a dedicated, new directory**, with location, layout
 and retention *"part of the §12 design phase, not an implementation detail to be improvised"*. That
 is this section.
 
@@ -197,8 +197,8 @@ That last clause is the one worth defending. A shared workstation has a noise fl
 below it produces alerts that are indistinguishable from someone opening a browser, which is how a
 perf gate gets muted and then ignored.
 
-**Sequence to P3**: run PF-1 (5 repeats, ~an hour, needs owner approval for the host time) →
-compute the spread → derive candidate thresholds by the rule above → the owner ratifies or rejects
+**Sequence to P3**: run PF-1 (5 repeats, ~an hour, needs Overtoad approval for the host time) →
+compute the spread → derive candidate thresholds by the rule above → the Overtoad ratifies or rejects
 them → P3's second half, a dry measurement pass reproducing end-to-end, can then run.
 
 ---
@@ -206,7 +206,7 @@ them → P3's second half, a dry measurement pass reproducing end-to-end, can th
 ## 6. What this design deliberately does not decide
 
 - **Threshold values** — P3, and blocked on PF-1 as above.
-- ~~**Whether the run tier ever gates CI**~~ — **ANSWERED 2026-09-07 (owner): NO, and the reason is
+- ~~**Whether the run tier ever gates CI**~~ — **ANSWERED 2026-09-07 (Overtoad): NO, and the reason is
   STRUCTURAL rather than a preference.** §12.4 said report-only "at first"; "first" does not end on
   the current infrastructure, because the run tier *cannot* gate hosted CI at all:
   - `compare_baseline.py` treats `HOST_IDENTITY_FIELDS = (cpu_model, cpu_count, thread_budget)` as
@@ -225,7 +225,7 @@ them → P3's second half, a dry measurement pass reproducing end-to-end, can th
   assuming this bullet.
 
   **Consequence, now permanent**: item 1.4's decoupling of `run_suite`'s exit code from the
-  comparator verdict is no longer "pending an owner decision" — it is the settled design. Relaxing
+  comparator verdict is no longer "pending an Overtoad decision" — it is the settled design. Relaxing
   `HOST_IDENTITY_FIELDS` to advisory was considered and **rejected**: §2 of this document defines a
   run-tier regression as *"the same YAML, same hardware, same thread budget"*, so relaxing it would
   make every CI comparison silently cross-hardware, which is the precise failure the refusal exists
@@ -247,9 +247,9 @@ The phasing table's P1 is *"done when: a `notes/` design doc exists and is revie
 - [x] What regression *means*, per tier — §2
 - [x] §12.3 scenario matrix, draft → fixed — §3 (PF-4 rescoped, PF-8 deferred, rationale recorded)
 - [x] Q-8 baseline directory: name, layout, retention, who writes it — §4
-- [x] **Reviewed** — owner, in session 2026-09-01 ("design reviewed and approved"); the four P3 decisions that followed are recorded in §7 of the loaded-and-bridged results ([`JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-LOADED-AND-BRIDGED-RESULTS.md`](JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-LOADED-AND-BRIDGED-RESULTS.md))
+- [x] **Reviewed** — Overtoad, in session 2026-09-01 ("design reviewed and approved"); the four P3 decisions that followed are recorded in §7 of the loaded-and-bridged results ([`JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-LOADED-AND-BRIDGED-RESULTS.md`](JUNIPER_2026-09-01_JUNIPER-ECOSYSTEM_PF1-LOADED-AND-BRIDGED-RESULTS.md))
 
-Review is the remaining half. The two items most worth an owner's attention are **§1** (PF-4's
+Review is the remaining half. The two items most worth an Overtoad's attention are **§1** (PF-4's
 instrument does not hold timing data, so the reuse decision behind it is half-true) and **§5's
 derivation rule**, which commits in advance to concluding "this host cannot gate that metric" if
 the noise floor says so.
