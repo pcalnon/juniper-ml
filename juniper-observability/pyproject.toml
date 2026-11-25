@@ -29,10 +29,11 @@ dependencies = [
 
 [project.optional-dependencies]
 prometheus = ["prometheus-client>=0.20.0"]
-# Capped below 3: sentry-sdk 3.0.0 (PyPI, 2026-11-23) removed the `send_default_pii` option and the
-# `sentry_sdk.scrubber` module, so `configure_sentry` raises "TypeError: Unknown option
-# 'send_default_pii'" on 3.x. Lift the cap only with a port of `sentry.py` to the 3.x API.
-sentry = ["sentry-sdk[fastapi]>=2.35.0,<3"]
+# Both majors: `configure_sentry` passes 2.x's options on 2.x and 3.x's on 3.x (sentry-sdk 3.0.0,
+# PyPI 2026-11-23, removed `send_default_pii`, `include_local_variables`, `enable_logs` and
+# `before_send_transaction`, and raises TypeError on an unknown option). Capped below 4: lift it
+# only with a port to 4.x's API, measured with the real SDK.
+sentry = ["sentry-sdk[fastapi]>=2.35.0,<4"]
 all = ["juniper-observability[prometheus,sentry]"]
 test = [
     "pytest>=8.0",
@@ -41,7 +42,7 @@ test = [
     "httpx>=0.27",
     "fastapi>=0.110",
     "prometheus-client>=0.20.0",
-    "sentry-sdk[fastapi]>=2.35.0,<3",
+    "sentry-sdk[fastapi]>=2.35.0,<4",
 ]
 
 [project.urls]

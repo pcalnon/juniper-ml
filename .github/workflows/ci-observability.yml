@@ -70,6 +70,14 @@ jobs:
         continue-on-error: ${{ matrix.experimental == true }}
         run: pip install --upgrade "pip>=26.1.1" && pip install -e ".[test]"
 
+      - name: Check the installed sentry-sdk is 3.x
+        id: check-the-installed-sentry-sdk-is-3-x
+        continue-on-error: ${{ matrix.experimental == true }}
+        # The `test` extra admits 2.x and 3.x; this job is the 3.x half (`test-sentry-sdk-2` is the 2.x
+        # half). The wire tests run only the installed major, so a 2.x resolution here would skip every
+        # 3.x wire test and still pass.
+        run: python -c "import sentry_sdk, sys; print('sentry-sdk', sentry_sdk.VERSION); sys.exit(sentry_sdk.VERSION.split('.')[0] != '3')"
+
       - name: Run unit tests with coverage
         id: run-unit-tests-with-coverage
         continue-on-error: ${{ matrix.experimental == true }}
@@ -111,10 +119,41 @@ jobs:
               print(f"::notice title=Python {leg} (informational)::every step passed on Python {leg}")
           PY
 
+  test-sentry-sdk-2:
+    # `configure_sentry` passes 2.x's options on sentry-sdk 2.x and 3.x's on 3.x, and the wire tests in
+    # tests/test_sentry.py run only the installed major. The `test` job resolves 3.x, so this job holds
+    # sentry-sdk below 3 (pip then resolves the newest 2.x; the 2.35.0 floor is tested locally only): the 2.x wire tests (transactions, EventScrubber) run here only.
+    name: Test (Python 3.13, sentry-sdk 2.x)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: juniper-observability
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0  # v7.1.0
+        with:
+          python-version: "3.13"
+
+      - name: Install package + test extras, with sentry-sdk 2.x
+        run: pip install --upgrade "pip>=26.1.1" && pip install -e ".[test]" "sentry-sdk[fastapi]>=2.35.0,<3"
+
+      - name: Check the installed sentry-sdk is 2.x
+        run: python -c "import sentry_sdk, sys; print('sentry-sdk', sentry_sdk.VERSION); sys.exit(sentry_sdk.VERSION.split('.')[0] != '2')"
+
+      - name: Run unit tests with coverage
+        run: |
+          python -m pytest --cov=juniper_observability --cov-report=term-missing --cov-report=json:coverage.json --cov-fail-under=90
+
+      - name: Enforce per-file coverage gate (blocking)
+        run: |
+          pip install "juniper-ci-tools>=0.9.0,<0.10.0"
+          juniper-coverage-gap-map --coverage-json coverage.json --enforce
+
   build:
     name: Build distribution
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, test-sentry-sdk-2]
     defaults:
       run:
         working-directory: juniper-observability
