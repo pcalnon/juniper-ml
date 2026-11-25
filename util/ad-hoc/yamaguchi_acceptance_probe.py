@@ -47,8 +47,9 @@ WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 1
               is `up to date` within 24 h of its write; the keys directory sits outside the Dropbox root
     AC-12     systemd-analyze security: exposure at or below 2.0 and no unset row outside note AC-12a's accepted set
     RUN       server: the newest finished backup -- its age (26 h, the watchdog's bound; a day more while a task is
-              active), its result, its warnings by tag against the 2026-11-08 allow-list, its counts against the
-              previous run -- and every backup that began off the schedule
+              active), its result, its warnings by tag against the 2026-11-08 allow-list, its examined files and
+              bytes against the previous run (within 10 % each) and its bytes against a floor 5 % under the
+              2026-11-08 baseline (Q1, ruled 2026-11-23 and 2026-11-24) -- and every backup that began off the schedule
               While a run of this job is in progress the server refuses the job log with HTTP 400 (recovery plan
               finding 42). RUN then names the run and reads SKIP, or FAIL on the newest finished backup's age, which
               the job's metadata gives without the log (LastBackupStarted); OFFSCHED reads SKIP. Any other refusal
@@ -56,8 +57,8 @@ WHAT IT JUDGES (design section 9 unless noted; "server" = needs the web API on 1
     CENSUS    server: the destination's file count and bytes against the job's own metadata (AGREE or DIVERGE)
     MODES     the destination's (kind, mode, owner) classes, and which dlists changed class since the last run
 
-    Verdicts: PASS, FAIL, PENDING (cannot be proven yet -- it needs more days), ATTN (outside a tolerance the Overtoad has
-    not ruled, or an unexplained observation), SKIP (not judged in this run), ERROR (the evidence could not be read),
+    Verdicts: PASS, FAIL, PENDING (cannot be proven yet -- it needs more days), ATTN (an unexplained observation, such as
+    a backup that began off its slot), SKIP (not judged in this run), ERROR (the evidence could not be read),
     INFO. RESULT is FAIL on any FAIL, UNDETERMINED on any ERROR, INCOMPLETE on any PENDING, ATTN or SKIP, else PASS.
     Exit 0 = no FAIL and no ERROR, 1 = at least one FAIL, 2 = at least one ERROR and no FAIL, 64 = usage error.
 
@@ -101,7 +102,7 @@ import urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import yamaguchi_server_api as api  # noqa: E402 -- sibling module; path fixed one line above
 
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 SCHEMA = "yamaguchi-acceptance/1"
 UTC = dt.timezone.utc
 
@@ -148,7 +149,7 @@ JOB_MISSING_PROBE_ID = "999"
 SNAPSHOT_UNIT = "yamaguchi-server-db-snapshot.service"
 SNAPSHOT_FILE = "~/.local/state/duplicati-server-db/Duplicati-server.sqlite"
 SNAPSHOT_SOURCE = "/home/duplicati/.config/Duplicati/Duplicati-server.sqlite"  # "the new data folder"
-SNAPSHOT_SOURCE_LINE = re.compile(r"^source\s*: (.+) \([^()]*\)$")  # yamaguchi_server_db_snapshot.py:110
+SNAPSHOT_SOURCE_LINE = re.compile(r"^source\s*: (.+) \([^()]*\)$")  # the `source      :` print of yamaguchi_server_db_snapshot.py
 SNAPSHOT_ENABLED = dt.datetime(2026, 11, 8, 19, 57, 0, tzinfo=UTC)  # step 13's `enable --now`
 SNAPSHOT_FIRE = dt.time(12, 45, 0)  # the timer's OnCalendar, UTC: 15 min before the backup, since 2026-11-15
 SNAPSHOT_FIRES = ((SNAPSHOT_ENABLED.date(), dt.time(13, 45, 0)), (SCHEDULE_MOVED, SNAPSHOT_FIRE))  # 13:45 UTC until then
@@ -176,8 +177,13 @@ ALLOWED_WARNING_SCOPE = ".mozilla/firefox/"  # relative to the backup Source's h
 # and no `/` precedes it, so a bracket inside a path (which follows the tag and starts with `/`) is never the tag.
 WARNING_TAG = re.compile(r"^[^\[/]*\[Warning-([^\]\s]+)\]:")
 BASELINE_BYTES = 301_072_989_629  # run 20261107T212908Z, the AC-3 rebaseline (Overtoad ruling 2026-11-08)
-COUNT_TOLERANCE = 0.10  # per run, against the previous run -- open question Q1, not yet ruled
-SIZE_TOLERANCE = 0.05  # against the baseline -- AC-3's own size tolerance
+# AC-3's count, the Overtoad's rulings on Q1 (recovery plan §6.6): files examined within 10 % of the previous run
+# (2026-11-23), and bytes examined within 10 % of the previous run plus a floor 5 % under BASELINE_BYTES, 286 GB
+# (2026-11-24). The ±5 % against the baseline that AC-3 carried would fail every run: on 2026-11-23 the newest run's
+# bytes were 13.2 % over it.
+COUNT_TOLERANCE = 0.10  # files examined, per run, against the previous run
+SIZE_TOLERANCE = 0.10  # bytes examined, per run, against the previous run
+SIZE_FLOOR = 0.05  # bytes examined may sit at most this far under BASELINE_BYTES
 MAX_RUN_AGE_HOURS = 26.0  # the watchdog's --max-age-hours default: a daily job plus slack
 SCHEDULE_SLACK = dt.timedelta(minutes=5)
 PRECEDING_WINDOW = dt.timedelta(minutes=15)
@@ -798,11 +804,16 @@ def unreadable_before_first_backup(entries):
     return count
 
 
+def is_count(value):
+    """A count the server wrote: a non-negative int, never a bool (which is an int to Python)."""
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
 def percent(new, old):
     return None if not isinstance(new, int) or not isinstance(old, int) or isinstance(new, bool) or isinstance(old, bool) or old <= 0 else (new - old) / old
 
 
-def judge_run(backups, retention, active_task=None, unreadable_newer=0, baseline_bytes=BASELINE_BYTES, count_tolerance=COUNT_TOLERANCE, size_tolerance=SIZE_TOLERANCE, now=None, max_age_hours=MAX_RUN_AGE_HOURS):
+def judge_run(backups, retention, active_task=None, unreadable_newer=0, baseline_bytes=BASELINE_BYTES, count_tolerance=COUNT_TOLERANCE, size_tolerance=SIZE_TOLERANCE, size_floor=SIZE_FLOOR, now=None, max_age_hours=MAX_RUN_AGE_HOURS):
     """`backups`: summarize_entry() results with operation == 'Backup', newest first. `retention`: suspended/restored/None.
 
     `unreadable_newer`: unreadable_before_first_backup() of the whole scan. `now`: when given, the newest finished
@@ -813,7 +824,7 @@ def judge_run(backups, retention, active_task=None, unreadable_newer=0, baseline
         return Finding("RUN", "ERROR", "no finished Backup among the job-log entries examined")
     newest, previous = backups[0], backups[1] if len(backups) > 1 else None
     w = newest["warnings"]
-    fails, errors, attn, notes = [], [], [], []
+    fails, errors, notes = [], [], []
     age_hours = None
     if now is not None and newest["begin"] is None:
         errors.append("the newest backup carries no readable BeginTime, so its age cannot be judged")
@@ -855,22 +866,32 @@ def judge_run(backups, retention, active_task=None, unreadable_newer=0, baseline
         fails.append(f"the run deleted {newest['deleted_sets']} fileset(s) while retention is {retention or 'unknown'}")
     elif newest["deleted_sets"]:
         notes.append(f"retention deleted {newest['deleted_sets']} fileset(s)")
+    # AC-3's count (Q1): an exact edge is inside its bound. A count the result does not carry cannot be judged.
+    for key, label in (("examined", "ExaminedFiles"), ("examined_bytes", "SizeOfExaminedFiles")):
+        if not is_count(newest[key]):
+            errors.append(f"{label} is absent from the result or not a count, so AC-3's count cannot be judged")
     drift = percent(newest["examined"], previous["examined"]) if previous else None
-    size_drift = percent(newest["examined_bytes"], baseline_bytes)
-    if drift is not None and abs(drift) > count_tolerance:  # exactly the tolerance is inside it
-        attn.append(f"examined files moved {drift:+.1%} against the previous run (provisional tolerance {count_tolerance:.0%}; question Q1 is unruled)")
+    size_drift = percent(newest["examined_bytes"], previous["examined_bytes"]) if previous else None
+    size_vs_baseline = percent(newest["examined_bytes"], baseline_bytes)
+    if drift is not None and abs(drift) > count_tolerance:
+        fails.append(f"examined files moved {drift:+.1%} against the previous run (AC-3 allows {count_tolerance:.0%})")
     if size_drift is not None and abs(size_drift) > size_tolerance:
-        attn.append(f"examined bytes are {size_drift:+.1%} against the 2026-11-08 baseline (AC-3's {size_tolerance:.0%}; question Q1 is unruled)")
+        fails.append(f"examined bytes moved {size_drift:+.1%} against the previous run (AC-3 allows {size_tolerance:.0%})")
+    if size_vs_baseline is not None and size_vs_baseline < -size_floor:
+        fails.append(f"examined bytes are {size_vs_baseline:+.1%} against the 2026-11-08 baseline, under AC-3's floor of {-size_floor:.0%}")
+    if previous is None:
+        notes.append("no earlier finished backup among the entries examined, so the run-to-run counts are not compared")
     facts = {"begin": utc_stamp(newest["begin"]), "duration": hours_minutes(newest["seconds"]), "result": newest["result"], "warnings": w, "errors": newest["errors"],
              "examined": newest["examined"], "examined_bytes": newest["examined_bytes"], "count_drift": None if drift is None else round(drift, 4),
-             "size_vs_baseline": None if size_drift is None else round(size_drift, 4), "deleted_sets": newest["deleted_sets"], "test_result": newest["test_result"],
+             "size_drift": None if size_drift is None else round(size_drift, 4),
+             "size_vs_baseline": None if size_vs_baseline is None else round(size_vs_baseline, 4), "deleted_sets": newest["deleted_sets"], "test_result": newest["test_result"],
              "active_task": active_task, "retention": retention, "age_hours": None if age_hours is None else round(age_hours, 2)}
     head = f"backup {utc_stamp(newest['begin'])} ({hours_minutes(newest['seconds'])}) ParsedResult={newest['result']}, examined {newest['examined']}"
     if drift is not None:
         head += f" ({drift:+.1%} vs the previous run)"
     if active_task:
         notes.append(f"a task is active now ({active_task}); this is the newest FINISHED backup")
-    return Finding("RUN", settle(fails, errors, attn=attn), "; ".join([head] + fails + errors + attn + notes), facts)
+    return Finding("RUN", settle(fails, errors), "; ".join([head] + fails + errors + notes), facts)
 
 
 def metadata_stamp(value):

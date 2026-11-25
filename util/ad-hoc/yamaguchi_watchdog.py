@@ -57,8 +57,10 @@ WHY A POLLING WATCHDOG AND NOT ONLY --run-script-after
     The warning allow-list is Q6's other half, the Overtoad's ruling of 2026-11-23 (recovery
     plan §6.6, "Allow-list after review"): the Overtoad reads a run's warnings, and a Warning
     run whose every warning is of a class the Overtoad accepted counts as OK toward AC-5; any
-    other warning still alerts and ends the streak. ACCEPTED_WARNING_CLASSES is EMPTY until
-    the Overtoad names classes, so until then every Warning run alerts. A warning is
+    other warning still alerts and ends the streak. ACCEPTED_WARNING_CLASSES holds the one
+    class the Overtoad accepted on 2026-11-24: the Firefox-profile class that AC-3's ruling
+    of 2026-11-08 allow-listed (the acceptance probe's ALLOWED_WARNING_TAGS, under its
+    ALLOWED_WARNING_SCOPE), which was exactly the 11-16 run's three warnings. A warning is
     classified by its `[Warning-<tag>]` tag, never by its text (recovery plan finding 35),
     and a run with an untagged warning, a warning the result counts but does not list, or an
     error is never accepted.
@@ -120,8 +122,14 @@ LOG_MAX_PAGES = 10
 # The classes of warning the Overtoad accepted for AC-5 after reading them (Q6, ruled 2026-11-23). Each is (key, scope):
 # the key as the acceptance probe names it -- the last two dotted segments of the tag, then the message id, e.g.
 # "FilePreFilterProcess.FileEntry-PathNotFound" -- and the scope a path prefix under the backup Source's home (e.g.
-# ".mozilla/firefox/"), or None for any path. EMPTY until the Overtoad names classes.
-ACCEPTED_WARNING_CLASSES = ()
+# ".mozilla/firefox/"), or None for any path. The Overtoad accepted the Firefox-profile class on 2026-11-24 (recovery
+# plan §6.6): AC-3's class of 2026-11-08, the acceptance probe's ALLOWED_WARNING_TAGS under its ALLOWED_WARNING_SCOPE.
+# A class added here, or one dropped, needs the Overtoad's ruling first; a test pins the list to the probe's.
+ACCEPTED_WARNING_CLASSES = (
+    ("FileBlockProcessor.FileEntry-PathNotFound", ".mozilla/firefox/"),
+    ("FilePreFilterProcess.FileEntry-PathNotFound", ".mozilla/firefox/"),
+    ("MetadataGenerator.Metadata-MetadataProcessFailed", ".mozilla/firefox/"),
+)
 # "<when> - [Warning-<tag>-<id>]: <message>": the acceptance probe's own pattern. The tag is accepted only where no `[`
 # and no `/` precedes it, so a bracket inside a path (which follows the tag and starts with `/`) is never the tag.
 WARNING_TAG = re.compile(r"^[^\[/]*\[Warning-([^\]\s]+)\]:")
