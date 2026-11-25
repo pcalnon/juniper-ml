@@ -80,6 +80,12 @@ when required checks are green"* and not *"merges only the SHA this run vouched 
 Callers who need the stronger property should pass ``--no-auto-fallback`` and keep the run
 alive.
 
+**Both paths land the same commit message.** When a net stores a headline or a body (an
+operator re-armed it with a curated message), the local merge passes that text with
+``--subject`` and ``--body``; otherwise it passes none, and the repository's default applies to
+either path. Until 2026-11-25 the local merge never passed text, so a curated message lost
+whenever this run won the race (juniper-ml#2548; ``stored_commit_text``).
+
 **A refusal takes the net back down.** Any refusal after arming calls ``--disable-auto``
 before propagating, so a refusal cannot quietly become a merge once the blocker clears. If
 that teardown itself fails, the refusal says so **loudly** and names the PR -- that is the one
@@ -638,7 +644,8 @@ def stale_snapshot_refusal(info: dict) -> "str | None":
     THE HAZARD IS NOT THIS TOOL. Established 2026-09-11 by independent consensus over
     1877 PRs: ``gh pr merge --auto --<method>`` with no body flags OMITS ``commitBody``,
     so GitHub stores ``null`` -- and a history search for ``--body-file`` in this file
-    returns no commits, in any version. This module has never supplied one. The one
+    returns no commits, in any version. This module never supplies a body when it arms a
+    net; its local merge copies the text a net stores (``stored_commit_text``). The one
     incident (ml#1228) was armed by something else, 5m42s AFTER this tool's own disarm.
 
     ``commitBody`` has THREE states and only one is safe:
@@ -689,6 +696,33 @@ def stale_snapshot_refusal(info: dict) -> "str | None":
             "re-arm with no body flags, or merge deliberately."
         )
     return None
+
+
+def stored_commit_text(info: dict) -> list[str]:
+    """The ``gh pr merge`` flags that make the LOCAL merge land the text an armed net stores.
+
+    Which path merges is a race: the net fires the moment the required checks pass, and this
+    run's local merge follows its own read of the same checks. Until 2026-11-25 the local merge
+    passed no commit text, so GitHub's default concatenation landed whenever it won, even when
+    the operator had re-armed the net with a curated message after the last commit (the one
+    case ``stale_snapshot_refusal`` calls correct). juniper-ml#2548 landed that way: finding 37
+    of ``notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md``.
+
+    Only non-empty text is copied, field by field. ``null`` means the repository's default,
+    which a merge with no flag already gets; that is the state this tool's own net stores. An
+    empty string is not copied either: as a body it is the destructive state refused at entry,
+    and one stored after entry would otherwise reach the local merge too. A stale non-empty
+    snapshot is copied as it stands, because it is what the net would land.
+    """
+    amr = info.get("autoMergeRequest") or {}
+    flags: list[str] = []
+    headline = amr.get("commitHeadline")
+    if isinstance(headline, str) and headline:
+        flags += ["--subject", headline]
+    body = amr.get("commitBody")
+    if isinstance(body, str) and body:
+        flags += ["--body", body]
+    return flags
 
 # Module-level so the signal handler can report the net truthfully. A per-cycle local (the
 # previous shape) also silently forgot the net across a BEHIND re-sync, so a refusal on cycle
@@ -1083,6 +1117,9 @@ def _safe_merge_inner(
             )
 
         log(f"  all required checks green — merging {head[:8]} ({method})")
+        text = stored_commit_text(after)
+        if text:
+            log("  the armed net stores a commit message — the local merge lands the same text")
         try:
             _gh(
                 [
@@ -1094,6 +1131,7 @@ def _safe_merge_inner(
                     f"--{method}",
                     "--match-head-commit",
                     head,
+                    *text,
                 ],
                 timeout=300,
             )

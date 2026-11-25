@@ -9,7 +9,7 @@
 # File Path:     Juniper/juniper/conf/
 #
 # Date:          2025-12-06
-# Last Modified: 2026-11-16
+# Last Modified: 2026-11-23
 #
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
@@ -45,4 +45,4 @@
 juniper-ci-tools==0.9.1
 packaging==26.3
 pip==26.3
-PyYAML==6.0.3
+PyYAML==6.0.4
