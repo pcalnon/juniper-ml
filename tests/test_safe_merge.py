@@ -1158,7 +1158,8 @@ class StoredAutoMergeBodyTest(SafeMergeTestBase):
       all nine repos) resolves at MERGE time, so post-arm commits still land. Measured:
       60 post-arm commits over 48 PRs, zero losses, lags to 40.7 hours. This is what
       `gh pr merge --auto --<method>` with no body flags produces, and therefore what
-      `safe_merge` produces -- it has never passed `--body-file` in any version.
+      `safe_merge` produces when it arms a net -- it has never passed `--body-file` in any
+      version. (Its LOCAL merge copies a net's stored text: `LocalMergeCommitTextTest`.)
     * ``""``    -- an actual empty string. Overrides the repo default; the squash lands
       with NO body. Real: 8 PRs here, e.g. ml#1831, whose landed commit is one line.
     * non-empty -- an ARM-TIME SNAPSHOT. Binds when the net fires; 23 of the 29 PRs with a
@@ -1246,6 +1247,68 @@ class StoredAutoMergeBodyTest(SafeMergeTestBase):
         safe_merge.pr_state("o", "r", 1)
         joined = " ".join(captured["args"])
         self.assertIn("autoMergeRequest", joined)
+
+
+class LocalMergeCommitTextTest(SafeMergeTestBase):
+    """The local merge lands the commit text an armed net stores, so the race decides nothing.
+
+    juniper-ml#2548 (finding 37 of the backup recovery plan,
+    `notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md`):
+    the operator re-armed the net with a curated message after the last commit, this tool's
+    local merge won the race, and GitHub's default concatenation landed, because the local
+    `gh pr merge` passed no text. gh 2.46.0, the host's, sends `--subject` as `commitHeadline`
+    and `--body` as `commitBody` on `mergePullRequest` (`pkg/cmd/pr/merge/http.go`).
+    """
+
+    CURATED_HEADLINE = "fix(x): the curated subject (#1)"
+    CURATED_BODY = "First paragraph.\n\nAllow-Symbol-Loss: method:A.b\nCo-Authored-By: someone"
+
+    def _merge_argv(self, *states) -> list[str]:
+        h = Harness(list(states))
+        self.assertIn("MERGED", self.run_merge(h))
+        merges = [c for c in h.calls if c[:2] == ["pr", "merge"]]
+        self.assertEqual(len(merges), 1)
+        return merges[0]
+
+    def _net(self, **amr):
+        return _state(autoMergeRequest=amr)
+
+    def test_a_curated_message_on_the_net_is_what_the_local_merge_lands(self) -> None:
+        argv = self._merge_argv(self._net(commitHeadline=self.CURATED_HEADLINE, commitBody=self.CURATED_BODY))
+        self.assertEqual(argv[argv.index("--subject") + 1], self.CURATED_HEADLINE)
+        self.assertEqual(argv[argv.index("--body") + 1], self.CURATED_BODY, "the body is one argument, newlines and trailers intact")
+        self.assertEqual(argv[argv.index("--match-head-commit") + 1], "a" * 40, "the head pin is kept")
+
+    def test_a_net_re_armed_during_the_wait_is_read_at_merge_time(self) -> None:
+        """ml#2548's order: the curated message was stored WHILE this run waited on the checks,
+        so the text must come from the read after the wait, not from the cycle's first read."""
+        argv = self._merge_argv(_state(), _state(), self._net(commitHeadline=self.CURATED_HEADLINE, commitBody=self.CURATED_BODY))
+        self.assertEqual(argv[argv.index("--body") + 1], self.CURATED_BODY)
+
+    def test_a_stored_headline_alone_is_copied_alone(self) -> None:
+        argv = self._merge_argv(self._net(commitHeadline=self.CURATED_HEADLINE, commitBody=None))
+        self.assertIn("--subject", argv)
+        self.assertNotIn("--body", argv, "a null body is the repository's default; passing one would override it")
+
+    def test_a_null_net_and_no_net_pass_no_text(self) -> None:
+        """THE NEGATIVE CONTROLS: the net this tool arms stores null, and most runs have no net.
+        Either way the repository's COMMIT_MESSAGES default must still decide the message."""
+        for state in (self._net(commitHeadline=None, commitBody=None), _state(), _state(autoMergeRequest=None)):
+            with self.subTest(state=state.get("autoMergeRequest")):
+                argv = self._merge_argv(state)
+                self.assertNotIn("--subject", argv)
+                self.assertNotIn("--body", argv)
+
+    def test_an_empty_string_stored_after_entry_is_not_copied(self) -> None:
+        """The entry check refuses an EMPTY body. One stored after entry must not reach the
+        local merge as `--body ""`, which would land a squash with no body at all."""
+        argv = self._merge_argv(_state(), self._net(commitHeadline="", commitBody=""))
+        self.assertNotIn("--subject", argv)
+        self.assertNotIn("--body", argv)
+
+    def test_only_text_is_copied(self) -> None:
+        self.assertEqual(safe_merge.stored_commit_text(self._net(commitHeadline=7, commitBody=["x"])), [])
+        self.assertEqual(safe_merge.stored_commit_text({}), [])
 
 
 if __name__ == "__main__":
