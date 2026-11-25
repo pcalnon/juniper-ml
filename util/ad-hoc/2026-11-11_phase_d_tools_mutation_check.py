@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Mutation check: the Phase D probe's and finish tool's suites must FAIL on every seeded defect.
+Mutation check: the Phase D probe's, finish tool's and AC-4 driver's suites must FAIL on every seeded defect.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
@@ -9,8 +9,8 @@ Created: 2026-11-11
 Status: ad-hoc — investigation (test-efficacy evidence)
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/yamaguchi_acceptance_probe.py, util/ad-hoc/2026-11-11_phase_d_finish.{py,bash},
-         util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash,
-         tests/test_yamaguchi_acceptance_probe.py, tests/test_phase_d_finish.py,
+         util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash, util/ad-hoc/2026-11-09_ac4_restore_drill.py,
+         tests/test_yamaguchi_acceptance_probe.py, tests/test_phase_d_finish.py, tests/test_ac4_restore_drill.py,
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-11_backup-phase-d-sitting-steps-11-13-done-ac4-drill-next.md
 
 Both tools exist because hand-written checks passed while the thing they checked was wrong. A suite that would also
@@ -45,9 +45,11 @@ DEPLOY = "util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash"
 RETENTION = "util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py"
 PROBE_SUITE = "tests/test_yamaguchi_acceptance_probe.py"
 FINISH_SUITE = "tests/test_phase_d_finish.py"
+DRIVER = "util/ad-hoc/2026-11-09_ac4_restore_drill.py"
+DRIVER_SUITE = "tests/test_ac4_restore_drill.py"
 COPIED = [
     PROBE, FINISH, WRAPPER, DEPLOY, PROBE_SUITE, FINISH_SUITE, "tests/duplicati_api_stub.py", "tests/redacted_env.py", "util/ad-hoc/yamaguchi_server_api.py", "util/ad-hoc/yamaguchi_watchdog.py", "util/ad-hoc/yamaguchi_server_db_snapshot.py",
-    "util/ad-hoc/2026-11-09_ac4_restore_drill.py",
+    DRIVER, DRIVER_SUITE,
     RETENTION, "util/systemd/yamaguchi-acceptance-probe.service", "util/systemd/yamaguchi-acceptance-probe.timer",
     "notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md",
     "notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md",  # the census's metadata stamps
@@ -320,8 +322,23 @@ MUTANTS = [
     (WRAPPER, "wrapper: the caller's environment is not emptied", 'exec "$ENV" -i "${keep[@]}" "$PY" -I "$TOOL" "$@"', 'exec "$ENV" "${keep[@]}" "$PY" -I "$TOOL" "$@"'),
     (WRAPPER, "wrapper: one more variable is let through", "for name in HOME USER LOGNAME TERM; do", "for name in HOME USER LOGNAME TERM COLUMNS; do"),
     (WRAPPER, "wrapper: the interpreter runs without isolated mode", '"$PY" -I "$TOOL" "$@"', '"$PY" "$TOOL" "$@"'),
+    # --- the AC-4 driver (recovery plan finding 29; driver 1.1.0) --------------------------------------------------
+    (DRIVER, "driver: a restore killed by a signal passes", "    return 0 <= returncode < 3\n", "    return returncode < 3\n"),
+    (DRIVER, "driver: rc=3 passes", "    return 0 <= returncode < 3\n", "    return 0 <= returncode <= 3\n"),
+    (DRIVER, "driver: rc=2, warnings only, fails", "    return 0 <= returncode < 3\n", "    return 0 <= returncode < 2\n"),
+    (DRIVER, "driver: the pass rule ignores the restore's code", "    passed = restore_ok(proc.returncode) and ", "    passed = "),
+    (DRIVER, "driver: a signal-killed restore's files still count as verified", '        if not restore_ok(proc.returncode) and verdict == "VERIFIED":\n', '        if proc.returncode >= 3 and verdict == "VERIFIED":\n'),
+    (DRIVER, "driver: a good restore's files are all marked", '        if not restore_ok(proc.returncode) and verdict == "VERIFIED":\n', '        if restore_ok(proc.returncode) and verdict == "VERIFIED":\n'),
+    (DRIVER, "driver: a path that does not print is eligible", "isinstance(path, str) and path.isprintable() and ", "isinstance(path, str) and "),
+    (DRIVER, "driver: only C0 controls keep a path out", "isinstance(path, str) and path.isprintable() and ", "isinstance(path, str) and not any(ord(ch) < 32 for ch in path) and "),
+    (DRIVER, "driver: a path that is not a string reaches the string tests", "isinstance(path, str) and path.isprintable() and ", "path.isprintable() and "),
+    (DRIVER, "driver: a missing size is small", "    if type(size) is not int or size < 0:\n        return None\n", ""),
+    (DRIVER, "driver: a bool size has a stratum", "    if type(size) is not int or size < 0:\n", "    if not isinstance(size, int) or size < 0:\n"),
+    (DRIVER, "driver: a negative size is small", "    if type(size) is not int or size < 0:\n", "    if type(size) is not int:\n"),
+    (DRIVER, "driver: a BOM in front of the array stops the parse", 'BETWEEN_ENTRIES = " ' + BS + "t" + BS + "r" + BS + 'n," + BOM', 'BETWEEN_ENTRIES = " ' + BS + "t" + BS + "r" + BS + 'n,"'),
+    (DRIVER, "driver: the source holds the BOM itself", "BOM = chr(0xFEFF)", 'BOM = "' + chr(0xFEFF) + '"'),
 ]
-SUITE_OF = {PROBE: PROBE_SUITE, DEPLOY: PROBE_SUITE, FINISH: FINISH_SUITE, WRAPPER: FINISH_SUITE, RETENTION: FINISH_SUITE}
+SUITE_OF = {PROBE: PROBE_SUITE, DEPLOY: PROBE_SUITE, FINISH: FINISH_SUITE, WRAPPER: FINISH_SUITE, RETENTION: FINISH_SUITE, DRIVER: DRIVER_SUITE}
 SUITE_TIMEOUT = 300  # seconds: a mutant that makes a test wait for ever is killed by the clock, and reported as such
 
 
