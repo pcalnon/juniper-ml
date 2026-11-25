@@ -365,6 +365,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`util/safe_merge.py`'s local merge lands the commit message an armed auto-merge net stores** (finding 37 of the
+  backup recovery plan). juniper-ml#2548's operator re-armed the net with a curated message after the last commit. The
+  local merge won the race and passed no text, so GitHub's default concatenation of the branch's commits landed.
+  - `stored_commit_text()` copies the net's non-empty `commitHeadline` and `commitBody` into the local `gh pr merge`
+    as `--subject` and `--body`, read after the wait. A `null` field (the state this tool's own net stores), an empty
+    string and a value that is not a string are never copied, so the repository's default still decides an uncurated
+    message. Arming is unchanged.
+  - gh 2.46.0, this host's, sends both on `mergePullRequest` (`pkg/cmd/pr/merge/http.go` at `v2.46.0`).
+  - `tests/test_safe_merge.py` (84 tests, 78 before): `LocalMergeCommitTextTest`.
+    `util/ad-hoc/2026-11-25_safe_merge_commit_text_mutation_check.py` kills all nine of its mutants.
+
 - **Backup Phase D: the AC-4 restore driver's four gaps are closed (recovery plan finding 29; driver 1.1.0).** Both
   drills of 2026-11-15 exited 2 and passed. The finish tool already failed a negative exit code; the driver now agrees
   with it.
