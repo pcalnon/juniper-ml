@@ -16,15 +16,17 @@ A start is now refused (``RuntimeError``; HTTP 409) while the previous run's thr
 alive with its stop pending, before the start touches anything. The stop stays set, so the
 stopped ``fit`` unwinds at its next event and none of its later events lands anywhere; once its
 thread has ended, a start is accepted and runs alone. The refusal is decided under the manager
-lock, and it does not depend on the machine reading ``STOPPED``: a snapshot load is accepted
-after a stop, and a start from the state it leaves is refused the same way. A start after a run
-that settled itself (``COMPLETED`` or ``FAILED``) is not held back while that thread exits, and a
-thread that died without settling blocks nothing.
+lock, and it does not depend on the machine reading ``STOPPED``: a start from ``RESUME_READY``,
+``INVESTIGATING`` or ``REPLAYING``, entered after the stop, is refused the same way. (A snapshot
+load after a stop is itself refused now, by the same check, so those three tests enter the state
+through the state machine; ``test_lifecycle_stop_then_load.py`` pins the load refusal.) A start
+after a run that settled itself (``COMPLETED`` or ``FAILED``) is not held back while that thread
+exits, and a thread that died without settling blocks nothing.
 
 Eleven of the thirteen tests here fail on a ``manager.py`` without the refusal, at the refused
-start (there it was accepted, or refused only after it had cleared the stop); the last two are
-controls and pass either way. Every wait is on a ``threading.Event`` with a deadline; nothing
-sleeps.
+start (there it was accepted, or refused only after it had cleared the stop), or, for the three
+after-a-load tests, at the load, which that ``manager.py`` accepts; the last two are controls and
+pass either way. Every wait is on a ``threading.Event`` with a deadline; nothing sleeps.
 """
 
 from __future__ import annotations
@@ -417,6 +419,10 @@ def test_a_reset_then_start_is_refused_the_same_way(gated) -> None:
     _start_and_finish_alone(mgr, model)
 
 
+# The state-machine move each load makes; a service subclass's own load can make it directly.
+_MOVES_THE_MACHINE_AS = {"resume_from_snapshot": "mark_resume_ready", "load_snapshot": "mark_investigating", "start_replay": "mark_replaying"}
+
+
 @pytest.mark.parametrize(
     ("load", "loaded_status"),
     [("resume_from_snapshot", "RESUME_READY"), ("load_snapshot", "INVESTIGATING"), ("start_replay", "REPLAYING")],
@@ -424,16 +430,22 @@ def test_a_reset_then_start_is_refused_the_same_way(gated) -> None:
 def test_a_start_after_a_snapshot_load_is_refused_while_the_stopped_fit_is_still_running(gated, tmp_path, load: str, loaded_status: str) -> None:
     """The refusal does not depend on the machine reading ``STOPPED``.
 
-    After a stop, a snapshot load is accepted while the stopped run's ``fit`` is still running, and
-    it leaves the machine ``RESUME_READY``, ``INVESTIGATING`` or ``REPLAYING``. Before the fix a
-    start from ``RESUME_READY`` was accepted, cleared the stop and ran beside that ``fit``; from
-    the other two the state machine refused it, but only after the start had cleared the stop. The
-    refusal comes first in all three, so the stop stays set and the stopped ``fit`` unwinds.
+    After a stop, a snapshot load was accepted while the stopped run's ``fit`` was still running,
+    and it left the machine ``RESUME_READY``, ``INVESTIGATING`` or ``REPLAYING``. The load is now
+    refused there too (``test_lifecycle_stop_then_load.py``), so the test moves the machine as that
+    load would, through the state machine, as a service subclass's own load can. Before the start
+    refusal a start from ``RESUME_READY`` was accepted, cleared the stop and ran beside that
+    ``fit``; from the other two the state machine refused it, but only after the start had cleared
+    the stop. The refusal comes first in all three, so the stop stays set and the stopped ``fit``
+    unwinds.
     """
     model, mgr = gated(_STOPPED_RUN, serializer=_FreshModelSerializer(), snapshot_dir=tmp_path)
     snapshot_id = mgr.save_snapshot()["id"]
     old_thread = _stop_while_parked(mgr, model)
-    assert getattr(mgr, load)(snapshot_id)["state_machine"]["status"] == loaded_status
+    with pytest.raises(RuntimeError, match=REFUSAL):
+        getattr(mgr, load)(snapshot_id)
+    assert getattr(mgr.state_machine, _MOVES_THE_MACHINE_AS[load])()
+    assert mgr.get_status()["state_machine"]["status"] == loaded_status
 
     with pytest.raises(RuntimeError, match=REFUSAL):
         mgr.start_training(*_zeros())
@@ -447,6 +459,8 @@ def test_a_start_after_a_snapshot_load_is_refused_while_the_stopped_fit_is_still
     assert model.interrupted == [1]
     assert model.delivered[1] == ["training_start"]
     assert not model.was_reached("old-after")
+    # With that thread gone, the load itself is accepted (the snapshot was saved before any run).
+    assert getattr(mgr, load)(snapshot_id)["state_machine"]["status"] == loaded_status
 
 
 def test_a_stop_that_lands_while_a_start_waits_for_the_lock_still_refuses_that_start(gated) -> None:

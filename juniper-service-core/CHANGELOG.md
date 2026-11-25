@@ -175,34 +175,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   next event)`; the route has merged the request's `params` and `epochs` into the parameter store
   by then, as it does before every start. The stop stays set, so that `fit` unwinds at its next
   event and none of its later events lands; once its thread has ended, the start is accepted and
-  runs alone. A reset holds a start back as a stop does, and so does the state a snapshot load
-  leaves after a stop (`RESUME_READY`, `INVESTIGATING` or `REPLAYING`). A run that settled itself
+  runs alone. A reset holds a start back as a stop does, and so does `RESUME_READY`, `INVESTIGATING`
+  or `REPLAYING` entered after the stop (a snapshot load in that window is itself refused now: the
+  entry on a snapshot load or an attach after a stop, in this section). A run that settled itself
   (`COMPLETED` or `FAILED`) holds no start back while its thread exits, and a thread that ended
   without settling holds none back either. `LifecycleStateMachine` and the routes are unchanged,
   and the ownership guard of juniper-ml#2531 stays, as a second line of defence.
 
   **What it costs.** The refusal lasts as long as the stopped `fit` does. A `fit` that does not
   end at its next event (it emits none, it hangs, or the model catches the interrupt and carries
-  on) holds every start back until it returns or raises. `reset` and `attach_model` do not unblock
-  it, `get_status()` reads `STOPPED` with `training_active` false and has no field for it, and
+  on) holds every start back until it returns or raises. `reset` does not unblock it, `attach_model`
+  is refused while it runs (the entry on a snapshot load or an attach after a stop, in this section),
+  `get_status()` reads `STOPPED` with `training_active` false and has no field for it, and
   short of that `fit` ending only a restart of the process clears it. On 0.7.2 the same start was
   accepted and ran beside that `fit`. A wait could not have replaced the refusal: the stopped
   thread needs the manager lock to settle, so a wait has to release the lock and check again, and
   a `fit` with no events outlasts any bound.
 
-  **Not covered, and not fixed.** The check reads the thread `start_training` launched and a stop
-  that is still pending. A `fit` driven by a direct `run()` on another thread is outside it, as it
-  is outside `is_active()`, and so is a run that a leftover replay session's `stop` reset without
-  setting the stop: a start beside either is still accepted. After a stop, `load_snapshot`,
-  `resume_from_snapshot`, `start_replay` and `restore_for_retrain` are also still accepted while
-  the stopped `fit` runs, since they require only an inactive machine. No second `fit` starts, but
-  that `fit`'s thread then settles over the loaded state: `monitor.status` `stopped` over
-  `investigating`, `resume_ready` or `replaying`, an `error` and `failed` if it raises, and an
-  event already inside the sink folded into the restored history. That stop-then-load race is a
-  known defect, reported and not fixed here.
+  **Not covered, and not fixed here.** The check reads the thread `start_training` launched and a
+  stop that is still pending. A `fit` driven by a direct `run()` on another thread is outside it,
+  as it is outside `is_active()`: a start beside it is still accepted. Two more gaps were left by
+  this change and are closed by the entry on a snapshot load or an attach after a stop, in this
+  section (ruling 23): a run that a leftover replay session's `stop` reset without setting the
+  stop was outside the check too, and after a stop, `load_snapshot`, `resume_from_snapshot`,
+  `start_replay` and `restore_for_retrain` were still accepted while the stopped `fit` ran, so
+  that `fit`'s thread settled over the loaded state when it ended.
 - **Tests**: `tests/test_lifecycle_stop_then_start.py` (13 tests) pins it. With `manager.py`
-  without the refusal, 11 of them fail at the start that should be refused; the other 2 are
-  controls. Five tests of `tests/test_lifecycle_paused_fit_return.py` (the four
+  without the refusal, 11 of them fail at the start that should be refused (the three after-a-load
+  tests, since they first assert the load's refusal, fail at the load, which that `manager.py`
+  accepts); the other 2 are controls. Five tests of `tests/test_lifecycle_paused_fit_return.py` (the four
   `test_a_stopped_runs_*` tests and `test_only_the_run_that_completes_records_its_result`) started
   a newer run beside a stopped `fit`, which is now refused. They clear the stop first
   (`_start_beside_the_stopped_fit`), rebuilding that interleaving, and still pin the ownership
@@ -211,6 +212,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   each half of its condition dropped, the refusal limited to a `STOPPED` machine, the check moved
   before the lock is taken, after the dataset write or after the stop is cleared, and four mutants
   of the ownership guard and result recording of juniper-ml#2531) are each killed by the suite.
+
+- **A snapshot load or an attach sent while a stopped run's `fit` is still running is refused, and
+  a replay session now ends with the `REPLAYING` state it belongs to** (the "Lifecycle races beside
+  N-2"; ruling 23 in §8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+  Both keep the design of the stop-then-start refusal (ruling 19, "Accept the 409"); there is no new
+  mechanism. 0.7.2 has both defects: its loads, `attach_model`, `start_replay`, `replay_control` and
+  `stop_replay` are the same code.
+  - **The stop-then-load race.** `load_snapshot`, `resume_from_snapshot`, `start_replay`,
+    `restore_for_retrain` and `attach_model` required only an inactive machine, so after a stop or
+    reset they were accepted while the stopped run's `fit` was still running. No second `fit` ran,
+    but that `fit`'s thread still owned the run, and when the `fit` ended it settled over what was
+    loaded: `monitor.status` `stopped` over `investigating`, `resume_ready` or `replaying`; `failed`,
+    with the `fit`'s `error`, when it raised instead of unwinding; and an event already inside the
+    sink when the stop landed was folded into the restored history (two rows where the snapshot held
+    one). The four loads (through `_load_snapshot_model`) and `attach_model` now make the check
+    `start_training` makes, through one private helper the three share
+    (`_refuse_while_a_stopped_fit_runs`), after their `is_active()` check and before they touch
+    anything: `RuntimeError("The stopped run's fit is still running (a stop takes effect at its next
+    event)")`, which `POST /v1/snapshots/{id}/restore`, `/resume`, `/retrain` and `/replay` answer as
+    a 409 with that text as the detail. Once that thread has ended, the same call is accepted and
+    what it loads stands.
+  - **A leftover replay session's `stop` reset a running run.** Only `reset`, `shutdown`, another
+    `start_replay` and the replay's own stop ended a replay session, so it survived a `restore`,
+    `resume` or `retrain` load. After a `retrain` or a `resume` a run could start while it was open,
+    and its `stop` (`replay_control("stop")`; `POST /v1/snapshots/{id}/replay/control` with
+    `"action": "stop"`) reset the machine to `STOPPED` without setting the stop while that run's
+    `fit` was still running, so the next start was accepted beside it: two `fit` calls on one model.
+    Its `seek` and `play` pushed replay frames into the live frame sink (the `/ws/training`
+    fan-out) during the run, and after a `restore` its `stop` moved `INVESTIGATING` to `STOPPED`.
+    Every load now ends any replay session once the snapshot has loaded (a load that fails before
+    that, such as an unknown id, leaves it), so a session exists only while the machine reads
+    `REPLAYING`, where no run can start; `replay_control` after a `restore`, `resume` or `retrain`
+    raises `No replay session is active` (HTTP 409). `stop_replay()` also set `monitor.status` `stopped` whatever the machine read, relabelling
+    a running run, an inspection or a finished run; it now resets the machine and relabels the
+    monitor only from `REPLAYING`. `attach_model` keeps the session: it does not move the machine
+    out of `REPLAYING`, where a start is refused.
+  - **What it costs.** A stopped `fit` that does not end at its next event now holds back every
+    snapshot load and `attach_model` as well as every start, until it returns or raises; `reset`
+    does not unblock it.
+  - **Unchanged.** `replay_control`'s code, the routes, `LifecycleStateMachine` and every status
+    field. `/ws/control` has no load or replay command, and its `start` answers as `start_training`
+    does; in the race's sequence its second `start` is now an error ack (`Training already in
+    progress`) where it was a success.
+- **Tests**: `tests/test_lifecycle_stop_then_load.py` (13 tests) and
+  `tests/test_lifecycle_leftover_replay_session.py` (14 tests) pin both. Against a `manager.py`
+  without this change 23 of them fail, at the call that should be refused, the session that should
+  be gone or the relabel that should not happen; the other 4 are controls. The three after-a-load tests of
+  `tests/test_lifecycle_stop_then_start.py` now assert the load's refusal, then enter
+  `RESUME_READY`, `INVESTIGATING` or `REPLAYING` through the state machine, as a service
+  subclass's own load can; once the stopped `fit` has ended, they load the snapshot. juniper-ml's
+  `util/ad-hoc/2026-11-25_flood4_s14_r23l_mutation_check.py` runs twenty mutants of `manager.py`:
+  this change reverted, each changed site restored or misplaced, and eleven of the twelve mutants
+  juniper-ml#2557's check runs (all but its fix-reverted row) re-expressed on the shared helper;
+  each is killed by the tests it names.
 
 - **A `resume_ok` on `/ws/training` now means the client missed nothing up to the moment its socket
   goes live.** The defect is the juniper-service-core `resume_ok` row of the defect table in
