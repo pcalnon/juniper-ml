@@ -36,6 +36,7 @@ import datetime as dt
 import hashlib
 import io
 import json
+import math
 import os
 import pwd
 import re
@@ -829,18 +830,65 @@ class RunTest(unittest.TestCase):
         nested = summarized(DeleteResults={"DeletedSets": [], "CompactResults": {"x": 1}})
         self.assertIn("a compact ran", self.judge(nested).summary)
 
-    def test_drift_is_attention_not_failure_and_its_edges_are_inside(self) -> None:
-        previous = summarized(examined=1_000_000)
-        at_edge = self.judge(summarized(examined=1_100_000), previous)
-        past = self.judge(summarized(examined=1_100_001), previous)
-        self.assertEqual((at_edge.verdict, past.verdict), ("PASS", "ATTN"))
-        self.assertIn("question Q1 is unruled", past.summary)
-        shrink = self.judge(summarized(examined=899_999), previous)
-        self.assertEqual(shrink.verdict, "ATTN")
-        size_edge = int(probe.BASELINE_BYTES * 1.05)
-        self.assertEqual(self.judge(summarized(examined_bytes=size_edge)).verdict, "PASS")
-        self.assertEqual(self.judge(summarized(examined_bytes=size_edge + probe.BASELINE_BYTES // 1000)).verdict, "ATTN")
-        self.assertEqual(self.judge(summarized(result="Error", examined=5_000_000), previous).verdict, "FAIL", "a failure outranks attention")
+    def test_ac3s_count_fails_outside_q1s_bounds_and_each_edge_is_inside(self) -> None:
+        # Q1, the Overtoad's rulings of 2026-11-23 (files) and 2026-11-24 (bytes): each within 10 % of the previous run.
+        previous = summarized(examined=1_000_000, examined_bytes=330_000_000_000)
+        cases = {
+            "files at +10 %": ({"examined": 1_100_000}, "PASS"),
+            "files past +10 %": ({"examined": 1_100_001}, "FAIL"),
+            "files at -10 %": ({"examined": 900_000}, "PASS"),
+            "files past -10 %": ({"examined": 899_999}, "FAIL"),
+            "bytes at +10 %": ({"examined_bytes": 363_000_000_000}, "PASS"),
+            "bytes past +10 %": ({"examined_bytes": 363_000_000_001}, "FAIL"),
+            "bytes at -10 %": ({"examined_bytes": 297_000_000_000}, "PASS"),
+            "bytes past -10 %": ({"examined_bytes": 296_999_999_999}, "FAIL"),
+        }
+        for label, (counts, verdict) in cases.items():
+            with self.subTest(case=label):
+                values = {"examined": 1_000_000, "examined_bytes": 330_000_000_000, **counts}
+                finding = self.judge(summarized(**values), previous)
+                self.assertEqual(finding.verdict, verdict, finding.summary)
+                self.assertNotIn("unruled", finding.summary)
+        files = self.judge(summarized(examined=1_100_001, examined_bytes=330_000_000_000), previous)
+        self.assertIn("examined files moved +10.0% against the previous run (AC-3 allows 10%)", files.summary)
+        size = self.judge(summarized(examined=1_000_000, examined_bytes=296_999_999_999), previous)
+        self.assertIn("examined bytes moved -10.0% against the previous run (AC-3 allows 10%)", size.summary)
+        self.assertEqual(size.facts["size_drift"], -0.1)
+        self.assertEqual(self.judge(summarized(result="Error", examined=5_000_000), previous).verdict, "FAIL")
+
+    def test_the_bytes_floor_sits_5_percent_under_the_baseline_and_is_inside(self) -> None:
+        # Q1's size bound (2026-11-24): never more than 5 % under the 2026-11-08 baseline, 286 GB, whatever the previous
+        # run read; above the baseline only the run-to-run bound applies, so the 13.2 % of 2026-11-23 passes.
+        floor = math.ceil(probe.BASELINE_BYTES * 0.95)
+        previous = summarized(examined_bytes=300_000_000_000)
+        at_floor = self.judge(summarized(examined_bytes=floor), previous)
+        under = self.judge(summarized(examined_bytes=floor - 1), previous)
+        self.assertEqual((at_floor.verdict, under.verdict), ("PASS", "FAIL"), under.summary)
+        self.assertIn("examined bytes are -5.0% against the 2026-11-08 baseline, under AC-3's floor of -5%", under.summary)
+        self.assertEqual(self.judge(summarized(examined_bytes=floor - 1)).verdict, "FAIL", "the floor holds with no earlier run")
+        # A round baseline puts the floor on an exact byte count, which the real one does not: the edge is inside.
+        self.assertEqual(self.judge(summarized(examined_bytes=95_000_000_000), baseline_bytes=100_000_000_000).verdict, "PASS")
+        self.assertEqual(self.judge(summarized(examined_bytes=94_999_999_999), baseline_bytes=100_000_000_000).verdict, "FAIL")
+        over = self.judge(summarized(examined_bytes=340_900_000_000), summarized(examined_bytes=340_000_000_000))
+        self.assertEqual(over.verdict, "PASS", over.summary)
+        self.assertAlmostEqual(over.facts["size_vs_baseline"], 0.1323, places=4)
+
+    def test_a_count_the_result_does_not_carry_is_unread_evidence(self) -> None:
+        previous = summarized()
+        cases = {"no SizeOfExaminedFiles": summarized(drop=("SizeOfExaminedFiles",)), "no ExaminedFiles": summarized(drop=("ExaminedFiles",)), "a bool for a count": summarized(examined=True)}
+        for label, newest in cases.items():
+            with self.subTest(case=label):
+                finding = self.judge(newest, previous)
+                self.assertEqual(finding.verdict, "ERROR", finding.summary)
+                self.assertIn("so AC-3's count cannot be judged", finding.summary)
+        self.assertEqual(self.judge(summarized(result="Error", drop=("ExaminedFiles",)), previous).verdict, "FAIL", "a failure outranks unread evidence")
+
+    def test_with_no_earlier_backup_the_run_to_run_counts_are_named_not_compared(self) -> None:
+        finding = self.judge(summarized(examined=9_000_000))
+        self.assertEqual(finding.verdict, "PASS", finding.summary)
+        self.assertIn("so the run-to-run counts are not compared", finding.summary)
+        self.assertIsNone(finding.facts["count_drift"])
+        self.assertIsNone(finding.facts["size_drift"])
 
     def test_a_backup_whose_log_entry_carries_an_exception_fails(self) -> None:
         entry = log_entry(9)
