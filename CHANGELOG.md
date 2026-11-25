@@ -365,6 +365,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Backup Phase D: the AC-4 restore driver's four gaps are closed (recovery plan finding 29; driver 1.1.0).** Both
+  drills of 2026-11-15 exited 2 and passed. The finish tool already failed a negative exit code; the driver now agrees
+  with it.
+  - A restore killed by a signal passed: `subprocess` reports one as a negative code, and the driver required only
+    `< 3`. `restore_ok()` admits 0, 1 and 2, and both of `main()`'s judgements of the code go through it.
+  - `eligible()` admitted a path with a control character, and the candidate and result lines print each sampled
+    path to root's terminal. A path any of whose characters does not print is never sampled now.
+  - `stratum_of(-1)`, the driver's reading of a missing size, was `small`, and the entry's absent `size` then raised
+    `KeyError`: an exit 1, which reads as FAIL. A size that is not a non-negative integer has no stratum now.
+  - The file-list parser's separators held a literal U+FEFF. The BOM is built with `chr` now.
+  - `tests/test_ac4_restore_drill.py` (28 tests, 23 before) pins each, and reads `main()`'s source for its two
+    judgements of the code. `util/ad-hoc/2026-11-11_phase_d_tools_mutation_check.py` now runs the driver's suite and
+    seeds 14 defects into the driver; all 14 are killed, and all 261 in the harness.
+
 - **Backup: three tools named the job's old times after the Overtoad moved it on 2026-11-15** (14:00Z to 13:00Z, and
   the watchdog's check from 12:00 to 20:00 local). Text only; nothing any of them does has changed.
   - `util/ad-hoc/yamaguchi_server_db_snapshot.py` 1.2.1 closes with "13:00Z daily". The installed copy under
