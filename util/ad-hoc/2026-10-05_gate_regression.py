@@ -680,11 +680,13 @@ def contract_check(base: Path, workdir: Path):
     # Round 14's reconciliation (ml#2318): round 13's keys name no credential word ("bare_pw", "bare_sec",
     # "dunder_api"), since CodeQL reads a constant key holding one as a source of credentials and flagged these
     # synthetic random values on their way to the case files (code-scanning alerts 1059 and 1060). "apikey" counts
-    # too: CodeQL classed it as a password, so that key holds "api" alone.
+    # too: CodeQL classed it as a password, so that key holds "api" alone. Three older keys named one too and kept
+    # both alerts open on main, because ml#2318's own analysis named only the sources inside its diff: this map's
+    # "secret" and "apikeys", and the "secret" of `tails`, are now "app_sec", "api_list" and "lowersec" (2026-11-25).
     v = {k: vd() for k in ("comment", "qualifier", "gap", "namevalue", "argv", "two", "three", "web", "quoted", "k",
                            "deep4", "deep5", "above", "pem", "auth", "tab", "dotted", "websvc", "cr", "k8sname",
                            "lim_above2", "lim_below6", "lim_split", "lim_cont", "lim_netrc", "lim_passcont", "lim_digit",
-                           "token", "secret", "sep3", "soft", "nbh", "apikeys", "openssh", "pkcs8", "gapbelow", "deepgap",
+                           "token", "app_sec", "sep3", "soft", "nbh", "api_list", "openssh", "pkcs8", "gapbelow", "deepgap",
                            "abovegap", "nasym", "argvpass", "argvcpe", "argvk", "pkcs12", "wsgi", "lim_http",
                            "passin", "passout", "bare_token", "bare_pw", "bare_sec", "dunder_api", "under_token",
                            "ovl1", "ovl2", "abl1", "abl2", "blanks")}
@@ -693,7 +695,7 @@ def contract_check(base: Path, workdir: Path):
               ("lim_lowerkey", "lima"), ("lim_kebab", "mike")]}
     lower = "".join(random.sample(string.ascii_lowercase, 24))
     lower18 = "".join(random.sample(string.ascii_lowercase, 18))
-    tails = {k: vd() for k in ("secret", "lowerkey", "uptoken")}
+    tails = {k: vd() for k in ("lowersec", "lowerkey", "uptoken")}
     keepwords = "the-old-new-value-of-the-key"
     long_cell = "a long description of what this setting does and why the operator needs it, kept in one cell"
     # punctuation printed as it was: a value made of it, and half of one that alternates letters with symbols (R11B1-02)
@@ -725,7 +727,7 @@ def contract_check(base: Path, workdir: Path):
         "openssl.sh": ("openssl enc -aes-256-cbc -pass '" + "pass:" + v["quoted"] + "' -in a -out b\n"
                        + "openssl enc -aes-256-cbc -k " + v["k"] + " -in a -out b\n"),
         "lower.env": f"{api}={lower}\n",
-        "suffix.yaml": ("client: \"abc123_sec" + "ret_" + tails["secret"] + "\"\ntoken: \"jd_api_" + "key_" + tails["lowerkey"]
+        "suffix.yaml": ("client: \"abc123_sec" + "ret_" + tails["lowersec"] + "\"\ntoken: \"jd_api_" + "key_" + tails["lowerkey"]
                         + "\"\nX=PROD_TO" + "KEN_" + tails["uptoken"].upper() + "\n"),
         "value-first.json": '{"Value": "' + keepwords + '", "Name": "pass' + 'phrase"}\n',
         # round 11: values past a window, or on a line that is itself listed (R11B1-01)
@@ -757,8 +759,8 @@ def contract_check(base: Path, workdir: Path):
         # round 12, clause 1: env words (X3, X4, C1c, C1d), separators (C1a, C1b), PEM kinds (C1e), and openssl's
         # argv-list spellings, -password and the WSGI header (R12B1-05)
         "token.env": "JUNIPER_CASCOR_" + tok + "=" + v["token"] + "\n",
-        "secret.env": "APP_" + sec + "=" + v["secret"] + "\n",
-        "apikeys.json": '{"JUNIPER_API_' + 'KEYS": ["' + v["apikeys"] + '"]}\n',
+        "secret.env": "APP_" + sec + "=" + v["app_sec"] + "\n",
+        "apikeys.json": '{"JUNIPER_API_' + 'KEYS": ["' + v["api_list"] + '"]}\n',
         "sep3.md": "**Pass – " + "phrase:** " + v["sep3"] + "\n",
         "soft-hyphen.md": "Pass­" + "phrase: " + v["soft"] + "\n",
         "nb-hyphen.md": "Pass‑" + "phrase: " + v["nbh"] + "\n",
@@ -853,7 +855,7 @@ def contract_check(base: Path, workdir: Path):
              "dotted.properties": words["dotkey"], "websvc.md": v["websvc"], "cr-only.yaml": v["cr"],
              "punct.env": punct, "symbols.env": symbols,
              "gap-below.md": v["gapbelow"], "deep-gap.yaml": v["deepgap"], "above-gap.yaml": v["abovegap"],
-             "token.env": v["token"], "secret.env": v["secret"], "apikeys.json": v["apikeys"], "sep3.md": v["sep3"],
+             "token.env": v["token"], "secret.env": v["app_sec"], "apikeys.json": v["api_list"], "sep3.md": v["sep3"],
              "soft-hyphen.md": v["soft"], "nb-hyphen.md": v["nbh"], "pem-openssh.txt": v["openssh"],
              "pem-pkcs8.txt": v["pkcs8"], "argv-pass.py": v["argvpass"], "argv-cpe.log": v["argvcpe"],
              "argv-k.py": v["argvk"], "pkcs12.sh": v["pkcs12"], "wsgi.env": v["wsgi"], "digits.env": digits,
