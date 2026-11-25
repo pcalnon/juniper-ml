@@ -92,6 +92,32 @@ The paths:
   states whether 0.4.3 stays on 2.x behind the cap or ports `configure_sentry` to 3.x. For each path above, it says
   what 3.x offers in place of the scrubber and of `send_default_pii`, measured with the real SDK, not assumed.
 
+**Addendum, 2026-11-24: this design is now 0.4.4, and 0.4.3 ports to sentry-sdk 3.x.** The Overtoad ruled on
+2026-11-24 (22:26:46Z) on three points:
+
+- juniper-observability **0.4.3** is the sentry-sdk 3.x port, supporting both majors (`sentry-sdk[fastapi]>=2.35.0,<4`);
+- R-OBS-SC-3, this design, becomes **0.4.4**;
+- the consumers are ported to 3.x.
+
+The rulings are recorded in `notes/JUNIPER_2026-11-23_JUNIPER-ECOSYSTEM_R-OBS-SC-2-FOLLOW-UPS-REMAINING-TASKS.md`
+(R14, R15, R20). This file keeps its name as a record. The port is juniper-ml#2647. What it changes here:
+
+- **Both majors are in scope.** On 2.x, 0.4.3's `configure_sentry` passes 0.4.2's options, and on 3.x
+  `data_collection` and `before_send_span`. Each option this design adds needs a form on each major, or a ruling that
+  drops one.
+- **Already done on 3.x in 0.4.3:**
+  - Query parameters are filtered by 3.x's own substring denylist; `?api_key=` reaches Sentry raw on 2.x only.
+  - Request bodies are off (`http_bodies: []`) until this design rules on them.
+  - The hooks apply 2.76.0's `EventScrubber` denylist and, without PII, its PII denylist. 3.0.0 deleted the scrubber.
+- **`before_send_log` is a top-level option on 2.35.0, 2.76.0 and 3.0.0** (each wheel's `consts.py`). A Sentry Logs
+  policy can install one on both majors. 0.4.3 installs none.
+- **Pre-existing findings of the port's reviews**, all in this design's channels:
+  - juniper-canopy's `POST /api/remote/connect` body field `authkey` reaches Sentry on 2.x, in `request.data`, because
+    2.x's denylist does not match it;
+  - five proxy headers carry the client address without `send_pii`: `Forwarded`, `X-Client-IP`, `CF-Connecting-IP`,
+    `True-Client-IP` and `X-Cluster-Client-IP`;
+  - Sentry Logs carry logging extras raw on both majors.
+
 Then the release plan. Patch or minor, judged by what the change does to the public API and to what consumers see.
 After the release comes the third lock round in each consumer, and the floors in each consumer's next release
 PR: round 1's ruling 1 of 2026-11-09, "In release PRs", records that each consumer raises the floors in its
