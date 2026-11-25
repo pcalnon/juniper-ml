@@ -246,6 +246,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `--python "$VIRTUAL_ENV/bin/python"` keeps every command on the venv's interpreter. docs/REFERENCE.md 0.6.83
     follows.
 
+- **Backup Phase D: the acceptance probe judges AC-3's count as the Overtoad ruled Q1 (probe 1.5.0).** Files and bytes
+  examined are each judged against the previous run within 10 % (the rulings of 2026-11-23 and 2026-11-24), and the
+  bytes also against a floor 5 % under the 2026-11-08 baseline, 286 GB. The ±5 % against the baseline that AC-3
+  carried would fail every run: the newest run's bytes were 13.2 % over it on 2026-11-23 and 15.8 % on 11-24.
+  - `util/ad-hoc/yamaguchi_acceptance_probe.py` 1.5.0: `RUN` reads `FAIL` outside either run-to-run bound or under the
+    floor, where a drift read `ATTN` with "question Q1 is unruled"; an exact edge is inside each. A count the newest
+    result does not carry reads `ERROR`. With no earlier backup among the entries examined, `RUN` says the run-to-run
+    counts are not compared. `OFFSCHED` is now the only criterion that reads `ATTN`.
+  - `tests/test_yamaguchi_acceptance_probe.py` (118 tests): every edge of the three bounds. The phase-D mutation
+    harness replaces "drift is a failure", which 1.5.0 made true, with twelve mutants; all 111 probe mutants are
+    killed.
+  - The host runs 1.3.0 until the Overtoad's redeploy (`util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash`).
+
 - **Backup Phase D: the watchdog accepts the Firefox-profile warning class for AC-5 (Q6's classes, the Overtoad's
   ruling of 2026-11-24).** `ACCEPTED_WARNING_CLASSES` in `util/ad-hoc/yamaguchi_watchdog.py` now holds AC-3's class of
   2026-11-08: `FileBlockProcessor.FileEntry-PathNotFound`, `FilePreFilterProcess.FileEntry-PathNotFound` and
