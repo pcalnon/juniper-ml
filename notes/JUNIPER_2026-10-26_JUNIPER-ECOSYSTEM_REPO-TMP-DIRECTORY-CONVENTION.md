@@ -245,7 +245,8 @@ The owner's other rulings of section 1:
   repo root, so a copied tree whose `pyproject.toml` names another repo's package fails
   `test_finds_exactly_seven_in_repo_packages` locally (measured 2026-10-26 with a probe under `tmp/`). By that evening
   juniper-ml's primary `tmp/` held 11 such files from other arcs' tree copies, and the test's own walk, run against
-  the primary checkout, found 12 package names, five of them other repos'. It is owed a scope choice (section 11).
+  the primary checkout, found 12 package names, five of them other repos'. It was owed a scope choice (section 11),
+  which juniper-ml#2629 made on 2026-11-24: the walk skips every `tmp/` directory.
 
 ## 5. Out of scope
 
@@ -346,7 +347,7 @@ sub-packages, keeping those whose root is a repo root or above it. Line numbers 
 | `.claude/agents/prompt-validator.md:97` | An agent instruction: resolve a symbol with `grep -rn <symbol> <target>/` | Included whenever the target is a repo root | Name the scope in the instruction: `grep -rn --exclude-dir=tmp`, or `git grep` for tracked files |
 | `util/global_text_replace.bash:14` | Files under `./*` holding a string, each then rewritten in place with `sed -i` | Included: only `logs` and `reports` are excluded, so a run also rewrites scratch copies | Exclude `tmp` explicitly (`--exclude-dir tmp`) |
 | `util/editable_install_drift_check.py:356` | `pyproject.toml` files under the ecosystem root, to find each package's single canonical source directory | Included: `_SKIP_DIRS` has no `tmp`, so a tree copy there makes the result ambiguous and no fix is planned | Skip a checkout's own `tmp/` (a directory named `tmp` beside a `.git`) |
-| `tests/test_release_train_registry.py:180` | In-repo `pyproject.toml` files with a `[project]` table; `test_finds_exactly_seven_in_repo_packages` wants exactly the seven registered | Included: run against juniper-ml's primary checkout on 2026-10-26 its walk found 12 names (section 4.8) | Skip paths under the root's `tmp/`, or read `git ls-files` |
+| `tests/test_release_train_registry.py:180` | In-repo `pyproject.toml` files with a `[project]` table; `test_finds_exactly_seven_in_repo_packages` wants exactly the seven registered | Included: run against juniper-ml's primary checkout on 2026-10-26 its walk found 12 names (section 4.8). **Excluded since 2026-11-24** | **Done** by juniper-ml#2629 (2026-11-24): `_in_repo_pyprojects` skips every directory named `tmp` (`skip_parts`, now line 181), and `test_a_pyproject_under_tmp_is_scratch_not_an_in_repo_package` fails without the skip |
 | `util/prompt_discovery/file_probe.py:18`, `util/prompt_discovery/symbol_probe.py:22` | Up to 25 anchors, and a symbol's definition, for a generated prompt | Excluded by `git grep` (tracked files); the `grep -rn` fallback, used when git is unavailable, includes it | Pass `--exclude-dir=tmp` in the fallback |
 | `util/ad-hoc/apd_eco_002_mutation_check.py:77`, `util/ad-hoc/apd_eco_002_add_backoff_jitter.py:71` | `**/juniper_*_client/constants.py` under a client worktree; exactly one is required | Included: a tree copy in the worktree's `tmp/` makes two, and the script refuses | Skip paths under the worktree's `tmp/`. Both are records kept as provenance, listed because they are undated and re-runnable |
 

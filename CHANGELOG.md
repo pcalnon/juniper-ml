@@ -40,7 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     130 interrupted.
   - First full run, 2026-11-23: 269 jobs in 5m32s at `-j 8`, with five local-only failures.
     - Four come from `TMPDIR` sitting inside a checkout; a `--tmpdir` outside the tree made them pass.
-    - `tests/test_a0_restore_scripts.py`'s `install` stub refuses every `/home/` path, so it cannot pass on this host.
+    - `tests/test_a0_restore_scripts.py`'s `install` stub refused every `/home/` path, so it could not pass on this
+      host. Fixed since (see Fixed).
     - docs/REFERENCE.md § Test Suite Reference, "Running tests locally", records all five; it is the operator
       documentation (docs version 0.6.81).
   - `tests/test_run_tests.py` is wired into ci.yml (263 suites). It checks that the real workflows parse the way CI runs
@@ -235,6 +236,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`conf/python_versions.yaml`'s juniper-ml recipe runs `util/run_tests.py regression`.**
+  - It ran `util/ad-hoc/2026-11-15_run_ci_regression_list_locally.py`, which ran the `python3 -m unittest` commands of
+    ci.yml's `Run Python regression tests` step one at a time.
+  - `util/python_version_check.py --repo juniper-ml` now runs all of ci.yml's `tests` job, as a CI matrix leg does:
+    every command of that step (its non-unittest checks too) and `Run bash regression tests`. They run at `-j auto`,
+    each step in its own process group with a timeout, a failed job is re-run alone, and the run is recorded under the
+    primary checkout's `tmp/run-tests/`.
+  - `--python "$VIRTUAL_ENV/bin/python"` keeps every command on the venv's interpreter. docs/REFERENCE.md 0.6.83
+    follows.
+
+- **Backup Phase D: the acceptance probe judges AC-3's count as the Overtoad ruled Q1 (probe 1.5.0).** Files and bytes
+  examined are each judged against the previous run within 10 % (the rulings of 2026-11-23 and 2026-11-24), and the
+  bytes also against a floor 5 % under the 2026-11-08 baseline, 286 GB. The ±5 % against the baseline that AC-3
+  carried would fail every run: the newest run's bytes were 13.2 % over it on 2026-11-23 and 15.8 % on 11-24.
+  - `util/ad-hoc/yamaguchi_acceptance_probe.py` 1.5.0: `RUN` reads `FAIL` outside either run-to-run bound or under the
+    floor, where a drift read `ATTN` with "question Q1 is unruled"; an exact edge is inside each. A count the newest
+    result does not carry reads `ERROR`. With no earlier backup among the entries examined, `RUN` says the run-to-run
+    counts are not compared. `OFFSCHED` is now the only criterion that reads `ATTN`.
+  - `tests/test_yamaguchi_acceptance_probe.py` (118 tests): every edge of the three bounds. The phase-D mutation
+    harness replaces "drift is a failure", which 1.5.0 made true, with twelve mutants; all 111 probe mutants are
+    killed.
+  - The host runs 1.3.0 until the Overtoad's redeploy (`util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash`).
+
+- **Backup Phase D: the watchdog accepts the Firefox-profile warning class for AC-5 (Q6's classes, the Overtoad's
+  ruling of 2026-11-24).** `ACCEPTED_WARNING_CLASSES` in `util/ad-hoc/yamaguchi_watchdog.py` now holds AC-3's class of
+  2026-11-08: `FileBlockProcessor.FileEntry-PathNotFound`, `FilePreFilterProcess.FileEntry-PathNotFound` and
+  `MetadataGenerator.Metadata-MetadataProcessFailed`, scoped to `~/.mozilla/firefox/`. These were exactly the 11-16
+  run's three warnings. A `Warning` run of that class reads `OK WARNINGS_ACCEPTED`, which the probe's AC-5 counts; any
+  other warning still alerts.
+  - `tests/test_yamaguchi_watchdog.py` (37 tests): the list is pinned to the ruling and to the probe's
+    `ALLOWED_WARNING_TAGS` under its `ALLOWED_WARNING_SCOPE`, the 11-16 run's warnings read `OK` with the list as
+    deployed, and with no class accepted every `Warning` run still alerts.
+  - `util/ad-hoc/2026-10-03_b2_mutation_check.py`: four mutations widen or narrow the list; all 52 are killed.
+  - The recovery plan's §6.6 records the day's three rulings (Q4, Q6's classes, Q1's size bound), and "Still open"
+    follows. The watchdog runs the primary checkout's copy (finding 44), so this reaches it when that checkout holds
+    it.
+
+- **Backup Phase D: the watchdog can accept the warning classes the Overtoad names (Q6's other half, ruled
+  2026-11-23).** A `Warning` run whose every warning is of an accepted class reads `OK WARNINGS_ACCEPTED`, which the
+  acceptance probe's AC-5 counts as it counts `OK OK`; any other warning still alerts and ends the streak. The list,
+  `ACCEPTED_WARNING_CLASSES` in `util/ad-hoc/yamaguchi_watchdog.py`, is empty until the Overtoad reads the warnings and
+  names classes, so until then every `Warning` run still alerts.
+  - A warning is classified by its `[Warning-<tag>]` tag with the acceptance probe's own rule, never by its text (the
+    recovery plan's finding 35), and a class may carry a path scope under the backup Source's home. A run with an
+    untagged warning, a warning the result counts but does not list, or an error is never accepted.
+  - `NOT_SUCCESS` now counts a run's warnings by tag (`warnings by tag: FilePreFilterProcess.FileEntry-PathNotFound
+    x2, …`), never their text, so an alert says which classes the Overtoad would be accepting.
+  - `tests/test_yamaguchi_watchdog.py`: 7 new tests, among them the tag rule pinned to the probe's and the accepted
+    record counted by the probe's AC-5. `util/ad-hoc/2026-10-03_b2_mutation_check.py` seeds 11 new defects; all 49
+    are killed.
+  - The watchdog runs the primary checkout's copy (the recovery plan's finding 44), so this reaches it only when the
+    primary checkout holds it.
+
 - **Backup Phase D: the acceptance probe follows two Overtoad rulings of 2026-11-15.** AC-2 expects the job's 5
   sources and 76 filters: the Overtoad changed them on purpose, and the design fixed 2 and 45 before. AC-5 no longer
   counts a day whose watchdog check found the job still running (`OK RUNNING`). Such a day ends the three-day
@@ -285,7 +339,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     REFERENCE's sentence that a future seq "is trusted, not checked against `current_seq`" no longer holds and is
     replaced.
 
+- **The Cursor flood-4 disposition record runs to 2026-11-24: the Overtoad's rulings 15–48 and what each produced.**
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` §8 stopped at ruling 14 (2026-11-09).
+  - §8 adds rulings 15–48 (2026-11-09 to 2026-11-24), each dated from its session's transcript, with its option labels
+    verbatim and its pull requests and merge commits. Ruling 17 is one ruling over its four fixes (juniper-data#529,
+    juniper-cascor#756, juniper-canopy#814 and #815), as R54 of
+    `notes/JUNIPER_2026-11-23_JUNIPER-ECOSYSTEM_R-OBS-SC-2-FOLLOW-UPS-REMAINING-TASKS.md` asks.
+  - Rulings 1–14's later outcomes: §4's four open rows now read fixed (juniper-ml#2531, #2534 and #2554, juniper-data#530),
+    ruling 10's seven Gitleaks ports and ruling 11's four fixes are named, rounds 2 and 3 are closed (all 50 drafts),
+    and no Cursor pull request has been opened in any of the nine repositories since 2026-11-08 00:51Z.
+  - Ruling 48's paragraph check landed as juniper-ml#2631, and the first Dependabot pull request after each of ruling
+    10's ports was read from its scan log. "Still open" lists what is left on 2026-11-24: the 2026-11-12 rulings'
+    follow-ups (two service-core PRs; five lockfile-print ports and a canopy docs line, built and in validation; two
+    canopy test PRs), juniper-data#536, the agent guard's open spellings, a docs-carrier link, `JuniperCanopy1`'s
+    upgrade and ruling 7's worktree cleanup.
+  - Every merged citation of a ruling number or date agrees with §8's numbering: juniper-cascor's and juniper-canopy's CHANGELOGs
+    (also at `v0.14.0` and `v0.10.0`), juniper-ml's `docs/REFERENCE.md` and the consolidated plan. §6 and §7 gain the
+    traps and tools a later reader needs; §5's tables are unchanged.
+  - Provenance helpers (new): session 10's sixteen, `util/ad-hoc/2026-11-23_flood4_s10_*.py` and
+    `util/ad-hoc/2026-11-23_flood4r2_val_s10-guard-claims_*.py` (three edited only to clear CodeQL alerts), and
+    session 11's `util/ad-hoc/2026-11-24_flood4_s11_record_{dialogs,census,prs,rulings_json,apply,pathcheck}.py`,
+    `util/ad-hoc/2026-11-24_flood4_s11_{dependabot_scan_read,apply_fixes}.py`,
+    `util/ad-hoc/2026-11-24_flood4_s11_val_claims_{dialogs,prs,timecheck,fixcheck}.py` and
+    `util/ad-hoc/2026-11-24_flood4_s11_val_doc_{checks,fixcheck}.py`.
+
 ### Fixed
+
+- **`util/safe_merge.py`'s local merge lands the commit message an armed auto-merge net stores** (finding 37 of the
+  backup recovery plan). juniper-ml#2548's operator re-armed the net with a curated message after the last commit. The
+  local merge won the race and passed no text, so GitHub's default concatenation of the branch's commits landed.
+  - `stored_commit_text()` copies the net's non-empty `commitHeadline` and `commitBody` into the local `gh pr merge`
+    as `--subject` and `--body`, read after the wait. A `null` field (the state this tool's own net stores), an empty
+    string and a value that is not a string are never copied, so the repository's default still decides an uncurated
+    message. Arming is unchanged.
+  - gh 2.46.0, this host's, sends both on `mergePullRequest` (`pkg/cmd/pr/merge/http.go` at `v2.46.0`).
+  - `tests/test_safe_merge.py` (84 tests, 78 before): `LocalMergeCommitTextTest`.
+    `util/ad-hoc/2026-11-25_safe_merge_commit_text_mutation_check.py` kills all nine of its mutants.
+
+- **Backup Phase D: the AC-4 restore driver's four gaps are closed (recovery plan finding 29; driver 1.1.0).** Both
+  drills of 2026-11-15 exited 2 and passed. The finish tool already failed a negative exit code; the driver now agrees
+  with it.
+  - A restore killed by a signal passed: `subprocess` reports one as a negative code, and the driver required only
+    `< 3`. `restore_ok()` admits 0, 1 and 2, and both of `main()`'s judgements of the code go through it.
+  - `eligible()` admitted a path with a control character, and the candidate and result lines print each sampled
+    path to root's terminal. A path any of whose characters does not print is never sampled now.
+  - `stratum_of(-1)`, the driver's reading of a missing size, was `small`, and the entry's absent `size` then raised
+    `KeyError`: an exit 1, which reads as FAIL. A size that is not a non-negative integer has no stratum now.
+  - The file-list parser's separators held a literal U+FEFF. The BOM is built with `chr` now.
+  - `tests/test_ac4_restore_drill.py` (28 tests, 23 before) pins each, and reads `main()`'s source for its two
+    judgements of the code. `util/ad-hoc/2026-11-11_phase_d_tools_mutation_check.py` now runs the driver's suite and
+    seeds 14 defects into the driver; all 14 are killed, and all 261 in the harness.
+
+- **Backup: three tools named the job's old times after the Overtoad moved it on 2026-11-15** (14:00Z to 13:00Z, and
+  the watchdog's check from 12:00 to 20:00 local). Text only; nothing any of them does has changed.
+  - `util/ad-hoc/yamaguchi_server_db_snapshot.py` 1.2.1 closes with "13:00Z daily". The installed copy under
+    `/usr/local/lib/duplicati/` keeps saying 14:00Z until the Overtoad copies the new file there.
+  - `util/ad-hoc/yamaguchi_reboot_verify.bash`: the closing message says 13:00Z, and the false-negative note and step 3
+    name the 20:00 watchdog.
+  - `util/systemd/yamaguchi-acceptance-probe.timer`'s comment: the job starts at 13:00 UTC, ten and a half hours before
+    the probe. The probe's next deploy installs it.
+
+- **`tests/test_a0_restore_scripts.py` passes on a host whose `TMPDIR` is under `/home`.** Its PATH `install` stub, a
+  safety net against a regressed refusal, refused every argument under `/home/`. The 2026-10-26 rule puts `TMPDIR` in
+  the repo's `tmp/`, under `/home` on the Linux workstation, so 10 of its 17 tests failed there.
+  - The stub canonicalises each absolute argument (`realpath -m`), then refuses one under `/home` or the real home
+    unless it is inside the test's own scratch directory.
+  - The production-default test's "path elsewhere" was a scratch path. On such a host every scratch directory is inside
+    the default backup Source, `/home/pcalnon`, so the restore script rightly refused it. It is now
+    `/nonexistent/juniper-a0-r7-elsewhere/out`, which the stub records instead of creating.
+  - `InstallStubSafetyNet` (4 tests) pins the net itself; the suite has 21 tests.
+  - `util/ad-hoc/2026-11-24_a0_install_stub_mutation_check.py` kills six mutants. With the restore script's own
+    refusal removed, the net refuses the real-home path and nothing is created.
+  - docs/REFERENCE.md 0.6.83: "Known local-only failures" marks it fixed, and its Test Suite Reference entry describes
+    the net.
+
+- **Backup Phase D: the acceptance probe judges a day on which a backup is still running.** While a run of the job is
+  in progress the server refuses the job log with HTTP 400. On 11-19, 11-21 and 11-22 that made all six server
+  criteria read `ERROR` (AC-2, AC-13, `OPTIONS`, `RUN`, `OFFSCHED`, `CENSUS`): the recovery plan's finding 42.
+  - `util/ad-hoc/yamaguchi_acceptance_probe.py` 1.4.0 still judges AC-2, AC-13, `OPTIONS` and `CENSUS`, which need no
+    log, and `OFFSCHED` reads `SKIP`. `RUN` names the run and reads `SKIP`, or `FAIL` when the newest finished backup
+    began more than 50 h earlier; it reads that start from the job's metadata (`LastBackupStarted`). Any other refusal
+    of the log still reads `ERROR`, and the active task is named by its ids alone.
+  - `tests/test_yamaguchi_acceptance_probe.py` (115 tests). The mutation harness seeds 13 new defects in the probe,
+    and the probe's suite kills them and all of the probe's other mutants.
+  - The recovery plan's finding 42 records the change and the census values the metadata stamp is pinned against.
 
 - **"owner" is back wherever juniper-ml#2606 renamed a technical owner to "Overtoad": 340 tokens in 112 files.**
   #2606 kept the rename only where "owner" means the person, judged one word on each side of the token, and it
@@ -2826,80 +2963,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `util/ad-hoc/2026-09-21_raise_canopy_floor_0_8_1.py`, which asserts each of the ten sites'
   exact text and requires exactly one match apiece.
 
-- **All eight decision-11 floors raised — the meta-package now resolves the released contract, not the
-  retired one.** `[clients]` `juniper-data-client>=0.5.0` and `juniper-cascor-client>=0.8.0`; `[servers]`
-  `juniper-canopy>=0.7.0`, `juniper-cascor>=0.11.0`, `juniper-data>=0.14.0`; `[recurrence]`
-  `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0`,
-  `juniper-recurrence-client>=0.3.0,<0.4.0`. Decision 11 (§9.5 of
-  `notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md`, producer-side
-  juniper-data#369) retired the `*_full` family, and every package above shipped its half of that
-  change. Until now `pip install juniper-ml[recurrence]` could not resolve the new versions **at all**:
-  the old caps were `juniper-recurrence-model<0.3.0` and `juniper-recurrence-client<0.3.0`, which
-  actively forbid the releases that carry `derive_full_split` — the reconstruction `POST /v1/crossval`
-  depends on for a post-#369 artifact.
-
-  These are **floors on a meta-package**, so nothing here is a behaviour change in this repo; the
-  behaviour is in the pinned packages, each documented in its own changelog. The lockstep artifacts
-  move with them: `tests/test_pyproject_extras.py` (which asserts the exact strings), the four extras
-  tables in `AGENTS.md`, `README.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md`, and a new `0.8.x`
-  row in the compatibility matrix — whose prose still said "juniper-ml 0.6.0 declares" while the
-  package was at 0.7.1.
-
-- **`juniper-cascor-client` floored at `>=0.8.0`, which is where the base-URL host guard actually
-  starts.** `docs/REFERENCE.md`'s HTTP-client note said the latest released data-client was `0.4.2` and
-  "still lacks the host guard", so `pip install juniper-ml[clients]` could resolve a wheel that
-  "silently accepts `HTTPS://host` (TLS downgrade)". Checked against the *published* wheels in a clean
-  venv: `juniper-data-client` 0.5.0 and `juniper-cascor-client` 0.8.0 both refuse a hostless `https://`
-  and both **normalise** `HTTPS://host` to `https://host`, so the TLS-downgrade reading is withdrawn.
-  What survived was narrower and was a live gap — the data-client floor guaranteed the guard, the
-  cascor-client floor did not. Each published cascor-client wheel was then probed in a throwaway venv
-  (`util/ad-hoc/2026-09-11_cascor_client_guard_boundary.py`): **0.5.0, 0.6.0 and 0.7.0 all fail both
-  halves**, and **0.8.0 is the first release carrying either**. The floor is set from that measurement
-  rather than from the changelog that introduced the fix, and the gap is closed rather than documented.
-
-- Widened the `recurrence` extra's `juniper-recurrence` ceiling to admit the released next minor:
-  `juniper-recurrence>=0.2.0,<0.5.0` (0.4.0 on PyPI). Supersedes dependabot #1323, which cannot
-  co-update the `tests/test_pyproject_extras.py` lint contract; the contract and the extras tables in
-  `AGENTS.md`, `README.md`, `docs/QUICK_START.md`, and `docs/REFERENCE.md` move in lockstep — the same
-  handling the v0.7.1 widening gave dependabot #900/#901. No other ceiling moves: recurrence 0.4.0's
-  own pins (`juniper-recurrence-model<0.3.0,>=0.1.5`, `juniper-service-core<0.6.0,>=0.5.0`,
-  `juniper-model-core[crossval]<0.4.0,>=0.2.0`, `juniper-data-client<0.5.0,>=0.4.2`) all resolve inside
-  what this package already declares, so `pip install juniper-ml[recurrence]` stays satisfiable.
-  `juniper-recurrence-client` stays at `<0.3.0` (no newer release).
-- `util/ad-hoc/2026-08-14_touchup_lane_probe.py` and `util/ad-hoc/2026-08-14_signing_arc_status.py`
-  moved to `util/ad-hoc/retired/` with the `_RETIRED-2026-08-14` suffix (the #928 precedent), their
-  purposes being complete: the touch-up fan-out landed in all 8 repos with the lane, and
-  `juniper-cascor` 0.9.0 published to PyPI. Their headers now record the answers they produced rather
-  than a "retire when" condition already met.
-
-- **Editable-install drift check now detects stale metadata**, a second axis orthogonal to
-  `FRESH` / `WORKTREE_PINNED` / `ORPHANED` (`util/editable_install_drift_check.py`). An editable
-  install never re-derives its version when the source tree moves on: `import` follows the live
-  tree, but `*.dist-info/METADATA` stays frozen at whatever was declared when pip last ran. The
-  path axis cannot see that, and neither can `juniper-env-drift-check`, which asks a different
-  question — whether an installed version satisfies a consumer's declared *floor*. A stale
-  editable sits comfortably above every floor and is still wrong.
-  - Found on this host on 2026-08-14: **7 of 8** editable installs were `FRESH` **and** stale at
-    once, `juniper-data` five minors behind (`0.6.0` recorded vs `0.11.0` declared). Both existing
-    checkers reported completely clean. The consequence is not a broken `import` — it is anything
-    reading the *installed* version: juniper-cascor's own `test_version_matches_pyproject` failed
-    locally on exactly this (`0.6.0` vs pyproject `0.9.0`), and a host-launched service exports the
-    stale number as its build-info/provenance metric.
-  - New per-finding fields `installed_version` / `source_version` / `version_status`
-    (`MATCH` | `STALE` | `UNKNOWN`) in the table, the summary, and `--json`. `STALE` is **soft**
-    (exit `0` — `import` still resolves); `--strict-version` makes it exit `1`, and `--strict` is
-    unchanged, still about the path axis alone.
-  - `--fix-stale` refreshes stale installs against the path they **already point at**
-    (`drift: "stale-metadata"`), not a canonical-discovery result — reinstalling from the recorded
-    path is what re-stamps the metadata, while routing it through discovery could re-point a
-    deliberate checkout. `ORPHANED` repair is untouched (`drift: "path"`).
-  - Dynamic versions resolve only from an **explicit** declaration
-    (`[tool.setuptools.dynamic] version.attr`, including `src/` layouts, or `[tool.hatch.version] path`).
-    An unrecognized backend reports `UNKNOWN` rather than guessing at a plausible `_version.py`,
-    so the tool cannot manufacture a `STALE` finding from the wrong file.
-  - Coverage: `tests/test_editable_install_drift_check.py::VersionDriftTest` (18 arms, hermetic —
-    synthetic conda dir + ecosystem root, no real pip).
-
 - **The pin-capping rule is now stated beside the pins** (#1987, APD-ML-001). `pyproject.toml`
   gained a comment block recording why some first-party pins carry a `<` ceiling and some do
   not: shared LIBRARIES a consumer imports are capped, so a breaking `0.(Y+1)` cannot be
@@ -3025,11 +3088,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `max_hidden_units: 2` would measure the cap rather than the difficulty — the same failure class
   the re-spec exists to escape. `util/ad-hoc/2026-09-12_pf2_spiral_capacity_calibration.yaml` is
   the probe that settles it, and it reads **structural** outcomes, so it does not need a quiet host.
-
-## [0.8.0] - 2026-09-11
-
-### Added
-
 - **Perf lane — nothing "stops" the first-pass burst; the training thread is re-pinned during
   candidate result collection, and `torch.get_num_threads()` is not a passive read**
   (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`).
@@ -3063,6 +3121,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-LIBRARY-ATTRIBUTION.md` (§5,
   §5.1, §5.3, §7, status line) and
   `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md` (§4.2).
+
+## [0.8.0] - 2026-09-11
+
+### Added
+
 - **Perf lane — the initial output pass's ~11-core burst is libgomp under torch, not NumPy's
   OpenBLAS, and cascor's parent thread pin binds only the thread that ran the constructor**
   (`notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-LIBRARY-ATTRIBUTION.md`). The
@@ -3176,6 +3239,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and replaying canned stdout; no network, repo, or `git`). `util/` sits outside every pre-commit
   Python hook's scope, so this is the gate. Wired into `ci.yml`.
 
+- **Editable-install drift check now detects stale metadata**, a second axis orthogonal to
+  `FRESH` / `WORKTREE_PINNED` / `ORPHANED` (`util/editable_install_drift_check.py`). An editable
+  install never re-derives its version when the source tree moves on: `import` follows the live
+  tree, but `*.dist-info/METADATA` stays frozen at whatever was declared when pip last ran. The
+  path axis cannot see that, and neither can `juniper-env-drift-check`, which asks a different
+  question — whether an installed version satisfies a consumer's declared *floor*. A stale
+  editable sits comfortably above every floor and is still wrong.
+  - Found on this host on 2026-08-14: **7 of 8** editable installs were `FRESH` **and** stale at
+    once, `juniper-data` five minors behind (`0.6.0` recorded vs `0.11.0` declared). Both existing
+    checkers reported completely clean. The consequence is not a broken `import` — it is anything
+    reading the *installed* version: juniper-cascor's own `test_version_matches_pyproject` failed
+    locally on exactly this (`0.6.0` vs pyproject `0.9.0`), and a host-launched service exports the
+    stale number as its build-info/provenance metric.
+  - New per-finding fields `installed_version` / `source_version` / `version_status`
+    (`MATCH` | `STALE` | `UNKNOWN`) in the table, the summary, and `--json`. `STALE` is **soft**
+    (exit `0` — `import` still resolves); `--strict-version` makes it exit `1`, and `--strict` is
+    unchanged, still about the path axis alone.
+  - `--fix-stale` refreshes stale installs against the path they **already point at**
+    (`drift: "stale-metadata"`), not a canonical-discovery result — reinstalling from the recorded
+    path is what re-stamps the metadata, while routing it through discovery could re-point a
+    deliberate checkout. `ORPHANED` repair is untouched (`drift: "path"`).
+  - Dynamic versions resolve only from an **explicit** declaration
+    (`[tool.setuptools.dynamic] version.attr`, including `src/` layouts, or `[tool.hatch.version] path`).
+    An unrecognized backend reports `UNKNOWN` rather than guessing at a plausible `_version.py`,
+    so the tool cannot manufacture a `STALE` finding from the wrong file.
+  - Coverage: `tests/test_editable_install_drift_check.py::VersionDriftTest` (18 arms, hermetic —
+    synthetic conda dir + ecosystem root, no real pip).
+
 ### Added
 
 - **`util/ad-hoc/2026-08-24_bot_pr_census.py`**, **`_bot_pr_merge_sweep.py`**, **`_bot_pr_converge.py`** —
@@ -3200,6 +3291,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   four one-off drivers from the same day, retired per the #928 precedent rather than deleted; their
   headers now record what each produced, including the `Allow-Symbol-Loss` waiver surviving ml#1316's
   squash and the armed-but-`BEHIND` split that exposed the config deadlock above.
+
+### Changed
+
+- **All eight decision-11 floors raised — the meta-package now resolves the released contract, not the
+  retired one.** `[clients]` `juniper-data-client>=0.5.0` and `juniper-cascor-client>=0.8.0`; `[servers]`
+  `juniper-canopy>=0.7.0`, `juniper-cascor>=0.11.0`, `juniper-data>=0.14.0`; `[recurrence]`
+  `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0`,
+  `juniper-recurrence-client>=0.3.0,<0.4.0`. Decision 11 (§9.5 of
+  `notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md`, producer-side
+  juniper-data#369) retired the `*_full` family, and every package above shipped its half of that
+  change. Until now `pip install juniper-ml[recurrence]` could not resolve the new versions **at all**:
+  the old caps were `juniper-recurrence-model<0.3.0` and `juniper-recurrence-client<0.3.0`, which
+  actively forbid the releases that carry `derive_full_split` — the reconstruction `POST /v1/crossval`
+  depends on for a post-#369 artifact.
+
+  These are **floors on a meta-package**, so nothing here is a behaviour change in this repo; the
+  behaviour is in the pinned packages, each documented in its own changelog. The lockstep artifacts
+  move with them: `tests/test_pyproject_extras.py` (which asserts the exact strings), the four extras
+  tables in `AGENTS.md`, `README.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md`, and a new `0.8.x`
+  row in the compatibility matrix — whose prose still said "juniper-ml 0.6.0 declares" while the
+  package was at 0.7.1.
+
+- **`juniper-cascor-client` floored at `>=0.8.0`, which is where the base-URL host guard actually
+  starts.** `docs/REFERENCE.md`'s HTTP-client note said the latest released data-client was `0.4.2` and
+  "still lacks the host guard", so `pip install juniper-ml[clients]` could resolve a wheel that
+  "silently accepts `HTTPS://host` (TLS downgrade)". Checked against the *published* wheels in a clean
+  venv: `juniper-data-client` 0.5.0 and `juniper-cascor-client` 0.8.0 both refuse a hostless `https://`
+  and both **normalise** `HTTPS://host` to `https://host`, so the TLS-downgrade reading is withdrawn.
+  What survived was narrower and was a live gap — the data-client floor guaranteed the guard, the
+  cascor-client floor did not. Each published cascor-client wheel was then probed in a throwaway venv
+  (`util/ad-hoc/2026-09-11_cascor_client_guard_boundary.py`): **0.5.0, 0.6.0 and 0.7.0 all fail both
+  halves**, and **0.8.0 is the first release carrying either**. The floor is set from that measurement
+  rather than from the changelog that introduced the fix, and the gap is closed rather than documented.
+
+- Widened the `recurrence` extra's `juniper-recurrence` ceiling to admit the released next minor:
+  `juniper-recurrence>=0.2.0,<0.5.0` (0.4.0 on PyPI). Supersedes dependabot #1323, which cannot
+  co-update the `tests/test_pyproject_extras.py` lint contract; the contract and the extras tables in
+  `AGENTS.md`, `README.md`, `docs/QUICK_START.md`, and `docs/REFERENCE.md` move in lockstep — the same
+  handling the v0.7.1 widening gave dependabot #900/#901. No other ceiling moves: recurrence 0.4.0's
+  own pins (`juniper-recurrence-model<0.3.0,>=0.1.5`, `juniper-service-core<0.6.0,>=0.5.0`,
+  `juniper-model-core[crossval]<0.4.0,>=0.2.0`, `juniper-data-client<0.5.0,>=0.4.2`) all resolve inside
+  what this package already declares, so `pip install juniper-ml[recurrence]` stays satisfiable.
+  `juniper-recurrence-client` stays at `<0.3.0` (no newer release).
+- `util/ad-hoc/2026-08-14_touchup_lane_probe.py` and `util/ad-hoc/2026-08-14_signing_arc_status.py`
+  moved to `util/ad-hoc/retired/` with the `_RETIRED-2026-08-14` suffix (the #928 precedent), their
+  purposes being complete: the touch-up fan-out landed in all 8 repos with the lane, and
+  `juniper-cascor` 0.9.0 published to PyPI. Their headers now record the answers they produced rather
+  than a "retire when" condition already met.
 
 ### Fixed
 
@@ -3460,31 +3599,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `pip install juniper-ml[all]` now pulls in every published Juniper
   package: 3 servers, 2 clients, 1 worker, and 3 tools.
 
-### Changed
-
-- **Pre-tag docs polish for the 0.5.0 release.** Refreshes the three
-  Ecosystem Compatibility tables (`README.md`, `docs/REFERENCE.md`,
-  `docs/DOCUMENTATION_OVERVIEW.md`) to enumerate every package the
-  meta-package now pins -- canopy / cascor / data / data-client /
-  cascor-client / cascor-worker / ci-tools / doc-tools / observability
-  -- with their actual pyproject pins (the previous tables only listed
-  3-5 packages and used stale `0.4.x` headers). Adds `[servers]`,
-  `[tools]`, and `[doc-tools]` editable-install commands to `AGENTS.md`
-  and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, plus an explicit
-  multi-GB callout on `[all]`.
-
-- **Version bumped to 0.5.0** (semver minor) to mark the new optional
-  dependency surface. No removals or breaking changes -- existing
-  `[clients]`, `[worker]`, `[doc-tools]`, and `[all]` install commands
-  continue to work; `[all]` is now a strict superset.
-- **`juniper-observability` is now aggregated under `juniper-ml[tools]`
-  and `juniper-ml[all]`.** Until 0.4.1 it was published from this
-  repository as a sibling package that had to be installed directly.
-  Documentation in `README.md`, `docs/QUICK_START.md`,
-  `docs/REFERENCE.md`, and `docs/DOCUMENTATION_OVERVIEW.md` updated to
-  reflect this. Independent versioning and the
-  `juniper-observability-v*` tag pipeline are unchanged.
-
 - **§5 drift-detection guard rails** for the `juniper-doc-tools` PyPI
   migration (plan
   [`notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`](notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md)
@@ -3509,6 +3623,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       repo results. Per-repo failures are warned; the step fails only
       when `>=DOWNSTREAM_FAIL_THRESHOLD` consumers regress in the same
       week (default 5 of 6 = catastrophic juniper-doc-tools regression).
+
+### Changed
+
+- **Pre-tag docs polish for the 0.5.0 release.** Refreshes the three
+  Ecosystem Compatibility tables (`README.md`, `docs/REFERENCE.md`,
+  `docs/DOCUMENTATION_OVERVIEW.md`) to enumerate every package the
+  meta-package now pins -- canopy / cascor / data / data-client /
+  cascor-client / cascor-worker / ci-tools / doc-tools / observability
+  -- with their actual pyproject pins (the previous tables only listed
+  3-5 packages and used stale `0.4.x` headers). Adds `[servers]`,
+  `[tools]`, and `[doc-tools]` editable-install commands to `AGENTS.md`
+  and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, plus an explicit
+  multi-GB callout on `[all]`.
+
+- **Version bumped to 0.5.0** (semver minor) to mark the new optional
+  dependency surface. No removals or breaking changes -- existing
+  `[clients]`, `[worker]`, `[doc-tools]`, and `[all]` install commands
+  continue to work; `[all]` is now a strict superset.
+- **`juniper-observability` is now aggregated under `juniper-ml[tools]`
+  and `juniper-ml[all]`.** Until 0.4.1 it was published from this
+  repository as a sibling package that had to be installed directly.
+  Documentation in `README.md`, `docs/QUICK_START.md`,
+  `docs/REFERENCE.md`, and `docs/DOCUMENTATION_OVERVIEW.md` updated to
+  reflect this. Independent versioning and the
+  `juniper-observability-v*` tag pipeline are unchanged.
 
 ### Removed
 
