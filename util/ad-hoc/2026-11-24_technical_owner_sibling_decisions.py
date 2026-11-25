@@ -20,7 +20,9 @@ were reviewed row by row, every row, not only the ones a net flagged. Then three
 ``classify`` cannot see: the words before and after each token, the generic determiners and qualifiers
 ("an owner", "the deployment owner", "its real owner"), and every token that starts or ends its line, read
 together with the neighbouring line (the line-wrap blind spot: ``classify`` reads one line, so "away from its
-real" + "# owner." on the next line read as the person). An independent review of all 721 rows followed, briefed
+real" + "# owner." on the next line read as the person; ``2026-11-24_technical_owner_sibling_sweep.py wrap``
+reproduces that pass), plus a net over each repo's current main rather than the diff (``... shapes``). An
+independent review of all 721 rows followed, briefed
 with the data and the blind spots but not these decisions. It found the same ten tokens: the seven below and the
 three recurrence publish lines (next section). Its seven unsure rows were judged the person: canopy
 ``.github/workflows/main-verify.yml:48`` ("a later per-repo owner call" is the owner's call, made per repo);

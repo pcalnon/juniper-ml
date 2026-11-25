@@ -30,12 +30,22 @@ candidates  run the candidate tool per repo, then label every row against ``orig
             "owner" back), GONE (main no longer has the line)
 upload      one GitHub-signed commit of a worktree's tracked edits on a new branch made at the worktree's HEAD
             (refused if main has since changed a carried file), a blob-by-blob check, then the pull request
+wrap        the LINE-WRAP pass: every LIVE row whose token starts or ends its line, printed with the neighbouring
+            line from the rename merge. ``classify`` reads one line, so "away from its real" + "# owner." on the
+            next line read as the person; this is the pass that found cascor's coordinator and canopy's
+            "the deployment" / "owner has verified"
+shapes      an independent net over each repo's CURRENT ``origin/main``, not the rename diff: ``git grep`` for
+            shapes where "Overtoad" is unlikely to be the person (an indefinite article, a qualifier such as
+            "its" / "real" / "deployment", a placeholder or identifier, an attribute list, a possessive, a slug);
+            it also catches renamed text that a later PR copied forward
 
 Usage
 -----
     python3 util/ad-hoc/2026-11-24_technical_owner_sibling_sweep.py state
     python3 util/ad-hoc/2026-11-24_technical_owner_sibling_sweep.py setup --branch fix/technical-owner-sweep
     python3 util/ad-hoc/2026-11-24_technical_owner_sibling_sweep.py candidates --out tmp/tech-owner-siblings
+    python3 util/ad-hoc/2026-11-24_technical_owner_sibling_sweep.py wrap --out tmp/tech-owner-siblings
+    python3 util/ad-hoc/2026-11-24_technical_owner_sibling_sweep.py shapes
 """
 
 from __future__ import annotations
@@ -191,6 +201,60 @@ def cmd_candidates(args) -> int:
     return 0
 
 
+LINE_LEAD = re.compile(r"^[\s#/*>\-|\"'`(]*$")
+LINE_TAIL = re.compile(r"[\s.,;:)\"'`*]*")
+
+
+def cmd_wrap(args) -> int:
+    for name, merge, _pr, _repair in REPOS:
+        tsv = os.path.join(args.out, name, "labelled.tsv")
+        if not os.path.isfile(tsv):
+            continue
+        repo, cache = primary(name), {}
+        with open(tsv, encoding="utf-8") as handle:
+            for raw in handle:
+                label, _status, where, occurrence, orig, _got, _nets, _kind, window = raw.rstrip("\n").split("\t")
+                if label != "LIVE":
+                    continue
+                path, number = where.rsplit(":", 1)
+                lines = file_lines(repo, merge, path, cache) or []
+                n = int(number)
+                mark = window.index("[[")
+                before, after = window[:mark], window[mark + len(orig) + 4 :]
+                if LINE_LEAD.match(before) and len(before) < 70 and n > 1:
+                    print(f"START {name}|{where}#{occurrence}| prev: ...{lines[n - 2][-75:]} || {window[:100]}")
+                if LINE_TAIL.fullmatch(after) and len(after) < 70 and n < len(lines):
+                    print(f"END   {name}|{where}#{occurrence}| {window[-90:]} || next: {lines[n][:75]}...")
+    return 0
+
+
+# Shapes where "Overtoad" is unlikely to be the person; every hit is a candidate to read, not a verdict.
+SHAPES = (
+    r"\b[Aa]n Overtoad\b",
+    r"(its|their|whose|real|deployment|product|code|repo|repository|file|process|lock|slot|task|each|every|no|any) Overtoad\b",
+    r"Overtoad(ship|s\b|_|\(|\)|\}|>|=|:\s*[a-z_]+\b)",
+    r"[{<$/_.]Overtoad",
+    r"Overtoad[-_](only|id|name|uid|gid|repo|email|login|key|field)",
+    r"(mode|group|uid|chown|perm\w*)\s*(,|and|or|/)\s*Overtoad",
+    r"Overtoad\s*(,|and|or|/)\s*(mode|group|uid|perm\w*)",
+    r"[a-z]'s Overtoad",
+    r"-Overtoad-",
+)
+
+
+def cmd_shapes(args) -> int:
+    for name, _merge, _pr, _repair in REPOS:
+        cmd = ["grep", "-n", "-E", "-I"]
+        for shape in SHAPES:
+            cmd += ["-e", shape]
+        cmd += ["origin/main", "--", ".", ":!*.lock", ":!**/requirements*.txt"]
+        hits = git(primary(name), *cmd, check=False).splitlines()
+        print(f"== {name}: {len(hits)} hit(s)")
+        for hit in hits:
+            print("   " + hit.replace("origin/main:", "", 1)[:230])
+    return 0
+
+
 PUSH = os.path.join(HERE, "..", "push_signed_commit.py")
 
 
@@ -259,8 +323,12 @@ def main(argv: list[str]) -> int:
     for name in ("--repo", "--worktree", "--branch", "--message", "--commit-body-file", "--title", "--body-file"):
         p.add_argument(name, required=True)
     p.add_argument("--execute", action="store_true")
+    p = sub.add_parser("wrap")
+    p.add_argument("--out", required=True, help="the directory ``candidates`` wrote")
+    sub.add_parser("shapes")
     args = ap.parse_args(argv)
-    return {"state": cmd_state, "setup": cmd_setup, "candidates": cmd_candidates, "upload": cmd_upload}[args.cmd](args)
+    commands = {"state": cmd_state, "setup": cmd_setup, "candidates": cmd_candidates, "upload": cmd_upload, "wrap": cmd_wrap, "shapes": cmd_shapes}
+    return commands[args.cmd](args)
 
 
 if __name__ == "__main__":
