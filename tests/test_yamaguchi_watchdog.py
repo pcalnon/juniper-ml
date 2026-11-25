@@ -32,8 +32,9 @@ Pins, each able to fail for the reason it exists:
   notify-send child sees neither the password nor a variable carrying it;
 * the unit hands the id over braced (one argv word) and the deploy script refuses, before touching
   the host, to deploy without one. The deploy script is checked statically and never executed;
-* Q6's warning allow-list (the Overtoad's ruling of 2026-11-23): it is empty until the Overtoad
-  names classes; a Warning run whose every warning is of an accepted class reads ``OK
+* Q6's warning allow-list (the Overtoad's ruling of 2026-11-23): it holds exactly the class the
+  Overtoad accepted on 2026-11-24, the acceptance probe's AC-3 Firefox-profile class, and with no
+  class accepted every Warning run alerts; a Warning run whose every warning is of an accepted class reads ``OK
   WARNINGS_ACCEPTED``, which the acceptance probe's AC-5 counts; a class is the tag's (the probe's
   own rule), never the text's; a run with an untagged warning, an unlisted one or an error is never
   accepted; and ``NOT_SUCCESS`` counts the warnings by tag and never prints their text.
@@ -245,7 +246,10 @@ PATH_MARKER = "places-withheld-path-marker.sqlite"
 TAG_PREFIX = "Duplicati.Library.Main.Operation.Backup."
 PATH_NOT_FOUND = "FilePreFilterProcess.FileEntry-PathNotFound"
 METADATA_FAILED = "MetadataGenerator.Metadata-MetadataProcessFailed"
+BLOCK_NOT_FOUND = "FileBlockProcessor.FileEntry-PathNotFound"
 FIREFOX_CLASSES = ((PATH_NOT_FOUND, ".mozilla/firefox/"), (METADATA_FAILED, ".mozilla/firefox/"))
+# The class the Overtoad accepted on 2026-11-24 (recovery plan §6.6): AC-3's Firefox-profile class, all three keys.
+ACCEPTED_ON_2026_11_24 = ((BLOCK_NOT_FOUND, ".mozilla/firefox/"), (PATH_NOT_FOUND, ".mozilla/firefox/"), (METADATA_FAILED, ".mozilla/firefox/"))
 
 
 def warning(key: str, path: str) -> str:
@@ -268,14 +272,38 @@ class WarningAllowListTest(_Watchdog):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    def test_the_list_is_empty_until_the_overtoad_names_classes(self) -> None:
-        self.assertEqual(wd.ACCEPTED_WARNING_CLASSES, ())
+    def test_with_no_class_accepted_every_warning_run_alerts(self) -> None:
+        self.accept()
         self.serve(log=[warning_entry(10, FIREFOX_RUN)])
         verdict, code, details = self.check()
-        self.assertEqual((verdict, code), ("ALERT", "NOT_SUCCESS"), "until a class is accepted, every Warning run alerts")
+        self.assertEqual((verdict, code), ("ALERT", "NOT_SUCCESS"), "with no class accepted, every Warning run alerts")
         self.assertIn(f"warnings by tag: {PATH_NOT_FOUND} x2, {METADATA_FAILED} x1", details, "the alert names the tags, for the Overtoad's review")
         self.assertNotIn(PATH_MARKER, details, "never a warning's text")
         self.assertNotIn(".mozilla", details)
+
+    def test_the_list_is_the_class_the_overtoad_accepted(self) -> None:
+        # Q6 (a), ruled 2026-11-24: the probe's AC-3 class, no more and no less. A change to either list needs a ruling.
+        self.assertEqual(wd.ACCEPTED_WARNING_CLASSES, ACCEPTED_ON_2026_11_24)
+        probe = load_ad_hoc("yamaguchi_acceptance_probe")
+        self.assertEqual(set(wd.ACCEPTED_WARNING_CLASSES), {(key, probe.ALLOWED_WARNING_SCOPE) for key in probe.ALLOWED_WARNING_TAGS}, "the watchdog's AC-5 class is the probe's AC-3 class")
+
+    def test_the_11_16_runs_warnings_read_ok_with_the_list_as_deployed(self) -> None:
+        # The 11-16 run's three warnings, one of each key, all under ~/.mozilla/firefox/ (the probe's RUN line of that day).
+        run = [warning(BLOCK_NOT_FOUND, FIREFOX + PATH_MARKER), warning(PATH_NOT_FOUND, FIREFOX + PATH_MARKER), warning(METADATA_FAILED, FIREFOX + PATH_MARKER)]
+        self.serve(log=[warning_entry(10, run)])
+        verdict, code, details = self.check()
+        self.assertEqual((verdict, code), ("OK", "WARNINGS_ACCEPTED"))
+        self.assertIn(f"3 warning(s), all of accepted classes ({BLOCK_NOT_FOUND} x1, {PATH_NOT_FOUND} x1, {METADATA_FAILED} x1)", details)
+        self.assertNotIn(PATH_MARKER, details)
+        outside = {
+            "an accepted key outside the profile": [*run, warning(BLOCK_NOT_FOUND, HOME + ".mozilla/" + PATH_MARKER)],
+            "another key inside the profile": [*run, warning("BackendManager.Remote-PutFailed", FIREFOX + PATH_MARKER)],
+            "an accepted key in a profile outside the home": [warning(PATH_NOT_FOUND, "/srv/other/.mozilla/firefox/" + PATH_MARKER)],
+        }
+        for label, warnings in outside.items():
+            with self.subTest(case=label):
+                self.serve(log=[warning_entry(10, warnings)])
+                self.assertEqual(self.check()[:2], ("ALERT", "NOT_SUCCESS"))
 
     def test_a_run_of_accepted_classes_reads_ok_and_counts_its_warnings(self) -> None:
         self.accept(*FIREFOX_CLASSES)
