@@ -6,6 +6,7 @@
 `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, which the one-artifact line owns. It does
 not replace the plan.
 **Date**: 2026-11-23
+**Updated**: 2026-11-24, by session 031e862f ("Checked and changed, 2026-11-24" below)
 
 ---
 
@@ -51,6 +52,82 @@ Every remaining task of the R-OBS-SC-2 follow-ups arc, including its one-artifac
   - The plan routes the question through the flood-4 session, which is live again
     (`flood4-session9-paused-pause-fix-landed-guard-and-d14-ready` [f9fa6e]). R54 moves there too.
 - **Counts after the update**: A 19, B 8, C 19, D 11 (R56 and R57 done, so **9 open: R45 to R53**), E 8.
+
+## Checked and changed, 2026-11-24 (session 031e862f, from 21:24Z)
+
+- **Group D is done except R53.** Each PR was read MERGED with `gh pr view`:
+  - R45: data#551 (03:15:27Z), cascor#779 (03:16:14Z), canopy#840 (12:45:23Z, `7935ce3a`);
+  - R46: cascor#778 (02:09:03Z, `a68dd84e`);
+  - R47: canopy#839 (03:07:53Z, `cf25e4ea`);
+  - R48: canopy#838 (02:26:21Z, `aa54edb6`);
+  - R49: ml#2623 (04:32:26Z, `515e16a0`). The workflow comment half was already done by ml#2576 (`6befa3ba`);
+  - R50 and R51: ml#2637 (15:58:10Z, `0a05e8a2`);
+  - R52: ml#2627 (04:15:52Z, `6d528300`; ships with service-core 0.8.0).
+  - R54 (ml#2635, 14:51:35Z) and R55 (ml#2631, 13:06:28Z) were done by the flood-4 line.
+- **The Overtoad's rulings of 2026-11-24.** Times are this session's transcript, the first timestamped entry of each.
+  - 21:24:29Z: merge approval, for this session.
+  - 21:29:24Z, four answers:
+    - R14: "let's cut a new release for juniper-observability and update the cap for sentry-sdk to include 3.x";
+    - R21: "let's upgrade all applicable conda environments to use latest observability and service-core versions";
+    - R23: "juniper-ml checkout has been restored to main";
+    - the CHANGELOG findings: "released sections should be repaired".
+  - 22:26:46Z (AskUserQuestion, asked 21:37:19Z):
+    - the release is **0.4.3**, and R-OBS-SC-3 moves to **0.4.4**;
+    - it supports **both** majors, `>=2.35.0,<4`;
+    - R15: **port the consumers** to 3.x.
+- **R23 done by the Overtoad.** The primary's reflog shows a checkout of `main` at 21:22:29Z, then a fast-forward to
+  `f41b1d07` at 21:22:45Z. The task branch's tip `c8f4d884` (21:21:31Z, pushed, PR ml#2605 closed) renames five
+  handoff files to `HANDOFF_<date>__<description>.md`, to flag the most recent in each work arc. It is not on `main`,
+  and no document states that convention.
+- **R21 done at 22:30Z** (`tmp/cosmic/r21/` in worktree `cosmic-percolating-kazoo`: before/after freezes, dry runs,
+  diffs).
+  - `JuniperData` (its `python3.14t`, the env's only tree in use) and `JuniperCanopy1` (`python3.13`) moved from
+    observability 0.4.0 and service-core 0.5.0 to **0.4.2** and **0.7.2**. Nothing else changed: sentry-sdk stayed at
+    2.54.0 and 2.62.0, held below 3 by a constraint.
+  - `pip check` is unchanged: clean in `JuniperData`; `JuniperCanopy1` keeps its pre-existing `torch 2.11.0+cpu` /
+    `setuptools<82` line.
+  - `JuniperCascor1`'s editable installs map to the primary's `juniper-observability/` and `juniper-service-core/`,
+    now on `main`, and import 0.4.2 and 0.7.2. pip's dist-info still reads 0.4.1 and 0.7.1.
+  - The same environments take 0.4.3 once it is on PyPI.
+- **R22 is unblocked** (R21, R23), and runs once the environments hold 0.4.3, so its record is of the final state.
+- **R14 in progress**: the port is ml#2647. On 3.x, `configure_sentry` passes:
+  - `data_collection`: user and cookies follow `send_pii`; the seven headers and the two address headers are denied;
+    no frame locals, SQL parameters, redis arguments or request bodies; queue, GenAI, MCP and GraphQL data only with
+    `send_pii`;
+  - `before_send_span`;
+  - the logging integration, with `attach_stacktrace=False`.
+  The hooks apply 2.x's `EventScrubber` denylist, which 3.0.0 deleted. Another major initialises nothing.
+  - Two independent round-1 reviews found two blockers, both measured on the wire, and their fixes are merged: the
+    unset `data_collection` defaults (a SQL bind parameter and a redis value under `send_pii=False`), and the deleted
+    scrubber.
+  - A round-2 review of the merged fixes found a third blocker (2.x's PII denylist), a 2.x over-redaction and a consumer-test break; all fixed, and a round-3 review checked those fixes (ml#2647's body).
+  - The release proposal and the ceremony follow; the `pypi` gate is the Overtoad's.
+- **R15 ruled: port.** It follows 0.4.3's PyPI publication, because each consumer's floor moves to
+  `juniper-observability>=0.4.3` and each sentry-sdk floor gains `<4`.
+  - juniper-cascor's bootstrap `sentry_sdk.init` (`src/main.py:231-249` on `main`) also passes
+    `profile_session_sample_rate=1.0`, `profile_lifecycle="trace"` and `traces_sample_rate=1.0`, which
+    `configure_sentry` has no parameter for.
+  - A re-init that installs only `_strip_sensitive_headers` leaves traces unscrubbed on either major (the adversarial
+    review's scenario 4).
+  - data (`juniper_data/api/app.py:46`) and canopy (`src/main.py:312`) call only `configure_sentry`.
+- **R20**: the start prompt keeps its file name. Its addendum of 2026-11-24 records the move to 0.4.4 and what 0.4.3
+  already does on 3.x.
+- **The CHANGELOG ruling: ml#2646** (merge `c38f4e5d`).
+  - Seven bullets moved verbatim: each to the release whose tag first contains it, under the category its author
+    filed it in.
+  - A walk that starts after the misfilings reads the moves as findings: one from v0.7.1, two from v0.8.0, and eight
+    from v0.11.5, the next cut's window. **Pass `--accept c38f4e5d`** to `util/ad-hoc/2026-11-24_released_section_drift.py`,
+    as for `40815bb4`.
+  - At least 24 of the 59 findings left from v0.2.0 are the tool's false positives: the v0.2.1 and v0.3.0 tags sit on
+    the branches that `c0dc4092` (PR #7) and `9cea64c5` (PR #61) merged, off `main`'s first parent.
+  - Open for the Overtoad: `200f0ce5` wrote a 0.4.0 rename note into the released `[0.3.0]` bullet.
+- **New pre-existing findings for the Overtoad** (equal on both majors; R-OBS-SC-3's channels):
+  - juniper-canopy's `POST /api/remote/connect` body field `authkey` reaches Sentry on `main` today, in `request.data`
+    on 2.x, because 2.x's denylist does not match it. The DSNs are blank (XC-SENTRY (b)), so nothing is sent.
+  - The client address reaches Sentry without `send_pii` through five other proxy headers: `Forwarded`,
+    `X-Client-IP`, `CF-Connecting-IP`, `True-Client-IP`, `X-Cluster-Client-IP`.
+  - Sentry Logs carry logging extras raw.
+- **Counts after the update**: A 19 (R14 and R15 ruled), B 8 (R21 and R23 done), C 19, D 11 (R53 open), E 8.
 
 ## Sources (aliases used in the tables; each alias is the tail of the filename)
 
@@ -112,8 +189,8 @@ re-probed here. Counts at compilation: **A 19, B 8, C 17, D 13, E 8** (65 rows);
 | R11 | Limiter wall clock: a clock stepped backwards makes the wait read above the window in all four copies, which read `time.time()`; candidate fix `time.monotonic()`; with B-9 (canopy's `_evict_expired` answers differently) | `…DEVELOPMENT-PLAN.md:1146-1147` | Overtoad decision | open; P6 re-read on main: data `juniper_data/api/security.py:257`, cascor `src/api/security.py:234`, canopy `src/security.py:273` (`_evict_expired` at `:234`), service-core `juniper_service_core/security.py:250` | — | Ask (the plan's "Next: the Overtoad") |
 | R12 | WebSocket control `retry_after` and `HandshakeCooldown.get_block_remaining` round to one decimal, so a wait under 50 ms reads `0.0` | `…DEVELOPMENT-PLAN.md:1149-1150`; `…guard-cuts-plan-next.md:265-267` | Overtoad decision | open; P6: cascor `src/api/websocket/control_security.py:81`, `:154`; service-core `juniper_service_core/websocket/control_security.py:112`, `:185` | flood-4's answer of 2026-11-12 23:34:04Z chose "WebSocket gaps beside N-4", which names other gaps (`…DEVELOPMENT-PLAN.md:1150`) | Ask (the plan's "Next: the Overtoad") |
 | R13 | `tests/test_release_train_registry.py` walks the checkout for `pyproject.toml` without skipping `tmp/`, so 3 tests fail locally when `tmp/` holds one | `…DEVELOPMENT-PLAN.md:1151` | Overtoad decision | open; P6: `ml_root.rglob("pyproject.toml")` at `:180` (docstring `:176`) | — | Ask, or have the Overtoad confirm the 2026-10-26 scope ruling already covers it (Gaps 14) |
-| R14 | sentry-sdk 3.0.0 removed `send_default_pii`: release ml#2608's `<3` cap in a juniper-observability patch, choose its number (0.4.3 is reserved for R-OBS-SC-3), and say whether R-OBS-SC-3 ports `sentry.py` to 3.x | `…recurrence-deploy-next.md:86`; `…seven-worktrees-archived.md:56-60`, `:73`; `juniper-observability/CHANGELOG.md:9-17`; `…DEVELOPMENT-PLAN.md:1036`, `:1501` | Overtoad decision | open. ml#2608 MERGED 20:50:42Z (`b2aa9026`, P1); PyPI observability newest 0.4.2, no 0.4.3 (P2); sentry-sdk 3.0.0 on PyPI since 09:30:33Z (P2); `juniper_observability/sentry.py:182` passes `send_default_pii` (P6) | — | Rule the cut and its number; a session then proposes it (`util/release_train/propose.py`), and the Overtoad approves the `pypi` gate |
-| R15 | Cap `sentry-sdk` below 3 in juniper-cascor, juniper-data and juniper-canopy, whose floors are uncapped; cascor's own `sentry_sdk.init` passes `send_default_pii` | `…recurrence-deploy-next.md:87-88` | Overtoad decision | open; P6: cascor `pyproject.toml:151` and canopy `:251` `sentry-sdk>=2.0.0`, data `:142` `sentry-sdk[fastapi]>=2.0.0`, cascor `src/main.py:236` `send_default_pii=False` | — | Rule: a cap PR in each now, or the cap in each next release PR (as ruling 1 of 2026-11-09 did for the floors, `…DEVELOPMENT-PLAN.md:1090`) |
+| R14 | sentry-sdk 3.0.0 removed `send_default_pii`: release ml#2608's `<3` cap in a juniper-observability patch, choose its number (0.4.3 is reserved for R-OBS-SC-3), and say whether R-OBS-SC-3 ports `sentry.py` to 3.x | `…recurrence-deploy-next.md:86`; `…seven-worktrees-archived.md:56-60`, `:73`; `juniper-observability/CHANGELOG.md:9-17`; `…DEVELOPMENT-PLAN.md:1036`, `:1501` | Overtoad decision | **ruled** 2026-11-24 (21:29Z, 22:26Z): 0.4.3 supports sentry-sdk 2.x and 3.x (`>=2.35.0,<4`); R-OBS-SC-3 moves to 0.4.4; the port is ml#2647. Was: open. ml#2608 MERGED 20:50:42Z (`b2aa9026`, P1); PyPI observability newest 0.4.2, no 0.4.3 (P2); sentry-sdk 3.0.0 on PyPI since 09:30:33Z (P2); `juniper_observability/sentry.py:182` passes `send_default_pii` (P6) | — | Rule the cut and its number; a session then proposes it (`util/release_train/propose.py`), and the Overtoad approves the `pypi` gate |
+| R15 | Cap `sentry-sdk` below 3 in juniper-cascor, juniper-data and juniper-canopy, whose floors are uncapped; cascor's own `sentry_sdk.init` passes `send_default_pii` | `…recurrence-deploy-next.md:87-88` | Overtoad decision | **ruled** 2026-11-24 (22:26Z): port the consumers to 3.x (cascor's bootstrap init; `juniper-observability>=0.4.3`; a `<4` cap on each sentry-sdk floor), after 0.4.3 is on PyPI. Was: open; P6: cascor `pyproject.toml:151` and canopy `:251` `sentry-sdk>=2.0.0`, data `:142` `sentry-sdk[fastapi]>=2.0.0`, cascor `src/main.py:236` `send_default_pii=False` | — | Rule: a cap PR in each now, or the cap in each next release PR (as ruling 1 of 2026-11-09 did for the floors, `…DEVELOPMENT-PLAN.md:1090`) |
 | R16 | Remove `giggly-foraging-sunbeam` (its `tmp/` 6.3 GB), `sparkling-percolating-meadow` and `agent-a54a0a279acc3a863`, eligible since ml#2610 landed their scripts | `…seven-worktrees-archived.md:65-67`; `…DEVELOPMENT-PLAN.md:1172`; `…landed-ports-plan-v1-15-17-next.md:86` | Overtoad decision | open; all three present (P9) | — | The Overtoad's word per worktree; then a session archives each `tmp/` (flagged as possibly substituted) and removes the tree |
 | R17 | Remove `juniper-ml/tmp/retry-after-guard-ssq1mano` (the fork-drift guard's scratch: `M1`–`M3`, `R1`–`R2` per repository) | `…guard-pr-plan-v1-15-16-next.md:75`; `…DEVELOPMENT-PLAN.md:1172` | Overtoad decision | open; present, 21 MB, 69 entries (P9). Absent from the archive README and from `…seven-worktrees-archived.md:29-38` (Gaps 4) | — | The Overtoad's word; then archive or delete under the retention rule |
 | R18 | Retention of `juniper-ml/tmp/worktree-archive-2026-11-23/` (946 MB): "keep until the Overtoad rules this R-OBS-SC-2 evidence no longer needed" | archive README (its Retention line); `…seven-worktrees-archived.md:37-38` | Overtoad decision | open; as documented | — | Rule once plan v1.15.18 (R39) has recorded what the archive backs |
@@ -123,10 +200,10 @@ re-probed here. Counts at compilation: **A 19, B 8, C 17, D 13, E 8** (65 rows);
 
 | ID | Task | Source | Lane | Status | Blocked by | Next concrete action |
 | --- | --- | --- | --- | --- | --- | --- |
-| R20 | Launch the R-OBS-SC-3 (0.4.3) design session from its start prompt (ruling 4 of 2026-11-13) | `…DEVELOPMENT-PLAN.md:1167`, `:523`, `:1142`, `:1501`; `…seven-worktrees-archived.md:74-75` | Overtoad action | open. No 0.4.3 design under `notes/` at `b2aa9026`; "not launched" (`…seven-worktrees-archived.md:75`) | Best after R14 (its number) and R57 (the prompt's sentry-sdk 3 facts) | Launch from `…SENTRY-SCRUBBING_DESIGN_2026-11-15_0010.md` |
-| R21 | Upgrade the trio's environments: `JuniperData` (its `python3.14t`) and `JuniperCanopy1` to observability 0.4.2 and service-core 0.7.2, keeping `sentry-sdk<3` | `…DEVELOPMENT-PLAN.md:1168`, `:867-875`, `:1396`; `…seven-worktrees-archived.md:70-73` | Overtoad action | open; P3: `JuniperData` observability 0.4.0, service-core 0.5.0, sentry-sdk 2.54.0; `JuniperCanopy1` 0.4.0, 0.5.0, 2.62.0 | — | Record the versions, then upgrade with a `sentry-sdk<3` constraint (published 0.4.2 admits 3.x). The trio is stopped (P5), so no stop is needed |
-| R22 | Re-run the per-lock probe in each upgraded environment and record it (ruling 6 of 2026-11-13), six DSNs blank, FastAPI's telemetry setting recorded | `…DEVELOPMENT-PLAN.md:874-875`, `:521`, `:1104`, `:867` | unowned session work | blocked | R21; R23 (which commit `JuniperCascor1` imports) | After R21: run the probe per environment, name each interpreter, and record the commit the editable installs run, not pip's version |
-| R23 | Settle what `JuniperCascor1` imports at the trio restart: the juniper-ml primary is on the closed ml#2605's branch, not `main`, and only the Overtoad may switch it (ruling 7 of 2026-11-13: session pulls only "on `main` and clean", never a branch switch) | `…DEVELOPMENT-PLAN.md:520`, `:682-683`, `:875`; `…recurrence-deploy-next.md:92-94` | Overtoad action | open (new; P4): HEAD is `refs/heads/task/owner-is-the-overtoadgit` at `6e230a6d` (committed 10:54:59Z; HEAD file changed 2026-11-20 22:48Z); version strings on disk 0.4.2 / 0.7.2; ml#2605 CLOSED unmerged 20:54:14Z (P1) | — | The Overtoad returns the primary to `main` or names the commit the restart runs; sessions may then pull it under ruling 7 |
+| R20 | Launch the R-OBS-SC-3 (0.4.3) design session from its start prompt (ruling 4 of 2026-11-13) | `…DEVELOPMENT-PLAN.md:1167`, `:523`, `:1142`, `:1501`; `…seven-worktrees-archived.md:74-75` | Overtoad action | open; its release is now **0.4.4** (ruling of 2026-11-24, 22:26Z; the prompt's addendum of that day). Was: open. No 0.4.3 design under `notes/` at `b2aa9026`; "not launched" (`…seven-worktrees-archived.md:75`) | Best after R14 (its number) and R57 (the prompt's sentry-sdk 3 facts) | Launch from `…SENTRY-SCRUBBING_DESIGN_2026-11-15_0010.md` |
+| R21 | Upgrade the trio's environments: `JuniperData` (its `python3.14t`) and `JuniperCanopy1` to observability 0.4.2 and service-core 0.7.2, keeping `sentry-sdk<3` | `…DEVELOPMENT-PLAN.md:1168`, `:867-875`, `:1396`; `…seven-worktrees-archived.md:70-73` | Overtoad action | **done** 2026-11-24 22:30Z (session 031e862f, on the Overtoad's ruling of 21:29Z): `JuniperData` and `JuniperCanopy1` hold observability 0.4.2 and service-core 0.7.2, sentry-sdk unchanged; `JuniperCascor1` imports the primary's `main`; a second pass follows 0.4.3. Was: open; P3: `JuniperData` observability 0.4.0, service-core 0.5.0, sentry-sdk 2.54.0; `JuniperCanopy1` 0.4.0, 0.5.0, 2.62.0 | — | Record the versions, then upgrade with a `sentry-sdk<3` constraint (published 0.4.2 admits 3.x). The trio is stopped (P5), so no stop is needed |
+| R22 | Re-run the per-lock probe in each upgraded environment and record it (ruling 6 of 2026-11-13), six DSNs blank, FastAPI's telemetry setting recorded | `…DEVELOPMENT-PLAN.md:874-875`, `:521`, `:1104`, `:867` | unowned session work | unblocked 2026-11-24 (R21, R23 done); runs once the environments hold 0.4.3 | — | After R21: run the probe per environment, name each interpreter, and record the commit the editable installs run, not pip's version |
+| R23 | Settle what `JuniperCascor1` imports at the trio restart: the juniper-ml primary is on the closed ml#2605's branch, not `main`, and only the Overtoad may switch it (ruling 7 of 2026-11-13: session pulls only "on `main` and clean", never a branch switch) | `…DEVELOPMENT-PLAN.md:520`, `:682-683`, `:875`; `…recurrence-deploy-next.md:92-94` | Overtoad action | **done** by the Overtoad 2026-11-24: checkout of `main` 21:22:29Z, fast-forward to `f41b1d07` 21:22:45Z (the primary's reflog). Was: open (new; P4): HEAD is `refs/heads/task/owner-is-the-overtoadgit` at `6e230a6d` (committed 10:54:59Z; HEAD file changed 2026-11-20 22:48Z); version strings on disk 0.4.2 / 0.7.2; ml#2605 CLOSED unmerged 20:54:14Z (P1) | — | The Overtoad returns the primary to `main` or names the commit the restart runs; sessions may then pull it under ruling 7 |
 | R24 | Restart the trio on the recorded probe, on P3-05, with the six Sentry DSNs blank | `…DEVELOPMENT-PLAN.md:1168`, `:874`, `:516`, `:1410` | Overtoad action | open; trio stopped (no listener on `:8101`, `:8202`, `:8051`, P5) | R22; R23; P3-05 (no PR or session, `…PLAN-V2.md:152`) | Restart once R22's record exists and P3-05 is met |
 | R25 | Bring up (it is no longer a restart) the juniper-deploy stack on its pins: cascor 0.14.0 and canopy 0.10.0 (deploy#278), recurrence 0.8.1 (deploy#284), data 0.17.1 | `…DEVELOPMENT-PLAN.md:1165`, `:878`, `:1256`, `:1401`; `…seven-worktrees-archived.md:68-69` | Overtoad action | open; 0 Juniper containers (`docker ps -a`, P5); deploy#278 and deploy#284 MERGED (P1) | R9 (the DSN policy for these services) | The Overtoad brings the stack up with the DSNs R9 decides |
 | R26 | Check whether the PyPI trusted publishers are bound to the `pypi` environment (needs the Overtoad's PyPI login) | `…DEVELOPMENT-PLAN.md:1219-1220`, `:1256`, `:1403`; `…land-after-cascor-772.md:248` | Overtoad action | open; as documented (the evidence: cascor 0.14.0's and data 0.17.1's PyPI files, and canopy 0.10.0's TestPyPI files, carry `environment: null`, `:1219`) | — | The Overtoad reads each project's trusted-publisher settings on PyPI and reports |
@@ -158,17 +235,17 @@ re-probed here. Counts at compilation: **A 19, B 8, C 17, D 13, E 8** (65 rows);
 
 | ID | Task | Source | Lane | Status | Blocked by | Next concrete action |
 | --- | --- | --- | --- | --- | --- | --- |
-| R45 | A telemetry test that reads `app.extra["telemetry"]`, which runs below FastAPI 0.142, where the ported tests skip (the fix pass's A-4) | `…DEVELOPMENT-PLAN.md:1145` | Hygiene T6 | open; P6: data `juniper_data/tests/unit/test_api_app.py:64`, cascor `src/tests/unit/api/test_api_app.py:44`, canopy `src/tests/unit/test_main_import_and_lifespan.py:330` still `importorskip` | — | One PR per repository (§3) |
-| R46 | cascor's API reference lists `/docs`, `/openapi.json` and `/redoc` as exempt; `EXEMPT_PATHS` exempts only health and `/metrics` (B-10) | `…DEVELOPMENT-PLAN.md:1148` | Hygiene T6 | open; P6: `docs/api/JUNIPER_CASCOR_API_REFERENCE.md:113`; `src/api/middleware.py:16`, `:20` | — | Doc PR in juniper-cascor (§3) |
-| R47 | canopy's `conf/conda_environment_cpu.yaml:47` pins `dash=3.3.0`, below `pyproject.toml:56`'s `dash>=4.0.0` | `…DEVELOPMENT-PLAN.md:1156` | Hygiene T6 | open; P6: both lines as cited | — | PR in juniper-canopy (§3) |
-| R48 | canopy's `.github/workflows/juniper-data-schema-drift.yml:40-41` says it fires "only once juniper-data's notify matrix lists juniper-canopy" | `…DEVELOPMENT-PLAN.md:1157` | Hygiene T6 | open; P6: `:40-41` as cited (and `:46` "yet in that matrix"); data's `notify-consumers.yml:78` lists canopy | — | Comment-only PR (§3) |
-| R49 | Two stale texts ml#2576 left: the register's §2.3 compare row (service-core's "latest published wheel, 0.7.0 … still short-circuits") and `docs-full-check.yml`'s "THIS is where that gate actually bites" | `…DEVELOPMENT-PLAN.md:1162` | Hygiene T6 | open; P6: `…DEFECT-REGISTER.md:279`; `.github/workflows/docs-full-check.yml:253` | — | One juniper-ml PR (§3) |
-| R50 | `util/ad-hoc/2026-09-23_released_section_drift.py` sees only the first of ml#2360's two misfiling kinds (a bullet under a released section), not a wrong category | `…DEVELOPMENT-PLAN.md:1155`; `…guard-cuts-plan-next.md:268-270` | Hygiene T6 | open; as documented | — | A dated successor (§3) |
-| R51 | `util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py` prints `answered None` when an answer's last entry is an untimed `api-request-blob` copy | `…DEVELOPMENT-PLAN.md:1163`, `:1106` | Hygiene T6 | open; as documented | — | A dated successor that reads the first timestamped entry (§3) |
-| R52 | juniper-service-core's app factory passes no `telemetry=`, and recurrence (uncapped `fastapi>=0.110`) builds with it (A-5) | `…DEVELOPMENT-PLAN.md:1144` | unowned session work | open; P6: `juniper_service_core/app.py:56` `app = FastAPI(` with no `telemetry`; recurrence `juniper-recurrence/pyproject.toml:55` | — | A PR into service-core's `[Unreleased]` (ships with 0.8.0) (§3) |
+| R45 | A telemetry test that reads `app.extra["telemetry"]`, which runs below FastAPI 0.142, where the ported tests skip (the fix pass's A-4) | `…DEVELOPMENT-PLAN.md:1145` | Hygiene T6 | **done**: data#551, cascor#779, canopy#840 (2026-11-24). Was: open; P6: data `juniper_data/tests/unit/test_api_app.py:64`, cascor `src/tests/unit/api/test_api_app.py:44`, canopy `src/tests/unit/test_main_import_and_lifespan.py:330` still `importorskip` | — | One PR per repository (§3) |
+| R46 | cascor's API reference lists `/docs`, `/openapi.json` and `/redoc` as exempt; `EXEMPT_PATHS` exempts only health and `/metrics` (B-10) | `…DEVELOPMENT-PLAN.md:1148` | Hygiene T6 | **done**: cascor#778 (2026-11-24; data's `AGENTS.md` lines in data#551). Was: open; P6: `docs/api/JUNIPER_CASCOR_API_REFERENCE.md:113`; `src/api/middleware.py:16`, `:20` | — | Doc PR in juniper-cascor (§3) |
+| R47 | canopy's `conf/conda_environment_cpu.yaml:47` pins `dash=3.3.0`, below `pyproject.toml:56`'s `dash>=4.0.0` | `…DEVELOPMENT-PLAN.md:1156` | Hygiene T6 | **done**: canopy#839 (2026-11-24; dash 4.4.1). Was: open; P6: both lines as cited | — | PR in juniper-canopy (§3) |
+| R48 | canopy's `.github/workflows/juniper-data-schema-drift.yml:40-41` says it fires "only once juniper-data's notify matrix lists juniper-canopy" | `…DEVELOPMENT-PLAN.md:1157` | Hygiene T6 | **done**: canopy#838 (2026-11-24). Was: open; P6: `:40-41` as cited (and `:46` "yet in that matrix"); data's `notify-consumers.yml:78` lists canopy | — | Comment-only PR (§3) |
+| R49 | Two stale texts ml#2576 left: the register's §2.3 compare row (service-core's "latest published wheel, 0.7.0 … still short-circuits") and `docs-full-check.yml`'s "THIS is where that gate actually bites" | `…DEVELOPMENT-PLAN.md:1162` | Hygiene T6 | **done**: ml#2623 (2026-11-24), the register row; ml#2576 had rewritten the workflow comment. Was: open; P6: `…DEFECT-REGISTER.md:279`; `.github/workflows/docs-full-check.yml:253` | — | One juniper-ml PR (§3) |
+| R50 | `util/ad-hoc/2026-09-23_released_section_drift.py` sees only the first of ml#2360's two misfiling kinds (a bullet under a released section), not a wrong category | `…DEVELOPMENT-PLAN.md:1155`; `…guard-cuts-plan-next.md:268-270` | Hygiene T6 | **done**: ml#2637 (2026-11-24), `util/ad-hoc/2026-11-24_released_section_drift.py`; its eight pre-arc findings repaired by ml#2646 | — | A dated successor (§3) |
+| R51 | `util/ad-hoc/2026-11-09_r_obs_sc_2_owner_answers.py` prints `answered None` when an answer's last entry is an untimed `api-request-blob` copy | `…DEVELOPMENT-PLAN.md:1163`, `:1106` | Hygiene T6 | **done**: ml#2637 (2026-11-24), `util/ad-hoc/2026-11-24_r_obs_sc_2_owner_answers.py` | — | A dated successor that reads the first timestamped entry (§3) |
+| R52 | juniper-service-core's app factory passes no `telemetry=`, and recurrence (uncapped `fastapi>=0.110`) builds with it (A-5) | `…DEVELOPMENT-PLAN.md:1144` | unowned session work | **done**: ml#2627 (2026-11-24), in service-core's `[Unreleased]`. Was: open; P6: `juniper_service_core/app.py:56` `app = FastAPI(` with no `telemetry`; recurrence `juniper-recurrence/pyproject.toml:55` | — | A PR into service-core's `[Unreleased]` (ships with 0.8.0) (§3) |
 | R53 | Before service-core 0.8.0 (a minor), widen every `<0.8.0` cap (juniper-ml `[tools]`, data, recurrence, cascor, canopy); P2-09's and P12-28's service-core halves ride the same release | `…DEVELOPMENT-PLAN.md:1154`, `:1072` | unowned session work | open; PyPI service-core newest 0.7.2, no 0.8.x (P2); P6: data `pyproject.toml:117`, recurrence `juniper-recurrence/pyproject.toml:68`, cascor `:118`, canopy `:135` all `<0.8.0` | None formally; cap PRs land before 0.8.0's Release (§5's rule) | Do it as part of preparing 0.8.0, which no session owns (§3) |
-| R54 | `…CURSOR-FLOOD-4-DISPOSITION.md` §8 stops at ruling 14 | `…DEVELOPMENT-PLAN.md:1158-1159` | flood-4 session f9fa6e (live again on 2026-11-23; moved from group D) | open; §8 lists rulings 1–14; the file last changed in `734aab58`, 2026-11-09 (git log at `b2aa9026`) | — | Add rulings 15 onward from the transcripts (§3) |
-| R55 | Re-read whether ml#2579 / ml#2581 brought a check that the paragraph above the compatibility matrix in `docs/REFERENCE.md` says the current row tracks `pyproject.toml` between a floor PR and its release | `…DEVELOPMENT-PLAN.md:1152-1153` | flood-4 session f9fa6e (moved from group D) | answered 2026-11-23 by session 2222e504: `_DECLARES_RE` (`tests/test_pyproject_extras.py:91-92`) pins the release the sentence above the matrix names; nothing checks that the paragraph says the current row tracks `pyproject.toml` between a floor PR and its release. ml#2579 and #2581 MERGED, #2507 CLOSED (P1) | — | The flood-4 session takes the question to the Overtoad, as `…DEVELOPMENT-PLAN.md:1152` routes it |
+| R54 | `…CURSOR-FLOOD-4-DISPOSITION.md` §8 stops at ruling 14 | `…DEVELOPMENT-PLAN.md:1158-1159` | flood-4 session f9fa6e (live again on 2026-11-23; moved from group D) | **done**: ml#2635 (2026-11-24) carries rulings 15–48. Was: open; §8 lists rulings 1–14; the file last changed in `734aab58`, 2026-11-09 (git log at `b2aa9026`) | — | Add rulings 15 onward from the transcripts (§3) |
+| R55 | Re-read whether ml#2579 / ml#2581 brought a check that the paragraph above the compatibility matrix in `docs/REFERENCE.md` says the current row tracks `pyproject.toml` between a floor PR and its release | `…DEVELOPMENT-PLAN.md:1152-1153` | flood-4 session f9fa6e (moved from group D) | **done**: ml#2631 (2026-11-24; flood-4 ruling 48) pins the paragraph with a test. Was: answered 2026-11-23 by session 2222e504: `_DECLARES_RE` (`tests/test_pyproject_extras.py:91-92`) pins the release the sentence above the matrix names; nothing checks that the paragraph says the current row tracks `pyproject.toml` between a floor PR and its release. ml#2579 and #2581 MERGED, #2507 CLOSED (P1) | — | The flood-4 session takes the question to the Overtoad, as `…DEVELOPMENT-PLAN.md:1152` routes it |
 | R56 | Restore the six older parent-`AGENTS.md` backups the blind pass rewrote (`juniper-ml/tmp/2026-10-29-parent-agents-md-backups/`, `…/2026-11-01-parent-agents-md-backup/`, `…/2026-11-07-parent-agents-md-backup/`) | `…DEVELOPMENT-PLAN.md:677`, `:2547`, `:2550`; `…parent-agents-cascor-0-13-0.md:92`; `…parent-agents-edited-owner-items-next.md:23` | unowned session work | **done** 2026-11-23 by `util/ad-hoc/2026-11-23_restore_parent_agents_backups_older.py` (session 2222e504): all six restored to their recorded sha256 (`6ffd7604`, `79b17d5e`, `5082c9c8`, `29e375ff` twice, `48e2568a`), each rewritten file kept beside it as `*.substituted-2026-11-20`; a re-run prints six `ORIGINAL` | — | Plan v1.15.18 records it (R64 follows) |
 | R57 | Add the sentry-sdk 3.0.0 facts and ml#2608's cap to the 0.4.3 start prompt, as a dated addendum | `…seven-worktrees-archived.md:56-60`, `:74-75`; `…SENTRY-SCRUBBING_DESIGN_2026-11-15_0010.md:63-64`, `:73-74` | unowned session work | **done** 2026-11-23 in this document's PR: a dated addendum after the prompt's "The paths:" list | — | R14 still sets the release number |
 
@@ -293,7 +370,8 @@ Every run of a service or suite below sets the six Sentry DSN variables to `""`
 5. **Two claims on juniper-observability 0.4.3.** `…DEVELOPMENT-PLAN.md:1036` and `:1501`, and the start prompt's
    title, reserve 0.4.3 for R-OBS-SC-3; `…recurrence-deploy-next.md:86` asks the Overtoad to "Cut a juniper-observability
    0.4.3 carrying the sentry cap". `juniper-observability/CHANGELOG.md:9-17` on `main` already holds the cap under
-   `[Unreleased]`, so the next cut carries it whichever number it takes (R14).
+   `[Unreleased]`, so the next cut carries it whichever number it takes (R14). **Resolved 2026-11-24**: the
+   Overtoad gave 0.4.3 to the sentry-sdk 3.x port (which replaces the `<3` cap with `<4`) and moved R-OBS-SC-3 to 0.4.4.
 6. **The 0.4.3 start prompt predates sentry-sdk 3.0.0.** `…SENTRY-SCRUBBING_DESIGN_2026-11-15_0010.md:73-74` asks for
    "the sentry-sdk floor each option needs" and names no ceiling; `…seven-worktrees-archived.md:56-60`, `:75` says the
    new release "changes its ground"; no source assigns the prompt's update (R57).
