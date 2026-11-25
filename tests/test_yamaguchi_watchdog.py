@@ -31,7 +31,13 @@ Pins, each able to fail for the reason it exists:
 * the record line keeps ``<when> <verdict> <code> backup=<id> <details>`` on one line, and the
   notify-send child sees neither the password nor a variable carrying it;
 * the unit hands the id over braced (one argv word) and the deploy script refuses, before touching
-  the host, to deploy without one. The deploy script is checked statically and never executed.
+  the host, to deploy without one. The deploy script is checked statically and never executed;
+* Q6's warning allow-list (the Overtoad's ruling of 2026-11-23): it holds exactly the class the
+  Overtoad accepted on 2026-11-24, the acceptance probe's AC-3 Firefox-profile class, and with no
+  class accepted every Warning run alerts; a Warning run whose every warning is of an accepted class reads ``OK
+  WARNINGS_ACCEPTED``, which the acceptance probe's AC-5 counts; a class is the tag's (the probe's
+  own rule), never the text's; a run with an untagged warning, an unlisted one or an error is never
+  accepted; and ``NOT_SUCCESS`` counts the warnings by tag and never prints their text.
 
 No server is contacted: ``urllib.request.urlopen`` is ``tests/duplicati_api_stub.py``'s router.
 """
@@ -231,6 +237,156 @@ class BackupFreshnessTest(_Watchdog):
         self.assertEqual(self.check()[:2], ("OK", "RUNNING"))
         self.fake.route("GET", "/api/v1/task/5", 200, {"TaskStarted": ago(7.0)})
         self.assertEqual(self.check()[:2], ("ALERT", "STUCK"))
+
+
+# --- Q6's other half: the warning allow-list (the Overtoad's ruling of 2026-11-23) -------------------------------------
+HOME = os.path.expanduser("~").rstrip("/") + "/"
+FIREFOX = HOME + ".mozilla/firefox/abc123.default-release/"
+PATH_MARKER = "places-withheld-path-marker.sqlite"
+TAG_PREFIX = "Duplicati.Library.Main.Operation.Backup."
+PATH_NOT_FOUND = "FilePreFilterProcess.FileEntry-PathNotFound"
+METADATA_FAILED = "MetadataGenerator.Metadata-MetadataProcessFailed"
+BLOCK_NOT_FOUND = "FileBlockProcessor.FileEntry-PathNotFound"
+FIREFOX_CLASSES = ((PATH_NOT_FOUND, ".mozilla/firefox/"), (METADATA_FAILED, ".mozilla/firefox/"))
+# The class the Overtoad accepted on 2026-11-24 (recovery plan §6.6): AC-3's Firefox-profile class, all three keys.
+ACCEPTED_ON_2026_11_24 = ((BLOCK_NOT_FOUND, ".mozilla/firefox/"), (PATH_NOT_FOUND, ".mozilla/firefox/"), (METADATA_FAILED, ".mozilla/firefox/"))
+
+
+def warning(key: str, path: str) -> str:
+    """A warning as Duplicati writes it, and as tests/test_yamaguchi_acceptance_probe.py builds it."""
+    tag, _, message_id = key.rpartition("-")
+    return f"2026-11-16 13:02:11 -06 - [Warning-{TAG_PREFIX}{tag}-{message_id}]: Failed to process path: {path}"
+
+
+def warning_entry(entry_id: int, warnings: list[str], *, operation: str = "Backup", result: str = "Warning", hours: float = 2.0, actual: int | None = None, errors: list[str] | None = None) -> dict:
+    message = {"MainOperation": operation, "ParsedResult": result, "BeginTime": ago(hours), "Warnings": warnings, "WarningsActualLength": len(warnings) if actual is None else actual, "Errors": errors or [], "ErrorsActualLength": len(errors or [])}
+    return {"ID": entry_id, "Type": "Result", "Message": json.dumps(message)}
+
+
+FIREFOX_RUN = [warning(PATH_NOT_FOUND, FIREFOX + PATH_MARKER), warning(PATH_NOT_FOUND, FIREFOX + "cache2/" + PATH_MARKER), warning(METADATA_FAILED, FIREFOX + PATH_MARKER)]
+
+
+class WarningAllowListTest(_Watchdog):
+    def accept(self, *classes: tuple[str, str | None]) -> None:
+        patcher = mock.patch.object(wd, "ACCEPTED_WARNING_CLASSES", classes)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_with_no_class_accepted_every_warning_run_alerts(self) -> None:
+        self.accept()
+        self.serve(log=[warning_entry(10, FIREFOX_RUN)])
+        verdict, code, details = self.check()
+        self.assertEqual((verdict, code), ("ALERT", "NOT_SUCCESS"), "with no class accepted, every Warning run alerts")
+        self.assertIn(f"warnings by tag: {PATH_NOT_FOUND} x2, {METADATA_FAILED} x1", details, "the alert names the tags, for the Overtoad's review")
+        self.assertNotIn(PATH_MARKER, details, "never a warning's text")
+        self.assertNotIn(".mozilla", details)
+
+    def test_the_list_is_the_class_the_overtoad_accepted(self) -> None:
+        # Q6 (a), ruled 2026-11-24: the probe's AC-3 class, no more and no less. A change to either list needs a ruling.
+        self.assertEqual(wd.ACCEPTED_WARNING_CLASSES, ACCEPTED_ON_2026_11_24)
+        probe = load_ad_hoc("yamaguchi_acceptance_probe")
+        self.assertEqual(set(wd.ACCEPTED_WARNING_CLASSES), {(key, probe.ALLOWED_WARNING_SCOPE) for key in probe.ALLOWED_WARNING_TAGS}, "the watchdog's AC-5 class is the probe's AC-3 class")
+
+    def test_the_11_16_runs_warnings_read_ok_with_the_list_as_deployed(self) -> None:
+        # The 11-16 run's three warnings, one of each key, all under ~/.mozilla/firefox/ (the probe's RUN line of that day).
+        run = [warning(BLOCK_NOT_FOUND, FIREFOX + PATH_MARKER), warning(PATH_NOT_FOUND, FIREFOX + PATH_MARKER), warning(METADATA_FAILED, FIREFOX + PATH_MARKER)]
+        self.serve(log=[warning_entry(10, run)])
+        verdict, code, details = self.check()
+        self.assertEqual((verdict, code), ("OK", "WARNINGS_ACCEPTED"))
+        self.assertIn(f"3 warning(s), all of accepted classes ({BLOCK_NOT_FOUND} x1, {PATH_NOT_FOUND} x1, {METADATA_FAILED} x1)", details)
+        self.assertNotIn(PATH_MARKER, details)
+        outside = {
+            "an accepted key outside the profile": [*run, warning(BLOCK_NOT_FOUND, HOME + ".mozilla/" + PATH_MARKER)],
+            "another key inside the profile": [*run, warning("BackendManager.Remote-PutFailed", FIREFOX + PATH_MARKER)],
+            "an accepted key in a profile outside the home": [warning(PATH_NOT_FOUND, "/srv/other/.mozilla/firefox/" + PATH_MARKER)],
+        }
+        for label, warnings in outside.items():
+            with self.subTest(case=label):
+                self.serve(log=[warning_entry(10, warnings)])
+                self.assertEqual(self.check()[:2], ("ALERT", "NOT_SUCCESS"))
+
+    def test_a_run_of_accepted_classes_reads_ok_and_counts_its_warnings(self) -> None:
+        self.accept(*FIREFOX_CLASSES)
+        self.serve(log=[warning_entry(10, FIREFOX_RUN)])
+        verdict, code, details = self.check()
+        self.assertEqual((verdict, code), ("OK", "WARNINGS_ACCEPTED"))
+        self.assertIn(f"3 warning(s), all of accepted classes ({PATH_NOT_FOUND} x2, {METADATA_FAILED} x1)", details)
+        self.assertIn("age=2.0h", details)
+        self.assertNotIn(PATH_MARKER, details)
+
+    def test_anything_else_still_alerts(self) -> None:
+        self.accept(*FIREFOX_CLASSES)
+        cases = {
+            "another tag": [*FIREFOX_RUN, warning("BackendManager.Remote-PutFailed", FIREFOX + PATH_MARKER)],
+            "an accepted tag outside its scope": [*FIREFOX_RUN, warning(PATH_NOT_FOUND, HOME + "Documents/" + PATH_MARKER)],
+            "the scope's name inside a longer path": [warning(PATH_NOT_FOUND, HOME + "old" + HOME + ".mozilla/firefox/" + PATH_MARKER)],
+            "an untagged warning": [*FIREFOX_RUN, "2026-11-16 13:02:11 -06 - Failed to process path: " + FIREFOX + PATH_MARKER],
+            "a bracket in the path, not a tag": [f"2026-11-16 13:02:11 -06 - {FIREFOX}[Warning-{TAG_PREFIX}FilePreFilterProcess.FileEntry-PathNotFound]: x"],
+        }
+        for label, warnings in cases.items():
+            with self.subTest(case=label):
+                self.serve(log=[warning_entry(10, warnings)])
+                verdict, code, details = self.check()
+                self.assertEqual((verdict, code), ("ALERT", "NOT_SUCCESS"))
+                self.assertNotIn(PATH_MARKER, details)
+        others = {
+            "warnings the result counts but does not list": warning_entry(10, FIREFOX_RUN, actual=4),
+            "an error beside the warnings": warning_entry(10, FIREFOX_RUN, errors=["boom " + PATH_MARKER]),
+            "an Error result": warning_entry(10, FIREFOX_RUN, result="Error"),
+            "a Warning with no warning listed": warning_entry(10, []),
+        }
+        for label, run in others.items():
+            with self.subTest(case=label):
+                self.serve(log=[run])
+                verdict, code, details = self.check()
+                self.assertEqual((verdict, code), ("ALERT", "NOT_SUCCESS"))
+                self.assertNotIn(PATH_MARKER, details)
+        self.serve(log=[warning_entry(10, FIREFOX_RUN, actual=4)])
+        self.assertIn("not listed in the result x1", self.check()[2])
+        self.serve(log=[warning_entry(10, FIREFOX_RUN, errors=["boom"])])
+        self.assertIn("; 1 error(s)", self.check()[2])
+
+    def test_a_class_without_a_scope_accepts_any_path_but_never_by_text(self) -> None:
+        self.accept((PATH_NOT_FOUND, None))
+        self.serve(log=[warning_entry(10, [warning(PATH_NOT_FOUND, "/srv/elsewhere/" + PATH_MARKER)])])
+        self.assertEqual(self.check()[:2], ("OK", "WARNINGS_ACCEPTED"))
+        # Finding 35: the class is the tag's. An untagged warning that names the key in its text is not of the class.
+        self.serve(log=[warning_entry(10, [f"2026-11-16 13:02:11 -06 - Retried after {PATH_NOT_FOUND}: /srv/elsewhere/{PATH_MARKER}"])])
+        verdict, code, details = self.check()
+        self.assertEqual((verdict, code), ("ALERT", "NOT_SUCCESS"))
+        self.assertIn("warnings by tag: untagged x1", details)
+
+    def test_an_accepted_run_is_still_judged_for_its_age_and_by_the_newest_entry(self) -> None:
+        self.accept(*FIREFOX_CLASSES)
+        self.serve(log=[warning_entry(10, FIREFOX_RUN, hours=30.0)])
+        self.assertEqual(self.check()[:2], ("ALERT", "STALE"))
+        self.serve(log=[entry(11, "Compact", "Error", 1.0), warning_entry(10, FIREFOX_RUN)])
+        self.assertEqual(self.check()[:2], ("ALERT", "NOT_SUCCESS"), "a failed newer entry still alerts")
+        self.serve(log=[warning_entry(11, [warning(METADATA_FAILED, FIREFOX + PATH_MARKER)], operation="Test"), entry(10, "Backup", "Success", 3.0)])
+        verdict, code, details = self.check()
+        self.assertEqual((verdict, code), ("OK", "WARNINGS_ACCEPTED"), "the classes hold for the newest entry of any operation")
+        self.assertIn(f"1 warning(s), all of accepted classes ({METADATA_FAILED} x1)", details)
+
+    def test_the_tag_rule_is_the_acceptance_probes(self) -> None:
+        probe = load_ad_hoc("yamaguchi_acceptance_probe")
+        self.assertEqual(wd.WARNING_TAG.pattern, probe.WARNING_TAG.pattern)
+        samples = [*FIREFOX_RUN, "untagged", f"x - {FIREFOX}[Warning-a.b.c-d]: x", "[Warning-nodash]: x", "[Warning-a.b.C-]: x", None]
+        for text in samples:
+            with self.subTest(text=text):
+                self.assertEqual(wd.warning_key(text), probe.warning_key(text))
+
+    def test_an_accepted_day_counts_toward_ac5(self) -> None:
+        # The probe counts a day whose every record reads OK and none RUNNING; the record is the one record() writes.
+        probe = load_ad_hoc("yamaguchi_acceptance_probe")
+        self.accept(*FIREFOX_CLASSES)
+        self.serve(log=[warning_entry(10, FIREFOX_RUN)])
+        line = wd.record(self.args(), *self.check())
+        stamp, rest = line.split(" ", 1)
+        when = dt.datetime.strptime(stamp, "%Y-%m-%dT%H:%M:%S%z")
+        days = [(when - dt.timedelta(days=d)).strftime("%Y-%m-%dT%H:%M:%S%z") + " " + rest for d in (2, 1, 0)]
+        finding = probe.judge_ac5("\n".join(days) + "\n", JOB, when + dt.timedelta(minutes=1))
+        self.assertEqual(finding.facts["streak_days"], 3, finding.summary)
+        self.assertIn("WARNINGS_ACCEPTED", finding.facts["days"][0])
 
 
 class CredentialAndIdTest(_Watchdog):

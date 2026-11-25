@@ -5,7 +5,7 @@ Project:     juniper-ml
 Sub-Project: backup infrastructure (Phase D step 14, AC-4)
 Author:      Paul Calnon
 Created:     2026-11-09
-Version:     1.0.0
+Version:     1.1.0 (2026-11-25: finding 29's four gaps closed)
 Status:      ad-hoc -- recovery (Phase D sitting)
 Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related:     notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md (AC-4, note AC-4a)
@@ -27,6 +27,8 @@ What it does (run as ROOT -- post-recovery volumes are 0640 duplicati:duplicati)
   2. Samples files by size stratum (small <= 1 MiB, multi 1-64 MiB, one large 256 MiB-2 GiB, one empty)
      from an ALLOW-LIST of benign extensions, minus a DENY-LIST of secret-bearing prefixes and names,
      preferring files whose live copy is unchanged since the fileset (so the live oracle engages).
+     A path any of whose characters does not print is never sampled: the candidate and result lines
+     show each path to root's terminal. Only a non-negative integer size has a stratum.
   3. One `duplicati-cli restore` of all candidates plus one path that is NOT in the fileset, against a
      NONEXISTENT --dbpath (a temporary database built from the destination alone), pinned with
      --version computed from the destination's own dlist list, which must not change during the restore.
@@ -34,8 +36,9 @@ What it does (run as ROOT -- post-recovery volumes are 0640 duplicati:duplicati)
      file where it predates the fileset; then the negative controls:
        (a) the not-in-fileset path must NOT be restored;
        (b) a one-byte-flipped copy of a verified file must FAIL the oracle.
-  Exit 0 = PASS (>= --min-verified files verified, every candidate verified, no live contradiction,
-  both negative controls fail as they must); 1 = FAIL; 2 = operational error.
+  Exit 0 = PASS (duplicati-cli exited 0, 1 or 2, >= --min-verified files verified, every candidate
+  verified, no live contradiction, both negative controls fail as they must); 1 = FAIL; 2 = operational
+  error. A negative exit is a restore killed by a signal, and fails like 3 and above.
 
 Secrets: the passphrase is read from --cred-file (key PASSPHRASE; one pair of matching outer quotes is
 stripped) and reaches duplicati-cli only through its environment (PASSPHRASE), never argv. Only its
@@ -67,6 +70,8 @@ DENY_PREFIX = tuple(SOURCE_HOME + p for p in (".ssh/", ".gnupg/", ".config/dupli
 DENY_NAME = re.compile(r"(^|/)\.env|secret|token|credential|passw|passphrase|private|id_(rsa|ed25519|ecdsa)" r"|\.(key|pem|p12|pfx|kdbx|keystore|asc|gpg)$|cookie|session", re.IGNORECASE)
 NEGATIVE_NAME = ".phase-d-ac4-negative-control-"
 VOLATILE_FS = {"tmpfs", "ramfs", "devtmpfs", "squashfs", "overlay"}
+BOM = chr(0xFEFF)  # built, not typed: an escape typed into a source here has reached it as the invisible character itself
+BETWEEN_ENTRIES = " \t\r\n," + BOM  # .NET writes a UTF-8 BOM in front of the array
 
 
 def fail(msg):
@@ -159,7 +164,7 @@ def iter_json_array(stream, chunk=1 << 22):
         buf = buf[pos:] + utf8.decode(data or b"", final=not data)
         pos = 0
         while True:
-            while pos < len(buf) and buf[pos] in " \t\r\n,﻿":  # .NET writes a UTF-8 BOM
+            while pos < len(buf) and buf[pos] in BETWEEN_ENTRIES:
                 pos += 1
             if not started:
                 if pos < len(buf) and buf[pos] == "[":
@@ -183,6 +188,14 @@ def iter_json_array(stream, chunk=1 << 22):
 
 
 def stratum_of(size):
+    """The size stratum of a File entry, or None.
+
+    Only a non-negative int has one. The caller reads a missing size as -1, which was "small" until 1.1.0, and
+    the entry's absent `size` then raised KeyError -- an exit 1, which reads as FAIL, not as an operational error.
+    A bool is an int to Python and is refused too.
+    """
+    if type(size) is not int or size < 0:
+        return None
     if size == 0:
         return "empty"
     if size <= 1 << 20:
@@ -195,7 +208,12 @@ def stratum_of(size):
 
 
 def eligible(path):
-    return path.startswith(SOURCE_HOME) and not path.startswith(DENY_PREFIX) and not DENY_NAME.search(path) and NEGATIVE_NAME not in path and not any(ch in path for ch in "*?[]{}") and path.lower().endswith(ALLOW_EXT)
+    """A path the drill may sample: the Source's home, an allowed extension, no denied prefix or name, no glob
+    character, and every character printable. The candidate and result lines print each path to root's terminal,
+    where a control character (a newline, CR, ESC), a format character or a line separator could forge or hide a
+    line. The finish tool stops only a newline from forging one of its summary lines.
+    """
+    return isinstance(path, str) and path.isprintable() and path.startswith(SOURCE_HOME) and not path.startswith(DENY_PREFIX) and not DENY_NAME.search(path) and NEGATIVE_NAME not in path and not any(ch in path for ch in "*?[]{}") and path.lower().endswith(ALLOW_EXT)
 
 
 def sha256_b64(path):
@@ -204,6 +222,15 @@ def sha256_b64(path):
         for block in iter(lambda: fh.read(1 << 20), b""):
             h.update(block)
     return base64.b64encode(h.digest()).decode()
+
+
+def restore_ok(returncode):
+    """Whether duplicati-cli's exit code allows a PASS: 0 ok, 1 nothing changed, 2 warnings.
+
+    3 and above are errors. subprocess reports a restore killed by signal N as -N, which `< 3` alone passed
+    until 1.1.0.
+    """
+    return 0 <= returncode < 3
 
 
 def judge(c, found, epoch):
@@ -340,7 +367,7 @@ def main():
         fail("the destination's dlist list changed during the restore; --version no longer names the drilled fileset -- rerun")
     if os.path.exists(dbpath):
         fail(f"{dbpath} materialized; the restore was not destination-only")
-    print(f"restore     : duplicati-cli rc={proc.returncode} in {took:.0f}s (0 ok, 1 nothing changed, 2 warnings, >=3 errors; log restore.log)")
+    print(f"restore     : duplicati-cli rc={proc.returncode} in {took:.0f}s (0 ok, 1 nothing changed, 2 warnings, >=3 errors, <0 a signal; log restore.log)")
 
     found = {}
     for root, _d, files in os.walk(restored):
@@ -349,7 +376,7 @@ def main():
     results, verified, live_ok, contra = [], 0, 0, 0
     for c in picked:
         verdict, live = judge(c, found.get(os.path.basename(c["path"])), epoch)
-        if proc.returncode >= 3 and verdict == "VERIFIED":
+        if not restore_ok(proc.returncode) and verdict == "VERIFIED":
             verdict = f"VERIFIED (but rc={proc.returncode})"
         verified += verdict == "VERIFIED"
         live_ok += live == "match"
@@ -374,7 +401,7 @@ def main():
     print(f"VERIFIED    : {verified}/{len(picked)} (SHA-256 + length vs the dlist manifest; AC-4 floor {args.min_verified})")
     print(f"live oracle : {live_ok} match, {contra} contradiction (floor {args.live_floor})")
     print(f"negative    : not-in-fileset path absent={neg_a}; flipped-byte copy rejected={neg_b}")
-    passed = proc.returncode < 3 and verified == len(picked) and verified >= args.min_verified and contra == 0 and live_ok >= args.live_floor and neg_a and neg_b
+    passed = restore_ok(proc.returncode) and verified == len(picked) and verified >= args.min_verified and contra == 0 and live_ok >= args.live_floor and neg_a and neg_b
     print("RESULT: PASS" if passed else "RESULT: FAIL")
     return 0 if passed else 1
 

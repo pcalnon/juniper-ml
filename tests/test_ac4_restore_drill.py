@@ -21,10 +21,15 @@ What each group pins:
 * **The streaming parser.** A UTF-8 BOM in front of the array (the .NET writer's, and the cause of the 2026-11-09 "0
   entries" run), a multibyte character split across two reads, an empty array, and three malformed streams, each of
   which must stop with exit 2 rather than yield nothing.
-* **The sample filter** never selects a path under a secret-bearing tree or with a secret-shaped name, and
-  ``stratum_of`` is exact at every size boundary.
+* **The sample filter** never selects a path under a secret-bearing tree or with a secret-shaped name, nor one with a
+  character that does not print (the candidate and result lines show each path to root's terminal), and
+  ``stratum_of`` is exact at every size boundary and gives no stratum to a size that is not a non-negative integer.
+* **The restore's exit code** allows a PASS only at 0, 1 or 2: 3 and above are errors, and a negative code is a
+  restore killed by a signal, which ``< 3`` alone passed until driver 1.1.0. ``main()`` judges the code only through
+  ``restore_ok``.
 * **The oracle** tells a verified file from a missing one, a length mismatch and a hash mismatch, and engages the live
   comparison only for a live file that predates the fileset.
+* **The source** holds no character that does not print: its UTF-8 BOM is built with ``chr``, not typed.
 * **Secrets.** The passphrase loader prints a 16-hex prefix of a hash and never the value, and the driver's source
   hands the passphrase to ``duplicati-cli`` through the environment, with neither local-blocks option on its argv.
 
@@ -214,6 +219,14 @@ class JsonStreamTest(unittest.TestCase):
         self.assertEqual(self.stream(b""), [])
         self.assertIn('fail("filelist.json yielded no entries', DRIVER.read_text(encoding="utf-8"))
 
+    def test_the_source_spells_the_bom_rather_than_holding_it(self) -> None:
+        # Recovery plan finding 29: the separator string held a literal U+FEFF until 1.1.0, invisible in review and
+        # in a diff. No character of the source may be one that does not print.
+        source = DRIVER.read_text(encoding="utf-8")
+        hidden = [(source.count("\n", 0, i) + 1, hex(ord(ch))) for i, ch in enumerate(source) if not (ch.isprintable() or ch == "\n")]
+        self.assertEqual(hidden, [], "(line, code point) of each character that does not print")
+        self.assertIn(chr(0xFEFF), drill.BETWEEN_ENTRIES, "the parser still skips the BOM")
+
 
 class SampleFilterTest(unittest.TestCase):
     def test_secret_bearing_paths_are_never_eligible(self) -> None:
@@ -238,14 +251,72 @@ class SampleFilterTest(unittest.TestCase):
             self.assertFalse(drill.eligible(f"{HOME}proj/a{glob}b.py"), "duplicati-cli would read the path as a filter expression")
         self.assertFalse(drill.eligible(HOME + drill.NEGATIVE_NAME + "000000001.txt"), "the negative control's own name is never a candidate")
 
+    def test_a_path_with_a_character_that_does_not_print_is_never_eligible(self) -> None:
+        # Recovery plan finding 29: the candidate and result lines print each sampled path to root's terminal, so a
+        # newline, CR or ESC in one could forge or hide a line there. C0 and C1 controls, DEL, format characters
+        # (a zero-width space, a right-to-left override, the BOM) and both Unicode separators. Each is built with
+        # chr(): an escape typed into a source here has reached it as the character itself.
+        for code in (0x00, 0x09, 0x0A, 0x0D, 0x1B, 0x7F, 0x85, 0x200B, 0x2028, 0x2029, 0x202E, 0xFEFF):
+            with self.subTest(code=hex(code)):
+                self.assertFalse(drill.eligible(f"{HOME}proj/a{chr(code)}b.py"))
+        self.assertTrue(drill.eligible(f"{HOME}proj/a b {chr(0xFC)}{chr(0x20AC)}{chr(0x1F600)}.py"), "a space and printable non-ASCII stay eligible")
+        for value in (None, 7, f"{HOME}proj/a.py".encode()):
+            with self.subTest(path=value):
+                self.assertFalse(drill.eligible(value), "a path that is not a string is never eligible")
+
     def test_strata_are_exact_at_their_bounds(self) -> None:
         mib, gib = 1 << 20, 1 << 30
-        # Sizes from 0 up. A File entry always carries `size`; the driver's `-1` default for a missing one is NOT
-        # guarded by stratum_of (it reads as "small") -- recorded as a finding, left alone while drill 1 is pending.
         cases = {0: "empty", 1: "small", mib: "small", mib + 1: "multi", 64 * mib: "multi", 64 * mib + 1: None, 256 * mib - 1: None, 256 * mib: "large", 2 * gib: "large", 2 * gib + 1: None}
         for size, expected in cases.items():
             with self.subTest(size=size):
                 self.assertEqual(drill.stratum_of(size), expected)
+
+    def test_a_size_that_is_not_a_non_negative_int_has_no_stratum(self) -> None:
+        # Recovery plan finding 29: the driver reads a missing size as -1. Until 1.1.0 that was "small", and the
+        # entry's absent `size` then raised KeyError -- an exit 1, which reads as FAIL rather than as an error.
+        for size in (-1, -(1 << 20), True, False, 1.0, 0.0, None, "5"):
+            with self.subTest(size=size):
+                self.assertIsNone(drill.stratum_of(size))
+
+
+def _main_function() -> ast.FunctionDef:
+    tree = ast.parse(DRIVER.read_text(encoding="utf-8"))
+    return next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "main")
+
+
+def _is_the_restore_code(node: ast.AST) -> bool:
+    return isinstance(node, ast.Attribute) and node.attr == "returncode" and isinstance(node.value, ast.Name) and node.value.id == "proc"
+
+
+class RestoreCodeTest(unittest.TestCase):
+    def test_only_0_1_and_2_allow_a_pass(self) -> None:
+        for code in (0, 1, 2):
+            with self.subTest(code=code):
+                self.assertTrue(drill.restore_ok(code))
+        # subprocess reports a restore killed by signal N as -N (finding 29: `< 3` alone passed it).
+        for code in (3, 4, 100, -1, -2, -9, -15):
+            with self.subTest(code=code):
+                self.assertFalse(drill.restore_ok(code))
+
+    def test_main_judges_the_code_only_through_restore_ok(self) -> None:
+        # main() needs root, a destination and duplicati-cli, so its two judgements of the code are read from its
+        # source: a VERIFIED verdict is marked "(but rc=...)" when the code fails, and the pass rule requires the code.
+        main = _main_function()
+        calls = [node for node in ast.walk(main) if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "restore_ok"]
+        self.assertEqual(len(calls), 2, "the verdict marking and the pass rule each call restore_ok")
+        for call in calls:
+            self.assertTrue(len(call.args) == 1 and _is_the_restore_code(call.args[0]), ast.unparse(call))
+        compared = [ast.unparse(node) for node in ast.walk(main) if isinstance(node, ast.Compare) and any(_is_the_restore_code(part) for part in (node.left, *node.comparators))]
+        self.assertEqual(compared, [], "main() compares proc.returncode itself")
+        marking = [node for node in ast.walk(main) if isinstance(node, ast.If) and any(isinstance(n, ast.Call) and n in calls for n in ast.walk(node.test))]
+        self.assertEqual(len(marking), 1)
+        negated = [n for n in ast.walk(marking[0].test) if isinstance(n, ast.UnaryOp) and isinstance(n.op, ast.Not)]
+        self.assertTrue(any(n.operand in calls for n in negated), f"a verdict is marked when the code FAILS: {ast.unparse(marking[0].test)}")
+        passed = next(node.value for node in ast.walk(main) if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "passed" for t in node.targets))
+        self.assertIsInstance(passed, ast.BoolOp)
+        assert isinstance(passed, ast.BoolOp)
+        self.assertIsInstance(passed.op, ast.And)
+        self.assertTrue(any(value in calls for value in passed.values), f"the pass rule requires restore_ok: {ast.unparse(passed)}")
 
 
 class OracleTest(_Files):

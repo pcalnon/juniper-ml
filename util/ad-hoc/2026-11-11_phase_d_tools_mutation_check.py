@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Mutation check: the Phase D probe's and finish tool's suites must FAIL on every seeded defect.
+Mutation check: the Phase D probe's, finish tool's and AC-4 driver's suites must FAIL on every seeded defect.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
@@ -9,8 +9,8 @@ Created: 2026-11-11
 Status: ad-hoc — investigation (test-efficacy evidence)
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (Overtoad policy 2026-08-25)
 Related: util/ad-hoc/yamaguchi_acceptance_probe.py, util/ad-hoc/2026-11-11_phase_d_finish.{py,bash},
-         util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash,
-         tests/test_yamaguchi_acceptance_probe.py, tests/test_phase_d_finish.py,
+         util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash, util/ad-hoc/2026-11-09_ac4_restore_drill.py,
+         tests/test_yamaguchi_acceptance_probe.py, tests/test_phase_d_finish.py, tests/test_ac4_restore_drill.py,
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-11_backup-phase-d-sitting-steps-11-13-done-ac4-drill-next.md
 
 Both tools exist because hand-written checks passed while the thing they checked was wrong. A suite that would also
@@ -45,11 +45,14 @@ DEPLOY = "util/ad-hoc/yamaguchi_acceptance_probe_deploy.bash"
 RETENTION = "util/ad-hoc/2026-10-08_backup-phase-b-fold-in/retention_table.py"
 PROBE_SUITE = "tests/test_yamaguchi_acceptance_probe.py"
 FINISH_SUITE = "tests/test_phase_d_finish.py"
+DRIVER = "util/ad-hoc/2026-11-09_ac4_restore_drill.py"
+DRIVER_SUITE = "tests/test_ac4_restore_drill.py"
 COPIED = [
     PROBE, FINISH, WRAPPER, DEPLOY, PROBE_SUITE, FINISH_SUITE, "tests/duplicati_api_stub.py", "tests/redacted_env.py", "util/ad-hoc/yamaguchi_server_api.py", "util/ad-hoc/yamaguchi_watchdog.py", "util/ad-hoc/yamaguchi_server_db_snapshot.py",
-    "util/ad-hoc/2026-11-09_ac4_restore_drill.py",
+    DRIVER, DRIVER_SUITE,
     RETENTION, "util/systemd/yamaguchi-acceptance-probe.service", "util/systemd/yamaguchi-acceptance-probe.timer",
     "notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md",
+    "notes/JUNIPER_2026-10-03_JUNIPER-ECOSYSTEM_BACKUP-SYSTEM-STATE-ASSESSMENT-AND-RECOVERY-PLAN.md",  # the census's metadata stamps
 ]
 
 # A backslash, built: an escape typed into this file can reach it as the character it names (the BOM did, 2026-11-11).
@@ -119,7 +122,20 @@ MUTANTS = [
     (PROBE, "RUN: deletions under suspended retention pass", '    if newest["deleted_sets"] and retention != "restored":\n', "    if False:\n"),
     (PROBE, "RUN: a compact passes", '    if newest["compact"]:\n', "    if False:\n"),
     (PROBE, "RUN: exactly the count tolerance is outside it", "abs(drift) > count_tolerance:", "abs(drift) >= count_tolerance:"),
-    (PROBE, "RUN: drift is a failure", '    return Finding("RUN", settle(fails, errors, attn=attn),', '    return Finding("RUN", settle(fails + attn, errors),'),
+    # 2026-11-24, probe 1.5.0: AC-3's count per the Overtoad's Q1 rulings (files and bytes within 10 % of the previous
+    # run, bytes at most 5 % under the baseline). They replace "drift is a failure", which 1.5.0 made true.
+    (PROBE, "RUN: a count the result does not carry passes", "        if not is_count(newest[key]):\n", "        if False:\n"),
+    (PROBE, "RUN: a bool is a count", "return isinstance(value, int) and not isinstance(value, bool) and value >= 0", "return isinstance(value, int) and value >= 0"),
+    (PROBE, "RUN: the files drift is only a note", '        fails.append(f"examined files moved', '        notes.append(f"examined files moved'),
+    (PROBE, "RUN: a shrinking files count is not judged", "if drift is not None and abs(drift) > count_tolerance:", "if drift is not None and drift > count_tolerance:"),
+    (PROBE, "RUN: exactly the size tolerance is outside it", "abs(size_drift) > size_tolerance:", "abs(size_drift) >= size_tolerance:"),
+    (PROBE, "RUN: the bytes are judged against the baseline, not the previous run", 'size_drift = percent(newest["examined_bytes"], previous["examined_bytes"]) if previous else None', 'size_drift = percent(newest["examined_bytes"], baseline_bytes)'),
+    (PROBE, "RUN: the bytes drift is only a note", '        fails.append(f"examined bytes moved', '        notes.append(f"examined bytes moved'),
+    (PROBE, "RUN: the floor is not judged", "    if size_vs_baseline is not None and size_vs_baseline < -size_floor:\n", "    if False:\n"),
+    (PROBE, "RUN: exactly the floor is under it", "size_vs_baseline < -size_floor:", "size_vs_baseline <= -size_floor:"),
+    (PROBE, "RUN: the old ±5 % against the baseline is back", "size_vs_baseline < -size_floor:", "abs(size_vs_baseline) > size_floor:"),
+    (PROBE, "RUN: the floor sits 10 % under the baseline", "SIZE_FLOOR = 0.05  # bytes", "SIZE_FLOOR = 0.10  # bytes"),
+    (PROBE, "RUN: the bytes may move only 5 % a run", "SIZE_TOLERANCE = 0.10  # bytes", "SIZE_TOLERANCE = 0.05  # bytes"),
     (PROBE, "RUN: an exception on the backup's log entry passes", '    if newest.get("exception"):\n', "    if False:\n"),
     (PROBE, "RUN: unreadable entries ahead of the backup pass", "    if unreadable_newer:\n", "    if False:\n"),
     (PROBE, "RUN: unreadable entries are counted past the newest backup", '        if entry.get("operation") == "Backup":\n            break\n', '        if False:\n            break\n'),
@@ -146,6 +162,20 @@ MUTANTS = [
     (PROBE, "server: a refused login prints the server's answer", '        return f"the server refused the login (status {m.group(1)}); its answer is not printed"\n', '        return f"login refused: {text[:200]}"\n'),
     (PROBE, "server: an unknown stop prints its message", '    return "the API client stopped; its message is not printed"\n', '    return f"the API client stopped: {text}"\n'),
     (PROBE, "server: a credential refusal is not cut to 200 characters", '        return f"credential refused: {text[:200]}"\n', '        return f"credential refused: {text}"\n'),
+    # --- the probe while a run is in progress (recovery plan finding 42; probe 1.4.0) --------------------------------
+    (PROBE, "log refused: any status is excused", "            if status != LOG_REFUSED_WHILE_RUNNING or task_backup != str(backup_id):\n", "            if task_backup != str(backup_id):\n"),
+    (PROBE, "log refused: excused whichever job's task is active", "            if status != LOG_REFUSED_WHILE_RUNNING or task_backup != str(backup_id):\n", "            if status != LOG_REFUSED_WHILE_RUNNING:\n"),
+    (PROBE, "log refused: entries read before the refusal are kept", '            log_refused, entries = f"log -> {status} after {len(entries)} entries", None\n', '            log_refused = f"log -> {status} after {len(entries)} entries"\n'),
+    (PROBE, "log refused: the task's start is never read", "            task_started = fetch_task_started(tok, task_id) if task_id else None\n", "            task_started = None\n"),
+    (PROBE, "log refused: main() judges the log it does not have", '        if server["log_refused"]:  # a run of this job', '        if False:  # a run of this job'),
+    (PROBE, "task ids: any text is an id", "        return text if SERVER_ID.fullmatch(text) else None\n", "        return text or None\n"),
+    (PROBE, "task ids: the name prints whatever the server wrote", '    task = (f"task {task_id} for backup {task_backup}" if task_id and task_backup else "a task whose ids this probe cannot read") if state.get("ActiveTask") else None\n', '    active = state.get("ActiveTask")\n    task = f"task {active.get(\'Item1\')} for backup {active.get(\'Item2\')}" if isinstance(active, dict) else (str(active) if active else None)\n'),
+    (PROBE, "metadata: a stamp of any width is read", "    if not isinstance(value, str) or not METADATA_STAMP.fullmatch(value):\n", "    if not isinstance(value, str):\n"),
+    (PROBE, "RUN without the log: the age is not judged", "            if age > bound:  # exactly the bound is inside it\n", "            if False:  # exactly the bound is inside it\n"),
+    (PROBE, "RUN without the log: exactly the bound is already stale", "            if age > bound:  # exactly the bound is inside it\n", "            if age >= bound:  # exactly the bound is inside it\n"),
+    (PROBE, "RUN without the log: no extra day while a task is active", "            bound = max_age_hours + 24.0  # a task is active", "            bound = max_age_hours  # a task is active"),
+    (PROBE, "RUN without the log: a run in progress passes", '    verdict = settle(fails, errors) if fails or errors else "SKIP"', "    verdict = settle(fails, errors)"),
+    (PROBE, "RUN without the log: an unreadable start passes", "        errors.append(\"the job's metadata carries no readable LastBackupStarted", "        [].append(\"the job's metadata carries no readable LastBackupStarted"),
     (DEPLOY, "deploy: the user is read from $USER", 'ME="$(id -un)"\n', 'ME="$USER"\n'),
     # --- the finish tool: the drill's output, read strictly --------------------------------------------------------
     (FINISH, "drill: a FATAL beside a RESULT is ignored", '    if "fatal" in parsed:\n        also', '    if "fatal" in parsed and "result" not in parsed:\n        also'),
@@ -292,8 +322,23 @@ MUTANTS = [
     (WRAPPER, "wrapper: the caller's environment is not emptied", 'exec "$ENV" -i "${keep[@]}" "$PY" -I "$TOOL" "$@"', 'exec "$ENV" "${keep[@]}" "$PY" -I "$TOOL" "$@"'),
     (WRAPPER, "wrapper: one more variable is let through", "for name in HOME USER LOGNAME TERM; do", "for name in HOME USER LOGNAME TERM COLUMNS; do"),
     (WRAPPER, "wrapper: the interpreter runs without isolated mode", '"$PY" -I "$TOOL" "$@"', '"$PY" "$TOOL" "$@"'),
+    # --- the AC-4 driver (recovery plan finding 29; driver 1.1.0) --------------------------------------------------
+    (DRIVER, "driver: a restore killed by a signal passes", "    return 0 <= returncode < 3\n", "    return returncode < 3\n"),
+    (DRIVER, "driver: rc=3 passes", "    return 0 <= returncode < 3\n", "    return 0 <= returncode <= 3\n"),
+    (DRIVER, "driver: rc=2, warnings only, fails", "    return 0 <= returncode < 3\n", "    return 0 <= returncode < 2\n"),
+    (DRIVER, "driver: the pass rule ignores the restore's code", "    passed = restore_ok(proc.returncode) and ", "    passed = "),
+    (DRIVER, "driver: a signal-killed restore's files still count as verified", '        if not restore_ok(proc.returncode) and verdict == "VERIFIED":\n', '        if proc.returncode >= 3 and verdict == "VERIFIED":\n'),
+    (DRIVER, "driver: a good restore's files are all marked", '        if not restore_ok(proc.returncode) and verdict == "VERIFIED":\n', '        if restore_ok(proc.returncode) and verdict == "VERIFIED":\n'),
+    (DRIVER, "driver: a path that does not print is eligible", "isinstance(path, str) and path.isprintable() and ", "isinstance(path, str) and "),
+    (DRIVER, "driver: only C0 controls keep a path out", "isinstance(path, str) and path.isprintable() and ", "isinstance(path, str) and not any(ord(ch) < 32 for ch in path) and "),
+    (DRIVER, "driver: a path that is not a string reaches the string tests", "isinstance(path, str) and path.isprintable() and ", "path.isprintable() and "),
+    (DRIVER, "driver: a missing size is small", "    if type(size) is not int or size < 0:\n        return None\n", ""),
+    (DRIVER, "driver: a bool size has a stratum", "    if type(size) is not int or size < 0:\n", "    if not isinstance(size, int) or size < 0:\n"),
+    (DRIVER, "driver: a negative size is small", "    if type(size) is not int or size < 0:\n", "    if type(size) is not int:\n"),
+    (DRIVER, "driver: a BOM in front of the array stops the parse", 'BETWEEN_ENTRIES = " ' + BS + "t" + BS + "r" + BS + 'n," + BOM', 'BETWEEN_ENTRIES = " ' + BS + "t" + BS + "r" + BS + 'n,"'),
+    (DRIVER, "driver: the source holds the BOM itself", "BOM = chr(0xFEFF)", 'BOM = "' + chr(0xFEFF) + '"'),
 ]
-SUITE_OF = {PROBE: PROBE_SUITE, DEPLOY: PROBE_SUITE, FINISH: FINISH_SUITE, WRAPPER: FINISH_SUITE, RETENTION: FINISH_SUITE}
+SUITE_OF = {PROBE: PROBE_SUITE, DEPLOY: PROBE_SUITE, FINISH: FINISH_SUITE, WRAPPER: FINISH_SUITE, RETENTION: FINISH_SUITE, DRIVER: DRIVER_SUITE}
 SUITE_TIMEOUT = 300  # seconds: a mutant that makes a test wait for ever is killed by the clock, and reported as such
 
 
