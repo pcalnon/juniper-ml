@@ -71,45 +71,45 @@ juniper-ml ──hosts independent package workflows──> juniper-observabilit
 
 ## Related Services
 
-| Component | Relationship | Notes |
-|-----------|-------------|-------|
-| [juniper-canopy](https://github.com/pcalnon/juniper-canopy) | Aggregated under `[servers]` and `[all]` | `pip install juniper-canopy` |
-| [juniper-cascor](https://github.com/pcalnon/juniper-cascor) | Aggregated under `[servers]` and `[all]` | `pip install juniper-cascor` |
-| [juniper-recurrence](https://github.com/pcalnon/juniper-recurrence) | Aggregated under`[servers]` and `[all]` | `pip install juniper-recurrence` |
-| [juniper-data](https://github.com/pcalnon/juniper-data) | Aggregated under `[servers]` and `[all]` | `pip install juniper-data` |
-| [juniper-data-client](https://github.com/pcalnon/juniper-data-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-data-client` |
-| [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-cascor-client` |
-| [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Aggregated under `[worker]` and `[all]` | `pip install juniper-cascor-worker` |
-| [juniper-ci-tools](https://github.com/pcalnon/juniper-ml/tree/main/juniper-ci-tools) | Aggregated under `[tools]` and `[all]`; published from this repository | `pip install juniper-ci-tools` |
-| [juniper-doc-tools](juniper-doc-tools/README.md) | Aggregated under `[doc-tools]`, `[tools]`, and `[all]`; published from this repository | `pip install juniper-doc-tools` |
-| [juniper-observability](juniper-observability/README.md) | Aggregated under `[tools]` and `[all]`; published independently from this repository | `pip install "juniper-observability[all]"` |
+| Component                                                                            | Relationship                                                                           | Notes                                      |
+|--------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|--------------------------------------------|
+| [juniper-canopy](https://github.com/pcalnon/juniper-canopy)                          | Aggregated under `[servers]` and `[all]`                                               | `pip install juniper-canopy`               |
+| [juniper-cascor](https://github.com/pcalnon/juniper-cascor)                          | Aggregated under `[servers]` and `[all]`                                               | `pip install juniper-cascor`               |
+| [juniper-recurrence](https://github.com/pcalnon/juniper-recurrence)                  | Aggregated under`[servers]` and `[all]`                                                | `pip install juniper-recurrence`           |
+| [juniper-data](https://github.com/pcalnon/juniper-data)                              | Aggregated under `[servers]` and `[all]`                                               | `pip install juniper-data`                 |
+| [juniper-data-client](https://github.com/pcalnon/juniper-data-client)                | Aggregated under `[clients]` and `[all]`                                               | `pip install juniper-data-client`          |
+| [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client)            | Aggregated under `[clients]` and `[all]`                                               | `pip install juniper-cascor-client`        |
+| [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker)            | Aggregated under `[worker]` and `[all]`                                                | `pip install juniper-cascor-worker`        |
+| [juniper-ci-tools](https://github.com/pcalnon/juniper-ml/tree/main/juniper-ci-tools) | Aggregated under `[tools]` and `[all]`; published from this repository                 | `pip install juniper-ci-tools`             |
+| [juniper-doc-tools](juniper-doc-tools/README.md)                                     | Aggregated under `[doc-tools]`, `[tools]`, and `[all]`; published from this repository | `pip install juniper-doc-tools`            |
+| [juniper-observability](juniper-observability/README.md)                             | Aggregated under `[tools]` and `[all]`; published independently from this repository   | `pip install "juniper-observability[all]"` |
 
 ### Extras
 
-| Extra        | Packages Included                                                                                |
-|--------------|--------------------------------------------------------------------------------------------------|
-| `clients`    | `juniper-data-client>=0.5.0`, `juniper-cascor-client>=0.8.0`                                     |
-| `worker`     | `juniper-cascor-worker>=0.4.0`                                                                   |
-| `servers`    | `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`, `juniper-cascor[api,juniper-data]>=0.12.0`, `juniper-data[api]>=0.17.1` |
+| Extra        | Packages Included                                                                                                                                                                                            |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `clients`    | `juniper-data-client>=0.5.0`, `juniper-cascor-client>=0.8.0`                                                                                                                                                 |
+| `worker`     | `juniper-cascor-worker>=0.4.0`                                                                                                                                                                               |
+| `servers`    | `juniper-canopy[juniper-cascor,juniper-data]>=0.9.0`, `juniper-cascor[api,juniper-data]>=0.12.0`, `juniper-data[api]>=0.17.1`                                                                                |
 | `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.4.2`, `juniper-service-core>=0.7.2,<0.8.0` |
-| `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)         |
+| `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)                                                                                                                     |
 | `recurrence` | `juniper-recurrence-model>=0.6.0,<0.7.0`, `juniper-recurrence>=0.8.1,<0.9.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
-| `all`        | All of the above                                                                                 |
+| `all`        | All of the above                                                                                                                                                                                             |
 
 ## Active Research Components
 
 The active research components of the Juniper platform are surfaced through the component repositories listed below. Each repository's README documents the algorithms, datasets, protocols, or operational primitives it implements; `juniper-ml` aggregates their client surfaces and does not host research code of its own.
 
-| Component | Research artifact |
-|-----------|-------------------|
-| [juniper-cascor](https://github.com/pcalnon/juniper-cascor) | Cascade-Correlation reference implementation (Fahlman & Lebiere, 1990), candidate-pool training protocol, multi-network orchestration |
-| [juniper-recurrence](https://github.com/pcalnon/juniper-recurrence) | Legendre Memory Unit reference implementation ([Voelker, Kajić, and Eliasmith](https://proceedings.neurips.cc/paper_files/paper/2019/file/952285b9b7e7a1be5aa7849f32ffff05-Paper.pdf) 2019)
-| [juniper-data](https://github.com/pcalnon/juniper-data) | Dataset-generation service, named-version registry, ARC-AGI dataset families |
-| [juniper-canopy](https://github.com/pcalnon/juniper-canopy) | Real-time training-dynamics visualization, network-topology renderer, WebSocket control surface |
-| [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Distributed candidate-unit training over a WebSocket worker protocol |
-| [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | REST + WebSocket training-stream and control-stream client protocols |
-| [juniper-observability](juniper-observability/README.md) | Idempotent Prometheus collector helpers (`register_or_reuse` family), structured-JSON logging, Starlette middleware |
-| [juniper-doc-tools](juniper-doc-tools/README.md) | `juniper-check-doc-links` CLI for cross-repo and ecosystem-root markdown link validation |
+| Component                                                                 | Research artifact                                                                                                                                                                           |
+|---------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [juniper-cascor](https://github.com/pcalnon/juniper-cascor)               | Cascade-Correlation reference implementation (Fahlman & Lebiere, 1990), candidate-pool training protocol, multi-network orchestration                                                       |
+| [juniper-recurrence](https://github.com/pcalnon/juniper-recurrence)       | Legendre Memory Unit reference implementation ([Voelker, Kajić, and Eliasmith](https://proceedings.neurips.cc/paper_files/paper/2019/file/952285b9b7e7a1be5aa7849f32ffff05-Paper.pdf) 2019) |
+| [juniper-data](https://github.com/pcalnon/juniper-data)                   | Dataset-generation service, named-version registry, ARC-AGI dataset families                                                                                                                |
+| [juniper-canopy](https://github.com/pcalnon/juniper-canopy)               | Real-time training-dynamics visualization, network-topology renderer, WebSocket control surface                                                                                             |
+| [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Distributed candidate-unit training over a WebSocket worker protocol                                                                                                                        |
+| [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | REST + WebSocket training-stream and control-stream client protocols                                                                                                                        |
+| [juniper-observability](juniper-observability/README.md)                  | Idempotent Prometheus collector helpers (`register_or_reuse` family), structured-JSON logging, Starlette middleware                                                                         |
+| [juniper-doc-tools](juniper-doc-tools/README.md)                          | `juniper-check-doc-links` CLI for cross-repo and ecosystem-root markdown link validation                                                                                                    |
 
 ## Quick Start Guide
 
@@ -164,14 +164,14 @@ Within this program, `juniper-ml` is the integration surface: a single installat
 
 ## Documentation
 
-| Document | Purpose |
-|----------|---------|
-| [`docs/DOCUMENTATION_OVERVIEW.md`](docs/DOCUMENTATION_OVERVIEW.md) | Navigation index for all `juniper-ml` documentation |
-| [`docs/QUICK_START.md`](docs/QUICK_START.md) | Installation and verification guide |
-| [`docs/REFERENCE.md`](docs/REFERENCE.md) | Extras, compatibility matrix, environment variables, service ports, and host-mode stack utilities |
-| [`docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`](docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | Quick-reference card for development tasks |
-| [`notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md`](notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md) | Ecosystem-wide README normalization plan (this README is its reference implementation) |
-| [`notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md`](notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md) | Source-of-truth for the Research Philosophy text inlined above |
+| Document                                                                                                                                                                 | Purpose                                                                                           |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| [`docs/DOCUMENTATION_OVERVIEW.md`](docs/DOCUMENTATION_OVERVIEW.md)                                                                                                       | Navigation index for all `juniper-ml` documentation                                               |
+| [`docs/QUICK_START.md`](docs/QUICK_START.md)                                                                                                                             | Installation and verification guide                                                               |
+| [`docs/REFERENCE.md`](docs/REFERENCE.md)                                                                                                                                 | Extras, compatibility matrix, environment variables, service ports, and host-mode stack utilities |
+| [`docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`](docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md)                                                                                     | Quick-reference card for development tasks                                                        |
+| [`notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md`](notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md)                     | Ecosystem-wide README normalization plan (this README is its reference implementation)            |
+| [`notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md`](notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md) | Source-of-truth for the Research Philosophy text inlined above                                    |
 
 ## License
 
