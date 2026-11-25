@@ -61,9 +61,15 @@ from juniper_observability.testing import reset_prometheus_registry  # pytest fi
 | `RequestIdMiddleware`, `PrometheusMiddleware` | Starlette middlewares applied across the service fleet. |
 | Health-response models | Pydantic models for the `/v1/health/ready` endpoint. |
 | Structured-JSON logging | Logging configuration with `request_id` propagation. |
-| Sentry init | `configure_sentry` passes `include_local_variables=False` (no switch to turn locals back on) and the SEC-10 `before_send` hook always runs. The hook also deletes frame `vars`. |
+| Sentry init | `configure_sentry` works with sentry-sdk 2.x and 3.x. It never captures frame locals (2.x: `include_local_variables=False`; 3.x: `data_collection` with `stack_frame_variables` off; no switch to turn them back on), and the SEC-10 `before_send` hook always runs. The hook also deletes frame `vars`. On 3.x a second hook, `before_send_span`, scrubs the same headers from span attributes. |
 
 `configure_sentry` never captures frame locals. Sentry's `EventScrubber` redacts locals by name, and the local that held the configured API key during the comparison in the juniper-canopy#683 finding is not on that list. The `before_send` hook deletes `vars` as well, because the opt-in `PureEvalIntegration` (sentry-sdk 2.58.0) writes them without consulting `include_local_variables`. Releases up to and including **0.4.0** use the SDK default (`True`). There is no parameter to turn locals back on.
+
+On sentry-sdk 3.x, which removed `send_default_pii`, `include_local_variables`, `enable_logs` and `before_send_transaction`, the same choices go through `data_collection`.
+It also turns off what 2.x did not collect under the same `send_pii` (SQL parameters, redis arguments, queue job arguments, GenAI, MCP and GraphQL data), and it sends no request bodies.
+3.0.0 deleted 2.x's `EventScrubber`, so on 3.x the hooks redact its denylisted names (`password`, `api_key`, `token` ...) themselves, and without `send_pii` its PII names too (`ip_address`, `remote_addr`, `x_forwarded_for`, `x_real_ip`). On 2.x they leave that to the SDK, so 2.x output is unchanged.
+Spans replace transactions there, and carry each request header as an attribute, which `before_send_span` scrubs.
+3.x installs no logging integration by default, so `configure_sentry` passes one with `event_level=logging.ERROR`, and an ERROR record is still an error event.
 
 Operator notes: [juniper-ml REFERENCE](../docs/REFERENCE.md#non-ascii-api-keys-and-sentry-frame-locals).
 
