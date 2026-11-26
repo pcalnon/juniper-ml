@@ -54,7 +54,6 @@ TREE = Path(os.environ.get("R27V2_TREE", os.getcwd())).resolve()
 STATE = {"nodeid": None, "phase": "outside", "started": time.time(), "is_pytest": False, "fake_module": None}
 COUNTS = {"connects": 0, "connects_8100": 0, "refused_juniper": 0, "refused_listening": 0, "fake_answers": 0, "guard_reports": 0}
 _LOCK = threading.Lock()
-_FD: dict[str, int] = {}
 
 
 def _append(kind: str, record: dict) -> None:
@@ -62,11 +61,12 @@ def _append(kind: str, record: dict) -> None:
         return
     line = (json.dumps(record, sort_keys=True) + "\n").encode("utf-8")
     with _LOCK:
-        fd = _FD.get(kind)
-        if fd is None:
-            fd = os.open(f"{OUT}.{kind}.jsonl", os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o644)
-            _FD[kind] = fd
-        os.write(fd, line)
+        # One append per record, owner-only, closed at once (O_APPEND keeps each line whole).
+        fd = os.open(f"{OUT}.{kind}.jsonl", os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0o600)
+        try:
+            os.write(fd, line)
+        finally:
+            os.close(fd)
 
 
 def _is_local(host: str) -> bool:
