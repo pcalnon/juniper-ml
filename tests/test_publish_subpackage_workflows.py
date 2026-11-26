@@ -27,6 +27,11 @@ have already bitten in production:
   * **subdirectory build** — ``working-directory`` + artifact path under the
     package dir so a root-level build cannot ship the wrong package.
 
+Since the one-artifact template's sweep (juniper-cascor#777; ruling 2 of 2026-11-16) each Verify-install step runs
+in a job of its own, ``Verify the TestPyPI install`` (``contents: read`` alone, from ``$RUNNER_TEMP``), which the PyPI
+job needs as well as the TestPyPI job. A step this module cannot find, or a workflow it cannot read, is a failure,
+never a skip: a skipped pin is no pin.
+
 This unittest:
   1. Structurally pins the shared contracts across all six ``publish-*.yml`` files.
   2. Extracts each Verify-install shell and runs it hermetically with PATH stubs
@@ -89,13 +94,23 @@ def _workflow_on(doc: dict) -> dict:
     return {}
 
 
+#: The install check's own job since the one-artifact sweep (ruling 2 of 2026-11-16): its id, and the name it is found by.
+INSTALL_JOB = "verify-testpypi-install"
+INSTALL_JOB_NAME = "Verify the TestPyPI install"
+
+
 def _verify_step_run(doc: dict) -> tuple[str, str]:
-    # The install check, by name: the one-artifact template's own "Verify ..." steps run Python before it.
-    steps = (doc.get("jobs") or {}).get("publish-testpypi", {}).get("steps") or []
-    step = next((s for s in steps if str(s.get("name") or "").startswith("Verify install from TestPyPI") and "run" in s), None)
-    if step is None:
-        raise unittest.SkipTest("could not locate Verify install step in publish-testpypi")
-    return str(step["name"]), step["run"]
+    """The install check, by name, in the one job named INSTALL_JOB_NAME, where it runs since the one-artifact sweep.
+
+    Not finding it is a failure, never a skip: a skipped pin is no pin.
+    """
+    jobs = [job for job in (doc.get("jobs") or {}).values() if isinstance(job, dict) and job.get("name") == INSTALL_JOB_NAME]
+    if len(jobs) != 1:
+        raise AssertionError(f"expected one job named {INSTALL_JOB_NAME!r}, found {len(jobs)}")
+    steps = [s for s in jobs[0].get("steps") or [] if str(s.get("name") or "").startswith("Verify install from TestPyPI") and "run" in s]
+    if len(steps) != 1:
+        raise AssertionError(f"expected one Verify install step in {INSTALL_JOB_NAME!r}, found {len(steps)}")
+    return str(steps[0]["name"]), steps[0]["run"]
 
 
 def _pypi_publish_steps(job: dict) -> list[dict]:
@@ -122,7 +137,7 @@ class PublishSubpackageStructuralTest(unittest.TestCase):
         for suffix, pkg, _subdir in SHARED_PACKAGES:
             path = cls.workflows_dir / f"publish-{suffix}.yml"
             if not path.is_file():
-                raise unittest.SkipTest(f"missing {path.name}")
+                raise AssertionError(f"missing {path.name}: a missing publisher fails, it is never skipped")
             cls.loaded[pkg] = {
                 "path": path,
                 "raw": path.read_text(encoding="utf-8"),
@@ -152,14 +167,16 @@ class PublishSubpackageStructuralTest(unittest.TestCase):
         credential.  Job-level ``permissions`` REPLACE the workflow block rather
         than merging with it, so each job states its own.  Since the one-artifact
         publish (2026-11-15): the build ``contents: read`` and ``actions: read``
-        (its reuse step lists the run's artifacts), the TestPyPI job
-        ``contents: read`` for its sparse checkout, the PyPI job, which checks
-        nothing out, ``id-token: write`` alone, and the republish job
+        (its reuse step lists the run's artifacts), the TestPyPI job, which
+        checks nothing out since the one-artifact sweep, and the PyPI job
+        ``id-token: write`` alone, the install check's own job
+        ``contents: read`` alone, for its sparse checkout, and the republish job
         ``actions: read`` for the release run's artifact.
         """
         expected = {
             "build": {"contents": "read", "actions": "read"},
-            "publish-testpypi": {"id-token": "write", "contents": "read"},
+            "publish-testpypi": {"id-token": "write"},
+            INSTALL_JOB: {"contents": "read"},
             "publish-pypi": {"id-token": "write"},
             "republish": {"actions": "read", "id-token": "write"},
         }
@@ -206,6 +223,8 @@ class PublishSubpackageStructuralTest(unittest.TestCase):
                 self.assertIn("workflow_dispatch", build_if + str(_workflow_on(doc)))
                 expected = f"startsWith(github.event.release.tag_name, '{pkg}-v')"
                 self.assertIn(expected, build_if)
+                # A dispatch builds only from this package's own tag: another tag's would publish this package under it.
+                self.assertIn(f"startsWith(github.ref_name, '{pkg}-v')", build_if)
                 # working-directory must be the package subdirectory
                 wd = ((build.get("defaults") or {}).get("run") or {}).get("working-directory")
                 self.assertEqual(wd, subdir)
@@ -243,7 +262,9 @@ class PublishSubpackageStructuralTest(unittest.TestCase):
                 needs_py = py.get("needs")
                 needs_py = [needs_py] if isinstance(needs_py, str) else (needs_py or [])
                 self.assertIn("build", needs_tp)
-                self.assertIn("publish-testpypi", needs_py)
+                # The PyPI job needs both TestPyPI jobs: the upload with its checks, and the install check after it.
+                self.assertEqual(needs_py, ["publish-testpypi", INSTALL_JOB])
+                self.assertEqual((jobs.get(INSTALL_JOB) or {}).get("needs"), "publish-testpypi")
                 tp_env = tp.get("environment")
                 py_env = py.get("environment")
                 # environment may be a string or {name, url}
@@ -294,20 +315,30 @@ class PublishSubpackageStructuralTest(unittest.TestCase):
         for pkg, info in self.loaded.items():
             _name, script = _verify_step_run(info["doc"])
             with self.subTest(pkg=pkg):
+                # Read under $GITHUB_WORKSPACE: the check runs from $RUNNER_TEMP, outside the sparse checkout.
                 if pkg == "juniper-model-core":
-                    self.assertIn("juniper-model-core/juniper_model_core/_version.py", script)
+                    self.assertIn('"${GITHUB_WORKSPACE}/juniper-model-core/juniper_model_core/_version.py"', script)
                     self.assertIn("__version__", script)
                 else:
-                    self.assertIn(f"{pkg}/pyproject.toml", script)
+                    self.assertIn(f'"${{GITHUB_WORKSPACE}}/{pkg}/pyproject.toml"', script)
                     self.assertIn("grep '^version'", script)
-                # Post-install must prove the package landed — either importlib.metadata
-                # (deps-heavy packages that cannot import under --no-deps) or a direct import.
-                has_metadata = "importlib.metadata" in script and f"m.version('{pkg}')" in script
-                has_import = f"import {pkg.replace('-', '_')}" in script
+                # Post-install must prove the package landed: a direct import, or, for the deps-heavy packages that
+                # cannot import under --no-deps, importlib.metadata AND importlib.util.find_spec. Metadata alone passes
+                # a wheel that lacks the package (R4-5 of the one-artifact sweep's review), so the metadata check must
+                # also find it, with an origin, and fail through SystemExit, which PYTHONOPTIMIZE keeps. Read from the
+                # commands alone: a comment may name an import that never runs.
+                module = pkg.replace("-", "_")
+                commands = "\n".join(ln.strip() for ln in script.splitlines() if ln.strip() and not ln.strip().startswith("#"))
+                has_metadata = "importlib.metadata" in commands and f"m.version('{pkg}')" in commands
+                has_import = f"import {module}" in commands
                 self.assertTrue(
                     has_metadata or has_import,
                     f"{pkg}: verify must prove install via importlib.metadata or package import",
                 )
+                if has_metadata and not has_import:
+                    self.assertIn(f"u.find_spec('{module}')", commands, f"{pkg}: a metadata check must also find the package")
+                    self.assertIn("raise SystemExit(0 if origin else", commands)
+                    self.assertNotIn("assert ", commands)
 
 
 class PublishSubpackageVerifyRehearsalTest(unittest.TestCase):
@@ -323,7 +354,7 @@ class PublishSubpackageVerifyRehearsalTest(unittest.TestCase):
         for suffix, pkg, _subdir in SHARED_PACKAGES:
             path = cls.repo_root / ".github" / "workflows" / f"publish-{suffix}.yml"
             if not path.is_file():
-                raise unittest.SkipTest(f"missing {path.name}")
+                raise AssertionError(f"missing {path.name}: a missing publisher fails, it is never skipped")
             _name, script = _verify_step_run(yaml.safe_load(path.read_text(encoding="utf-8")))
             cls.scripts[pkg] = script
 
@@ -377,8 +408,13 @@ class PublishSubpackageVerifyRehearsalTest(unittest.TestCase):
             self._write_stubs(bindir, pip_log, version="9.9.9")
             script_path = tdp / "verify.sh"
             script_path.write_text(script, encoding="utf-8")
+            (tdp / "runner-temp").mkdir()
             env = RedactedEnv(os.environ)
             env["PATH"] = f"{bindir}{os.pathsep}{env.get('PATH', '')}"
+            # The runner's own two directories: each verify reads its version under GITHUB_WORKSPACE and runs from
+            # RUNNER_TEMP. Set here, so a CI runner's own values never reach the rehearsal.
+            env["GITHUB_WORKSPACE"] = str(tdp)
+            env["RUNNER_TEMP"] = str(tdp / "runner-temp")
             proc = subprocess.run(  # nosec B603,B607 - workflow's own shell, fixed argv
                 ["bash", str(script_path)],
                 cwd=str(tdp),

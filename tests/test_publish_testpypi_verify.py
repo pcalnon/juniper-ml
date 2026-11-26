@@ -21,19 +21,24 @@ broken sdist) beat production ``fastapi 0.141.1`` and killed the v0.7.0 verify
     extras) against production PyPI ONLY. No ``--no-deps``, so extras/dependency
     resolution is genuinely exercised; single index, so nothing can be confused.
 
+Since the one-artifact template's sweep (juniper-cascor#777; ruling 2 of 2026-11-16) the verify runs in a job of
+its own, ``Verify the TestPyPI install`` (``contents: read`` alone, from ``$RUNNER_TEMP``), which the PyPI job needs
+as well as the TestPyPI job. A verify this module cannot find is a failure, never a skip: a skipped pin is no pin.
+
 This unittest:
   1. Structurally pins both phases: the download phase's TestPyPI-only index +
      ``--no-deps`` + exact ``==${VERSION}``, the three install phases' PyPI-only index
-     + local-wheel target + extras + absence of ``--no-deps``, the tomllib version read,
-     no ``skip-existing`` on either upload (the one-artifact publish), the ``pypi needs: testpypi``
-     gate, and the ``v*`` release-tag guard.
+     + local-wheel target + extras + absence of ``--no-deps``, the tomllib version read
+     under ``$GITHUB_WORKSPACE``, no ``skip-existing`` on either upload (the one-artifact
+     publish), the PyPI job needing both TestPyPI jobs, and the ``v*`` release-tag guard.
   2. Enforces the anti-regression invariant: NO verify command may carry
      ``--extra-index-url``, and no single command may name both index URLs (the merged
      namespace). A synthetic-violation self-test proves that check actually bites.
-  3. Extracts the verify shell and runs it hermetically with PATH stubs for
-     ``sleep`` / ``mktemp`` / ``pip`` / ``python`` so a rewrite that drops a phase, swaps
-     the index URLs, or stops walking extras fails in CI without hitting the network --
-     including a negative arm proving the missing-wheel guard aborts before any install.
+  3. Extracts the verify shell and runs it hermetically, under ``bash -e`` as the runner
+     does, with PATH stubs for ``sleep`` / ``mktemp`` / ``pip`` / ``python`` so a rewrite
+     that drops a phase, swaps the index URLs, or stops walking extras fails in CI without
+     hitting the network -- including a negative arm proving the missing-wheel guard aborts
+     before any install, and the provenance fetch's retry and its lag error.
 
 Assertions target *executable* lines only (comments are stripped), so the workflow may
 document the merged-namespace rationale without tripping its own gate.
@@ -64,6 +69,11 @@ from tests.redacted_env import RedactedEnv
 
 WORKFLOW_NAME = "publish.yml"
 VERIFY_STEP_NAME = "Verify TestPyPI install"
+#: The verify's own job since the one-artifact sweep (ruling 2 of 2026-11-16): its id, and the name it is found by.
+INSTALL_JOB = "verify-testpypi-install"
+INSTALL_JOB_NAME = "Verify the TestPyPI install"
+#: The template's lag error, after the provenance fetch's tenth failed try (R5-F5 of the sweep's review).
+LAG_ERROR = "is not installable from TestPyPI after 10 tries (index lag?): Re-run failed jobs; a real failure repeats"
 TESTPYPI_INDEX = "https://test.pypi.org/simple/"
 PYPI_INDEX = "https://pypi.org/simple/"
 
@@ -84,11 +94,18 @@ def _find_repo_root(start: Path) -> Path:
 
 
 def _verify_step_run(doc: dict) -> str:
-    steps = (doc.get("jobs") or {}).get("testpypi", {}).get("steps") or []
-    step = next((s for s in steps if s.get("name") == VERIFY_STEP_NAME), None)
-    if step is None or "run" not in step:
-        raise unittest.SkipTest(f"could not locate {VERIFY_STEP_NAME!r} in {WORKFLOW_NAME}")
-    return step["run"]
+    """The verify's script: the one step named VERIFY_STEP_NAME in the one job named INSTALL_JOB_NAME.
+
+    Since the one-artifact sweep the verify runs in a job of its own, not in the TestPyPI job. Not finding it is a
+    failure, never a skip: a skipped pin is no pin.
+    """
+    jobs = [job for job in (doc.get("jobs") or {}).values() if isinstance(job, dict) and job.get("name") == INSTALL_JOB_NAME]
+    if len(jobs) != 1:
+        raise AssertionError(f"expected one job named {INSTALL_JOB_NAME!r} in {WORKFLOW_NAME}, found {len(jobs)}")
+    steps = [s for s in jobs[0].get("steps") or [] if s.get("name") == VERIFY_STEP_NAME and "run" in s]
+    if len(steps) != 1:
+        raise AssertionError(f"expected one {VERIFY_STEP_NAME!r} step in {INSTALL_JOB_NAME!r} of {WORKFLOW_NAME}, found {len(steps)}")
+    return steps[0]["run"]
 
 
 def _command_lines(script: str) -> list[str]:
@@ -128,14 +145,14 @@ class PublishTestPyPIVerifyStructuralTest(unittest.TestCase):
         cls.repo_root = _find_repo_root(Path(__file__).resolve().parent)
         cls.workflow_path = cls.repo_root / ".github" / "workflows" / WORKFLOW_NAME
         if not cls.workflow_path.is_file():
-            raise unittest.SkipTest(f"{WORKFLOW_NAME} not present at {cls.workflow_path}")
+            raise AssertionError(f"{WORKFLOW_NAME} not present at {cls.workflow_path}: a missing publisher fails, it is never skipped")
         cls.raw = cls.workflow_path.read_text(encoding="utf-8")
         cls.doc = yaml.safe_load(cls.raw)
         cls.script = _verify_step_run(cls.doc)
 
     def test_jobs_present(self) -> None:
         jobs = self.doc.get("jobs") or {}
-        for name in ("build", "testpypi", "pypi"):
+        for name in ("build", "testpypi", INSTALL_JOB, "pypi"):
             with self.subTest(job=name):
                 self.assertIn(name, jobs)
 
@@ -144,11 +161,15 @@ class PublishTestPyPIVerifyStructuralTest(unittest.TestCase):
         build_if = str(self.doc["jobs"]["build"].get("if") or "")
         self.assertIn("workflow_dispatch", build_if)
         self.assertIn("startsWith(github.event.release.tag_name, 'v')", build_if)
+        # A dispatch builds only from a `v` tag: from a sub-package's tag it would publish the meta-package's files.
+        self.assertIn("startsWith(github.ref_name, 'v')", build_if)
 
     def test_pypi_needs_testpypi(self) -> None:
+        # Both TestPyPI jobs: the upload with its sha256 checks, and the verify (Gate 1), which runs in a job of its own.
         needs = self.doc["jobs"]["pypi"].get("needs")
         needs = [needs] if isinstance(needs, str) else (needs or [])
-        self.assertIn("testpypi", needs, "PyPI publish must wait on TestPyPI verify (Gate 1).")
+        self.assertEqual(needs, ["testpypi", INSTALL_JOB], "PyPI publish must wait on the TestPyPI upload and its verify (Gate 1).")
+        self.assertEqual(self.doc["jobs"][INSTALL_JOB].get("needs"), "testpypi", "the verify must run after the TestPyPI upload's sha256 check")
 
     def test_testpypi_needs_build(self) -> None:
         needs = self.doc["jobs"]["testpypi"].get("needs")
@@ -159,6 +180,9 @@ class PublishTestPyPIVerifyStructuralTest(unittest.TestCase):
         self.assertIn("tomllib", self.script)
         self.assertIn("pyproject.toml", self.script)
         self.assertIn("['project']['version']", self.script)
+        # Read under the workspace: the verify runs from $RUNNER_TEMP, outside the sparse checkout that holds the file.
+        self.assertIn("open('${GITHUB_WORKSPACE}/pyproject.toml','rb')", self.script)
+        self.assertEqual(_command_lines(self.script)[0], 'cd "${RUNNER_TEMP}"')
 
     # ── Phase 1: artifact provenance ────────────────────────────────────────────────
     def test_download_phase_is_testpypi_only_at_exact_version(self) -> None:
@@ -243,9 +267,10 @@ class PublishTestPyPIVerifyStructuralTest(unittest.TestCase):
         workflow block rather than merging with it.  Since the one-artifact
         publish (2026-11-15) the workflow block is ``{}`` and each job states its
         own: the build ``contents: read`` and ``actions: read`` (its reuse step
-        lists the run's artifacts), the TestPyPI job ``contents: read`` for its
-        checkout, the PyPI job, which checks nothing out, ``id-token: write``
-        alone, and the republish job ``actions: read`` for the release run's
+        lists the run's artifacts), the TestPyPI job, which checks nothing out
+        since the one-artifact sweep, and the PyPI job ``id-token: write``
+        alone, the verify's own job ``contents: read`` alone, for its sparse
+        checkout, and the republish job ``actions: read`` for the release run's
         artifact.
         """
         self.assertEqual(self.doc["jobs"]["testpypi"].get("environment"), "testpypi")
@@ -256,7 +281,8 @@ class PublishTestPyPIVerifyStructuralTest(unittest.TestCase):
 
         expected = {
             "build": {"contents": "read", "actions": "read"},
-            "testpypi": {"id-token": "write", "contents": "read"},
+            "testpypi": {"id-token": "write"},
+            INSTALL_JOB: {"contents": "read"},
             "pypi": {"id-token": "write"},
             "republish": {"actions": "read", "id-token": "write"},
         }
@@ -338,7 +364,7 @@ class PublishTestPyPIVerifyRehearsalTest(unittest.TestCase):
         repo_root = _find_repo_root(Path(__file__).resolve().parent)
         wf = repo_root / ".github" / "workflows" / WORKFLOW_NAME
         if not wf.is_file():
-            raise unittest.SkipTest(f"{WORKFLOW_NAME} not present at {wf}")
+            raise AssertionError(f"{WORKFLOW_NAME} not present at {wf}: a missing publisher fails, it is never skipped")
         cls.script = _verify_step_run(yaml.safe_load(wf.read_text(encoding="utf-8")))
 
     @staticmethod
@@ -356,7 +382,9 @@ class PublishTestPyPIVerifyRehearsalTest(unittest.TestCase):
         # the workflow expects, so the download -> install handoff is genuinely exercised.
         wheel_name = WHEEL_TEMPLATE.format(version=version)
         make_wheel = "if [[ \"$1\" == 'download' ]]; then\n" '  dest=""; prev=""\n' '  for a in "$@"; do\n' '    if [[ "$prev" == "--dest" ]]; then dest="$a"; fi\n' '    prev="$a"\n' "  done\n" f'  if [[ -n "$dest" && "{int(create_wheel)}" == "1" ]]; then\n' '    mkdir -p "$dest"\n' f'    : > "$dest/{wheel_name}"\n' "  fi\n" "fi\n"
-        self._write_exec(bindir / "pip", f'#!/bin/bash\nprintf "%s\\n" "$*" >> "{pip_log}"\n{make_wheel}exit 0\n')
+        # A `pip download` fails while the downloads so far, this one included, number STUB_DOWNLOAD_FAILURES or fewer.
+        fail_download = f'if [[ "$1" == \'download\' ]] && [ "$(grep -c \'^download\' "{pip_log}")" -le "${{STUB_DOWNLOAD_FAILURES:-0}}" ]; then exit 1; fi\n'
+        self._write_exec(bindir / "pip", f'#!/bin/bash\nprintf "%s\\n" "$*" >> "{pip_log}"\n{fail_download}{make_wheel}exit 0\n')
 
         # python stub: tomllib version probe prints VERSION; import probes succeed.
         self._write_exec(
@@ -364,7 +392,7 @@ class PublishTestPyPIVerifyRehearsalTest(unittest.TestCase):
             f'#!/bin/bash\nargs="$*"\nif [[ "$args" == *tomllib* ]]; then\n  echo "{version}"\n  exit 0\nfi\nexit 0\n',
         )
 
-    def _run_verify(self, *, create_wheel: bool = True) -> tuple[int, list[str], str]:
+    def _run_verify(self, *, create_wheel: bool = True, download_failures: int = 0) -> tuple[int, list[str], str]:
         with tempfile.TemporaryDirectory() as td:
             tdp = Path(td)
             bindir = tdp / "bin"
@@ -376,11 +404,17 @@ class PublishTestPyPIVerifyRehearsalTest(unittest.TestCase):
             self._write_stubs(bindir, pip_log, tdp / "dl", version=REHEARSAL_VERSION, create_wheel=create_wheel)
             script_path = tdp / "verify.sh"
             script_path.write_text(self.script, encoding="utf-8")
+            (tdp / "runner-temp").mkdir()
             env = RedactedEnv(os.environ)
             env["PATH"] = f"{bindir}{os.pathsep}{env.get('PATH', '')}"
-            # Keep cwd at the temp tree (script opens pyproject.toml relative to CWD).
+            # The runner's own two directories: the verify reads pyproject.toml under GITHUB_WORKSPACE and runs from
+            # RUNNER_TEMP. Set here, so a CI runner's own values never reach the rehearsal.
+            env["GITHUB_WORKSPACE"] = str(tdp)
+            env["RUNNER_TEMP"] = str(tdp / "runner-temp")
+            env["STUB_DOWNLOAD_FAILURES"] = str(download_failures)
+            # As the runner runs a `run:` without a `shell:`: bash -e.
             proc = subprocess.run(  # nosec B603,B607 - workflow's own shell, fixed argv
-                ["bash", str(script_path)],
+                ["bash", "-e", str(script_path)],
                 cwd=str(tdp),
                 capture_output=True,
                 text=True,
@@ -440,6 +474,20 @@ class PublishTestPyPIVerifyRehearsalTest(unittest.TestCase):
         self.assertEqual(len(lines), 1, f"no install may run after a failed download: {lines}")
         self.assertIn("::error::", out)
 
+    def test_a_failed_fetch_is_retried_and_the_verify_goes_on_once_one_succeeds(self) -> None:
+        # The flag-form fetch (`pip download ... && { FETCHED=1; break; }`): a failed try does not stop the step under
+        # `bash -e`, and needs no `set +e`; the try that succeeds ends the loop.
+        rc, lines, out = self._run_verify(download_failures=2)
+        self.assertEqual(rc, 0, out)
+        self.assertEqual([ln.split()[0] for ln in lines], ["download"] * 3 + ["install"] * 3)
+
+    def test_index_lag_that_outlasts_every_try_fails_with_the_templates_lag_error(self) -> None:
+        rc, lines, out = self._run_verify(download_failures=10)
+        self.assertEqual(rc, 1, out)
+        self.assertEqual(len(lines), 10, lines)
+        self.assertTrue(all(ln.startswith("download ") for ln in lines), lines)
+        self.assertIn(f"::error::juniper-ml {REHEARSAL_VERSION} {LAG_ERROR}", out)
+
     def test_sleep_is_invoked_but_stubbed_not_blocking(self) -> None:
         """The index-lag buffer is a BOUNDED POLL, not a fixed sleep (2026-08-24).
 
@@ -473,8 +521,9 @@ class PublishTestPyPIVerifyRehearsalTest(unittest.TestCase):
             "expected a bounded retry loop around the fetch",
         )
         # A failure to ever fetch must be a real error, never a silent fall-through
-        # into the install phases with an empty download dir.
-        self.assertIn("never served", self.script)
+        # into the install phases with an empty download dir: the template's lag
+        # error, the operator signature the docs quote (R5-F5 of the sweep's review).
+        self.assertIn(f'echo "::error::juniper-ml ${{VERSION}} {LAG_ERROR}"', _command_lines(self.script))
         # If sleep were not stubbed this would hang; finishing quickly is the proof.
         # Still exactly 4 pip invocations: the stub succeeds on the first attempt, so
         # the retry adds nothing in the happy path.

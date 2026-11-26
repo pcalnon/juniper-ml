@@ -705,6 +705,16 @@ Why: juniper-cascor 0.13.0's and 0.14.0's wheels differ between PyPI and TestPyP
 
 **Never "Re-run all jobs"** on a publish run, nor `gh run rerun <run-id>` without `--failed`, and do not re-cut the Release: a new build of a version TestPyPI already holds is refused at the TestPyPI upload. Each repository's commands: juniper-ml's seven in [`docs/REFERENCE.md`](../docs/REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi); juniper-cascor's in its `MANUAL.md` section above.
 
+**2026-11-26 amendment (the template's sweep, [juniper-cascor#777](https://github.com/pcalnon/juniper-cascor/pull/777); rulings 1 and 2 of 2026-11-16).** juniper-cascor's three publishers carry it since #777 and juniper-ml's seven since its port; each other repository's as its port lands. In a publisher that carries it:
+
+- the install check runs in a job of its own, `Verify the TestPyPI install` (`contents: read` alone, from `$RUNNER_TEMP`), which the PyPI job needs, and the TestPyPI job holds `id-token: write` alone;
+- rung 1 refuses unless the tag's newest release run exists and its TestPyPI jobs, the upload and the install check, concluded success in their latest attempt, so it can no longer copy files whose install check failed;
+- a TestPyPI job that failed on index lag goes to "Re-run failed jobs" on the release run, within 30 days, which runs the failed job and those after it again: a re-run `Publish to TestPyPI` uploads the same bytes, which the index accepts, and repeats its JSON check, and the install check then runs again; when only `Verify the TestPyPI install` failed, nothing is uploaded again and only the install check repeats; a failed install check goes to a new patch version;
+- a re-cut's run becomes the tag's newest release run, TestPyPI refuses its files, and rung 1 then refuses the tag;
+- the republish takes the version from the tag, the workflow's `PUBLISH_TAG_PREFIX` followed by the exact version, so any other tag fails safe; for a version that a plain dispatch published, no release run of its tag passed its TestPyPI jobs, so rung 1 refuses it, and rung 2 applies to that dispatch run, within 30 days of it;
+- a failed `Verify PyPI serves exactly these files` (the files are already on PyPI) has two causes: a mismatch, which only a new patch version repairs, or a check that gave up waiting, index lag, which "Re-run failed jobs" on the run whose check gave up (the release run, or the republish's dispatch run) repairs within 30 days of that run;
+- the ladder holds only for tags cut after the publisher carries the job: a dispatch runs the workflow as of the tag.
+
 ---
 
 ## 12. Troubleshooting
