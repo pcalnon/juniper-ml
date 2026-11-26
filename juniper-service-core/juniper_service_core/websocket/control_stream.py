@@ -22,6 +22,12 @@ allowlist, optional API key) are preserved; all tunables are read off ``app.stat
 cascor's defaults) rather than importing a service settings module, and cascor's
 ``api.observability`` emissions are dropped. Per-command execution timeouts and the
 ``asyncio.to_thread`` dispatch (so a blocking executor never wedges the event loop) are retained.
+
+Once the server has sent its close -- the heartbeat's 1011, or the receive loop's own idle,
+oversize or malformed-frame close -- the handler executes nothing more and sends nothing more
+(RFC 6455 section 5.5.1: no data after a sent Close). A frame that arrives after the heartbeat's
+close, even one that completes the receive already in progress, is not dispatched: the receive
+loop drains until the ASGI server reports the disconnect, as ``/ws/training``'s does.
 """
 
 from __future__ import annotations
@@ -32,6 +38,7 @@ import logging
 import time
 
 from fastapi import WebSocket, WebSocketDisconnect
+from fastapi.websockets import WebSocketState
 
 from juniper_service_core.websocket.commands import DEFAULT_COMMANDS
 from juniper_service_core.websocket.control_security import HandshakeCooldown, LeakyBucket, validate_control_origin
@@ -79,6 +86,58 @@ def _get_client_ip(websocket: WebSocket) -> str:
     if websocket.client:
         return websocket.client[0]
     return "unknown"
+
+
+def _closed_by_server(websocket: WebSocket) -> bool:
+    """Whether the app has sent its close on ``websocket``.
+
+    Starlette marks ``application_state`` ``DISCONNECTED`` the moment the app sends a close (or a send
+    meets a dead transport). From then on it refuses ``receive_text()`` and every send with its
+    ``RuntimeError`` (``WebSocketDisconnected`` from Starlette 1.x). A socket without the attribute
+    (a test double) reads as open.
+    """
+    return getattr(websocket, "application_state", None) is WebSocketState.DISCONNECTED
+
+
+async def _send_unless_closed(websocket: WebSocket, message: dict) -> bool:
+    """Send ``message`` unless the server has closed the socket already; ``True`` once it is sent.
+
+    The check and Starlette's own state check run with no ``await`` between them, so a close cannot
+    land in between and turn the send into Starlette's ``RuntimeError``.
+    """
+    if _closed_by_server(websocket):
+        return False
+    await websocket.send_json(message)
+    return True
+
+
+async def _drain_until_disconnect(websocket: WebSocket) -> None:
+    """After the server's close, discard what arrives until the ASGI server reports the disconnect.
+
+    ``receive()`` checks only the peer's side, so unlike ``receive_text()`` it still works after the app's
+    close; nothing read here is dispatched. The same drain as ``/ws/training``'s
+    (``training_stream._drain_until_disconnect``), and the same known limit: it has no time bound of its
+    own, so with a peer that never completes the close it lasts as long as the ASGI server keeps the
+    connection.
+    """
+    while getattr(websocket, "client_state", None) is not WebSocketState.DISCONNECTED:
+        message = await websocket.receive()
+        if message.get("type") == "websocket.disconnect":
+            return
+
+
+async def _reject_and_close(websocket: WebSocket, error: str, code: int, reason: str) -> None:
+    """Answer a frame the loop will not dispatch with an error ack, then close the socket.
+
+    If the heartbeat closed the socket while the ack was being sent, nothing more is sent: the
+    socket is drained instead of closed a second time, which Starlette would refuse with
+    ``RuntimeError``.
+    """
+    await _send_unless_closed(websocket, create_control_ack_message("unknown", "error", error=error))
+    if _closed_by_server(websocket):
+        await _drain_until_disconnect(websocket)
+        return
+    await websocket.close(code=code, reason=reason)
 
 
 def _get_cooldown(websocket: WebSocket) -> HandshakeCooldown:
@@ -153,38 +212,43 @@ async def _check_handshake_gates(websocket: WebSocket, client_ip: str) -> bool:
 
 
 async def _handle_command_message(websocket: WebSocket, executor, valid_commands: set[str], msg: dict, bucket: LeakyBucket) -> None:
-    """Validate and dispatch a single command message; send the response."""
+    """Validate and dispatch a single command message; send the response.
+
+    A command still executing when the server closes the socket (its heartbeat timed out meanwhile)
+    finishes, but is not acknowledged: nothing is sent after the close.
+    """
     command = msg.get("command", "")
     safe_command = _sanitize_for_log(command)
     command_id = msg.get("command_id")
 
     if not bucket.try_acquire():
-        await websocket.send_json(create_control_ack_message(command, "rate_limited", data={"retry_after": bucket.retry_after}, command_id=command_id))
+        await _send_unless_closed(websocket, create_control_ack_message(command, "rate_limited", data={"retry_after": bucket.retry_after}, command_id=command_id))
         return
 
     if command not in valid_commands:
-        await websocket.send_json(create_control_ack_message(command, "error", error=f"Unknown command: {command}", command_id=command_id, code="unknown_command"))
+        await _send_unless_closed(websocket, create_control_ack_message(command, "error", error=f"Unknown command: {command}", command_id=command_id, code="unknown_command"))
         return
 
     if executor is None:
-        await websocket.send_json(create_control_ack_message(command, "error", error="Control executor not available", command_id=command_id))
+        await _send_unless_closed(websocket, create_control_ack_message(command, "error", error="Control executor not available", command_id=command_id))
         return
 
     timeout = _COMMAND_TIMEOUTS.get(command, 2.0)
     # Dispatch off the event loop so a blocking executor cannot wedge it; bound by the timeout.
     try:
         result = await asyncio.wait_for(asyncio.to_thread(executor.execute, command, msg.get("params")), timeout=timeout)
-        await websocket.send_json(create_control_ack_message(command, "success", data=result, command_id=command_id))
+        if not await _send_unless_closed(websocket, create_control_ack_message(command, "success", data=result, command_id=command_id)):
+            logger.info("Command '%s' completed after the server closed the socket; it was not acknowledged", safe_command)
     except asyncio.TimeoutError:
         logger.error("Command '%s' timed out after %ss", safe_command, timeout)
-        await websocket.send_json(create_control_ack_message(command, "error", error=f"Command timed out after {timeout}s", command_id=command_id))
+        await _send_unless_closed(websocket, create_control_ack_message(command, "error", error=f"Command timed out after {timeout}s", command_id=command_id))
     except (ValueError, RuntimeError) as exc:
         # Expected control errors (bad params / invalid state transition) -- surface the message.
         logger.info("Command '%s' rejected: %s", safe_command, exc)
-        await websocket.send_json(create_control_ack_message(command, "error", error=str(exc), command_id=command_id))
+        await _send_unless_closed(websocket, create_control_ack_message(command, "error", error=str(exc), command_id=command_id))
     except Exception as exc:  # noqa: BLE001 - an unexpected executor failure stays opaque to the client
         logger.error("Command '%s' failed: %s", safe_command, exc)
-        await websocket.send_json(create_control_ack_message(command, "error", error="Command execution failed", command_id=command_id))
+        await _send_unless_closed(websocket, create_control_ack_message(command, "error", error="Command execution failed", command_id=command_id))
 
 
 async def _control_ping_loop(websocket: WebSocket, client_ip: str, hb_interval: float, hb_timeout: float, pong_received: asyncio.Event) -> None:
@@ -215,17 +279,33 @@ async def _control_ping_loop(websocket: WebSocket, client_ip: str, hb_interval: 
 
 
 async def _control_recv_loop(websocket: WebSocket, executor, valid_commands: set[str], bucket: LeakyBucket, pong_received: asyncio.Event, idle_timeout: float, client_ip: str) -> None:
-    """Receive loop: enforce idle timeout, dispatch commands, route pong frames."""
+    """Receive loop: enforce idle timeout, dispatch commands, route pong frames.
+
+    Once the heartbeat has closed the socket, the loop starts no further ``receive_text()`` (Starlette
+    refuses one after the app's close with ``RuntimeError``), dispatches nothing, and drains until the
+    disconnect (:func:`_drain_until_disconnect`). That includes the frame completing a receive already in
+    progress when the server closed: a command there is neither executed nor acknowledged. The loop's
+    own closes (idle timeout, oversize, malformed frame) end it as before, except that no second close
+    is attempted once the heartbeat has closed first.
+    """
     while True:
+        if _closed_by_server(websocket):
+            await _drain_until_disconnect(websocket)
+            return
         try:
             if idle_timeout and idle_timeout > 0:
                 raw = await asyncio.wait_for(websocket.receive_text(), timeout=idle_timeout)
             else:
                 raw = await websocket.receive_text()
         except asyncio.TimeoutError:
+            if _closed_by_server(websocket):
+                continue  # the heartbeat closed it while this receive waited: drain
             logger.info("Control WS: idle timeout (%ss), closing: %s", idle_timeout, client_ip)
             await websocket.close(code=1000, reason="Idle timeout")
             return
+
+        if _closed_by_server(websocket):
+            continue  # a frame that completed the receive in progress when the server closed: drain, not dispatch
 
         if len(raw) > _MAX_MESSAGE_SIZE:
             # Close rather than ``continue`` (``APD-SVCCORE-005``). The size check necessarily runs
@@ -240,23 +320,20 @@ async def _control_recv_loop(websocket: WebSocket, executor, valid_commands: set
             # (malformed JSON, non-object JSON); an over-limit frame is the same class of client
             # fault, and reconnection is governed by the handshake cooldown.
             # 1009 is RFC 6455's "Message Too Big", which no other gate here uses.
-            await websocket.send_json(create_control_ack_message("unknown", "error", error="Message too large"))
-            await websocket.close(code=1009, reason="Message too large")
+            await _reject_and_close(websocket, "Message too large", 1009, "Message too large")
             return
 
         try:
             msg = json.loads(raw)
         except json.JSONDecodeError:
-            await websocket.send_json(create_control_ack_message("unknown", "error", error="Invalid JSON"))
-            await websocket.close(code=1003, reason="Malformed JSON")
+            await _reject_and_close(websocket, "Invalid JSON", 1003, "Malformed JSON")
             return
 
         # JSON-valid non-objects (arrays / scalars / null) must not reach
         # ``_handle_command_message``'s ``msg.get`` — that AttributeError would
         # tear down the receive loop instead of a controlled reject/close.
         if not isinstance(msg, dict):
-            await websocket.send_json(create_control_ack_message("unknown", "error", error="Invalid control message"))
-            await websocket.close(code=1003, reason="Malformed JSON")
+            await _reject_and_close(websocket, "Invalid control message", 1003, "Malformed JSON")
             return
 
         if msg.get("type") == "pong":
