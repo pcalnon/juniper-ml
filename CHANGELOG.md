@@ -339,6 +339,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     REFERENCE's sentence that a future seq "is trusted, not checked against `current_seq`" no longer holds and is
     replaced.
 
+- **The Cursor flood-4 disposition record runs to 2026-11-26: ruling 49, ruling 7's answers and cleanup script, and
+  what rulings 23 and 26–28 produced.** `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`
+  stopped at 2026-11-24 (juniper-ml#2635).
+  - §8: ruling 7 gains its four answers of 2026-11-25 and K1's as sub-items, and the cleanup script's juniper-ml#2659;
+    ruling 6 records `JuniperCanopy1`'s upgrade by another arc; rulings 23, 26, 27 and 28 name their pull requests
+    (juniper-ml#2664 and #2671; juniper-data#552, juniper-cascor#781, juniper-data-client#272,
+    juniper-cascor-client#205, juniper-cascor-worker#237 and juniper-canopy#842; juniper-canopy#843;
+    juniper-canopy#845),
+    and ruling 23's open question is answered as a stated cost of the ruled fix. Ruling 49 (2026-11-26) gives canopy's
+    X7 health test ruling 28's kind of fix in a PR of its own. Session 16's merge approvals are recorded unnumbered.
+  - "Still open" on 2026-11-26: ruling 49's follow-up, juniper-data#536, the agent guard's open spellings, the
+    service-core release, ruling 7's run and one docs-carrier link. §6 corrects the rename's reach (only the worktrees
+    under `juniper-ml/.claude/worktrees/`), §7 names the pull requests that carried sessions 12–16's helpers, and §5's
+    tables are unchanged.
+  - Provenance helper (new): `util/ad-hoc/2026-11-26_flood4_s16_rec_build_fixes.py`.
 - **The Cursor flood-4 disposition record runs to 2026-11-24: the Overtoad's rulings 15–48 and what each produced.**
   `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` §8 stopped at ruling 14 (2026-11-09).
   - §8 adds rulings 15–48 (2026-11-09 to 2026-11-24), each dated from its session's transcript, with its option labels
