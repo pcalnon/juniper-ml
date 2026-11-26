@@ -42,9 +42,12 @@ import juniper_service_core.websocket.control_stream as control_stream
 import juniper_service_core.websocket.manager as manager_mod
 import juniper_service_core.websocket.training_stream as training_stream
 from fastapi import WebSocket
-from juniper_service_core.websocket.control_stream import control_stream_handler
-from juniper_service_core.websocket.manager import WebSocketManager
-from juniper_service_core.websocket.training_stream import training_stream_handler
+
+# The same objects a `from ... import` would bind; taken from the module aliases above so that each module is
+# imported one way only (CodeQL py/import-and-import-from).
+control_stream_handler = control_stream.control_stream_handler
+WebSocketManager = manager_mod.WebSocketManager
+training_stream_handler = training_stream.training_stream_handler
 
 
 def _code_identity() -> dict:

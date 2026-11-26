@@ -172,7 +172,7 @@ def _close(session: Any, settle: Any = None) -> dict:
         time.sleep(0.2)  # an observation window for the handler to return once it has read the disconnect
     try:
         session.__exit__(None, None, None)
-    except BaseException as exc:  # noqa: BLE001 - the handler's own exception is what is measured
+    except Exception as exc:  # noqa: BLE001 - the handler's own exception is what is measured
         return {"settled": settled, "handler_raised": f"{type(exc).__name__}: {exc}"}
     return {"settled": settled, "handler_raised": None}
 
