@@ -1,0 +1,31 @@
+Thu Nov 26 09:54:57 PM UTC 2026
+primary HEAD file: ref: refs/heads/main
+primary refs/heads/main at 557490fb (loose ref)
+79b17d5e 2026-10-29-parent-agents-md-backups/AGENTS.md.after-first-edit-2026-10-29T20-30Z
+7965b7a1 2026-10-29-parent-agents-md-backups/AGENTS.md.after-first-edit-2026-10-29T20-30Z.substituted-2026-11-20
+6ffd7604 2026-10-29-parent-agents-md-backups/AGENTS.md.pre-edit-2026-10-27T22-35Z
+e9542d3c 2026-10-29-parent-agents-md-backups/AGENTS.md.pre-edit-2026-10-27T22-35Z.substituted-2026-11-20
+29e375ff 2026-11-01-parent-agents-md-backup/AGENTS.md.after-deploy-pin-edit
+e3575215 2026-11-01-parent-agents-md-backup/AGENTS.md.after-deploy-pin-edit.substituted-2026-11-20
+5082c9c8 2026-11-01-parent-agents-md-backup/AGENTS.md.before-deploy-pin-edit
+92560657 2026-11-01-parent-agents-md-backup/AGENTS.md.before-deploy-pin-edit.substituted-2026-11-20
+48e2568a 2026-11-07-parent-agents-md-backup/AGENTS.md.after-juniper-ml-0-11-4-edit
+b0a3ae8c 2026-11-07-parent-agents-md-backup/AGENTS.md.after-juniper-ml-0-11-4-edit.substituted-2026-11-20
+29e375ff 2026-11-07-parent-agents-md-backup/AGENTS.md.before-juniper-ml-0-11-4-edit
+e3575215 2026-11-07-parent-agents-md-backup/AGENTS.md.before-juniper-ml-0-11-4-edit.substituted-2026-11-20
+90df2783 2026-11-14-parent-agents-md-backup/AGENTS.md.before-2026-11-14-edit
+d8ab5749 2026-11-14-parent-agents-md-backup/AGENTS.md.before-2026-11-14-edit.substituted-2026-11-20
+3009c3f4 2026-11-15-parent-agents-md-backup/AGENTS.md.after-cascor-0-14-0-canopy-0-10-0-edit
+5cc1a94c 2026-11-15-parent-agents-md-backup/AGENTS.md.after-cascor-0-14-0-canopy-0-10-0-edit.substituted-2026-11-20
+f3f69b34 2026-11-15-parent-agents-md-backup/AGENTS.md.before-cascor-0-14-0-canopy-0-10-0-edit
+6698d723 2026-11-15-parent-agents-md-backup/AGENTS.md.before-cascor-0-14-0-canopy-0-10-0-edit.substituted-2026-11-20
+live parent AGENTS.md: 3009c3f4
+docker ps rc 0 containers: 0  
+ss rc 0 watched ports listening: [] | all listening: 35
+present: giggly-foraging-sunbeam
+present: sparkling-percolating-meadow
+present: agent-a54a0a279acc3a863
+present: ethereal-munching-peacock
+present: moonlit-percolating-sun
+present: tmp/retry-after-guard-ssq1mano
+worktree archives: ['worktree-archive-2026-11-23']

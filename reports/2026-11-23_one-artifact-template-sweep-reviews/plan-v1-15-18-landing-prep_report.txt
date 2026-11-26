@@ -1,0 +1,366 @@
+REPORT: landing prep for plan v1.15.18 (the one-artifact template sweep's files)
+==================================================================================
+Written 2026-11-26 after 22:25:22Z (date -u) by session d769e173's landing-prep agent. Brief:
+$ME/tmp/v1_15_18/landing/LANDING_PREP_BRIEF.md, read in full. First command 21:54:29Z.
+
+  ME          = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/purring-hugging-hippo
+  W           = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/ethereal-munching-peacock (read only)
+  WT          = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun (read only)
+  PRIMARY_TMP = /home/pcalnon/Development/python/Juniper/juniper-ml/tmp (item 5 only)
+  L           = $ME/tmp/v1_15_18/landing (my scratch: every log and driver named below is here)
+
+OUTCOME: items 1-6 all DONE. No commit, push, stash or delete in any repo; $ME's HEAD is still main 557490fb. I did not
+touch $ME/notes/, $ME/docs/, $ME/prompts/ or any tracked file. $W and $WT are unchanged: 0 entries newer than 21:54Z
+(find -newermt, at 22:23:36Z). Nothing was written under /tmp or /var/tmp. Deviations are listed under each item and
+collected at the end.
+
+The deliverables in $ME: 19 new files in util/ad-hoc/ and 57 in reports/2026-11-23_one-artifact-template-sweep-reviews/.
+Their final sha256s are in $L/deliverables_final.sha256 (76 lines; `sha256sum -c` from $ME gives 76 OK). None of the
+76 is gitignored (`git check-ignore -v --no-index --stdin` exit 1; the positive control on tmp/ and __pycache__/ gives
+exit 0).
+
+
+1. VERBATIM COPIES INTO $ME/util/ad-hoc/ -- DONE
+------------------------------------------------
+Copied with `cp -p` (mtimes kept; nothing existed at these paths in $ME beforehand):
+
+  From $W, the 7 files named in $W/tmp/arc/sweep_scripts.sha256:
+    c47940add4abcfa6e087c3454d81a00fdb328b3e0e71c36a5aeaf2b0a31c352a  util/ad-hoc/2026-11-23_cascor_one_artifact_sweep_edits.py
+    a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35  util/ad-hoc/2026-11-23_publish_port_template_identity.py
+    faa198c274779db9eafc2451bcdc799a75066378290de10b44426748e0bc9e41  util/ad-hoc/2026-11-24_publish_port_install_pins.json
+    34924d190d34ae8ca7ed0dd7827833ae9143e96b33b7040485b666593fe55761  util/ad-hoc/2026-11-23_publish_one_artifact_test_lens_mutations.py
+    5fb8aa0e586b3fab89e683eb061c37454e184029b0ed053f74c6e290e72ba85f  util/ad-hoc/2026-11-23_publish_one_artifact_test_lens_proposed_fixes.py
+    bc697f2b13e847db7ddc9498e1b42aa3b20519ffd411e450de1c7ad9fcece1e1  util/ad-hoc/2026-11-23_publish_sweep_r2_review_probes.py
+    caa4c187c4d19d08b9ce0b094bb080931a14c2a6ae9f367294c32afc1f9396c1  util/ad-hoc/2026-11-23_publish_sweep_r4_review_probes.py
+  Proof: `cd $ME && sha256sum -c $W/tmp/arc/sweep_scripts.sha256` printed 7 OK (exit 0). Re-run at the end: 7 OK
+  ($L/final_item1_manifest.out).
+
+  From $WT, the 8 files $WT/util/ad-hoc/2026-11-26_*.py (the brief calls all 8 writers; the eighth,
+  ..._juniper-cascor-client_pypi_check_two_causes.py, is the writer of the cascor-client follow-up #207):
+    9f5fe73f0a7febdd06d7228ad25a812acdabab86431e544741b9ebc2a2d69f71  util/ad-hoc/2026-11-26_juniper-canopy_one_artifact_sweep_port.py
+    17035d909cdf1059699ebf150fbe737d5ad7a642ad2b242b4ba8a2a36b8030a3  util/ad-hoc/2026-11-26_juniper-cascor-client_one_artifact_sweep_port.py
+    e7a8dd3bbe1df60cf12c9a6df3250e0334f8fc34c8f5b62be5bb62a3eafc0a4a  util/ad-hoc/2026-11-26_juniper-cascor-client_pypi_check_two_causes.py
+    7e6d47c09e9b0b8acb732a69c6128401b7e9d90bd5401f64fbd1ca682f75a8b6  util/ad-hoc/2026-11-26_juniper-cascor-worker_one_artifact_sweep_port.py
+    c2295899906ae463ae272b254233d98a75e2eea78f16e31528f0a20597bf2895  util/ad-hoc/2026-11-26_juniper-data-client_one_artifact_sweep_port.py
+    3327f4e6d1884c9637bacc7dd4516f142b936f1b8264737f3025c57b72f7ee8f  util/ad-hoc/2026-11-26_juniper-data_one_artifact_sweep_port.py
+    6d79b6d15a161ee0f9136e3abe99ae389906987bbb65b3b18aca62466478c5a6  util/ad-hoc/2026-11-26_juniper-ml_one_artifact_sweep_port.py  (as copied; item 2 changes it)
+    7ab9ab5142e683f9018b56d1183f0cc3ed29f8ff2e07059af7b4e6f5778a011a  util/ad-hoc/2026-11-26_juniper-recurrence_one_artifact_sweep_port.py
+  Written: $L/writers.sha256 (sha256sum format, repo-relative paths, these 8 lines). `cd $WT && sha256sum -c` on it:
+  8 OK. From $ME after item 2: 7 OK, and the juniper-ml writer FAILS, as it must, since item 2 changed only that copy
+  (now 31f8440e..., item 2).
+
+  Which source states each writer's FINAL hash ($L/writer_hash_search.py, output $L/writer_hash_search.out; it searches
+  the 16-hex and 8-hex prefixes in $W/tmp/sweep/REVIEW_DISPOSITIONS.md and the 17 $WT/tmp/ports/*/REPORT*.txt, then the
+  hashes on or near each line that names the writer). Every one of the 8 final hashes is stated by at least one
+  source, so there is no writer whose final hash no source states. The report holding the last value:
+  - canopy 9f5fe73f0a7febdd: $WT/tmp/ports/juniper-canopy/REPORT_FIXUP2.txt:73 (full) and REVIEW_DISPOSITIONS.md:2504
+    (`9f5fe73f…`). It moved twice: REPORT.txt:15 states 7e56cdfd… (commit 1), and REPORT_FIXUP.txt:50 states 5fca1dca…
+    (commit 2).
+  - cascor-client 17035d909cdf1059: juniper-cascor-client/REPORT_FIXUP.txt:49 (full) and REVIEW_DISPOSITIONS.md:2249.
+    Earlier, REPORT.txt:14 states 77182443….
+  - pypi_check_two_causes e7a8dd3bbe1df60c: juniper-cascor-client-followup/REPORT.txt:39 (full) and
+    REVIEW_DISPOSITIONS.md:2598. No earlier value.
+  - cascor-worker 7e6d47c09e9b0b8a: ONLY juniper-cascor-worker/REPORT_FIXUP.txt:42 (full, "(was ceabb57e...)").
+    REVIEW_DISPOSITIONS.md states only the first commit's ceabb57e… (:2331), so the record is stale for this writer.
+    REPORT.txt:16 states ceabb57e….
+  - data-client c2295899906ae463: juniper-data-client/REPORT_FIXUP.txt:84 (full, "revision 2") and
+    REVIEW_DISPOSITIONS.md:2391. Earlier, REPORT.txt:20 states 6798f7b7… (revision 1).
+  - data 3327f4e6d1884c96: juniper-data/REPORT_FIXUP.txt:40 (full, "(was f789b881...)") and REVIEW_DISPOSITIONS.md:2553.
+    Earlier, REPORT.txt:15 states f789b881….
+  - ml 6d79b6d15a161ee0: juniper-ml/REPORT_FIXUP.txt:68 (full), :207 (8-hex) and REPORT_FIXUP_part2.txt:50 (8-hex).
+    REVIEW_DISPOSITIONS.md states NO hash for this writer at all. Earlier, REPORT.txt:45-46 states dfac9f69… (commit 2's
+    writer, its 64 hex split across two lines) and f0cc2226… (commit 1's).
+  - recurrence 7ab9ab5142e683f9: juniper-recurrence/REPORT_FIXUP.txt:42 (full) and REVIEW_DISPOSITIONS.md:2612
+    ("revision 2"). Earlier, REPORT.txt:15 states 823baf14….
+
+
+2. THE JUNIPER-ML PORT WRITER: CODEQL'S UNUSED LOCALS -- DONE
+--------------------------------------------------------------
+In $ME's copy only. Line numbers are the original's:
+  :670 install_job()        package, _, test_id, _, _, step_name, sparse  ->  _, _, test_id, _, _, step_name, sparse
+  :688 install_step_old()   package, _, _, prod_id, _, step_name, _       ->  _, _, _, _, _, _, _
+                            (kept as an unpacking, so a wrong key or length still raises exactly as before)
+  :761 workflow_edit()      package, dist, test_id, prod_id, prefix, step_name, sparse  ->  ..., prefix, _, sparse
+  Docstring: one sentence added as a final paragraph: "Landed with plan v1.15.18 on 2026-11-26 with five unused tuple
+  targets renamed ``_`` (CodeQL's unused-local: ``package`` in ``install_job()``; ``package``, ``prod_id`` and
+  ``step_name`` in ``install_step_old()``; ``step_name`` in ``workflow_edit()``), its output unchanged."
+  The diff is $L/item2_writer.diff (4 hunks). The file goes 6d79b6d1… -> 31f8440e76bda9dc1ba2df92b6b30f4f1d356e1f5f6ff407528016422778e8c6.
+
+Proof, by replay. A replay was possible, so I ran one.
+  - Method, from $WT/tmp/ports/juniper-ml/REPORT_FIXUP.txt ("Replay") and the writer's own header ("92 and 55
+    reproduce juniper-ml#2673, all three commits"). The input is a plain copy of a base tree at juniper-ml bceac63c,
+    plus an empty .git marker directory. The arguments are --changelog-cases 92 --changelog-mutations 55
+    --date 2026-11-26.
+  - Base tree. `git archive bceac63c` produced $L/replay/base.tar, extracted to $L/replay/base and verified entry by
+    entry against `git ls-tree -r bceac63c`: 6852 entries, 0 mismatched, 0 extra.
+    - The 70 LFS paths were checked by their pointer's oid and size: `git archive` ran git-lfs smudge, because
+      filter.lfs.* is configured.
+    - All 70 objects were already in the primary's local LFS cache, and none was touched near or after the archive,
+      so nothing was downloaded ($L/replay/lfs_check.out).
+  - Template. A cp -p copy of $WT/tmp/ports/clones/juniper-cascor/.github/workflows/{publish.yml,publish-protocol.yml},
+    whose sha256s equal the writer's pins b6826ee6… and f37c3ef6…. It is passed as --template-dir to BOTH runs, because
+    the writer's default is resolved from its own location, which differs between the two copies.
+  - Command, run once per writer, each on its own fresh copy (fresh_orig, fresh_mod), from $L/replay:
+      /opt/miniforge3/envs/JuniperCascor1/bin/python3 -I -B <writer> --tree <fresh copy> --template-dir <template>
+          --changelog-cases 92 --changelog-mutations 55 --date 2026-11-26
+    The exact commands are in $L/replay/run_orig.cmd and run_mod.cmd. The driver is $L/replay/replay_item2.py, and its
+    log is $L/replay/replay_item2.out.
+  - Result: IDENTICAL.
+    - Both runs exit 0. Their stdout is equal (1143 bytes, sha256 5dd1bd785d412d46…) and their stderr is empty.
+    - The two trees hold 6853 entries each, and 0 differ.
+    - Each run wrote the same 18 files, and every one equals, by blob id, the file in juniper-ml main e2e463ea
+      (#2673 as landed). So the replay is not vacuous: it reproduces the merged PR.
+    - $WT is unchanged (0 entries newer than the run).
+Proof, structural (in addition, since a replay settles only the success path): $L/ast_item2.py, output $L/ast_item2.out.
+  Ignoring positions, the two ASTs differ in 6 places:
+  - the docstring constant, where the modified docstring is the original plus that one paragraph, and the first line,
+    the only part the writer uses (argparse's description), is unchanged;
+  - exactly the 5 Name nodes, each a tuple target renamed `_`.
+  No renamed name is read (Load) anywhere in its function, nested scopes included. No `_` is read in those functions in
+  the modified copy, and none of the three calls locals, vars, globals, eval or exec.
+Prescreen: `python3 util/ad-hoc/2026-10-05_codeql_python_prescreen.py <the writer>` predicts 5 alerts before (exit 1,
+$L/item2_prescreen_before.out, the brief's five exactly) and 0 after (exit 0, $L/item2_prescreen_after.out).
+
+
+3. THREE SESSION TOOLS PROMOTED TO $ME/util/ad-hoc/ -- DONE
+------------------------------------------------------------
+  f93546c75d47ede78b3e7e651a74962d2a27ece368f373c1e9b64dfa534652c5  util/ad-hoc/2026-11-26_publish_port_verify_all_mains.bash
+      from $WT/tmp/s2/verify_all_mains_v3.bash (6d84ba8baf4f714b…)
+  f98952496f9a06e678a0b1219e94d4f834dc48fff500ab6fec12914b62f3e3ea  util/ad-hoc/2026-11-26_publish_port_check_pr_head.bash
+      from $WT/tmp/s2/check_pr_head.bash (1ca330d67c3d4ffd…)
+  f53980e48c88cd9e303892151bcbfdf1d54ffa1298e66275e9587f0ec17fc766  util/ad-hoc/2026-11-26_publish_port_apply_install_pin.py
+      from $WT/tmp/s2/apply_pin.py (1accc8cc5326b475…)
+What changed, as the brief asks:
+  - Each carries the util/ad-hoc/README.md header.
+  - The repo root comes from the script's own location: `git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse
+    --show-toplevel`, and the same through subprocess in the .py.
+  - The checker, the pins file and the fetch helper are the checkout's own. verify_all_mains keeps its CHECKER and
+    PINS environment overrides. check_pr_head keeps its PINS_FILE argument, and its checker is not overridable (the
+    original's was not). check_pr_head still refuses any checker whose sha256 is not a452db3d….
+  - The interpreter is ${PYTHON:-python3}. The headers say it needs PyYAML, and both bash tools refuse at once (exit 2)
+    when `"$PYTHON" -I -c 'import yaml'` fails. That pre-check is an addition.
+  - Outputs go to NEW timestamped directories under the checkout's tmp/: tmp/publish-port-verify-all-mains/<stamp>/,
+    tmp/publish-port-check-pr-head/<repo>-<pr>/<stamp>/ and tmp/publish-port-apply-install-pin/<stamp>/. A tool refuses
+    when its stamp directory already exists; the originals used mkdir -p.
+  - There is no /home/pcalnon literal and no /tmp literal.
+  - For the pin tool, the checkout's pins file is the canonical one. The $W manifest regeneration is dropped, and the
+    backups are kept, under tmp/.
+Deviations, each with its reason:
+  (a) Both bash tools keep `set -u`, not the README template's `set -euo pipefail`, and each header says why: the
+      originals collect every repository's checker status and report it, and -e would abort at the first failure.
+  (b) apply_install_pin: the original took its EARLIER canonical versions from $W (fix pass 11's
+      pins_r12_as_delivered.json and $W/tmp/arc/pins.before-*.json), and those paths go away with $W. Since git is the
+      manifest now, they are every version of util/ad-hoc/2026-11-24_publish_port_install_pins.json in the checkout's
+      git history (`git log`, then `git show`), plus this tool's own backups under tmp/publish-port-apply-install-pin/.
+      Until this PR lands the file has no git history, so another repository's entry must equal the current file's.
+  (c) apply_install_pin gained `--pins FILE` (default: the checkout's file), because the brief's "real run on a COPY"
+      needs a target other than the canonical file. A backup of a non-canonical target is named rehearsal.before-…,
+      so a rehearsal can never count as an earlier canonical version. argparse replaces sys.argv parsing, so a usage
+      error exits 2, and an existing backup directory is refused cleanly (exit 2).
+  (d) check_pr_head: `cat log | cut -c1-220` became `cut -c1-220 log`, with the same output.
+  (e) The two bash tools print the checkout and their output directory near the top, an addition.
+Proofs:
+  - `bash -n`: exit 0 on both. shellcheck 0.11.0 is clean on both at its default checks (exit 0) and at the hook's
+    --severity=warning. With --enable=all, the optional style notes SC2250, SC2312 and SC2248 appear, as they would
+    on the originals; I did not address them.
+  - verify_all_mains, run from $ME with PYTHON unset (python3 resolves to JuniperCascor1 3.14.7, PyYAML 6.0.3):
+      `bash util/ad-hoc/2026-11-26_publish_port_verify_all_mains.bash` -> last line `18 of 18 pass`, exit 0 (22:09:42Z)
+    - Every repository is at main and passes at exit 0: cascor 5e3d9801 (3 of 3), canopy 374c0fb9, data a0bb1558
+      (called file e17ddc9b…), data-client 51e34f71, cascor-client 7e1399d8, cascor-worker f9122a8a, recurrence
+      8a5a062e (3 of 3) and ml 557490fb (7 of 7).
+    - The checker is a452db3d… and the pins file faa198c2….
+    - Output in $ME/tmp/publish-port-verify-all-mains/20261126T220941Z/; stdout in $L/item3_verify_all_mains.out.
+  - check_pr_head:
+      `bash util/ad-hoc/2026-11-26_publish_port_check_pr_head.bash juniper-cascor-client 207 util/ad-hoc/2026-11-24_publish_port_install_pins.json publish.yml`
+    - The head is faaf6538bd003b8a018f951ddbf560e3f6d4815f. #207 is MERGED, at 11:27:26Z, as 7e1399d8.
+    - It printed `PASS head/publish.yml` and `1 of 1 pass`; checker exit 0, template b6826ee6…, pins faa198c2….
+    - Output in $ME/tmp/publish-port-check-pr-head/juniper-cascor-client-207/20261126T221007Z/; stdout in
+      $L/item3_check_pr_head_207.out.
+  - check_pr_head's refusal, a negative control beyond the listed proofs (the refusal the brief says to keep):
+    - The tool was copied into a throwaway `git init` checkout, $L/item3/negctl, beside a checker one comment line
+      longer than the real one.
+    - It printed `REFUSED: checker sha256 7f04b83bbc550d77…` and exited 2, before any fetch, and created no output
+      directory.
+  - The pin tool. The driver is $L/item3_proofs.py, and its log is $L/item3/item3_proofs.out:
+    A  The canonical file as the proposal for juniper-ml, --dry-run, on the canonical file: "nothing to apply: juniper-ml's
+       pins already equal the proposal's", exit 0.
+    B  The same, as a --dry-run and then as a REAL run, on a COPY ($L/item3/copy.json, through --pins): both "nothing to
+       apply", exit 0. The copy and the canonical file are unchanged (faa198c2…), and no backup was written.
+    C  A proposal that moves juniper-canopy's pin (one line added, its sha256 recomputed so that only the
+       other-repository rule can refuse it), for juniper-ml, as a real run on the copy and as a dry run on the
+       canonical file:
+       "REFUSED: the proposal changes another repository's pin ('juniper-canopy', 'publish.yml', 'Verify TestPyPI
+       install') (equal to no canonical version)", exit 1 in both, and nothing changed.
+    D  Beyond the brief, to exercise the write path the promotion changed: the same proposal for juniper-canopy, on a
+       second copy.
+       - It printed APPLY ffc590714d80379c… (23 lines) -> f02d30d64d7f4274… (24 lines).
+       - The backup, $ME/tmp/publish-port-apply-install-pin/20261126T221123Z/rehearsal.before-juniper-canopy-20261126T221123Z.json,
+         equals the copy's state before the run.
+       - The copy then equals the proposal byte for byte, and a re-run has nothing to apply.
+       - The canonical file is unchanged throughout.
+
+
+4. THE REVIEWS' ARCHIVE (IN GIT) -- DONE
+-----------------------------------------
+New: 749e7a8f1121b71429a2bd868282d52150960a3871779e68efdd579b81f3a15f  util/ad-hoc/2026-11-26_archive_one_artifact_sweep_reviews.py
+  The archiver is modelled on the 2026-11-15 one:
+  - Copies are verbatim, as bytes, plus one final newline only if a source lacks one. None of the 56 lacked one.
+  - All 56 sources' sha256s are pinned in FILES, each source named relative to the primary checkout, which is found
+    from the git common directory.
+  - README.md is rendered from the table: file (a link), what it is, source path, sha256 prefix.
+  - `--check` writes nothing. It exits 1 when a copy is missing or differs from its source, or, when a source has gone,
+    from its pin.
+  - A write run refuses (exit 1, nothing written) while any source is missing or moved from its pin.
+  It goes beyond the model in two ways. `--check` still checks the README and every other file when a source has gone;
+  the model returned 0 early in that case. And `--check` FAILS on any file in the archive directory that the table does
+  not name.
+  Runs:
+  - The write run, at 22:15:35Z, wrote 57 files.
+  - `python3 -I -B util/ad-hoc/2026-11-26_archive_one_artifact_sweep_reviews.py --check` gives 57 PASS, exit 0. Re-run
+    at the end: 57 PASS, 0 FAIL ($L/final_item4_check.out).
+Archive: $ME/reports/2026-11-23_one-artifact-template-sweep-reviews/, 57 files, 1,212,388 bytes.
+  - README.md is 75f0270ada5ed0e13fdc7e4a67b7c71e5a3d53f79d8607d090924e89072c6d06.
+  - The 56 copies are byte-identical to their sources, each sha256 being its pin. The list is in the archiver and in
+    $L/item4_sources.sha256.txt.
+  The files:
+    dispositions.md                      <- $W/tmp/sweep/REVIEW_DISPOSITIONS.md (f70311a8…, 274,296 bytes)
+    round-06_report.md … round-12_report.md (7)       <- $W/tmp/r{6..12}review/ROUND{6..12}_REPORT.md
+    round-04_brief.md … round-12_brief.md (9)         <- $W/tmp/sweep/ROUND{4..12}_BRIEF.md
+    fixpass-03_brief.md … fixpass-11_brief.md (9)     <- $W/tmp/sweep/FIXPASS{3..11}_BRIEF.md
+    land_brief.md, sweep_brief.md, sweep_items.md, plan_v1_15_18_inputs.md
+                                         <- $W/tmp/sweep/LAND_BRIEF.md, $W/tmp/ports/SWEEP_BRIEF.md, SWEEP_ITEMS.md,
+                                            $W/tmp/arc/plan_v1_15_18_inputs.md
+    sweep-port_brief.md, sweep-port-review_brief.md
+                                         <- $WT/tmp/ports/SWEEP_PORT_BRIEF.md, SWEEP_PORT_REVIEW_BRIEF.md
+    port-<repo>_review.txt (7)           <- $WT/tmp/ports/<repo>/review/REVIEW.txt
+    port-<repo>_report.txt / _report-fixup.txt (17), with canopy's _report-fixup2.txt, ml's _report-fixup-part2.txt and
+    port-juniper-cascor-client-followup_report.txt
+                                         <- every $WT/tmp/ports/<repo>/REPORT*.txt
+(a) The credentials and personal-data grep: $L/item4_secret_grep.py, output $L/item4_secret_grep.out, which lists
+    every hit with its line. Nothing was changed.
+    - ghp_: 0. gho_: 0. github_pat_: 0. AKIA: 0. Private-key headers: 0.
+    - pypi-: 38 lines, none of them token-shaped. Every one is part of a name:
+      - gh-action-pypi-publish (dispositions.md:1406, :1534, :1695; fixpass-09_brief.md:29; round-10_report.md:166, :168;
+        round-11_report.md:234-236, :251, :278; round-12_report.md:203; sweep_items.md:68;
+        port-juniper-cascor-client_review.txt:259);
+      - verify-testpypi-install (the review and report files; sweep_brief.md:60);
+      - docs/publish-pypi-check-two-causes (dispositions.md:2591; port-juniper-cascor-client-followup_report.txt:12,
+        :15, :220);
+      - "pypi-publish tests" (round-09_report.md:181).
+    - E-mail addresses: 5 lines, all noreply@anthropic.com in Co-Authored-By trailers: fixpass-03_brief.md:106,
+      land_brief.md:64, port-juniper-canopy_review.txt:300, sweep-port_brief.md:207 and sweep_brief.md:224.
+    - Beyond the brief: there are 59 home-directory paths in 45 files. 58 are the host user's home (for example
+      "$WT = /home/pcalnon/…"), and one is /home/runner, a CI runner path (round-09_report.md:111).
+(b) The doc-link check, from $ME, exactly as CI runs it:
+      `juniper-check-doc-links --exclude templates --exclude history --exclude legacy --exclude pull_requests
+       --exclude releases --exclude analysis --exclude fixes --exclude development --exclude CHANGELOG.md
+       --exclude tmp --cross-repo skip`
+    - Version 0.1.1. Exit 0: "All links valid across 1784 files", PASSED on the first run
+      ($L/item4_doclinks_run1.out).
+    - It is not vacuous. The verbose run ($L/item4_doclinks_verbose.out) shows each of the README's 56 links "OK
+      (file)", and sweep-port_brief.md:216's external link skipped. A run on the archive directory alone scanned 57
+      files, all valid ($L/item4_doclinks_archive_only.out).
+    - No file needed to become .md.txt. The archiver adds its README note only when a name ends .md.txt, so the note is
+      absent.
+    Note: .pre-commit-config.yaml's global `exclude` covers reports/.*, so no pre-commit hook ever runs on this archive.
+    CI's doc-link step and its Security Scan do (gitleaks over the archive: item 6).
+
+
+5. THE PROOF TOOLS' ARCHIVE (OUTSIDE GIT, IN THE PRIMARY'S tmp/) -- DONE
+------------------------------------------------------------------------
+Root: $PRIMARY_TMP/worktree-archive-2026-11-26/. It did not exist, and the driver refuses if it does. Copies are in
+ethereal-munching-peacock/tmp/sweep/<dir>/. The driver is $L/item5_archive_proof_tools.py and its log
+$L/item5_archive_proof_tools.out; it ran from 22:19:30Z to 22:19:51Z (date -u).
+Measured first (du -sb; file sizes): the total to copy was 18,850,995 bytes (18.0 MiB), under 1 GB, so every
+top-level regular file AND each evidence/ directory, recursively, were copied, with `cp -p` and `cp -Rp`; nothing was
+moved.
+  dir          top-level files (bytes)    evidence/ files (du -sb)   other subdirectories NOT copied (whole dir du -sb)
+  cascor-r3    49 (677,800)               67 (385,797)               43 (369,542,199)
+  cascor-r4    55 (1,053,984)             104 (1,818,471)            55 (786,954,941)
+  checker-r5   36 (556,224)               28 (370,371)               12 (27,804,394)
+  checker-r6   36 (478,948)               29 (570,132)               15 (46,970,236)
+  checker-r7   43 (668,738)               32 (649,429)               13 (51,008,914)
+  checker-r8   38 (808,569)               25 (322,741)               7 (28,928,053)
+  checker-r9   42 (708,434)               30 (389,285)               9 (46,273,945)
+  checker-r10  44 (884,482)               57 (1,240,240)             31 (403,921,819)
+  checker-r11  69 (1,951,704)             402 (2,474,768)            59 (745,532,316)
+  checker-r12  64 (1,193,298)             329 (1,647,580)            36 (229,143,614)
+  No top-level or evidence entry was a link, FIFO or device.
+Each of the 1579 copies equals its source in content (sha256) and modification time.
+README.md (c30160815d2e5e79198541fffd688fb85fb0c9283f0978d575b98de0a5971128) says:
+  - what this is: each round's proof drivers and evidence, the tools that produced the counts REVIEW_DISPOSITIONS.md
+    records;
+  - its source;
+  - when (date -u) and by which session (d769e173);
+  - that the trees (clones, mutants, simulations, stand-in venvs; every other subdirectory, named per directory) and
+    the sweep's other directories (cascor, cascor-r2, cascor-r3-prep, land) were NOT copied, and remain in
+    $W/tmp/sweep/ until the Overtoad rules on $W's removal;
+  - that the archive is kept under the 2026-10-26 retention rule;
+  - how to verify it.
+MANIFEST.sha256 (44ba25897d964b1bb6cc0237c5d5f5673b5577707d5b17b45e71669eb453f4a6) lists every file but itself, the
+README included: 1580 entries, with paths relative to the archive root. I took the archive root to be
+worktree-archive-2026-11-26/ itself, so MANIFEST.sha256 and README.md sit there.
+Verify: `cd $PRIMARY_TMP/worktree-archive-2026-11-26 && sha256sum -c MANIFEST.sha256` gives exit 0, 1580 OK of 1580
+($L/item5_sha256sum_check.out; re-run at the end, 1580 OK, $L/final_item5_check.out). The archive totals 19,090,276
+bytes.
+
+
+6. GATES ON EVERY NEW FILE UNDER $ME/util/ad-hoc/ -- DONE, ALL PASS
+--------------------------------------------------------------------
+The 19 files are listed in $L/new_files.txt: 16 .py, 2 .bash and 1 .json. The driver is $L/item6_gates.bash and its log
+$L/item6_gates.out.
+  - `python3 util/ad-hoc/2026-10-05_codeql_python_prescreen.py <the 16 .py>`: "0 predicted alert(s) in 16 file(s)",
+    exit 0.
+  - flake8 7.3.0 (flake8-bugbear 26.11.22), the binary the brief names:
+    - --select=B914: 0 findings, exit 0.
+    - --max-line-length=512 --select=F,E9: 0 findings, exit 0.
+    - No flake8 config file exists in the repo, so none could exclude a file.
+    - Positive control: an implicit concatenation planted in a list in a scratch file is reported as B914.
+  - `python3 -m py_compile`: 16 of 16 pass. The bytecode went to $L/pycache through PYTHONPYCACHEPREFIX.
+  - shellcheck on the 2 .bash: clean (exit 0) at its defaults and at --severity=warning. `bash -n` gives 0.
+  - `python3 util/tmp_path_literal_check.py` (whole scope): PASS (3885 files, 453 literal lines).
+    `python3 util/home_path_literal_check.py` (whole scope): PASS (3337 files, 651).
+    NOTE: both whole-scope runs read `git ls-files`, so they CANNOT see these untracked files. I therefore also ran both
+    in the FILE form with the 19 files named. Both PASS: "the named files: 18 files, 0 literal lines"; the .json is
+    outside both gates' suffixes.
+  - `pre-commit run --files <the 19>`, with pre-commit 4.6.0 on PATH (it is not broken; its shebang is python3.14). The
+    driver is $L/item6_precommit.bash and its log $L/item6_precommit.out. Exit 0.
+    - Passed: JSON, end-of-file, trailing whitespace, merge conflicts, large files, case conflicts, Python AST, debug
+      statements, private keys, shellcheck, gitleaks, G5 and G-TMP.
+    - Skipped, as scoped to scripts|tests: black, isort, flake8, mypy and bandit.
+    - Hashing my 19 files and the orchestrator's 2 in-flight files before and after shows all unchanged. No hook would
+      change a verbatim file, so nothing was restored.
+  - Beyond the brief:
+    - The pre-commit gitleaks hook scans staged content only; the config's own comment says "In CI nothing is staged,
+      so this hook scans nothing". Its "Passed" is therefore vacuous for untracked files, and CI's Security Scan is the
+      gate.
+    - So I ran `gitleaks dir`: the same v8.24.3, as built in the pre-commit cache, with $ME/.gitleaks.toml, whose
+      allowlist is regexes only. The driver is $L/item6_gitleaks.bash and its log $L/item6_gitleaks.out.
+    - Results: the archive gives 0 findings, and cp -p copies of the 19 files give 0. A positive control (a fake ghp_
+      token built at run time, then removed) gives 1 finding.
+
+
+DEVIATIONS AND NOTES, COLLECTED
+-------------------------------
+- Item 3: (a) to (e) above: `set -u` kept; the pin tool's earlier versions come from git history and tmp/ backups;
+  `--pins` added; `cut` for `cat | cut`; extra header lines. Also the PyYAML pre-check in both bash tools.
+- Item 2: an `ast` proof was added beside the replay, although the replay was possible.
+- Item 3: two checks were added: a negative control of check_pr_head's checker refusal, and the pin tool's write path
+  (case D).
+- Item 6: the literal gates were also run in the FILE form (the whole-scope form cannot see untracked files), and a
+  gitleaks dir scan was added.
+- The orchestrator is working in this worktree at the same time: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md
+  is modified, and util/ad-hoc/2026-11-26_consolidated_plan_v1_15_18_template_sweep.py is new. I did not touch either,
+  and that .py is NOT among the 19 I gated.
+- util/ad-hoc/__pycache__/2026-09-05_markdown_structure_check.cpython-314.pyc appeared at 22:09:30Z, from no command of
+  mine. util/markdown_structure_delta.py loads that module, so it was probably the orchestrator's run. I left it; it is
+  gitignored.
+- My own `python3 -m py_compile`, at 22:08:59Z, had written
+  util/ad-hoc/__pycache__/2026-11-26_publish_port_apply_install_pin.cpython-314.pyc. I removed that one file and the
+  then-empty directory at once, and every later compile used PYTHONPYCACHEPREFIX.
+- Item 1: the dispositions record is stale for two writers: cascor-worker (it names ceabb57e…, not 7e6d47c0…) and
+  juniper-ml (no hash at all). The reports named above hold the final values.
+- Scratch size and retention: $L is 762 MB, almost all of it the replay trees in $L/replay, which can be rebuilt from git
+  bceac63c with replay_item2.py. The tools' outputs in $ME/tmp/publish-port-*/ are 1.3 MB. All of it stays under the
+  2026-10-26 retention rule. `git worktree remove` of this worktree would delete it, so check $ME/tmp/ against that rule
+  first. The proof logs worth keeping are the small *.out files in $L.
