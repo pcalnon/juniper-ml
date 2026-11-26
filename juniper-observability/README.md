@@ -91,9 +91,11 @@ and collector helpers (pin `>=0.2.0`). The client libraries
 
 **Live** on PyPI, published independently of the meta-package on `juniper-observability-v*` tags. The
 current version is shown by the badge above; see [`CHANGELOG.md`](./CHANGELOG.md). Consumers should
-pin `juniper-observability>=0.4.2`, the security patch in which `configure_sentry` also scrubs
-Sentry transactions, parsed cookies and four more credential headers; 0.4.1 stopped it sending
-frame-local variables.
+pin `juniper-observability>=0.4.3`, the first release whose `configure_sentry` runs on sentry-sdk 3.x:
+0.4.2's `sentry` extra admits 3.x, and on 3.x its `configure_sentry` raises `TypeError` at startup
+whenever a DSN is set. 0.4.2 was the security patch in which `configure_sentry` also scrubs Sentry
+transactions, parsed cookies and four more credential headers; 0.4.1 stopped it sending frame-local
+variables.
 
 ### Compatibility policy — pinning, not deprecation cycles
 

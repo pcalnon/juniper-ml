@@ -98,7 +98,16 @@ def test_middleware_reexports_are_the_same_objects():
 
 
 def test_version_is_stable_string():
-    """0.4.2 — security patch, no public-symbol change vs ``0.4.1``. ``configure_sentry`` also
+    """0.4.3 — patch, no public-symbol change vs ``0.4.2``. ``configure_sentry`` runs on
+    sentry-sdk 3.x as well as 2.x: 3.0.0 removed four of the options 0.4.2 passed, and
+    ``sentry_sdk.init`` raised ``TypeError`` on them at startup whenever a DSN was set. The
+    installed SDK's major decides the options. 2.x gets 0.4.2's, unchanged; 3.x gets the same
+    choices through ``data_collection``, and the hooks, a new ``before_send_span`` among them,
+    re-apply the denylists of the ``EventScrubber`` that 3.0.0 deleted. The ``sentry`` and
+    ``test`` extras admit ``sentry-sdk[fastapi]>=2.35.0,<4``. Consumers should pin
+    ``juniper-observability>=0.4.3``.
+
+    0.4.2 — security patch, no public-symbol change vs ``0.4.1``. ``configure_sentry`` also
     installs its hook as ``before_send_transaction``, so a sampled transaction no longer carries
     the raw ``X-API-Key`` under ``send_pii=True`` (round-42 finding F2); the hook redacts the
     request's parsed ``cookies``; and ``Proxy-Authorization``, ``Sec-WebSocket-Protocol``,
@@ -137,7 +146,7 @@ def test_version_is_stable_string():
     ``juniper_observability.testing.reset_prometheus_registry``; 0.1.1
     was the pre-helpers baseline.
     """
-    assert juniper_observability.__version__ == "0.4.2"
+    assert juniper_observability.__version__ == "0.4.3"
 
 
 def test_constants_match_documented_values():
