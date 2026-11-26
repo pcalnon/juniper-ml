@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pin the one-artifact publish: PyPI takes exactly the files TestPyPI took, and the run checks it by sha256.
 
-The Overtoad's directive of 2026-11-15: "deploy to pypi should send the same artifact that was already sent to
+The directive of 2026-11-15: "deploy to pypi should send the same artifact that was already sent to
 testpypi. an identical hash check, of the artifacts after testpypi deploy and prior to pypi deploy, might also be
 helpful here to prevent this from slipping through the cracks again." juniper-ml's seven publishers handed both
 publish jobs one artifact, but nothing checked it, and a re-run broke it. juniper-ci-tools 0.9.1's run 38045867684:
@@ -1055,9 +1055,10 @@ class TestInstallCheckScript(unittest.TestCase):
                             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
                             self.assertIn(f"TestPyPI install 1.2.3 package at {site / module / '__init__.py'}", proc.stdout)
                         elif kind == "nothing":
-                            # No metadata: the version lookup itself fails the step.
-                            self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-                            self.assertNotIn(" OK", proc.stdout)
+                            # No metadata: the version lookup itself fails the step, before the check prints anything.
+                            self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+                            self.assertEqual(proc.stdout, "")
+                            self.assertIn("PackageNotFoundError", proc.stderr)
                         else:
                             # The metadata alone passes the version lookup; the package check then fails through
                             # SystemExit with its own message and nothing else: no traceback (a traceback of 3.13 and

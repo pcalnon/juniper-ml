@@ -7,7 +7,7 @@
 # Version:       0.5.0
 #
 # Date Created:  2026-02-23
-# Last Modified: 2026-11-15
+# Last Modified: 2026-11-26
 #
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
@@ -252,7 +252,7 @@ jobs:
           # kept an earlier build under the same file name silently, so the install check could test a file PyPI
           # would never receive. A re-cut that builds new files for a version TestPyPI holds now fails here, and
           # its run becomes the tag's newest release run, which the republish dispatch then refuses (ruling 1 of
-          # 2026-11-16): finish such a release with the republish dispatch, never with a re-cut.
+          # 2026-11-16): finish a release whose version TestPyPI holds with the republish dispatch, before any re-cut.
 
       # One-artifact publish template, step 5: after the TestPyPI upload, before the install check.
       - name: Verify TestPyPI serves exactly these files

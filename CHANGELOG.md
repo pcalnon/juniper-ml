@@ -688,8 +688,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `bash -e`. `tests/test_publish_testpypi_verify.py` and `tests/test_publish_subpackage_workflows.py` read the install
     check from its job, and a step or workflow they cannot find fails them rather than skipping (R4-1 of the sweep's
     review); the TestPyPI job's pinned permissions are `id-token: write` alone. New
-    `tests/test_publish_docs_bounds.py` pins the install checks' bounds and lag errors the docs state, wired into
-    `ci.yml` and the `main-verify.yml` battery. Each of 51 edits to a copy of the workflows and the docs, each
+    `tests/test_publish_docs_bounds.py` pins the install checks' bounds the docs state (the tries, the wait, how many
+    waits each makes and their total, read from each loop) and their lag errors, wired into
+    `ci.yml` and the `main-verify.yml` battery. Each of 55 edits to a copy of the workflows and the docs, each
     undoing one property, fails the tests, and a bump of one action in all seven publishers at once passes them.
   - Docs: `docs/REFERENCE.md` (§ Meta-Package Publish Pipeline and § Independent Sibling Package Publish Pipelines:
     the install job, the republish gate, `PUBLISH_TAG_PREFIX`, and the ladder's new facts: an index-lag failure is
