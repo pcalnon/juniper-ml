@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.11.5
-**Last Updated**: 2026-11-24
+**Last Updated**: 2026-11-26
 
 ---
 
@@ -72,7 +72,7 @@ PR rather than waiving the budget gate.
 python3 util/run_tests.py            # all: every suite and package lane, -j auto
 python3 util/run_tests.py --failed   # the last run's failures again
 
-# Run all tests -- the full ordered list of 263 `python3 -m unittest`
+# Run all tests -- the full ordered list of 264 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
 # § Test Suite Reference. It is generated from ci.yml's regression step, which is
 # the authoritative list; tests/test_ci_test_wiring_drift.py gates that every suite
