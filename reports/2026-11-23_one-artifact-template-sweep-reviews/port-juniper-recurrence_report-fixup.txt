@@ -1,0 +1,155 @@
+The fix-up for juniper-recurrence#241 is pushed: one signed commit, CI green, PR body updated. Nothing merged, armed
+or branch-updated, and no other PR touched.
+
+- PR: https://github.com/pcalnon/juniper-recurrence/pull/241. It is OPEN and CLEAN, with 2 commits, 7 files, +1059 -201.
+- Fix-up commit: 57559a28f8329a3aeaefabbfd100fb9908692e44.
+  - Verified, reason valid; its parent is d7adc41c6dba5b3fe71e88d763f93498c62f4bb7.
+  - It changes two files, +21 -22: juniper-recurrence/README.md and juniper-recurrence-client/AGENTS.md.
+- CI on 57559a28 (06:10Z): 38 check runs, all completed.
+  - 37 succeeded. The 1 skip is `Bench smoke`, as on the first head.
+  - The extra run against the first head's 37 is a second `Guard PR base branch`.
+
+Working files are in /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/tmp/ports/juniper-recurrence/fixup/.
+Every script, log and tree for this fix-up is there.
+
+1. Main and head unchanged
+- At 05:40:50Z GitHub main was 2ce346dae0be2ed2b666c96ea1de7d92a30ceffc, the PR head was d7adc41c, and #241 was the only open PR.
+- The push's precheck read all three again at 06:06Z. None had changed.
+
+2. What the fix-up changes
+These follow your dispositions on the review, /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/tmp/ports/juniper-recurrence/review/REVIEW.txt.
+
+- F1 (README.md:213-215): the review's proposed text, word for word.
+  - I checked its claim against the head's republish job first. The download step refuses a file TestPyPI lists if its
+    version is not the tag's exact string, and a 404 there fails the job. So such a tag publishes nothing.
+  - juniper-cascor's docs/ci_cd/MANUAL.md:713 (cascor clone at 5e3d9801) keeps the two cases apart the same way.
+- N1, changed in two places. I need your call on this one (point 8).
+  - README.md:233, the sentence the finding cites, now reads `Publish to PyPI` "(in the release run, or a plain
+    dispatch's re-fire)".
+  - README.md:240, the remedy's bracket list, is now exactly "(the release run, a plain dispatch's re-fire, or rung 1's
+    dispatch run)".
+- N2: the words are unchanged; a check confirmed both word sequences are identical.
+  - README.md:176-189, the opening paragraph of the Publishing section: rewrapped greedily at 120 columns, with every
+    code span kept whole. Both ragged breaks (old lines 178 and 186) are gone, and the paragraph is one line shorter.
+  - AGENTS.md:75: "dispatch" now starts the command's line. A greedy wrap at 120 leaves it alone again: line 74 is 114
+    columns, adding the word makes 123, and the code span cannot be split. No other line moved, and the file's
+    character count is the same (one newline became one space).
+- F2: left as is. The PR body's over-claim is corrected (point 7).
+- N3: left as is.
+
+3. The writer, revision 2
+- File: /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/util/ad-hoc/2026-11-26_juniper-recurrence_one_artifact_sweep_port.py
+  - sha256 7ab9ab5142e683f9018b56d1183f0cc3ed29f8ff2e07059af7b4e6f5778a011a.
+  - Revision 1 (823baf14...) is archived at /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/tmp/ports/juniper-recurrence/drafts-source/drafts__writer.py.
+- What changed: README_NEW and CLIENT_AGENTS_NEW, and the docstring.
+- What did not: README_OLD, CLIENT_AGENTS_OLD, CHANGELOG_ENTRY, TEST_MODULE, BASE_SHA256 and both template shas are
+  identical in both revisions. step2.py asserts this.
+- A docstring error from revision 1, now fixed: it said CI's `Verify AGENTS.md Last Updated` checks the client
+  AGENTS.md's date. That check is juniper-cascor's. Nothing in juniper-recurrence reads that line (no workflow, hook or
+  script), and none of #241's check runs does.
+
+4. Step 2: a fresh copy of main (fixup/step2.log)
+- `git archive` of main at 2ce346da gave 177 files, identical to base-tree.
+- Revision 2 on that copy wrote the seven files, and all seven equal the edited clone byte for byte. The five the
+  fix-up leaves alone also equal the PR head's.
+- A second run exited 1 ("not the module this port was derived from") and wrote nothing.
+- Revision 2 before its docstring fix (cb6636cf...) produced the same bytes (fixup/step2-try1.log).
+
+5. Step 3: re-verification
+- Tests ran on work5, the final writer applied to base-tree, in conda env JuniperCascor1 (Python 3.14.7, pytest 9.0.3).
+  - test_publish_one_artifact.py: 204 passed, 0 skipped, 0 deselected (121 on main).
+  - test_publish_smoke_pins.py: 2 passed.
+  - No new skip.
+- ruff (check and format) on the test module: clean.
+- ruff on the writer reports only N818 on `Refused`. Revision 1 had the same finding.
+- pre-commit, this repo's config, in git-init'ed copies:
+  - On the two changed files, 7 hooks ran; all passed and none changed a file.
+  - On all seven files, every hook passed.
+- actionlint: exit 0. The doc-link check (`--exclude tmp --cross-repo skip`): exit 0 on main and on this tree.
+- The FINAL checker (a452db3d..., unedited), all three publishers on one command line, template cascor main's
+  publish.yml (b6826ee6...):
+  - $W's pins file moved again, from e3723222... to 9d38c76fac1cbdb36f2088a3d223baa697a7fdd01330711682ae0aa763481c30.
+    Only juniper-data's pin changed.
+  - I rebuilt the proposal on it. /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/tmp/ports/juniper-recurrence/pins.proposed.json
+    is now da50213c00c12377c386e1698b5a6fc1e3488be83f357c0aaf7090ebaddc3d86. That is the current seed with
+    recurrence's three pins replaced. Those three are byte-identical to the old proposal's (66ad441e..., ab1ddc68...,
+    221d0462...).
+  - The old proposal is archived as fixup/pins.proposed.r1-b62731ee.json.
+  - With the proposal: 3 of 3 pass, exit 0, on work5, on the clone and on the pushed head.
+  - With $W's current pins: 0 of 3. Each publisher fails only at its install step's pin (3 items).
+- The review's raw-text comparison (review/blocks.py, unedited, comments included), run on the clone: 66 IDENTICAL,
+  exit 0. That covers every template step and the 17966-byte republish job in all three publishers, against cascor's
+  publish-cascor-model.yml and publish-protocol.yml.
+- Sequence-safety screens, with both commits replayed locally (fixup/probe_screens_two.py). Commit 1 used the message
+  GitHub stores for d7adc41c, which equals the one sent.
+  - Over main..HEAD: symbol-loss `files_screened=1 findings=1 fail=0 by_verdict={'WAIVED': 1}`. Commit 1's
+    Allow-Symbol-Loss line still covers its one symbol.
+  - Docs-additions: `files_screened=0`, exit 0.
+  - The fix-up alone: 0 findings in both screens.
+- The pre-push gate (util/ad-hoc/2026-11-15_pre_push_gate_run.bash). Its payload: the two pushed files, the fix-up's
+  commit message, the PR body and title, and the fix-up's 21 added lines.
+  - Before the push (fixup/gate3): PASS. Both scans found 0 (canary 32 of 32), and the masked read listed 0 lines.
+  - The final body, exactly as sent (fixup/gate5): PASS, same results.
+
+6. Steps 4 and 5: the push and read-back
+- I pushed with fixup/landing_fixup.py. fixup/ARGS_fixup.json sets expected_head to
+  d7adc41c6dba5b3fe71e88d763f93498c62f4bb7 and paths to the two changed files only.
+- The message's last paragraph is exactly the brief's two trailer lines.
+- The dry run passed. The real push landed at 06:06:20Z as 57559a28: verified, parent d7adc41c, README blob
+  ea6975a1c434, AGENTS blob 210cce50f4f6.
+- readback_branch.py confirmed it independently: verified, reason valid, the message ends in the two trailer lines,
+  both blobs equal the local files, and the commit touches exactly the two files.
+- The re-fetched PR head (fixup/pr-head-fixup) equals the clone for all seven files. The checker on it, with the
+  proposal: 3 of 3 pass, exit 0. Both of the PR's commits are verified.
+
+7. Step 6: the PR body
+- I confirmed GitHub's body was still the one I sent (7561dd56...), then PATCHed with
+  `gh api --method PATCH repos/pcalnon/juniper-recurrence/pulls/241 --input fixup/pr_body_patch.json`.
+- The body is now 725e6dd27094a2927da258a2be297be3935a6cdcc787b6b0b342ff9db1fdc6b6 (30144 characters). It read back
+  equal to what I sent and still ends in the two required lines.
+- What changed in it (built by fixup/build_pr_body_v2.py):
+  - F2: the H1/H2 paragraph said the checker pins the copies to juniper-cascor's "text". It now says:
+    - the checker compares parsed YAML: every `run:` script whole, comments included, plus exact SHAs;
+    - neither guard compares a YAML comment outside a `run:` script;
+    - at this head, the template's comments are byte-identical to cascor's (the blocks.py re-run);
+    - guarding them is an arc-wide residual for plan v1.15.18 of juniper-ml's
+      notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md.
+  - N1: the ladder summary's remedy now carries the same bracket list as the README.
+  - The pin shas now read seed 9d38c76f... and proposal da50213c..., in the pin table and the Testing section.
+  - "this commit" and "the commit" now say "the first commit", in the waiver sentence and the screens line.
+  - The concurrent-PR line covers the fix-up.
+  - A new section, "The review's fix-up (`57559a28`)": the five findings, what was done with each, and the
+    re-verification.
+
+8. Decisions for you
+- N1 (point 2): the sentence the finding cites (README:232-234) also left out the re-fire, so I changed it as well as
+  the bracket list. Your text sits verbatim at README:240. If you wanted only one place changed, reverting the other is
+  a two-line change to the writer.
+- N2 (point 2): AGENTS.md:75 is now 166 columns, up from 157. The code span alone is too long for any line, and putting
+  "dispatch" on the same line is the only layout with no short line.
+- Pins: the proposal to apply to $W's pins file is now da50213c..., not b62731ee.... The old one would revert
+  juniper-data's new pin (point 5).
+
+Changed:
+- In juniper-recurrence, by the fix-up commit: juniper-recurrence/README.md and juniper-recurrence-client/AGENTS.md.
+  Also #241's body.
+- The writer: /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/util/ad-hoc/2026-11-26_juniper-recurrence_one_artifact_sweep_port.py (revision 2).
+- In /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/tmp/ports/juniper-recurrence/:
+  - pins.proposed.json and pins.proposed.diff.txt, both rebuilt.
+  - pr_body.md, now the body on GitHub.
+- The clone /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/tmp/ports/clones/juniper-recurrence:
+  its README.md and juniper-recurrence-client/AGENTS.md now hold the pushed bytes. Nothing was committed locally.
+
+New, in that same tmp/ports/juniper-recurrence/ directory:
+- fixup/: the scripts and logs, gate3, gate5, fresh-main, fresh-main-try1, screens-two, pr-head-fixup, the
+  precommit-r4-* copies and the commit message files.
+- work4/, work5/, and their pytest temp directories and logs.
+- drafts-source-r2/: the revision 2 sources.
+- This report, REPORT_FIXUP.txt.
+
+Read but not changed:
+- review/REVIEW.txt (in that same directory).
+- juniper-cascor's docs/ci_cd/MANUAL.md, in the cascor clone.
+- In $W: util/ad-hoc/2026-11-24_publish_port_install_pins.json and util/ad-hoc/2026-11-23_publish_port_template_identity.py.
+- In juniper-ml: notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md, and
+  notes/JUNIPER_2026-11-23_JUNIPER-ECOSYSTEM_R-OBS-SC-2-FOLLOW-UPS-REMAINING-TASKS.md (which names plan v1.15.18).

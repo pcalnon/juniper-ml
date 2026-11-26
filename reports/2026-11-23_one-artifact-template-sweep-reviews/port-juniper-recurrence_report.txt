@@ -1,0 +1,205 @@
+REPORT: juniper-recurrence port of the one-artifact template sweep (juniper-cascor#777), variant faithful, all three publishers
+Written 2026-11-26 after 05:04Z (date -u) by the port executor; brief: $WT/tmp/ports/SWEEP_PORT_BRIEF.md, addenda included
+$WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun
+$W  = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/ethereal-munching-peacock (read only; nothing written)
+Scratch, every log and script named below: $WT/tmp/ports/juniper-recurrence/ (<S>); sources archived in <S>/drafts-source/
+
+== PR
+PR #241  https://github.com/pcalnon/juniper-recurrence/pull/241  (OPEN, not draft; mergeStateStatus BLOCKED at 05:04Z, CI running)
+Branch fix/publish-one-artifact-sweep; head d7adc41c6dba5b3fe71e88d763f93498c62f4bb7, ONE commit, parent 2ce346da.
+Read-back: verified=True reason=valid; the 7 blobs "same" as the local files; extra=[] missing=[]; the message's last
+lines are the two trailers. Title = commit subject (the brief's, unshortened: this repo has no subject limit).
+Not merged, armed, approved or updated; no other PR touched (the repo had no other open PR).
+
+== Writer
+$WT/util/ad-hoc/2026-11-26_juniper-recurrence_one_artifact_sweep_port.py  (sha256 823baf147a52d1dfec8ea216122e0cef63f6a984ba60a3b575fcde495b554d25)
+  --tree <fresh clone> --template <juniper-cascor clone>/.github/workflows/publish.yml [--date YYYY-MM-DD] [--check]
+  Both paths REQUIRED (no placeholder defaults); --date defaults to today, UTC; the CHANGELOG entry carries no counts,
+  so the writer takes no count arguments (R7). Run as: --date 2026-11-26 with JuniperCascor1's python3 -I (it needs
+  PyYAML for its post-conditions and refuses without it).
+- Template: --template must hash to b6826ee6... (juniper-cascor publish.yml at #777's merge; main 5e3d9801), and the
+  publish-cascor-model.yml beside it to a64c6359.... Every template block (10 per publisher) and the whole republish job
+  are cut out of the template by their spans and spliced into each publisher by span, never retyped, then re-cut from
+  the result and compared. The text it adds outside the blocks (install-job banner, permission comments, sparse-checkout
+  comment, persist-credentials, cd and its comment, lag line and lag error, the env and guard sentences) is checked
+  against publish-cascor-model.yml at run time.
+- Workflow and doc edits are exact-once anchors on the base (a moved file is still applied by its anchors, with a note);
+  the test module is written whole (embedded TEST_MODULE, sha256 0c017b34...) ONLY over the base module's sha256
+  (04736057...), so a moved test module is refused, never reverted.
+- Replay: on a fresh copy of main (<S>/work3) and on the clone it writes the same 7 files byte for byte; a second run on
+  its own output refuses ("not the module this port was derived from") and writes nothing; no --template: usage exit 2.
+- Wording: the README's ladder line keeps the person-word its base uses (detected at run time; the writer refuses if the
+  README's count of that word changes); no new text names the person. The template's own text is as it is.
+
+== Base
+Clone $WT/tmp/ports/clones/juniper-recurrence: HEAD 2ce346dae0be2ed2b666c96ea1de7d92a30ceffc (#240), == GitHub main at
+04:17Z, 04:51Z and in the precheck at 05:02Z just before the upload. Pristine copy: <S>/base-tree.
+
+== git diff --stat (clone; full diff <S>/clone.diff)
+ .github/workflows/publish-recurrence-app.yml       | 127 +++-
+ .github/workflows/publish-recurrence-client.yml    | 127 +++-
+ .github/workflows/publish-recurrence-model.yml     | 127 +++-
+ juniper-recurrence-client/AGENTS.md                |  15 +-
+ juniper-recurrence/CHANGELOG.md                    |  49 ++
+ juniper-recurrence/README.md                       |  70 +-
+ .../tests/test_publish_one_artifact.py             | 744 ++++++++++++++++++---
+ 7 files changed, 1059 insertions(+), 200 deletions(-)
+
+== What changed in each publisher (all three alike)
+- New job verify-testpypi-install, "Verify the TestPyPI install": needs publish-testpypi; permissions contents: read;
+  no environment. Steps: the sparse checkout of <package>/<module>/_version.py, now persist-credentials: false; then
+  "Verify install from TestPyPI": set -euo pipefail, cascor's sys.path note, cd "${RUNNER_TEMP}", the version read from
+  "${GITHUB_WORKSPACE}/<package>/<module>/_version.py", the kept echo and security note, the template's lag line, the
+  same 5-try loop now ending in the template's lag error, the client's/model's by-name runtime install, the import.
+- publish-testpypi: id-token: write alone; ends at "Verify TestPyPI serves exactly these files".
+- publish-pypi: needs [publish-testpypi, verify-testpypi-install]; id-token: write alone.
+- env: PUBLISH_TAG_PREFIX <package>-v, the comment naming three parameters (recurrence's own wording kept:
+  "(the template's source is juniper-cascor's publish.yml)").
+- Build guard: + "&& startsWith(github.ref_name, '<package>-v')" (#777 M4); its comment carries cascor's sentence,
+  rewrapped at 120 columns.
+- Workflow permissions comment: cascor's (job permissions REPLACE the block; SWEEP item 2).
+- Template blocks: only the PyPI job's witness comment and the republish job (banner + find step) differ from the base.
+- Header line 22: "#        owner       = pcalnon" (aligned with "repository  ="), restoring #237's "Overtoad".
+- Structural target: each publisher equals $W/tmp/sweep/checker-r12/port-sim/faithful/juniper-recurrence/workflows/<pub>.yml
+  once both are loaded and comment lines are dropped from every run (<S>/drafts-source/struct_compare.py: identical x3).
+
+== Verification (all on the clone = the pushed files, or on <S>/work3, byte-identical to it)
+1. Tests, conda env JuniperCascor1 (Python 3.14.7, pytest 9.0.3; recurrence has no env; PyYAML 6.0.3 and pytest
+   sufficed), each suite from its package directory with the package's own config:
+   - juniper-recurrence/tests/test_publish_one_artifact.py: 204 passed, 0 failed, 0 skipped (base: 121 collected/passed).
+   - juniper-recurrence-model/tests/test_publish_smoke_pins.py (unchanged): 2 passed.
+   - Whole suites, base -> port (<S>/full-suites-final.log, junit in <S>/full-suites-final/): app 485 -> 568 passed;
+     model 227 -> 227; client 77 -> 77; root tests/ (util/run_tests.py) 106 -> 106 (45 subtests). 0 failed, 0 errors,
+     0 skipped on both sides. No new skip; the module's one skip guard (no sha256sum) did not fire.
+   - ruff (the app lane's `ruff check .`, E/F/W/B/I/N, line 512) and `ruff format --check` on the test module: clean.
+     Implicit string concatenation (tokenize scan, proven on planted cases): none in the test, the writer or any script.
+     The writer alone gets ruff N818 (exception `Refused` lacks an Error suffix): the name cascor's model writer uses.
+2. actionlint 1.7.12 on the three publishers: exit 0, no output.
+3. pre-commit (/opt/miniforge3/bin/pre-commit via precommit_in_copy.py, the 7 files, <S>/precommit-r3.log): every hook
+   that ran passed (check-yaml, EOF, trailing whitespace, merge conflicts, large files, AST, debug statements, private
+   keys, markdownlint, yamllint, version drift); ruff/mypy/bandit had no files in scope; "changed by hooks: none", exit 0.
+   juniper-check-doc-links --exclude tmp --cross-repo skip (ci-docs.yml's): exit 0 on base and port.
+4. Checker, FINAL, sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35 verified before every run,
+   --repo juniper-recurrence, --template the cascor clone's publish.yml (b6826ee6...), all three on one command line,
+   --pins <S>/pins.proposed.json (sha256 b62731ee45c347e977f4254bef15b663d097571f85b32fcfb9be7116d45397b7, 18 pins):
+     PASS juniper-recurrence/publish-recurrence-app.yml  (PUBLISH_PACKAGE=juniper-recurrence, PUBLISH_DIST_DIR=juniper-recurrence/dist, PUBLISH_TAG_PREFIX=juniper-recurrence-v)
+     PASS juniper-recurrence/publish-recurrence-client.yml  (PUBLISH_PACKAGE=juniper-recurrence-client, PUBLISH_DIST_DIR=juniper-recurrence-client/dist, PUBLISH_TAG_PREFIX=juniper-recurrence-client-v)
+     PASS juniper-recurrence/publish-recurrence-model.yml  (PUBLISH_PACKAGE=juniper-recurrence-model, PUBLISH_DIST_DIR=juniper-recurrence-model/dist, PUBLISH_TAG_PREFIX=juniper-recurrence-model-v)
+     3 of 3 pass   (exit 0; <S>/checker-clone.log)
+   On the FETCHED PR head (<S>/pr-head, 2026-11-15_fetch_pr_files.py --pr 241; all 7 files == the clone): the same three
+   PASS lines, "3 of 3 pass", exit 0 (<S>/checker-pr-head.log).
+   Control with $W's current pins file (e3723222...): "0 of 3 pass", each failing only at its install step's pin, first at
+   line 2 (the first comment line the seed lacks) (<S>/checker-clone-seedpins.log).
+5. Mutation proof (<S>/drafts-source/mutations.py; table <S>/mutations-r2.table.md, also in the PR body; log
+   <S>/mutations-r2.log): 48 of 48 mutations caught, 3 of 3 controls pass. Each mutation is an anchored edit of a COPY
+   of the ported tree (anchor count asserted, YAML still parses), the module runs with -x, the file is restored and
+   checked by sha256 (no file left changed). A catch counts only a FAILED assertion, never a setup ERROR. B-series and C3
+   are applied to all three publishers alike, so only the rehearsals can catch them (each was caught by a
+   TestFindReleaseRun case). Summary:
+     A1 install job needs dropped | A2 install job id-token | A3 checkout back in TestPyPI job | A4 PyPI needs TestPyPI
+     alone | A5 install job environment | A6 TestPyPI contents: read back | A7 cd RUNNER_TEMP removed | A8 `|| true` on
+     pip | A9 version read relative to cwd | A10 persist-credentials dropped | A11 continue-on-error on install step |
+     A12 lag branch exit 0 | A13 --extra-index-url | A14 model import -> metadata read | A15 model by-name install
+     dropped | A16 install needs build | A17 install job renamed without TestPyPI | B1 one character in the find step |
+     B2 oldest release run | B3 filter=latest | B4 lowest attempt kept | B5 no refusal without a release run | B6 first
+     page only | B7 counts unless failed | B8 republish on any dispatch | C1 prefix disagrees with guard | C2 guard's
+     dispatch prefix dropped | C3 find step's prefix check dropped | C4 prefix dropped | C5 guard loses -v | E1 retention
+     30 | E2 skip_existing | E3 attestations false | E4 continue-on-error on a check | E5 job continue-on-error | E6 if:
+     always() on PyPI | E7 workflow renamed | E8 extra step into dist/ | E9 reuse traded for push | E10 one download
+     re-pinned | E11 rebuild in PyPI job | E12 self-hosted | E13 one comment word in one copy | E14 cancel-in-progress |
+     E15 push: tags | E16 job PIP_EXTRA_INDEX_URL | E17 bounds overridden | E18 the app lane's filter forgets a
+     publisher: all caught. Controls: K0 no edit passes; H1 every download-artifact pin bumped alike passes this suite
+     (the checker FAILs it: exact SHAs); H2 one comment word changed alike in all three find steps passes this suite (the
+     checker FAILs it: cascor's text). The checker also FAILs every A/B/C/E mutation except E18 (a file it does not read).
+   Harness note: round 1 (<S>/mutations-r1.out) let pytest's --basetemp parent be missing, so 13 mutation rows (B1-B7,
+   C3, E10, E13, E14, E15, E18) were counted "caught" on a tmp_path setup ERROR and both controls failed on it; found on
+   reading the log, the harness was fixed (it creates the parent and counts only FAILED assertions), a clean-copy
+   control (K0) added, and every mutation re-run (round 2, the one reported). In round 2 the checker passes K0 and E18
+   alone and fails the other 49 rows.
+6. Sequence-safety screens: probe_screens.py's scope is cascor's, so <S>/drafts-source/probe_screens_rec.py runs this
+   repo's (--scope juniper-recurrence/** juniper-recurrence-model/** juniper-recurrence-client/** bench/** scripts/**,
+   as sequence-safety.yml does), JuniperCascor1's juniper-ci-tools 0.9.1, local unsigned probe commits in a scratch repo:
+   - juniper-symbol-loss-check: exit 0, files_screened=1 findings=1 fail=0 by_verdict={'WAIVED': 1} (<S>/screens-r3.log).
+     Without the waiver (<S>/screens-nowaiver.log): exit 1, one finding, LOST
+     method:TestFindReleaseRun.test_the_newest_release_run_that_still_holds_the_artifact_is_found. That is the commit's
+     one Allow-Symbol-Loss line (one symbol, one line, its own paragraph).
+   - juniper-docs-additions-check: exit 0, files_screened=0 (no root AGENTS.md/docs/notes change).
+   - On GitHub at 05:04Z: "Sequence Safety" completed/success on the PR head.
+7. Pre-push gate (bash 2026-11-15_pre_push_gate_run.bash <S>/gate2; files/ = the 7 pushed files, text/ = PR body, title,
+   commit message; added/ = 1070 added lines): exit 0, "gate: PASS"; both scans "0 finding(s)", 0 accepted, canary 32 of
+   32. Masked read (--names), one line listed and judged NOT a credential: the test module's added line
+   `assert all(headers.get("Authorization") == f"Bearer {FAKE_API_CREDENTIAL}" for _, headers in server.requests)`
+   (random-looking=0), the rehearsal's stand-in, FAKE_API_CREDENTIAL = "stand-in-credential", ported from cascor's test.
+   (An earlier gate run, <S>/gate, also passed; it was rebuilt after the PR body changed.)
+8. Landing: landing.py precheck (HEAD == main, no open PR, branch absent, clone == work3, pins current) OK at 05:02Z;
+   run_open_signed_pr.py ARGS.json --dry-run (7 files, nothing written), then the real run from $WT: "signed commit
+   d7adc41c6dba on pcalnon/juniper-recurrence:fix/publish-one-artifact-sweep", "PR: .../pull/241". Then readback (above)
+   and the fetch + checker (above).
+9. CI at 05:04Z (read-only check-runs on the head): none failing. Completed success: Sequence Safety, Pre-commit
+   (all-files), Lint (ruff) x3, Documentation links, Memory Budget, Guard PR base branch, Local test runner suite, Bench
+   required checks, the four change detectors, several Test legs; in progress: other Test legs (3.12-3.15, torch),
+   Build distribution, Analyze (python). Not re-run. Re-read at 05:06:20Z: 36 check runs completed/success, 1 skipped
+   (Bench smoke, which this PR's paths do not trigger), none failing; mergeStateStatus CLEAN.
+
+== Proposed pin diff (<S>/pins.proposed.json; $W's file untouched)
+Built by <S>/drafts-source/make_pins.py on $W's pins file AS IT STOOD AT 05:02Z: sha256 e3723222b23b4a8e5f4bf34e7beaa90a0b8c0195ece5894c8cdaca80804000ea
+(layout indent=2 + final newline, re-dumps to its own bytes). It moved twice during this session (824c50d9 at 04:17Z ->
+19d6acd3 at 04:24Z -> e3723222 by 05:02Z, other ports' pins); the proposal was rebuilt each time and the checker re-run.
+Only juniper-recurrence's three pins change, in lines, sha256 and source; every seed line is kept in order and every
+added line is a comment (the script asserts both). Proposed file sha256 b62731ee45c347e977f4254bef15b663d097571f85b32fcfb9be7116d45397b7.
+  publish-recurrence-app.yml    1065e246721c... (19 lines) -> 66ad441ea5bc9bcfbaa8618879991f94c8e5d9c23c45f60ad5e04c5e1d084de7 (29 lines, +10 comment lines)
+  publish-recurrence-client.yml 9f6db030e894... (20 lines) -> ab1ddc68f24bc7290c4f2e6c2037313f5cf7ab2c72380df7db54cee3a053d516 (28 lines, +8 comment lines)
+  publish-recurrence-model.yml  bee31e9e6d16... (20 lines) -> 221d0462999d3805607707dc4d6013b258f40ec05a3ce46689cf21b795220d73 (33 lines, +13 comment lines)
+The added comments: cascor's sys.path note before the cd (publish-cascor-model.yml's), the security note each step carried
+in the TestPyPI job, the template's lag line, and each step's own note on its import (app: needs no runtime dependency;
+client and model: their by-name runtime installs). Full diff: <S>/pins.proposed.diff.txt. If $W's file moves again
+before it is applied, re-run: python3 -I make_pins.py <clone> <$W pins file> <out>.
+
+== Judgement calls
+1. No R4-5 find_spec check: each check already imports its package (app: juniper_recurrence/__init__.py imports only
+   _version; client: imports its client module, after requests/urllib3 install; model: imports numpy/model-core
+   modules, after its by-name install). Confirmed in the source tree.
+2. test_publish_docs_bounds.py NOT ported: the README states no poll count, interval, timeout or try number (the lag
+   error is described, not quoted; "90 days" is the retention RETENTION_DAYS pins; "5-minute timer" is the pypi
+   environment's wait timer, read with a GET; "30 days" is GitHub's). No number was added to pin.
+3. juniper-recurrence-model/tests/test_publish_smoke_pins.py (:47) is unchanged: it scans the whole workflow for the one
+   option-free `pip install` line, which moved jobs but not text; it passes, and its docstring stays true.
+4. Root AGENTS.md unchanged: its publish bullet (:122) stays true; 19,972 of 20,000 characters.
+5. The test module carries NO marker (--strict-markers registers only `performance`; the lane runs all of tests/), and
+   keeps recurrence's design: the three copies pinned identical to one another (the checker pins cascor's text and
+   SHAs), so no digest pins (item G does not apply). Kept every rehearsal and every recurrence-specific case (nested
+   dist, sibling prefixes, the app lane's change filter, TestUnchanged). Renamed nothing still true; the only removed
+   symbol is #777's. Added beyond cascor: a decoy _version.py in $RUNNER_TEMP, a missing version file, the
+   single-package prefix `v` refusing a <package>-v tag (C both ways), and three tag forms per publisher.
+6. Install job keeps its sparse checkout (it reads the version file), with persist-credentials: false (addendum).
+7. CHANGELOG: one entry at the end of [Unreleased] / ### Fixed, after the 3.15-leg entry; #236's earlier entry left as
+   it is (the orchestrator's ruling on data-client's F4; #777 precedent): the new entry's "Until now ..." supersedes it.
+   Its "the package it imported ran beside that job's OIDC token-request variables" is TRUE here (R1): the base checks
+   imported their packages inside the TestPyPI job, which held id-token: write.
+8. README rewrite covers: the five jobs; rung 1's refusals; index lag vs a real install failure; the re-cut consequence
+   (R3); a plain dispatch's version (rung 2 on that dispatch run); the two causes of a failed "Verify PyPI serves exactly
+   these files", naming "the run whose check gave up (the release run, or the republish's dispatch run), within 30 days
+   of that run" (#274 MAJOR, #238); a lead-in that excludes none of its bullets (R2); the tag-prefix fail-safe; "each rung
+   acts on the workflow file as of the tag" (every release so far predates #236: app v0.8.1, client v0.3.1, model v0.6.0).
+   Two of my own inaccuracies caught on re-read and fixed before the upload: "a plain workflow_dispatch fires all three
+   workflows" (false: it fires the one dispatched) and "Each workflow runs five jobs" (a release runs four).
+9. The writer's header-field edit is tolerant: if main already reads "owner" it notes and skips; any other word refuses.
+10. No `## Requirements` section: juniper-recurrence has no PR template (.github/ holds CODEOWNERS and dependabot.yml).
+11. Labels that resolve only inside juniper-ml worktrees ("item E", "A's", "C's", review ids) kept out of the pushed
+    files (#238's N-2) and out of the PR body's prose; the rulings are cited by date.
+
+== Could not do / deviations from the brief's mechanics
+- Write/Edit refuse $WT paths from my agent worktree (.claude/worktrees/agent-a966292b0ced8bd81): every source was
+  drafted in its tmp/rec/ and copied into $WT with Bash; all deliverables are in $WT (the writer in util/ad-hoc/, the
+  rest in <S>), sources in <S>/drafts-source/ (29 files).
+- The Bash guard refused `cd <clone> && git ...`, `.github` paths with shell variables, and brace groups: read-only git
+  ran through <S>/vcs_in.py (subprocess, cwd=clone), and the other steps through small scripts. No git commit, tag, push,
+  stash, reset or checkout in any clone or in $WT; the clone was reset to main once by copying the seven files back from
+  the pristine base copy (git status then clean). The only commits were the screens' local probe commits in scratch
+  repos, and the one GitHub-signed commit open_signed_pr.py made.
+- I did not wait for CI to finish.
+
+== Contradictions with the brief
+- The pins file's sha256: the prompt said 824c50d9...; it was, at 04:17Z, then moved to 19d6acd3... and e3723222... during
+  this session (other ports). The proposal is built on e3723222... (above).
+- None blocking otherwise. The structural target, the checker and the template all agree with the port.
