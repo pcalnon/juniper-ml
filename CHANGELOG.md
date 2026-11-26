@@ -610,12 +610,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `skip-existing`: on TestPyPI it kept an earlier build silently, and the install check tested that file.
   - **Permissions.** Only the jobs that upload hold `id-token: write`. `publish.yml`'s workflow block is now `{}`; the
     sub-packages' stays `contents: read`. The build holds `contents: read` and `actions: read`, the TestPyPI job
-    `contents: read` and `id-token: write`, every PyPI job `id-token: write` alone (none checks out; `publish.yml`'s
+    `contents: read` and `id-token: write` (`id-token: write` alone since the sweep, the next entry), every PyPI job `id-token: write` alone (none checks out; `publish.yml`'s
     no longer checks out or sets up Python), and the republish job `actions: read` and `id-token: write`.
   - **The Overtoad's recovery ladder (2026-11-15)** for a release that did not reach PyPI: (1) dispatch its workflow from
     the release tag with `-f republish_from_testpypi=true`, which runs only `Republish the tested files (dispatch
     only)`: behind the same `pypi` gate it copies TestPyPI's files for the version to PyPI, checked against TestPyPI's
-    JSON and the release run's `SHA256SUMS`, and builds nothing; (2) if that fails, within 30 days of the release run,
+    JSON and the release run's `SHA256SUMS`, and builds nothing (since the sweep, the next entry, only once the tag's
+    newest release run passed its TestPyPI jobs); (2) if that fails, within 30 days of the release run,
     "Re-run failed jobs" on it, never "Re-run all jobs"; (3) otherwise, a new patch version. Rungs 1 and 2 apply only
     when the release run's TestPyPI job, install check included, succeeded or failed only for a transient index lag; a
     real install-check failure means a broken package, which ships fixed as a new patch version and never through
@@ -643,6 +644,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md` (§5.5, and the responses in §4,
     §4.1 and §5.3, which said to fix and re-cut: a transient failure is "Re-run failed jobs", a broken package a new
     patch version), and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (the ladder replaces its plain re-fire row).
+
+- **The one-artifact publish, swept: the install check runs in a job that cannot mint a credential, the republish
+  job refuses unless the release run passed its TestPyPI jobs, and `PUBLISH_TAG_PREFIX`, in all seven publishers**
+  (`publish.yml` and the six `publish-<pkg>.yml`; the port of juniper-cascor#777, rulings 1 and 2 of 2026-11-16).
+  - **Ruling 2, the install check's own job.** `Verify the TestPyPI install` needs the TestPyPI job, holds
+    `contents: read` alone (no environment, no `id-token`), sparse-checks out the one file the version is read from
+    (`persist-credentials: false`), and installs from `$RUNNER_TEMP`, reading the version under `$GITHUB_WORKSPACE`;
+    `publish.yml`'s keeps its setup-python 3.12. The PyPI job needs both TestPyPI jobs. `Publish to TestPyPI` keeps
+    the template steps and the upload, checks out nothing, and holds `id-token: write` alone. Until now the check ran
+    in the TestPyPI job, so pip and the check ran with that job's OIDC token-request variables in their environment.
+  - **The install scripts.** Each stops with the template's lag error after its last try. `publish.yml`'s provenance
+    fetch is `pip download … && { FETCHED=1; break; }` in place of its `set +e` block, its `ls -la` drops `|| true`,
+    and its error after the tenth try is `juniper-ml <version> is not installable from TestPyPI after 10 tries (index
+    lag?): Re-run failed jobs; a real failure repeats`, in place of "TestPyPI never served … within ~60s of upload".
+    The six sub-packages' loops gain the same error after their fifth try. `publish-ci-tools.yml` and
+    `publish-observability.yml`, whose checks read metadata alone, which a wheel without the package also passes,
+    find the package with `importlib.util.find_spec` too (none of its code runs) and fail through `SystemExit`, which
+    `PYTHONOPTIMIZE` keeps; `publish-config-tools.yml` and `publish-doc-tools.yml` run their `python -c` check last.
+  - **Ruling 1, the republish gate.** `Find the release run's artifact` reads the tag's newest release run, refuses
+    when there is none, and refuses unless each of its jobs whose name holds "testpypi" (the upload and the install
+    check) concluded success in its latest attempt (`filter=all`, each name's record with the highest
+    `(run_attempt, id)`); that run's artifact, while it exists, still checks TestPyPI's files.
+  - **`PUBLISH_TAG_PREFIX`**, the template's third parameter: `v` in `publish.yml`, `<package>-v` in a sub-package's.
+    The republish accepts only that prefix followed by the version, so a sub-package publisher dispatched from the
+    meta `v` tag refuses before any request. Each build guard repeats the prefix (a job-level `if:` cannot read
+    `env`), and its dispatch branch gains `startsWith(github.ref_name, '<prefix>')`: a plain dispatch builds only
+    from the workflow's own tag.
+  - **Comments.** The template's: the republish banner (the monitor reads dispatch runs since juniper-ml#2592), the
+    witness comment, the `env` comment, and the rc*/hf* note on `publish.yml`'s guard. The sub-packages' permissions
+    comment now says a job's own `permissions` replace the workflow block; `publish.yml`'s TestPyPI upload comment no
+    longer says the republish dispatch finishes a re-cut release.
+  - **Unchanged:** the triggers, the workflow and job names the release train reads (`util/release_train/ceremony.py`
+    counts both TestPyPI jobs by "testpypi", so a failed install check still reads `HALT_TESTPYPI`, with no ceremony
+    change), the environments, the build steps, and each install check's commands beyond those above.
+  - Pins: `tests/test_publish_one_artifact.py` (92 cases, 60 before) ports #777's hardening: each job's keys, runner
+    and exact steps; the install job's wiring, exact commands, and the shell that cannot switch it off; retention
+    exactly 90; no `skip_existing` or `attestations: false`; the workflow names; `PUBLISH_TAG_PREFIX` against each
+    guard; the template blocks pinned by sha256 NORMALIZED (each `uses:` line by its action's name, so a Dependabot
+    bump moves no digest) and each action at one ref; and the rehearsals of the republish gate (no release run, a
+    failed upload or install check, a carried-over job, a re-run that passed or failed, either listing order, two
+    pages, an older run behind a newer failed one), of the tag prefix, and of each install check's shell under
+    `bash -e`. `tests/test_publish_testpypi_verify.py` and `tests/test_publish_subpackage_workflows.py` read the install
+    check from its job, and a step or workflow they cannot find fails them rather than skipping (R4-1 of the sweep's
+    review); the TestPyPI job's pinned permissions are `id-token: write` alone. New
+    `tests/test_publish_docs_bounds.py` pins the install checks' bounds the docs state (the tries, the wait, how many
+    waits each makes and their total, read from each loop) and their lag errors, wired into
+    `ci.yml` and the `main-verify.yml` battery. Each of 55 edits to a copy of the workflows and the docs, each
+    undoing one property, fails the tests, and a bump of one action in all seven publishers at once passes them.
+  - Docs: `docs/REFERENCE.md` (§ Meta-Package Publish Pipeline and § Independent Sibling Package Publish Pipelines:
+    the install job, the republish gate, `PUBLISH_TAG_PREFIX`, and the ladder's new facts: an index-lag failure is
+    "Re-run failed jobs", a failed install check a new patch version, never a re-cut, the two causes of a failed
+    `Verify PyPI serves exactly these files`, rung 2 after a plain dispatch, and the tags the ladder covers),
+    `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` and
+    `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` (§11.8's amendment of 2026-11-26).
 
 - **The agent guard also reads each Bash command as bash 5.3 builds its words, and quoted text no longer counts
   against the brace cap (`util/claude_agent_guard.py` 1.4.0)** (the Overtoad's rulings 16 and 18 (2026-11-09; the
