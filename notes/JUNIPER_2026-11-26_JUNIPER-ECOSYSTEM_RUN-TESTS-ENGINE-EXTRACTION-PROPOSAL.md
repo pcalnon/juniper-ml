@@ -2,7 +2,9 @@
 
 **Project**: Juniper (ecosystem-wide)
 **Owner**: Paul Calnon
-**Status**: Proposal for the Overtoad's ruling, 2026-11-26. Nothing in it is built yet.
+**Status**: **Ruled 2026-11-26 at 11:30:12Z: option A.** The Overtoad answered an AskUserQuestion asked at
+02:16:21Z in session c62abc55; both times are from that session's transcript. § 5 records all three rulings.
+Nothing in § 4 is built yet.
 **Date**: 2026-11-26
 **Author**: session c62abc55 (Claude Code), worktree `juniper-ml/.claude/worktrees/floofy-doodling-aho`
 
@@ -227,14 +229,28 @@ if __name__ == "__main__":
   recurrence, whose test jobs hold only pytest and the gate. juniper-ml's package lanes must be checked when it
   converts in step 2.
 
-## 5. Decisions for the Overtoad
+## 5. Decisions for the Overtoad, and the rulings
+
+Asked 2026-11-26 at 02:16:21Z and answered at 11:30:12Z:
 
 1. **Option A, B or C** for the other seven repos (recommended: A).
+   **Ruled: A, "Extract into ci-tools".** The next step is § 4.3 step 2, the engine PR in juniper-ml.
 2. **Merge approval** for juniper-data-client#273, and for the juniper-ml PR that carries this proposal and this
-   arc's scripts.
+   arc's scripts. **Ruled: "Merge both".**
+   - #273 first had to be fixed. juniper-data-client#274 merged while the question was open (04:15:39Z,
+     `4b78d540`), and the two conflicted in `docs/REFERENCE.md`'s footer.
+   - Fix commit `38307835` moved § Running Tests Locally clear of the footer, so `main`'s footer (0.5.5) survives.
+   - With the fix, `git merge-tree` with `main` was clean, and the merged tree, materialized detached, passed
+     `run_tests.py all` (unit-tests 727 passed).
+   - `util/safe_merge.py` updated the branch (GitHub's signed merge `d7a32c6a`). Its auto-merge net merged #273 at
+     11:43:28Z as `51e34f71`, once the required checks passed.
 3. Still open from 2026-11-25: whether juniper-recurrence's `Local test runner suite` (from `ci-tooling.yml`) joins
    ruleset `juniper-recurrent-rules` (id `20634527`) as a required check. data-client needs no such ruling: its
-   runner suite runs inside `unit-tests`, which is already required.
+   runner suite runs inside `unit-tests`, which is already required. **Ruled: "Make it required".**
+   - Done 2026-11-26 with `util/ad-hoc/2026-11-26_add_required_check_to_ruleset.py`. The ruleset now requires 11
+     checks; the new one is `{"context": "Local test runner suite", "integration_id": 15368}`.
+   - The script re-read the ruleset and found every other field unchanged.
+   - No recurrence PR was open, so none was blocked by the change.
 
 ## 6. Evidence and scripts
 
@@ -246,3 +262,8 @@ All of these are in juniper-ml, under `util/ad-hoc/`:
 - `2026-11-26_run_tests_data_client_mutation_check.py`: data-client's 16 mutants.
 - `2026-11-26_probe_sequence_safety_screens.py`: runs a sibling's Sequence Safety screens on uncommitted work through
   a throwaway index, so no ref moves. It found both of data-client#273's screens passing before the upload.
+- `2026-11-26_probe_merge_with_main.py`: would a PR branch, with the worktree's fix on top, merge cleanly with
+  `origin/main`? `--materialize` checks the merged tree out detached, for testing; `--remove` deletes it again, and
+  refuses unless it is detached, clean and has an empty `tmp/`. This is how § 5's #273 fix was proven.
+- `2026-11-26_add_required_check_to_ruleset.py`: adds one required check to a ruleset and verifies that nothing else
+  changed (§ 5, ruling 3).
