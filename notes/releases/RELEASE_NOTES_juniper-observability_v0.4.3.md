@@ -77,7 +77,11 @@
 
 ## Known Issues
 
-None known at time of release.
+These predate 0.4.3, which leaves them as 0.4.2 had them. The next release, 0.4.4 (R-OBS-SC-3), is to decide them. juniper-deploy's defaults configure no Sentry DSN, so none of them sends anything until an operator sets one. Each was measured on the wire on sentry-sdk 2.35.0, 2.76.0 and 3.0.0, under either `send_pii` value, by juniper-ml's `util/ad-hoc/2026-11-26_observability_known_issues_wire_probe.py`.
+
+- **The client's address, through five proxy headers, even without `send_pii`.** `Forwarded`, `X-Client-IP`, `CF-Connecting-IP`, `True-Client-IP` and `X-Cluster-Client-IP` reach the error events and sampled transactions (on 3.x, spans) of a request that carries them, raw. Of the headers that carry a client address, only `X-Forwarded-For` and `X-Real-IP` are filtered.
+- **On 2.x, a request-body field whose name the denylist lacks.** juniper-canopy's `POST /api/remote/connect` carries its worker `authkey` in the JSON body. Its pydantic `SecretStr` hides it from logs and reprs, not from the raw body the SDK reads, so it reaches `request.data` in error events and in every sampled transaction. 3.x sends no request bodies.
+- **Sentry Logs carry a log record's `extra` fields raw**, on either major, even under a name the denylist names (`api_key`): `configure_sentry` installs no `before_send_log` hook.
 
 ---
 
