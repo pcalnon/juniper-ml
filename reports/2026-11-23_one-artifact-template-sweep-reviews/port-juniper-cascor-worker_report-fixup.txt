@@ -1,0 +1,121 @@
+REPORT_FIXUP: juniper-cascor-worker#238, the fix-up commit for its independent review's finding R-1
+Written 2026-11-26 after 04:22Z (date -u) by the port executor. The review: $WT/tmp/ports/juniper-cascor-worker/review/
+REVIEW.txt (BLOCKER 0, MAJOR 0, MINOR 1, NIT 2). The first commit's report: REPORT.txt in the same directory.
+$WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun
+Scratch (every log and script named below): $WT/tmp/ports/juniper-cascor-worker/ ("<scratch>")
+
+== New head
+PR #238 https://github.com/pcalnon/juniper-cascor-worker/pull/238 (OPEN, not draft, base main)
+New head 5b7340f0aad19215f2d931b49518f2b02013ac5a, parent 1965e557d1993c797c699e30a324048e14766365 (the first commit);
+the PR now holds two commits (1965e557d199, 5b7340f0aad1). GitHub verification: verified=True, reason=valid (the push's
+own check and readback_branch.py both). Message: "docs(publish): re-run a PyPI check that gave up waiting in the run
+whose check gave up (#238 review, R-1)", body <scratch>/fixup_commit_body.txt, last paragraph exactly the two trailers
+(Co-Authored-By: Claude Opus 5.5 ..., Claude-Session: .../session_016H76AnduzwfVyhVtsQqJeJ), nothing after.
+Not merged, armed, approved or updated; no other PR touched.
+
+== Pre-push confirmation (step 1)
+04:13:46Z: GitHub main 7df573f0c375c1f4662ecbe9df447891f5ac6ee3, PR head 1965e557d1993c797c699e30a324048e14766365
+(CLEAN). Re-checked by landing2.bash right before the dry run (04:20:58Z) and the real push: neither had moved.
+The repo squashes with COMMIT_MESSAGES, so the first commit's two Allow-Symbol-Loss: lines reach a squash commit too.
+
+== The change (R-1: FIX)
+Only docs/DEVELOPER_CHEATSHEET.md and CHANGELOG.md change (publish.yml, the test module and AGENTS.md are byte-identical
+to the first commit: 0896da8d..., e40758d8..., 6a4bbd2e...). Diff against the first commit (<scratch>/verify/fixup_replay.log):
+- docs/DEVELOPER_CHEATSHEET.md:282, the failed-PyPI-check paragraph's timeout bullet, the review's proposed text:
+  - "**Re-run failed jobs** on the release run, within 30 days. The re-run PyPI job uploads ..."
+  + "**Re-run failed jobs** on the run whose check gave up (the release run, or the republish's dispatch run), within 30
+    days of that run. The re-run job uploads the same bytes again, which the index accepts, and repeats the check; it
+    waits at the `pypi` gate again, for a fresh approval."
+- CHANGELOG.md, the entry's Docs bullet: '"Re-run failed jobs" when the check gave up waiting for the index' becomes
+  '"Re-run failed jobs" on the run whose check gave up waiting for the index (the release run, or the republish's
+  dispatch run)' (3 lines rewrapped: 2 removed, 3 added).
+- The PR body: the recovery-ladder bullet names the same run; a new section "The fix-up commit (finding R-1 of the
+  independent review)" gives R-1's change and the NIT dispositions; Testing and Files changed cover both commits.
+- Not changed, as dispositioned: N-1 ("installs and imports" in the pinned step comment: the sweep-wide wording; the
+  pin does not move) and N-2 (the "R4-5" / "SWEEP item 23" labels: juniper-ml's plan v1.15.18 will record both).
+- Other texts checked for "the release run" alone on that re-run: AGENTS.md's "Re-run failed jobs (within 30 days; also
+  the fix for a TestPyPI job that failed on index lag)" is about a release that did not reach PyPI, so it stays; the
+  cheatsheet's TestPyPI-lag bullet names the release run rightly (TestPyPI jobs run only there).
+
+== Writer (step 2)
+$WT/util/ad-hoc/2026-11-26_juniper-cascor-worker_one_artifact_sweep_port.py, now sha256
+7e6d47c09e9b0b8acb732a69c6128401b7e9d90bd5401f64fbd1ca682f75a8b6 (was ceabb57e...): the two passages above, and its
+header now credits #238's review R-1. Sources: <scratch>/drafts-source/writer_src.py (+ the unchanged test module,
+e40758d8..., joined by assemble.py, which checks TEST_MODULE byte for byte); rebuilt by drafts-source/rebuild2.bash
+with -B (no bytecode cache written in $WT). Run as before: --date 2026-11-26 --changelog-cases 121 --changelog-mutations 59.
+- On a FRESH copy of main (<scratch>/base-tree, 7df573f0): exit 0, and its output equals the edited clone byte for
+  byte, every file of the tree (diff -r).
+- A second run on that output: exit 1, "REFUSED: .github/workflows/publish.yml: anchor matched 0 times", wrote nothing.
+- The edited clone against the first commit's files (fetched from GitHub at 1965e557): CHANGED docs/DEVELOPER_CHEATSHEET.md
+  and CHANGELOG.md; unchanged publish.yml, the test module, AGENTS.md.
+
+== Verification (step 3; on the edited clone = the pushed files; logs in <scratch>/verify/ unless named)
+1. Tests (JuniperCascor1, Python 3.14; drafts-source/fixup_tests.bash):
+   - tests/test_publish_one_artifact.py: 121 passed, 0 failed, 0 skipped. fixup_publish_test.log
+   - tests/ --timeout=60 --maxfail=5 (ci.yml's unit-lane flags, the repo's addopts): 664 passed, 8 skipped, 7 subtests
+     passed; base with the same flags 612 passed, 8 skipped, 7 subtests passed; the same 8 skips (all
+     tests/test_gitleaks_pr_scan.py, no gitleaks binary). No new skip. fixup_full.log
+2. pre-commit 4.5.1 on the two changed files (drafts-source/precommit_files.bash, precommit_in_copy.py): exit=0,
+   "changed by hooks: none"; end-of-files, whitespace, merge-conflict, large-files, case, private-key, doc-links and
+   requirements.lock passed, the rest had no file (markdownlint excludes CHANGELOG.md and docs/). precommit_fixup.log
+3. Checker, FINAL (sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35, verified before each run),
+   --repo juniper-cascor-worker, template b6826ee6..., --pins <scratch>/pins.proposed.json UNCHANGED (sha256
+   63992351c10f9c4750d9fda7dccc40ab97026fbfc1c4b57039e533f901cc2233):
+     PASS juniper-cascor-worker/publish.yml  (PUBLISH_PACKAGE=juniper-cascor-worker, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)
+     1 of 1 pass   (exit 0; actionlint 1.7.12 exit 0)    checker_fixup_clone.log
+4. Sequence-safety screens on the two-commit range (drafts-source/probe_screens2_ccw.py via screens2.bash: base 7df573f0
+   -> commit 1 = the base with the five files fetched at 1965e557 and its own message -> commit 2 = the edited clone
+   with the fix-up's message; scope --scope 'juniper_cascor_worker/**/*.py' --scope 'tests/**/*.py'; juniper-ci-tools
+   0.9.1; local unsigned probe commits, never pushed):
+   - juniper-symbol-loss-check: exit 0, findings=2 fail=0 {'WAIVED': 2} (the first commit's two Allow-Symbol-Loss:
+     lines); the fix-up removes no symbol.
+   - juniper-docs-additions-check: exit 0, findings=9 fail=0 {'small-deletion': 9}.   <scratch>/screens/two-commit.log
+5. Pre-push gate over the fix-up's files and texts (drafts-source/gate2.bash: files/ = the 2 files, text/ = the final
+   PR body, the title, the fix-up's commit message; added/ = its 4 added lines, against commit 1's tree):
+   exit 0, gate: PASS. files scan 0 findings; text scan 0 findings (canary 32 of 32 both); the masked read listed
+   0 lines (none to judge). It ran first on a provisional body, then on the final body: PASS both
+   (<scratch>/gate-fixup.log). gate_matches_push.py: the payload equals the pushed bytes, body, title and message.
+6. Mutation proof: not re-run. The fix-up changes neither publish.yml nor the test module, so the first commit's
+   59 of 59 (plus the harmless control) and the rehearsals' 18 of 18 stand; the PR body says so.
+
+== Landing (step 4)
+run_push_signed_commit.py <scratch>/ARGS2.json (expected_head 1965e557d1993c797c699e30a324048e14766365, paths
+docs/DEVELOPER_CHEATSHEET.md and CHANGELOG.md), from $WT via drafts-source/landing2.bash:
+- --dry-run: "@ 1965e557... (== --expected-head)", the two files, the message, "(nothing written)", exit 0.
+- real: "verified head fix/publish-one-artifact-sweep -> 5b7340f0aad19215f2d931b49518f2b02013ac5a", "verified signature
+  (reason=valid)", "verified parent 1965e557...", both blobs verified (72ce1d86b410, 95b40390f4d8), exit 0.
+  <scratch>/push_signed_commit.dry.log, <scratch>/push_signed_commit.log
+
+== Read-back, re-fetch, checker (step 5)
+- readback_branch.py ARGS2.json: head 5b7340f0... verified=True reason=valid parents=['1965e557'], message last lines =
+  the two trailers, both blobs "same", "commit touches 2 file(s); expected 2; extra=[] missing=[]" (readback_fixup.log).
+- 2026-11-15_fetch_pr_files.py --pr 238 -> <scratch>/pr-head-fixup: the five files at the new head; each equals the
+  edited clone byte for byte (compare_pr_head.py).
+- The checker on the re-fetched head: PASS pr-head-fixup/publish.yml, 1 of 1 pass, exit 0; actionlint exit 0
+  (<scratch>/checker_pr_head_fixup.txt).
+
+== The PR body (step 6)
+gh api --method PATCH repos/pcalnon/juniper-cascor-worker/pulls/238 --input <scratch>/pr_body_fixup.json (from
+<scratch>/pr_body_fixup.md, built by drafts-source/build_pr_body2.py from the fix-up's own logs): updated_at
+2026-11-26T04:22:00Z. Read back (gh pr view --json body): equal to the file; it ENDS with the two required lines.
+
+== CI (read-only, 04:22Z, not waited on)
+On 5b7340f0: 11 pass, 11 pending, 5 skipping, none failing.
+
+== Could not do / notes
+- CI was not waited on or re-run.
+- The mutation batteries were not re-run (step 3 did not ask for them; the files they mutate are unchanged).
+- My isolated worktree was removed from the session after the first report; every source had been mirrored into
+  <scratch>/drafts-source/, and the fix-up was built from there.
+
+== Documents referenced (by filename) and changed
+Referenced: <scratch>/review/REVIEW.txt (the review of #238), <scratch>/REPORT.txt (the first commit's report),
+$WT/tmp/ports/SWEEP_PORT_BRIEF.md (the trailers and the PR body's required ending).
+Changed in the repo (the fix-up commit 5b7340f0): docs/DEVELOPER_CHEATSHEET.md, CHANGELOG.md; and PR #238's body.
+Changed in $WT: util/ad-hoc/2026-11-26_juniper-cascor-worker_one_artifact_sweep_port.py; under <scratch>:
+drafts-source/writer_src.py, writer.py, pr_body_head.md, pr_body_tail.md; created ARGS2.json, fixup_commit_body.txt,
+fixup_commit_message.txt, gate_summary_c1.md, gate_summary_fixup.md, pr_body_fixup.md, pr_body_fixup.json,
+pr_body_readback.md, this REPORT_FIXUP.txt, drafts-source/{rebuild2,fixup_replay,fixup_tests,precommit_files,screens2,
+gate2,landing2}.bash and {probe_screens2_ccw,build_pr_body2}.py, and the logs and trees named above (verify/*fixup*,
+verify/rebuild2.log, replay-fix/, commit1-tree/, screens/two-commit*, gate-fixup*/, precommit-fixup/, pr-head-fixup/,
+readback_fixup.log, fetch_pr_files_fixup.log, checker_pr_head_fixup.txt, push_signed_commit*.log).

@@ -1,0 +1,253 @@
+REPORT: juniper-cascor-client follow-up to #206: docs/REFERENCE.md now gives both causes of a failed
+`Verify PyPI serves exactly these files`
+Written 2026-11-26, after 05:49Z (date -u).
+$WT      = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun
+scratch  = $WT/tmp/ports/juniper-cascor-client-followup
+Brief followed: $WT/tmp/ports/SWEEP_PORT_BRIEF.md (its mechanics and hard rules). Also read: #206's review,
+$WT/tmp/ports/juniper-cascor-client/review/REVIEW.txt (R2 and R3 neighbour this paragraph).
+
+== The PR (as printed)
+- PR #207: https://github.com/pcalnon/juniper-cascor-client/pull/207
+  - OPEN, not a draft, no auto-merge; created 2026-11-26T05:47:48Z.
+- Head: faaf6538bd003b8a018f951ddbf560e3f6d4815f on branch docs/publish-pypi-check-two-causes.
+  - One signed commit. Its parent is beb6b349, which was main at the upload (checked at 05:47:43Z).
+- The upload (run_open_signed_pr.py, without --dry-run) printed:
+  - "signed commit faaf6538bd00 on pcalnon/juniper-cascor-client:docs/publish-pypi-check-two-causes"
+  - "PR: https://github.com/pcalnon/juniper-cascor-client/pull/207"
+- readback_branch.py printed:
+  - "head faaf6538bd003b8a018f951ddbf560e3f6d4815f verified=True reason=valid parents=['beb6b349']";
+  - "same 091a4a369cf1 docs/REFERENCE.md", "same acd90afb45a5 CHANGELOG.md";
+  - "commit touches 2 file(s); expected 2; extra=[] missing=[]".
+  - The message's last two lines are the two trailer lines.
+- Title and commit subject: "docs(publish): a failed PyPI check that gave up waiting is index lag, re-run, not a new
+  patch version". This is the prompt's subject, not shortened (the repo has no subject limit; #206's was longer).
+- PR body:
+  - read back from GitHub, it equals scratch/pr_body.md (58 lines, final newline aside);
+  - it ends with the brief's two required lines.
+- fetch_pr_files.py --pr 207: GitHub's two files at the head equal the clone's byte for byte.
+  - docs/REFERENCE.md sha256 f4b393bd14cb807c97a5e09e4d79e71387ea5748aaa50651cbd6dc5d1f5a4917
+  - CHANGELOG.md sha256 f8bc2691b597271fca6691a27ee305ef91a6f8767bca9dc4596389d095ac0996
+- Not merged, armed, approved or updated. No other PR was touched: `gh pr list` showed 0 open PRs before the upload,
+  so no concurrent PR changes these files.
+- CI, one read-only snapshot at 2026-11-26T05:49:02Z: 14 pass, 6 pending, 5 skipping, 0 failing. Not waited on.
+
+== Base and writer
+- Fresh clone, made by 2026-11-15_publish_port_clone.py: scratch/juniper-cascor-client.
+  - HEAD beb6b349689273b07d3df8240cd89f6ae9dda3fb, #206's merge.
+  - It equalled GitHub main at the clone, at the dry run and at 05:47:43Z, right before the upload.
+- Writer: $WT/util/ad-hoc/2026-11-26_juniper-cascor-client_pypi_check_two_causes.py
+  - sha256 e7a8dd3bbe1df60cf12c9a6df3250e0334f8fc34c8f5b62be5bb62a3eafc0a4a; source copy in scratch/drafts-source/.
+  - Usage: --tree <fresh clone> [--date YYYY-MM-DD]. Every edit is an anchor that must match exactly once.
+  - Post-condition: the lines each file loses and gains must equal exactly the expected ones, or it refuses and writes
+    nothing.
+  - Replays:
+    - On a copy of the base files (scratch/replay2) it reproduces both files byte for byte.
+    - A second run refuses ("anchor matched 0 times") and writes nothing.
+    - With --date 2026-11-27 (scratch/replay-date) it moves both Last Updated lines, so a past-midnight re-run is
+      covered.
+  - Lint: flake8 7.3.0 at 512 columns is clean, and black --check passes. scratch/drafts-source/implicit_concat_probe.py
+    finds 0 implicit concatenations; it stands in for B914, which the env's bugbear 25.11.29 predates, and it caught 3
+    of 3 planted cases in concat_positive.py. There are no /tmp literals.
+
+== git diff --stat
+ CHANGELOG.md      | 4 ++++
+ docs/REFERENCE.md | 9 ++++++---
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+== The diff (exact bytes in scratch/followup.diff; in this copy the blank context lines lost their leading space)
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index a59558a..acd90af 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -274,6 +274,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
+     against a release run and a TestPyPI that name different files, the install step's own shell against stand-in
+     `pip`, `python` and `sleep`, and its package check against a real interpreter, `PYTHONOPTIMIZE` set or not. Each of
+     38 edits to a copy of the workflow, one at a time, fails the tests.
++- **`docs/REFERENCE.md` gives both causes of a failed `Verify PyPI serves exactly these files`.** #206's text gave
++  only a mismatch (PyPI lists a file this run did not build, or another sha256), which needs a new patch version. A
++  check that gave up waiting is index lag: the files are already on PyPI, and "Re-run failed jobs" on the run whose
++  check gave up, within 30 days of it, re-uploads the same bytes and repeats the check, behind a fresh `pypi` approval.
+
+ ## [0.8.0] - 2026-09-05
+
+diff --git a/docs/REFERENCE.md b/docs/REFERENCE.md
+index af4fc37..091a4a3 100644
+--- a/docs/REFERENCE.md
++++ b/docs/REFERENCE.md
+@@ -2,7 +2,7 @@
+
+ ## juniper-cascor-client Technical Reference
+
+-**Version:** 0.1.7
++**Version:** 0.1.8
+ **Status:** Active
+ **Last Updated:** November 26, 2026
+ **Project:** Juniper - CasCor Service Client Library
+@@ -726,7 +726,10 @@ When rung 1 refuses, or the release run failed before PyPI:
+ - **A TestPyPI job failed on index lag** (a JSON check, or the install check, gave up waiting for the index, and its error says so): **Re-run failed jobs** on the release run, within 30 days. A re-run `Publish to TestPyPI` uploads the same bytes from the run's artifact, which the index accepts (HTTP 200 for a byte-identical file), and repeats its check; the install check then runs again.
+ - **The install check failed for real** (the package does not install or its check fails, and a re-run fails the same way): cut a new patch version. If unsure, re-run the failed jobs first: index lag passes on a re-run, and a real failure repeats. A same-version re-cut cannot fix it, since the index refuses new bytes under a file name it already holds; never delete and publish a Release again to retry: a re-cut's run becomes the tag's newest release run, TestPyPI refuses its files, and rung 1 then refuses the tag (what is left is "Re-run failed jobs" on the original release run, within 30 days of it, then a new patch version).
+
+-A failed `Verify PyPI serves exactly these files` is not in that list: the step runs after the upload, so this run's files are already on PyPI. If PyPI lists a file this run did not build, or another sha256, find which upload put it there; only a new patch version ships tested files under a clean version.
++A failed `Verify PyPI serves exactly these files` is not in that list: the step runs after the upload, so this run's files are already on PyPI. It has two causes, and they need different fixes:
++
++- **A mismatch** (PyPI lists a file this run did not build, or another sha256): find which upload put it there; only a new patch version ships tested files under a clean version.
++- **The check gave up waiting** (PyPI's JSON did not list the files in time): index lag, not a wrong file. **Re-run failed jobs** on the run whose check gave up (the release run, or the republish's dispatch run), within 30 days of that run. The re-run job uploads the same bytes again, which the index accepts, and repeats the check. Re-running the job needs a fresh `pypi` approval.
+
+ Each rung acts on the workflow as of the tag: a tag cut before juniper-cascor-client#199 has no rung 1, and one cut before this change runs rung 1 without the check of the release run's TestPyPI jobs.
+ Never "Re-run all jobs" on a publish run, nor `gh run rerun <id>` without `--failed`.
+@@ -1013,5 +1016,5 @@ isort --check-only juniper_cascor_client  # Import order
+ ---
+
+ **Last Updated:** November 26, 2026
+-**Version:** 0.1.7
++**Version:** 0.1.8
+ **Maintainer:** Paul Calnon
+
+== Every check's result
+1. Publish test module (the prompt asked for this one): exit 0.
+   - tests/test_publish_one_artifact.py: 121 passed, 0 failed, 0 skipped. These are the 121 cases #206 left.
+   - tests/test_memory_budget_check.py: 40 passed, 0 failed, 0 skipped. It is the only other test that names
+     docs/REFERENCE.md, and it only asserts that the budget does not govern the file.
+   - How it ran: JuniperCascor1 (Python 3.14.7) through scratch/drafts-source/run_pytest.py, with cwd = the clone,
+     --timeout=60 (as in ci.yml), --basetemp under scratch and a git ceiling at scratch.
+   - Logs and results: scratch/pytest_publish.log, junit-publish.xml, pytest_publish_counts.txt.
+2. Full suite (not asked; cheap): pytest tests/, run the same way, exit 0.
+   - 720 passed, 8 skipped, 0 failed. All 8 skips are in tests/test_gitleaks_pr_scan.py ("no gitleaks binary").
+   - These are the same counts #206's review measured on its head.
+   - Logs: scratch/pytest_full.log, junit-full.xml.
+3. Docs-link check: juniper-check-doc-links with ci.yml's arguments, run from the clone root. Exit 0, "All links valid
+   across 19 files" (3 cross-repo links skipped). Log: scratch/doclinks.log.
+   Pre-commit also runs it as the hook "Validate documentation links" (.pre-commit-config.yaml), which passed in
+   check 4.
+4. pre-commit: /opt/miniforge3/bin/pre-commit run --files docs/REFERENCE.md CHANGELOG.md, run in a copy of the clone
+   by $WT/util/ad-hoc/2026-11-15_cascor_one_artifact_helpers/precommit_in_copy.py. Exit 0, "changed by hooks: none".
+   - Passed: end-of-file, trailing whitespace, merge conflicts, large files, case conflicts, private keys and
+     Validate documentation links.
+   - markdownlint "(no files to check)": the repo excludes CHANGELOG.md and docs/.
+   - Log: scratch/precommit.log.
+5. Sequence-safety screens (Sequence Safety is a required check), replayed locally with this repo's scope:
+   scratch/probe_screens_ccc.py, the pilot's copy, unchanged, with juniper-ci-tools 0.9.1. Exit 0. Log:
+   scratch/screens.log.
+   - symbol-loss: files_screened=0, findings=0.
+   - docs: findings=3, fail=0, {'small-deletion': 3}: the paragraph (deleted 1, added 4) and the two version lines
+     (deleted 1, added 1 each).
+   - No Allow-Symbol-Loss line is needed: no Python changed.
+6. Pre-push gate: bash $WT/util/ad-hoc/2026-11-15_pre_push_gate_run.bash. The final payload is scratch/gate3: files/ =
+   the 2 files, text/ = the final PR body, the title and the commit message, added/ = the 10 added lines.
+   - The final run exits 0, "gate: PASS". Log: scratch/gate3_run.log.
+     - files scan: 1 finding, ACCEPTED (key below), 0 open.
+     - text scan: 0 findings.
+     - masked read --names over the added lines: "0 line(s) listed from 2 file(s) and 12 line(s) read; 0 refused".
+   - The masked line I judged: docs/REFERENCE.md:661:69:juniper-env-credential:3576f680b1.
+     - Masked shape (scratch/gate_masked_661.log): "L661 len=206 offset=67 random-looking=0". At the offset sits the
+       all-caps identifier assigned to API_KEY_ENV_VAR in the Constants Reference table: an environment-variable NAME.
+     - That line is on main and untouched by this change. The pilot accepted the same key.
+     - Judged not a credential, and accepted for the files scan only (scratch/gate3/accept.files.txt).
+   - Earlier runs: scratch/gate (no accept file) exited 1 on that one OPEN finding, as expected. scratch/gate2 (an
+     earlier body) passed. I rebuilt the payload after each body edit, so the final gate scanned the uploaded body
+     (cmp equal).
+7. Upload mechanics.
+   - run_open_signed_pr.py --dry-run exited 0: "base main @ beb6b349...", 2 adds, the commit body with the trailers
+     last, "(nothing written)". Log: scratch/open_signed_pr_dryrun.log.
+   - The real run was gated on `gh api .../commits/main` == beb6b349 in the same command, then exited 0 (above).
+8. Not applicable, as the prompt says: the template-identity checker and the install pins (the workflow does not
+   change), and the mutation proof (no workflow or test change).
+
+== Where the text comes from
+- Models, read read-only through gh api on each repo's main (copies in scratch/refs/):
+  - juniper-cascor-worker docs/DEVELOPER_CHEATSHEET.md (main f9122a8a = #238's merge): its "It has two causes, and they
+    need different fixes:" lead-in, which follows the same first sentence as this paragraph, and its two-bullet form;
+  - juniper-data-client docs/REFERENCE.md § Publishing and Recovery (main 4b78d540 = #274's merge): its "index lag, not
+    a wrong file" and "Re-running the job needs a fresh `pypi` approval.";
+  - juniper-canopy docs/ci_cd/CICD_MANUAL.md (main aa9ac734 = #844's merge);
+  - juniper-cascor docs/ci_cd/MANUAL.md (main 5e3d9801): its failure table's mismatch row (:819) and the row "A JSON
+    check gives up after 20 attempts" (:821).
+- "on the run whose check gave up (the release run, or the republish's dispatch run), within 30 days of that run" is
+  taken verbatim from the brief's #238 addendum (that review's R-1).
+- Every claim was checked against this repo:
+  - publish.yml has `Verify PyPI serves exactly these files` in two jobs, each after its upload: `Publish to PyPI`
+    (:486 then :492) and `Republish the tested files (dispatch only)` (:794 then :800).
+  - Both jobs run in `environment: pypi` (:359, :581). That environment has a required reviewer, so a re-run needs a
+    fresh approval (GET repos/pcalnon/juniper-cascor-client/environments).
+  - The step's own errors tell the two causes apart: "lists a file this run did not build, or with another sha256"
+    fails at once; "... after {attempts} attempts" ends the wait.
+- The mismatch bullet keeps the old sentence's text. The paragraph keeps its place, after and outside the "When rung 1
+  refuses, or the release run failed before PyPI:" list.
+
+== Judgement calls
+1. I used two bullets rather than two sentences, as the worker and data-client ports do, with the mismatch first (the
+   old text) and the timeout second.
+2. I left out canopy's and cascor's "5-minute timer". This repo's pypi environment does have wait_timer 5, but
+   docs/REFERENCE.md never mentions it, and the prompt prescribes only "a fresh `pypi` approval".
+3. I left out the bound's numbers (20 attempts, 15 s). docs/REFERENCE.md states none of them, and this repo has no
+   docs-bounds test (#206's review: rightly not ported). Adding them would create an unpinned bound.
+4. "ONE CHANGELOG.md line": I read this as one entry, which is the brief's wording ("one entry under [Unreleased], in the
+   repo's own style").
+   - It is one bullet, wrapped at the file's width (119 columns at most; the section wraps at 120 or less).
+   - It sits under ### Fixed, after #206's entry, where this file puts doc corrections.
+   - If one physical line was meant, join CHANGELOG_ENTRY in the writer and re-run it on a fresh clone.
+5. Version and date lines: I changed both pairs (header and footer), as #195, #196, #199 and #206 did (git log -G on
+   the file).
+   - #178, #188 and #201 edited the file without a bump, so "every edit bumps" would be false. I removed that phrase
+     from my PR body and from the writer's docstring before the upload.
+   - 0.1.7 became 0.1.8. The Last Updated lines already read November 26, 2026, which was date -u's day at the upload
+     (05:47Z), so they did not change.
+6. #206's own CHANGELOG entry ("...that a failed `Verify PyPI serves exactly these files` comes after the upload") is
+   left as it is. It is incomplete, not false, and the prompt says to change nothing else; the new entry carries the
+   correction.
+7. The writer sits in $WT/util/ad-hoc/, as the script-placement rule and the pilot's writer have it. It is untracked
+   in $WT, and committing it to juniper-ml is the orchestrator's call. The PR body names its path and says it is not
+   yet on juniper-ml main.
+8. I fixed four inaccuracies in my own PR-body draft before the upload, after re-reading it against the evidence:
+   - "the other six ports": juniper-recurrence#241 is OPEN, a title search found no juniper-ml sweep PR, and
+     juniper-data#553 is merged but I did not read its docs. The body now names only the three ports I read.
+   - "as each recent edit of the file did": see call 5.
+   - "has never mentioned it" became "does not mention it anywhere".
+   - "every check ran in JuniperCascor1" became "the tests ran in JuniperCascor1".
+
+== Could not do / did not do
+- I did not wait for CI or re-run it; the snapshot is above.
+- I did not verify live that PyPI accepts a byte-identical re-upload. "which the index accepts" is the template's
+  documented fact: juniper-cascor docs/ci_cd/MANUAL.md, and this file's own :726 bullet ("HTTP 200 for a
+  byte-identical file").
+- I did not read juniper-data#553's or juniper-recurrence#241's docs, and I make no claim about them.
+
+== Against the brief or the prompt
+- The prompt's "level with the other six ports" could not be confirmed in full: of the six, I found four merged
+  (worker#238, data-client#274, canopy#844, data#553), one open (recurrence#241) and no juniper-ml PR. The PR claims
+  only the three I read.
+- Where this follow-up's prompt departs from SWEEP_PORT_BRIEF.md, I followed the prompt: the branch
+  (docs/publish-pypi-check-two-causes, not fix/publish-one-artifact-sweep), the subject, and no checker, pins or
+  mutation table.
+- Nothing else contradicts the brief.
+
+== Documents
+Referenced:
+- $WT/tmp/ports/SWEEP_PORT_BRIEF.md;
+- $WT/tmp/ports/juniper-cascor-client/review/REVIEW.txt (#206's review);
+- $WT/tmp/ports/juniper-cascor-client/REPORT_FIXUP.txt;
+- $WT/tmp/ports/juniper-data-client/review/REVIEW.txt (F1);
+- $WT/tmp/ports/juniper-cascor-worker/review/REVIEW.txt (R-1);
+- juniper-cascor docs/ci_cd/MANUAL.md;
+- juniper-cascor-worker docs/DEVELOPER_CHEATSHEET.md;
+- juniper-data-client docs/REFERENCE.md;
+- juniper-canopy docs/ci_cd/CICD_MANUAL.md;
+- in juniper-cascor-client: docs/REFERENCE.md, CHANGELOG.md, .github/workflows/publish.yml, ci.yml and
+  sequence-safety.yml, .pre-commit-config.yaml and pyproject.toml.
+Changed, repository files: juniper-cascor-client docs/REFERENCE.md and CHANGELOG.md (PR #207), and nothing else.
+Created, outside any repository commit:
+- $WT/util/ad-hoc/2026-11-26_juniper-cascor-client_pypi_check_two_causes.py (the writer, untracked);
+- under scratch:
+  - this REPORT.txt;
+  - the clone juniper-cascor-client/;
+  - refs/; base/, base-tree/, replay/, replay2/, replay-date/;
+  - followup.diff, followup.diff.final, followup.diffstat;
+  - the writer logs (writer_*.log);
+  - the test logs and results: pytest_*.log, junit-*.xml, *_counts.txt, pytest-basetemp-*/;
+  - doclinks.log, precommit/ and precommit.log;
+  - probe_screens_ccc.py, screens/ (a local scratch repo of two unsigned commits, never pushed) and screens.log;
+  - build_gate.py, gate/, gate2/, gate3/ and their logs, gate_masked_661.log;
+  - commit_body.txt, commit_message.txt, pr_body.md, ARGS.json;
+  - open_signed_pr_dryrun.log, open_signed_pr.log, readback.log, pr_body_readback.md, pr-head/, fetch_pr_files.log;
+  - drafts-source/: every script and text drafted in my agent worktree, checked identical.
+Nothing was deleted. Nothing under $W was read or written. $WT's git state was not touched.

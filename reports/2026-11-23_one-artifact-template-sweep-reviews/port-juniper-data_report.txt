@@ -1,0 +1,150 @@
+REPORT: juniper-data, the port of juniper-cascor#777 (the one-artifact template's sweep)
+Written 2026-11-26 after 04:29Z (date -u). $WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun;
+<scratch> = $WT/tmp/ports/juniper-data; $W = .../worktrees/ethereal-munching-peacock (read only; nothing there was written).
+The brief: $WT/tmp/ports/SWEEP_PORT_BRIEF.md (with its addenda, including "From #238's review").
+
+== The pull request
+PR #553 https://github.com/pcalnon/juniper-data/pull/553 (OPEN, not draft; mergeStateStatus BLOCKED at 04:29Z while CI runs)
+Head 62e0854a6fe608b2bb7e397d78a5541e9b1a8aef on fix/publish-one-artifact-sweep: ONE signed commit, parent 8e08d209
+(readback_branch: "verified=True reason=valid parents=['8e08d209']"; gh api commits/62e0854a...: verified=true reason=valid;
+the trailers are the last paragraph). Title = commit subject: "fix(publish): port of juniper-cascor#777 -- the install
+check gets a job that cannot mint, the republish job checks the release run's TestPyPI jobs, and PUBLISH_TAG_PREFIX".
+Not merged, armed, approved or updated; no other PR touched (juniper-data had no open PR before the upload).
+
+== Writer and base
+Writer: $WT/util/ad-hoc/2026-11-26_juniper-data_one_artifact_sweep_port.py (sha256 f789b8818c36bcf406685daa47d07c1f38c4b5b439c99da61eef72c3414fff3b),
+assembled by <scratch>/drafts-source/assemble.py from drafts-source/{writer_src,digests_src,docs_src}.py and the three test
+modules (embedded whole as TEST_MODULE, INSTALL_TEST_MODULE, DOCS_BOUNDS_TEST_MODULE). Run:
+  python3 -I <writer> --tree <fresh clone of main> --date 2026-11-26 --changelog-cases 125 --changelog-mutations 51
+Both counts are required (missing -> exit 2; a placeholder -> exit 1; nothing written either way). Template pinned by
+sha256 (b6826ee6..., juniper-cascor publish.yml at 5e3d9801); base test modules pinned by sha256 (written only over them);
+the new docs-bounds module only where none exists; notify-consumers.yml must be e17ddc9b...; the writer refuses (writes
+nothing) on any anchor miss or failed post-condition (template blocks and republish job re-cut and compared; notify-consumers'
+text unchanged; jobs/env/install job/pypi needs checked as YAML; INSTALL_LINES keep the seed's commands in order).
+Clone base HEAD: 8e08d2097c362f1d46d4dfaa1adc6f12e5974855 (== GitHub main at 03:29Z and again at 04:28:19Z).
+Replay (<scratch>/replay.bash, log replay.log): a fresh copy of main -> the 10 files byte for byte; a second run refuses
+("anchor matched 0 times") and writes nothing; no counts exit 2; "{cases}" exit 1; trees unchanged.
+
+git diff --stat (clone, tracked files) + the new file:
+ .github/workflows/publish.yml                      | 174 ++--
+ CHANGELOG.md                                       |  65 ++
+ docs/DEVELOPER_CHEATSHEET.md                       |   8 +-
+ docs/REFERENCE.md                                  |  33 +-
+ docs/ci_cd/CICD_MANUAL.md                          |  51 +-
+ docs/ci_cd/CICD_QUICK_START.md                     |  10 +-
+ docs/ci_cd/CICD_REFERENCE.md                       |  17 +-
+ .../tests/unit/test_publish_one_artifact.py        | 960 ++++++++++++++++++---
+ .../tests/unit/test_testpypi_install_verify.py     |  82 +-
+ 9 files changed, 1182 insertions(+), 218 deletions(-)
+ + juniper_data/tests/unit/test_publish_docs_bounds.py (new, 97 lines)
+Full diff: <scratch>/clone.diff.
+
+== Verification (all before the push; on the writer's output for a fresh copy of main, byte-identical to the clone, 10/10)
+1. Tests, conda env JuniperData (pytest 9.0.2), -m "unit and not slow" -p no:cacheprovider --timeout=60:
+   test_publish_one_artifact.py 125 passed; test_testpypi_install_verify.py 6 passed; test_publish_docs_bounds.py 2
+   passed; test_notify_consumers_dispatch.py 27 passed: 160 passed, 0 failed, 0 skipped (log <scratch>/pytest-work7.log).
+   Unit lane as ci.yml selects it (-m "unit and not slow" juniper_data/tests/unit, no coverage): 2665 passed, 15 skipped
+   (14 no gitleaks binary, 1 FastAPI < 0.142), 0 failed, exit 0 (<scratch>/unit-lane-final.log).
+2. actionlint 1.7.12, in the clone: publish.yml + notify-consumers.yml exit 0. (The BASE publish.yml fails actionlint:
+   SC2086 on the old unquoted `juniper-data==${VERSION}`; the port quotes it. Outside a git root actionlint cannot
+   resolve ./.github/workflows/notify-consumers.yml, so it was run in the clone.)
+3. pre-commit (precommit_in_copy.py, /opt/miniforge3/bin/pre-commit, the 10 files): exit 0; 16 Passed (Ruff lint +
+   format, MyPy for tests, yamllint, YAML syntax, doc links, ...), 7 Skipped, "changed by hooks: none".
+4. Checker (sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35 verified before every run), --repo
+   juniper-data --template clones/juniper-cascor/.github/workflows/publish.yml, on the clone's publish.yml with
+   notify-consumers.yml (e17ddc9b3ac99d87600c99835b2c87bc16f252034f966645975c0b776ec8e078) beside it:
+     --pins <scratch>/pins.proposed.json (sha256 c67ad8c6448519492e414478d2e0b63662ae7228641f29772afa26e4c51d1d55):
+       "PASS juniper-data/publish.yml  (PUBLISH_PACKAGE=juniper-data, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)"
+       "1 of 1 pass", exit 0.
+     Control, --pins $W's canonical file (sha256 19d6acd36d6ad0d0648ab160e20be8e863fba4c21d25e57e539a8b9c26fe125d):
+       "0 of 1 pass", exit 1: "step 'Verify TestPyPI install' differs from its pin ... first at line 1".
+   On the PR head (fetch_pr_files.py --pr 553, + notify-consumers.yml; 11 of 11 fetched files equal the clone's):
+       "PASS pr-head/publish.yml  (PUBLISH_PACKAGE=juniper-data, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)",
+       "1 of 1 pass", exit 0 (same proposed pins file). (The label is the checker's: the directory two levels up.)
+5. Mutation proof (<scratch>/mutations.py, derived from the pilot's; each edit on a COPY, the three publish test
+   modules run with -x, the copy removed): 52 run; 51 of 51 mutations caught; the harmless control H1 (Dependabot
+   bumps every download-artifact pin together) passes. Areas: A1-A16 + R5a-R5d (install job, install script, package
+   check), B1-B5 (find step), C1-C4 (prefix/guard), E1-E13 (hardening; E13 = a YAML comment word in a template block),
+   N1-N3 (notify-consumers: if: always(), needs: testpypi, the dispatch ref as version), D1-D5 (each doc's stated bound).
+   Rehearsals alone (-k the rehearsal classes and the install-verify cases): 16 of 16 caught + H1 passes (run on the
+   previous build, whose workflow and two test modules are byte-identical; cmp checked). Tables:
+   <scratch>/mutations-final/table.md, <scratch>/mutations-final-rehearsals/table.md (both in the PR body).
+6. Sequence-safety screens (<scratch>/probe_screens_data.py: the pilot's probe with data's scope 'juniper_data/**' from
+   sequence-safety.yml:151; juniper-ci-tools 0.9.1; base = pristine main snapshot <scratch>/base-tree; the commit's own
+   message): juniper-symbol-loss-check exit 0, files_screened=3 findings=6 fail=0 {'LOST': 1, 'WAIVED': 5};
+   juniper-docs-additions-check exit 0, findings=34 fail=0 (all small-deletion WARNs). Without the waivers: 5 FAIL.
+   Waived, one Allow-Symbol-Loss line each: TestFindReleaseRun.test_the_newest_release_run_that_still_holds_the_artifact_is_found;
+   TestFindReleaseRun.test_a_package_prefixed_tag_names_its_version_too; TestUnchanged.test_the_install_check_still_ends_the_testpypi_job_and_installs_from_testpypi_alone;
+   TestTemplate.test_the_template_steps_and_the_republish_job_equal_juniper_cascor_at_675884888f5a; _step_ids.
+   const:INSTALL_CHECK is reported LOST at WARN (constants are advisory and cannot be waived or fail); it is named on
+   its own line too, which the screen lists as waived and keeps at WARN.
+7. Pre-push gate (2026-11-15_pre_push_gate_run.bash <scratch>/gate-final: files = exactly the 10 files from the clone;
+   text = the final PR body, the title, the commit message; added = the added lines): exit 0, "gate: PASS".
+   Files scan: 4 findings, each read with the masked tool, judged NOT a credential, accepted (<scratch>/gate/accept.files.txt):
+     docs/ci_cd/CICD_REFERENCE.md:358:2 and :359:2 juniper-env-pipe-cell, and docs/REFERENCE.md:2443:66
+     juniper-env-pipe-cell: table cells naming a secret/token variable, random-looking=0, each byte-identical to a base
+     line (357, 358, 2432) the PR does not change;
+     juniper_data/tests/unit/test_publish_one_artifact.py:976:26 juniper-env-credential: the notify-consumers case's
+     `"secrets": {"CROSS_REPO_DISPATCH_TOKEN": "${{ secrets.CROSS_REPO_DISPATCH_TOKEN }}"}`, an expression, as the base test had it.
+   Text scan: 0 findings. Masked read --names of the added lines: 2 lines, neither a value: publish.yml added line 18
+   (the template's guard comment naming the D2 design note; random-looking=1 from the long notes path) and the test's
+   added line 693 (`assert all(headers.get(<str>) == f<str> ...)`, the rehearsal asserting the stand-in credential is
+   sent as the Authorization header).
+
+== The proposed pin (as "each port's review updates that port's pin")
+<scratch>/pins.proposed.json = $W's canonical file as it stood at 04:28Z (19d6acd3...) with ONLY (juniper-data,
+publish.yml, "Verify TestPyPI install") changed: lines 18 -> 31, sha256 3783295d154721cb31708337a2bcb99cb60657bdeff953a8689e26882f843d4f
+-> 4a05dbb20ec3db65e5b6303a93261ad042dd76359a54c2f3d32d8d63a3003176, source rewritten (names the writer, R4-5, the neutral
+print, the comments). Every seed command kept in order; the last (python -c) gains find_spec('juniper_data') with
+cascor's neutral form: print('TestPyPI install', m.version('juniper-data'), 'package at', origin); raise SystemExit(0
+if origin else 'the installed wheel holds no juniper_data package'). The other 17 pins equal the canonical file's
+(checked). Diff: <scratch>/pins.proposed.diff.txt. Generator: <scratch>/make_pins.py.
+
+== Judgement calls
+- Digest pins (item G): data's test pinned the PARSED step (json.dumps, sort_keys), not raw text as SWEEP_BRIEF item G
+  assumed. Kept that form, normalized (uses: value reduced to the action name), at TEMPLATE_COMMIT f5ed30177766 (the
+  snapshot case renamed, as its own assertion requires). Mutation E13 then showed a YAML comment edit inside a template
+  block passes BOTH the parsed digests AND the cross-repo checker (it compares parsed YAML: confirmed in its docstring
+  and by running it on the E13 copy: PASS). So the port ALSO adds juniper-cascor-client#206's raw-text normalized block
+  pins (2 cases + a normalization case); E13 is now caught. Redundant with the parsed pins by design (no #543 case dropped).
+- The install job has no checkout: the tag comes from env RELEASE_TAG; the sim's sparse checkout of pyproject.toml is
+  left out, per the addenda of SWEEP_PORT_BRIEF.md.
+- test_publish_docs_bounds.py ported (new): data's docs state the bounds (20 polls, 15 s, 30 s timeouts, 19 sleeps;
+  30 s wait, 5 tries, 10 s), so they are now read from publish.yml and required in CICD_MANUAL, CICD_REFERENCE,
+  REFERENCE and DEVELOPER_CHEATSHEET (D1-D5 prove it).
+- test_testpypi_install_verify.py rewritten whole (same 6 cases and names): the step in its job, RELEASE_TAG env, the
+  check from $RUNNER_TEMP, 5 failed tries before the lag error.
+- Each job's exact step list uses the template's (name, action) form, kept in TestWiring (data's place); TestExactly
+  has the rest without a duplicate.
+- Docs: a new heading "Stage 1b: Verify the TestPyPI install" (no heading renamed or removed); every edited doc's
+  version patch-bumped and dated 2026-11-26; AGENTS.md not edited (it documents no publish step; its CLAUDE.md is a symlink).
+- The coordinator's #238 lesson was applied BEFORE the PR opened: every "gave up waiting" remedy names the run whose
+  check gave up (the release run, or the republish's dispatch run), within 30 days of that run: the MANUAL's new
+  paragraph, its troubleshooting line, the cheatsheet row, the CHANGELOG entry and the PR body. The TestPyPI-job and
+  rung-2 remedies say "the release run" (those jobs run only there).
+- Person-word: data's publish.yml says "owner" (detected; its header keeps it); the template blocks bring "Overtoad"
+  byte for byte, so the file now carries both. No new text names the person (the writer refuses one in docs/CHANGELOG).
+- notify-consumers: trigger semantics, text and notify-consumers.yml unchanged. A republish dispatch skips it (needs
+  pypi; the release tag is absent), so it does NOT notify consumers; the docs keep the re-send command
+  (gh workflow run notify-consumers.yml --repo pcalnon/juniper-data --ref v<version> -f version=<version>). PR body says so.
+- Requirements: no PR template in juniper-data; the body references JR-ML-OPS-007, as #543 did (exists in juniper-ml
+  notes/requirements).
+
+== Contradictions with the brief ($WT/tmp/ports/SWEEP_PORT_BRIEF.md), and things to know
+- $W's pins file is not d539f05f... as the brief says: it read 1dd592c2... at 03:33Z, 824c50d9... at ~04:15Z, and
+  19d6acd3... at 04:28Z (the orchestrator applying reviewed pins). The proposal was regenerated from the current file
+  right before the upload; if the canonical file moves again before juniper-data's pin is applied, regenerate it with
+  <scratch>/make_pins.py (only juniper-data's pin differs).
+- The checker does not compare YAML comments outside run scripts (see E13): "byte-identical" for those comments is
+  enforced by the writer's post-condition and, for data, now by its raw-text pins, not by the checker.
+- The base publish.yml failed actionlint (SC2086); fixed by the port.
+- The clone (tmp/ports/clones/juniper-data) holds the ported, uncommitted files (that is the tree the PR uploaded);
+  its .git was never written.
+
+== Artifacts (<scratch>)
+ARGS.json, commit_body.txt, commit_message_full.txt, pr_body.md, pins.proposed.json, pins.proposed.diff.txt, clone.diff,
+diffstat.txt, base-tree/ (pristine main), work7/ (the verified tree), mutations-final/, mutations-final-rehearsals/,
+screens-final.log, precommit-final.log, unit-lane-final.log, checker-clone.log, checker-clone-control.log,
+checker-pr-head.log, gate-final/ + gate-final_run.log, open_signed_pr_dryrun.log, open_signed_pr.log, readback.log,
+fetch_pr_files.log, pr-head/, replay.log, drafts-source/ (every source: writer parts, test drafts, edit passes, merge
+resolution, PR body parts and builder, helper scripts).

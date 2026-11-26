@@ -1,0 +1,305 @@
+REVIEW: juniper-canopy#844 (https://github.com/pcalnon/juniper-canopy/pull/844)
+Head e6557ec4cd6d603b2d1dfb534204316b219994df (= GitHub headRefOid); base 2cec71fe10e9025232d64e74c4f527b6ed0c08f3 (= canopy main; compare: identical).
+Two commits, reviewed together as the squash will land them: dcc58bb5510874227dd04206b0b77a3f7df2916e (the port), e6557ec4cd6d603b2d1dfb534204316b219994df (the runbook fix-up).
+Scratch: $WT/tmp/ports/juniper-canopy/review/ (head clone head/, every script and log named below). Written 2026-11-26 UTC.
+
+WHAT WAS NOT DONE
+- No GitHub writes. I did not re-run the failed Playwright job, or anything else.
+- I did not read the porting session's REPORT.txt, REPORT_FIXUP.txt or its other files (pins.proposed.json only), nor its
+  mutation harness. The PR body's 55-mutation table is therefore unverified by me. My own 19 mutations are below.
+- I did not run canopy's whole unit lane locally (8500+ cases), nor pre-commit, nor the sequence-safety screens. CI ran all
+  three on the head, and I read the logs: all five unit lanes, the three pre-commit lanes and Sequence Safety passed. I ran
+  the two publish modules and test_wheel_import_smoke.py locally.
+- LD_LIBRARY_PATH/LIBTORCH were left as the host sets them. Collecting the publish modules did not break, so nothing was
+  unset.
+- The pins file the proposal was built on (d539f05f...) is no longer on disk: $W's file was updated in place to 1dd592c2....
+  I compared canopy's entry with 1dd592c2's, whose canopy entry is still the seed (36d5694d..., the value the PR body cites
+  for d539f05f).
+- GitHub's squash message was not exercised. The squash notes are inferred from the repo setting
+  (squash_merge_commit_message = COMMIT_MESSAGES) and the screens' code.
+
+VERDICT: BLOCKER 0, MAJOR 0, MINOR 2, NIT 3
+Mergeable once the failing required check, a pre-existing Playwright flake (see CI), is re-run green.
+- Nothing I found would publish wrong bytes, mint a credential where it must not, let a failed check pass, or break a
+  release or a republish.
+- The FINAL checker passes.
+- Every template block is byte-identical to cascor main's, comments included.
+- The proposed pin is accepted, applied as canopy's entry alone (see "Notes for the merger").
+
+FINDINGS
+
+M1  MINOR  docs/ci_cd/CICD_REFERENCE.md:565 (with :558)
+  What: The section claims "Pinned by `src/tests/unit/test_publish_one_artifact.py`, and the numbers in this section by
+    `src/tests/unit/test_publish_docs_bounds.py`." The same section states "`juniper-canopy-dist`, kept 90 days" (:558),
+    which the docs-bounds module neither reads nor requires. Cascor's REFERENCE.md:258 scopes the same sentence to "the
+    numbers in this paragraph", its JSON-bounds paragraph; the port widened "paragraph" to "section".
+  Shown by: mutation R15 (CICD_REFERENCE.md "kept 90 days" -> "kept 30 days"): all 115 cases pass. The workflow side is
+    covered (test_publish_one_artifact.py pins retention to exactly 90), so only the doc can drift unseen.
+  Fix: either scope the claim to what the module reads ("..., and the JSON checks' poll bounds and the install check's
+    wait, tries and lag error by `src/tests/unit/test_publish_docs_bounds.py`"), or have the module read `retention-days`
+    from `Upload dist artifacts` and require "kept {n} days" in CICD_REFERENCE.md. The docs state that number, so pinning
+    it stays within "pins only what the docs state".
+
+M2  MINOR  .github/workflows/publish.yml:594-598 and :426-428; src/tests/unit/test_publish_one_artifact.py:843-856;
+           PR body § "This repository's own changes, and the judgement calls" ("No digest pins" bullet)
+  What: The template's YAML comments outside `run:` scripts are guarded by neither canopy's suite nor the FINAL checker.
+    That includes the two comments the sweep corrected: SWEEP item 1's republish-job comment and #777's PyPI-job witness
+    comment. The checker compares "as parsed YAML" (its docstring), so a comment outside a run script is invisible to it.
+    The PR body says "Comment-only drift inside a single-copy template block is the cross-repo checker's to catch, as
+    before", which is true only for a comment inside a `run:` script.
+  Shown by:
+    - R17 restores the false sentence "A dispatch run is not a release-event run, and the ceremony never reads one."
+      Result: 115 passed, and the checker prints "PASS ... 1 of 1 pass".
+    - R18 reverts the witness comment to "...the witness to what the TestPyPI job tested." Result: the same.
+    - Contrast R19, a comment inside the single-copy find step's script: the suite passes, but the checker prints
+      "FAIL ... republish-job differs from the template".
+    This PR's blocks are correct: my raw-text comparison found all 14 template steps and the 307-line republish job
+    byte-identical, comments included. The gap is in what guards them after this PR.
+  Fix: Correct the PR body's sentence (scope it to run scripts). Arc-wide, and the orchestrator's call: if the template's
+    YAML comments are to stay pinned, give canopy G's normalized raw-block sha256 pins, and any other port without SWEEP
+    item G's digest pins (recurrence, per the brief's table) the same. Alternatively, add a raw-text comparison to a
+    future checker. Until then these comments are kept by review alone.
+
+N1  NIT  CHANGELOG.md:272-273
+  What: "...reads the JSON checks' bounds and the install check's wait and tries from `publish.yml` and requires the two
+    docs to state them." The module requires the JSON bounds in CICD_REFERENCE.md only. CICD_MANUAL.md states none of
+    them (rightly), and the module does not ask it to.
+  Fix: "...requires CICD_REFERENCE.md to state the JSON checks' bounds, and both docs the install check's wait, tries
+    and lag error."
+
+N2  NIT  src/tests/unit/test_publish_one_artifact.py:41 and :862
+  What: Both lines cite juniper-ml's `util/ad-hoc/2026-11-23_publish_port_template_identity.py`. That file is not on
+    juniper-ml main (contents API: 404); it lives only in the orchestrator's worktree. The base cited the 2026-11-15
+    checker, which is on main. The merged juniper-cascor-client#206 says "juniper-ml's cross-repo checker", with no path.
+  Fix: land the 2026-11-23 checker on juniper-ml main so the citation resolves, or write "juniper-ml's cross-repo
+    checker", as #206 does.
+
+N3  NIT  PR body § "What changed in publish.yml", the `Build and Validate` bullet
+  What: The bullet says "unchanged but for its guard comment". The job's `Upload dist artifacts` comment also changed,
+    from "owner" to "Overtoad" (publish.yml:177, the template's word). The body mentions that only at the end of the
+    republish bullet ("The upload block's comment takes the template's word too."). PR-body text only.
+  Fix: name it in the Build and Validate bullet.
+
+NOTES FOR THE MERGER (not findings)
+- The squash body must keep both waivers. main-verify.yml screens the squash commit itself (from its catch-up base to the
+  merge), and juniper-symbol-loss-check reads `^\s*Allow-Symbol-Loss:` lines from the range's commit messages
+  (symbol_loss_check.py:418).
+  - The repo's default squash (COMMIT_MESSAGES) includes the first commit's two waiver lines.
+  - The PR body has no line-start waiver line (3 mid-line mentions only).
+  - A custom squash body must therefore keep both lines at line start, or the post-merge net reports 2 LOST symbols.
+- Apply only canopy's entry from pins.proposed.json to $W's file.
+  - The proposal still carries the pre-review juniper-cascor-client pin
+    (8281a039a1f702d7d6140181dc2e0d698bd45ec402372b46d31fe4d7aca9608a), while $W now holds the reviewed one
+    (575be747ed0c5dc6bdca6586ed5b3f8056d2abe2d5b704aa22b8d2eab27c5f6a). Copying the file whole would revert it.
+  - Checker run on $W's current file with canopy's entry alone (my copy pins.merged-on-1dd592c2.json, sha256
+    72d6f6425d98080277b3d800f00259aebe2dc261a25306924f7223de3bac1e56): PASS, 1 of 1 pass.
+- CI: "Re-run failed jobs" on run 45751954645 should clear the Playwright flake (see CI). Not done by me.
+- Observation, no action needed: canopy's own 2026-11-15 negative control (unchanged by this PR) now prints "82 of 86
+  mutations caught" and exits 1. Its 4 "DID NOT APPLY" are exactly the four the CHANGELOG names, and cascor#777 left its
+  own control the same way (it is not in #777's 11 files).
+
+THE PIN (juniper-canopy, publish.yml, step "Verify TestPyPI install"; package juniper-canopy)
+- What changed: lines 18 -> 23; sha256 36d5694da5dee8079a52d994358b56ea15f36a3a3861ba0a52321f87b58d9b82 ->
+  ffc590714d80379c41cbdce3c022d0fe69078cdde9491b5ebbd3104edfc2462d. Each sha256 equals that of "\n".join(lines), which I
+  checked. `source` is rewritten and describes the change accurately.
+- The 5 added lines are all comments: 3 before `cd`, 1 before the loop, 1 before the import. Every command line is
+  unchanged and in the same order (unified diff of the lines).
+- The file holds no non-ASCII byte (the em dash stays escaped), and `format` and `about` are unchanged. Against
+  1dd592c2, the only other entry that differs is juniper-cascor-client's (see the merger notes).
+- Behaviour under `bash -e` (pin_e2e.py): the pin's own text, run with a real venv and the real python; only pip
+  (redirected to a local wheel) and sleep are stubbed.
+  - S1, a good wheel after 2 lagging tries: exit 0, "TestPyPI OK: v9.9.9", sleeps [30, 10, 10].
+  - S2, a wheel without juniper_canopy/: exit 1, ModuleNotFoundError.
+  - S3, `cd` removed and a full checkout in the workspace, with a wheel lacking the package: exit 0. This is the
+    shadowing the first comment describes, which the `cd` prevents.
+  - S4, lag on all 5 tries: exit 1, printing "::error::juniper-canopy 9.9.9 is not installable from TestPyPI after 5
+    tries (index lag?): Re-run failed jobs; a real failure repeats". The import never runs; sleeps 30 + 4x10.
+  - S5, as S2 with PYTHONOPTIMIZE=1: exit 1.
+  - S6, a bare namespace juniper_canopy/ with no __init__.py: exit 1, "cannot import name '__version__'".
+  - S7, as S6 with PYTHONOPTIMIZE=1: exit 1.
+- Every comment in the pin is true of the step. No R4-5 check is needed: the check imports the package, which runs the
+  wheel's juniper_canopy/__init__.py.
+
+CHECKS THAT PASSED (evidence)
+- Fetch: cloned juniper-canopy and fetched pull/844/head; HEAD = headRefOid. Against its base the PR changes 7 files,
+  905 insertions(+), 152 deletions(-). main has not moved since (re-checked 04:40Z).
+- Template fidelity. My own raw-text extraction (template_fidelity.py) compared the PR with the template: cascor main
+  5e3d9801c9f4c78ee3eb75cf8bd1b46a3d5bc17a, publish.yml sha256
+  b6826ee65f7fc511a1cc68a169730c8d54933d5fd6bff08b25ffc3148f40078b (the same bytes as #777's merge f5ed3017 and as
+  GitHub main).
+  - All 14 template steps are byte-identical, comments included: Reuse, Record SHA256SUMS, Upload dist artifacts,
+    2x Download dist artifacts, 3x Verify the dist against SHA256SUMS, Verify TestPyPI serves..., Verify TestPyPI still
+    serves..., 2x Verify PyPI serves..., Find the release run's artifact, Download TestPyPI's files and verify them.
+  - The whole republish job, banner included (307 lines, 17966 bytes), is byte-identical.
+- Structure.
+  - The parsed workflow (comments aside) equals the requirements' structural target,
+    $W/tmp/sweep/checker-r12/port-sim/faithful/juniper-canopy/workflows/publish.yml: 0 differences (sim_compare.py).
+  - Every job's non-step keys equal the template's.
+  - The build job is parsed-identical to the base's, and among the steps kept, only the find step's script changed.
+- The install job:
+  - named "Verify the TestPyPI install"; needs testpypi; exactly contents: read; no environment, if or env;
+  - steps: setup-python 3.14, then a sparse checkout of pyproject.toml with persist-credentials: false, then the step;
+  - `cd "${RUNNER_TEMP}"` comes first, and the version is read by its path under $GITHUB_WORKSPACE.
+- The other jobs:
+  - TestPyPI job: id-token: write alone; no checkout or setup-python; it ends at "Verify TestPyPI serves exactly these
+    files".
+  - PyPI job: needs [testpypi, verify-testpypi-install]; id-token: write alone.
+  - PUBLISH_TAG_PREFIX is v, the same prefix as the guard's startsWith(..., 'v').
+  - The comments for SWEEP items 1 and 12 are present; item 2 does not apply to a single-package publisher.
+  - actionlint 1.7.12: exit 0, no output.
+- The sparse-checkout form works.
+  - The same action SHA (3d3c42e5...) ran `git sparse-checkout set juniper-observability/pyproject.toml` (cone mode)
+    before `git checkout` in juniper-ml run 45739959764, job 139642417585 (juniper-observability-v0.4.3), and that job
+    succeeded.
+  - My local replay of canopy's exact form (sparse_repro.py, git 2.53.0) leaves pyproject.toml present and
+    juniper_canopy/ absent.
+- "Runs the package" (addendum) is true here. The import executes the installed wheel's juniper_canopy/__init__.py (S1),
+  so the template banner's "It executes the package TestPyPI serves" holds. So does the CHANGELOG's "the package it
+  imported ran with that job's OIDC token-request variables": the base's check imported juniper_canopy inside the
+  id-token job.
+- The ceremony claim holds. juniper-ml util/release_train/ceremony.py:660-667 counts every job whose lowercased name holds
+  "testpypi", and returns HALT_TESTPYPI when one fails.
+- The docs are true of the head:
+  - job names, permissions and bounds (20 polls, 15 s apart; 30 s, then 5 tries 10 s apart);
+  - the order of the rungs, and canopy's own dispatch command;
+  - the `pypi` gate: the environments API shows required reviewers and wait_timer 5;
+  - #823 merged at 2026-11-16T08:27:14Z, and v0.10.0 (57d90decc6e941ffec3b58f684a5fe3140155d6d) predates it, with
+    skip-existing: true and no reuse step (its publish.yml read).
+- The addenda:
+  - A failed PyPI check's two causes are kept apart (CICD_MANUAL.md:1055-1057).
+  - The lead-in "When rung 1 refuses, or a check of the release run failed:" (:1048) covers every bullet.
+  - The re-cut bullet states ruling 1's consequence (:1053).
+  - No cascor-only sentence: I scanned every added line for sub-package, torch, tag-version and timeout claims.
+  - The docs-bounds module pins only what the docs state. It requires the JSON bounds in CICD_REFERENCE.md, and the
+    wait, tries and error in both docs; it does not pin the request timeout, which canopy's docs don't state.
+    (M1 is the converse.)
+- No stale publish text elsewhere: AGENTS.md:319 and CICD_REFERENCE.md:184 stay true.
+- Links: cascor main's MANUAL.md has both anchors (### headings at :671 and :689), and CI's Documentation Links passed.
+- **Last Updated** is 2026-11-26 in all three docs (headers, and REFERENCE's footer). AGENTS.md is untouched, and CI's
+  date check covers only AGENTS.md. CLAUDE.md stays a symlink to AGENTS.md.
+- Wording:
+  - The template blocks take "Overtoad", as byte identity requires.
+  - New text names no person.
+  - The test docstring keeps its base word, "owner".
+  - No technical owner was renamed.
+- JR-ML-OPS-007 and JR-CAN-TEST-015 both exist in juniper-ml notes/requirements; the latter's title matches the PR's
+  quote.
+- CHANGELOG: one entry under [Unreleased] -> ### Fixed (:223), in the repo's style. Its counts check out: 113 cases and
+  69 before; 2 cases; 82 of 86, with the 4 that no longer apply named correctly.
+- Test hardening:
+  - Inventory against #777: every case #777 added has a canopy counterpart, adapted for one publisher (SWEEP item E, and
+    B's and C's rehearsals, in full).
+  - The removed TestFindReleaseRun case is #777's own.
+  - The second removed symbol has a successor: TestUnchanged.test_the_install_job_keeps_the_install_check_and_reads_the_
+    version_from_a_sparse_checkout.
+  - The rehearsal's citation of run 43135960676 is accurate: it is canopy's CI run, and its 2 attempts list 19 job
+    records each (38 in all).
+  - No new skip, the module stays pytest.mark.unit, and a tokenize scan finds no implicit string concatenation.
+- Concurrent PRs: at 04:27Z only #844 was open.
+
+CHECKER (FINAL, sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35; --repo juniper-canopy;
+         --template cascor publish.yml; workflow sha256 3bbae01d2b35d42ac25c17da98e156b2bf60708f35414aee30186fdefa9125dc)
+  With the proposed pins (checker-proposed.log):
+    pins: /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/tmp/ports/juniper-canopy/pins.proposed.json (sha256 0fa60256e012388e19365fe8b6e04d16203131da6a359e50258f4115400b1365, 18 pins)
+    PASS head/publish.yml  (PUBLISH_PACKAGE=juniper-canopy, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)
+    1 of 1 pass
+    exit=0
+  With $W's current pins, 1dd592c224adeec82910328d5d2a9127e1a3bc6d7b3d5c9ded11ed971b7bacc7 (checker-W-current.log):
+    "FAIL head/publish.yml". The only failure is "verify-testpypi-install: step 'Verify TestPyPI install' differs from
+    its pin ... first at line 1", i.e. the three comment groups. "0 of 1 pass", exit 1.
+  With 1dd592c2 plus canopy's proposed entry only (checker-merged.log): PASS, 1 of 1 pass.
+
+TESTS (conda env JuniperCanopy1, Python 3.13.13, pytest 8.4.2; TMPDIR and --basetemp under the review dir)
+  - Head, CI's marker expression (-m "not requires_cascor and not requires_server and not slow"), both publish modules:
+    115 passed, 0 failed, 0 errors, 0 skipped.
+    - test_publish_one_artifact.py: 113 cases. Per class: TestWiring 18, TestInstallCheckJob 6, TestInstallCheckScript 4,
+      TestUnchanged 6, TestTemplate 5, TestRecordSha256sums 7, TestVerifyDist 9, TestIndexCheck 11, TestReuseStep 5,
+      TestFindReleaseRun 32, TestFetchTestPyPIFiles 10.
+    - test_publish_docs_bounds.py: 2 cases (TestPublishDocsStateTheBounds).
+  - Head, -m "unit and not slow" (the documented fast run): 115 passed, 0 skipped. Nothing is deselected.
+  - Head, src/tests/unit/test_wheel_import_smoke.py (it reads publish.yml's smoke step, which is unchanged): 13 passed,
+    0 skipped.
+  - Base 2cec71fe, test_publish_one_artifact.py: 69 passed, 0 skipped.
+  - CI (run 45751954645, the Python 3.14 lane's junit-unit.xml, artifact 15086625970): test_publish_one_artifact 113
+    passed, test_publish_docs_bounds 2 passed, test_wheel_import_smoke 13 passed.
+  - New skips: none. The one skip path, pytest.skip("no sha256sum on PATH"), predates the PR (base :588, head :913).
+
+MUTATION TABLE (mine, none from the PR body's list; each applied to a copy of the head's workflow or docs, with both
+publish modules run under --noconftest; mutate.py, mutations.log and mutations-R18-R19.log)
+  CONTROL  the head's files unmutated: 115 passed; checker PASS
+  R1   A/item 10   step env PYTHONPATH=${{ github.workspace }} on the install step:
+                   caught (TestInstallCheckJob::test_the_install_step_runs_exactly_its_commands)
+  R2   A/item 10   cd "${GITHUB_WORKSPACE}" in place of cd "${RUNNER_TEMP}":
+                   caught x4 (test_it_installs_and_imports_from_outside_any_checkout, ...)
+  R3   A/ruling 2  install job's permissions removed, and workflow default contents: read + id-token: write:
+                   caught x3 (TestWiring::test_only_the_jobs_that_upload_hold_id_token_write, ...)
+  R4   B           find step drops its head_branch == tag filter:
+                   caught x2 (test_the_newest_release_run_is_the_one_checked..., test_without_a_release_run_for_the_tag...)
+  R5   B           refusal any() -> all() (a failed install check behind a green upload passes):
+                   caught x3 (test_a_release_run_whose_testpypi_jobs_did_not_both_pass_is_refused[the-install-check-failed], ...)
+  R6   C           old <package>-v parsing re-admitted ahead of the prefix:
+                   caught (test_it_refuses_anything_but_a_release_tag_of_this_package[a-package-named-tag-in-a-single-package-publisher])
+  R7   E/item 4    retention 90 -> 120:
+                   caught (test_one_artifact_carries_the_dist_and_sha256sums_and_outlives_the_pypi_gate)
+  R8   A           --no-deps dropped from the install:
+                   caught x4 (test_the_install_step_runs_exactly_its_commands, TestInstallCheckScript x2, TestUnchanged)
+  R9   E/item 9    if: github.run_attempt == '1' on the PyPI job's TestPyPI witness check:
+                   caught x2 (test_no_publish_step_is_gated..., test_no_step_or_job_can_switch_a_check_off)
+  R10  E/14,19     a step copying a wheel into dist/ before the TestPyPI upload:
+                   caught x2 (test_the_testpypi_job_keeps_only_the_template_steps_and_the_upload, test_each_job_runs_exactly_these_steps_in_this_order)
+  R11  republish   environment: pypi removed from the republish job:
+                   caught x2 (test_the_republish_job_runs_only_on_its_dispatch_behind_the_pypi_gate..., keys test)
+  R12  republish   if: loosened to any workflow_dispatch:
+                   caught (test_the_republish_job_runs_only_on_its_dispatch...)
+  R13  A/bounds    install loop sleep 10 -> 15:
+                   caught x4 (incl. TestPublishDocsStateTheBounds::test_the_install_checks_wait_and_retry)
+  R14  docs        CICD_MANUAL.md says "6 tries":
+                   caught (TestPublishDocsStateTheBounds::test_the_install_checks_wait_and_retry)
+  R15  docs        CICD_REFERENCE.md "kept 90 days" -> "kept 30 days":
+                   SURVIVED, 115 passed (M1)
+  R16  A/ruling 2  install job needs build instead of testpypi:
+                   caught x3 (test_the_publish_jobs_chain_on_the_build..., ...)
+  R17  D/item 1    republish comment's false "the ceremony never reads one" restored:
+                   SURVIVED the suite; checker PASS (M2)
+  R18  D/#777      PyPI-job witness comment reverted:
+                   SURVIVED the suite; checker PASS (M2)
+  R19  B           a comment inside the single-copy find step's script:
+                   SURVIVED the suite; checker FAIL "republish-job differs from the template"
+  Totals:
+  - Every behaviour mutation of the workflow (R1-R13, R16: 14) is caught by the suite, as is the docs mutation R14.
+  - R19 is caught by the checker.
+  - R15, R17 and R18 are caught by neither (M1, M2).
+  - Also run: canopy's own 2026-11-15 negative control on the head (negctl-1115.log). Baseline: pytest exit 0. "82 of 86
+    mutations caught". The four that did not apply: "the install check falls back to pypi.org", "the republish job
+    accepts a branch named like a tag", "the install check imports before it leaves the checkout", "the TestPyPI job
+    loses its setup-python". Exit 1.
+
+CI (gh pr checks 844, run 45751954645 on the head; the run concluded failure)
+  Required contexts: 21 in rules/branches/main. 19 pass and 2 fail.
+  - UI Sub-suite (Playwright), FAIL (job 139681584572):
+    - Failing case: src/tests/ui/test_ws_silent_poll_liveness.py::test_populated_store_survives_poll_after_stop[chromium]
+    - Message: "AssertionError: status predicate not satisfied within 10.0s; last={'is_running': False, ...
+      'status': 'COMPLETED'}". Summary: "1 failed, 32 passed, 1 deselected, 1 xfailed".
+    - Not caused by this PR:
+      - The head commit changes only CICD_MANUAL.md and CHANGELOG.md.
+      - The same case failed the same way on main's push run 45530414633 (60880efc).
+      - This PR's first-commit run 45748645895 concluded success in every job.
+  - Quality Gate, FAIL (job 139688035211): it fails only because "UI Tests: failure"; every other input is success.
+  Passing: the four required unit lanes (3.12 macOS, 3.12/3.13/3.14 ubuntu; 3.15 is informational and also passed),
+  Integration Tests, Build Distribution, Docker Build & Smoke Test, Dependency Documentation, Documentation Links,
+  Lockfile Freshness, Memory Budget, Pre-commit 3.12/3.13/3.14, Security Scans, Async-route audit, Analyze (python),
+  Guard PR base branch, and Sequence Safety. Sequence Safety (job 139681584118): the symbol screen found 2 losses, both
+  WAIVED by the first commit's lines; the docs screen gave 13 small-deletion WARNs; exit 0.
+  Merge state: BLOCKED. No review or approval was given by me.
+
+COMMITS
+  dcc58bb5510874227dd04206b0b77a3f7df2916e: verified=true, reason=valid.
+    The body holds one Allow-Symbol-Loss line per symbol the screen reports:
+      - TestFindReleaseRun.test_the_newest_release_run_that_still_holds_the_artifact_is_found
+      - TestUnchanged.test_the_testpypi_job_keeps_its_install_check_and_the_checkout_it_reads_the_version_from
+    The last paragraph is exactly the two trailer lines (Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com> /
+    Claude-Session: https://claude.ai/code/session_016H76AnduzwfVyhVtsQqJeJ).
+  e6557ec4cd6d603b2d1dfb534204316b219994df: verified=true, reason=valid. The last paragraph is the same two trailer lines.
+    Its own diff touches exactly the passages its message names: "2 files changed, 9 insertions(+), 4 deletions(-)"
+    (CHANGELOG.md, docs/ci_cd/CICD_MANUAL.md).
+  The PR body ends with the two required lines. Squash: see the merger notes.
