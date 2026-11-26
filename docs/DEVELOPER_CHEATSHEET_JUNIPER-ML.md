@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.74
-**Date**: 2026-11-25
+**Version**: 1.0.75
+**Date**: 2026-11-26
 **Project**: juniper-ml
 
 ---
@@ -290,9 +290,9 @@ This behavior is regression-tested in `tests/test_wake_the_claude.py`:
 | Local package tests | `cd juniper-observability && python -m pytest --cov=juniper_observability --cov-report=term-missing --cov-fail-under=90` |
 | Local build check | `cd juniper-observability && python -m build --sdist --wheel && twine check dist/*` |
 | Publish | Cut a GitHub Release with tag `juniper-observability-vX.Y.Z` (never a bare `git push <tag>`) to trigger `.github/workflows/publish-observability.yml` |
-| Retry publish | Use `workflow_dispatch` on `.github/workflows/publish-observability.yml` against the existing tag |
+| Retry publish | A plain `workflow_dispatch` of `.github/workflows/publish-observability.yml` from its own tag rebuilds, so only before TestPyPI took the version; after that, the recovery ladder ([REFERENCE — the ladder](REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi)) |
 
-Publish flow: build uploads `juniper-observability-dist` for seven days, TestPyPI downloads and publishes it with OIDC, TestPyPI `--no-deps` install is retried 5×10s for index lag, then PyPI downloads the same artifact after TestPyPI verification succeeds.
+Publish flow: build uploads `juniper-observability-dist` (90 days), TestPyPI downloads and publishes it with OIDC, `Verify the TestPyPI install` (a job that cannot mint a credential) retries the `--no-deps` install 5×10s for index lag and finds the package (`find_spec`), then PyPI downloads the same artifact after both TestPyPI jobs succeed.
 
 Constraint: publish jobs currently run on GitHub-hosted `ubuntu-latest` runners with SHA-pinned artifact actions. If switching to self-hosted runners, verify compatibility with the pinned `actions/upload-artifact` and `actions/download-artifact` versions before tagging a release.
 
@@ -391,7 +391,7 @@ Tip: `csv_import` refuses sources over 128 MiB with HTTP **422** until `dataset.
 | Post-merge main-verify | Auto on every `push:main` (`.github/workflows/main-verify.yml`); see tip below              |
 | Publish `juniper-ml`   | Create GitHub Release with `vX.Y.Z` tag (OIDC; Gate 1 = three TestPyPI installs)            |
 | Publish shared package | Create GitHub Release with a `juniper-<pkg>-vX.Y.Z` tag → `publish-<pkg>.yml` (six packages)|
-| Recover a publish      | Only after a TestPyPI job (install check included) that passed or failed only for index lag: (1) `gh workflow run publish-<pkg>.yml --repo pcalnon/juniper-ml --ref juniper-<pkg>-vX.Y.Z -f republish_from_testpypi=true` (meta: `publish.yml`, `--ref vX.Y.Z`); (2) within 30 days, `gh run rerun <run-id> --repo pcalnon/juniper-ml --failed`, never "Re-run all jobs"; (3) a new patch version. [REFERENCE — the ladder](REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi) |
+| Recover a publish      | (1) after both TestPyPI jobs passed (the republish refuses otherwise): `gh workflow run publish-<pkg>.yml --repo pcalnon/juniper-ml --ref juniper-<pkg>-vX.Y.Z -f republish_from_testpypi=true` (meta: `publish.yml`, `--ref vX.Y.Z`); (2) if that fails, or a TestPyPI job failed on index lag: within 30 days, `gh run rerun <run-id> --repo pcalnon/juniper-ml --failed`, never "Re-run all jobs"; (3) otherwise, and for a failed install check, a new patch version. [REFERENCE — the ladder](REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi) |
 | Weekly security scan   | Actions → Scheduled Security Scan (`pip-audit --strict --desc on` after `pip install -e .`) |
 | CodeQL Analysis        | `.github/workflows/codeql.yml` — required context `Analyze (python)`; see tip below         |
 | Weekly lockfile refresh| Actions → Update Lockfiles (`juniper-generate-dep-docs` → PR on `chore/lockfile-update`)    |
@@ -848,8 +848,8 @@ Tip: meta publish Gate 1 polls TestPyPI 10×6s (~60s ceiling) for the just-uploa
 
 Tip: the six shared `publish-*.yml` are Release-only (`release: published`; no `push: tags` — the #555 double-publish race); a bare `git push <tag>` starts **no run**. Each is tag-prefix-guarded, with a `--no-deps` TestPyPI-only 5×10s verify. Do not resurrect a `Require a GitHub Release for this tag` step under `if: github.event_name == 'push'` — that condition is unreachable (#1310). See [REFERENCE — Build and Release](REFERENCE.md#build-and-release).
 
-Tip: all seven publishers build once and check by sha256 (juniper-cascor#763 / #767's one-artifact template): both publish jobs upload the build job's artifact (dist and `SHA256SUMS`, 90 days), TestPyPI's JSON must list exactly those sha256 after the TestPyPI upload and again before the PyPI one, and PyPI's after; no `skip-existing`; only the uploading jobs hold `id-token: write`.
-A release that did not reach PyPI, after a TestPyPI job (install check included) that passed or failed only for a transient index lag: dispatch its workflow from the tag with `-f republish_from_testpypi=true` (copies TestPyPI's files, builds nothing); if that fails, within 30 days **Re-run failed jobs**, never "Re-run all jobs"; otherwise cut a new patch version. A real install-check failure is a broken package: cut a new patch version, never republish it. See [REFERENCE — One artifact, and recovering a release that did not reach PyPI](REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi).
+Tip: all seven publishers build once and check by sha256 (juniper-cascor#763 / #767's one-artifact template, swept by #777): both publish jobs upload the build job's artifact (dist and `SHA256SUMS`, 90 days), TestPyPI's JSON must list exactly those sha256 after the TestPyPI upload and again before the PyPI one, and PyPI's after; no `skip-existing`; only the uploading jobs hold `id-token: write`. The install check runs in its own job, `Verify the TestPyPI install` (`contents: read` alone), which PyPI needs; each workflow `env` names `PUBLISH_TAG_PREFIX`, and a plain dispatch builds only from the workflow's own tag.
+A release that did not reach PyPI: dispatch its workflow from the tag with `-f republish_from_testpypi=true` (copies TestPyPI's files, builds nothing, and refuses unless the tag's newest release run passed both TestPyPI jobs); if that fails, or a TestPyPI job failed on index lag, within 30 days **Re-run failed jobs**, never "Re-run all jobs"; otherwise, and for a failed install check, cut a new patch version, never a re-cut. A failed `Verify PyPI serves exactly these files` means the files are already on PyPI: a mismatch needs a new patch version, a check that gave up waiting **Re-run failed jobs** on the run whose check gave up. See [REFERENCE — One artifact, and recovering a release that did not reach PyPI](REFERENCE.md#one-artifact-and-recovering-a-release-that-did-not-reach-pypi).
 
 Tip: shared-package `ci-*.yml` (six sub-packages) must keep path self-inclusion, matrix floors, `--cov-fail-under`, and a blocking `juniper-coverage-gap-map --enforce`. Dropping the workflow self-path or `--enforce` ships green while the package suite stops running or stops enforcing gaps; service-core installs sibling `juniper-model-core` from the monorepo root (no test-job `working-directory`). Full table: [REFERENCE — Shared-Package CI](REFERENCE.md#shared-package-ci-workflows).
 
