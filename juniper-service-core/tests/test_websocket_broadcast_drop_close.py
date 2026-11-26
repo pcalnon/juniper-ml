@@ -482,9 +482,10 @@ async def test_the_broadcast_waits_once_for_all_its_closes_for_one_send_timeout(
 
 @pytest.mark.asyncio
 async def test_a_dropped_sockets_per_ip_slot_is_released_once() -> None:
-    """Forgotten by the broadcast, then disconnected again by its own handler: one release, not two.
+    """Dropped by the broadcast, then disconnected by its own handler: one release, not two.
 
-    Only end states are asserted, so this does not fix *when* the slot is released (at the drop, today).
+    Only end states are asserted, so this does not fix *when* the slot is released: when the handler's
+    ``disconnect()`` runs, which ``test_websocket_unsendable_late_frame_and_slot.py`` pins.
     """
     mgr = _manager(max_connections_per_ip=2)
     app = _app(mgr)
