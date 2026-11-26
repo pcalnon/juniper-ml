@@ -227,6 +227,43 @@ the enumerated symbols / files (a `*` symbol wildcard is rejected; a `*` docs
 wildcard waives all). Exit codes: `0` clean, `1` >= 1 unwaived FAIL, `2` usage /
 invocation error (never masked by `--advisory`).
 
+## Local test runner engine (`juniper_ci_tools.run_tests`)
+
+The engine behind every Juniper repo's `util/run_tests.py` (added in 0.10.0): it reads a repo's
+workflows on every run and runs any subset of its tests -- everything, a lane, a suite, one test
+file or test, the lanes a change touches, the last run's failures -- with the commands CI runs,
+each step in its own process group, with one log per step and a `summary.json` (schema 1) under
+the primary checkout's `tmp/`. It never writes under the system temp directory and installs
+nothing. It imports only the standard library and PyYAML, and nothing from this package, so a
+repo can also load the file from a tree of its own (juniper-ml does).
+
+A repo declares only what the workflows cannot say, as a `RepoSpec`, in a thin script:
+
+```python
+from juniper_ci_tools import run_tests as rt
+
+SPEC = rt.RepoSpec(
+    project="juniper-data-client",           # its pyproject.toml name: the checkout check and the header
+    script=__file__,                         # its checkout is the default --checkout
+    lanes=(rt.unittest_lane(), rt.job_lanes()),
+    opt_in={"security": "needs the gitleaks binary on PATH"},
+    strip_suffix="-tests",                   # unit-tests is also "unit"
+    docs="docs/REFERENCE.md, 'Running Tests Locally'",
+    description="...", epilog="...",        # --help
+)
+
+if __name__ == "__main__":
+    raise SystemExit(rt.main(SPEC))
+```
+
+Three lane strategies cover the ecosystem's shapes: `unittest_lane()` (every `python3 -m unittest`
+suite a pull-request workflow runs), `step_lane(name, workflow, job, step)` (one named step's
+commands) and `job_lanes(...)` (every job that runs pytest, named by its job id or, with
+`name=rt.workflow_stem("ci-")`, by its workflow; `keep=` runs a named environment-check step
+alongside the tests). The public API is what `run_tests.__all__` names and follows SemVer; the
+rest of the module is internal. The design of record is juniper-ml
+`notes/JUNIPER_2026-11-26_JUNIPER-ECOSYSTEM_RUN-TESTS-ENGINE-EXTRACTION-PROPOSAL.md`.
+
 ## Library API
 
 ```python

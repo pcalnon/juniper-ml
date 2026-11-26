@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`juniper_ci_tools.run_tests`: the engine behind every Juniper repo's `util/run_tests.py`.**
+  Extracted from juniper-data-client's `util/run_tests.py` (juniper-data-client#273), the superset of
+  the three per-repo copies (juniper-ml#2629, juniper-recurrence#240), as the Overtoad ruled on
+  2026-11-26 (option A of juniper-ml
+  `notes/JUNIPER_2026-11-26_JUNIPER-ECOSYSTEM_RUN-TESTS-ENGINE-EXTRACTION-PROPOSAL.md`). It reads a
+  repo's workflows on every run and runs any subset of its tests with CI's commands: process groups,
+  timeouts, a parallel re-run of failures alone, `-k`, `--changed`, `--failed`, the child
+  environment and the `TMPDIR` rule, `summary.json` (schema 1, which now records the engine's module
+  and version) and the exit codes 0/1/2/3/5/130.
+  - A repo declares a `RepoSpec` (project, lanes, opt-in table, alias suffix, docs pointer, help
+    text, `EnvFlag` options) in a thin script that calls `main(SPEC)`.
+  - Three lane strategies: `unittest_lane()`, `step_lane()` (juniper-ml's `unittest` and `bash`
+    lanes) and `job_lanes()` (data-client's jobs by id; recurrence's and juniper-ml's by workflow,
+    with `workflow_stem()`). `job_lanes(keep=...)` runs a named step that runs no test, such as
+    ci-observability.yml's sentry-sdk 3.x check.
+  - Behaviour beyond the copies: a lane's directory may be declared (`directory="juniper-{name}"`);
+    its test-file scan skips hidden, build and install directories; a bare test-file name two places
+    share is refused until it is given by its path; `--changed` also picks the commands that run a
+    changed file; a workflow whose `jobs:` is not a mapping is skipped instead of crashing the
+    unittest lane; a unittest suite that ran nothing under `-k` is NO-TESTS on Python 3.11 too, whose
+    unittest exits 0 where 3.12 and later exit 5.
+  - The public API is `run_tests.__all__`; every other name is internal.
+  - Measured against the three copies on their `main` trees: every `--dry-run` case is identical,
+    and the `--list` cases differ only in the groups line, one optional lane's stated reason and
+    four messages (juniper-ml `util/ad-hoc/2026-11-26_run_tests_engine_equivalence.py`).
+  - Its suite, `tests/test_run_tests.py` (93 tests), runs in-process on three fake checkouts, one per
+    shape; the engine measures 98% statement coverage.
+
 ## [0.9.1] - 2026-10-10
 
 ### Fixed
