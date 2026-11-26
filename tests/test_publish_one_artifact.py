@@ -1024,7 +1024,9 @@ class TestInstallCheckScript(unittest.TestCase):
 
     def test_the_package_check_finds_a_wheels_package_without_running_it_and_refuses_one_without_it(self) -> None:
         # The check's own python -c, run by a real interpreter with -S (the environment's site-packages, which may hold
-        # the real package, stay off sys.path) against a stand-in site directory, from an empty working directory.
+        # the real package, stay off sys.path) against a stand-in site directory, from an empty working directory. The
+        # site holds the package and its metadata ("package"), the metadata alone ("metadata-only"), the metadata and an
+        # empty directory in the package's place, a namespace package with no origin ("bare-directory"), or nothing.
         for workflow, module in sorted(FIND_SPEC.items()):
             package = PUBLISHERS[workflow][0]
             check = _commands(_install_step(workflow)["run"])[-1]
@@ -1036,7 +1038,7 @@ class TestInstallCheckScript(unittest.TestCase):
                         site, cwd = case / "site", case / "cwd"
                         cwd.mkdir()
                         site.mkdir()
-                        if kind in ("package", "metadata-only"):
+                        if kind != "nothing":
                             info = site / f"{module}-1.2.3.dist-info"
                             info.mkdir()
                             (info / "METADATA").write_text(f"Metadata-Version: 2.1\nName: {package}\nVersion: 1.2.3\n", encoding="utf-8")
@@ -1052,11 +1054,17 @@ class TestInstallCheckScript(unittest.TestCase):
                         if kind == "package":
                             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
                             self.assertIn(f"TestPyPI install 1.2.3 package at {site / module / '__init__.py'}", proc.stdout)
-                        else:
+                        elif kind == "nothing":
+                            # No metadata: the version lookup itself fails the step.
                             self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
                             self.assertNotIn(" OK", proc.stdout)
-                            if kind != "nothing":
-                                self.assertIn(f"the installed wheel holds no {module} package", proc.stderr)
+                        else:
+                            # The metadata alone passes the version lookup; the package check then fails through
+                            # SystemExit with its own message and nothing else: no traceback (a traceback of 3.13 and
+                            # later quotes the -c source, the message included, so a substring test would pass on it).
+                            self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+                            self.assertEqual(proc.stdout, "TestPyPI install 1.2.3 package at None\n")
+                            self.assertEqual(proc.stderr, f"the installed wheel holds no {module} package\n")
 
 
 class TestUnchanged(unittest.TestCase):
