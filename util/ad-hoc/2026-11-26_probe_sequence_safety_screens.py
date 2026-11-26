@@ -36,6 +36,7 @@ def main() -> int:
     parser.add_argument("--work", required=True, type=Path, help="a directory under a repo's tmp/ for the throwaway index")
     parser.add_argument("--base", default="origin/main")
     parser.add_argument("--scope", action="append", default=[], help="symbol-loss scope glob (repeatable), as the workflow passes it")
+    parser.add_argument("--message-file", type=Path, help="the probe commit's message, to test a waiver trailer the screens read (default: a fixed one)")
     args = parser.parse_args()
     checkout = args.checkout.resolve()
     args.work.mkdir(parents=True, exist_ok=True)
@@ -50,7 +51,8 @@ def main() -> int:
             sys.stderr.write(f"{' '.join(argv)} failed: {proc.stderr}")
             return 2
         out = proc.stdout.strip()
-    probe = run(["git", "commit-tree", out, "-p", base, "-m", "probe: the working tree, never pushed"], checkout, env)
+    message = ["-F", str(args.message_file.resolve())] if args.message_file else ["-m", "probe: the working tree, never pushed"]
+    probe = run(["git", "commit-tree", out, "-p", base, *message], checkout, env)
     if probe.returncode != 0:
         sys.stderr.write(f"git commit-tree failed: {probe.stderr}")
         return 2

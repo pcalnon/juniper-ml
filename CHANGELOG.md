@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`juniper_ci_tools.run_tests`, the shared engine, and `util/run_tests.py` as a thin spec over it.** The Overtoad
+  ruled option A of `notes/JUNIPER_2026-11-26_JUNIPER-ECOSYSTEM_RUN-TESTS-ENGINE-EXTRACTION-PROPOSAL.md` on
+  2026-11-26: the engine moves into juniper-ci-tools (`juniper-ci-tools/CHANGELOG.md`, Unreleased), and each repo
+  keeps a `util/run_tests.py` that declares a `RepoSpec`.
+  - juniper-ml's spec: ci.yml's two regression steps as `step_lane`s, the six `ci-<pkg>.yml` test jobs as
+    `job_lanes` named by their workflow with `juniper-<pkg>/` as their directory, ci-observability.yml's sentry-sdk
+    3.x check kept, and `--force-drift` as an `EnvFlag`. The script loads the engine from this checkout's
+    `juniper-ci-tools/` tree, never an installed juniper-ci-tools.
+  - What changed for juniper-ml, measured with `util/ad-hoc/2026-11-26_run_tests_engine_equivalence.py` over 27
+    cases: every `--dry-run` is identical; `--list`'s groups line names each group's lanes (and an `optional`
+    group, empty here); four messages are reworded. New selectors reach a package test file by its name, stem or a
+    glob, and refuse a name two packages share until it is given by its path. `--changed` also narrows the package
+    lanes to their test files that name a changed file.
+  - `tests/test_run_tests.py` now pins the spec against the real workflows and docs/REFERENCE.md; the fake-checkout
+    suite moved to `juniper-ci-tools/tests/test_run_tests.py`.
+
 - **`util/run_tests.py` runs any subset of juniper-ml's tests locally, with the commands CI runs.** There was no local
   wrapper: ci.yml's regression step is a hand-maintained list of 261 `python3 -m unittest` commands under `bash -e`,
   each in-repo package has its own pytest workflow, and at least ten one-off runners in `util/ad-hoc/` re-ran those
