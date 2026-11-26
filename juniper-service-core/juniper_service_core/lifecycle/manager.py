@@ -26,9 +26,12 @@ it returns, and the run settles ``COMPLETED`` as if the pause had not been reque
 likewise, is seen only at the next boundary (a ``fit`` that emits no events runs until it
 returns), so ``start_training`` refuses a start while a run it launched has been stopped or
 reset and its ``fit`` has not ended: that start would clear the stop, and the stopped ``fit``
-would run on beside the new one, its events landing in the new run. The check reads the
-training thread and the pending stop, so a ``fit`` driven by a direct ``run()`` on another
-thread is outside it, as it is outside ``is_active()``.
+would run on beside the new one, its events landing in the new run. A snapshot load and
+``attach_model`` are refused the same way, because that ``fit``'s thread, when it ends, would
+settle over what they loaded. The check reads the training thread and the pending stop, so a
+``fit`` driven by a direct ``run()`` on another thread is outside it, as it is outside
+``is_active()``. A replay session lasts only as long as the ``REPLAYING`` state it belongs to:
+a load ends it, so its ``stop`` cannot reset a run started after it.
 """
 
 from __future__ import annotations
@@ -124,10 +127,12 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
     # -- model attachment ------------------------------------------------------------------
 
     def attach_model(self, model: TrainableModel) -> None:
-        """Attach (or replace) the model this manager drives. Rejected while a run is active."""
+        """Attach (or replace) the model this manager drives. Rejected while a run is active, and
+        while a stopped run's ``fit`` is still running."""
         with self._lock:
             if self.state_machine.is_active():
                 raise RuntimeError("Cannot attach a model while training is active")
+            self._refuse_while_a_stopped_fit_runs()
             self.model = model
             self._last_result = None
             self._last_error = None
@@ -185,9 +190,7 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
             # no events outlasts any bound. The check reads self._thread, which only this method
             # sets, so a fit driven by a direct run() on another thread is outside it, as it is
             # outside is_active().
-            previous = self._thread
-            if previous is not None and previous.is_alive() and self._stop_event.is_set():
-                raise RuntimeError("The stopped run's fit is still running (a stop takes effect at its next event)")
+            self._refuse_while_a_stopped_fit_runs()
             self._train_x, self._train_y = X, y
             self._val_x, self._val_y = X_val, y_val
             self._dataset_name = dataset_name
@@ -551,11 +554,20 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         return base  # pragma: no cover - 1000 same-second snapshots is not a real scenario
 
     def _load_snapshot_model(self, snapshot_id: str) -> dict[str, Any]:
-        """Shared restore core: reject-if-active, deserialize model + sidecar, attach. Caller holds the lock."""
+        """Shared restore core: reject-if-active (or while a stopped run's ``fit`` is still running),
+        deserialize model + sidecar, end any replay session, attach. Caller holds the lock.
+
+        A load moves the machine out of ``REPLAYING`` (:meth:`start_replay` back into it, with a
+        session of its own), so a session found here belongs to the state the load leaves: left
+        open, it would outlive that state, and its ``stop`` would later reset a run started after
+        the load. A load that fails (``SnapshotNotFoundError``) or is refused leaves it alone.
+        """
         store = self._require_snapshots()
         if self.state_machine.is_active():
             raise RuntimeError("Cannot load a snapshot while training is active")
+        self._refuse_while_a_stopped_fit_runs()
         model, sidecar = store.load(snapshot_id)  # raises SnapshotNotFoundError if absent
+        self._teardown_replay()
         self.model = model
         self._last_result = None
         self._last_error = None
@@ -567,7 +579,7 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
     def start_replay(self, snapshot_id: str) -> dict[str, Any]:
         """Load a snapshot and begin replaying its metric history -> ``REPLAYING`` (paused at
         frame 0). Returns the status with a ``replay`` block. Raises ``SnapshotNotFoundError`` /
-        ``RuntimeError`` (training active)."""
+        ``RuntimeError`` (training active, or a stopped run's ``fit`` still running)."""
         with self._lock:
             sidecar = self._load_snapshot_model(snapshot_id)
             self._teardown_replay()
@@ -583,7 +595,10 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
 
     def replay_control(self, action: str, **params: Any) -> dict[str, Any]:
         """Control the active replay (play/pause/seek/speed/range/stop/status). ``stop`` exits to
-        ``STOPPED``. Raises ``RuntimeError`` if no replay is active, ``ValueError`` on a bad action."""
+        ``STOPPED``. Raises ``RuntimeError`` if no replay is active, ``ValueError`` on a bad action.
+
+        A session exists only while the machine reads ``REPLAYING`` (a load, ``reset`` and
+        ``shutdown`` end it), so the ``RESET`` on ``stop`` never lands on a run."""
         with self._lock:
             if self._replay_session is None:
                 raise RuntimeError("No replay session is active")
@@ -597,12 +612,14 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
             return result
 
     def stop_replay(self) -> dict[str, Any]:
-        """Stop the active replay -> ``STOPPED`` (idempotent)."""
+        """Stop the active replay -> ``STOPPED`` (idempotent). Outside ``REPLAYING`` it only ends a
+        session, if there is one, and leaves the machine and the monitor as they are: a run, an
+        inspection or a finished run is not the replay's to relabel."""
         with self._lock:
             self._teardown_replay()
             if self.state_machine.is_replaying():
                 self.state_machine.handle_command(LifecycleCommand.RESET)
-            self.monitor.set_run_context(status="stopped", phase="idle")
+                self.monitor.set_run_context(status="stopped", phase="idle")
             return self._status_dict()
 
     def get_replay_state(self) -> dict[str, Any] | None:
@@ -663,6 +680,25 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         return (time.time() - float(updated)) < stale_after_seconds
 
     # -- internals -------------------------------------------------------------------------
+
+    def _refuse_while_a_stopped_fit_runs(self) -> None:
+        """Raise ``RuntimeError`` while a run that a stop or reset was sent to is still in its ``fit``.
+
+        Caller holds the lock. :meth:`start_training`, every snapshot load and
+        :meth:`attach_model` call it, after their ``is_active()`` check and before they touch
+        anything. A stop is seen only at ``fit``'s next event, so that ``fit`` can run on while the
+        machine reads ``STOPPED``, and its thread settles when it ends. A start would clear the
+        stop (see :meth:`start_training`). A load or an attach would be overwritten by that settle:
+        ``monitor.status`` ``stopped``, or ``failed`` with an ``error``, over the loaded state, and
+        an event already inside the sink folded into the loaded history. Only ``start_training``
+        clears the stop, before it launches a thread, so a live previous thread with the stop set
+        is a run that a stop, reset or shutdown was requested for and whose ``fit`` has not ended
+        (or, for an instant, one that has and whose thread is exiting). A run that settled itself
+        (no stop pending) and a thread that has ended hold nothing back.
+        """
+        previous = self._thread
+        if previous is not None and previous.is_alive() and self._stop_event.is_set():
+            raise RuntimeError("The stopped run's fit is still running (a stop takes effect at its next event)")
 
     def _status_dict(self) -> dict[str, Any]:
         """Assemble the status payload. Caller must hold ``self._lock``."""

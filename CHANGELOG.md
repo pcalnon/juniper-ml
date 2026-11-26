@@ -701,6 +701,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     the quoted cases of the cap) and `AnalysisBoundTest` (the two bounds); the self-test runs 66 checks. The Overtoad
     re-runs `bash util/install_claude_agent_guard.bash --apply` from an up-to-date `main` to install it.
 
+- **`juniper-service-core`: a snapshot load or an attach sent while a stopped run's `fit` is still running is
+  refused, and a replay session ends with the `REPLAYING` state it belongs to** (the "Lifecycle races beside N-2";
+  ruling 23 in section 8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`). Both keep
+  the stop-then-start refusal's design (ruling 19, "Accept the 409"). After a stop, `load_snapshot`,
+  `resume_from_snapshot`, `start_replay`, `restore_for_retrain` and `attach_model` were accepted while the stopped
+  run's `fit` still ran, and its thread settled over what they loaded when it ended. They now refuse while that
+  thread is alive with its stop pending (HTTP 409 on `POST /v1/snapshots/{id}/restore`, `/resume`, `/retrain` and
+  `/replay`, `The stopped run's fit is still running (a stop takes effect at its next event)`), and are accepted once
+  it has ended. A replay session survived a `restore`, `resume` or `retrain` load; after a `retrain` or `resume` its
+  `stop` reset a run started meanwhile to `STOPPED` without stopping its `fit`, so the next start ran a second `fit`
+  beside it. Every load now ends the session once the snapshot has loaded (a replay control after a `restore`,
+  `resume` or `retrain` is a 409, `No replay session is active`), and `stop_replay()` resets and relabels only from `REPLAYING`. 0.7.2 has both.
+  - The cost: a stopped `fit` that does not end at its next event now holds back every snapshot load and
+    `attach_model` as well as every start; a reset does not unblock it.
+  - Pinned by `juniper-service-core/tests/test_lifecycle_stop_then_load.py` (13 tests) and
+    `test_lifecycle_leftover_replay_session.py` (14 tests): 23 fail without this change, 4 are controls. The three
+    after-a-load tests of `test_lifecycle_stop_then_start.py` now assert the load's refusal and enter their state
+    through the state machine. `util/ad-hoc/2026-11-25_flood4_s14_r23l_mutation_check.py` runs twenty mutants of
+    `manager.py`, each killed by the tests it names, and `util/ad-hoc/2026-11-25_flood4_s14_r23l_probe.py`
+    reproduces both races on a tree without the fix.
+  - `docs/REFERENCE.md` (0.6.84) describes the refusal, the session's scope and their cost, and keeps both races for
+    juniper-service-core 0.7.2 and earlier.
+  - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the next juniper-service-core release,
+    0.8.0.
+
 ## [0.11.5] - 2026-11-13
 
 ### Security
