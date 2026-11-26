@@ -339,6 +339,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     REFERENCE's sentence that a future seq "is trusted, not checked against `current_seq`" no longer holds and is
     replaced.
 
+- **The Cursor flood-4 disposition record lands ruling 49: juniper-canopy#846, its helpers and the gap the Overtoad
+  accepted.** `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` had ruling 49's fix still in
+  validation, with no pull request open (juniper-ml#2677).
+  - §8: ruling 49 names juniper-canopy#846, which makes canopy's X7 health test check where the slow upstream call
+    runs instead of timing the answers, and juniper-ml#2680, which keeps its 23 helpers. Its sub-item R49-Q1
+    (2026-11-26, "Land as ruled") accepts the gap the code lens measured: the new test kills 8 of 12 mutants where the
+    old one killed all 12, and a short `time.sleep` in the health route, in `/api/status` before its offload or in the
+    middleware passes it. Session 17's merge approval is recorded unnumbered.
+  - "Still open": the accepted gap takes the place of ruling 49's follow-up. §7 names juniper-ml#2680 and runs the
+    handoffs to session 16's, §9 names juniper-ml#2677 and this update's PR, and §5's tables are unchanged.
 - **The Cursor flood-4 disposition record runs to 2026-11-26: ruling 49, ruling 7's answers and cleanup script, and
   what rulings 23 and 26–28 produced.** `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`
   stopped at 2026-11-24 (juniper-ml#2635).
