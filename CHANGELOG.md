@@ -726,6 +726,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the next juniper-service-core release,
     0.8.0.
 
+- **`juniper-service-core`: the three WebSocket gaps beside the broadcast drop-and-close are fixed** ("WebSocket gaps
+  beside N-4"; ruling 23 in section 8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+  A broadcast that no socket could be sent (a `datetime`, a lone surrogate, a circular reference) took a seq, closed
+  every socket 1011 and broke every resume across it; it is now refused before it takes a seq, closes nothing, and is
+  counted (`transport_stats()["unserializable_messages_total"]`) and logged at ERROR without its value, while an
+  oversized message with the same value is still delivered as chunks. After its heartbeat's 1011 close, `/ws/control`
+  ended with Starlette's `RuntimeError` on a late frame (under uvicorn's `websockets` implementation) or on a command
+  still running at the close (under every implementation), and executed a late command it could not acknowledge; it now
+  executes and sends nothing after the server's close and drains until the disconnect. A socket a broadcast dropped
+  released its connection and per-IP slots at once, so a socket from the same address was admitted past
+  `max_connections_per_ip` while it closed; it now keeps both until its handler returns
+  (`transport_stats()["dropped_connections"]`), and meanwhile a socket from that address past
+  `max_connections_per_ip` is refused 1013 (HTTP 403 under uvicorn).
+  - The cost: a reconnect from the address of a dropped socket that would exceed a cap waits until that socket is gone
+    (one under both caps is admitted at once); with a client that has stopped reading, as long as the ASGI server
+    keeps the connection (29.5 s under uvicorn 0.54.0's `websockets`
+    implementation; under its `websockets-sansio` and `wsproto`, still held 180 s after the drop, past uvicorn's own
+    keepalive timeout, until the client's connection goes).
+  - Pinned by `juniper-service-core/tests/test_websocket_unsendable_late_frame_and_slot.py` (28 tests): 23 fail without
+    this change, 5 are controls. `util/ad-hoc/2026-11-25_flood4_s14_r23w_mutants.py` runs 27 mutants, each killed by
+    the tests it names, and `util/ad-hoc/2026-11-25_flood4_s14_r23w_probe.py` reproduces all three on a tree without
+    the fix in process, and the second and third under real uvicorn.
+  - `docs/REFERENCE.md` (0.6.85) and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` (1.0.74) state what is now true.
+  - Details are in `juniper-service-core/CHANGELOG.md`; unreleased, first in the next juniper-service-core release,
+    0.8.0.
+
 ## [0.11.5] - 2026-11-13
 
 ### Security

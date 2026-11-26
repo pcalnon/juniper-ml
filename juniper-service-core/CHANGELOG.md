@@ -69,6 +69,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   read with `receive()` until `websocket.disconnect`, as `/ws/training`'s receive loop now does.
   None of the shipped handlers registers a socket with `connect()`.
 
+- **A socket registered with `connect()` that a broadcast drops keeps its connection and per-IP slots
+  until the service's handler calls `disconnect()`** (the Fixed entry "The three WebSocket gaps
+  beside the broadcast drop-and-close are fixed"). Through 0.7.2 the drop released them
+  itself. A service's own handler calls `disconnect()` when it ends, as the shipped handlers do in
+  their `finally`; one that left that to the drop now holds a dropped socket's slots until it does.
+  None of the shipped handlers registers a socket with `connect()`.
+
 - **`/ws/training` answers a resume frame as juniper-cascor does: juniper-cascor#754's four cursor rules**
   (the Overtoad's rulings of 2026-11-12, "Match cascor's resume answers", and of 2026-11-13, "Four rules + shared
   table" and, for a negative cursor, "Read as 0"). Driven over a real WebSocket, the two copies answered 131 of
@@ -350,10 +357,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   nothing was broadcast to and was never told it was missing frames. `endpoint_counts()` still
   counted it, and the per-IP slot the drop released had a live socket behind it, so one client
   could hold more sockets than `max_connections_per_ip` for as long as it kept them. The close
-  bounds both by its own length; it does not end them (Known limits, in this entry).
+  bounds both by its own length, and keeping the slots until the handler returns ends the second
+  (the entry "The three WebSocket gaps beside the broadcast drop-and-close are fixed").
   juniper-cascor fixed its own copy (its F-CASCOR-004); this ports that fix where it fits.
-  - `broadcast` now forgets every failed socket, then closes each **1011** `Broadcast send failed
-    or timed out`: cascor's code and reason, and the code this handler's heartbeat and
+  - `broadcast` now takes every failed socket out of the fan-out, then closes each **1011**
+    `Broadcast send failed or timed out`: cascor's code and reason, and the code this handler's heartbeat and
     incomplete-resume closes use. The client reconnects, and a resume from its last seq replays the
     frame it missed while that is still buffered. The other sockets are untouched.
   - A socket that Starlette already marks closed is not closed again: a send that met a dead
@@ -384,33 +392,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Unchanged: a failed `send_personal_message` neither drops nor closes the socket (the caller
     decides; the resume path closes with its own 1011 `Resume replay incomplete`), and the resume
     catch-up leaves its close to the handler, as before.
-  - **Known limits**, each reported and none changed here:
-    - The drop still releases the socket's connection and per-IP slots at once, before the socket
-      is gone, and `endpoint_counts()` counts the socket until its handler returns. So while the
-      close is in progress, a new socket from the same address can be admitted past
-      `max_connections_per_ip`. The close bounds that excess by its own length; through 0.7.2 it
-      lasted for as long as the client kept the socket. With a client that takes the close it is
-      an instant. With one that has stopped reading it is as long as the ASGI server takes to give
-      up on the connection. Measured under real uvicorn, with a cap of 1, the default 0.5 s send
-      timeout and a raw-socket client that completes the handshake and never reads again: two
-      handlers from one address ran together, `endpoint_counts()["training"]` read 2 against a
-      `connection_count` of 1, and the dropped socket's handler outlived the drop by 29.5 to 29.9 s
-      under uvicorn's default implementation (`websockets`; two runs each on uvicorn 0.37.0 and
-      0.49.0). Under `wsproto` (uvicorn 0.37.0) it was still running when the observation ended
-      45 s later, the close frame unwritten.
-    - A close that the transport never takes stays held, with its socket, until the socket is
-      disconnected after its peer has gone. `close_all()` neither awaits nor cancels it, and the
-      handler's drain has no time bound of its own, so it waits as long.
-    - A broadcast that `send_json` cannot serialise (Starlette's has no `default=`) fails every
-      live send, so it now closes every active socket 1011, where 0.7.2 dropped every socket
-      without a close. Either way the frame takes a seq and a replay slot, so each resume across
-      it is closed 1011 `Resume replay incomplete` until the buffer evicts it; a fresh connect is
-      unaffected. juniper-cascor's copy refuses such a message once, before its seq is assigned
-      (the other half of its F-CASCOR-004); this manager does not.
-    - `/ws/control` still calls `receive_text()` after its heartbeat's close. A frame that arrives
-      after that 1011 close ends `control_stream_handler` with Starlette's `RuntimeError`, and a
-      command that arrives then is executed and cannot be acknowledged (measured under uvicorn
-      0.37.0 and 0.49.0 with the `websockets` implementation). 0.7.2 does the same.
+  - **Known limit**, reported and not changed here: a close that the transport never takes stays
+    held, with its socket, until the socket is disconnected after its peer has gone. `close_all()`
+    neither awaits nor cancels it, and the handler's drain has no time bound of its own, so it waits
+    as long. The three other limits this entry recorded (the slots released at the drop, an
+    unserialisable broadcast closing every socket, and `/ws/control`'s `receive_text()` after its
+    heartbeat's close) are fixed in this release by the entry "The three WebSocket gaps beside the
+    broadcast drop-and-close are fixed".
   - **Pinned by** `tests/test_websocket_broadcast_drop_close.py`: 20 tests driving the real manager
     and handler over a real Starlette `WebSocket` bound to an in-memory ASGI peer. Against the
     previous code 16 fail. The other four pin what must not change: no close attempt for a dead
@@ -422,6 +410,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Python 3.12 and 3.13. The three that survive are recorded there with the reason: one is the
     alternative of holding the slot until the handler returns, which the slot test does not
     exclude on purpose, and two change nothing that a real socket can show.
+
+- **The three WebSocket gaps beside the broadcast drop-and-close are fixed: an unsendable broadcast is
+  refused before it takes a seq, `/ws/control` executes and sends nothing after the server's close, and
+  a dropped socket keeps its connection and per-IP slots until its handler returns** ("WebSocket gaps
+  beside N-4"; ruling 23 in §8 of `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md`).
+  The entry "A socket a broadcast drops is closed 1011" recorded all three as known limits.
+  - **An unsendable broadcast.** A message the transport cannot serialise -- a `datetime` or another
+    value `json` rejects (`TypeError`), a lone surrogate (`UnicodeEncodeError`, when the ASGI server
+    encodes the text), a circular reference (`ValueError`) -- took a seq and a replay slot and then
+    failed on every socket, so every active socket was dropped and closed **1011** `Broadcast send
+    failed or timed out`, and every resume across it was answered `resume_ok` and then closed **1011**
+    `Resume replay incomplete` until the buffer evicted it. 0.7.2 took the seq too, and dropped every
+    socket without a close. `broadcast` now checks every frame it would send the way Starlette's
+    `send_json` and the ASGI server encode it (`json.dumps(..., separators=(",", ":"),
+    ensure_ascii=False)`, then UTF-8), before it assigns any seq. A message with a frame that fails is
+    refused whole: it takes no seq, nothing is buffered or sent, no socket is dropped or closed, and
+    the stream continues without a gap. It counts once in the new `transport_stats()` key
+    `unserializable_messages_total`, not in `send_failures`, which counted it once per socket, and is
+    logged at ERROR with the frame's `type` and the exception's class, never a value from the
+    message. The check runs on the frames after chunking, so an oversized message holding the same
+    value, which the chunker splits from `json.dumps(default=str)`, is still delivered as chunks, byte
+    for byte as before.
+  - **`/ws/control` after the server's close.** Once the heartbeat had closed the socket **1011**, a
+    frame arriving before the peer's disconnect, even one completing the receive already in progress,
+    ended `control_stream_handler` with Starlette's `RuntimeError` (`WebSocketDisconnected` from
+    Starlette 1.x): a pong at the next `receive_text()` ('WebSocket is not connected. Need to call
+    "accept" first.'), and a command after the executor had run it, at its acknowledgment ('Cannot
+    call "send" once a close message has been sent.'). Under uvicorn each is one `Exception in ASGI
+    application`. Measured on uvicorn 0.54.0 with its `websockets` implementation; its
+    `websockets-sansio` (what 0.54.0's `ws="auto"` selects) and `wsproto` report the disconnect first
+    unless they had already queued the frame; a command still executing when the heartbeat closed
+    ended the handler the same way under all three, at its acknowledgment. 0.7.2's `control_stream.py`
+    is the same file. The receive loop now checks `application_state` before each `receive_text()`,
+    after each one returns and when the idle timeout fires. Once the server has closed it dispatches nothing more, so a late command is
+    neither executed nor acknowledged, and it drains with `receive()` until the disconnect, as
+    `/ws/training`'s loop does. No acknowledgment is sent once the server has closed: a command still
+    running when the heartbeat closes completes, unacknowledged, with an INFO line. The loop's own
+    closes (idle timeout **1000**, oversize **1009**, malformed or non-object JSON **1003**) still send
+    their error ack, close and return, unless the heartbeat closed first; then no second close is
+    attempted, which Starlette would refuse with the same `RuntimeError`. The handshake gates (kill
+    switch, cooldown, API key, Origin) close before `accept()` and return, as before.
+  - **The per-IP slot.** The drop released the socket's connection and per-IP slots at once, before
+    the socket was gone, so while it closed a new socket from the same address was admitted past
+    `max_connections_per_ip`, and any socket past `max_connections`; `endpoint_counts()` kept counting
+    the dropped socket until its handler returned, against a `connection_count` that had let it go.
+    0.7.2 released them at the drop too, and never closed the socket. Measured on uvicorn 0.54.0 with
+    a cap of 1, the default 0.5 s send timeout and a client that stops reading after its handshake: it
+    was dropped after 1.02 s, a second socket from its address was admitted (HTTP 101), and the
+    dropped one's handler ran on for 29.5 s under the `websockets` implementation and for more than
+    45 s under `websockets-sansio` and `wsproto`. The drop now only takes the socket out of the
+    fan-out, into a dropped set that both caps count, and its handler's `disconnect()`, as it returns,
+    releases both slots. Neither cap is exceeded: meanwhile a socket from the same address past
+    `max_connections_per_ip` is refused **1013** `Per-IP connection limit reached`, and one past the
+    global cap **1013** `Maximum connections reached` (uvicorn answers both with HTTP 403, before the handshake). `transport_stats()`
+    gains `dropped_connections` (dropped and not yet disconnected; with `active_connections` and
+    `pending_connections` it is what the cap counts), `connection_established`'s `connections` counts
+    those sockets, and `endpoint_counts()` agrees with the slots.
+  - **What it costs.** A reconnect from the address of a dropped socket that would exceed a cap (the
+    per-IP cap counts the dropped socket) waits until that socket is gone, while one under both caps is
+    admitted at once, as before. The old socket is gone at once with a client that takes the close; with
+    one that has stopped reading it lasts as long as the ASGI server keeps the connection, since the
+    handler's drain has no time bound of its own (the 29.5 s above; under `websockets-sansio` and
+    `wsproto`, until the client's connection goes).
+    Each frame a broadcast sends is serialised once more, for the check.
+  - **Unchanged.** `send_personal_message` (it still returns `False` on such a message and counts a
+    send failure; juniper-cascor's copy refuses it too), every close code and reason, and `training_stream.py`.
+  - **`close_all()`** forgets a dropped socket with the rest and does not close it again, and it now
+    clears the per-IP counts: the handlers' later `disconnect()` finds no record to release, so before,
+    every address with a socket open at `close_all()` stayed charged against `max_connections_per_ip`
+    for good.
+  - **Tests**: `tests/test_websocket_unsendable_late_frame_and_slot.py` (28 tests) pins all three over
+    a real Starlette `WebSocket` bound to an in-memory ASGI peer that encodes text as UTF-8. Against
+    the previous `manager.py` and `control_stream.py` 23 of them fail; the other 5 are controls: an
+    oversized message with the same value is delivered as before, a message's own `seq` field is
+    still overwritten, the loop's own close is unchanged, a socket its handler disconnected before the
+    drop is not held, and a dropped socket's slots are released once however often it is
+    disconnected. juniper-ml's `util/ad-hoc/2026-11-25_flood4_s14_r23w_mutants.py` runs 27 mutants
+    (24 restoring one fixed site, 3 of the drop-and-close entry's re-expressed on the new code), and
+    each is killed by a test it names, on Python 3.12 and 3.13.
 
 ## [0.7.2] - 2026-11-08
 
