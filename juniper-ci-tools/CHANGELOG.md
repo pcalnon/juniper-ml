@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-26
+
 ### Added
 
 - **`juniper_ci_tools.run_tests`: the engine behind every Juniper repo's `util/run_tests.py`.**
