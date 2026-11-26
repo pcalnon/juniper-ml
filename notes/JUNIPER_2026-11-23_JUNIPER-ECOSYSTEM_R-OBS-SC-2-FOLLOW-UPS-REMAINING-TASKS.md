@@ -6,7 +6,8 @@
 `notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md`, which the one-artifact line owns. It does
 not replace the plan.
 **Date**: 2026-11-23
-**Updated**: 2026-11-24, by session 031e862f ("Checked and changed, 2026-11-24" below)
+**Updated**: 2026-11-26, by session cf970cdc ("Checked and changed, 2026-11-26" below); before that 2026-11-24, by
+session 031e862f
 
 ---
 
@@ -128,6 +129,75 @@ Every remaining task of the R-OBS-SC-2 follow-ups arc, including its one-artifac
     `X-Client-IP`, `CF-Connecting-IP`, `True-Client-IP`, `X-Cluster-Client-IP`.
   - Sentry Logs carry logging extras raw.
 - **Counts after the update**: A 19 (R14 and R15 ruled), B 8 (R21 and R23 done), C 19, D 11 (R53 open), E 8.
+
+## Checked and changed, 2026-11-26 (session cf970cdc, from 01:16Z)
+
+- **Merged since the 2026-11-24 update**, each read with `gh pr view`:
+  - ml#2647, R14's port: 2026-11-25 10:41:26Z, merge `b54f961b`, head `042030b6`. Every check on that head
+    succeeded, `Test (Python 3.13)` (3.x), `Test (Python 3.13, sentry-sdk 2.x)` and `Analyze (python)` among them.
+  - ml#2650, this document's 2026-11-24 update: 12:09:30Z, `dbe9ab30`.
+  - ml#2655, session 031e862f's handoff: 20:37:00Z, `0b53d2ab`.
+- **The Overtoad's rulings of 2026-11-26** (AskUserQuestion, asked 01:33:42Z, answered 01:47:02Z):
+  - merge the 0.4.3 proposal, ml#2666, and run the ceremony to cut the Release. The approval also covers this
+    session's docs-only PRs (this update and the handoff);
+  - the Release lists the three pre-existing exposures below as its Known Issues, each re-measured on the wire first,
+    in place of the renderer's fixed "None known at time of release.";
+  - **R15 for juniper-cascor: add profiling to `configure_sentry`.** A later juniper-observability release gains
+    profiling keyword arguments, and cascor's port waits for it and keeps its profiling. juniper-data and
+    juniper-canopy call only `configure_sentry`, so their ports can follow 0.4.3 on PyPI.
+- **The proposal: ml#2666, MERGED 01:47:50Z, merge `b9442e3c`** (branch `release/juniper-observability-v0.4.3`).
+  - `detect.py`'s GitHub path proposed minor / 0.5.0, from repo-wide `feat:` commits; `--local-git` proposed the
+    ruled patch / 0.4.3. The manifest is the GitHub path's with only `proposed_bump` and `proposed_version`
+    rewritten, after asserting that the two manifests differ in nothing else `propose.py` reads.
+  - Commit 1 (`549da41f`, `propose.py`): `pyproject.toml`, `_version.py`, and the CHANGELOG move to
+    `[0.4.3] - 2026-11-26`. Commit 2 (`d1901c04`): the carriers `propose.py` misses, `tests/test_public_api.py`'s
+    pin and per-release paragraph, and README § Status's floor, now `>=0.4.3`.
+  - Before it opened, `util/ad-hoc/2026-10-21_simulate_release_proposal.py` ran 17 suites with 0 regressed, and the
+    package's tests on the simulated copy gave 305 passed / 7 skipped on sentry-sdk 3.0.0 and 299 / 13 on 2.76.0.
+    The branch's five files equal that copy byte for byte. Every check on `d1901c04` passed (29 success, 5 neutral,
+    1 skipped).
+- **The Known Issues, measured** by `util/ad-hoc/2026-11-26_observability_known_issues_wire_probe.py` against
+  `main`'s package (0.4.3), on sentry-sdk 2.35.0, 2.76.0 and 3.0.0, under both `send_pii` values:
+  - the client's address in `Forwarded`, `X-Client-IP`, `CF-Connecting-IP`, `True-Client-IP` and
+    `X-Cluster-Client-IP` reaches the error event and the transaction on both 2.x, and the error event and the
+    server span on 3.0.0;
+  - canopy's body field `authkey` reaches `request.data` of the error event and of the transaction on both 2.x. On
+    3.0.0 it is not sent: there are no bodies;
+  - a log record's `extra` fields (`api_key`, `detail`) reach the Sentry Log's attributes on all three.
+  - **Two corrections to the 2026-11-24 record.** The `authkey` reaches 2.x transactions too, not only error events.
+    And the R15 bullet's "`configure_sentry` has no parameter for" holds only for the two profiling options:
+    `configure_sentry` takes `traces_sample_rate` (`juniper-observability/juniper_observability/sentry.py:436`,
+    default 0.1).
+  - The DSNs are still blank: juniper-deploy's compose file defaults each `*_SENTRY_DSN` to empty, its Helm values
+    set `""`, and its `secrets.example/cascor_sentry_dsn.txt` holds a placeholder.
+  - The Release's text is held in `util/ad-hoc/2026-11-26_observability_0_4_3_known_issues_notes.py`.
+- **The cut: Release `juniper-observability-v0.4.3`, published 02:04:23Z**, after the merge commit's `ci.yml` push run
+  (45738156851) completed `success` at 02:03:42Z.
+  - `ceremony.py --execute --target-sha b9442e3c… --release-date 2026-11-26 --monitor-timeout 30`. The tag is a
+    commit ref on `b9442e3c`. The Release is not a draft or a prerelease, and `releases/latest` stays `v0.11.5`
+    (`--latest=false`).
+  - The body the ceremony rendered equalled the body reviewed before the cut, byte for byte, in the Release and in
+    the archive branch's file. Then the Known Issues went into both: signed commit `3cb84a0e` on
+    `release-notes/juniper-observability-v0.4.3` (atop the ceremony's `76855285`), and `gh release edit`. Both read
+    back equal to the filled text.
+  - The archive PR, ml#2667, added one file, `notes/releases/RELEASE_NOTES_juniper-observability_v0.4.3.md`, and
+    auto-merged at 02:19:08Z (`fcbc5d3c`). The file on `main` equals the filled text and the live Release body.
+  - The publish run is 45739959764 (`release`, `b9442e3c`, created 02:04:26Z). **It waits at the `pypi` gate, gate 2,
+    the Overtoad's**, read by hand at 02:05:47Z:
+    - `Build and Validate` and `Publish to TestPyPI` succeeded, `Publish to PyPI` is `waiting`, and
+      `pending_deployments` names `pypi`;
+    - TestPyPI serves 0.4.3: the wheel (sha256 `4817790d…`) and the sdist (`14c6c7db…`), with
+      `sentry-sdk[fastapi]<4,>=2.35.0` on the `sentry` and `test` extras;
+    - PyPI answers 404 for 0.4.3 until the gate is approved;
+    - the deadlines, from the run's creation: day 30, 2026-12-26, is the last day to re-run it and the cap on its
+      wait at the gate; day 35, 2026-12-31, is when GitHub cancels it. The workflow carries the republish job, so
+      §11.8's rung 1 of `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` applies after
+      either.
+- **Open, unchanged**: R21's second pass and R22 follow 0.4.3 on PyPI, which waits on gate 2, the Overtoad's. R53
+  waits for the session that prepares service-core 0.8.0. R15 follows PyPI for data and canopy, and the profiling
+  release for cascor.
+  - The profiling arguments add to `configure_sentry`'s public signature, which SemVer counts as a minor, while
+    R-OBS-SC-3 is ruled 0.4.4: the release that carries them needs its number ruled.
 
 ## Sources (aliases used in the tables; each alias is the tail of the filename)
 
