@@ -6,7 +6,8 @@ thread-safe manager that handles:
 
 - Connection lifecycle (connect / disconnect / pending) + a bounded global and per-IP limit.
 - Monotonically increasing sequence numbers on broadcasts -- every broadcast, whether or not a
-  client is connected, so a gap in the numbering is a gap in what the client received.
+  client is connected (one refused because no socket could be sent it takes none), so a gap in the
+  numbering is a gap in what the client received.
 - A bounded replay buffer for client reconnection (``replay_since``), and a resume promotion
   (``promote_to_active(..., replayed_through=...)``) that delivers whatever was broadcast while
   the replay was being sent before the socket joins the live stream.
@@ -65,6 +66,23 @@ def _is_closed(websocket: WebSocket) -> bool:
     either attribute (a test double) reads as open.
     """
     return WebSocketState.DISCONNECTED in (getattr(websocket, "application_state", None), getattr(websocket, "client_state", None))
+
+
+def _transport_error(frame: dict) -> Exception | None:
+    """The exception that keeps ``frame`` off the wire as a broadcast sends it, or ``None`` when it can be sent.
+
+    It does what the transport does to the frame: Starlette's ``send_json`` serialises with
+    ``json.dumps(..., separators=(",", ":"), ensure_ascii=False)``, with no ``default=``, and the ASGI
+    server encodes the text as UTF-8. A value ``json`` cannot serialise (a ``datetime``, a NumPy integer or ``float32``) fails
+    the first step and a lone surrogate the second. Either is a property of the frame, so it would fail on
+    every socket alike. ``seq`` and ``emitted_at_monotonic`` are checked as the integer and the float that
+    :meth:`WebSocketManager.broadcast` gives them.
+    """
+    try:
+        json.dumps({**frame, "seq": 0, "emitted_at_monotonic": 0.0}, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    except Exception as exc:  # noqa: BLE001 - whatever is raised here is a property of the frame
+        return exc
+    return None
 
 
 #: The per-endpoint connection buckets the generic base tracks: the two client-facing channels
@@ -129,6 +147,10 @@ class WebSocketManager:
         # Connection tracking
         self._active_connections: set[WebSocket] = set()
         self._pending_connections: set[WebSocket] = set()
+        # Sockets a broadcast dropped from the fan-out (_drop) that have not been disconnected yet. They are
+        # still open, their close perhaps in flight, so each keeps its connection and per-IP slots until
+        # disconnect() -- its handler's, as it returns.
+        self._dropped: set[WebSocket] = set()
         # Per-endpoint active-connection sets, used for per-endpoint accounting. Keys are the
         # closed set passed in ``endpoints``; sets are disjoint in steady state. Pending
         # (resume-handshake) connections are NOT counted -- the buckets track broadcast-eligible
@@ -173,6 +195,9 @@ class WebSocketManager:
         self._messages_sent_by_type: dict[str, int] = {}
         self._bytes_sent_by_type: dict[str, int] = {}
         self._send_failures: int = 0
+        # Broadcasts refused because no socket could be sent them (_refuse_unsendable): one per message,
+        # not per socket. Kept apart from _send_failures, which counts per-socket delivery failures.
+        self._unserializable_messages_total: int = 0
 
         # Message-size guard + chunking. Broadcasts whose serialized JSON exceeds
         # ``max_message_size_bytes`` are split into a sequence of ``chunked_message`` envelopes
@@ -247,7 +272,12 @@ class WebSocketManager:
             bucket.discard(websocket)
 
     def endpoint_counts(self) -> dict[str, int]:
-        """Per-endpoint broadcast-eligible connection counts (for a service's own metrics)."""
+        """Per-endpoint connection counts (for a service's own metrics).
+
+        A socket counts from its handler's :meth:`register_endpoint_connection` until its
+        :meth:`unregister_endpoint_connection`. One a broadcast dropped therefore counts until its handler
+        returns, as its connection and per-IP slots do.
+        """
         return {name: len(bucket) for name, bucket in self._endpoint_connections.items()}
 
     # ------------------------------------------------------------------
@@ -260,7 +290,7 @@ class WebSocketManager:
             "type": "connection_established",
             "timestamp": time.time(),
             "data": {
-                "connections": self.connection_count + len(self._pending_connections),
+                "connections": self.connection_count + len(self._pending_connections) + len(self._dropped),
                 "server_instance_id": self._server_instance_id,
                 "server_start_time": self._server_start_time,
                 "replay_buffer_capacity": self._replay_buffer_max_size,
@@ -307,13 +337,14 @@ class WebSocketManager:
         here must expect that close: once the app has closed, Starlette refuses a new
         ``receive_text()`` with ``RuntimeError``, not ``WebSocketDisconnect``. Such a handler reads
         with ``receive()`` until ``websocket.disconnect`` instead, as ``/ws/training``'s receive
-        loop does.
+        loop does. It calls :meth:`disconnect` when it ends: that releases the socket's connection
+        and per-IP slots, which a socket the broadcast dropped keeps until then.
 
         Returns:
             ``True`` if connected, ``False`` if a connection limit was reached.
         """
         async with self._lock:
-            total = len(self._active_connections) + len(self._pending_connections)
+            total = len(self._active_connections) + len(self._pending_connections) + len(self._dropped)
             if total >= self._max_connections:
                 await websocket.close(code=1013, reason="Maximum connections reached")
                 logger.warning("Connection rejected: limit of %d reached", self._max_connections)
@@ -344,7 +375,7 @@ class WebSocketManager:
             ``True`` if accepted, ``False`` if a connection limit was reached.
         """
         async with self._lock:
-            total = len(self._active_connections) + len(self._pending_connections)
+            total = len(self._active_connections) + len(self._pending_connections) + len(self._dropped)
             if total >= self._max_connections:
                 await websocket.close(code=1013, reason="Maximum connections reached")
                 logger.warning("Connection rejected: limit of %d reached", self._max_connections)
@@ -459,7 +490,10 @@ class WebSocketManager:
                 cursor = frame["seq"]
 
     async def disconnect(self, websocket: WebSocket) -> None:
-        """Remove a WebSocket connection (from active or pending).
+        """Remove a WebSocket connection (from active, pending, or dropped by a broadcast).
+
+        This is what releases the socket's connection and per-IP slots. A socket a broadcast dropped keeps
+        both until then, because it is still open: the shipped handlers call this as they return.
 
         Once the peer's disconnect has been received, a close that a broadcast's drop started on
         this socket and that is still pending is cancelled: the connection is gone, so the frame
@@ -472,6 +506,7 @@ class WebSocketManager:
         async with self._lock:
             self._active_connections.discard(websocket)
             self._pending_connections.discard(websocket)
+            self._dropped.discard(websocket)
             meta = self._connection_meta.pop(websocket, None)
             # Release the per-IP slot reserved at connect time so a clean reconnect does not
             # accrue phantom counts against the cap.
@@ -613,6 +648,12 @@ class WebSocketManager:
         unaffected. Its client reconnects, and a resume from its last seq replays the frame it
         missed while that is still buffered.
 
+        A message that no socket could be sent -- one the transport cannot serialise, such as one
+        holding a ``datetime`` -- is refused before it takes a seq or enters the replay buffer: nothing
+        is sent, no socket is dropped or closed, and the refusal is counted and logged
+        (:meth:`_refuse_unsendable`). What is checked is each frame as it would go on the wire, after
+        chunking, so an oversized message the chunker splits is still delivered as before.
+
         Must run on the manager's event loop (the one the stream handlers serve on, which
         :meth:`set_event_loop` records); from another thread use :meth:`broadcast_from_thread`.
         A resume's continuity (:meth:`promote_to_active`) rests on a broadcast assigning its seq
@@ -620,7 +661,10 @@ class WebSocketManager:
         broadcast running on another thread can land between the catch-up's last check and the
         activation.
         """
-        for sub_message in self._maybe_chunk_message(message, quiet=not self._active_connections):
+        frames = self._maybe_chunk_message(message, quiet=not self._active_connections)
+        if self._refuse_unsendable(message, frames):
+            return
+        for sub_message in frames:
             enriched = self._assign_seq_and_buffer(sub_message)
             disconnected = []
             # No ``await`` between assigning the seq and copying the active set: the recipients
@@ -632,6 +676,35 @@ class WebSocketManager:
             if disconnected:
                 await self._drop(disconnected, enriched["seq"])
 
+    def _refuse_unsendable(self, message: dict, frames: list[dict]) -> bool:
+        """Count, log and refuse a broadcast that no socket could be sent; ``True`` when the caller must skip it.
+
+        ``frames`` are what :meth:`_maybe_chunk_message` made of ``message``: the message itself, or the
+        chunks of an oversized one. The chunker builds chunks from ``json.dumps(default=str)``, so an
+        oversized message holding a ``datetime`` passes as chunks and is delivered, as it was before this
+        check. If any frame fails :func:`_transport_error` -- the frame alone decides, so it would fail on
+        every socket -- the whole message is refused before any seq is assigned: it enters no replay,
+        nothing is sent, and no socket is dropped or closed. Before this check such a frame took a seq and
+        a replay slot and failed on every socket, so every socket was dropped and closed 1011, and every
+        resume across it was closed 1011 ``Resume replay incomplete`` until the buffer evicted it.
+
+        Counted in ``transport_stats()["unserializable_messages_total"]``, once per message, and logged at
+        ERROR, since the producer is at fault: the message's ``type`` (its ``repr``) when it is a string,
+        and the exception's class, never another value from the message.
+        """
+        error = next((err for err in map(_transport_error, frames) if err is not None), None)
+        if error is None:
+            return False
+        with self._seq_lock:
+            self._unserializable_messages_total += 1
+        msg_type = message.get("type")
+        logger.error(
+            "Broadcast refused: a %s message cannot be serialised as the transport sends it (%s); it took no seq, and no socket was sent it or closed",
+            repr(msg_type) if isinstance(msg_type, str) else f"<{type(msg_type).__name__}>",
+            type(error).__name__,
+        )
+        return True
+
     async def _drop(self, sockets: list[WebSocket], seq: int) -> None:
         """Drop the sockets a broadcast could not send ``seq`` to, and close each one 1011.
 
@@ -641,15 +714,16 @@ class WebSocketManager:
         Closed, the client reconnects, and a resume from its last seq replays what it missed while
         that is still buffered.
 
-        Known limit: the drop still releases the socket's connection and per-IP slots here, before
-        the socket is gone, and ``endpoint_counts()`` counts the socket until its handler returns.
-        While the close is in progress, a new socket from the same address can therefore be
-        admitted past ``max_connections_per_ip``: for an instant with a peer that answers the
-        close, and for as long as the ASGI server takes to give up on one that has stopped reading.
-        The close bounds that excess by its own length; without it the excess lasted for as long
-        as the client kept the socket open.
+        The drop takes the socket out of the fan-out and nothing else: it keeps its connection and
+        per-IP slots, and ``endpoint_counts()`` keeps counting it, until :meth:`disconnect` -- its
+        handler's, as that returns -- because until then it is still open. So neither cap is exceeded
+        while it closes: a new socket from its address is refused 1013 while the per-IP cap is full,
+        and admitted once the old one is gone. With a peer that answers the close that is at once; with
+        one that has stopped reading, as long as its connection lasts, which uvicorn's
+        ``websockets-sansio`` and ``wsproto`` keep until the client goes. Through juniper-service-core 0.7.2 the drop released both slots at once, before the
+        socket was gone, and a socket from the same address was admitted past the cap meanwhile.
 
-        Every socket is forgotten before any close starts, so an overlapping broadcast stops
+        Every socket leaves the fan-out before any close starts, so an overlapping broadcast stops
         targeting them. A socket that something has already closed -- the server or the peer
         (:func:`_is_closed`) -- or that an overlapping broadcast is closing already, is not closed
         again. The closes run concurrently, and the broadcast waits for them at most one send
@@ -658,8 +732,12 @@ class WebSocketManager:
         and a close still in flight finishes in the background (:meth:`_close_done`). The one
         thing that cancels it is :meth:`disconnect` of the same socket after its peer has gone.
         """
-        for ws in sockets:
-            await self.disconnect(ws)
+        async with self._lock:
+            for ws in sockets:
+                # One its handler has disconnected already is gone, slots and all; never resurrect it.
+                if ws in self._active_connections:
+                    self._active_connections.discard(ws)
+                    self._dropped.add(ws)
         closes = []
         for ws in sockets:
             if ws in self._closing or _is_closed(ws):
@@ -779,17 +857,24 @@ class WebSocketManager:
 
         A service surfaces this however it likes (e.g. a ``GET /v1/metrics/transport`` route or
         a Prometheus scrape) -- the generic base keeps the counters but pushes no metrics.
+
+        ``active_connections`` are in the broadcast fan-out, ``pending_connections`` in a resume
+        handshake, and ``dropped_connections`` dropped by a broadcast but not yet disconnected: still
+        open, so the three together are what the connection cap counts. ``unserializable_messages_total``
+        counts broadcasts refused because no socket could be sent them (:meth:`_refuse_unsendable`).
         """
         with self._seq_lock:
             return {
                 "bytes_sent_total": self._bytes_sent_total,
                 "messages_sent_total": self._messages_sent_total,
                 "send_failures": self._send_failures,
+                "unserializable_messages_total": self._unserializable_messages_total,
                 "messages_sent_by_type": dict(self._messages_sent_by_type),
                 "bytes_sent_by_type": dict(self._bytes_sent_by_type),
                 "uptime_seconds": time.monotonic() - self._server_start_time,
                 "active_connections": len(self._active_connections),
                 "pending_connections": len(self._pending_connections),
+                "dropped_connections": len(self._dropped),
                 "current_seq": self._next_seq - 1,
                 "replay_buffer_size": len(self._replay_buffer),
                 "replay_buffer_capacity": self._replay_buffer_max_size,
@@ -813,13 +898,17 @@ class WebSocketManager:
         deadlock risk from re-entering the lock via ``disconnect()`` on exception paths.
 
         A socket a broadcast has already dropped is in neither set, so it is not closed here, and
-        its 1011 close, if still in flight, is neither awaited nor cancelled (:meth:`_drop`).
+        its 1011 close, if still in flight, is neither awaited nor cancelled (:meth:`_drop`); it is
+        forgotten with the rest.
         """
         async with self._lock:
             snapshot = list(self._active_connections) + list(self._pending_connections)
             self._active_connections.clear()
             self._pending_connections.clear()
+            self._dropped.clear()
             self._connection_meta.clear()
+            # Their handlers' disconnect() will find no record to release, so no address may stay charged.
+            self._per_ip_counts.clear()
             self._connection_endpoint.clear()
             for bucket in self._endpoint_connections.values():
                 bucket.clear()
