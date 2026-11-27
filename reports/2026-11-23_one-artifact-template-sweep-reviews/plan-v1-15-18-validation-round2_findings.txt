@@ -1,0 +1,533 @@
+PLAN v1.15.18 -- ROUND 2 (THE CORRECTIONS, ADVERSARIALLY) -- FINDINGS
+=====================================================================
+
+Validator: an independent round-2 agent, worktree purring-hugging-hippo. Work window 2026-11-26 22:56:41Z to 23:26Z (date -u).
+Under review: tmp/v1_15_18/val/draft1_to_draft2.diff (sha256 07388b0c...), tmp/v1_15_18/val/plan_v1_15_18_draft2.md
+(09c9516c..., byte-identical to notes/...CONSOLIDATED-DEVELOPMENT-PLAN.md in this worktree at 23:17:09Z),
+tmp/v1_15_18/val/plan_v1_15_18_draft2.diff (4b5d1f72...) and tmp/v1_15_18/val/writer_draft2.py (4d4d4bed...): all four match
+draft2.sha256. Plan line numbers are draft 2's. Abbreviations: RD = .claude/worktrees/ethereal-munching-peacock/tmp/sweep/
+REVIEW_DISPOSITIONS.md (2733 lines, sha256 f70311a8...); RT = notes/JUNIPER_2026-11-23_JUNIPER-ECOSYSTEM_R-OBS-SC-2-FOLLOW-UPS-
+REMAINING-TASKS.md; 7WT = prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-23_r-obs-sc-2-owner-items-recurrence-pin-0-8-1-
+seven-worktrees-archived.md; HO-1124a / HO-1125 / HO-1126 = the arc's handoffs of those dates; INPUTS = .../ethereal-munching-
+peacock/tmp/arc/plan_v1_15_18_inputs.md; A23 = juniper-ml/tmp/worktree-archive-2026-11-23/; A26 = juniper-ml/tmp/worktree-archive-
+2026-11-26/; LR = tmp/v1_15_18/landing/REPORT.txt (this worktree).
+
+Totals: 0 BLOCKER, 1 MAJOR, 8 MINOR, 14 NIT (23 findings). Every fix is in fixes.json (26 entries, ids R2-xx-Lnnnn): each "old"
+occurs exactly once in plan_v1_15_18_draft2.md, all 26 apply in order without collision, the plan's count of lines over 512
+characters stays 28, and the patched text passes markdownlint v0.42.0 (the pinned hook) with no finding but the 24 MD013 lines
+main and draft 1 already carry. Two "old" strings need re-basing if they are applied to the LIVE writer's output instead of draft 2:
+util/ad-hoc/2026-11-26_consolidated_plan_v1_15_18_template_sweep.py changed at 22:57:47Z (sha256 b36adca8..., not 4d4d4bed...),
+rewriting line 1367's "each under `<worktree>/tmp/` there" (R2-02) and line 2556's "the `/tmp` write" (R2-11).
+
+
+------------------------------------------------------------------------
+R2-01  MAJOR  Line 2709: the archived parent-AGENTS copy is NOT byte-equal to the restored backup; it is the substituted text
+------------------------------------------------------------------------
+Draft (2709, new): "      - v1.15.18: that worktree was removed on 2026-11-23; the copy is `buzzing-growing-whale/tmp/s2/parent_AGENTS_before_
+2026-11-14.md` in `juniper-ml/tmp/worktree-archive-2026-11-23/`, byte-equal to the restored backup (that archive's README)."
+Source (measured 2026-11-26 23:06:55Z, read only):
+  sha256 A23/buzzing-growing-whale/tmp/s2/parent_AGENTS_before_2026-11-14.md                          = d8ab5749e103414e...
+  sha256 juniper-ml/tmp/2026-11-14-parent-agents-md-backup/AGENTS.md.before-2026-11-14-edit            = 90df27837369e0b4... (restored)
+  sha256 .../AGENTS.md.before-2026-11-14-edit.substituted-2026-11-20                                    = d8ab5749e103414e...
+  `cmp` of the archived copy and the .substituted-2026-11-20 file: identical. "Overtoad" occurs 7 times in the archived copy, 0
+  times in the restored backup; the archived copy's mtime is 2026-11-21 01:14:11Z, inside the blind pass. Likewise
+  A23/buzzing-growing-whale/tmp/s2/parent_AGENTS_trial.md = 6698d723... (8 "Overtoad") = the 2026-11-15 backup's
+  .substituted-2026-11-20, not f3f69b34.
+  A23/README.md:20-24 is the source of the error: "One exception is proven: the parent `AGENTS.md` copies in
+  `buzzing-growing-whale/tmp/s2/` ... are byte-equal to the backups ..., which were restored to their recorded sha256". That is
+  true only of the backups BEFORE their restore (both carry the same substitution); the copies themselves were never restored.
+  Round 1's A09 proposal ("except those parent AGENTS.md copies, proven byte-equal to the restored backups") made the same misreading,
+  and draft 2 put it into the plan.
+Why it matters: a successor who wants the parent's pre-2026-11-14 bytes is told the archive holds them; it holds the rewritten text.
+It also contradicts draft 2's own line 1374 ("tmp/ evidence older than 2026-11-20, the 2026-11-23 archive's included, reads as
+possibly substituted") and line 1367, and it is part of what R18's ruling rests on (RT:266, "Rule once plan v1.15.18 (R39) has
+recorded what the archive backs").
+Proposed (fixes.json R2-01-L2709): "      - v1.15.18: that worktree was removed on 2026-11-23. Its copy, `buzzing-growing-whale/tmp/s2/
+parent_AGENTS_before_2026-11-14.md` in `juniper-ml/tmp/worktree-archive-2026-11-23/`, is the substituted text (sha256 `d8ab5749…`,
+the backup's `*.substituted-2026-11-20`), not the prior copy, whose bytes (`90df2783…`) are the restored backup below (re-read
+2026-11-26 23:06Z)."
+Also (no fix entry): 2709 sits between 2708 and 2708's own continuation "- and on 2026-11-15 (one command at 02:53:56Z): ...", so
+that continuation now reads as following the v1.15.18 note; moving the note after 2710 reads better.
+
+
+------------------------------------------------------------------------
+R2-02  MINOR  Line 1367: "That archive backs the files this plan cites" -- three of the five are substituted copies
+------------------------------------------------------------------------
+Draft (1367, new): "    - That archive backs the files this plan cites in those worktrees: `humble-humming-flask`'s `tmp/review-763/` and
+`tmp/cascor-767/safe_merge_767.log`, `buzzing-growing-whale`'s `tmp/s2/parent_AGENTS_before_2026-11-14.md`, and the two copies
+`reports/2026-11-15_r-obs-sc-2-follow-ups-reviews/README.md` names, each under `<worktree>/tmp/` there (R18's precondition). Its
+README asks that they be read as possibly substituted."
+Source (measured 23:06-23:08Z): all five exist in A23. But:
+  - parent_AGENTS_before_2026-11-14.md: d8ab5749..., substituted (R2-01);
+  - A23/logical-percolating-sparkle/tmp/lps/fixpass_r1.md: 76bc07541566dcad..., 7 "Overtoad"; the repository's verbatim copy
+    reports/2026-11-15_r-obs-sc-2-follow-ups-reviews/five-prs-validation-fixpass-round-1.md is ad8d90912ec864c9..., the sha256 that
+    README pins (its line 31) and plan line 1168 quotes;
+  - A23/humble-humming-flask/tmp/review-763/: 44 of its 89 files contain "Overtoad" (plan line 1285 already says it was rewritten);
+  - A23/toasty-prancing-karp/tmp/s1/guard_review_round1.md: 37508e487e0eda00..., the sha256 the reviews README states (its line 23),
+    0 "Overtoad": intact;
+  - A23/humble-humming-flask/tmp/cascor-767/safe_merge_767.log: 0 "Overtoad", mtime 2026-11-15 13:15Z: reads intact.
+Why it matters: R18 is the Overtoad's retention ruling, and its precondition is exactly what the archive backs. "Backs" tells the
+Overtoad the archive is the backing copy, when for three of the five the copy to trust is elsewhere (the repository, the restored
+backups) and the archive's is rewritten. The line also contradicts 2709 (R2-01).
+Proposed (fixes.json R2-02-L1367): keep the list, say "holds" for "backs", and add a sub-bullet naming the three substituted copies
+and the two intact ones with their sha256 and where the trustworthy copy is.
+
+
+------------------------------------------------------------------------
+R2-03  MINOR  Line 1318: "rounds 9 to 11 each found a BLOCKER or a MAJOR one level outside the install script"
+------------------------------------------------------------------------
+Draft (1318, changed; B20's reconciliation): "The option's one review round became four: rounds 9 to 11 each found a BLOCKER or a
+MAJOR one level outside the install script."
+Source: RD:1115 (round 9) "All blocking findings are one level outside the install script"; RD:1288 (round 10) "The three BLOCKERs
+sit one level further out"; RD:1526 (round 11) "The MAJOR is in what the checker PRINTS; its exit status stays correct" (M11-A, a
+forged PASS line in a terminal). Draft 1 attached the phrase to round 9 alone, which was right; draft 2 moved it onto rounds 9 to 11.
+Proposed (fixes.json R2-03-L1318): "... rounds 9 to 11 each found a BLOCKER or a MAJOR outside the install script (round 11's in
+what the checker prints)."
+
+
+------------------------------------------------------------------------
+R2-04  MINOR  One of the eleven 0.4.3 passages is still unmarked, while three lines say all are marked
+------------------------------------------------------------------------
+Draft (1530, unchanged): "- **Left with the Overtoad by R-OBS-SC-2's follow-ups** (...): ... launching the 0.4.3 design session; ..."
+Its annotation (1531, changed): "  - v1.15.18: the recurrence pin moved (juniper-deploy#284); the trio's environments hold 0.4.2 and
+0.7.2 (...); the stack's restart is a bring-up, no container existing (R25); and seven worktrees were removed and archived on
+2026-11-23. The rest is open (§5, the note on the template sweep)." -- nothing about 0.4.4, so "launching the 0.4.3 design session"
+falls under "The rest is open".
+Claims of completeness: 49 "It marks the passages that still gave 0.4.3 to R-OBS-SC-3"; 1377 "the passages that said otherwise are
+marked"; 2556 (the BLOCKER's eleven passages, "Each was ... applied").
+Source: round 1 named this passage in both lenses: attack/findings.txt A01 "L1499 (\"launching the 0.4.3 design session\")" with
+fix A01/B09/B10-sec6-L1500 ("the 0.4.3 design session is now 0.4.4's"), and facts/findings.txt F-02 ":1499". Draft 2 took that
+fix's B09 and B10 parts and dropped its A01 part. The other ten passages are marked (171 inline, 175, 533, 1057, 1094, 1167, 1199,
+1529 inline, 1636 inline, 1919).
+Proposed (fixes.json R2-04-L1531): add "The design session to launch is now 0.4.4's (the Overtoad's ruling of 2026-11-24)." before
+"The rest is open".
+
+
+------------------------------------------------------------------------
+R2-05  MINOR  Gap 16 is attached to two different checks; 0.4.3's own post-approval re-read drops out of "What remains"
+------------------------------------------------------------------------
+Draft (1362, new): "Once the gate is approved, ... a session can re-read both indexes; no session holds that check (that document's
+§4, gap 16)." -- the 0.4.3 Release, which runs the UNSWEPT publisher (1360).
+Draft (1377, new): "... and gap 16 is under the first Release, above."
+Draft (1381, new, in "What remains"): "  - the check that the first Release through a swept publisher gives PyPI TestPyPI's files (gap
+16): no session holds it;"
+Source: RT:481-483 (gap 16): "Nobody is named to verify the first Release through the swept workflows. No Release has run the
+one-artifact workflows (newest: canopy v0.10.0 ...), and no source assigns checking that the first one gives PyPI TestPyPI's
+sha256." Written 2026-11-23, before #777, its "swept" means the one-artifact workflows, i.e. 0.4.3's (gh release list for the 8
+publishing repos at 23:12:32Z: juniper-observability-v0.4.3 is the only Release since 2026-11-15). Round 1's A06 fix for "What
+remains" named both checks: "after the Overtoad approves juniper-observability 0.4.3's `pypi` gate (by day 30, 2026-12-26): a re-read
+of both indexes' sha256, for which no session is named (gap 16); and the first Release through a swept publisher ...". Draft 2 kept
+only the second and relabelled it gap 16.
+Proposed (fixes.json R2-05-L1381): "  - once the Overtoad approves juniper-observability 0.4.3's `pypi` gate (by 2026-12-26), a re-read
+that PyPI serves TestPyPI's files (gap 16, above); and the same check of the first Release through a swept publisher, whose install
+job and republish gate no Release has run. No session holds either;"
+
+
+------------------------------------------------------------------------
+R2-06  MINOR  Line 1380: the residuals' wording is not "also a change to the checker"
+------------------------------------------------------------------------
+Draft (1380, new): "  - SWEEP items 28 and 29, and the residuals' wording for a later pin round: each a change to the template through
+cascor and then every port, and each also a change to the checker, which its FINAL note makes a new reviewed pass (`SW/dispositions.md`
+§ \"Fix pass 11\"). No session holds them."
+Source: RD:2142-2143 "FINAL ... with this checker, `a452db3d...`. Any later change to it is a new pass." The checker
+(util/ad-hoc/2026-11-23_publish_port_template_identity.py, a452db3d..., on disk here) fixes the build window (TWINE_CHECK, TAG_ASSERT
+for juniper-ml only, CANOPY_SMOKE: :494-497, :1728-1731) and the chain's five jobs (EXTRA_JOBS, :550; "Every other job is refused"),
+so items 28 and 29 do need checker changes. The wording residual does not: the find_spec comments are inside pinned `run` scripts,
+i.e. the pins file, which each port's review moved without a new pass (plan 1336: "The pins: each port's review moved its own pins
+..."); the banner comments are outside `run:`, which the checker never reads (plan 1352: "since the checker compares parsed YAML,
+template comments outside `run:` scripts are guarded only by each repository's digest pins"). A successor would schedule a checker
+review round for a comment change.
+Proposed (fixes.json R2-06-L1380): items 28 and 29 as checker changes (naming why); the wording as a template-comment and pins-file
+change, "as each port's review moved its pins, not the checker".
+
+
+------------------------------------------------------------------------
+R2-07  MINOR  Lines 1384-1385: the "Archived" list overstates SW/, the "Not archived" list omits five entries of ethereal's tmp/
+------------------------------------------------------------------------
+Draft (1384, new): "Archived: `SW/` (the record, the briefs, the reviews and the executor reports) and, in `juniper-ml/tmp/worktree-
+archive-2026-11-26/`, each of the ten round directories' top-level files and `evidence/` ..."
+Draft (1385, new): "Not archived: in `ethereal-munching-peacock`, the review rounds' own directories (`tmp/r2review` to
+`tmp/r12review` and the two lenses'), `tmp/sweep/land/` (#777's landing evidence), `tmp/sweep/cascor`, `cascor-r2` and
+`cascor-r3-prep`, `tmp/arc/`, and the trees inside the round directories; in `moonlit-percolating-sun`, all of `tmp/` but what `SW/`
+copies (...)."
+Source: util/ad-hoc/2026-11-26_archive_one_artifact_sweep_reviews.py:59-124 (SW/'s file list): the record, rounds 6 to 12's reports
+only (round-06..12_report.md), the round 4-12 and fix pass 3-11 briefs, the port briefs, reviews and reports, the inputs file, the
+landing brief and report, the host probe and round 1's validation. Rounds 1, 2, 4 and 5's reports are not in SW/. `ls` of
+ethereal-munching-peacock/tmp/ at 23:08:17Z: arc audit-handoff-r1 audit-handoff-r2 factcheck-2610 ports r10review ... r9review
+r3val_tree.txt review-test-lens review-workflow-lens sweep. Not in the 1385 list and not in A26 or SW/: tmp/ports/ (5.0 MB; its
+verify-all-mains/, verify-all-mains-v2/ and verify_all_mains_v2.after777.log, the "3 of 18 pass" log RD:496-498 cites for plan 1312),
+tmp/audit-handoff-r1/ (492K), tmp/audit-handoff-r2/ (868K), tmp/factcheck-2610/ (2.0M; some names reappear in juniper-ml/tmp/2026-11-
+23-plan-v1-15-17-evidence/, not checked byte for byte), tmp/r3val_tree.txt (412K), and tmp/sweep/'s 37 REVIEW_DISPOSITIONS.before-*.md
+backups. A26/README.md: "For each review round's and fix pass's directory": the ten are fix-pass directories (cascor-r3 = round 3,
+the second fix pass; cascor-r4 = fix pass 3; checker-r5..r12 = fix passes 4..11), while 1385's "review rounds' own directories" are
+the rXreview ones, so "round directories" in 1384-1385 names two different sets.
+Why it matters: R41's removal waits on "all of their tmp/" (1383, correct), but a successor archiving exactly the 1385 list before
+`git worktree remove` loses #777's done-check evidence and v1.15.17's audit and fact-check scratch.
+Proposed (fixes.json R2-07a-L1384, R2-07b-L1385).
+
+
+------------------------------------------------------------------------
+R2-08  NIT  Line 533: the plan's only MD032 violation (a list item directly under a paragraph)
+------------------------------------------------------------------------
+Draft (532-533): "...Sentry Logs and exception values to 0.4.3 (R-OBS-SC-3), so (a) and (b) stay in force.\n- v1.15.18: R-OBS-SC-3 is
+now juniper-observability 0.4.4 ..."
+Source: markdownlint v0.42.0 (the pinned hook, ~/.cache/pre-commit/repoft72ba_k), run read-only with ./.markdownlint.yaml, at about
+23:00Z: main's v1.15.17 and draft 1 give only MD013 (24 each); draft 2 adds "plan_v1_15_18_draft2.md:533 MD032/blanks-around-lists".
+No gate fails (the hook's exclude covers notes/, .pre-commit-config.yaml:248-249). It renders as a bullet (CommonMark lets a bullet
+list interrupt a paragraph), as the first item of the list that 535's trio bullet continues.
+Proposed (fixes.json R2-08-L533): a blank line before 533.
+
+
+------------------------------------------------------------------------
+R2-09  NIT  Line 1332: a paraphrase quoted as the reviewer's words
+------------------------------------------------------------------------
+Draft (1332, changed): "its F1 rated MINOR (\"MAJOR read strictly\", said its reviewer)."
+Source: moonlit-percolating-sun/tmp/ports/juniper-recurrence/review/REVIEW.txt:50-52: "I place this one at MINOR: ... Raise it to
+MAJOR if you read the guide strictly." "MAJOR read strictly" is RD:2581's paraphrase ("MINOR (the reviewer: MAJOR read strictly)").
+The plan quotes labels and texts verbatim elsewhere.
+Proposed (fixes.json R2-09-L1332): "its F1 rated MINOR by its reviewer, who added \"Raise it to MAJOR if you read the guide
+strictly\"."
+
+
+------------------------------------------------------------------------
+R2-10  NIT  Line 2553: "the four messages" -- the plan dates three from transcripts; line 1299 says none
+------------------------------------------------------------------------
+Draft (2553, changed): "... not re-dated from the transcripts as v1.15.17's were, but for the four messages it dates from the
+transcripts' first timestamped entries."
+Draft (1299, changed): "... and its rulings are quoted from that record, where each session wrote them as its dialog returned them."
+Source: the writer's only transcript-dated messages are 1343 and 1344 (writer_draft2.py:492-493): 11:26:35Z (transcript 3792e0cc,
+first entry: attachment 11:26:35.942Z / enqueue 11:26:35.946Z) and 21:40:06Z, 21:40:15Z (transcript d769e173, entries 21:40:06.017Z
+and 21:40:15.222Z). A grep of draft 2 for any other transcript time (22:26:46Z, 01:47:10Z, 11:26:13Z, 06:29:30Z, 01:32:36Z) finds
+none. 1344's two are not in the record (SW/dispositions.md) at all, so 1299's "quoted from that record" is not true of them.
+Proposed (fixes.json R2-10a-L2553, R2-10b-L1299).
+
+
+------------------------------------------------------------------------
+R2-11  NIT  Line 2556: the three findings are attributed to the inputs file
+------------------------------------------------------------------------
+Draft (2556, new): "The MAJORs: the proof archive overstated, the three findings and the `/tmp` write `plan_v1_15_18_inputs.md` sends
+here, ..."
+Source: the three findings are 7WT:46-61's, sent by gap 7 (RT:448-452), as the plan's own 1373 says ("Gap 7, the three findings
+`…seven-worktrees-archived.md` sent here"). INPUTS:25-26 carries only the second of them; INPUTS:64-67 carries the /tmp write.
+Proposed (fixes.json R2-11-L2556). (The live writer already rewrites "the `/tmp` write" here; re-base this entry on its output.)
+
+
+------------------------------------------------------------------------
+R2-12  MINOR  Line 1376: "that document's gap 17" resolves to the wrong document; line 1363's scope omits gap 17
+------------------------------------------------------------------------
+Draft (1373, new): "  - Gap 7, the three findings `…seven-worktrees-archived.md` sent here:"
+Draft (1376, new): "    - juniper-ml registered 447 worktrees after that cleanup, and 478 at 22:44:33Z on 2026-11-26; no task holds
+them (that document's gap 17)."
+Source: the nearest-named document is `…seven-worktrees-archived.md`, which has no gaps; gap 17 is RT:484-486 ("The 447 registered
+worktrees ... have no task attached"). Two documents are cited in this bullet group, so by the plan's naming rule each reference
+carries its filename. Line 1363 scopes the list to "§4's gaps 1 to 9, 11 and 16", and 1376 adds gap 17.
+Counts confirmed: 7WT:61 "447 worktrees"; this session's transcript, 22:44:33Z: `git worktree list --porcelain | grep -c
+'^worktree '` = 478; my re-run at 23:15:14Z: 478.
+Proposed (fixes.json R2-12a-L1376, R2-12b-L1363).
+
+
+------------------------------------------------------------------------
+R2-13  NIT  Line 141: "gaps 1 to 9, 11 and 16 are this lane's" -- no source assigns gaps 11 and 16 to this lane
+------------------------------------------------------------------------
+Draft (141, changed): "(ml#2619's inventory ...; its group C's R28 to R41, its group E and §4's gaps 1 to 9, 11 and 16 are this
+lane's)"
+Source: INPUTS:30-34 ([9660dc]'s message): "THIS lane: its group C, R28-R41. Its group E (R58-R65) ... Its §4 \"Gaps\" items 1-9 are
+also this lane's." Nothing assigns gaps 11 or 16; gap 16's whole point is that no one is named (RT:481-483), and the plan's 1362 and
+1381 say no session holds it. "Takes in" (as 1363 does) is the supported claim.
+Proposed (fixes.json R2-13-L141).
+
+
+------------------------------------------------------------------------
+R2-14  NIT  Round 1's C07(c) not applied: the Validation record states no gate result
+------------------------------------------------------------------------
+Draft (2553-2558): no CodeQL prescreen, pre-commit or B914 result. Round 1's attack C07 (c) asked for them; its fixes.json carried only
+(a). HO-1126:73-75: "Run the CodeQL prescreen ... and pre-commit on every new script first; every writer must pass B914".
+Source: LR item 6 (LR:306-333): on the 19 new util/ad-hoc files (tmp/v1_15_18/landing/new_files.txt): prescreen "0 predicted alert(s)
+in 16 file(s)", flake8 B914 and F,E9 0 findings, py_compile 16 of 16, shellcheck clean, tmp_path and home_path literal checks PASS in
+the file form, `pre-commit run --files` exit 0. The writer util/ad-hoc/2026-11-26_consolidated_plan_v1_15_18_template_sweep.py is NOT
+among the 19 (new_files.txt), and it changed after the gates ran (item6_gates.out 22:21:19Z; writer mtime 22:57:47Z): it must be gated
+before the PR opens, and the archive script, gated as the 19th, changes again once round 2's files join SW/.
+Proposed (fixes.json R2-14-L2554): one sub-bullet stating LR item 6's results and that the writer is not among the 19.
+
+
+------------------------------------------------------------------------
+R2-15  NIT  Line 2681 omits the landing check's tool outputs in this worktree's tmp/
+------------------------------------------------------------------------
+Draft (2681, changed): "... and `tmp/v1_15_18/` in worktree `purring-hugging-hippo` (its probes, landing proofs and replay trees)."
+Source: `ls` of this worktree's tmp/ (about 23:02Z): publish-port-apply-install-pin/20261126T221123Z/, publish-port-check-pr-head/
+juniper-cascor-client-207/, publish-port-verify-all-mains/20261126T220941Z/, outside tmp/v1_15_18/. The last is the "18 of 18 pass"
+run plan 1338 cites ("and again from the landed copy ... by this record's landing check"); LR:364 names them ("The tools' outputs in
+$ME/tmp/publish-port-*/ are 1.3 MB").
+Proposed (fixes.json R2-15-L2681).
+
+
+------------------------------------------------------------------------
+R2-16  NIT  "Created/Modified outside the repository": the arc's other memory file and d935c226's MEMORY.md line
+------------------------------------------------------------------------
+Draft (2680, new): "  - by session `d935c226` (2026-11-24), the auto-memory file `reference_agents_md_date_check_crosses_midnight_
+utc.md` (...)."
+Source: transcript d935c226: Write of that file at 2026-11-24T01:34:13.367Z, then at 01:34:15.418Z a Bash that appends its line to
+memory/MEMORY.md (`printf ... >> $M/MEMORY.md`); the plan records such index lines elsewhere ("and `MEMORY.md` (a line appended, for
+its new file)", 2707). Transcript 11a98f94 (one of v1.15.18's three arc sessions, 1298): Write of memory/reference_blind_substitution_
+rewrites_untracked_files_in_sibling_worktrees.md at 2026-11-23T12:02:19.502Z; neither v1.15.17 (plan_v1_15_17_main.md) nor draft 2
+names it (grep: 0 hits). The file's mtime is 2026-11-24 01:50:58Z, so a later edit followed (not traced). A scan of 3792e0cc found no
+memory write.
+Proposed (fixes.json R2-16-L2680).
+
+
+------------------------------------------------------------------------
+R2-17  NIT  Line 1325: "a row a narrow terminal could show as a PASS"
+------------------------------------------------------------------------
+Source: RD:1823 (M12-C): "makes a terminal of width 80/100/200 show a fake PASS row" by soft wrap; 200 is not narrow. The rest of the
+line holds: RD:1814 "M12-C is a MINOR, as the reviewer rates it"; RD:1823 "MINOR (close call; the orchestrator's decision above)".
+Proposed (fixes.json R2-17-L1325).
+
+
+------------------------------------------------------------------------
+R2-18  NIT  Line 1270: "which the sweep kept ref-free" -- the sweep made them ref-free
+------------------------------------------------------------------------
+Source: ethereal .../tmp/ports/SWEEP_ITEMS.md:67-70 (item 23: the raw-text pins "include the action SHA pins inside the template
+steps"); SWEEP_BRIEF.md:178-179 ("G. Item 23, for the ports only ... pin a NORMALIZED block instead: every `uses:` line reduced to the
+action name"); RD:1308 ("each repo's own CI keeps item 23's ref-free digests").
+Proposed (fixes.json R2-18-L1270).
+
+
+------------------------------------------------------------------------
+R2-19  NIT  Line 1375: "ml#2608 capped it `<3`" reads as a released cap
+------------------------------------------------------------------------
+Source: the start prompt's addendum, prompts/generated/JUNIPER_ML_OBSERVABILITY-0-4-3-SENTRY-SCRUBBING_DESIGN_2026-11-15_0010.md:85-87:
+"juniper-ml#2608 ... caps ... under `[Unreleased]`. No release carries it yet"; RT:443-444 ("which replaces the `<3` cap with `<4`");
+TestPyPI 0.4.3 requires_dist "sentry-sdk[fastapi]<4,>=2.35.0" (23:03:25Z). Round 1's F-03 text said "on `main`".
+Proposed (fixes.json R2-19-L1375).
+
+
+------------------------------------------------------------------------
+R2-20  NIT  Line 1310: the handoff itself marks the landing call as the session's decision
+------------------------------------------------------------------------
+Draft (1310, new): "... though `…fix-pass-11-final-ports-next.md` counts it among \"the owner's three rulings\"."
+Source: HO-1125:33-34: "**The owner's three rulings of this arc** (verbatim in the dispositions file): - after round 5: the cascor PR
+landed while the checker was fixed (this session's decision, recorded);". "though" implies the handoff contradicts the record; it lists
+it under that header and says the same thing.
+Proposed (fixes.json R2-20-L1310).
+
+
+------------------------------------------------------------------------
+R2-21  MINOR  The 0.4.4 renumbering omits the rest of the same ruling (R15) and the open number question beside it
+------------------------------------------------------------------------
+Draft: eleven passages now say R-OBS-SC-3 is 0.4.4 by "the Overtoad's ruling of 2026-11-24"; "profiling", "R15" and "port the
+consumers" occur nowhere in draft 2 (grep; the one "profiling" hit is line 370, unrelated).
+Source: RT:75-78 (the same AskUserQuestion answer, 22:26:46Z): "the release is **0.4.3**, and R-OBS-SC-3 moves to **0.4.4**; it
+supports **both** majors ...; R15: **port the consumers** to 3.x." RT:106-107: R15 "follows 0.4.3's PyPI publication". RT:145-147
+(2026-11-26, answered 01:47:02Z): "R15 for juniper-cascor: add profiling to `configure_sentry`. A later juniper-observability release
+gains profiling keyword arguments, and cascor's port waits for it". RT:199-200: "The profiling arguments add to configure_sentry's
+public signature, which SemVer counts as a minor, while R-OBS-SC-3 is ruled 0.4.4: the release that carries them needs its number
+ruled." RT's header (RT:5-7): it "feeds plan v1.15.18".
+Why it matters: a successor reading "R-OBS-SC-3 is now 0.4.4" everywhere does not learn that another observability release with an
+unruled number (a minor by SemVer) sits on the same path, nor that the consumers' sentry-sdk floors move after 0.4.3.
+Proposed (fixes.json R2-21-L1377): a sub-bullet after line 1377.
+
+
+------------------------------------------------------------------------
+R2-22  NIT  Line 1170 "Still open" omits B-9 and the v2 draft's stale lines from the same list
+------------------------------------------------------------------------
+Source: plan 1173-1174 (B-9, "Next: with B-8") and 1189-1190 (the v2 draft's stale lines; RT row R10, "Overtoad decision | open").
+The eight "done" are right: R52, R45, R46, R50, R51, R47, R48 and R49, each MERGED (gh pr view, 23:03:36Z: ml#2627 04:15:52Z,
+data#551 03:15:27Z, cascor#779 03:16:14Z, canopy#840 12:45:23Z, cascor#778 02:09:03Z, ml#2637 15:58:10Z, canopy#839 03:07:53Z,
+canopy#838 02:26:21Z, ml#2623 04:32:26Z, all 2026-11-24).
+Proposed (fixes.json R2-22-L1170).
+
+
+------------------------------------------------------------------------
+R2-23  NIT  Line 1347: "Both are the Overtoad's to decide" -- "both" has no antecedent in its own bullet
+------------------------------------------------------------------------
+"Both" means M11-E (1346, the bullet before) and M11-C (1347). Source for the substance: RD:1685-1687 ("an owner decision for plan
+v1.15.18") and RD:1694-1697 ("recorded as a residual for plan v1.15.18 (accept it in writing, or record the image digest ...)"), both
+in RD § "Fix pass 10" (RD:1542-1797), so 1536's citation resolves.
+Proposed (fixes.json R2-23-L1347).
+
+
+========================================================================
+ROUND-1 FINDINGS: APPLIED-OK / APPLIED-WRONG / MISSING (each re-checked against draft 2 and its source)
+========================================================================
+Lens A (tmp/v1_15_18/val/facts/findings.txt):
+  F-01  APPLIED-OK (1383-1385, 1538, 50, 2681). Its own "Not archived" list was incomplete, and draft 2 follows it: R2-07.
+  F-02  APPLIED-WRONG: 10 of the live passages marked; its ":1499" (draft 2 line 1530) is not: R2-04.
+  F-03  APPLIED-OK (1373-1376); see R2-12 (citation) and R2-19 (cap unreleased).
+  F-04  APPLIED-OK (138, 1298, 1339, 2662; 3792e0cc = moonlit-percolating-sun-fa [b71989], 11a98f94 = [e71d3e], d935c226 = [ffffd3],
+        from each transcript's ListAgents line).
+  F-05  APPLIED-OK (46, 1301).
+  F-06  APPLIED-OK (1314; RD:353-357).
+  F-07  APPLIED-OK (1316; RD:868-870).
+  F-08  APPLIED-OK (1344; 21:40:06Z and 21:40:15Z are the first timestamped entries).
+  F-09  APPLIED-OK (1340, 1342, 1343; option texts and not-chosen labels match transcript 3792e0cc's AskUserQuestion inputs).
+  F-10  APPLIED-OK (2662; the tools' root comes from `git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel`, PYTHON
+        override, a new tmp/publish-port-*/<stamp>/ per run; the pin tool's docstring "no manifest is regenerated" against the
+        original's `MANIFEST = W / "tmp" / "arc" / "sweep_scripts.sha256"` rewrite).
+  F-11  APPLIED-OK (536; `git diff b9442e3c 557490fb -- juniper-observability/` is empty).
+  F-12  APPLIED-OK (2681); R2-15 adds the landing check's outputs.
+  F-13  APPLIED-OK (1378).
+  F-14  APPLIED-OK (536, 894, 1101, 1201, 1371, 1525, 1531).
+  N-01  APPLIED-OK (1363); gap 17 now also cited: R2-12.
+  N-02  APPLIED-OK (1335; #207 is 2 files, docs only).
+  N-03  APPLIED-OK (1302; plan_v1_15_17_main.md:1228-1229 records attempt_compare.py on canopy run 43135960676).
+  N-04  APPLIED-OK (1301; RD:487-490).
+  N-05  APPLIED-OK (1343, 11:26:35Z).
+  N-06  APPLIED-OK (1296 is now a top-level "Since then" bullet, a sibling of "What remains").
+  N-07  APPLIED-OK (1365).
+  N-08  APPLIED-OK for R42; the same edit adds "11 and 16" without a source: R2-13.
+  N-09  APPLIED-OK (47).
+  N-10  APPLIED-OK (1361).
+Lens B (tmp/v1_15_18/val/attack/findings.txt):
+  A01  APPLIED-WRONG: line 1530 unmarked while 49, 1377 and 2556 say all are: R2-04.
+  A02  APPLIED-OK (1373-1376).
+  A03  APPLIED-OK (1378).
+  A04  APPLIED-OK (1347, 1536); R2-23 is wording only.
+  A05  APPLIED-OK (1357-1358; RD:1389-1393, :1395-1400).
+  A06  APPLIED-WRONG: deadlines (1361) and "no session holds" (1362) applied; "What remains" (1381) drops 0.4.3's re-read and moves
+       gap 16 to the swept-publisher check: R2-05.
+  A07  APPLIED-OK (1383-1385, 1538); list gaps: R2-07.
+  A08  APPLIED-OK (49, 1169-1170); R2-22 is a NIT.
+  A09  APPLIED-WRONG: 2709 states a false byte-equality (the round-1 fix's own misreading of A23/README.md:20-24) and 1367 says
+       "backs" of three substituted copies: R2-01, R2-02.
+  B01  APPLIED-OK.   B02  APPLIED-OK.   B03  APPLIED-OK (1309-1310); R2-20 NIT.   B04  APPLIED-OK (1326; RD:2065).
+  B05  APPLIED-WRONG (NIT): RD's paraphrase quoted as the reviewer's words: R2-09.
+  B06  APPLIED-OK.   B07  APPLIED-OK (41, 1209, 1252).   B08  APPLIED-OK (1270); R2-18 NIT.
+  B09  APPLIED-OK.   B10  APPLIED-OK (gap 11's four lines 897, 1194, 1293, 1530 each marked; "docker ps -a" at 545, 1372, 1935).
+  B11  APPLIED-OK (1370; reflog verified, below).   B12  APPLIED-OK (1365).   B13  APPLIED-OK (1537).
+  B14  APPLIED-WRONG: the checker-change clause is extended to the wording residual: R2-06.
+  B15  APPLIED-OK (1312).   B16  APPLIED-OK (1332).   B17  APPLIED-OK (1333).   B18  APPLIED-OK (2680); R2-16 NIT.
+  B19  APPLIED-OK (1325); R2-17 NIT.
+  B20  APPLIED-WRONG: the reconciliation generalizes "one level outside the install script" to rounds 10 and 11: R2-03.
+  C01  APPLIED-OK.   C02  APPLIED-OK (RD:1510).   C03  APPLIED-OK.   C04  APPLIED-OK.   C05  APPLIED-OK.   C06  APPLIED-OK (1351).
+  C07  (a) APPLIED-OK (2553); (b) APPLIED-OK (2554 dates the environments 21:55:36Z); (c) MISSING: R2-14.
+  C08  APPLIED-OK (1537).   C09  APPLIED-OK (1363).
+Summary: 7 APPLIED-WRONG (F-02, A01, A06, A09, B05, B14, B20), 1 part MISSING (C07 c), the other 53 APPLIED-OK. "None is declined"
+(2557) holds in that none was refused, but C07 (c) was not applied.
+
+
+========================================================================
+NEW CONTRADICTIONS (brief item 3)
+========================================================================
+- 0.4.3 / 0.4.4: ten of eleven live passages marked; 1530 not (R2-04). Unmarked and acceptable: 34 (v1.15.15's entry), 891, 1080,
+  1117, 1125 (dated history), 539 and 1171 (name R-OBS-SC-3, not 0.4.3; 533 above 539 gives 0.4.4). Missing beside them: R15 and the
+  profiling release's number (R2-21).
+- The trio: every "0.4.0 and 0.5.0" passage (191, 535, 889, 893, 1100, 1200, 1524) is dated or annotated; every annotation (536,
+  894, 1101, 1201, 1296, 1371, 1525, 1531) says the same: first pass to 0.4.2/0.7.2 at R21 (2026-11-24 22:30Z), second pass and
+  R22 after 0.4.3 reaches PyPI. Consistent with RT:83-93, :196 and the 21:55:36Z read.
+- Restart vs bring-up: gap 11's four lines (897, 1194, 1293, 1530) are marked (898, 1197, 1296, 1531). Line 174 (§2 XC-SENTRY, "its
+  stack's restart is the Overtoad's (v1.15.16)") is a fifth, dated v1.15.16 and outside gap 11's list; no fix entry.
+- Archived vs not: 1384-1385 against the disk (R2-07); 1367 and 2709 against A23 and each other (R2-01, R2-02); 1374 contradicts 2709.
+- Gap 16: 1362 and 1377 attach it to 0.4.3's check, 1381 to the swept-publisher check (R2-05).
+- Merge approvals' times: 1340 (by 01:47:14Z; transcript 01:47:10.081Z), 1342 (after 06:13:35Z, by 11:27:00Z; asked 06:29:30.783Z,
+  answered 11:26:13.306Z), 1343 (11:26:35Z), 1344 (21:40:06Z, 21:40:15Z), 1338 (the re-run 21:40:08Z to 21:40:38Z): no conflict.
+  1299 vs 1344 on where the quotes come from: R2-10.
+
+
+========================================================================
+STRUCTURE (brief item 4)
+========================================================================
+- Depth: every added sub-bullet nests under the line it annotates (marker column >= the parent's content column), checked for all
+  added lines: 175 under 174, 536 under 535, 545 under 544, 894 under 893, 898 under 897, 1094 under 1093, 1101 under 1100, 1167 under
+  1166, 1169-1170 under 1168, 1197 under 1194 (after 1195-1196, at 1195's depth: intended), 1199 under 1198, 1201 under 1200, 1252
+  under 1251, 1270 under 1269, 1309-1310 under 1308, 1358 under 1357, 1367 under 1366, 1371 under 1370, 1374-1376 under 1373,
+  1384-1385 under 1383, 1525 under 1524, 1531 under 1530, 1536-1538 under 1535, 1935 under 1934, 2554-2558 under 2553, 2709 under 2708
+  (see R2-01's note on 2710). The one exception is 533 (R2-08).
+- New top-level bullets: 1296 ("Since then", sibling of "What remains"), 1301, 1328, 1339, 1345, 1360, 1363, 1379 in §5's sweep note,
+  and 1535 in §6 (now a header with three children): each renders as intended.
+- Tables: 138 and 141 keep 2 cells (header 87 "| Short form | File |"); 1057 keeps 4 (header 1053 "| Release | Carries | Ready when
+  | Unblocks |"); 1919 keeps 4 (header 1912 "| Risk | Impact | Likelihood | Mitigation |").
+- Lint: markdownlint v0.42.0 on draft 2 adds only 533's MD032; with fixes.json applied, nothing beyond the 24 MD013 lines.
+
+
+========================================================================
+WORSE IN DRAFT 2 THAN IN DRAFT 1
+========================================================================
+- 2709: draft 1 had a stale path; draft 2 states a false byte-equality (R2-01).
+- 1318-1319: draft 1 put "one level outside the install script" on round 9, correctly; draft 2 puts it on rounds 9 to 11 (R2-03).
+- 533: draft 2 brings the plan its only MD032 finding (R2-08).
+- New errors in new text: 1367 (R2-02), 1380 (R2-06), 1381 vs 1362 (R2-05), 1332 (R2-09), 2553 (R2-10), 2556 (R2-11), 1376 (R2-12),
+  141 (R2-13).
+- Everything else is better: the BLOCKER is fixed in ten of eleven places and every MAJOR is addressed.
+
+
+========================================================================
+CONFIRMED (re-derived from the primary source; one line each)
+========================================================================
+Host (read only; date -u given):
+- Primary reflog (/home/pcalnon/Development/python/Juniper/juniper-ml/.git/logs/HEAD, read with python): checkout of main 2026-11-24
+  21:22:29Z, fast-forward to f41b1d07 21:22:45Z; on pcalnon-patch-1-1 2026-11-25 19:28:27Z to 20:09:10Z, 20:21:13Z to 2026-11-26
+  01:16:14Z, and 10:40:08Z to 11:31:37Z; pulls to bceac63c (11:31:44Z), 8378665f (11:44:12Z), 557490fb (21:33:28Z). (1370)
+- probe_state.out 21:54:57Z: HEAD ref: refs/heads/main at 557490fb; the 18 backup files' sha256; live parent 3009c3f4; no watched port
+  (8050-8053, 8058, 8059, 8100, 8200-8202) listening. (545, 1370, 1372, 1935)
+- docker ps -a: 0 containers at 22:49:02Z (this session's transcript) and at 23:02:53Z (mine); ss: none of 8050-8053, 8058, 8059,
+  8100, 8101, 8200-8202 at 23:02:53Z. (545, 898, 1197, 1372, 1935)
+- /tmp/vFI4WZy absent at 22:51:36Z (transcript) and 23:02:53Z (mine); uptime -s 2026-11-17 15:19:02 (local). (1378)
+- Trio, 21:55:36Z (transcript; importlib.metadata in each env): JuniperData obs 0.4.2 sc 0.7.2 sentry 2.54.0 (python3 and python3.14t);
+  JuniperCanopy1 0.4.2, 0.7.2, 2.62.0; JuniperCascor1 0.4.1, 0.7.1, 2.58.0. (1371, 1201)
+- 557490fb's juniper-observability/ equals b9442e3c's (the 0.4.3 tag commit): empty diff; _version.py 0.4.3. (536, 894, 1101, 1370)
+- worktree count 478 at 22:44:33Z (transcript) and 23:15:14Z (mine). (1376)
+- A23 is 946M (du), README's caution and retention lines as quoted; the five cited files exist there. (1366, 1367)
+- A26: README.md, MANIFEST.sha256 (1580 entries, `sha256sum -c` all OK at 23:08:17Z), ethereal-munching-peacock/tmp/sweep/ with
+  cascor-r3, cascor-r4, checker-r5..r12; written 22:19:30Z-22:19:51Z by session d769e173. (50, 1384, 2681)
+- moonlit .../tmp/ports/verify-all-mains-v3/20261126T214015Z/ exists. (2681)
+- Landed files: checker a452db3d..., pins faa198c2..., writer c47940ad... (util/ad-hoc, sha256). (1301, 1318)
+PyPI / TestPyPI (23:03:25Z):
+- juniper-observability 0.4.2 requires_dist: sentry-sdk[fastapi]>=2.35.0 on "sentry" and "test", no cap. (1375)
+- sentry-sdk 3.0.0 files uploaded 2026-11-23T09:30:33Z and 09:30:35Z. (1375)
+- PyPI 0.4.3: HTTP 404; latest 0.4.2. TestPyPI 0.4.3: wheel 4817790d, sdist 14c6c7db; sentry-sdk[fastapi]<4,>=2.35.0. (1361, 1375)
+GitHub (gh, 23:03-23:12Z):
+- ml#2608 MERGED 2026-11-23T20:50:42Z b2aa9026; ml#2647 MERGED 2026-11-25T10:41:26Z b54f961b; ml#2632 MERGED 2026-11-24T13:20:45Z
+  c93914a7 ("the technical-owner sweep"); ml#2666 MERGED 01:47:50Z b9442e3c. (1332, 1375)
+- Group D PRs all MERGED (times under R2-22). (1169)
+- cascor-client#207 MERGED 11:27:26Z 7e1399d8, 2 files; ml#2673 MERGED 13:08:46Z e2e463ea, 18 files. (1334, 1335, 2661)
+- cascor runs on f5ed3017: CodeQL, Post-Merge Main Verification, Golden Regression, Conformance, CI/CD Pipeline and the dependency
+  update all success, last finished 01:09:11Z. (1312)
+- Release juniper-observability-v0.4.3: published 02:04:23Z, not draft or prerelease; its body's Known Issues are the three the plan
+  names (five proxy headers; canopy's authkey on 2.x; Sentry Logs' extra fields). (175, 1360)
+- Run 45739959764: waiting, created 02:04:26Z, b9442e3c, release; Build and Validate success, Republish skipped, TestPyPI success,
+  PyPI waiting; no install job. (1360, 1361)
+- gh release list, 8 publishing repos: the only Release after 2026-11-15 01:41:30Z is juniper-observability-v0.4.3. (41, 48, 1209,
+  1252, 1360)
+Transcripts:
+- 3792e0cc: "Merge ports" asked 01:32:36Z, answered 01:47:10Z "Approve all 7 (Recommended)", option texts and the three other labels
+  as quoted; "Merge #207" asked 06:29:30Z, answered 11:26:13Z "Yes, merge it (Recommended)", texts as quoted; "merge approval granted
+  for this work arc" first entry 11:26:35.942Z. (1340, 1342, 1343)
+- d769e173: "merge approval granted" 21:40:06.017Z; "merge approval granted for this work arc" 21:40:15.222Z; the two validators
+  launched 22:08:53Z and 22:08:56Z, after the 22:08:04.860Z freeze. (1344, 2555)
+- d935c226: Write of reference_agents_md_date_check_crosses_midnight_utc.md 2026-11-24T01:34:13Z. (2680)
+- Session pairs: 11a98f94 [e71d3e], d935c226 [ffffd3], 3792e0cc moonlit-percolating-sun-fa [b71989]. (138, 1298)
+Record and handoffs:
+- RD:25-32 and plan_v1_15_17_main.md:1228-1229 (M2 and its probe). (1302)
+- RD:304-316 and ROUND5_BRIEF.md:7-12 ("The landing step goes ahead only after a round with no BLOCKER and no MAJOR"; the
+  orchestrator's decision). (1308-1310)
+- RD:353-357 (allow-list in place of more deny rules; the deny rules stay as a second line). (1314)
+- RD:477-499 (landed tree = writer c47940ad with --date 2026-11-24 on 36dd6f2d; 3 of 18 pass after). (1301, 1312)
+- HO-1124a:9-10 (merge approval granted at the session's start) and :30-34 (post-merge runs SUCCESS at 01:09:15Z). (1312)
+- RD:868-870 (rounds 4-8 pattern), RD:873-889 ("Checker" ruling and texts). (1316-1317)
+- RD:895-920 (fix pass 7: 1753 -> 953 lines, 18 pins). (1318)
+- RD:1303-1309 ("Action refs" ruling). RD:1313-1314 and :1510 (fix pass 9, 21:20Z brief, began just before 21:26:11Z, to 22:23Z). (1323)
+- RD:1389-1393 (N10-6's second path) and :1395-1400 (EXTRA_JOBS, e17ddc9b). (1357-1358)
+- RD:1685-1697 (M11-C an owner decision for v1.15.18; M11-E accept in writing or record the digest), in § "Fix pass 10". (1347, 1536)
+- RD:1814, :1823 (M12-C MINOR, close call); RD:2065 (n12-c, n12-f recorded). (1325-1326)
+- RD:145 and :296 (round 3's F3-style residual, carried by fix pass 3); RD:87 (F3: recurrence-client and recurrence-model install
+  runtime deps by name). (1351)
+- RD § "Round-4 review" at RD:149 exists, so the label citation resolves (if SW/dispositions.md is RD verbatim). (1354)
+- RD:2581 and REVIEW.txt (recurrence) as R2-09; RD:2654-2662 (#2673's review: R4-1, R4-5, R5-F5, F2 edits met). (1332, 1333)
+- RD:2589-2602 (#207: orchestrator-read, no Python changed). (1334, 1335)
+- RD:1100-1106 and INPUTS:68 (recurrence line 22, ml#2632's finding). (1332)
+- 7WT:21-28 (#284; 0.8.1's lock and Dockerfile equal 0.8.0's; image holds 0.4.1/0.7.1), :29-38 (housekeeping 20:45:52Z, 946 MB),
+  :46-61 (three findings: counts 59,976 / 1,869 / 161 / 24; read pre-11-20 tmp/ as possibly substituted; sentry-sdk 3.0.0 and
+  ml#2608; 447 worktrees). (1365, 1366, 1374-1376)
+- INPUTS:64-67 (/tmp/vFI4WZy, 00:28:39.88Z, 4.1.1 and 5.1.1, left as evidence). (1378)
+- RT:59-67 (group D), :75-78 (0.4.3/0.4.4 ruling), :83-93 (R21, R22), :192-195 (day 30 2026-12-26, day 35 2026-12-31), :257 (R9),
+  :259-261 (R11-R13 open), :278 (R25 bring-up), :308-316 (R45-R53), :466-467 (gap 11), :481-487 (gaps 16, 17). (many)
+- Start prompt :77 "Addendum, 2026-11-23: sentry-sdk 3.0.0." and :95 "Addendum, 2026-11-24: this design is now 0.4.4"; no 0.4.4 design
+  under notes/ (git ls-files). (1167, 1199)
+- LR:89-113 (the juniper-ml writer replay on bceac63c: both runs write the same 18 files, each equal to e2e463ea's by blob id; ast:
+  only the docstring and five Name nodes differ). (2661)
+- tmp/v1_15_18/landing/item3_verify_all_mains.out: "18 of 18 pass", exit=0 (run 22:09:41Z from the landed copy). (1338)
+- Tools: util/ad-hoc/2026-11-26_publish_port_{verify_all_mains,check_pr_head}.bash and _apply_install_pin.py as F-10 above. (2662)
+- Memory: d935c226's file and MEMORY.md line as R2-16. (2680)
+
+NOT RE-RUN (stated, not guessed): the port checker and the juniper-ml writer replay (each would write outside my two files; I rely on
+LR and the landing outputs above); SW/'s contents (not judged, per the brief); who later edited 11a98f94's memory file.

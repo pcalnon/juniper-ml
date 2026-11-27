@@ -1,0 +1,226 @@
+REPORT_FIXUP: juniper-data-client#274, the fix-up commit for its independent review
+Written 2026-11-26 from 04:10Z (date -u). The review is $WT/tmp/ports/juniper-data-client/review/REVIEW.txt. $WT is
+/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun.
+
+== Result ==
+- PR: https://github.com/pcalnon/juniper-data-client/pull/274. It is open, not merged, not armed and not a draft.
+  No update-branch was run, and no other PR was touched (#273 was only read).
+- New head: a93f10d67dd49082a210b7ed90f45862537e8c96, on fix/publish-one-artifact-sweep.
+- The commit's verification:
+  - GitHub-signed through createCommitOnBranch (util/push_signed_commit.py): verified=True, reason=valid.
+  - Parent 8ef0c329e2b4b34bee9cb82b6bc66e2a55d9baeb; one fix-up commit.
+  - It touches exactly 4 files: .github/workflows/publish.yml, tests/test_publish_one_artifact.py, docs/REFERENCE.md
+    and CHANGELOG.md (+32 -19). tests/test_publish_docs_bounds.py is unchanged.
+- Subject: "fix(publish): the review's fixes -- the PyPI check's two failures, the install wording, and no OK before the
+  package check passes". The body has a paragraph per finding. Its LAST paragraph is exactly the two trailer lines
+  (Co-Authored-By, then Claude-Session). The message GitHub holds equals the scanned one.
+- New pin, for (juniper-data-client, publish.yml, Verify TestPyPI install): sha256
+  b60ce6b832648daaa12f86e73f67b9c93c9f86dd0aac671f9c7993461c77c745, 30 lines. It was d7bbf100... at commit 1. The
+  review predicted b60ce6b8... if only the print line changed, and only that line changed.
+  - $WT/tmp/ports/juniper-data-client/pins.proposed.json: sha256
+    824c50d909da821a90bf2ff7d748066370b7e9f97170a176c9080dc0e4df17d4, 18 pins.
+  - The first proposal is kept as pins.proposed.r1.json (sha256
+    cb387ade7a6eae192314a7312a3aa9f94cf6717265a164eddea25d0d92f56678).
+  - The arc's seed MOVED (see "Judgement calls" below): the new proposal is the CURRENT seed with data-client's entry
+    alone replaced.
+
+== Stop conditions, checked ==
+| when (date -u) | main | #274 head | #273 |
+|---|---|---|---|
+| 03:27:06Z | 5c329a39230561b0ee45ca032c58154bc076582e | 8ef0c329e2b4b34bee9cb82b6bc66e2a55d9baeb | open, unmerged (head 078901ad8cd58ccca5d26f8ad1928bb55121e58c) |
+| 04:05:22Z (fixup/preupload_r2.py) | same | same | open, unmerged |
+| 04:05:57Z, in the push's own command | - | - | "open merged=false"; the push would not have run otherwise |
+
+== Each finding's fix ==
+F1 (MAJOR), docs/REFERENCE.md § Publishing and Recovery: FIXED.
+  The sentence "A failed `Verify PyPI serves exactly these files` is past the ladder ..." is replaced, as
+  juniper-cascor's docs/ci_cd/MANUAL.md :819 and :821 do it. The new lead-in: the step comes after the upload, so the
+  run's files are already on PyPI, and what it needs depends on why it failed. Two bullets follow:
+  - "PyPI lists a file this run did not build, or one with another sha256": another upload put it there. Compare
+    PyPI's JSON with TestPyPI's; only a new patch version ships tested files under a clean version.
+  - "The check gave up waiting" (PyPI's JSON did not list the files in time): index lag, not a wrong file. Re-run
+    failed jobs on that run: the job uploads the same bytes again, which the index accepts, and the check runs again.
+    Re-running the job needs a fresh `pypi` approval.
+  Notes:
+  - The timeout is not called "past the ladder", and no bound's number is stated (test_publish_docs_bounds.py pins only
+    the install check's).
+  - The re-run advice names "that run", not the release run: both the PyPI job and the republish job carry the step,
+    and both are behind `pypi`.
+  - "Each rung acts on the workflow file as of the tag ..." is kept, as its own paragraph.
+  - The CHANGELOG entry's Docs bullet now names both cases.
+  - Before the push I dropped "beside this run's files" from the mismatch bullet: it fits only the extra-file case.
+F2 (MINOR), CHANGELOG.md and docs/REFERENCE.md: FIXED.
+  - CHANGELOG: "It installs the package TestPyPI serves, so it holds `contents: read` alone". And: "Until now it ran in
+    the TestPyPI job, so pip installed the package TestPyPI serves in a job that held `id-token: write` (the check read
+    its metadata alone, so none of its code ran)".
+  - REFERENCE item 3: "It installs the package TestPyPI serves, ...".
+  - Also: the comment in tests/test_publish_one_artifact.py (TestWiring, the permissions case) said "The install check
+    runs the package TestPyPI serves"; it now says "installs". The addendum's rule covers it; it is not a workflow
+    banner.
+  - LEFT, as ruled: publish.yml's banner comments ("It executes the package TestPyPI serves", and the permission comment
+    at :314, which is juniper-cascor publish.yml:306's comment with "the sparse checkout below, " inserted).
+F3 (MINOR), publish.yml, the tests and the pin: FIXED.
+  - The post-install check prints cascor's neutral line, as juniper-cascor publish-protocol.yml:389 does:
+    print('TestPyPI install', m.version('juniper-data-client'), 'package at', origin). The rest of the line is
+    unchanged.
+  - INSTALL_CHECK_RUN, POST_INSTALL_CHECK and :860's expected stdout ("TestPyPI install 1.2.3 package at ...") moved
+    with it.
+  - The refusal case (4 parametrizations) now also asserts `"OK" not in proc.stdout` and the exact stdout
+    "TestPyPI install 1.2.3 package at None\n".
+  - pins.proposed.json: the pin's lines, sha256 and source are regenerated, and the first proposal is kept as
+    pins.proposed.r1.json.
+  - The CHANGELOG entry gains one sentence: the line printed before the check is cascor's neutral one, in place of
+    `TestPyPI OK: v<version>`, so a refusal's log says no "OK".
+F4 (MINOR): LEFT, as ruled.
+F5 (NIT): NO CHANGE, as ruled. Commit 1's single Allow-Symbol-Loss line still waives both symbols over the two-commit
+  range, and commit 2 removes no symbol.
+N1: the PR body now has a section "Merge order with #273 (the review's N1)". It says this PR merges first if it is ready
+  first, and that the second to merge resolves the footer, in a new signed commit, and keeps both texts.
+  - Re-measured with git merge-file (fixup/merge_273.py): docs/REFERENCE.md has 1 conflict, in the footer, in either
+    order; CHANGELOG.md has 0 in either order.
+
+== The writer ==
+- $WT/util/ad-hoc/2026-11-26_juniper-data-client_one_artifact_sweep_port.py, revision 2: sha256
+  c2295899906ae463ae272b254233d98a75e2eea78f16e31528f0a20597bf2895. Revision 1 (6798f7b7...) is kept as
+  $WT/tmp/ports/juniper-data-client/fixup/r1/writer.py.
+- On a FRESH clone of GitHub main 5c329a39 (fixup/clone-main/): exit 0, and it wrote the five files.
+- A second run on its own output REFUSED: exit 1, "anchor matched 0 times", and none of the 102 files changed.
+- Its output is the tree pushed. The five files GitHub serves at a93f10d6 are byte-identical to it.
+- Beyond the review: revision 1 used implicit string concatenation in 39 places (its constants), against the brief's
+  "No implicit string concatenation in any Python you write". Revision 2 makes all 39 explicit with a leading +.
+  - fixup/explicit_concat.py: all 54 module constants compare equal, and 0 implicit concatenations are left.
+  - fixup/same_output.sh: on another fresh clone, the output is byte-identical to the verified tree (102 files), and
+    the second run refuses.
+  - The pushed files are not affected.
+
+== Every check (on the final tree unless said otherwise; logs in $WT/tmp/ports/juniper-data-client/fixup/) ==
+| check | result |
+|---|---|
+| publish modules (JuniperCascor1: Python 3.14.7, pytest 9.0.3) | 119 passed, 0 skipped (118 + 1); 118 collected in test_publish_one_artifact.py |
+| full suite (`pytest tests/ --timeout=120 -rs`) | 665 passed, 18 skipped, 67 subtests passed (commit 1 the same; base 615/18). The skip lines are identical to the base's and commit 1's (16 lines), none in a publish module: NO new skip |
+| actionlint 1.7.12 | exit 0 |
+| pre-commit (/opt/miniforge3/bin/pre-commit, in a copy, the five files) | exit 0; 15 hooks passed, 8 skipped (not applicable); changed by hooks: none |
+| FINAL checker (sha256 a452db3d...), new pins (824c50d9) | PASS, 1 of 1, exit 0, on the final tree and again on the PR head fetched at a93f10d6 |
+| checker control: the first proposal (cb387ade) | 0 of 1, exit 1, "first at line 30" (the print line) |
+| checker control: the current seed (1dd592c2) | 0 of 1, exit 1, first at line 1 |
+| F3 on a real wheel (fixup/measure_r2.py) | 20 of 20 as expected (details below) |
+| mutation proof at commit 2 (fixup/mutate_r2.py) | 38 of 38 caught, 3 of 3 controls pass; the same table as round 1 |
+| behaviour pass (mutate_behavior_r2.py) | 12 of 12 caught, the control passes |
+| F3 set | 4 of 4 caught, the control passes (details below) |
+| screens over the two-commit range (fixup/probe_screens_dc3.py: base, commit 1 with its GitHub message, commit 2 with its message) | symbol-loss exit 0 (files_screened=2, findings=2, both WAIVED by commit 1's trailer); docs-additions exit 0 (8 small-deletion warnings, none failing) |
+| pre-push gate (2026-11-15_pre_push_gate_run.bash) | PASS (details below) |
+| implicit string concatenation (fixup/implicit_concat.py, self-tested) | 0 in both publish modules, every fix-up script, and the revision-2 writer |
+| read-back (readback_branch.py) | head a93f10d6, verified=True, reason=valid, parents=[8ef0c329]; the 4 blobs the same; it touches 4 files, extra=[], missing=[] |
+| PR head re-fetched at a93f10d6 (fixup/pr_head_check_r2.sh) | all 5 files the same as the writer's output; checker PASS 1 of 1, both controls FAIL; actionlint 0; both publish modules 119 passed on main's tree plus the fetched files |
+| PR body | PATCHed at 04:07:33Z (gh api --method PATCH repos/pcalnon/juniper-data-client/pulls/274 --input fixup/pr_body_r2.patch.json). Read back: equal to pr_body_r2.md (34620 characters, sha256 c1b50f6e...), and it ends with the two required lines |
+| CI on a93f10d6 | see the next section |
+
+F3 on a real wheel: the juniper_data_client-0.6.0 wheel was built from the tree and installed --no-deps into fresh venvs
+(Python 3.12.16 and 3.14.7). The check line was read from the workflow, not retyped.
+- Installed: exit 0; numpy and requests were not imported.
+- Package removed (metadata kept), and a bare namespace directory (a file, no __init__.py), each plain and under
+  PYTHONOPTIMIZE=1: exit 1, stderr "the installed wheel holds no juniper_data_client package", stdout
+  "TestPyPI install 0.6.0 package at None" (no OK).
+- The old metadata-only check: exit 0 in both cases.
+
+F3 set, run without -x:
+| row | mutation | failing cases |
+|---|---|---|
+| F3a | round 1's OK print, in the workflow alone | 8 (the pins and every post-install-check case) |
+| F3b | the OK print in the workflow AND both test pins | 5: the success case and the 4 refusal cases, which only the new no-OK assertion and exact line can catch |
+| F3c | the raise dropped, in the workflow alone | 7 |
+| F3d | the raise dropped from the workflow and both pins | 4: the refusal cases, on their exit status |
+
+Pre-push gate, over the 4 files commit 2 uploads (against commit 1's tree), the PR body and commit 2's message:
+- files scan: 1 finding, docs/REFERENCE.md:640:69:juniper-env-credential:3ab6853de8. That is round 1's judged line (a
+  masked read showed environment-variable names). The line is identical in main, commit 1 and commit 2, and it is
+  accepted by that key alone.
+- text scan: 0 findings.
+- masked read of the 32 added lines: 0 listed.
+- The gate was re-run after each body edit; the last run is on the body as uploaded.
+
+== CI on a93f10d6 (read 04:09:52Z) ==
+- Every unit-test leg passed, with commit 1's counts: ubuntu Python 3.12, 3.13, 3.14 and 3.15 at 664 passed, 19 skipped;
+  macOS 3.12 at 662 passed, 21 skipped (fixup/ci_publish_counts_c2.log).
+- 22 success, 5 neutral (the Cursor Automation checks) and Build Package in progress. Quality Gate, Dependency
+  Documentation and Notify Downstream Repos had not started yet. On commit 1 they ran after the unit tests, as
+  success, success and skipped.
+- The final CI state is in the closing note at the end of this report.
+
+== Judgement calls ==
+1. The arc's seed pins file moved after round 1. $W/util/ad-hoc/2026-11-24_publish_port_install_pins.json is now
+   1dd592c224adeec82910328d5d2a9127e1a3bc6d7b3d5c9ded11ed971b7bacc7 (mtime 03:11:55Z); it was d539f05f...
+   - fixup/seed_delta.py proves the only change: rebuilt from pins.proposed.r1.json with data-client's seed entry, the
+     old file hashes to d539f05f again. The moved entry is juniper-cascor-client's alone (its #206 fix-up pin), and
+     data-client's seed entry (aa16d5b2...) did not move.
+   - So the new proposal is the CURRENT seed with data-client's entry alone replaced (make_pins_r2.py pins
+     SEED_SHA256 = 1dd592c2...). A proposal built on the old seed would have reverted cascor-client's pin.
+   - Against the current seed, only data-client's entry differs. Against r1, the diff also shows cascor-client's entry:
+     that is the seed's own move, not mine (fixup/pins_r1_to_r2.diff).
+2. The writer's implicit concatenation was fixed (above). It is not part of the PR.
+3. The CHANGELOG gained the F3 log-line sentence and the F1 Docs-bullet clause; the test comment's "runs" was fixed
+   under F2. The coordinator's list named neither, but each keeps the text true.
+4. The pypi environment also has a 5-minute wait timer (gh api environments/pypi), which the docs do not state. No test
+   pins it, and the ruling names only the approval.
+5. In the PR body, "#206" is written juniper-cascor-client#206: a bare #206 links data-client#206, a dependency bump.
+   The bare cascor numbers from round 1's body (#763, #767, #772, #777) do not exist in data-client and link nothing;
+   they are left as round 1 had them.
+6. One pass of the verification ran on the tree before the "beside this run's files" edit. All of it was re-run on the
+   final tree. Those earlier outputs are kept in fixup/superseded-r2a/, and the final tables are identical to them.
+7. The rescued round-1 files in $WT are untouched, except the two the coordinator asked to update:
+   - $WT/util/ad-hoc/...port.py (now revision 2);
+   - pins.proposed.json (r2; r1 is kept beside it).
+   Everything else from the fix-up is under $WT/tmp/ports/juniper-data-client/fixup/ (MANIFEST.sha256, 1452 files,
+   verified after the copy). The two venvs and the mutation runs' tree copies are left out; both can be rebuilt.
+
+== What I could not do, or did not do ==
+- CI had not finished on the new head when this report was written (see above and the closing note).
+- Not done, by the rules: merge, arm, update-branch, approve, or touch any other PR; edit $W (the seed was only read),
+  the checker or .pre-commit-config.yaml; any local git commit, tag or push (the commit is GitHub-signed); any write
+  under /tmp.
+
+== Documents changed ==
+- In juniper-data-client, by commit 2: docs/REFERENCE.md and CHANGELOG.md, plus .github/workflows/publish.yml and
+  tests/test_publish_one_artifact.py.
+- PR #274's body.
+- In $WT: util/ad-hoc/2026-11-26_juniper-data-client_one_artifact_sweep_port.py,
+  tmp/ports/juniper-data-client/pins.proposed.json and pins.proposed.r1.json, tmp/ports/juniper-data-client/fixup/
+  (new), and this report (tmp/ports/juniper-data-client/REPORT_FIXUP.txt).
+- Documents referenced: REVIEW.txt (above), SWEEP_PORT_BRIEF.md ($WT/tmp/ports/; its addenda), and juniper-cascor's
+  docs/ci_cd/MANUAL.md (:819, :821).
+
+== The coordinator's R-1 refinement (juniper-cascor-worker#238's review), received after the push ==
+The fix-up was already pushed (a93f10d6, 04:05:57Z). As instructed, I did not push again: nothing on GitHub, in the
+writer or in the pins changed after that message, and the only edit is this section of the report.
+
+Does the pushed text name only the release run? NO, but it does not have R-1's wording either.
+- docs/REFERENCE.md:705, the "gave up waiting" bullet, reads: "**Re-run failed jobs** on that run: the job uploads the
+  same bytes again, which the index accepts, and the check runs again. Re-running the job needs a fresh `pypi`
+  approval."
+  - "That run" points back to :702's lead-in ("A failed `Verify PyPI serves exactly these files` comes after the
+    upload, so the run's files are already on PyPI, ..."), that is, the run whose check failed, whichever it was. I
+    chose that wording because the PyPI job and the republish job both run the step behind `pypi`.
+  - It does NOT name the two runs (the release run, or the republish's dispatch run), and it gives NO 30-day window
+    ("within 30 days of that run"). It is short of R-1 on both counts.
+- CHANGELOG.md:262-264 (the Docs bullet): "a check that gave up waiting is index lag, which "Re-run failed jobs"
+  repeats". It names no run and no window.
+- PR body (the F1 row, line 30; the ladder paragraph, line 110): no run and no window.
+- Commit 2's message (the F1 bullet): no run and no window.
+- The recovery text says "the release run" only at :693 (rung 2, "within 30 days of the release run") and :698 (a
+  TestPyPI job that failed on index lag). Both concern release-run jobs (the TestPyPI jobs run only in the release
+  run), the fix-up did not touch them, and both are right as they stand.
+
+If the orchestrator wants R-1's wording, the change is:
+- docs/REFERENCE.md:705: "**Re-run failed jobs** on that run:" becomes "**Re-run failed jobs** on the run whose check
+  gave up (the release run, or the republish's dispatch run), within 30 days of that run:".
+- Optionally, the same in the CHANGELOG's Docs clause and in the PR body's two mentions.
+- The workflow does not change, so neither do the pin or the checker. test_publish_docs_bounds.py pins only the install
+  check's sentence.
+- A third commit would need the writer re-run on a fresh clone (a revision 3), the publish modules and the full suite,
+  pre-commit, the screens over three commits and the gate.
+
+== Closing note: CI on a93f10d6, final (read 04:11:16Z) ==
+- 31 check runs: 25 success, 5 neutral (the Cursor Automation checks) and 1 skipped (Notify Downstream Repos, skipped
+  on commit 1 too). Nothing failed and nothing is pending.
+- All 20 required contexts of ruleset data-client-rules (13316681) are success (fixup/required_contexts_c2.txt).
+- mergeable=true, mergeable_state=clean. The PR is not merged and not armed: merging is the Overtoad's.

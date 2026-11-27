@@ -1,0 +1,132 @@
+[
+ {
+  "id": "R2-01-L2709",
+  "old": "      - v1.15.18: that worktree was removed on 2026-11-23; the copy is `buzzing-growing-whale/tmp/s2/parent_AGENTS_before_2026-11-14.md` in `juniper-ml/tmp/worktree-archive-2026-11-23/`, byte-equal to the restored backup (that archive's README).",
+  "new": "      - v1.15.18: that worktree was removed on 2026-11-23. Its copy, `buzzing-growing-whale/tmp/s2/parent_AGENTS_before_2026-11-14.md` in `juniper-ml/tmp/worktree-archive-2026-11-23/`, is the substituted text (sha256 `d8ab5749…`, the backup's `*.substituted-2026-11-20`), not the prior copy, whose bytes (`90df2783…`) are the restored backup below (re-read 2026-11-26 23:06Z)."
+ },
+ {
+  "id": "R2-02-L1367",
+  "old": "    - That archive backs the files this plan cites in those worktrees: `humble-humming-flask`'s `tmp/review-763/` and `tmp/cascor-767/safe_merge_767.log`, `buzzing-growing-whale`'s `tmp/s2/parent_AGENTS_before_2026-11-14.md`, and the two copies `reports/2026-11-15_r-obs-sc-2-follow-ups-reviews/README.md` names, each under `<worktree>/tmp/` there (R18's precondition). Its README asks that they be read as possibly substituted.",
+  "new": "    - That archive holds the files this plan cites in those worktrees, each under `<worktree>/tmp/` there (R18's precondition): `humble-humming-flask`'s `tmp/review-763/` and `tmp/cascor-767/safe_merge_767.log`, `buzzing-growing-whale`'s `tmp/s2/parent_AGENTS_before_2026-11-14.md`, and the two copies `reports/2026-11-15_r-obs-sc-2-follow-ups-reviews/README.md` names. Three of the five are substituted (re-read 2026-11-26 23:06Z):\n      - the parent copy (`d8ab5749…`; the restored `90df2783…` is in `juniper-ml/tmp/2026-11-14-parent-agents-md-backup/`), `logical-percolating-sparkle`'s `tmp/lps/fixpass_r1.md` (`76bc0754…`; the verbatim `ad8d9091…` is in the repository as `five-prs-validation-fixpass-round-1.md`) and 44 of `tmp/review-763/`'s 89 files; `toasty-prancing-karp`'s `tmp/s1/guard_review_round1.md` keeps its pinned `37508e48…`, and the merge log holds no \"Overtoad\"."
+ },
+ {
+  "id": "R2-03-L1318",
+  "old": "The option's one review round became four: rounds 9 to 11 each found a BLOCKER or a MAJOR one level outside the install script.",
+  "new": "The option's one review round became four: rounds 9 to 11 each found a BLOCKER or a MAJOR outside the install script (round 11's in what the checker prints)."
+ },
+ {
+  "id": "R2-04-L1531",
+  "old": "and seven worktrees were removed and archived on 2026-11-23. The rest is open (§5, the note on the template sweep).",
+  "new": "and seven worktrees were removed and archived on 2026-11-23. The design session to launch is now 0.4.4's (the Overtoad's ruling of 2026-11-24). The rest is open (§5, the note on the template sweep)."
+ },
+ {
+  "id": "R2-05-L1381",
+  "old": "  - the check that the first Release through a swept publisher gives PyPI TestPyPI's files (gap 16): no session holds it;",
+  "new": "  - once the Overtoad approves juniper-observability 0.4.3's `pypi` gate (by 2026-12-26), a re-read that PyPI serves TestPyPI's files (gap 16, above); and the same check of the first Release through a swept publisher, whose install job and republish gate no Release has run. No session holds either;"
+ },
+ {
+  "id": "R2-06-L1380",
+  "old": "  - SWEEP items 28 and 29, and the residuals' wording for a later pin round: each a change to the template through cascor and then every port, and each also a change to the checker, which its FINAL note makes a new reviewed pass (`SW/dispositions.md` § \"Fix pass 11\"). No session holds them.",
+  "new": "  - SWEEP items 28 and 29: each a change to the template through cascor and then every port, and each also a change to the checker (it fixes the build window and the chain's five jobs), which its FINAL note makes a new pass (`SW/dispositions.md` § \"Fix pass 11\"); and the residuals' wording, for a later pin round: the template's comments and the pins file, as each port's review moved its pins, not the checker. No session holds them."
+ },
+ {
+  "id": "R2-07a-L1384",
+  "old": "    - Archived: `SW/` (the record, the briefs, the reviews and the executor reports) and, in `juniper-ml/tmp/worktree-archive-2026-11-26/`, each of the ten round directories' top-level files and `evidence/`",
+  "new": "    - Archived: `SW/` (the record, the briefs, rounds 6 to 12's reports, the seven ports' reviews and the executor reports) and, in `juniper-ml/tmp/worktree-archive-2026-11-26/`, each of the ten fix-pass directories' top-level files and `evidence/`"
+ },
+ {
+  "id": "R2-07b-L1385",
+  "old": "    - Not archived: in `ethereal-munching-peacock`, the review rounds' own directories (`tmp/r2review` to `tmp/r12review` and the two lenses'), `tmp/sweep/land/` (#777's landing evidence), `tmp/sweep/cascor`, `cascor-r2` and `cascor-r3-prep`, `tmp/arc/`, and the trees inside the round directories; in `moonlit-percolating-sun`, all of `tmp/` but what `SW/` copies (its clones, scratch, status notes, merge logs and done-check outputs).",
+  "new": "    - Not archived, in `ethereal-munching-peacock`: the review rounds' own directories (`tmp/r2review` to `tmp/r12review` and the two lenses', rounds 1, 2, 4 and 5's reports among them), `tmp/sweep/land/` (#777's landing evidence), `tmp/sweep/cascor`, `cascor-r2` and `cascor-r3-prep`, `tmp/arc/`, and the trees inside the fix-pass directories;\n      - and `tmp/ports/` (#777's \"3 of 18 pass\" log, `verify_all_mains_v2.after777.log`, among its done-check runs), `tmp/audit-handoff-r1/`, `tmp/audit-handoff-r2/`, `tmp/factcheck-2610/`, `tmp/r3val_tree.txt` and the record's 37 `REVIEW_DISPOSITIONS.before-*.md` backups.\n    - Not archived, in `moonlit-percolating-sun`: all of `tmp/` but what `SW/` copies (its clones, scratch, status notes, merge logs and done-check outputs)."
+ },
+ {
+  "id": "R2-08-L533",
+  "old": "so (a) and (b) stay in force.\n- v1.15.18: R-OBS-SC-3 is now juniper-observability 0.4.4",
+  "new": "so (a) and (b) stay in force.\n\n- v1.15.18: R-OBS-SC-3 is now juniper-observability 0.4.4"
+ },
+ {
+  "id": "R2-09-L1332",
+  "old": "its F1 rated MINOR (\"MAJOR read strictly\", said its reviewer).",
+  "new": "its F1 rated MINOR by its reviewer, who added \"Raise it to MAJOR if you read the guide strictly\"."
+ },
+ {
+  "id": "R2-10a-L2553",
+  "old": "but for the four messages it dates from the transcripts' first timestamped entries.",
+  "new": "but for the three messages it dates from the transcripts' first timestamped entries (11:26:35Z in `3792e0cc`; 21:40:06Z and 21:40:15Z in `d769e173`)."
+ },
+ {
+  "id": "R2-10b-L1299",
+  "old": "and its rulings are quoted from that record, where each session wrote them as its dialog returned them.",
+  "new": "and its rulings are quoted from that record, where each session wrote them as its dialog returned them, but for three approvals dated from the transcripts (below)."
+ },
+ {
+  "id": "R2-11-L2556",
+  "old": "the three findings and the `/tmp` write `plan_v1_15_18_inputs.md` sends here,",
+  "new": "the three findings `…seven-worktrees-archived.md` sends here and the `/tmp` write `plan_v1_15_18_inputs.md` records,"
+ },
+ {
+  "id": "R2-12a-L1376",
+  "old": "no task holds them (that document's gap 17).",
+  "new": "no task holds them (`…REMAINING-TASKS.md`'s gap 17)."
+ },
+ {
+  "id": "R2-12b-L1363",
+  "old": "(its group E, R58 to R65, and §4's gaps 1 to 9, 11 and 16), each re-read on 2026-11-26:",
+  "new": "(its group E, R58 to R65, and §4's gaps 1 to 9, 11, 16 and 17), each re-read on 2026-11-26:"
+ },
+ {
+  "id": "R2-13-L141",
+  "old": "its group C's R28 to R41, its group E and §4's gaps 1 to 9, 11 and 16 are this lane's) |",
+  "new": "its group C's R28 to R41, its group E and §4's gaps 1 to 9 are this lane's (`plan_v1_15_18_inputs.md`), and this record also takes in gaps 11, 16 and 17) |"
+ },
+ {
+  "id": "R2-14-L2554",
+  "old": "and the checker on every `main` (\"18 of 18 pass\").\n    - Two independent Opus agents",
+  "new": "and the checker on every `main` (\"18 of 18 pass\").\n    - The landing check gated the 19 new `util/ad-hoc/` files (`tmp/v1_15_18/landing/REPORT.txt` in `purring-hugging-hippo`, item 6): the CodeQL prescreen predicts 0 alerts in 16, flake8 reports 0 for B914 and for F and E9, shellcheck is clean, the tmp- and home-path literal gates pass on the named files, and `pre-commit run --files` exits 0. The writer is not among the 19.\n    - Two independent Opus agents"
+ },
+ {
+  "id": "R2-15-L2681",
+  "old": "and `tmp/v1_15_18/` in worktree `purring-hugging-hippo` (its probes, landing proofs and replay trees).",
+  "new": "and `tmp/v1_15_18/` in worktree `purring-hugging-hippo` (its probes, landing proofs and replay trees).\n    - and beside it there, the landed tools' outputs from the landing check: `tmp/publish-port-verify-all-mains/20261126T220941Z/`, `tmp/publish-port-check-pr-head/juniper-cascor-client-207/` and `tmp/publish-port-apply-install-pin/20261126T221123Z/`."
+ },
+ {
+  "id": "R2-16-L2680",
+  "old": "  - by session `d935c226` (2026-11-24), the auto-memory file `reference_agents_md_date_check_crosses_midnight_utc.md` (`Verify AGENTS.md Last Updated` wants the UTC day at CI time).",
+  "new": "  - by session `11a98f94` (2026-11-23 12:02:19Z), unrecorded by v1.15.17, the auto-memory file `reference_blind_substitution_rewrites_untracked_files_in_sibling_worktrees.md` (a repo-wide substitution also rewrites untracked and `tmp/` files in sibling worktrees).\n  - by session `d935c226` (2026-11-24 01:34:13Z), the auto-memory file `reference_agents_md_date_check_crosses_midnight_utc.md` (`Verify AGENTS.md Last Updated` wants the UTC day at CI time), and at 01:34:15Z its line in `MEMORY.md`."
+ },
+ {
+  "id": "R2-17-L1325",
+  "old": "its M12-C, a row a narrow terminal could show as a PASS,",
+  "new": "its M12-C, a row a terminal's soft wrap could show as a PASS (at widths 80, 100 and 200),"
+ },
+ {
+  "id": "R2-18-L1270",
+  "old": "which the sweep kept ref-free)",
+  "new": "which the sweep made ref-free, normalized)"
+ },
+ {
+  "id": "R2-19-L1375",
+  "old": "ml#2608 capped it `<3` (2026-11-23 20:50:42Z, `b2aa9026`),",
+  "new": "ml#2608 capped it `<3` on `main`, never released (2026-11-23 20:50:42Z, `b2aa9026`),"
+ },
+ {
+  "id": "R2-20-L1310",
+  "old": "though `…fix-pass-11-final-ports-next.md` counts it among \"the owner's three rulings\".",
+  "new": "though `…fix-pass-11-final-ports-next.md` lists it under \"The owner's three rulings of this arc\", as \"this session's decision, recorded\"."
+ },
+ {
+  "id": "R2-21-L1377",
+  "old": "and gap 16 is under the first Release, above.",
+  "new": "and gap 16 is under the first Release, above.\n    - The answer that moved R-OBS-SC-3 to 0.4.4 also ruled R15: the consumers port to sentry-sdk 3.x once 0.4.3 is on PyPI. On 2026-11-26 the Overtoad ruled that cascor's port waits for profiling arguments in a later observability release; SemVer counts them a minor while R-OBS-SC-3 is ruled 0.4.4, so that release's number is the Overtoad's (`…REMAINING-TASKS.md` § \"Checked and changed, 2026-11-26\")."
+ },
+ {
+  "id": "R2-22-L1170",
+  "old": "    - Still open: the wall clock (R11), the WebSocket rounding (R12), the `tmp/` walk (R13) and the `<0.8.0` caps (R53).",
+  "new": "    - Still open: the wall clock (R11, with B-9), the WebSocket rounding (R12), the `tmp/` walk (R13), the `<0.8.0` caps (R53) and the v2 draft's stale lines (R10, the Overtoad's; §6)."
+ },
+ {
+  "id": "R2-23-L1347",
+  "old": "(M11-C, R11-1, M12-B). Both are the Overtoad's to decide (§6, mid-wave sitting);",
+  "new": "(M11-C, R11-1, M12-B). This and the image tag (M11-E, above) are the Overtoad's to decide (§6, mid-wave sitting);"
+ }
+]

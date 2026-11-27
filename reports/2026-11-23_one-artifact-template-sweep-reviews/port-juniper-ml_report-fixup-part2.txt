@@ -1,0 +1,50 @@
+
+=====================================================================================================================
+OUTCOME (appended 2026-11-26 11:54Z, after the coordinator's go-ahead to re-pin to the current head)
+=====================================================================================================================
+The fix-up is pushed. New head: 67b6db2049fb575d8c567c52bb679169a1cff70f.
+
+- Re-pin: at 11:52:55Z the PR head was still 2eb9a9306278dd11ac27d154b139116b8d8076c6 (OPEN, not merged), so ARGS3.json's
+  expected_head was set to that full sha. Nothing else in ARGS3.json changed: the same six paths, message and body file
+  that gate3 passed.
+- Dry run (11:52Z): exit 0, "DRY-RUN pcalnon/juniper-ml:fix/publish-one-artifact-sweep @ 2eb9a930… (== --expected-head)",
+  six adds, "(nothing written)".
+- Push (11:53:11-11:53:20Z): exit 0.
+  - "signed commit 67b6db2049fb575d8c567c52bb679169a1cff70f on pcalnon/juniper-ml:fix/publish-one-artifact-sweep"
+  - "verified signature (reason=valid)"
+  - "verified parent 2eb9a9306278dd11ac27d154b139116b8d8076c6"
+  - each of the six blobs verified: publish.yml e475e2621aa0, test_publish_one_artifact.py d544a4e34d1f,
+    test_publish_docs_bounds.py 2e4a73be3ad2, REFERENCE.md 4e96e9248311, CHANGELOG.md 05debfb041bb, the PYPI-PUBLISH
+    procedure note 65ba54306cdc
+- Verification and parent (GitHub, gh api commits/67b6db20…): verified=true, reason=valid, parents=2eb9a9306278dd11ac27d154b139116b8d8076c6
+  (the head I pinned). The message's last paragraph is exactly the two trailer lines.
+- Read-back (readback_branch.py ARGS3.json): exit 0. "head 67b6db2049fb575d8c567c52bb679169a1cff70f verified=True
+  reason=valid parents=['2eb9a930']", all six blobs "same", "commit touches 6 file(s); expected 6; extra=[] missing=[]".
+- PR head fetch (2026-11-15_fetch_pr_files.py --pr 2673, <S>/pr-head3): 18 files, all equal by sha256 to the clone's,
+  which the writer wrote.
+- The FINAL checker (sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35, checked) on the fetched
+  seven, --repo juniper-ml, --pins <S>/pins.proposed.json (sha256
+  142b471493c3820ae79f30ccf46c7bafc9b28c5d5ef365085dd1c6362bf94811, 18 pins; $W's seed now da50213c…):
+    PASS pr-head3/publish.yml  (PUBLISH_PACKAGE=juniper-ml, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)
+    PASS pr-head3/publish-ci-tools.yml  (PUBLISH_PACKAGE=juniper-ci-tools, PUBLISH_DIST_DIR=juniper-ci-tools/dist, PUBLISH_TAG_PREFIX=juniper-ci-tools-v)
+    PASS pr-head3/publish-config-tools.yml  (PUBLISH_PACKAGE=juniper-config-tools, PUBLISH_DIST_DIR=juniper-config-tools/dist, PUBLISH_TAG_PREFIX=juniper-config-tools-v)
+    PASS pr-head3/publish-doc-tools.yml  (PUBLISH_PACKAGE=juniper-doc-tools, PUBLISH_DIST_DIR=juniper-doc-tools/dist, PUBLISH_TAG_PREFIX=juniper-doc-tools-v)
+    PASS pr-head3/publish-model-core.yml  (PUBLISH_PACKAGE=juniper-model-core, PUBLISH_DIST_DIR=juniper-model-core/dist, PUBLISH_TAG_PREFIX=juniper-model-core-v)
+    PASS pr-head3/publish-observability.yml  (PUBLISH_PACKAGE=juniper-observability, PUBLISH_DIST_DIR=juniper-observability/dist, PUBLISH_TAG_PREFIX=juniper-observability-v)
+    PASS pr-head3/publish-service-core.yml  (PUBLISH_PACKAGE=juniper-service-core, PUBLISH_DIST_DIR=juniper-service-core/dist, PUBLISH_TAG_PREFIX=juniper-service-core-v)
+    7 of 7 pass   (checker exit 0)
+- The body PATCH (gh api --method PATCH repos/pcalnon/juniper-ml/pulls/2673 --input <S>/pr_body3.json, 11:54:16Z):
+  answered "2673 open head=67b6db20… updated=2026-11-26T11:54:16Z". The stored body equals <S>/pr_body.md and ends
+  with the two required lines.
+  - Before the PATCH the body was rebuilt to name the sync merge (drafts2/edit_pr_body3b.py). It now has a paragraph
+    "A sync merge of `main` (2eb9a930, made by GitHub) follows the second commit; it brings in one `prompts/` handoff
+    file, none of this PR's files." "The third commit" became "The review's fix-up" throughout, and the screens bullet
+    says the local replay covers the PR's three commits besides the merge, which changes only a prompts/ file outside
+    both screens' scope.
+  - The gate was re-run on that final body (<S>/gate3b: the same six files and accepts, the new body): exit 0, "gate:
+    PASS", text scan 0 findings, 0 masked lines.
+- PR state at 11:54:30Z: OPEN; auto-merge SQUASH still armed (enabled 11:42:15Z, as the coordinator said; I did not
+  touch it). CI on 67b6db20 was starting: 1 pass, 14 pending, 6 skipping. Nothing was merged, armed or branch-updated
+  by me, and no other PR was touched.
+- In place, as asked: the six files in the clone (<S>/../clones/juniper-ml, uncommitted over main bceac63c), and the
+  writer $WT/util/ad-hoc/2026-11-26_juniper-ml_one_artifact_sweep_port.py (sha256 6d79b6d1…).

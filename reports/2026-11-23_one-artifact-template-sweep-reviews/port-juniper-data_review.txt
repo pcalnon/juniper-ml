@@ -1,0 +1,375 @@
+=====================================================================================================================
+WHAT WAS NOT DONE  (independent review of juniper-data#553, head 62e0854a6fe608b2bb7e397d78a5541e9b1a8aef)
+=====================================================================================================================
+- No local pre-commit run. I relied on CI's three green "Pre-commit (Python 3.12/3.13/3.14)" jobs on the head.
+- No local run of the whole unit lane. I ran the three publish modules and test_notify_consumers_dispatch.py (the one
+  other test that reads publish.yml). CI's five unit legs on the head are green, and its Ubuntu 3.12 leg's log shows
+  all 125 + 2 + 6 + 27 of these cases passing there (ci_dots.py on ci_unit_312.log).
+- No local sequence-safety replay. I read CI's "Sequence Safety" job log on the head instead
+  (sequence_safety_job.log): the same juniper-ci-tools screens, scope 'juniper_data/**', this commit's message.
+- No local juniper-check-doc-links run. CI's "Documentation Links" is green. I checked the two cascor anchors by hand
+  against the headings of cascor main's docs/ci_cd/MANUAL.md (:671 and :689).
+- I did not re-run the PR body's 51-mutation table. I ran 14 mutations of my own instead (table below).
+- Two things were not verified against GitHub:
+  - the template's claim that "Re-run failed jobs" gives each carried-over job a copied record in the new attempt
+    (cascor's text; the find step is right under either behaviour, and a rehearsal covers each);
+  - why mergeStateStatus reads BLOCKED. No check is failing or pending (see CI).
+- The real-wheel probe's wheel is a local build, not the release's own wheel:
+  - built from the head with JuniperData's setuptools 82, using --no-isolation and --skip-dependency-check, because
+    that env lacks the "wheel" package that build-system.requires names;
+  - its Python 3.12 came from conda env TrustMe, standing in for setup-python's 3.12.
+- I read the header and the argument lines of the porting session's writer,
+  $WT/util/ad-hoc/2026-11-26_juniper-data_one_artifact_sweep_port.py (it lives outside the porting session's scratch
+  dir), and ran it on a fresh base export, to test the PR body's "replayable" claim. I read no other porting file,
+  REPORT.txt included, except pins.proposed.json.
+
+=====================================================================================================================
+SCOPE
+=====================================================================================================================
+REVIEW of juniper-data#553 (https://github.com/pcalnon/juniper-data/pull/553).
+Independent review, per $WT/tmp/ports/SWEEP_PORT_REVIEW_BRIEF.md, against $WT/tmp/ports/SWEEP_PORT_BRIEF.md (with its
+"Addenda from the pilots") and $W/tmp/ports/SWEEP_BRIEF.md items A-G. Written 2026-11-26 (UTC, read from date -u).
+  WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun
+  W  = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/ethereal-munching-peacock (read only)
+  Scratch: $WT/tmp/ports/juniper-data/review/ (head/ = the PR fetched from GitHub; base/ = an export of its base;
+  every script and log named below is there).
+Head 62e0854a6fe608b2bb7e397d78a5541e9b1a8aef (= the PR's headRefOid, fetched with git fetch origin pull/553/head).
+Base 8e08d2097c362f1d46d4dfaa1adc6f12e5974855 (= GitHub's main, which has not moved since the PR opened).
+Template: juniper-cascor main 5e3d9801 (clone $WT/tmp/ports/clones/juniper-cascor at GitHub's main); its publish.yml
+is unchanged since #777's merge f5ed3017.
+
+=====================================================================================================================
+VERDICT
+=====================================================================================================================
+BLOCKER 0, MAJOR 0, MINOR 1, NIT 5
+
+The port is sound:
+- the checker passes, and every template block and the republish job are byte-identical to cascor's;
+- the wiring is exactly what SWEEP items A, B and C require;
+- the proposed pin does what it claims, on a real wheel under bash -e;
+- the tests carry all of #777's hardening and rehearsals, and caught all 14 of my mutations;
+- the ladder's two-cause rule and the notify-consumers statements are true everywhere;
+- the commit is verified, and no CI check failed (the required "Slow Tests" is skipped, as on every PR).
+The defects are confined to comments in the test module and small doc wording.
+
+=====================================================================================================================
+FINDINGS
+=====================================================================================================================
+R-1  MINOR  Two test comments copied from other repositories are false of juniper-data.
+  (a) juniper_data/tests/unit/test_publish_one_artifact.py:618
+      "# The install check runs the package TestPyPI serves: it may read the repository, and nothing more."
+      - Copied from juniper-cascor src/tests/unit/test_publish_one_artifact.py:476, where the check imports
+        juniper_cascor and so runs it.
+      - Here the check reads the metadata and calls find_spec, which locates juniper_data without running it. The
+        file's own PACKAGE_CHECK comment (:246-251) and publish.yml:341-345 both say so.
+      - This breaks two of the addenda's rules: "no text says the install job 'runs' a package it only installs and
+        inspects", and "no sentence true only of cascor".
+  (b) same file :784
+      "# `python -c` puts its working directory first on sys.path, and this repository's root holds juniper_cascor_client/:"
+      - Copied from juniper-cascor-client tests/test_publish_one_artifact.py:713.
+      - This repository's root holds juniper_data/, as publish.yml:316 says.
+  Shown by grep:
+  - 'The install check runs the package': cascor test :476, data test :618;
+  - "this repository.s root holds": cascor-client test :713, data test :784.
+  Fix (comments only, so no pin, digest or case moves):
+  - :618 -> "# The install check installs the package TestPyPI serves and inspects it: it may read the
+    repository, and nothing more."
+  - :784 -> "... holds juniper_data/:".
+  Make both changes in the writer's TEST_MODULE too, so that a replay keeps them.
+
+R-2  NIT  test_publish_one_artifact.py:65 defines OTHER_DIST_NAME = "juniper_data_client" (new in this PR, and
+  described at :61 as "another distribution whose name starts with this one's"). Nothing reads it.
+  - The cases that need such a name use literals instead (:1264 and :1639).
+  - Shown by: grep -n -w OTHER_DIST_NAME, which matches only :65.
+  - Fix: use it in those two parametrizations, or drop it and its mention at :61.
+
+R-3  NIT  test_publish_one_artifact.py:940-941 adds an assertion that cannot fail.
+  - The base's `assert "concurrency" not in wf` is kept, and cascor's `assert not _cancels(wf.get("concurrency"))`
+    follows it. That is _cancels's only call (:355), and it always reads None there.
+  - Cascor's single-package case (cascor test :777) carries the second line alone, which admits a group that never
+    cancels, as OPTIONAL_WORKFLOW_KEYS does.
+  - Fix: keep one. Either the base's stricter line alone (then drop _cancels), or cascor's form.
+
+R-4  NIT  The pinned step's comment and one test name say "import", where the check imports no juniper_data.
+  - publish.yml:317-318 (inside the pin): "so an import run inside a checkout of it can pass without the wheel ...
+    it still installs and imports from the runner's temporary directory".
+  - The test TestInstallCheckJob.test_it_installs_and_imports_from_outside_any_checkout (:778).
+  - The step imports only importlib modules, and locates juniper_data with find_spec.
+  - This is the template's own wording: cascor publish.yml:318-319, and publish-protocol.yml:360-361, a find_spec
+    publisher ("install and import from the runner's temporary directory"). The three find_spec pins already reviewed
+    in $W's pins file (juniper-cascor-client, juniper-cascor-worker, juniper-data-client) carry it too.
+  - No change proposed for this PR. At the next pin round, reword it for every find_spec port together ("a check run
+    inside a checkout", "installs and checks").
+
+R-5  NIT  The docs' spelled-out try counts are not pinned:
+  - docs/ci_cd/CICD_MANUAL.md:357 "The fifth failure fails the step";
+  - CICD_MANUAL.md:358 "A non-zero `pip` (five times)";
+  - docs/REFERENCE.md:2424 "the five tries";
+  - REFERENCE.md:2426 "A `pip` that fails five times".
+  test_publish_docs_bounds.py pins the digit forms beside them ("up to 5 tries ...", and the lag error), so a change
+  to the loop's count fails the module and points at those sentences. Nothing makes these words follow, though. The
+  module itself pins only what the docs state, which holds.
+  - Fix (optional): write them as the digits the module reads, or add them to it.
+
+R-6  NIT  CHANGELOG.md:267-269 says the entry ports juniper-cascor#777 "to the entry below".
+  - The 11-15 port's entry is at :338, two entries below, after the AGENTS.md entry at :332.
+  - Fix: "to juniper-data#543's entry below".
+
+Not findings (checked, and noted for the orchestrator):
+- Commit body: the "Allow-Symbol-Loss: INSTALL_CHECK" line changes nothing. CI's screen reports the constant as
+  WARN/LOST either way. Naming it is what the port brief asks.
+- The header keeps the base's "owner" ("the owner's directive", "the owner's recovery ladder"), while the template
+  blocks bring "Overtoad". This is the brief's rule: the base file's word in its own text, and the template byte for
+  byte. No technical owner is touched.
+- A kept TestUnchanged comment (:933-934, "before this change publish.yml had no job guard") is #543's text, and
+  refers to #543.
+
+=====================================================================================================================
+JUDGEMENTS ASKED FOR
+=====================================================================================================================
+1. The install pin ($WT/tmp/ports/juniper-data/pins.proposed.json, sha256 c67ad8c6448519492e414478d2e0b63662ae7228641f29772afa26e4c51d1d55)
+   - Only juniper-data's entry differs from $W's file (sha256 19d6acd3...); its other 17 pins are equal (checked
+     entry by entry).
+   - Seed: 18 lines, sha256 3783295d154721cb31708337a2bcb99cb60657bdeff953a8689e26882f843d4f.
+   - Proposed: 31 lines, sha256 4a05dbb20ec3db65e5b6303a93261ad042dd76359a54c2f3d32d8d63a3003176, which is its lines'
+     text. The file is ASCII, and the checker accepts it.
+   - The diff (pin_W.txt against pin_P.txt) keeps every command of the seed, in order. It adds the step's comment
+     lines, which the pin needs: it is the run text, comments included. It changes one command, the last.
+   - That python -c is cascor publish-protocol.yml:389 with the module and distribution names substituted, checked
+     programmatically. It prints the neutral line ('TestPyPI install', version, 'package at', origin), with no "OK"
+     before the verdict, and fails through SystemExit, never assert.
+   - Run under bash -e (real_wheel_probe.py: a stand-in pip that installs a local wheel, a no-op sleep, and a real
+     Python 3.12):
+       real juniper_data-0.17.1-py3-none-any.whl built from the head   exit 0, plain and PYTHONOPTIMIZE=1
+         (origin .../site-packages/juniper_data/__init__.py)
+       same wheel without juniper_data/__init__.py (a bare directory)    exit 1, plain and PYTHONOPTIMIZE=1
+       same wheel without juniper_data/ (metadata only)                  exit 1, plain and PYTHONOPTIMIZE=1
+     Each exit-1 case prints "the installed wheel holds no juniper_data package".
+   - Its comments are true, apart from R-4's template wording. The claim that juniper_data/__init__.py:8 imports
+     dotenv was checked.
+   - Verdict: the pin is what the step needs. Apply it.
+
+2. notify-consumers and a republish dispatch: stated truly, everywhere.
+   - On a dispatch, build's `if: startsWith(github.event.release.tag_name, 'v')` reads no release, so build is
+     skipped. testpypi, verify-testpypi-install, pypi and notify-consumers (needs: pypi, no if:) are skipped with
+     it. Only republish runs.
+   - notify-consumers.yml (sha256 e17ddc9b3ac99d87600c99835b2c87bc16f252034f966645975c0b776ec8e078, not in the PR's
+     files) has a workflow_dispatch with a required `version`. Its payload's sha is github.sha, which is the tag's
+     commit on a `--ref v<version>` dispatch, as CICD_MANUAL.md:407-411 says.
+   - These all agree: the workflow header (:23-24), the job's comment (:562-567), CICD_MANUAL.md:370 and :407-411,
+     CICD_REFERENCE.md, DEVELOPER_CHEATSHEET.md, CICD_QUICK_START.md, CHANGELOG.md and the PR body.
+   - TestUnchanged pins the job whole, and test_notify_consumers_dispatch.py (27 passed) pins its needs, uses,
+     version input, secret and permissions.
+
+3. The removed symbols. CI's screen reported findings=6 fail=0, by_verdict {'LOST': 1, 'WAIVED': 5}. Each removal
+   is what the sweep requires, and each has an equal or stronger replacement:
+   - TestFindReleaseRun.test_the_newest_release_run_that_still_holds_the_artifact_is_found
+     - Why: what #777 removed. Under B the find step checks the newest release run, whether or not it holds the
+       artifact.
+     - Replaced by: test_the_newest_release_run_is_the_one_checked_and_its_artifact_is_found,
+       ..._whose_artifact_expired_is_still_checked_..., and
+       ..._an_older_release_run_that_passed_does_not_vouch_for_a_newer_one_that_failed.
+   - TestFindReleaseRun.test_a_package_prefixed_tag_names_its_version_too
+     - Why: data's own case, which C makes false. A single-package publisher must refuse juniper-data-v1.2.3.
+     - Replaced by: test_it_refuses_anything_but_a_release_tag_of_this_package
+       [a-package-named-tag-in-a-single-package-publisher] (refused before any request),
+       test_a_sub_package_tag_names_its_version, and test_a_sub_package_publisher_refuses_every_tag_but_its_own_prefix.
+   - TestUnchanged.test_the_install_check_still_ends_the_testpypi_job_and_installs_from_testpypi_alone
+     - Why: A makes it false.
+     - Replaced by: TestExactly.test_the_install_check_runs_exactly_this (the step's whole mapping, its run text byte
+       for byte), the TestInstallCheckJob cases (wiring, commands, cannot be switched off, package check), and
+       TestUnchanged.test_the_install_job_keeps_the_testpypi_jobs_python_and_its_install_check.
+   - TestTemplate.test_the_template_steps_and_the_republish_job_equal_juniper_cascor_at_675884888f5a
+     - Why: renamed ..._at_f5ed30177766, as its own assertion requires.
+     - Its digests now drop each uses: ref (item 23, as G requires). The refs are pinned again by
+       test_each_action_is_pinned_to_one_ref_in_every_publisher and by the checker, and raw-text pins are added.
+     - All four pin families reproduce from cascor's own publish.yml (pins_from_cascor.py prints True four times):
+       the raw blocks, the republish text, the parsed digests, and each action's ref.
+   - _step_ids
+     - Replaced by _steps: (name, action) for every step, which also catches a named step that changes its action.
+   - INSTALL_CHECK (a constant; it warns only)
+     - Replaced by INSTALL_STEPS.
+
+4. The addenda.
+   - Two causes of a failed "Verify PyPI serves exactly these files": met, in three places (CICD_MANUAL.md's
+     recovery section, CICD_MANUAL.md's troubleshooting, and DEVELOPER_CHEATSHEET.md).
+     - A mismatch needs a new patch version.
+     - A timeout is index lag: "Re-run failed jobs on the run whose check gave up (the release run, or the
+       republish's dispatch run), within 30 days of that run", with the fresh `pypi` approval named.
+     - A timeout is never sent to a new version, and never called "past the ladder".
+   - Lead-ins: met. CICD_MANUAL.md's "When rung 1 refuses, or a release run failed before PyPI:" covers its four
+     bullets. The PyPI-check case stands outside the list ("is not in that list: the step runs after the upload").
+   - Nothing true only of cascor: met in the docs, CHANGELOG and commit, and in the workflow's own text apart from
+     R-4's template wording; not met in two test comments (R-1). The ladder was adapted rather than copied: "does not
+     install, or its check fails", not cascor's "or import"; no sub-package bullet; data's own #543 and dates.
+   - "Runs": the docs and CHANGELOG say "installs". The workflow's two "executes/runs the package" lines are cascor's
+     job-level banner and permissions comment, which the addendum allows. One test comment fails this (R-1). The
+     pinned comment's "imports" is the template's wording (R-4).
+   - The docs-bounds module pins only what the docs state: met. Each of its 12 doc checks (10 phrases, plus the lag
+     error in two docs) is text the named doc states. The retry's numbers came with the retry this PR adds; none was
+     added just to be pinned.
+
+5. Template fidelity: met.
+   - `diff` of cascor main's publish.yml against the head shows only data's own parts: the header, PUBLISH_PACKAGE,
+     the build guard's comment (data's text, ending in the template's rc*/hf* note), the install step's script, and
+     the kept notify-consumers job.
+   - Every template block and the whole republish job, comments included, are byte-identical to cascor's, and data's
+     own raw-text sha256 pins hold them so.
+   - Install job: name "Verify the TestPyPI install"; needs testpypi; permissions exactly contents: read; no
+     environment; setup-python 3.12; `cd "${RUNNER_TEMP}"` before every command; no checkout.
+   - testpypi: id-token: write alone; its four steps, ending at "Verify TestPyPI serves exactly these files"; no
+     checkout and no setup-python.
+   - pypi: needs [testpypi, verify-testpypi-install]; id-token: write alone.
+   - PUBLISH_TAG_PREFIX v agrees with the guard's startsWith(..., 'v').
+   - SWEEP items 1 and 12: present. Item 2: n/a here (single-package; the top permissions comment is cascor's
+     single-package text).
+   - Kept behaviour: the build steps (pip install build twine, python -m build, twine check dist/*) and
+     notify-consumers are unchanged.
+   - The writer replays (writer_replay.py; writer sha256 f789b8818c36...): on a fresh base export it exits 0 and
+     reproduces the head (0 of 480 files differ). A second run refuses (exit 1) and changes nothing.
+
+6. Docs and changelog: met.
+   - Every statement checked is true of the head's workflows: the job names, needs and permissions; the bounds (20
+     polls 15 s apart with 30 s request timeouts; a 30 s wait, then 5 tries 10 s apart); the ladder's rungs; and this
+     repo's `gh workflow run publish.yml --repo pcalnon/juniper-data --ref v<version> -f republish_from_testpypi=true`.
+   - Read from the API: both environments admit exactly v*, rc*, hf*, juniper-*-v*, juniper-*-rc* and juniper-*-hf*;
+     pypi has 1 required reviewer and a 5-minute wait timer.
+   - The ceremony claim holds: juniper-ml util/release_train/ceremony.py:660-667 returns HALT_TESTPYPI for a failed
+     job whose name holds "testpypi", and :621 sets the "to pypi" workflow-name suffix.
+   - juniper-data#543 merged 2026-11-16T08:30:29Z, as the docs state.
+   - Both cascor anchors exist.
+   - Every edited doc's date line reads 2026-11-26: Last Updated, top and bottom copies, and the cheatsheet's Date.
+     That is the commit's UTC day (verified_at 2026-11-26T04:28:46Z). Only AGENTS.md has a date check, and AGENTS.md
+     is untouched; CLAUDE.md is still a symlink to it.
+   - CHANGELOG.md: one entry, the first under [Unreleased] -> ### Fixed. Its counts are right: 125 cases (67
+     before), 2 and 6.
+   - actionlint 1.7.12 on the head: exit 0. On the base it exits 1 with SC2086, as the PR body says.
+
+7. The commit: met.
+   - One commit, whose parent is the base.
+   - GitHub's verification: verified true, reason valid.
+   - Six Allow-Symbol-Loss lines, one per symbol the screen reports.
+   - The trailers (Co-Authored-By, Claude-Session) are the last paragraph, with nothing after them.
+
+=====================================================================================================================
+CHECKER (FINAL, sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35; run_checker.bash -> checker.log)
+=====================================================================================================================
+/opt/miniforge3/envs/JuniperCascor1/bin/python3 -I -B $W/util/ad-hoc/2026-11-23_publish_port_template_identity.py
+    --repo juniper-data --template $WT/tmp/ports/clones/juniper-cascor/.github/workflows/publish.yml
+    --pins $WT/tmp/ports/juniper-data/pins.proposed.json  review/head/.github/workflows/publish.yml
+  (template sha256 b6826ee65f7f...; head publish.yml sha256 88a11239026285395ff92a366184834603892b633217b358d197c8ccdba03ebd;
+   notify-consumers.yml beside it, e17ddc9b3ac9...)
+pins: .../tmp/ports/juniper-data/pins.proposed.json (sha256 c67ad8c6448519492e414478d2e0b63662ae7228641f29772afa26e4c51d1d55, 18 pins)
+PASS head/publish.yml  (PUBLISH_PACKAGE=juniper-data, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)
+1 of 1 pass
+exit: 0
+Control, with $W's pins (sha256 19d6acd36d6ad0d0648ab160e20be8e863fba4c21d25e57e539a8b9c26fe125d):
+FAIL head/publish.yml ... - verify-testpypi-install: step 'Verify TestPyPI install' differs from its pin ..., first at line 1
+0 of 1 pass
+exit: 1   (expected: the pin has not been applied to $W's file)
+
+=====================================================================================================================
+TESTS (conda env JuniperData: Python 3.14.2, pytest 9.0.2; -m "unit and not slow" --timeout=60, TMPDIR under scratch)
+=====================================================================================================================
+Head (run_tests.bash -> tests_head.log):
+  test_publish_one_artifact.py 125, test_publish_docs_bounds.py 2, test_testpypi_install_verify.py 6:
+  133 passed, 0 failed, 0 skipped, 0 deselected. With -m "not unit", 0 are collected (133 deselected), so every case
+  carries the unit mark.
+  test_notify_consumers_dispatch.py (not in the PR; reads publish.yml): 27 passed.
+Base (8e08d209): test_publish_one_artifact.py 67 + test_testpypi_install_verify.py 6 = 73 passed.
+Skips: no new skip. The one conditional skip ("no sha256sum on PATH", :1125) is the base's (:556), and it did not
+  fire here.
+CI, Ubuntu 3.12 unit leg (job 139693350474): 125 + 2 + 6 + 27 passed, none skipped. The leg's total is 2666 passed,
+  14 skipped.
+B and C rehearsals (SWEEP item E): all present. They cover:
+  - no release run;
+  - a failed upload, and a cancelled one;
+  - a failed install check, and one still running;
+  - a job carried over without a record of attempt 2;
+  - GitHub's copied records, re-run passed and re-run failed;
+  - attempt 1 failed and attempt 2 passed;
+  - "Re-run all jobs" whose attempt 2 failed;
+  - each listing order;
+  - two pages;
+  - an older run that passed behind a newer one that failed;
+  - the artifact present, and expired;
+  - a failed build;
+  - no TestPyPI job;
+  - a sub-package publisher refusing v1.2.3, and a single-package one refusing juniper-data-v9.9.9.
+Item-E hardening: all present (the per-case list was checked against cascor's module).
+The removed TestFindReleaseRun case is the one #777 removed.
+
+=====================================================================================================================
+MUTATIONS (14, the reviewer's own, none from the PR body's list; mutate.py -> mut/mutations.log)
+=====================================================================================================================
+Each mutation was applied to one file of a copy of the head's tree (mut/tree), with an exact-once anchor. The three
+publish modules were run, and the file was restored from a pristine export. Controls: C0 before, 133 passed; C1
+after every restore, 133 passed. For the find-step and install-script mutations, the rehearsal classes were also
+run alone (no digest or exact-text pin), to show the rehearsal itself catches the change.
+
+id   area     mutation                                                             full suite (133)  rehearsals alone
+M1   A        the install job also holds `actions: read`                           CAUGHT, 3 failed  n/a
+              (TestWiring::test_only_the_jobs_that_upload_hold_id_token_write; TestInstallCheckJob::test_it_runs_after_
+               the_testpypi_job_with_contents_read_alone_and_pypi_needs_it; test_production_publish_waits_on_a_verify_
+               step_that_can_fail)
+M2   A        the install job `needs: build` (installs before TestPyPI's           CAUGHT, 4 failed  n/a
+              JSON check vouched)
+              (TestWiring::test_the_publish_jobs_chain_on_the_build_...; TestWiring::test_the_testpypi_job_checks_the_
+               dist_uploads_then_checks_testpypi_before_the_install_check; TestInstallCheckJob::test_it_runs_after_...;
+               test_production_publish_waits_...)
+M3   A        the install job renamed "Verify the install" (without "TestPyPI",    CAUGHT, 3 failed  n/a
+              the ceremony and the republish gate would not count it)
+              (TestWiring::test_the_publish_jobs_chain_...; TestInstallCheckJob::test_it_runs_after_...;
+               test_production_publish_waits_...)
+M4   A        job-level `continue-on-error: true` on the install job               CAUGHT, 3 failed  n/a
+              (TestWiring::test_every_job_carries_only_its_listed_keys_and_runs_on_a_hosted_runner;
+               TestExactly::test_no_job_and_no_step_lets_a_failure_pass; test_production_publish_waits_...)
+M5   A        `cd "${GITHUB_WORKSPACE}"` inserted before the package check         CAUGHT, 8 failed  CAUGHT, 5 failed
+              (TestInstallCheckJob::test_it_installs_and_imports_from_outside_any_checkout, ...; rehearsals:
+               TestInstallCheckScript::test_a_try_that_installs_ends_the_retries_and_the_check_runs_from_runner_temp,
+               test_installs_the_stripped_version_from_testpypi_only[3 tags], ...)
+M6   A        `origin = spec.origin if spec else 'missing'` (a wheel without the   CAUGHT, 6 failed  CAUGHT, 3 failed
+              package passes)
+              (test_the_install_step_runs_exactly_its_commands; test_the_package_check_finds_the_package_and_fails_
+               through_systemexit; rehearsals: test_the_package_check_fails_for_a_wheel_without_the_package_even_
+               optimized[metadata-only-plain / -PYTHONOPTIMIZE=1 / -PYTHONOPTIMIZE=2])
+M7   B        find step: `not checks or` dropped (a release run with no TestPyPI   CAUGHT, 4 failed  CAUGHT, 1 failed
+              job is accepted)
+              (the 3 TestTemplate pins; rehearsal TestFindReleaseRun::test_a_release_run_without_a_testpypi_job_is_refused)
+M8   B        find step reads only the first page of the jobs listing              CAUGHT, 4 failed  CAUGHT, 1 failed
+              (the 3 TestTemplate pins; rehearsal ...::test_the_latest_attempt_is_read_across_every_page_of_the_listing)
+M9   B        find step accepts a "skipped" TestPyPI job                           CAUGHT, 4 failed  CAUGHT, 1 failed
+              (the 3 TestTemplate pins; rehearsal ...::test_a_release_run_whose_build_failed_so_both_testpypi_jobs_
+               were_skipped_is_refused)
+M10  E        retention 90 -> 91 (exactly 90: item 4)                              CAUGHT, 3 failed  n/a
+              (TestWiring::test_one_artifact_carries_the_dist_and_sha256sums_and_outlives_the_pypi_gate; 2 TestTemplate)
+M11  E        `if: github.run_attempt == '1'` on "Verify TestPyPI still serves     CAUGHT, 3 failed  n/a
+              exactly these files" (the witness check skipped on a re-run: item 9)
+              (TestExactly::test_no_job_and_no_step_lets_a_failure_pass; 2 TestTemplate)
+M12  E        `HASH_CHECK_ATTEMPTS: "1"` on the TestPyPI job's JSON check (the     CAUGHT, 4 failed  n/a
+              poll bound overridden)
+              (TestWiring::test_each_json_check_reads_its_own_index_and_keeps_the_default_bounds;
+               TestTemplate::test_the_json_check_polls_a_bounded_number_of_times; 2 TestTemplate)
+M13  D        CICD_MANUAL Stage 1b: "Wait 60 seconds for index sync" (the step     CAUGHT, 1 failed  n/a
+              sleeps 30)
+              (test_publish_docs_bounds.py::TestPublishDocsStateTheBounds::test_the_install_checks_retry)
+M14  trigger  `push: tags: ["v*"]` added (juniper-ml#555's double-fire)            CAUGHT, 1 failed  n/a
+              (TestUnchanged::test_publish_yml_still_publishes_on_a_published_release_alone)
+Result: 14 of 14 caught; no mutation was missed.
+
+=====================================================================================================================
+CI (gh pr checks 553, read 2026-11-26 04:44:35Z; read only)
+=====================================================================================================================
+- Required checks (the main ruleset's 22): all pass, except the required "Slow Tests", which is skipping. That job is
+  skipped on PRs, and a skipped job satisfies a required check.
+  - Passing: Unit Tests + Coverage (3.12 macOS; 3.12, 3.13 and 3.14 Ubuntu), Documentation Links, Dependency
+    Documentation, Async-route audit, Quality Gate, Pre-commit (3.12, 3.13, 3.14), Integration Tests, Bandit, Build
+    Package, Docker Build & Smoke Test, Analyze (python), Lockfile Freshness, Security Scans, Sequence Safety, Guard
+    PR base branch, and Memory Budget.
+- Also passing: Unit Tests (3.15, informational), CodeQL, Build linux/amd64 and linux/arm64, and Build Notification.
+- Skipping: Publish manifest, and five Cursor Automation checks.
+- No check run on the head is incomplete or failed (a check-runs API query found none).
+- mergeStateStatus is BLOCKED, with mergeable MERGEABLE, reviewDecision empty and 0 reviews. The blocker is not a
+  check. The likely cause is the main ruleset's pull_request rule (require_extra_approval_for_unattributed_changes:
+  true; required_review_thread_resolution: true), but this was not verified.
+- No re-run, comment, review or other write was made.

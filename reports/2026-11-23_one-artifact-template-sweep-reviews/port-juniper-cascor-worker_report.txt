@@ -1,0 +1,210 @@
+REPORT: juniper-cascor-worker port of the one-artifact template sweep (juniper-cascor#777), variant faithful
+Written 2026-11-26 after 03:38Z (date -u) by the port executor. Brief: $WT/tmp/ports/SWEEP_PORT_BRIEF.md (its
+"Addenda from the pilots", the #206 and #274 bullets included).
+$WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun
+Scratch (every log and script named below): $WT/tmp/ports/juniper-cascor-worker/ ("<scratch>")
+
+== PR
+PR #238  https://github.com/pcalnon/juniper-cascor-worker/pull/238   (OPEN, not draft, base main; BLOCKED at 03:38Z
+while CI runs: 13 pass, 10 pending, 5 skipping, none failing; not waited on, not re-run)
+Branch fix/publish-one-artifact-sweep; head 1965e557d1993c797c699e30a324048e14766365, ONE commit, parent 7df573f0,
+signed: readback verified=True reason=valid. Title = commit subject (the brief's, unshortened: the repo has no limit).
+Not merged, armed, approved or updated; no other PR touched (the repo had no open PR at 03:02Z or at 03:36Z).
+
+== Writer
+$WT/util/ad-hoc/2026-11-26_juniper-cascor-worker_one_artifact_sweep_port.py
+  sha256 ceabb57ecf7f5b5d6ca8f69cb66089a37f5400f29b49d67a18ad9185e675bf5b; sources in <scratch>/drafts-source/
+  (writer_src.py + the drafted test module, joined by assemble.py, which checks the embedded TEST_MODULE byte for byte).
+  --tree <fresh clone> --changelog-cases N --changelog-mutations M [--template <cascor publish.yml>] [--date YYYY-MM-DD]
+  Run as: --date 2026-11-26 --changelog-cases 121 --changelog-mutations 59 (JuniperCascor1's python3 -I; it needs PyYAML).
+- Template: juniper-cascor publish.yml in $WT/tmp/ports/clones/juniper-cascor (main 5e3d9801; its three publishers equal
+  #777's merge f5ed3017, only claude.yml and lockfile-update.yml moved since), pinned TEMPLATE_SHA256 b6826ee6...; every
+  template block and the whole republish job are cut out of it, never retyped, then re-cut from the result and compared.
+- publish.yml by exact-once anchors on the base (a moved file is applied by anchors, with a note). The test module, the
+  cheatsheet's section and AGENTS.md's paragraph are replaced only over the base's sha256 (5070a3dd..., 71a7f91c...,
+  7b58f272...), so a moved file is refused, never reverted. AGENTS.md must stay under conf/memory_budget.json's ceiling.
+- R7 (#206's review): both counts are required ints; no counts or a placeholder: exit 2; a zero count: exit 1. The seed
+  pin's 18 lines are embedded and asserted to hash to the pin (231b1999...), and the install script must keep every seed
+  command in order and replace only its last by cascor publish-protocol.yml:389's check with this package's names.
+- Replay proof (<scratch>/verify/replay_final.log): two fresh copies of the pristine base give byte-identical trees; a
+  second run on a ported tree exits 1 ("anchor matched 0 times") and writes nothing; the R7 refusals write nothing.
+- Test module: derived from juniper-cascor-client#206's pushed test (sha a06fe1cf..., snapshot <scratch>/ref/) by
+  <scratch>/drafts-source/derive_test.py: exact-count edits only (names; this repo's own defect evidence, read from its
+  base test; the import-dependency claim made true here; R5's neutral line and its rehearsal asserts; #274's "installs"
+  wording), refusing if any client-specific text survives. The two base modules (and the two base publishers) differ
+  only in names, the defect evidence and one comment pair (diffs checked), so #206's port of #777's test applies.
+
+== Base
+Clone $WT/tmp/ports/clones/juniper-cascor-worker: HEAD 7df573f0c375c1f4662ecbe9df447891f5ac6ee3 (== GitHub main at
+02:57Z, 03:20Z, 03:36:39Z and in the upload's own guard at 03:37:35Z). Pristine copy: <scratch>/base-tree.
+
+== git diff --stat (clone; full diff <scratch>/verify/clone.diff)
+ .github/workflows/publish.yml      | 175 +++++---
+ AGENTS.md                          |   6 +-
+ CHANGELOG.md                       |  54 +++
+ docs/DEVELOPER_CHEATSHEET.md       |  31 +-
+ tests/test_publish_one_artifact.py | 802 ++++++++++++++++++++++++++++++++-----
+ 5 files changed, 911 insertions(+), 157 deletions(-)
+CLAUDE.md is still a symlink to AGENTS.md (mode 120000); only the target was written.
+
+== Verification (all on the clone = the pushed files; logs in <scratch>/verify/ unless named)
+1. Tests (JuniperCascor1, Python 3.14; <scratch>/run_pytest.bash, no cache or bytecode written into the tree):
+   - tests/test_publish_one_artifact.py: 121 passed, 0 failed, 0 skipped (base: 69 passed). final_publish_test.log
+   - tests/ with ci.yml's unit-lane --timeout=60 --maxfail=5 and the repo's addopts: 664 passed, 8 skipped, 7 subtests
+     passed (base, same flags: 612 passed, 8 skipped, 7 subtests passed). The same 8 skips both sides, all
+     tests/test_gitleaks_pr_scan.py "no gitleaks binary". No new skip. final_full.log, full_base_same_flags.log
+   - grep of tests/ for publish.yml and the moved step names: no other test pins publish text; one module touched.
+2. actionlint 1.7.12 .github/workflows/publish.yml: exit 0, no output (clone and fetched PR head).
+3. pre-commit 4.5.1 via util/ad-hoc/2026-11-15_cascor_one_artifact_helpers/precommit_in_copy.py, the 5 files:
+   exit=0, "changed by hooks: none"; passed: YAML, end-of-files, whitespace, merge-conflict, large-files, case, AST,
+   debug, private-key, Black, isort, Lint tests with Flake8 (relaxed), Security scan tests with Bandit (relaxed),
+   markdownlint, doc-links, yamllint, requirements.lock; the rest had no files. precommit.log
+   flake8-bugbear 26.11.22 (B914 active; the pre-commit cache's env) over the test module, the writer and every script
+   in drafts-source: no finding at all (--select=B).
+4. Checker, FINAL, sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35 verified before each run,
+   --repo juniper-cascor-worker, --template the cascor clone's publish.yml (b6826ee6...), --pins
+   <scratch>/pins.proposed.json (sha256 63992351c10f9c4750d9fda7dccc40ab97026fbfc1c4b57039e533f901cc2233):
+     pins: .../pins.proposed.json (sha256 63992351..., 18 pins)
+     PASS juniper-cascor-worker/publish.yml  (PUBLISH_PACKAGE=juniper-cascor-worker, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)
+     1 of 1 pass   (exit 0)        checker_final_clone.log
+   On the FETCHED PR head (<scratch>/pr-head via 2026-11-15_fetch_pr_files.py --pr 238): PASS pr-head/publish.yml,
+   1 of 1 pass, exit 0 (<scratch>/checker_pr_head.txt); the 5 fetched files equal the clone's byte for byte.
+   Control with $W's pins file as it stands (1dd592c2...): FAIL, "step 'Verify TestPyPI install' differs from its pin
+   (juniper-cascor-worker, publish.yml, 'Verify TestPyPI install'), first at line 1", 0 of 1 pass, exit 1.
+5. Mutation proof (<scratch>/mutations.py; each on a COPY of the clone, pytest -x, copy removed, the clone's publish.yml
+   checked unchanged after; each run's TMPDIR under its own scratch dir, never /tmp):
+   59 of 59 mutations caught; the harmless control H1 (every download-artifact pin bumped together, Dependabot-style)
+   passes, as item 23 intends. Table: <scratch>/mutations-final/table.md (and in the PR body). Summary:
+     A1 install needs dropped | A2 install id-token | A3 checkout back in TestPyPI job | A4 PyPI needs testpypi alone |
+     A5 install environment | A6 TestPyPI contents: read | A7 cd RUNNER_TEMP removed | A8 `|| true` on pip |
+     A9 find_spec removed (seed's check) | A10 assert for SystemExit | A11 continue-on-error on install step |
+     A12 tag pasted by expression | A13 sparse checkout in install job | A14 PIP_EXTRA_INDEX_URL | A15 4 tries |
+     R5a OK printed again | R5b `0 if spec` | R5c SystemExit(0) | R5d find_spec('juniper_cascor') |
+     B1 one char in the find step | B2 min(ids) | B3 filter=latest | B4 lowest attempt kept | B5 no refusal without a
+     release run | C1 PREFIX disagrees with guard | C2 PREFIX dropped | C3 guard prefix rc | C4 prefix check dropped |
+     E1 retention 30 | E2 skip_existing | E3 attestations false (PyPI) | E3b (republish) | E4 continue-on-error on a check
+     | E5 job continue-on-error | E6 if: always() on PyPI | E7 workflow renamed | E8 extra step into dist/ | E9 reuse
+     condition traded for push | E10 one download-artifact copy re-pinned | E11 rebuild in the PyPI job | E12
+     self-hosted install job | E13 one comment word in a template block |
+     F1-F17 (the mutations #206's independent review ran, REVIEW.txt X1-X29, applied here): republish loses
+     environment pypi | PyPI env testpypi | republish if drops the input | push: tags added | install job renamed |
+     --extra-index-url | --no-deps dropped | install needs build | `!= success` -> `== failure` | jobs listing stops
+     at page 1 | if-no-files-found warn | defaults shell bash {0} | input default true | guard admits dispatch |
+     TestPyPI loses needs build | find accepts a branch ref | Record SHA256SUMS accepts a stray: all caught.
+   Rehearsals alone (-k "TestFindReleaseRun or TestFetchTestPyPIFiles or TestInstallCheckScript or
+   TestRecordSha256sums"): A8 A9 A10 A15 R5a-d B1-B5 C4 F9 F10 F16 F17: 18 of 18 caught
+   (<scratch>/mutations-final-rehearsals/table.md). Both batteries ran first on a scratch copy with the same result.
+6. Sequence-safety screens, local replay (<scratch>/probe_screens_ccw.py: probe_screens.py with this repo's scope from
+   sequence-safety.yml, --scope 'juniper_cascor_worker/**/*.py' --scope 'tests/**/*.py'; JuniperCascor1's
+   juniper-ci-tools 0.9.1, within CI's >=0.9.0,<0.10.0; local unsigned probe commits, never pushed):
+   - juniper-symbol-loss-check: exit 0, findings=2 fail=0 {'WAIVED': 2}, each "waived_by Allow-Symbol-Loss trailer".
+     Without the waivers (screens/nowaiver.log): exit 1, LOST: TestFindReleaseRun.test_the_newest_release_run_that_
+     still_holds_the_artifact_is_found (as #777) and TestUnchanged.test_the_testpypi_job_keeps_its_setup_and_its_
+     install_check (its successor: TestUnchanged.test_the_install_job_keeps_the_testpypi_jobs_python_and_its_install_
+     check). The commit body names each on its own Allow-Symbol-Loss: line (R6).
+   - juniper-docs-additions-check: exit 0, 9 small-deletion WARNs (AGENTS.md 2, docs/DEVELOPER_CHEATSHEET.md 7), fail=0.
+   - Memory Budget, the repo's own util/memory_budget_check.py --base-ref HEAD in the clone: "[OK] AGENTS.md: 26717 /
+     26832 chars headroom=115 delta=+210", exit 0 (memory_budget.log).
+7. Pre-push gate (bash util/ad-hoc/2026-11-15_pre_push_gate_run.bash <scratch>/gate; files/ = the 5 pushed files,
+   text/ = PR body, title, commit message; added/ = 917 added lines): exit 0, gate: PASS (<scratch>/gate.log).
+   - files scan, first run (gate-provisional): exit 2 on 2 findings, AGENTS.md:123:2 and :124:2, juniper-env-pipe-cell
+     (b9 scan). Masked read (KEY mode): L123 `| <U6>_<U4>_<U5> | <U7>_<U6>_<U6>_<U4>_<U5> |` (backticked), L124 the
+     same shape with a lower-case remark, random-looking=0 both: the § Legacy env-var names table, upper-case variable
+     NAMES, not values; both lines unchanged by this PR (the diff touches AGENTS.md lines 9, 264, 265 only). Accepted for
+     the files scan only (<scratch>/gate.accept/accept.files.txt); the final run: 2 accepted, 0 open, exit 0.
+   - text scan: 0 findings (canary 32 of 32 planted classes found), exit 0.
+   - masked read (--names), 2 added lines, both judged not credentials: publish.yml added line 20 (random-looking=1):
+     the template's guard comment, "notes/JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md"
+     (a juniper-ml doc path; "AUTHORIZATION" matched); test added line 543 (random-looking=0): `assert
+     all(headers.get("Authorization") == f"Bearer {FAKE_API_CREDENTIAL}" ...)`, the rehearsal's stand-in (cascor's).
+   - non-vacuity: a random AWS-shaped key planted in a COPY of the payload's .github/workflows/publish.yml was reported
+     (aws-access-token, defaults scan), so the dot-directory is scanned; the copy was deleted (gate_dotdir_probe.bash).
+   - gate_matches_push.py: the gate's file copies equal the pushed bytes; its text equals the final body, title, message.
+8. Landing: run_open_signed_pr.py ARGS.json --dry-run (base main @ 7df573f0, the 5 files, "(nothing written)", exit 0),
+   then, guarded on main == 7df573f0 at that moment, the real run: "signed commit 1965e557d199 on
+   pcalnon/juniper-cascor-worker:fix/publish-one-artifact-sweep", "PR: .../pull/238" (open_signed_pr.log).
+   readback_branch.py: head 1965e557... verified=True reason=valid parents=['7df573f0'], message last lines = the two
+   trailers, all 5 blobs "same", "commit touches 5 file(s); expected 5; extra=[] missing=[]" (readback.log).
+
+== Proposed pin (<scratch>/pins.proposed.json, sha256 63992351c10f9c4750d9fda7dccc40ab97026fbfc1c4b57039e533f901cc2233)
+Derived from $W/util/ad-hoc/2026-11-24_publish_port_install_pins.json AS IT NOW IS (see Contradictions: 1dd592c2...),
+re-dumped in its own layout (indent=2 + final newline, round-trip verified); only (juniper-cascor-worker, publish.yml,
+"Verify TestPyPI install") changed: lines, sha256, source. Full diff: <scratch>/pins.proposed.diff.txt.
+pin sha256 231b1999dd3220fd87f919180bd446b7c1b9d0d6b93256be25a764569123871f (seed, 18 lines)
+        -> f5968714e21b7d739da974a271697e44867103629eaa09c1829a08b991e6eb2f (31 lines):
+  + 3 comment lines before `cd "${RUNNER_TEMP}"` (juniper-cascor's sys.path note, naming juniper_cascor_worker/)
+  + after `sleep 30`: the step's own 4-line security note (last sentence now "The sleep above, and the retry below,
+    cover TestPyPI index lag.") and the template's lag line
+  + after `done`: 5 comment lines (the step's own --no-deps note, extended to the package check)
+  - python -c "import importlib.metadata as m; print('TestPyPI install OK', m.version('juniper-cascor-worker'))"
+  + python -c "import importlib.metadata as m, importlib.util as u; spec = u.find_spec('juniper_cascor_worker'); origin = spec.origin if spec else None; print('TestPyPI install', m.version('juniper-cascor-worker'), 'package at', origin); raise SystemExit(0 if origin else 'the installed wheel holds no juniper_cascor_worker package')"
+  Every other seed command kept, in order (the writer asserts it). source rewritten to say what changed and why.
+
+== The coordinator's #274 addenda (arrived before the PR; all applied before opening, nothing pushed for them later)
+- MAJOR, a failed `Verify PyPI serves exactly these files` has two causes: SATISFIED. docs/DEVELOPER_CHEATSHEET.md keeps
+  it out of the "before PyPI" list as its own paragraph (as merged #206 does) and adds the timeout case: a mismatch ->
+  only a new patch version ships tested files under a clean version; a check that gave up waiting (index lag) -> "Re-run
+  failed jobs" within 30 days, which uploads the same bytes again, which the index accepts, and repeats the check,
+  behind a fresh `pypi` approval. Never "past the ladder". The CHANGELOG's Docs bullet says the same.
+- "installs", not "runs": SATISFIED in every text this PR writes (CHANGELOG "It installs the package TestPyPI serves";
+  the cheatsheet "nothing in it can mint a credential"; the test comment "The install check installs the package
+  TestPyPI serves"). Left as the template has them, per the addendum: the install job's banner ("It executes the
+  package TestPyPI serves") and permissions comment ("this job runs the package TestPyPI serves"); the PR body says so.
+- the neutral line `print('TestPyPI install', m.version('juniper-cascor-worker'), 'package at', origin)`: SATISFIED
+  (no "OK" before the check has passed; pinned by the test, the rehearsal asserts "OK" not in a failing check's log).
+
+== Judgement calls
+1. No checkout in the install job (as the pilot and the brief's addendum): the structural target's sparse checkout of
+   pyproject.toml was the simulation's mechanical carry-over; the version comes from the tag; the checker admits either.
+2. The R2 fix took the form merged #206 uses after its fix-up: "When rung 1 refuses, or the release run failed before
+   PyPI:" holds the two TestPyPI cases, and the failed PyPI check is its own paragraph with both causes (#274).
+3. Docs: the worker documents publishing in AGENTS.md § Publishing (3 lines, rewritten within the memory budget: 115
+   chars of headroom left; PUBLISH_TAG_PREFIX is left to the cheatsheet for that reason) and docs/DEVELOPER_CHEATSHEET.md
+   § Publishing and Recovery (replaced whole; version 1.1.4 -> 1.1.5, Date 2026-11-26) plus its Actions Layout row.
+   README.md (no publishing text) and docs/REFERENCE.md (publish.yml in its tree only) are unchanged: nothing false.
+4. test_publish_docs_bounds.py NOT ported: the worker's docs state none of the bounds' numbers (poll count, interval,
+   timeouts, tries, waits) before or after; the new docs deliberately quote no numbers. The CHANGELOG entry, a record,
+   names the retry's (30 s, 5 tries, 10 s), as cascor's and #206's do.
+5. Wording: the new text names no person. The base publish.yml says "owner"; the template blocks bring "Overtoad"
+   verbatim. The cheatsheet's "the Overtoad's recovery ladder" became "the recovery ladder (ruling of 2026-11-15)"
+   (detected and asserted first). The test docstring keeps the base's "owner" (unchanged text).
+6. The import-dependency claim was checked, not carried: juniper_cascor_worker/__init__ imports config (which imports
+   juniper_config_tools) and worker (numpy) at import time, so the docs say "juniper-config-tools and numpy among them";
+   the client's "requests, websockets and juniper-cascor-protocol" would have been false here.
+7. CHANGELOG: entry appended at the end of [Unreleased] / ### Fixed, right after #232's (the writer asserts that), no
+   blank line between, as the section does. #232's entry keeps its now-superseded statements (#206's R4: optional; the
+   template left its own earlier entry as is); the new entry says "Until now ..." for each.
+8. Mutation runner: unlike the pilot's, each pytest run gets TMPDIR under its own scratch dir, because pytest's capture
+   opens temporary files and nothing may be written under /tmp; both batteries were re-run after that change.
+9. The environments' tag policies (GET): testpypi and pypi admit hf*, juniper-*-hf*, juniper-*-rc*, juniper-*-v*, rc*,
+   v*, so the template's rc*/hf* guard note is true here.
+10. No `## Requirements` section: the repo has no PR template (.github/ holds CODEOWNERS, dependabot.yml, workflows).
+11. I removed one file I had created outside the scratch dir: my writer's bytecode cache,
+    $WT/util/ad-hoc/__pycache__/2026-11-26_juniper-cascor-worker_one_artifact_sweep_port.cpython-314.pyc (written by
+    make_pins.py's import under python3 -I). Other sessions' caches there were left alone.
+
+== Could not do / deviations from the brief's mechanics
+- Write/Edit refuse $WT paths from my isolated worktree (agent-a46cf0c1076774975): every source was drafted in its
+  gitignored tmp/drafts/ and installed in $WT with Bash cp; all deliverables are in $WT (writer, pins.proposed.json,
+  ARGS.json, logs, drafts-source/, this report).
+- git in the clone through <scratch>/vcs_in.py (subprocess, cwd=clone; refuses commit/tag/push/stash/reset/checkout);
+  the Bash guard also refused command lines naming .github paths or GITHUB_* strings, so those ran from script files.
+- CI was not waited on (13 pass, 10 pending, 5 skipping at 03:38Z).
+
+== Contradictions with the brief (none blocking)
+- $W's pins file no longer hashes to the brief's d539f05f...: it changed at 03:11:55Z to 1dd592c2..., byte-identical to
+  the cascor-client fix-up's pins.proposed.json (#206's reviewed pin). This repo's pin in it is still the seed. I never
+  wrote under $W; my proposal is derived from the current file and differs from it in this repo's pin alone.
+- The structural target's install-job checkout is not carried (judgement 1), as the addenda direct.
+
+== Documents referenced (by filename) and changed
+Referenced: $WT/tmp/ports/SWEEP_PORT_BRIEF.md; $W/tmp/ports/SWEEP_BRIEF.md, $W/tmp/ports/BRIEF.md,
+$W/tmp/ports/SWEEP_ITEMS.md; $WT/tmp/ports/juniper-cascor-client/REPORT.txt, .../review/REVIEW.txt, .../pr_body.md;
+juniper-cascor (5e3d9801) docs/ci_cd/MANUAL.md, docs/ci_cd/REFERENCE.md, CHANGELOG.md, publish-protocol.yml;
+juniper-cascor-client main docs/REFERENCE.md (merged #206, beb6b349); the worker's AGENTS.md, CHANGELOG.md,
+docs/DEVELOPER_CHEATSHEET.md, docs/REFERENCE.md, README.md, conf/memory_budget.json, sequence-safety.yml, ci.yml.
+Changed in the repo (PR #238): .github/workflows/publish.yml, tests/test_publish_one_artifact.py, AGENTS.md,
+docs/DEVELOPER_CHEATSHEET.md, CHANGELOG.md. Created in $WT: util/ad-hoc/2026-11-26_juniper-cascor-worker_one_artifact_
+sweep_port.py and everything under tmp/ports/juniper-cascor-worker/ (this REPORT.txt, pins.proposed.json and its
+diff, ARGS.json, commit_body.txt, commit_message.txt, pr_body.md, the scripts, ref/, verify/, gate*/, screens/,
+mutations*/, pr-head/, base-tree/, replay1-3/, work/, drafts-source/).
