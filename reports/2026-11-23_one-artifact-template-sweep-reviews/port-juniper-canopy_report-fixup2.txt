@@ -1,0 +1,155 @@
+REPORT_FIXUP2: juniper-canopy#844, the third commit (the PR's own review: M1 and N1 fixed in files, M2 and N3 in the body)
+Written 2026-11-26 after 04:59Z (date -u) by the port executor. Requested by the coordinator's message.
+$WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun
+Read first, whole: the review, $WT/tmp/ports/juniper-canopy/review/REVIEW.txt (BLOCKER 0, MAJOR 0, MINOR 2, NIT 3; unchanged).
+Earlier reports, unchanged: $WT/tmp/ports/juniper-canopy/REPORT.txt and REPORT_FIXUP.txt.
+Scratch for this fix-up (every log named below): $WT/tmp/ports/juniper-canopy/fixup2/; <scratch> = $WT/tmp/ports/juniper-canopy/
+
+== Result
+PR #844  https://github.com/pcalnon/juniper-canopy/pull/844   OPEN, not draft; title unchanged
+New head 704896b422a27caaad67e224425c54db9728b891: ONE signed commit on fix/publish-one-artifact-sweep, with parent
+e6557ec4cd6d603b2d1dfb534204316b219994df. The PR now holds three commits: dcc58bb5, e6557ec4 and 704896b4.
+  push tool (fixup2/push.log): "signed commit 704896b422a27caaad67e224425c54db9728b891 on
+  pcalnon/juniper-canopy:fix/publish-one-artifact-sweep", "verified signature (reason=valid)", "verified parent
+  e6557ec4cd6d603b2d1dfb534204316b219994df".
+  readback (fixup2/readback.log): head 704896b4... verified=True reason=valid parents=['e6557ec4']. The message's last
+  two lines are the brief's two trailers. docs/ci_cd/CICD_REFERENCE.md is "same" (blob 5b911d343da1), CHANGELOG.md
+  "same" (blob 03bba2f21f3c), and "commit touches 2 file(s); expected 2; extra=[] missing=[]".
+  Subject: docs(publish): the reference and the CHANGELOG name exactly the bounds test_publish_docs_bounds.py pins, and where
+  Body: fixup2/commit_body_fixup2.txt (sha256 e3b5b7ab...). Its LAST paragraph is exactly the two trailer lines. It has no
+  Allow-Symbol-Loss: line; the first commit's two still waive both symbols across the range (below).
+PR body: PATCHed with gh api --method PATCH repos/pcalnon/juniper-canopy/pulls/844 --input fixup2/pr_body3.json at
+  04:59:06Z (updated_at 04:59:07Z).
+  - Just before the PATCH, the body GitHub held equalled fixup/pr_body2.md byte for byte (the script refuses otherwise).
+  - Read back afterwards, it equals fixup2/pr_body3.md byte for byte (sha256 1ba01910...).
+  - It still ends with the two required lines (fixup2/patch_body.log).
+CI on the new head (read-only; nothing re-run, as instructed), 04:59:15Z: 6 success, 5 neutral, 8 in progress, none
+  failing; mergeStateStatus BLOCKED while they run. The UI Sub-suite (Playwright) re-runs here, on the new head.
+Not merged, armed, approved, updated or re-run; no other PR touched. GitHub main is still 2cec71fe at 04:59:15Z.
+
+== Pre-checks (stop-if-moved)
+04:44:57Z: main 2cec71fe10e9025232d64e74c4f527b6ed0c08f3; #844 head e6557ec4cd6d603b2d1dfb534204316b219994df; only #844
+open. Again at 04:52:49Z and at 04:58:38Z, just before the push (fixup2/prepush-{a,c}.log): unchanged, and only #844
+was open, so no other PR shares CICD_REFERENCE.md or CHANGELOG.md.
+
+== Dispositions, as done
+M1 (FIX), docs/ci_cd/CICD_REFERENCE.md:565 now reads "Pinned by `src/tests/unit/test_publish_one_artifact.py`, and the
+   JSON checks' poll bounds and the install check's wait, tries and lag error by
+   `src/tests/unit/test_publish_docs_bounds.py`. Recovery: ...". It used to say "and the numbers in this section by ...".
+   That is exactly what the module requires CICD_REFERENCE.md to state; the section's "kept 90 days" is no longer
+   claimed. No pin is added. The doc stays 0.30.6 / 2026-11-26: the PR bumps it once from main's.
+N1 (FIX), CHANGELOG.md:272-275 (three lines rewrapped into four at the entry's width): "... reads the JSON checks' bounds
+   and the install check's wait and tries from `publish.yml`, and requires `docs/ci_cd/CICD_REFERENCE.md` to state the
+   JSON checks' bounds, and both `CICD_REFERENCE.md` and `docs/ci_cd/CICD_MANUAL.md` to state the install check's wait,
+   tries and lag error." The rest of the entry is unchanged.
+M2 (PR body only). The "No digest pins" bullet now says:
+   - comment drift in the template blocks is caught only inside a `run:` script, because the checker compares the
+     parsed YAML;
+   - a comment anywhere else, the two the sweep corrected included, is guarded by neither the tests nor the checker,
+     and is kept by review alone;
+   - no pin is added, and it stays a residual of the sweep across its ports, "for juniper-ml's consolidated plan".
+   The concurrency bullet's "compares it with juniper-cascor's whole" now reads "compares its parsed YAML with
+   juniper-cascor's whole: every key and `run:` script, but no comment outside a script".
+   The body names no plan version. This worktree's notes/JUNIPER_2026-10-04_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-PLAN.md
+   records up to v1.15.17 (2026-11-23), so v1.15.18 cannot be cited yet.
+N2: left as it is. The body's new section says the test module cites juniper-ml's
+   util/ad-hoc/2026-11-23_publish_port_template_identity.py, "which is not on juniper-ml's `main` yet and is to land there".
+N3 (PR body only). The Build and Validate bullet now reads "unchanged but for two comments". It names the `Upload dist
+   artifacts` comment, a template block that takes the template's word ("once the Overtoad approves the `pypi` gate",
+   where the base said "the owner").
+   - job_diff.py confirms the build job's only differences from the base: that comment, the guard comment, and the
+     TestPyPI banner below the job.
+   - The republish bullet's misplaced "The upload block's comment takes the template's word too." moved there.
+Also in the body (the fix-up's own edits, fixup2/build_pr_body3.py, exact-once edits of the body the PR carried):
+   - The docs-bounds bullet had the N1 overreach too ("requires both docs to state it"). It is now scoped as the
+     CHANGELOG is, and says the artifact's 90 days are pinned in the workflow alone.
+   - A new section, "## The third commit: this pull request's review", gives the verdict counts, M1, N1, M2, N3 and N2.
+   - The Testing intro now says every check ran again after the third commit. Items 4, 6, 7, 8 and 9 say so for
+     pre-commit, the mutation proof, the screens (all three commits), the replay (the writer as edited for the third
+     commit) and the gate (line 1748).
+   - The concurrent-PR check: 04:52Z.
+
+== The writer, $WT/util/ad-hoc/2026-11-26_juniper-canopy_one_artifact_sweep_port.py
+- It is now sha256 9f5fe73f0a7febdd06d7228ad25a812acdabab86431e544741b9ebc2a2d69f71 (2372 lines). The second commit's
+  5fca1dca... is kept as fixup2/writer-commit2.py, and fixup/drafts/ re-assembles to it byte for byte (fixup2/setup.log).
+- Diff: fixup2/writer.diff (+9 -5). REFERENCE_NEW gets the M1 sentence, CHANGELOG_ENTRY the N1 sentence (with its
+  {docs_cases} and {mutations} placeholders), and the docstring a note of the third revision. Nothing else changed.
+- Sources: fixup2/drafts/ (writer_src.py edited; both test modules unchanged), assembled by drafts-source/assemble.py,
+  whose round-trip check passed.
+- Flake8 7.3.0 + bugbear 26.11.22 with juniper-ml's own .pre-commit-config.yaml arguments: clean, as are fixup2's Python
+  scripts.
+
+== Verification (on the clone, which equals the pushed tree, or on copies of it)
+1. Replay on FRESH copies of main (fixup2/replay.log). Copies: git archive of 2cec71fe from the clone, whose HEAD is that
+   commit, == GitHub main.
+   - The unported copy equals base-tree (936 files).
+   - Two runs (--date 2026-11-26 --changelog-cases 113 --changelog-docs-cases 2 --changelog-mutations 55): exit 0,
+     byte-identical trees (937 files).
+   - A second run on a ported copy: exit 1 (REFUSED: an anchor is gone); its tree hash is unchanged.
+   - No counts, and --changelog-cases '{cases}': exit 2 each.
+   - refusal_proof.py: 5 of 5 ok. The copy is unchanged.
+   - The writer's output vs the second commit's tree: exactly CHANGELOG.md and docs/ci_cd/CICD_REFERENCE.md differ
+     (fixup2/fixup.diff, 27 lines).
+   - The targeted edit fixup2/fixup_edit2.py made the clone: two exact-once replacements, applied only over the files
+     fetched from e6557ec4. The edited clone == the writer's output: 937 files, 0 differ (fixup2/edit_clone.log).
+2. Tests (JuniperCanopy1, Python 3.13.13, pytest 8.4.2; <scratch>/pytest-fixup2-clone.log):
+   test_publish_one_artifact.py + test_publish_docs_bounds.py + test_wheel_import_smoke.py: 128 passed, 0 failed,
+   0 skipped, exit 0. No new skip.
+3. CI's unit lane (not on your list; run so the body's "every check ran again" stays true):
+   - 8546 passed, 17 skipped, 0 failed, exit 0 (<scratch>/unit-lane-fixup2-final.log, 04:48:55Z-04:58:10Z).
+   - Equal to the first and second commits' lanes. The 13 SKIPPED lines equal the first commit's lane's and main's
+     (fixup2/unit-lane-summary.log).
+   - The lane's copy holds the third commit's two files (sha256 checked).
+4. actionlint 1.7.12 on publish.yml: exit 0, no output (<scratch>/lint-fixup2-clone.log).
+5. pre-commit (precommit_in_copy.py, /opt/miniforge3/bin/pre-commit):
+   - The two changed files: exit 0, "changed by hooks: none"; markdownlint and doc links passed (fixup2/precommit-two.log).
+   - All seven PR files: exit 0, "changed by hooks: none", no hook failed (fixup2/precommit-seven.log).
+6. FINAL checker (sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35 verified before each run;
+   --pins $WT/tmp/ports/juniper-canopy/pins.proposed.json, sha256
+   0fa60256e012388e19365fe8b6e04d16203131da6a359e50258f4115400b1365; publish.yml unchanged, sha256 3bbae01d...):
+   - Clone: "PASS juniper-canopy/publish.yml (PUBLISH_PACKAGE=juniper-canopy, PUBLISH_DIST_DIR=dist,
+     PUBLISH_TAG_PREFIX=v)", "1 of 1 pass", exit 0 (<scratch>/checker-fixup2-clone.log).
+   - Re-fetched PR head: "PASS pr-head/publish.yml ...", "1 of 1 pass", exit 0 (<scratch>/checker-fixup2-pr-head.log).
+7. Screens on the three-commit range (fixup2/screens_three.bash: main, then each commit with its pushed message;
+   fixup2/screens-three-commits.log):
+   - juniper-symbol-loss-check: exit 0, findings=2 fail=0 {'WAIVED': 2}. Both are waived by the first commit's lines.
+   - juniper-docs-additions-check: exit 0, 13 small-deletion WARNs, fail=0.
+8. Pre-push gate over the fix-up's files and texts. Payload fixup2/gate-final/: the two files, pr_body3.md as PATCHed,
+   the title and the fix-up's message; added/ = its lines added to e6557ec4 (fixup2/gate-final.log). Exit 0, gate: PASS.
+   - Files scan: 2 findings, both ACCEPTED for the files scan only (fixup2/accept.files.txt):
+     CHANGELOG.md:1748:11:juniper-env-credential:64b0c6e538 and CHANGELOG.md:1748:13:generic-api-key:64b0c6e538.
+     Line 1748 is byte-identical to main's line 1690 and to the second commit's line 1747 (fixup2/finding_lines2.log).
+     That log's label says "the first commit's" because its third argument was the second commit's tree. The N1 rewrap
+     added one line above it.
+   - Text scan: 0 findings; canary 32 of 32.
+   - Masked read --names: "0 line(s) listed from 2 file(s) and 7 line(s) read".
+   - Without the accept file the gate FAILS on exactly those two (fixup2/gate-pre.log).
+9. Mutation proof (not on your list; the harness copies the reference): 55 of 55 caught, and 17 of 17 with the
+   rehearsals alone. Both tables are identical to the first commit's (fixup2/mutations/table.md,
+   fixup2/mutations-rehearsals/table.md).
+10. Landing (fixup2/push_fixup.bash, run from $WT):
+   - prepush_check OK.
+   - run_push_signed_commit.py fixup2/ARGS3.json --dry-run: 04:58:41Z, "(nothing written)", exit 0.
+   - The same without --dry-run: 04:58:42Z-04:58:47Z, exit 0.
+   - ARGS3.json: expected_head e6557ec4cd6d603b2d1dfb534204316b219994df, paths [docs/ci_cd/CICD_REFERENCE.md,
+     CHANGELOG.md] only.
+11. Re-fetch (2026-11-15_fetch_pr_files.py --pr 844 --out fixup2/pr-head): 7 files, each equal to the clone's
+   (fixup2/pr-head-same.log, exit 0).
+
+== Not done, and notes
+- CI on 704896b4 was not waited on or re-run (in progress at 04:59:15Z, none failing).
+- The review's merger notes are not findings, and I left them alone; they stand for the merge.
+  - Apply only canopy's entry from pins.proposed.json to $W's pins file. It still carries the pre-review
+    juniper-cascor-client pin (8281a039...), while $W holds the reviewed one (575be747...).
+  - The squash must keep the first commit's two waiver lines at line start. The repo's default, COMMIT_MESSAGES, does.
+- The writer stays untracked in $WT, as before. Its first- and second-commit versions are fixup/writer-commit1.py and
+  fixup2/writer-commit2.py.
+
+== Documents changed
+juniper-canopy, pushed in 704896b4: docs/ci_cd/CICD_REFERENCE.md and CHANGELOG.md. Also PR #844's body (PATCH).
+$WT:
+- util/ad-hoc/2026-11-26_juniper-canopy_one_artifact_sweep_port.py (edited);
+- tmp/ports/juniper-canopy/REPORT_FIXUP2.txt (new);
+- tmp/ports/juniper-canopy/fixup2/ (new: scripts, logs, trees, drafts).
+The clone's two files carry the fix-up. Unchanged: REPORT.txt, REPORT_FIXUP.txt, pins.proposed.json, fixup/ and
+review/.

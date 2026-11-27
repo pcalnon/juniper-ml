@@ -1,0 +1,137 @@
+[
+  {
+    "id": "F-01a",
+    "old": "  - `ethereal-munching-peacock` and `moonlit-percolating-sun` may go once their `tmp/` is archived (R41). Their scripts land with v1.15.18 and their proof drivers and evidence are archived in `juniper-ml/tmp/worktree-archive-2026-11-26/ethereal-munching-peacock/`; their clones, mutant trees and simulations are not.",
+    "new": "  - `ethereal-munching-peacock` and `moonlit-percolating-sun` may go once their `tmp/` is archived (R41), which is done only in part. Their scripts land with v1.15.18, and `juniper-ml/tmp/worktree-archive-2026-11-26/` holds the top-level files and `evidence/` of ethereal-munching-peacock's ten `tmp/sweep/` round directories (`cascor-r3`, `cascor-r4`, `checker-r5` to `checker-r12`; 1,580 files, its `MANIFEST.sha256` all OK on 2026-11-26 at 22:35Z). Not archived: those directories' trees (clones, mutants, simulations, stand-in venvs); the review rounds' own directories (`tmp/r2review` to `tmp/r12review`, `tmp/review-test-lens`, `tmp/review-workflow-lens`) beyond the reports in `SW/`; `tmp/sweep/land/` (#777's landing evidence), `tmp/sweep/cascor`, `cascor-r2` and `cascor-r3-prep`, and `tmp/arc/`; and moonlit-percolating-sun's whole `tmp/` (about 8 GB: the ports' clones, merge logs and done-check runs) beyond the reviews and executor reports in `SW/`."
+  },
+  {
+    "id": "F-01b",
+    "old": "go (R41), now that their scripts have landed and their proof drivers are archived.",
+    "new": "go (R41): their scripts land with v1.15.18 and the fix passes' proof drivers and evidence are archived, but the rest of both worktrees' `tmp/` is not (§5, the note on the template sweep)."
+  },
+  {
+    "id": "F-02a",
+    "old": "Sentry Logs and exception values to 0.4.3 (R-OBS-SC-3), so (a) and (b) stay in force.",
+    "new": "Sentry Logs and exception values to 0.4.3 (R-OBS-SC-3), so (a) and (b) stay in force. v1.15.18: on 2026-11-24 the Overtoad gave 0.4.3 to the sentry-sdk 3.x port instead (ml#2647; sentry-sdk `>=2.35.0,<4`) and moved R-OBS-SC-3 to 0.4.4 (`…REMAINING-TASKS.md` § \"Checked and changed, 2026-11-24\"). 0.4.3's Release waits at its `pypi` gate since 2026-11-26 and lists three exposures as Known Issues (the client address in five proxy headers, canopy's `authkey` on 2.x, a log record's extras in Sentry Logs), so it ends neither (a) nor (b). Where this plan names \"0.4.3\" for R-OBS-SC-3's design, read 0.4.4."
+  },
+  {
+    "id": "F-02b",
+    "old": "| **R-OBS-SC-3** (owed; Overtoad ruling 2026-11-08): juniper-observability 0.4.3 |",
+    "new": "| **R-OBS-SC-3** (owed; Overtoad ruling 2026-11-08): juniper-observability 0.4.3 (0.4.4 since the Overtoad's ruling of 2026-11-24, which gave 0.4.3 to the sentry-sdk 3.x port; v1.15.18) |"
+  },
+  {
+    "id": "F-02c",
+    "old": "XC-SENTRY now and until 0.4.3 (R-OBS-SC-3);",
+    "new": "XC-SENTRY now and until R-OBS-SC-3 (0.4.4 since 2026-11-24; 0.4.3, at its `pypi` gate since 2026-11-26, is the sentry-sdk 3.x port and leaves three Known Issues; v1.15.18);"
+  },
+  {
+    "id": "F-03",
+    "old": "gap 7 is this record; and gap 8's overlap ended when ml#2606 merged.",
+    "new": "gap 7 is this record, with the three findings it names (next bullet); and gap 8's overlap ended when ml#2606 merged.\n  - Gap 7's three findings, which `…seven-worktrees-archived.md` § Findings sends to v1.15.18: (1) the rename's blind substitution reached untracked and ignored files in every juniper-ml worktree that existed on 2026-11-20 to 2026-11-22 (about 2,450 rewritten tracked files and 11 symlinks materialized in each, every untracked file and much of `tmp/`), so `tmp/` evidence older than 2026-11-20, `juniper-ml/tmp/worktree-archive-2026-11-23/` included, is read as possibly substituted; (2) sentry-sdk 3.0.0 (PyPI 2026-11-23 09:30Z) removed `send_default_pii` and raises `TypeError` on an unknown option, so `configure_sentry` with a DSN raises on a fresh install of published 0.4.2 that resolves 3.x (a blank DSN returns early); ml#2608 capped it `<3` on `main` (2026-11-23 20:50:42Z, `b2aa9026`), and 0.4.3 supports both majors; (3) juniper-ml still registered 447 worktrees after the housekeeping (478 on 2026-11-26 at 22:34Z)."
+  },
+  {
+    "id": "F-04a",
+    "old": "and `b71989` (`moonlit-percolating-sun-fa`), which ran the ports)",
+    "new": "and `3792e0cc` (ListAgents `moonlit-percolating-sun-fa`, [b71989]; the arc's record calls it session `b71989`), which ran the ports)"
+  },
+  {
+    "id": "F-04b",
+    "old": "(the ports and juniper-cascor-client#207; session `b71989`; ml#2676)",
+    "new": "(the ports and juniper-cascor-client#207; session `3792e0cc`, ListAgents [b71989]; ml#2676)"
+  },
+  {
+    "id": "F-05",
+    "old": "on 2026-11-24, after five review rounds.",
+    "new": "on 2026-11-24, after four review rounds (1, 2, 4 and 5; round 3 was the second fix pass)."
+  },
+  {
+    "id": "F-06",
+    "old": "replaced its deny rules with a positive allow-list over a bash lexer.",
+    "new": "judged the install scripts by a positive allow-list over a bash lexer, in place of more deny rules (the deny rules stayed as a second line)."
+  },
+  {
+    "id": "F-07",
+    "old": "  - Rounds 4 to 8 had each found a MAJOR or worse, every one from the checker reading shell differently from bash.",
+    "new": "  - Rounds 4 to 8 had each found a MAJOR-or-worse bypass of the install-script rules (R4-2, R5-F1, R6-F1, R7-1 and R8-1 to R8-3), each from the checker reading shell differently from bash: round 7 rated R7-1 MINOR on static evidence, and fix pass 6 executed it and found it a MAJOR."
+  },
+  {
+    "id": "F-08",
+    "old": "  - To this record's session (`d769e173`), between 21:40:08Z and 21:40:38Z: \"merge approval granted\" and \"merge approval granted for this work arc\".",
+    "new": "  - To this record's session (`d769e173`), by its transcript: \"merge approval granted\" (queued 21:40:06Z, read at 21:40:10Z) and \"merge approval granted for this work arc\" (queued 21:40:15Z, read at 21:40:34Z)."
+  },
+  {
+    "id": "F-09a",
+    "old": "I stop and ask about anything that falls outside those conditions.\"",
+    "new": "I stop and ask about anything that falls outside those conditions.\" Not chosen: \"Ports only\", \"Ask per PR\" and \"You merge\"."
+  },
+  {
+    "id": "F-09b",
+    "old": "**\"Yes, merge it (Recommended)\"**; and at 11:27:00Z, in the Overtoad's own words, \"merge approval granted for this work arc\".",
+    "new": "**\"Yes, merge it (Recommended)\"**: \"I merge juniper-cascor-client#207 with util/safe_merge.py once its required checks are green, and record it with the ports.\" Not chosen: \"Leave it for me\" and \"Close it\". And, in the Overtoad's own words (queued 11:26:36Z, read at 11:27:03Z), \"merge approval granted for this work arc\"."
+  },
+  {
+    "id": "F-10",
+    "old": "three of session `b71989`'s tools, promoted with headers:",
+    "new": "three of session `b71989`'s tools, promoted with headers and adapted to run from any juniper-ml checkout (paths from the checkout's root, `PYTHON` for the interpreter, a new output directory per run; the pin tool reads earlier pins from git history and no longer regenerates the sweep's manifest):"
+  },
+  {
+    "id": "F-11",
+    "old": "at `557490fb` on 2026-11-26 (§5, the note on the template sweep).",
+    "new": "at `557490fb` on 2026-11-26, whose `juniper-observability` is 0.4.3's code (ml#2666), so `JuniperCascor1` now imports 0.4.3's code while pip reports 0.4.1 (§5, the note on the template sweep)."
+  },
+  {
+    "id": "F-12",
+    "old": "with `MANIFEST.sha256` and `README.md`), kept under the 2026-10-26 retention rule.",
+    "new": "under its `ethereal-munching-peacock/tmp/sweep/`, with `MANIFEST.sha256` and `README.md` at its root), kept under the 2026-10-26 retention rule; and, by its re-run of the done-check at 21:40:15Z, `.claude/worktrees/moonlit-percolating-sun/tmp/ports/verify-all-mains-v3/20261126T214015Z/` (the fetched publishers and the checker's logs)."
+  },
+  {
+    "id": "F-13",
+    "old": "so the juniper-deploy stack's restart is a bring-up.\n  - Gap 4 is R17's",
+    "new": "so the juniper-deploy stack's restart is a bring-up.\n  - Not in `…REMAINING-TASKS.md`: session `ffffd3` found an unattributed write under `/tmp` on 2026-11-24, `/tmp/vFI4WZy/` (created 00:28:39Z; two byte-identical copies of juniper-ml's `.gitignore`, named `4.1.1` and `5.1.1`), and left it as evidence (`tmp/arc/plan_v1_15_18_inputs.md` in `ethereal-munching-peacock`). It was gone by 2026-11-26 22:31Z, with no reboot since 2026-11-17; its writer is unknown.\n  - Gap 4 is R17's"
+  },
+  {
+    "id": "F-14",
+    "old": "`JuniperCascor1`'s editable installs still report 0.4.1 and 0.7.1 to pip.",
+    "new": "`JuniperCascor1`'s editable installs still report 0.4.1 and 0.7.1 to pip. R21's second pass (to 0.4.3) and R22's per-environment probe wait for 0.4.3 on PyPI, behind its `pypi` gate, and the trio's restart waits on R22 (`…REMAINING-TASKS.md` § \"Checked and changed, 2026-11-26\")."
+  },
+  {
+    "id": "N-01",
+    "old": "(its group E, R58 to R65, and §4's gaps 1 to 9), each re-read",
+    "new": "(its group E, R58 to R65, and §4's gaps 1 to 9 and 11), each re-read"
+  },
+  {
+    "id": "N-02",
+    "old": "  - Each squash kept its `Allow-Symbol-Loss:` lines.",
+    "new": "  - Each port's squash kept its `Allow-Symbol-Loss:` lines (#207 changed no Python and carries none)."
+  },
+  {
+    "id": "N-03",
+    "old": "as v1.15.17's probe found)",
+    "new": "which v1.15.17 records from the orchestrator's re-run of canopy run 43135960676)"
+  },
+  {
+    "id": "N-04",
+    "old": "so a re-run on cascor `main` reproduces the tree.",
+    "new": "so the writer run on cascor `36dd6f2d` with `--date 2026-11-24` reproduces the landed tree."
+  },
+  {
+    "id": "N-07",
+    "old": "Its lock and Dockerfile equal 0.8.0's,",
+    "new": "0.8.1's `requirements.lock` and `Dockerfile` equal 0.8.0's,"
+  },
+  {
+    "id": "N-08",
+    "old": "its groups C and E and §4's gaps 1 to 9 are this lane's",
+    "new": "its group C but R42 (the rename repair's), its group E and §4's gaps 1 to 9 are this lane's"
+  },
+  {
+    "id": "N-09",
+    "old": "(\"Pin exact scripts\", \"Pin template SHAs\")",
+    "new": "(\"Pin exact scripts (Recommended)\", \"Pin template SHAs (Recommended)\")"
+  },
+  {
+    "id": "N-10",
+    "old": "The gate's day 30 is 2026-12-26.",
+    "new": "The gate's day 30, 2026-12-26, is the last day to approve or re-run it; GitHub cancels the run on day 35, 2026-12-31."
+  }
+]

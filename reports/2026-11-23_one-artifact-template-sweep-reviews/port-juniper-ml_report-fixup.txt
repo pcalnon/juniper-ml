@@ -1,0 +1,207 @@
+REPORT_FIXUP: juniper-ml#2673, the review's fix-up (F1-F3, N1-N5) -- STOPPED BEFORE THE PUSH: the PR head moved
+=====================================================================================================================
+Written 2026-11-26 11:49Z (date -u). Review: $WT/tmp/ports/juniper-ml/review/REVIEW.txt (BLOCKER 0, MAJOR 0, MINOR 3,
+NIT 5), read whole. $WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun;
+<S> = $WT/tmp/ports/juniper-ml.
+
+Why I stopped
+-------------
+- Step 1 (11:28Z): the PR head was 7dd1466feb9cbfa1f0d9a3cdfc79e9bb616d53e0, and main was bceac63c (compare
+  bceac63c...main: ahead_by 0).
+- At the push (11:48:59Z) the head was 2eb9a9306278dd11ac27d154b139116b8d8076c6. run_push_signed_commit.py
+  ARGS3.json --dry-run refused: "REFUSED: pcalnon/juniper-ml:fix/publish-one-artifact-sweep is at 2eb9a930…, not the
+  pinned --expected-head 7dd1466f…". Your rule ("if it moved, stop and report") applies, so nothing was pushed, and I
+  did NOT update the PR body. The stored body is still commit 2's.
+- 2eb9a930 (read with GETs only): "Merge branch 'main' into fix/publish-one-artifact-sweep", committed by GitHub at
+  2026-11-26T11:42:13Z, verified=true (valid). Its parents are 7dd1466f and main's 8378665f (11:41:54Z, "docs(handoff):
+  backup Phase E -- …"). compare 7dd1466f...2eb9a930 changes one file only:
+  prompts/thread-handoff_automated-prompts/HANDOFF_2026-11-26_backup-phase-e-rulings-route-deferred-runbook-drafted-ac5-day-2-host-steps-owed.md.
+  That is also the only file of compare bceac63c...main (ahead_by 1). It is none of the PR's 18 files, so this looks
+  like the merge tool syncing the branch.
+- CI on 2eb9a930 at 11:49:53Z: 19 pass, 4 pending, 6 skipping.
+- To finish, everything is ready (below). The fix-up needs only ARGS3.json's expected_head set to
+  2eb9a9306278dd11ac27d154b139116b8d8076c6. My six files sit on top of the merge without reverting anything: the
+  merge's only file is not among them. Then: dry run, push, readback_branch.py ARGS3.json, the PR-head fetch and the
+  checker, and gh api --method PATCH repos/pcalnon/juniper-ml/pulls/2673 --input <S>/pr_body3.json. Say the word and I
+  will do exactly that, or re-pin to whatever the head is then.
+
+The fix (all in the clone <S>/../clones/juniper-ml as uncommitted changes, made by the writer)
+-------------------------------------------------------------------------------------------------
+Changed files (6): .github/workflows/publish.yml, tests/test_publish_one_artifact.py, tests/test_publish_docs_bounds.py,
+docs/REFERENCE.md, CHANGELOG.md, notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md.
+- F1:
+  - docs/REFERENCE.md:10116 (the ladder's lead-in) now reads: "A TestPyPI job that failed on index lag is re-run
+    instead ("Re-run failed jobs" on the release run, within 30 days): it runs the failed job and those after it
+    again. A re-run `Publish to TestPyPI` uploads the same bytes, which the index accepts, and repeats its JSON check;
+    the install check then runs again. When only `Verify the TestPyPI install` failed, nothing is uploaded again and
+    only the install check repeats."
+  - The notes amendment's bullet (:712) says the same. So does the PR body's ladder bullet, in the prepared body only.
+- F2: the docs state their derived figures in digits:
+  - REFERENCE.md:10101 "(4 waits, ~40s)" (was "four waits"); :10143 "up to 5 times with a 10s interval (4 waits, then
+    the template's lag error"; :10056 "10 attempts × 6s, ~60s ceiling" and :10101 "(~60s)" were already digits.
+  - tests/test_publish_docs_bounds.py's _retry() now returns (tries, wait, waits made), read from each loop. A loop
+    whose lag-error stop comes before its wait, on its last try (checked: `if [ "${attempt}" -eq <tries> ]` before the
+    `exit 1`, both before the `sleep`), makes tries-1 waits. A loop with no stop inside it makes tries waits. Anything
+    else raises AssertionError.
+  - test_the_install_checks_retry pins, from the workflows: REFERENCE "10 attempts × 6s, ~60s ceiling", "10×6s `pip
+    download` poll (~60s)", "5×10s retry around `pip install` (4 waits, ~40s)" and "up to 5 times with a 10s interval
+    (4 waits, then the template's lag error"; the cheatsheet's "10×6s (~60s ceiling)" and "5×10s".
+  - No new figure was added to any doc. The REFERENCE suite entry for the module (:3991) now says, in words, that it
+    pins the waits and their total. The CHANGELOG sentence about the module says the same.
+- F3: tests/test_publish_one_artifact.py:4 "The directive of 2026-11-15:" (no name). It was the module's only person
+  word.
+- N1: the package check's "nothing" case asserts returncode 1, stdout "" and "PackageNotFoundError" in stderr.
+- N2: REFERENCE.md:10130 (rung 2): "For a version that a plain `workflow_dispatch` re-fire published, no release run
+  of its tag passed its TestPyPI jobs, so rung 1 refuses it, and rung 2 applies to that dispatch run, within 30 days
+  of it." I put the same sentence in the notes amendment's bullet (:714), which the review cited as "cf." and which
+  had the same wording. The prepared PR body's ladder bullet says the same.
+- N3: REFERENCE.md:5059 "(juniper-cascor#777, ported 2026-11-26)".
+- N4: publish.yml:255 "… which the republish dispatch then refuses (ruling 1 of 2026-11-16): finish a release whose
+  version TestPyPI holds with the republish dispatch, before any re-cut."
+- N5: publish.yml:10 "# Last Modified: 2026-11-26". The writer takes it from --date, so a replay stays consistent.
+- CHANGELOG: the module's sentence (F2), and "Each of 55 edits" (was 51: the four mutations below). The case count
+  stays 92.
+
+The writer
+----------
+- $WT/util/ad-hoc/2026-11-26_juniper-ml_one_artifact_sweep_port.py, now sha256
+  6d79b6d15a161ee0f9136e3abe99ae389906987bbb65b3b18aca62466478c5a6. It writes the third commit's tree.
+- Commit 2's writer (dfac9f69…) is kept as <S>/dev/writer.commit2.py, and commit 1's (f0cc2226…) as
+  <S>/dev/writer.commit1.py.
+- Its draft sources are <S>/drafts2/. My agent worktree is gone; drafts2 was rebuilt from <S>/drafts-source/, and
+  before any edit it reproduced the PR head's 18 files and the dfac9f69 writer exactly.
+- workflow_edit takes --date for N5.
+- The header documents all three commits: --changelog-cases 92 --changelog-mutations 55 reproduce the PR.
+- Replay:
+  - <S>/base-tree is checked blob by blob against the clone's HEAD bceac63c for the 18 paths (verify_base.py: 0
+    differ; test_publish_docs_bounds.py absent in both).
+  - Fresh copy <S>/fresh3 (fresh_copy.py): run 1 exit 0, 18 files written, all equal to the clone's by sha256.
+  - Run 2: exit 1, "REFUSED (nothing written): .github/workflows/publish.yml: anchor matched 0 times, expected 1",
+    and the 18 files unchanged.
+
+Verification (all on the fix-up's tree; nothing pushed)
+-------------------------------------------------------
+1. The four publish suites (python -m unittest -v, one process each, run_versions.bash, -B):
+     3.12.16 (Flocker env) / 3.13.13 (JuniperCanopy1) / 3.14.7 (JuniperCascor1) / 3.15.2 (/usr/bin/python3.15):
+     test_publish_one_artifact 92 OK, test_publish_docs_bounds 2 OK, test_publish_testpypi_verify 30 OK,
+     test_publish_subpackage_workflows 13 OK, on each. No skip. The only "skipped" in the logs is a test name,
+     test_a_release_run_whose_build_failed_so_both_testpypi_jobs_were_skipped_is_refused ... ok.
+2. tests/test_ci_test_wiring_drift.py: 14 OK on 3.12.16 and 3.14.7.
+   util/memory_budget_check.py --base-ref origin/main: AGENTS.md 27721 / 28000, delta +0, OK (3.12 and 3.14).
+   util/ad-hoc/2026-09-10_agents_md_test_list_drift.py: 0 / 0 / 0, exit 0 (3.12 and 3.14).
+   Regression lane, util/run_tests.py regression (3.14, -j 8, in the clone): 266 jobs, 6343 cases, FAILED 6 of 266.
+   These are the same six suites with the same failing tests as main's pristine clone (265 jobs, 6307 cases), which is
+   environmental, as before. I removed the bytecode cache the run left in the clone.
+3. pre-commit (precommit_in_copy.py over a copy of the clone with its history, the six files): exit 0, 19 hooks pass,
+   none changes a file. implicit_concat.py on the two changed test modules, the writer and mutations.py: 0.
+4. The FINAL checker (sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35, checked), --repo
+   juniper-ml, all seven:
+   - with <S>/pins.proposed.json (142b471493c3820ae79f30ccf46c7bafc9b28c5d5ef365085dd1c6362bf94811): 7 of 7 pass,
+     exit 0. No install step or template block changed, so the pins do not move.
+   - Per the review's N-PINS: $W's pins file is now da50213c00c12377c386e1698b5a6fc1e3488be83f357c0aaf7090ebaddc3d86.
+     <S>/pins.proposed.v3-seedda50213c.json (faa198c2…), built on it by make_pins.py, differs from it in juniper-ml's
+     seven entries only. Those entries are identical to pins.proposed.json's, and the checker gives 7 of 7 with it
+     too. Apply juniper-ml's seven entries only.
+5. The mutation proof (<S>/mutations.py, re-run on the fix-up's tree; <S>/mutations3/): 58 run, 55 caught, 3 controls
+   pass, wrong: none, and the ported tree is unchanged (316 files by sha256). The 54 earlier rows give the same
+   results. The four new ones, each caught by test_publish_docs_bounds:
+     D4 REFERENCE "(4 waits, ~40s)" -> "(5 waits, ~50s)" (the review's M14, which the PR's table missed): 1 of 2
+     D5 REFERENCE "~60s ceiling" -> "~50s ceiling": 1 of 2
+     D6 publish-doc-tools.yml's lag-error stop moved after the wait: docs_bounds 2 of 2, one_artifact 2 of 92
+     D7 cheatsheet "(~60s ceiling)" -> "(~50s ceiling)": 1 of 2
+6. Screens on the three-commit range (<S>/probe_screens_ml_multi.py: base -> commit 1's tree with its message -> commit
+   2's -> this tree with the fix-up's message; ml's ci.yml scope; juniper-ci-tools 0.9.1):
+   - symbol loss exit 0: findings=5, fail=0; 3 WAIVED by commit 1's lines, 2 WARN (META_GUARD, TEMPLATE_SHA256).
+   - docs additions exit 0: 34 small-deletion, fail=0.
+   (The merge commit 2eb9a930 touches only a prompts/ file, outside both screens' scope.)
+7. The pre-push gate (<S>/gate3: the six files, 54 added lines; the prepared PR body, the title and the fix-up's
+   message): exit 0, "gate: PASS".
+   - The files scan found three lines this fix-up does not add: CHANGELOG.md:1644:7:juniper-b9-assignment:9804369ff5,
+     docs/REFERENCE.md:4236:1311:juniper-b9-assignment:b6121351f4 and
+     docs/REFERENCE.md:7337:121:juniper-header-refusal:617fbd3a74. They have the same hashes as main's copies; the
+     CHANGELOG line is one lower because the entry gained a line. I read each masked (prose, random-looking=0), judged
+     none a credential, and accepted it.
+   - Text scan: 0 findings. Masked read of the added lines: 0 listed, of 60 read.
+
+Prepared, not sent
+------------------
+- <S>/ARGS3.json: paths = the six files; message "fix(publish): the review's F1-F3 and N1-N5 -- what a lag re-run does
+  for each TestPyPI job, the docs' wait figures pinned from the loops, and the wording fixes"; commit_body_file
+  <S>/fixup3_commit_body.txt, whose last paragraph is exactly the two trailer lines; expected_head 7dd1466f… (to be
+  re-pinned).
+- <S>/pr_body.md, the third commit's body, also as <S>/pr_body3.json for --input. It adds a "third commit" paragraph,
+  the F1 and N2 ladder bullets, the docs-bounds bullet, the testing updates and the 58-row mutation table, and still
+  ends with the two required lines. <S>/pr_body.commit2.md equals the body GitHub stores now.
+
+Files written in this fix-up
+----------------------------
+- In the clone: the six files above.
+- $WT/util/ad-hoc/2026-11-26_juniper-ml_one_artifact_sweep_port.py (replaced).
+- In <S>:
+  - ARGS3.json, fixup3_commit_body.txt, pr_body.md (+ pr_body.commit2.md, pr_body.remote3.md, pr_body3.json)
+  - pins.proposed.v3-seedda50213c.json, paths_fixup3.txt
+  - mutations.py (+ D4-D7), mutations3/, mutations3.out
+  - probe_screens_ml_multi.py, screens/ (replay-three/, tree-commit1/, tree-commit2/, commit2_message_full.txt,
+    commit3_message_full.txt, three.out)
+  - gate3/, gate3.out
+  - fresh3/, dev/ (versions-fixup3/, fixup3-checks/, rt-port3/, precommit-copy-fixup3/, writer-fresh3-run*.out,
+    writer.commit2.py)
+  - drafts2/, and the helpers copy_paths.py, verify_base.py, fresh_copy.py, run_checker_pins.bash,
+    precommit_fixup3.bash, run_versions.bash
+  - this REPORT_FIXUP.txt
+
+Not done, and why
+-----------------
+- The push, the read-back, the PR-head fetch and the checker on it, and the body PATCH: the PR head moved (above).
+- Nothing was merged, armed, branch-updated or approved, and no other PR was touched. GitHub calls since the review
+  were GETs and the refused dry run.
+
+=====================================================================================================================
+OUTCOME (appended 2026-11-26 11:54Z, after the coordinator's go-ahead to re-pin to the current head)
+=====================================================================================================================
+The fix-up is pushed. New head: 67b6db2049fb575d8c567c52bb679169a1cff70f.
+
+- Re-pin: at 11:52:55Z the PR head was still 2eb9a9306278dd11ac27d154b139116b8d8076c6 (OPEN, not merged), so ARGS3.json's
+  expected_head was set to that full sha. Nothing else in ARGS3.json changed: the same six paths, message and body file
+  that gate3 passed.
+- Dry run (11:52Z): exit 0, "DRY-RUN pcalnon/juniper-ml:fix/publish-one-artifact-sweep @ 2eb9a930… (== --expected-head)",
+  six adds, "(nothing written)".
+- Push (11:53:11-11:53:20Z): exit 0.
+  - "signed commit 67b6db2049fb575d8c567c52bb679169a1cff70f on pcalnon/juniper-ml:fix/publish-one-artifact-sweep"
+  - "verified signature (reason=valid)"
+  - "verified parent 2eb9a9306278dd11ac27d154b139116b8d8076c6"
+  - each of the six blobs verified: publish.yml e475e2621aa0, test_publish_one_artifact.py d544a4e34d1f,
+    test_publish_docs_bounds.py 2e4a73be3ad2, REFERENCE.md 4e96e9248311, CHANGELOG.md 05debfb041bb, the PYPI-PUBLISH
+    procedure note 65ba54306cdc
+- Verification and parent (GitHub, gh api commits/67b6db20…): verified=true, reason=valid, parents=2eb9a9306278dd11ac27d154b139116b8d8076c6
+  (the head I pinned). The message's last paragraph is exactly the two trailer lines.
+- Read-back (readback_branch.py ARGS3.json): exit 0. "head 67b6db2049fb575d8c567c52bb679169a1cff70f verified=True
+  reason=valid parents=['2eb9a930']", all six blobs "same", "commit touches 6 file(s); expected 6; extra=[] missing=[]".
+- PR head fetch (2026-11-15_fetch_pr_files.py --pr 2673, <S>/pr-head3): 18 files, all equal by sha256 to the clone's,
+  which the writer wrote.
+- The FINAL checker (sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35, checked) on the fetched
+  seven, --repo juniper-ml, --pins <S>/pins.proposed.json (sha256
+  142b471493c3820ae79f30ccf46c7bafc9b28c5d5ef365085dd1c6362bf94811, 18 pins; $W's seed now da50213c…):
+    PASS pr-head3/publish.yml  (PUBLISH_PACKAGE=juniper-ml, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)
+    PASS pr-head3/publish-ci-tools.yml  (PUBLISH_PACKAGE=juniper-ci-tools, PUBLISH_DIST_DIR=juniper-ci-tools/dist, PUBLISH_TAG_PREFIX=juniper-ci-tools-v)
+    PASS pr-head3/publish-config-tools.yml  (PUBLISH_PACKAGE=juniper-config-tools, PUBLISH_DIST_DIR=juniper-config-tools/dist, PUBLISH_TAG_PREFIX=juniper-config-tools-v)
+    PASS pr-head3/publish-doc-tools.yml  (PUBLISH_PACKAGE=juniper-doc-tools, PUBLISH_DIST_DIR=juniper-doc-tools/dist, PUBLISH_TAG_PREFIX=juniper-doc-tools-v)
+    PASS pr-head3/publish-model-core.yml  (PUBLISH_PACKAGE=juniper-model-core, PUBLISH_DIST_DIR=juniper-model-core/dist, PUBLISH_TAG_PREFIX=juniper-model-core-v)
+    PASS pr-head3/publish-observability.yml  (PUBLISH_PACKAGE=juniper-observability, PUBLISH_DIST_DIR=juniper-observability/dist, PUBLISH_TAG_PREFIX=juniper-observability-v)
+    PASS pr-head3/publish-service-core.yml  (PUBLISH_PACKAGE=juniper-service-core, PUBLISH_DIST_DIR=juniper-service-core/dist, PUBLISH_TAG_PREFIX=juniper-service-core-v)
+    7 of 7 pass   (checker exit 0)
+- The body PATCH (gh api --method PATCH repos/pcalnon/juniper-ml/pulls/2673 --input <S>/pr_body3.json, 11:54:16Z):
+  answered "2673 open head=67b6db20… updated=2026-11-26T11:54:16Z". The stored body equals <S>/pr_body.md and ends
+  with the two required lines.
+  - Before the PATCH the body was rebuilt to name the sync merge (drafts2/edit_pr_body3b.py). It now has a paragraph
+    "A sync merge of `main` (2eb9a930, made by GitHub) follows the second commit; it brings in one `prompts/` handoff
+    file, none of this PR's files." "The third commit" became "The review's fix-up" throughout, and the screens bullet
+    says the local replay covers the PR's three commits besides the merge, which changes only a prompts/ file outside
+    both screens' scope.
+  - The gate was re-run on that final body (<S>/gate3b: the same six files and accepts, the new body): exit 0, "gate:
+    PASS", text scan 0 findings, 0 masked lines.
+- PR state at 11:54:30Z: OPEN; auto-merge SQUASH still armed (enabled 11:42:15Z, as the coordinator said; I did not
+  touch it). CI on 67b6db20 was starting: 1 pass, 14 pending, 6 skipping. Nothing was merged, armed or branch-updated
+  by me, and no other PR was touched.
+- In place, as asked: the six files in the clone (<S>/../clones/juniper-ml, uncommitted over main bceac63c), and the
+  writer $WT/util/ad-hoc/2026-11-26_juniper-ml_one_artifact_sweep_port.py (sha256 6d79b6d1…).

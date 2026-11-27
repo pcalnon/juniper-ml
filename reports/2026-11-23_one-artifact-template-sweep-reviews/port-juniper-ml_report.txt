@@ -1,0 +1,288 @@
+juniper-ml -- port of juniper-cascor#777 (the one-artifact template sweep) to all seven publishers
+=====================================================================================================
+
+PR
+--
+- #2673  https://github.com/pcalnon/juniper-ml/pull/2673  (open, not draft; never merged, armed or branch-updated)
+- branch fix/publish-one-artifact-sweep -> main
+- head 7dd1466feb9cbfa1f0d9a3cdfc79e9bb616d53e0 (two signed commits; each read back verified=True, reason=valid):
+  1. e796a5d4d24cef9e28909c2a580ba10cdb8ccd59 (parent bceac63c), the port, 18 files. Its subject (also the PR title):
+     fix(publish): port of juniper-cascor#777 -- the install check gets a job that cannot mint, the republish job
+     checks the release run's TestPyPI jobs, and PUBLISH_TAG_PREFIX
+  2. 7dd1466feb9cbfa1f0d9a3cdfc79e9bb616d53e0 (parent e796a5d4), a fix-up of one test after CI's Python 3.12 lane
+     failed on commit 1 (below, "The second commit"): tests/test_publish_one_artifact.py only. Subject: fix(publish):
+     the package-check rehearsal's bare-directory case holds the metadata, and both refusals are matched exactly
+     (CI's Python 3.12 lane)
+  Each message ends with the two trailer lines as its last paragraph.
+
+The second commit
+-----------------
+CI on commit 1 (run 45764975222): Regression Tests (Python 3.12) failed six subtests of
+TestInstallCheckScript.test_the_package_check_finds_a_wheels_package_without_running_it_and_refuses_one_without_it
+(publish-ci-tools.yml and publish-observability.yml, kind bare-directory, PYTHONOPTIMIZE unset/1/2); 3.13 and 3.14
+passed; 3.15 was cancelled when commit 2 was pushed. Cause: my rehearsal's bare-directory site had no metadata, so
+importlib.metadata.version raised PackageNotFoundError before the package check ran; 3.13+ tracebacks quote the -c
+source (which holds the refusal text), so the substring assertion passed there by accident (measured: 3.12.16 does
+not quote it, 3.13.13 and 3.14.7 do). My local 3.14 runs therefore passed. Fix (test only, still 92 cases): the case
+now holds the wheel's metadata and an empty package directory (a namespace package, no origin), as the pilot's
+cascor-client rehearsal builds it, and both refusing cases assert exit 1, stdout "TestPyPI install 1.2.3 package at
+None" and stderr equal to the refusal (no traceback can pass). Reproduced first: commit 1's module on Flocker's
+python3.12 (3.12.16, the runner's patch level): FAILED (failures=6). After the fix, the four publish suites pass on
+3.12.16 (Flocker env), 3.13.13 (JuniperCanopy1), 3.14.7 (JuniperCascor1) and 3.15.2 (/usr/bin/python3.15): 92, 2, 30
+and 13 on each (run read-only with -B; run_versions.bash). The mutation proof re-run on the fixed tree
+(mutations2/): the same table, 51 of 51 caught, 3 controls pass, 316 files unchanged. pre-commit on the 18 files
+(copy of the clone with history): exit 0, 20 pass, no file changed. Screens on the replay: fail=0 both. Gate
+(gate2/: the one file, 13 added lines; the updated PR body, title, commit message): exit 0, 0 findings in either
+scan, 0 masked lines. run_push_signed_commit.py --dry-run exit 0, then the push: "signed commit 7dd1466feb9c…",
+"verified signature (reason=valid)", "verified parent e796a5d4…". readback_branch.py ARGS2.json: exit 0, the one
+blob "same", extra=[] missing=[]. The PR body was then updated with gh api -X PATCH .../pulls/2673 (this PR only) to
+record the second commit; the stored body equals the local one. The checker on the new head's seven fetched files
+(pr-head2/): 7 of 7 pass, exit 0; all 18 fetched files equal the clone's.
+
+Writer, inputs, base
+--------------------
+- writer: $WT/util/ad-hoc/2026-11-26_juniper-ml_one_artifact_sweep_port.py (sha256 dfac9f69e487f90492db37b88d69082e
+  aba2095470cf4b71736896982d8c60ab: it writes the final tree, both commits, from main; commit 1's writer, f0cc2226...,
+  is kept as $WT/tmp/ports/juniper-ml/dev/writer.commit1.py); its drafted parts in
+  $WT/tmp/ports/juniper-ml/drafts-source/ (the assembler is assemble.py; the dev loop iterate.bash)
+- run: python3 -I util/ad-hoc/2026-11-26_juniper-ml_one_artifact_sweep_port.py --tree <fresh clone>
+  --changelog-cases 92 --changelog-mutations 51 --date 2026-11-26   (template dir default: $WT/tmp/ports/clones/
+  juniper-cascor/.github/workflows, publish.yml + publish-protocol.yml pinned by sha256, cascor main 5e3d9801)
+- clone base HEAD: bceac63ceeddc8523ba4062040a32ee9ba7777db == GitHub main (re-confirmed 2026-11-26 05:57:24Z, just
+  before the upload); the branch did not exist (404)
+- open PRs on the repo before the upload: #2670, #2669, #2668, #2662; none changes a file this PR changes
+
+git diff --stat (commit 1 over main: 18 files, +2017 -554; the PR after commit 2: 18 files, +2025 -554,
+tests/test_publish_one_artifact.py +950 -157)
+---------------------------------------------
+ .github/workflows/ci.yml                           |   11 +-
+ .github/workflows/main-verify.yml                  |    1 +
+ .github/workflows/publish-ci-tools.yml             |  140 ++-
+ .github/workflows/publish-config-tools.yml         |  138 ++-
+ .github/workflows/publish-doc-tools.yml            |  138 ++-
+ .github/workflows/publish-model-core.yml           |  136 ++-
+ .github/workflows/publish-observability.yml        |  140 ++-
+ .github/workflows/publish-service-core.yml         |  136 ++-
+ .github/workflows/publish.yml                      |  192 ++--
+ AGENTS.md                                          |    4 +-
+ CHANGELOG.md                                       |   58 +-
+ docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md            |   14 +-
+ docs/REFERENCE.md                                  |   89 +-
+ ...-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md |   10 +
+ tests/test_publish_docs_bounds.py                  |   90 ++   (new)
+ tests/test_publish_one_artifact.py                 | 1099 +++++++++++++++++---
+ tests/test_publish_subpackage_workflows.py         |   74 +-
+ tests/test_publish_testpypi_verify.py              |  101 +-
+
+Verification (all before the push unless marked)
+-------------------------------------------------
+1. Publish suites, JuniperCascor1 Python 3.14.7, python3 -m unittest -v, one process each (run_suites.py):
+   test_publish_one_artifact 92 OK (main 60); test_publish_docs_bounds 2 OK (new); test_publish_testpypi_verify 30 OK
+   (main 28); test_publish_subpackage_workflows 13 OK (main 13). 0 skipped, 0 failed.
+   Related: test_ci_test_wiring_drift 14 OK; test_main_verify_battery_paths 11 OK; test_publish_env_policy_drift 28 OK
+   (2 live classes skipped outside CI) and 33 OK with JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 (read-only gh api GETs);
+   test_publish_release_only_trigger 5 OK; test_release_train_ceremony 182 OK; test_env_repr_safety 6 OK.
+   Regression lane (python3 util/run_tests.py regression --checkout <clone>, -j 8): main's pristine clone 265 jobs /
+   6307 cases, FAILED 6 of 265; the port 266 jobs / 6343 cases, FAILED 6 of 266. The same six suites with the same
+   failing tests in both (test_cleanup_open_remove_stale_worktrees 2, test_editable_install_drift_check 5,
+   test_workflow_script_paths 1, test_resident_gap_triage 5, test_resident_gap_scan 2, test_replay_redrive_stack_refusal
+   13): environmental (the clone and TMPDIR sit inside $WT's tmp/; the preflight also warns that `wheel` is absent).
+   The only differences: test_publish_one_artifact 60 -> 92, test_publish_testpypi_verify 28 -> 30, the new
+   test_publish_docs_bounds 2. Re-run on the final tree (commit 2, from 06:13:50Z): 266 jobs / 6343 cases, the same
+   six failures with the same tests. Memory budget (util/memory_budget_check.py --base-ref origin/main): AGENTS.md 27721 /
+   28000, delta +0, OK. AGENTS.md Last Updated 2026-11-26 = date -u's day at upload.
+2. actionlint 1.7.12: the seven publishers and main-verify.yml: exit 0. ci.yml: exit 0 with -shellcheck= -pyflakes=,
+   as is main's; with its default external linters actionlint makes no progress on ci.yml (0 CPU, no output; a 300 s
+   run on the port's and a 120 s run on main's both stopped by timeout, exit 124), so that run did not complete.
+3. pre-commit (/opt/miniforge3/bin/pre-commit via precommit_in_copy.py) on the 18 files:
+   - final, on a copy of the clone (its .git included, so the change stages as M plus one A): exit 0; 20 hooks pass,
+     6 have no files; no hook changes a file.
+   - earlier, on copies of the dev tree without history (every file staged as ADDED): 18 pass, and
+     check-added-large-files (docs/REFERENCE.md 1389 KB; main's is 1,413,630 bytes) and gitleaks (21 findings, all in
+     files this PR does not touch) fail; the same copy of main's 17 files fails the same two hooks with the same
+     findings (sorted file/rule/line/fingerprint sets identical): an artifact of the copy.
+4. The checker ($W/util/ad-hoc/2026-11-23_publish_port_template_identity.py, sha256 a452db3d285d70838adb3c6cfc9091c9cf
+   0999996bf6e718c6ef5e49e05cee35, checked before each run), --repo juniper-ml, --template the cascor clone's
+   publish.yml, --pins $WT/tmp/ports/juniper-ml/pins.proposed.json (sha256 142b471493c3820ae79f30ccf46c7bafc9b28c5d
+   5ef365085dd1c6362bf94811, 18 pins), on all seven, run on the dev tree, and after the push on the PR head's files
+   (fetched with 2026-11-15_fetch_pr_files.py --pr 2673, all 18 equal to the clone's by sha256):
+     PASS pr-head/publish.yml  (PUBLISH_PACKAGE=juniper-ml, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)
+     PASS pr-head/publish-ci-tools.yml  (PUBLISH_PACKAGE=juniper-ci-tools, PUBLISH_DIST_DIR=juniper-ci-tools/dist, PUBLISH_TAG_PREFIX=juniper-ci-tools-v)
+     PASS pr-head/publish-config-tools.yml  (PUBLISH_PACKAGE=juniper-config-tools, PUBLISH_DIST_DIR=juniper-config-tools/dist, PUBLISH_TAG_PREFIX=juniper-config-tools-v)
+     PASS pr-head/publish-doc-tools.yml  (PUBLISH_PACKAGE=juniper-doc-tools, PUBLISH_DIST_DIR=juniper-doc-tools/dist, PUBLISH_TAG_PREFIX=juniper-doc-tools-v)
+     PASS pr-head/publish-model-core.yml  (PUBLISH_PACKAGE=juniper-model-core, PUBLISH_DIST_DIR=juniper-model-core/dist, PUBLISH_TAG_PREFIX=juniper-model-core-v)
+     PASS pr-head/publish-observability.yml  (PUBLISH_PACKAGE=juniper-observability, PUBLISH_DIST_DIR=juniper-observability/dist, PUBLISH_TAG_PREFIX=juniper-observability-v)
+     PASS pr-head/publish-service-core.yml  (PUBLISH_PACKAGE=juniper-service-core, PUBLISH_DIST_DIR=juniper-service-core/dist, PUBLISH_TAG_PREFIX=juniper-service-core-v)
+     7 of 7 pass     (checker exit 0)
+   Structural targets ($W/tmp/sweep/checker-r12/port-sim/<variant>/juniper-ml/workflows/): each workflow matches its
+   variant (publish.yml faithful+ml-F2+lag; config/doc-tools reorder; the other four faithful) but for the install
+   step's comments and indentation, which the simulation strips.
+5. Mutation proof ($WT/tmp/ports/juniper-ml/mutations.py; table.md and results.json in mutations/): 51 of 51 caught,
+   3 controls pass, the ported tree unchanged (316 files by sha256 before and after). Each mutation ran on its own
+   fresh copy of the files the four suites read; the copy was removed after its run.
+   A1 publish.yml install job's needs dropped: one_artifact 4/92, testpypi_verify 1/30
+   A2 ci-tools install job gets id-token: write: one_artifact 2, subpackage 1/13
+   A3 service-core checkout back in the TestPyPI job: one_artifact 5
+   A4 doc-tools PyPI job needs TestPyPI alone: one_artifact 2, subpackage 1
+   A5 model-core install job gets the testpypi environment: one_artifact 2
+   A6 observability TestPyPI job holds contents: read again: one_artifact 2, subpackage 1
+   A7 config-tools no cd "${RUNNER_TEMP}": one_artifact 3
+   A8 config-tools || true on the pip line: one_artifact 4
+   A9 observability find_spec removed (main's check back): one_artifact 3, subpackage 1
+   A10 model-core persist-credentials: false dropped: one_artifact 1
+   A11 publish.yml continue-on-error on the install step: one_artifact 3
+   A12 ci-tools sparse checkout widened to the package dir: one_artifact 2
+   A13 publish.yml version by an expression in the script: one_artifact 7, testpypi_verify 10
+   A14 doc-tools 4 tries: one_artifact 2, docs_bounds 2/2, subpackage 1
+   A15 publish.yml ls -la || true back: one_artifact 2
+   A16 publish.yml lag error loses "(index lag?)": one_artifact 2, docs_bounds 1, testpypi_verify 2
+   A17 ci-tools check prints OK before its verdict (R5): one_artifact 3
+   A18 observability assert instead of SystemExit: one_artifact 3, subpackage 1
+   A19 publish.yml failed fetch no longer retried: one_artifact 3, testpypi_verify 2
+   A20 config-tools python -c first again: one_artifact 1
+   A21 publish.yml install job gets actions: read: one_artifact 2, testpypi_verify 1
+   B1 observability "testpypi" -> "testpypy" in the find step: one_artifact 4
+   B2 service-core run_id = min(ids): one_artifact 4
+   B3 doc-tools filter=latest: one_artifact 4
+   B4 model-core LOWEST attempt kept: one_artifact 4
+   B5 publish.yml no refusal without a release run: one_artifact 5
+   B6 ci-tools any -> all in the gate: one_artifact 4
+   B7 config-tools a run with no TestPyPI job passes: one_artifact 4
+   C1 ci-tools PUBLISH_TAG_PREFIX juniper-ci-tool-v: one_artifact 1
+   C2 publish.yml PUBLISH_TAG_PREFIX dropped: one_artifact 1
+   C3 observability guard's dispatch prefix check dropped: one_artifact 2, subpackage 1
+   C4 service-core find step accepts any tag: one_artifact 4
+   C5 publish.yml guard's release prefix 'rc': one_artifact 2, testpypi_verify 1
+   C6 doc-tools guard's dispatch prefix shortened: one_artifact 2, subpackage 1
+   D1 REFERENCE.md "10 attempts x 6s" -> 5s (both places): docs_bounds 1
+   D2 doc-tools sleep 5 (docs say 10s): one_artifact 2, docs_bounds 1
+   D3 cheatsheet "10x6s" -> 10x5s: docs_bounds 1
+   E1 service-core retention 30: one_artifact 2
+   E2 publish.yml skip-existing on the TestPyPI upload: one_artifact 2, testpypi_verify 1
+   E3 ci-tools attestations: false on the PyPI upload: one_artifact 2
+   E4 model-core continue-on-error on "still serves": one_artifact 2
+   E5 doc-tools job-level continue-on-error on the PyPI job: one_artifact 2
+   E6 observability if: always() on the PyPI job: one_artifact 2
+   E7 config-tools workflow renamed: one_artifact 1
+   E8 publish.yml extra build step writes into dist/: one_artifact 2
+   E9 service-core build step's reuse condition traded: one_artifact 2
+   E10 ci-tools one download-artifact copy moved: one_artifact 1
+   E11 model-core rebuild in the PyPI job: one_artifact 3
+   E12 doc-tools install job self-hosted: one_artifact 2
+   E13 observability one comment word in a template block: one_artifact 1
+   E14 service-core install job renamed without "TestPyPI": one_artifact 2, subpackage 3/12
+   controls: CTRL (no edit), H1 (download-artifact bumped in all seven at once), H2 (checkout likewise): all pass.
+6. Sequence-safety screens, ml's scope (ci.yml's sequence-safety job; juniper-ci-tools 0.9.1 from JuniperCascor1),
+   via $WT/tmp/ports/juniper-ml/probe_screens_ml.py (probe_screens.py with ml's --scope) on a local replay of the
+   commit over main:
+   - without waivers: symbol loss FAIL, 3 failures + 2 warnings, all in tests/test_publish_one_artifact.py:
+     method TestFindReleaseRun.test_the_newest_release_run_that_still_holds_the_artifact_is_found (LOST),
+     method TestUnchanged.test_publish_yml_keeps_its_checkout_before_the_download_and_its_two_phase_install_check
+     (LOST), func _expected_steps (WEAKENED, 17 -> 5 lines; it now reads the exact step lists from constants),
+     const META_GUARD and const TEMPLATE_SHA256 (LOST, warnings; replaced by GUARD and CASCOR_TEMPLATE_SHA256)
+   - with the commit body's five Allow-Symbol-Loss lines (one per symbol): exit 0, fail=0 (3 WAIVED, 2 warnings)
+   - docs additions: exit 0, fail=0, 34 small-deletion warnings (lines rewritten in place)
+   - after the push, CI's own Sequence Safety check on the PR: pass
+7. Pre-push gate (bash $WT/util/ad-hoc/2026-11-15_pre_push_gate_run.bash $WT/tmp/ports/juniper-ml/gate, from $WT;
+   files/ = the 18 files, text/ = PR body, title, commit message; added/ = 2030 added lines): exit 0, "gate: PASS",
+   run last on the final body and message.
+   Masked lines judged:
+   - files scan, 3 findings, each read with 2026-10-05_masked_finding_shape.py and accepted (accept.files.txt):
+     CHANGELOG.md:1643:7:juniper-b9-assignment:9804369ff5 (prose, random-looking=0),
+     docs/REFERENCE.md:4236:1311:juniper-b9-assignment:b6121351f4 (a 2460-char prose line, random-looking=0),
+     docs/REFERENCE.md:7337:121:juniper-header-refusal:617fbd3a74 (prose, random-looking=0). None is a line this PR
+     adds: the same scan of main's two files reports the same three hashes at CHANGELOG.md:1589,
+     docs/REFERENCE.md:4232 and :7332. Not credentials.
+   - text scan: 0 findings.
+   - masked read --names over the added lines: 2 listed of 2048 read, 0 refused:
+     .github/workflows/publish.yml added line 26 (random-looking=1): a comment naming
+     notes/JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md (listed for "AUTHORIZATION"; the
+     random-looking token is the upper-case file name);
+     tests/test_publish_one_artifact.py added line 775 (random-looking=0): asserts the stand-in API received
+     "Authorization: Bearer {FAKE_API_CREDENTIAL}", FAKE_API_CREDENTIAL = "stand-in-credential". Not credentials.
+8. Landing: run_open_signed_pr.py --dry-run exit 0 (base main @ bceac63c, 18 adds), then the real run exit 0:
+   "signed commit e796a5d4d24c on pcalnon/juniper-ml:fix/publish-one-artifact-sweep", "PR: .../pull/2673".
+   readback_branch.py: exit 0, head e796a5d4d24cef9e28909c2a580ba10cdb8ccd59 verified=True reason=valid parents
+   ['bceac63c'], all 18 blobs "same", extra=[] missing=[]. The stored PR body equals the local one (but for the final
+   newline gh's --jq output adds); it ends with the two required lines.
+9. Writer replay: applied to the clone it wrote the 18 files, equal by sha256 to the dev tree's; a second run on the
+   ported clone: exit 1, "REFUSED (nothing written): .github/workflows/publish.yml: anchor matched 0 times, expected
+   1", the 18 files unchanged. (Commit 2's writer, run on a pristine copy of main, writes the final tree; its 18 files
+   equal the clone's and the PR head's.)
+10. CI: see "The second commit" for commit 1. On the final head 7dd1466f (all finished by 2026-11-26 06:27:34Z): 24
+   pass, 6 skipping, 0 failing; Regression Tests 3.12, 3.13, 3.14 and 3.15, Sequence Safety, Pre-commit 3.12-3.14 and
+   Quality Gate all success; the PR reads OPEN, mergeable, mergeStateStatus CLEAN (not merged, not armed).
+
+The proposed pin diff ($WT/tmp/ports/juniper-ml/pins.proposed.json)
+--------------------------------------------------------------------
+Built by make_pins.py on $W's CURRENT pins file (sha256 9d38c76fac1cbdb36f2088a3d223baa697a7fdd01330711682ae0aa763481c30);
+it differs from it in juniper-ml's seven entries only (lines, sha256, source; order, format, about and every other
+entry byte for byte). Each new script keeps every command of the seed, in order, except R4-5's check (ci-tools,
+observability), which replaces the seed's last command:
+  publish.yml                  14215e014fb1 (26 lines) -> 27e85e336abb (77 lines)
+  publish-ci-tools.yml         ef99d6aeb1a0 (18 lines) -> 553b40561328 (31 lines)
+  publish-config-tools.yml     31df94bffeb8 (19 lines) -> 93db83d6dd83 (22 lines)
+  publish-doc-tools.yml        b01478c803d6 (20 lines) -> 6d7c3b87df3a (23 lines)
+  publish-model-core.yml       cd41068e1998 (18 lines) -> 3b4cdf8bc787 (21 lines)
+  publish-observability.yml    a067b1f91918 (18 lines) -> 039d6baf879a (31 lines)
+  publish-service-core.yml     c91ec1d84aa1 (18 lines) -> 87ad5ff829cb (25 lines)
+(The seed pins are the port simulation's scripts without comments; the proposed are the port's steps, comments
+included, as the checker compares them byte for byte.)
+
+Judgement calls
+---------------
+- A second signed commit. The brief's landing names one signed commit; commit 1's CI found a defect in my own test
+  (a fixture that passed on 3.13+ by accident), so I fixed it in a follow-up commit through
+  run_push_signed_commit.py (expected head pinned, as the pilots' fix-ups were made) rather than leave the PR red,
+  and edited this PR's own body to record it. A squash merge still lands one commit. No other PR was touched.
+- $W's pins file moved while I worked (my first proposal, 64c21d6e..., was built on 19d6acd3...; the file now reads
+  9d38c76f..., modified 2026-11-26 05:18:38Z, juniper-canopy's and juniper-data's publish.yml entries changed). I
+  rebuilt the proposal on the current file: juniper-ml's seven entries are identical to the first proposal's; the old
+  one is kept as pins.proposed.v1-seed19d6acd3.json.
+- The engineering proposal (TestPyPI job: id-token: write alone; sub-packages drop contents: read) is applied as in
+  #777 and stated as a proposal, not ruling text, in the commit and the PR body.
+- test_publish_docs_bounds.py ported: juniper-ml's docs state the bounds (REFERENCE "10 attempts × 6s" twice,
+  "5×10s"; cheatsheet "10×6s", "5×10s") and the lag errors.
+- Waivers: one Allow-Symbol-Loss line for each of the five symbols the screen reports, the two warnings included.
+- The CHANGELOG entry's mutation sentence counts 51 (workflows and docs edits) and names the controls.
+- tests/test_publish_testpypi_verify.py line 384 (`make_wheel`) has ten implicit concatenations; they are main's
+  (line 358 there), untouched by this PR; every line I wrote has none (checked with implicit_concat.py on the writer,
+  the four test modules' new text and mutations.py).
+- pre-commit: the final run on a copy of the clone with its history is the one reported as the result; the earlier
+  no-history runs' two failures are shown to be artifacts (identical on main).
+- The PR body names juniper-observability 0.4.3's release run 45739959764, waiting at its pypi gate (juniper-ml#2669):
+  it runs the workflow as of its tag, so this change does not touch it.
+- The regression lane ran in the clone three times (main, commit 1, the final tree); each run left
+  util/ad-hoc/2026-10-08_backup-phase-b-fold-in/__pycache__/ (ignored), which I removed; the clone's status is the 18
+  changes only.
+
+Could not do / deviations
+-------------------------
+- actionlint with shellcheck and pyflakes on ci.yml does not complete (main's too); ci.yml is linted without them.
+- Before this session's context was summarized, one run of tests/test_workflow_script_paths.py used TMPDIR=
+  ~/.local/state/juniper-ml-sweep-port-tmp, outside my scratch dir; the directory held nothing and I removed it.
+  That suite's one failure needs a TMPDIR outside every checkout, which my scratch dir cannot give; it fails the
+  same on main.
+- `wheel` is absent from JuniperCascor1 (run_tests.py preflight WARN); I did not install into the shared env.
+- My verification before commit 1 ran the suites on 3.14 only; CI's 3.12 lane caught what that missed (a dev box is
+  host-advantaged). Commit 2's verification ran the four publish suites on 3.12, 3.13, 3.14 and 3.15; the full
+  regression lane ran locally on 3.14 only (on commit 1's tree and on the final tree).
+
+Contradictions with the brief
+-----------------------------
+- The brief's writer usage names --tree and --date; this writer also requires --changelog-cases and
+  --changelog-mutations (the #206 review's R7: no placeholder defaults) and takes --template-dir (cascor's
+  publish.yml and publish-protocol.yml, both pinned) where cascor-client's takes --template.
+- The pins file the brief describes (19d6acd3...) is no longer $W's; see Judgement calls.
+- Nothing else in the repo contradicts the brief.
+
+Files written (outside the clone's 18 and the PR)
+-------------------------------------------------
+$WT/util/ad-hoc/2026-11-26_juniper-ml_one_artifact_sweep_port.py; $WT/tmp/ports/juniper-ml/: REPORT.txt, ARGS.json,
+ARGS2.json, commit_body.txt, fixup_commit_body.txt, pr_body.md, pins.proposed.json (+ .v1-seed19d6acd3.json,
+.v2.json), paths.txt, mutations.py, mutations/ and mutations2/ (table.md, results.json, per-mutation diffs and logs),
+probe_screens_ml.py, screens/, gate/ and gate2/ (+ gate.prev/, gate-main/), pr-head/ and pr-head2/, drafts-source/,
+dev/ (logs, run outputs, writer.commit1.py, versions-fix/), devtree/, base-tree/, and the helper scripts
+(run_checker.bash, run_versions.bash, compare_trees.py, build_gate.py, make_pins.py, run_suites.py, precommit.bash,
+precommit_base.bash, git_in.py, vcs_batch.py, subdiff.py, wf_outline.py). The clone holds the final tree as
+uncommitted changes (its HEAD is still main's bceac63c).

@@ -1,0 +1,165 @@
+REPORT_FIXUP: juniper-canopy#844, the second commit (the three gaps the first report named, fixed)
+Written 2026-11-26 after 03:56Z (date -u) by the port executor. Requested by the coordinator's message; the first report is
+$WT/tmp/ports/juniper-canopy/REPORT.txt (unchanged). $WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun
+Fix-up scratch (every log named below): $WT/tmp/ports/juniper-canopy/fixup/; <scratch> = $WT/tmp/ports/juniper-canopy/
+
+== Result
+PR #844  https://github.com/pcalnon/juniper-canopy/pull/844   OPEN, not draft; title unchanged
+New head e6557ec4cd6d603b2d1dfb534204316b219994df: ONE signed commit on fix/publish-one-artifact-sweep, parent
+dcc58bb5510874227dd04206b0b77a3f7df2916e (the first commit), the PR now holds those two commits.
+  push tool: "signed commit e6557ec4cd6d603b2d1dfb534204316b219994df on pcalnon/juniper-canopy:fix/publish-one-artifact-sweep",
+  "verified signature (reason=valid)", "verified parent dcc58bb5510874227dd04206b0b77a3f7df2916e" (fixup/push.log)
+  readback (fixup/readback.log): head e6557ec4... verified=True reason=valid parents=['dcc58bb5']; the message's last two
+  lines are the brief's two trailers; docs/ci_cd/CICD_MANUAL.md "same" (blob c786a5881562), CHANGELOG.md "same" (blob
+  f0d3482b69e3); "commit touches 2 file(s); expected 2; extra=[] missing=[]".
+  Subject: docs(publish): the runbook tells a PyPI check that gave up waiting from a mismatch, and its lead-in covers every bullet
+  Body: fixup/commit_body_fixup.txt (sha256 dbdf57a7...); its LAST paragraph is exactly the two trailer lines. It has no
+  Allow-Symbol-Loss: line: the screens read every commit message in the range, and the first commit's two still waive
+  both symbols (below). The repo squashes with squash_merge_commit_message=COMMIT_MESSAGES, so a squash keeps both.
+PR body: updated with gh api --method PATCH repos/pcalnon/juniper-canopy/pulls/844 --input fixup/pr_body2.json at
+  03:55:47Z (updated_at 03:55:48Z). Read back, it equals fixup/pr_body2.md byte for byte (sha256 56237d58...) and still
+  ends with the two required lines (fixup/patch_body.log). Before the PATCH, the body GitHub held equalled the first
+  commit's pr_body.md byte for byte, so the edits started from what the PR carried.
+CI on the new head (read-only, not waited on, not re-run), 03:56:01Z: 7 success, 5 neutral, 7 not yet concluded, none
+  failing; mergeStateStatus BLOCKED while they run (it was CLEAN on dcc58bb5 at 03:52:19Z).
+Not merged, armed, approved or updated; no other PR touched.
+
+== Pre-checks (stop-if-moved)
+03:30:59Z: GitHub main 2cec71fe10e9025232d64e74c4f527b6ed0c08f3; #844 head dcc58bb5510874227dd04206b0b77a3f7df2916e.
+Again at 03:52:19Z, 03:54:22Z and 03:55:20Z, the last one just before the push (fixup/prepush-{a,b,c}.log): unchanged.
+The only open pull request on juniper-canopy each time was #844, so no other PR shares CICD_MANUAL.md or CHANGELOG.md.
+
+== The changes (files pushed: docs/ci_cd/CICD_MANUAL.md and CHANGELOG.md; the other five files are byte-identical to dcc58bb5)
+1. CICD_MANUAL.md, § Runbook: Release publishing. The old :1055 bullet is replaced by your two, with the text exactly
+   as I proposed it:
+   - :1055-1056 "**`Verify PyPI serves exactly these files` gave up waiting** (PyPI's JSON did not list the files within
+     its bound): index lag. The files are already on PyPI ... Within 30 days, "Re-run failed jobs" on the release run: the
+     PyPI job uploads the same bytes again, which PyPI accepts, and repeats the check (a fresh `pypi` approval, then the
+     5-minute timer)." and "`Verify TestPyPI still serves exactly these files` giving up, before the upload, takes the same
+     re-run; nothing reached PyPI." On one line the bullet is 517 characters, over canopy's markdownlint MD013 limit of 512,
+     so it breaks before the second sentence group onto a two-space continuation line (391 + 127 characters). The
+     index-lag bullet just above breaks the same way. The words are unchanged.
+   - :1057 "**`Verify PyPI serves exactly these files` found a mismatch** (PyPI lists a file this run did not build, or
+     another sha256): the files are on PyPI. Compare ... only a new patch version ships tested files under a clean version."
+   The two causes match juniper-cascor's MANUAL.md failure table: its mismatch row; its "A JSON check gives up after 20
+   attempts" row, "Re-run failed jobs ... a fresh approval and ... the 5-minute timer"; and its "Verify TestPyPI still
+   serves exactly these files" row, "Nothing reached PyPI ... use Re-run failed jobs".
+2. CICD_MANUAL.md:1048: the lead-in is now "When rung 1 refuses, or a check of the release run failed:".
+   The doc stays at 0.29.6 / 2026-11-26: the PR bumps it once from main's 0.29.5, and the writer gives that on main.
+3. The writer, $WT/util/ad-hoc/2026-11-26_juniper-canopy_one_artifact_sweep_port.py
+   - It is now sha256 5fca1dca116b9fcee651c6cda21da9d30481231d4ecac8d9e25f6d8cb68fde10 (2368 lines). It was 7e56cdfd...
+     (2338 lines), kept as fixup/writer-commit1.py.
+   - Diff: fixup/writer.diff (+39 -12).
+   - --changelog-cases, --changelog-docs-cases and --changelog-mutations are now required=True, with an argparse type
+     (changelog_count) that admits only a positive integer: no counts, a placeholder or 0 is a usage error, exit 2.
+   - apply() refuses (Refused, exit 1) a count that is not a positive integer, and an entry that still holds any of its
+     six placeholders after formatting.
+   - The docstring states both guards and records the revision.
+   - Its manual_new() and CHANGELOG_ENTRY carry the new text; everything else it writes is unchanged.
+   - Sources: fixup/drafts/ (writer_src.py edited; the two test modules unchanged), assembled by drafts-source/assemble.py,
+     whose round-trip check passed. The archived sources re-assemble byte for byte to the first commit's writer
+     (fixup/setup.log).
+   - It still runs on a fresh copy of main (below).
+4. CHANGELOG.md:250-260, the entry's Docs bullet (:254-258 rewrapped). The manual now states "that a failed `Verify PyPI
+   serves exactly these files` comes after the upload and has two causes, kept apart: a check that gave up waiting, which
+   is index lag and is re-run the same way (as is `Verify TestPyPI still serves exactly these files` giving up before the
+   upload), and a mismatch, which needs a new patch version". Its counts (113, 2, 55) are unchanged.
+   PR body, the runbook paragraph (pr_body2.md:105-115) names both causes the same way and the new lead-in.
+   Other edits to the PR body (fixup/build_pr_body2.py, exact-once edits of the body the PR carried):
+   - A new section "## The second commit: the lessons of two reviews of earlier ports" (:23). It covers the three fixes
+     and the lessons the first commit already met (your SATISFIED 4-8).
+   - Six bare cross-repo references, "#777" x4, "#763" and "#767", are qualified as juniper-cascor#....
+     juniper-canopy has its own unrelated #777 ("ci(drift): notice juniper-data generator-schema drift against canopy's
+     committed snapshot"), so the bare forms linked there.
+   - "The commit body waives both" now reads "The first commit's body".
+   - Testing: the intro says every check was re-run. Item 4 states pre-commit both times and the Flake8 arguments
+     precisely. Item 6 states the mutation re-run, item 7 the two-commit range, and item 8 the edited writer's replay and
+     refusals. Item 9 names the first gate's payload and adds the second gate's result.
+   - Concurrent PRs: the 03:54Z check.
+   The rest of the body is as it was.
+
+== Verification (on the clone, which equals the pushed tree, or on copies of it; logs in fixup/ unless named)
+1. Writer replay (replay.bash, replay.log), on FRESH copies of main:
+   - Copies: git archive of 2cec71fe from the clone, whose HEAD is that commit (== GitHub main), extracted by system
+     tar (tarfile's filters reject or rewrite this tree's symlinks into sibling repos).
+   - The unported copy equals the pristine base-tree #844 was written on (936 files).
+   - Two runs (--date 2026-11-26 --changelog-cases 113 --changelog-docs-cases 2 --changelog-mutations 55): exit 0,
+     byte-identical trees (937 files).
+   - A second run on a ported copy: exit 1 (REFUSED: an anchor is gone); the tree hash is unchanged.
+   - Usage refusals, each exit 2 with the copy unchanged: no counts; --changelog-cases '{cases}';
+     --changelog-mutations '{mutations}'; --changelog-docs-cases 0.
+   - refusal_proof.py (apply() called directly, nothing written), 5 of 5 ok:
+     a) '{cases}' refused; b) '{mutations}' refused; c) 0 refused;
+     d) an entry keeping {docs_cases} after formatting refused;
+     e) the control with the real counts returns 7 files.
+   - The writer's output vs the first commit's tree: exactly CHANGELOG.md and CICD_MANUAL.md differ (fixup.diff, 37 lines).
+   - Independent targeted edit (fixup_edit.py: three exact-once replacements, applied only over the files fetched from
+     dcc58bb5) made the clone. compare_trees.py, clone vs the writer's output on fresh main: 937 files, 0 differ, 0 on one
+     side only (edit_clone.log). Its first attempt refused and wrote nothing (my length check took old CHANGELOG lines);
+     it was corrected to check only the new lines, like the writer.
+2. Tests (JuniperCanopy1, Python 3.13.13, pytest 8.4.2; <scratch>/pytest-fixup-clone.log):
+   test_publish_one_artifact.py + test_publish_docs_bounds.py + test_wheel_import_smoke.py: 128 passed, 0 failed,
+   0 skipped, exit 0.
+3. CI's unit lane (<scratch>/unit_lane.bash, LD_LIBRARY_PATH/LIBTORCH unset as before; <scratch>/unit-lane-fixup-final.log,
+   03:41:52Z-03:51:49Z): 8546 passed, 17 skipped, 0 failed, exit 0. That equals the first commit's lane. The 13 SKIPPED
+   lines (17 skips) equal both the first commit's lane's and main's (cmp; unit-lane-summary.log). No new skip.
+4. actionlint 1.7.12 on publish.yml: exit 0, no output (<scratch>/lint-fixup-clone.log).
+5. pre-commit (precommit_in_copy.py, /opt/miniforge3/bin/pre-commit):
+   - The two changed files: exit 0, "changed by hooks: none"; markdownlint and doc links passed (precommit-two.log).
+   - All seven PR files: exit 0, "changed by hooks: none" (precommit-seven.log).
+6. FINAL checker (sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35 verified; --pins
+   $WT/tmp/ports/juniper-canopy/pins.proposed.json sha256 0fa60256e012388e19365fe8b6e04d16203131da6a359e50258f4115400b1365;
+   template b6826ee6...):
+   - Clone: "PASS juniper-canopy/publish.yml (PUBLISH_PACKAGE=juniper-canopy, PUBLISH_DIST_DIR=dist,
+     PUBLISH_TAG_PREFIX=v)", "1 of 1 pass", exit 0 (<scratch>/checker-fixup-clone.log).
+   - Re-fetched PR head: "PASS pr-head/publish.yml ...", "1 of 1 pass", exit 0 (<scratch>/checker-fixup-pr-head.log).
+   publish.yml is unchanged (sha256 3bbae01d...).
+7. Screens on the two-commit range (screens_two.bash; probe_screens.py: main, then the first commit with its pushed
+   message, then the fix-up with its message; screens-two-commits.log):
+   - juniper-symbol-loss-check: exit 0, findings=2 fail=0 {'WAIVED': 2}. Both symbols are waived by the first commit's
+     Allow-Symbol-Loss lines.
+   - juniper-docs-additions-check: exit 0, 13 small-deletion WARNs, fail=0. Same counts as the first commit alone.
+8. Pre-push gate over the fix-up's files and texts (gate_fixup.bash final; payload gate-final/ = the two files, the PR
+   body pr_body2.md as PATCHed, the title, the fix-up's message; added/ = its lines added to dcc58bb5; gate-final.log):
+   exit 0, gate: PASS.
+   - Files scan: 2 findings, both ACCEPTED for the files scan only (fixup/accept.files.txt):
+     CHANGELOG.md:1747:11:juniper-env-credential:64b0c6e538 and CHANGELOG.md:1747:13:generic-api-key:64b0c6e538.
+     Line 1747 is byte-identical to main's line 1690 and to the first commit's line 1744 (finding_lines2.log), the line
+     #844's first gate judged. The fix-up's three added lines above it moved it.
+   - Text scan: 0 findings; canary 32 of 32.
+   - Masked read --names: "0 line(s) listed from 2 file(s) and 11 line(s) read".
+   - Without the accept file the gate FAILS on exactly those two (gate-pre.log), so the files scan is not vacuous.
+   The payload's two files equal the clone's (cmp).
+9. Mutation proof, re-run because its harness copies the two docs (mutations.py on the clone; fixup/mutations/table.md,
+   mutations.log): 55 of 55 caught, base and both controls passed. Rehearsals alone (the same 17 ids, -k
+   "TestFindReleaseRun or TestFetchTestPyPIFiles or TestInstallCheckScript"): 17 of 17. Both tables are identical to the
+   first commit's (diff).
+10. Landing: push_fixup.bash ran prepush_check (OK), then run_push_signed_commit.py fixup/ARGS2.json --dry-run
+   (03:55:23Z, "(nothing written)", exit 0; an earlier dry run at 03:52Z also passed), then the same without --dry-run
+   (03:55:24Z-03:55:30Z, exit 0). ARGS2.json: expected_head dcc58bb5510874227dd04206b0b77a3f7df2916e, paths
+   [docs/ci_cd/CICD_MANUAL.md, CHANGELOG.md] only. Run from $WT.
+11. Re-fetch (2026-11-15_fetch_pr_files.py --pr 844 --out fixup/pr-head): the 7 files; each equals the clone's
+   (pr-head-same.log, exit 0).
+12. Flake8 7.3.0 + bugbear 26.11.22 (the pre-commit env), juniper-ml's own .pre-commit-config.yaml arguments: the edited
+   writer and the fix-up's scripts are clean (flake8-writer.log). The mutation script has one B950, a 614-character line.
+   CORRECTION to the first report: its "flake8 ... clean (E501/B950/B907 ignored ...)" was imprecise. With only those
+   three ignored, flake8 reports 4 E203 (black's slice spacing) in the writer, first commit's version included. E203 is
+   in the ignore lists of juniper-ml's arguments and of canopy's .flake8. The PR body's item 4 now says so.
+
+== Judgement calls
+- The bullet's line break (change 1): forced by MD013; same words.
+- The CHANGELOG bullet is rewrapped from its fifth line on, at the entry's width. Its first four lines and the last two
+  are unchanged.
+- The PR body's bare cross-repo references are qualified, and its testing section is updated, so that the body stays true
+  of a two-commit PR. These go beyond the runbook paragraph you named. They are all in the body, none in a file.
+- The mutation proof was re-run though not on your list: its harness reads the manual, and the body claims it.
+
+== Could not do / not done
+- CI on e6557ec4 was not waited on (in progress at 03:56:01Z, none failing). Nothing else outstanding.
+- The writer stays untracked in $WT (as before); its first-commit version is kept at fixup/writer-commit1.py.
+
+== Documents changed
+juniper-canopy (pushed in e6557ec4): docs/ci_cd/CICD_MANUAL.md, CHANGELOG.md. PR #844's body (PATCH).
+$WT: util/ad-hoc/2026-11-26_juniper-canopy_one_artifact_sweep_port.py (edited); tmp/ports/juniper-canopy/REPORT_FIXUP.txt
+(new); tmp/ports/juniper-canopy/fixup/ (new: scripts, logs, trees, drafts). The clone's two files carry the fix-up.
+REPORT.txt, pins.proposed.json, ARGS.json and the first commit's records are unchanged.

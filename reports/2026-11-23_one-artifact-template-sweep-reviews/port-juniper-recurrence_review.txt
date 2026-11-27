@@ -1,0 +1,290 @@
+WHAT WAS NOT DONE
+
+- I did not run the three packages' whole suites locally. I read CI instead.
+  - App lane, Python 3.12:
+    - main: run 44829656572, at 93a28202, the last app-path change before the base: 485 passed.
+    - This PR: run 45759058692: 568 passed.
+    - The +83 equals 204 - 121, the publish module's own growth: nothing in juniper-recurrence/ changed between 93a28202
+      and the base.
+  - Model lane, Python 3.12: 211 passed and 1 skipped (tests/test_readouts_mlp.py: no torch in that job).
+  - Client lane, Python 3.12: 77 passed.
+  - The PR body's local "model 227 and 227" fits an environment that has torch. I did not verify it.
+- I did not replay pre-commit or the sequence-safety screens locally. I read CI's runs on this head instead:
+  `Pre-commit (all-files)` passed, and the `Sequence Safety` job's log uses the repo's five-tree scope.
+- I did not run the pre-push gate; it is not a review step.
+- I did not read the porting session's REPORT.txt or any other file of it under $WT/tmp/ports/juniper-recurrence/,
+  except pins.proposed.json. I did run the PR's own writer, $WT/util/ad-hoc/2026-11-26_juniper-recurrence_one_artifact_sweep_port.py,
+  to check that it replays.
+- The mutations ran with -x, so each row gives the first failing case only.
+- GitHub: GETs only.
+- This review ran in $WT itself, so nothing had to be copied in. Every file is under
+  $WT/tmp/ports/juniper-recurrence/review/.
+
+VERDICT
+
+juniper-recurrence#241 (https://github.com/pcalnon/juniper-recurrence/pull/241).
+- Head d7adc41c6dba5b3fe71e88d763f93498c62f4bb7, equal to headRefOid.
+- Base 2ce346dae0be2ed2b666c96ea1de7d92a30ceffc, equal to GitHub's main; main had not moved at 05:35Z.
+- One commit, 7 files, +1059 -200.
+
+BLOCKER 0, MAJOR 0, MINOR 2, NIT 3
+
+FINDINGS
+
+F1  MINOR  juniper-recurrence/README.md:214-215
+  What is wrong:
+    The README says: "The republish takes the version from the tag, after its `PUBLISH_TAG_PREFIX`, so it refuses
+    another package's tag, and any tag that is not the prefix followed by the exact version, before any request: it
+    publishes nothing."
+    - The first half is true.
+    - The second half is false. A tag that carries the prefix but not the exact version passes the find step's prefix
+      check. Here that is `juniper-recurrence-v0.3.1-beta` (data-client's `v0.3.1-beta` form).
+    - The step then makes its API requests. When the tag has a release run whose TestPyPI jobs passed, the step succeeds
+      and outputs version=0.3.1-beta.
+    - The job fails only later, at `Download TestPyPI's files and verify them`, when it reads TestPyPI's JSON for that
+      version. Nothing is published.
+    juniper-cascor's MANUAL.md:713 keeps the two cases apart. Such a tag "cannot be republished, and the job fails
+    without publishing", and "before any request" applies only to a tag with the wrong prefix. This PR's CHANGELOG
+    entry and PR body word it correctly; only the README merges the two.
+  Severity:
+    The severity guide lists a doc statement false of the workflow as MAJOR. I place this one at MINOR: what is false
+    is where the refusal happens. What an operator acts on is stated correctly (such a tag cannot be republished, and
+    nothing is published), so no recovery changes. Raise it to MAJOR if you read the guide strictly.
+  Shown by:
+    review/probe_find_tag.py runs the head's own find step against a stand-in API that records every request
+    (output in probe_find_tag.out).
+    - Tag `juniper-recurrence-model-v0.3.1`: exit 1, 0 requests.
+    - Tag `juniper-recurrence-v0.3.1-beta`, with a release run whose TestPyPI jobs passed: exit 0, 3 requests
+      (runs, jobs, artifacts), GITHUB_OUTPUT "version=0.3.1-beta | run-id=4242".
+  Fix:
+    "The republish takes the version from the tag, after its `PUBLISH_TAG_PREFIX`: it refuses another package's tag
+    before any request, and a tag that is the prefix followed by anything but the exact version cannot be republished
+    either: the job fails later, without publishing."
+
+F2  MINOR  juniper-recurrence/tests/test_publish_one_artifact.py:866-885 (TestTemplate) and :40-42 (the docstring)
+  What is wrong:
+    You asked whether this module guards the template blocks as well as the other ports' tests do. It pins the three
+    copies equal to one another and carries no digest pin: each template step's `run:` text is compared, and the
+    republish job as parsed YAML, with action refs dropped.
+    - Behaviour is well guarded: all 14 of my non-probe mutations were caught.
+    - Template text is guarded less well than by the other ports' normalized digest pins (data, cascor-client,
+      data-client, worker, ml; SWEEP item G). Two gaps follow.
+    (a) An edit made the same way in all three copies of a template `run:` script passes the suite, and so CI.
+        - P1: the find step's `prefix and` clause dropped.
+        - P2: the find step's warning changed from "(kept 90 days)" to "(kept 7 days)".
+        - The FINAL checker catches both (0 of 3 pass). But it runs only in this arc's sessions, never in recurrence's
+          CI.
+        - P1 is not a gap of this repo alone: cascor's own suite has no empty-prefix case either. It is harmless while
+          the env pins a non-empty prefix.
+    (b) YAML comments outside `run:` scripts are compared by neither the suite nor the checker, which compares parsed
+        YAML. Both of these pass both guards (suite 204 passed; checker 3 of 3 pass):
+        - P3: SWEEP item 1 reverted in one publisher's republish banner.
+        - P4: SWEEP item 2 reverted in one publisher's top comment.
+        So the PR body's division of labour ("the checker pins them to juniper-cascor's text", its H1 and H2 controls)
+        holds for `run:` scripts only.
+  Why this does not block the merge:
+    - The PR's comments are right today. review/blocks.py compares the raw text, comments included. Every template step
+      of the release jobs, and the whole republish job (17966 bytes), is byte-identical to juniper-cascor's
+      publish-cascor-model.yml and publish-protocol.yml.
+    - The design dates from #236. The module docstring documents it, and so does the PR body's H2 control.
+    - The port brief's table asks no digest pins of recurrence (column G: "--").
+  Fix (optional, for the next sweep): pin each template block's normalized raw text, comments included, in G's form
+  (each `uses:` reduced to the action name), as the other ports do. Or run an identity check that reads raw comments in
+  this repo's CI.
+
+N1  NIT  juniper-recurrence/README.md:232-234
+  - The README says: "The step runs in two jobs, `Publish to PyPI` (in the release run) and the republish job (in rung
+    1's dispatch run)".
+  - `Publish to PyPI` also runs in a plain dispatch's re-fire, which README:247-251 describes.
+  - The remedy, re-running "the run whose check gave up", covers that case, so only the list in brackets is short.
+  - The wording follows the port brief's addendum from #238's review.
+  - Fix: "(the release run, a plain dispatch's re-fire, or rung 1's dispatch run)".
+
+N2  NIT  juniper-recurrence/README.md:178 and :186; juniper-recurrence-client/AGENTS.md:74-76
+  - The writer left ragged line breaks:
+    - "`Verify the TestPyPI install`, a" / "job of its own ...";
+    - "The workflow's `env`" / "holds ...";
+    - "in this order:" / "dispatch" / then the command.
+  - They render correctly.
+  - Fix: rewrap at 120 columns.
+
+N3  NIT  .github/workflows/publish-recurrence-model.yml:15-17 (pre-existing; the sweep did not make it false)
+  - The header says the model's tags stay "decoupled from the future juniper-recurrence application's own ``v*``
+    release tags".
+  - The app exists, and its tags are `juniper-recurrence-v*`, as the app's and client's headers say.
+  - Fix: "decoupled from the app's ``juniper-recurrence-v*`` and the client's ``juniper-recurrence-client-v*`` release
+    tags".
+
+VERIFIED (NO FINDING)
+
+- The checker: see CHECKER OUTPUT below. With the proposed pins it prints 3 of 3 pass. With $W's current pins it prints
+  0 of 3 pass, and each publisher fails only at its install step's pin.
+- The proposed install pins (review/pins_diff.py):
+  - Only recurrence's three entries change (`lines`, `sha256`, `source`).
+  - `about`, `format`, the entry order and the other 15 entries are unchanged. The file holds 0 bytes outside ASCII.
+  - Every added line is a comment: 10 in the app, 8 in the client, 13 in the model. Every seed command is kept, in
+    order.
+  - Each sha256 recomputes from "\n".join(lines).
+  - The added lines are the step's own comments, which the pin must hold byte for byte. Under bash -e they do nothing,
+    and the module's 15 install-shell rehearsals (against stand-in pip, python and sleep) pass on the head.
+  - Each install check imports its package:
+    - app: `import juniper_recurrence`;
+    - client: `import juniper_recurrence_client`, after installing requests and urllib3 by name;
+    - model: `import juniper_recurrence_model`, after installing numpy and juniper-model-core by name.
+    Each reads `__version__` before it prints "OK".
+  - review/probe_import_check.py runs each check's own `python -c` line under `python -S`, from a stand-in
+    $RUNNER_TEMP:
+    - an absent module fails (ModuleNotFoundError);
+    - a bare namespace directory fails (AttributeError);
+    - both fail with and without PYTHONOPTIMIZE=1;
+    - a package with __version__ passes.
+    So no find_spec check is needed, and each pin's `source` text is accurate.
+- Template fidelity (review/blocks.py, raw text with comments):
+  - The 10 template steps of the release jobs are byte-identical to juniper-cascor's publish-cascor-model.yml and
+    publish-protocol.yml: reuse, record, upload, both downloads, both dist checks and the three JSON checks. So is the
+    whole republish job.
+  - Against publish.yml, only the job ids differ (testpypi and pypi there).
+  - PUBLISH_TAG_PREFIX is juniper-recurrence-v, juniper-recurrence-client-v and juniper-recurrence-model-v, each equal
+    to its build guard's literals. The guard's dispatch branch is `startsWith(github.ref_name, '<package>-v')` (#777's
+    M4).
+  - The top comment is SWEEP item 2's text. Item 12 does not apply here: cascor carries it in publish.yml only.
+  - The TestPyPI job holds `id-token: write` alone and runs download, dist check, publish and JSON check.
+  - The install job:
+    - is named `Verify the TestPyPI install` and needs publish-testpypi;
+    - holds `contents: read` alone, with no environment and no defaults;
+    - its sparse checkout of <pkg>/<module>/_version.py sets persist-credentials: false;
+    - `cd "${RUNNER_TEMP}"` is its first command, and it reads the version from "${GITHUB_WORKSPACE}/...".
+  - The PyPI job needs both and holds `id-token: write` alone.
+  - What the repo kept is unchanged (review/structure.py, base against head): the triggers, the concurrency groups, the
+    build steps and their commands, the push-gated release step that never runs, both environments and both uploads'
+    inputs.
+  - The install job runs on the runner's default interpreter, without setup-python. So did the pre-#236 TestPyPI job
+    when 0.8.1 was published (release run 41935261358).
+  - actionlint 1.7.12: exit 0.
+- Line 22 of each publisher:
+  - It is `#        owner       = pcalnon`, byte-equal to f34c69f (before #237), with its `=` in the same column as
+    `repository  =`'s.
+  - #237's other two edits in each publisher name the person and match juniper-cascor's template: "the Overtoad
+    approves" and "The Overtoad's recovery ladder".
+  - New text names no person; `owner` appears only for PyPI's field.
+- Tests: JuniperCascor1, run from juniper-recurrence/, with TMPDIR and --basetemp under review/.
+  - test_publish_one_artifact.py: on the head 204 passed, 0 failed, 0 skipped; on the base 121 passed.
+  - juniper-recurrence-model/tests/test_publish_smoke_pins.py: 2 passed on both.
+  - One test is gone: TestFindReleaseRun.test_the_newest_release_run_that_still_holds_the_artifact_is_found. #777
+    removed exactly that test from cascor's module (review/testnames.py, comparing 36dd6f2d with f5ed3017).
+  - 33 tests are new. They carry all 31 of #777's additions except
+    test_the_release_tag_is_read_as_data_never_run_as_script, which does not apply here (recurrence reads a version
+    file, not the tag). They add a version-file case and a decoy case.
+  - No new skip. The module's only skip site, "no sha256sum on PATH", is at base line 565 too, and it did not skip.
+  - Every hardening of SWEEP item E is present: retention exactly 90; the reuse exemption by the step's name; no `if:` or
+    `continue-on-error`; the exact step list of each job; the name ending "to PyPI"; an install check that cannot be
+    switched off; no skip_existing and no attestations: false; A's wiring.
+  - Every rehearsal case of B and C is present.
+  - No marker is needed, and CI really runs the module:
+    - `addopts` carries no -m, and CI runs `python -m pytest` with none either;
+    - `--strict-markers` admits only `performance`;
+    - CI's count rose by exactly this module's +83 (568 - 485).
+  - No implicit string concatenation. A tokenize scan found none, and it catches cases I planted.
+- The writer replays. Run on a fresh export of 2ce346da, it leaves a tree byte-identical to the head: 177 files, none
+  different.
+- Docs (apart from F1, every statement below is true of the head's workflows):
+  - The README covers the five jobs, the ladder, when rung 1 refuses, and the two causes of a failed PyPI check, naming
+    the run whose check gave up. It also covers the re-cut consequence, the plain-dispatch case, and "each rung acts on
+    the workflow file as of the tag".
+  - Each list's lead-in covers all of its bullets.
+  - "every release so far" is true: the newest Release, juniper-recurrence-v0.8.1, dates from 2026-11-04, before #236.
+  - The `pypi` environment holds a required reviewer, a 5-minute wait timer and tag-only policies. `testpypi` is
+    tag-only too.
+  - Both links resolve to headings in juniper-cascor main's docs/ci_cd/MANUAL.md (:671 and :689).
+  - The client AGENTS.md's `Last Updated` is 2026-11-26, the UTC day of the commit (05:03:08Z). This repo has no date
+    gate.
+  - CLAUDE.md, at the root and in the client, are still symlinks (mode 120000).
+  - No living doc states a poll, retry or timeout number, so leaving test_publish_docs_bounds.py unported is right.
+  - The CHANGELOG has one entry, at the end of [Unreleased], under "### Fixed", in the repo's style. Its sentences hold
+    for recurrence:
+    - the old check did import the package beside the TestPyPI job's OIDC token-request variables;
+    - after its fifth failed try, it did fall through to the import.
+- The commit:
+  - It is the PR's only commit, and GitHub verifies its signature (reason "valid", 05:03:09Z).
+  - Its second-to-last paragraph is the single `Allow-Symbol-Loss:` line.
+  - The symbol-loss screen reports exactly that symbol. From CI's log: files_screened=1 findings=1 fail=0
+    by_verdict={'WAIVED': 1}, and the docs screen shows files_screened=0.
+  - The trailers are the last paragraph.
+- Concurrent pull requests: none. At 05:27Z, #241 was the repo's only open PR.
+
+CHECKER OUTPUT
+(FINAL checker a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35; template b6826ee65f7fc511a1cc68a169730c8d54933d5fd6bff08b25ffc3148f40078b;
+ fetched head; all three publishers on one command line, --repo juniper-recurrence)
+
+pins: /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun/tmp/ports/juniper-recurrence/pins.proposed.json (sha256 b62731ee45c347e977f4254bef15b663d097571f85b32fcfb9be7116d45397b7, 18 pins)
+PASS head/publish-recurrence-app.yml  (PUBLISH_PACKAGE=juniper-recurrence, PUBLISH_DIST_DIR=juniper-recurrence/dist, PUBLISH_TAG_PREFIX=juniper-recurrence-v)
+PASS head/publish-recurrence-client.yml  (PUBLISH_PACKAGE=juniper-recurrence-client, PUBLISH_DIST_DIR=juniper-recurrence-client/dist, PUBLISH_TAG_PREFIX=juniper-recurrence-client-v)
+PASS head/publish-recurrence-model.yml  (PUBLISH_PACKAGE=juniper-recurrence-model, PUBLISH_DIST_DIR=juniper-recurrence-model/dist, PUBLISH_TAG_PREFIX=juniper-recurrence-model-v)
+3 of 3 pass
+checker exit: 0
+
+Control, with $W's current pins (e3723222b23b4a8e5f4bf34e7beaa90a0b8c0195ece5894c8cdaca80804000ea): FAIL for each of
+the three, "0 of 3 pass", exit 1. Each fails only at "verify-testpypi-install: step 'Verify install from TestPyPI'
+differs from its pin", first at line 2, where the step has the comment line the seed lacks.
+Logs: review/checker-head-proposedpins.log and review/checker-head-currentpins.log.
+
+TEST COUNTS
+(JuniperCascor1, Python 3.14.7)
+
+- head  juniper-recurrence/tests/test_publish_one_artifact.py          204 passed, 0 failed, 0 skipped (54.81s)
+- head  juniper-recurrence-model/tests/test_publish_smoke_pins.py          2 passed
+- base  juniper-recurrence/tests/test_publish_one_artifact.py          121 passed
+- base  juniper-recurrence-model/tests/test_publish_smoke_pins.py          2 passed
+- CI    app lane, Python 3.12: main 485 passed, this PR 568 passed; model 211 passed + 1 skipped module; client 77 passed
+
+MUTATION TABLE
+(Each row is a fresh copy of the head tree, edited, then the module run with -x, then the FINAL checker with the
+proposed pins. The head's workflows kept their sha256 throughout. None of these is in the PR body's list of 48.)
+
+| id  | area    | mutation                                                                                              | suite result      | first failing case (assertion)                                                                                               | checker      |
+|-----|---------|-------------------------------------------------------------------------------------------------------|-------------------|------------------------------------------------------------------------------------------------------------------------------|--------------|
+| K0  | control | no edit                                                                                               | 204 passed        | -                                                                                                                            | 3 of 3 pass  |
+| R1  | A       | step-level `PIP_EXTRA_INDEX_URL: https://pypi.org/simple/` on the app's install step                    | caught            | TestWiring::test_no_env_points_pip_elsewhere[app] (assert not ['PIP_EXTRA_INDEX_URL'])                                       | 2 of 3 pass  |
+| R2  | A       | the app's check cds back into the sparse checkout's package dir before its import (item 10)             | caught            | TestInstallCheckJob::test_it_installs_and_imports_from_outside_any_checkout[app]                                             | 2 of 3 pass  |
+| R3  | A       | the model's install-job checkout made a full checkout                                                   | caught            | TestInstallCheckJob::test_it_installs_and_imports_from_outside_any_checkout[model]                                           | 2 of 3 pass  |
+| R4  | A       | the client's PyPI job needs the install job alone                                                       | caught            | TestWiring::test_the_publish_jobs_chain_on_the_build_under_the_names_the_release_train_reads[client]                         | 2 of 3 pass  |
+| R5  | E       | retention 90 -> 60 in all three (the base's `> 30` pin passes it)                                       | caught            | TestWiring::test_one_artifact_carries_the_dist_and_sha256sums_and_outlives_the_pypi_gate[app] (60 == 90)                     | 0 of 3 pass  |
+| R6  | E       | `skip-existing: true` (hyphen) on the model's TestPyPI upload                                           | caught            | TestWiring::test_every_upload_takes_the_downloaded_dist_and_none_skips_an_existing_file[model]                               | 2 of 3 pass  |
+| R7  | B       | the find step ignores the install job (counts only the upload), in all three                            | caught            | TestFindReleaseRun::test_a_release_run_whose_testpypi_jobs_did_not_both_pass_is_refused[the-upload-failed]                   | 0 of 3 pass  |
+| R8  | B       | the find step treats an expired artifact as present, in all three                                       | caught            | TestFindReleaseRun::test_a_release_run_whose_artifact_expired_is_still_checked_and_testpypi_is_the_only_record               | 0 of 3 pass  |
+| R9  | C       | the model's PUBLISH_TAG_PREFIX loses its trailing `v` (disagrees with the guard)                        | caught            | TestWiring::test_the_template_parameters_name_this_package[model]                                                            | 2 of 3 pass  |
+| R10 | A       | a sixth job, `attest`, holding id-token: write and running a script (model)                             | caught            | TestWiring::test_the_publish_jobs_chain_on_the_build_under_the_names_the_release_train_reads[model]                          | 2 of 3 pass  |
+| R11 | B       | the republish job loses `environment: pypi`, in all three                                               | caught            | TestWiring::test_the_republish_job_runs_only_on_its_dispatch_behind_the_pypi_gate_and_builds_nothing[app] ('None' == 'pypi') | 0 of 3 pass  |
+| R12 | D       | the republish job renamed with "PyPI" in its name, in all three (item 1)                                | caught            | TestWiring::test_the_republish_job_runs_only_on_its_dispatch_behind_the_pypi_gate_and_builds_nothing[app]                    | 0 of 3 pass  |
+| R13 | E       | `twine check dist/* || true` in the app's build                                                         | caught            | TestWiring::test_the_build_steps_run_exactly_their_commands[app]                                                             | 2 of 3 pass  |
+| R14 | A       | the client's by-name runtime install resolved from TestPyPI (`--index-url https://test.pypi.org/simple/`) | caught            | TestInstallCheckJob::test_the_install_step_runs_exactly_its_commands[client]                                                 | 2 of 3 pass  |
+| P1  | probe   | the find step's `prefix and` dropped, alike in all three                                                | MISSED (probe)    | - (204 passed)                                                                                                               | 0 of 3 pass  |
+| P2  | probe   | the find step's warning "(kept 90 days)" -> "(kept 7 days)", alike in all three                         | MISSED (probe)    | - (204 passed)                                                                                                               | 0 of 3 pass  |
+| P3  | probe   | SWEEP item 1 reverted in the client's republish banner only (a YAML comment)                            | MISSED (probe)    | - (204 passed)                                                                                                               | 3 of 3 pass  |
+| P4  | probe   | SWEEP item 2 reverted in the model's top permissions comment only (a YAML comment)                      | MISSED (probe)    | - (204 passed)                                                                                                               | 3 of 3 pass  |
+
+Every catch is an assertion failure, not a setup or collection error (each log's first `E` line). The probes are
+evidence for F2. P1 and P2 are caught by the checker alone; P3 and P4 by neither guard.
+Files: review/mutations.py, review/mutations.json, review/mutations-P3-P4.json, review/mut/<id>/{pytest,checker}.log.
+
+CI STATE
+(gh pr checks 241, read at 05:19Z; PR state read again at 05:35Z)
+
+- All 10 required contexts (ruleset on main) pass: Documentation links; Pre-commit (all-files); Guard PR base branch;
+  App required checks; Model required checks; Client required checks; Bench required checks; Analyze (python);
+  Sequence Safety; Memory Budget.
+- Every other check passes too: every lane's Test 3.12-3.15 legs, the Lint (ruff) jobs, the Build distribution jobs,
+  Docker Build & Smoke Test, the torch MLP readout test, CodeQL, and Local test runner suite.
+- Skipped: "Bench smoke (Python ${{ matrix.python-version }})". The PR changes no bench file.
+- Nothing failing, nothing pending. The PR is CLEAN and MERGEABLE at head d7adc41c. No auto-merge is armed.
+
+NOTES FOR THE ORCHESTRATOR (NOT FINDINGS)
+
+- At the squash merge, carry the `Allow-Symbol-Loss:` line into the squash message: main-verify.yml waives only by
+  commit trailer.
+- The CHANGELOG and the PR body cite "juniper-ml's util/ad-hoc/2026-11-26_juniper-recurrence_one_artifact_sweep_port.py".
+  That file exists today only untracked, in $WT. Land it on juniper-ml main with the arc's record, as the 11-15 writers
+  were.
+- The FINAL checker compares parsed YAML, so it does not see YAML comments in template blocks (P3 and P4), and cascor's
+  own suite does not either. Today, "byte-identical, comments included" is enforced only by the G ports' digest pins and
+  by a review that compares raw text, as review/blocks.py did here.

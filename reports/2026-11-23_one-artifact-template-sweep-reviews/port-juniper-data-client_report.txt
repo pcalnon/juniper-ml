@@ -1,0 +1,245 @@
+REPORT: juniper-data-client port of the swept one-artifact template (juniper-cascor#777)
+Written 2026-11-26 (UTC, from `date -u`) by the port executor for juniper-data-client.
+
+PR
+- PR #274: https://github.com/pcalnon/juniper-data-client/pull/274
+- Head: 8ef0c329e2b4b34bee9cb82b6bc66e2a55d9baeb, one signed commit (verified=True, reason=valid). Parent: 5c329a39, data-client main.
+- Branch: fix/publish-one-artifact-sweep (absent before; no earlier PR on it). State at 02:37:58Z: OPEN, MERGEABLE, not a draft.
+- CI (read at 2026-11-26 02:41:23Z): every check passed (24 pass, 0 fail, 0 pending), Sequence Safety, Quality Gate,
+  Pre-commit 3.12-3.14 and the five unit-test legs among them; 6 skipping (the five Cursor automations and Notify
+  Downstream Repos, which do not run on a PR). Unit-test totals against main 5c329a39's same jobs: ubuntu 3.12-3.15
+  614 -> 664 passed, 19 -> 19 skipped; macOS 3.12 612 -> 662 passed, 21 -> 21 skipped. +50 on every leg (119 - 69) with
+  no new skip, so every new or changed publish case ran and passed in CI, macOS's bash included.
+- I did not merge, arm, update-branch, approve or touch any other PR.
+
+WHERE EVERYTHING IS (read this first: the brief's $WT paths were not writable for me)
+The harness isolated me in my own worktree, MY=/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/agent-a2750c00ae7f6c8a4.
+The Write tool refused $WT ("its writes are limited to that folder"), and the guard refused git run in $WT's clone
+("a worktree-isolated agent's git operations must target its own worktree"). So I mirrored the brief's layout inside
+MY and read $WT and $W only as inputs:
+- writer:         MY/util/ad-hoc/2026-11-26_juniper-data-client_one_artifact_sweep_port.py (untracked; sha256 6798f7b77ab514ca419f42c63ebd22c0286c7ad213df7f795bb930ed77a1bcd9; 2268 lines)
+- this report:    MY/tmp/ports/juniper-data-client/REPORT.txt
+- proposed pins:  MY/tmp/ports/juniper-data-client/pins.proposed.json (sha256 cb387ade7a6eae192314a7312a3aa9f94cf6717265a164eddea25d0d92f56678)
+- ARGS.json:      MY/tmp/ports/juniper-data-client/ARGS.json; commit body landing/commit_body.txt; PR body landing/pr_body.md (sha256 f2c9c724...)
+- landing clone:  MY/tmp/ports/clones/juniper-data-client (fresh `git clone` of main, base HEAD 5c329a39230561b0ee45ca032c58154bc076582e; the writer's output in its working tree)
+- cascor clone:   MY/tmp/ports/clones/juniper-cascor (blobless clone of main 5e3d9801, for `git diff 36dd6f2d f5ed3017`; its publish.yml is byte-identical to $WT's, sha256 b6826ee6..., and the checker ran with $WT's template path as the brief says)
+- PR-head fetch:  MY/tmp/ports/juniper-data-client/pr-head; gate payload MY/tmp/ports/juniper-data-client/gate
+- evidence logs:  verify_landing.log, mutations.tsv, mutations_behavior.tsv, fullsuite_iter2.log, fullsuite_base.log, gate_final.log, landing/readback.log, pr_head_check.log (all in MY/tmp/ports/juniper-data-client/)
+To place them where the brief expects, copy the writer to $WT/util/ad-hoc/ and REPORT.txt / pins.proposed.json to
+$WT/tmp/ports/juniper-data-client/. Do not remove MY before that: `git worktree remove` deletes its tmp/.
+One write reached $WT before I learned of the isolation: `mkdir $WT/tmp/ports/juniper-data-client` and a copy of the
+brief as it stood at 01:32Z, $WT/tmp/ports/juniper-data-client/brief_snapshot_1932.md. Nothing else was written under
+$WT; nothing at all under $W; no sibling primary checkout touched.
+
+WRITER
+python3 -I <writer> --tree <fresh clone> [--template <juniper-cascor .github/workflows/publish.yml>] [--date YYYY-MM-DD]
+- --template defaults to <tree>/../juniper-cascor/.github/workflows/publish.yml, which matches the clones/ layout, and must
+  hash to b6826ee6... (cascor f5ed3017 = main 5e3d9801). It needs PyYAML (its post-condition parses the workflow): run it
+  with /opt/miniforge3/envs/JuniperCascor1/bin/python3.
+- Exact-once anchors everywhere; refuses and writes nothing on any miss. Shown both ways: its final version wrote five
+  files byte-identical (by sha256) on a fresh copy of main (iteration 3) and on the landing clone; and, run again on an
+  already-written tree, it refuses (exit 1, "anchor matched 0 times") with none of 144 files changed.
+- Template blocks and the republish job are cut out of cascor's file and put in place of data-client's copies by line
+  span, then cut out of the result again and compared byte for byte (block_spans / template_blocks / republish_job).
+- The new test modules are carried whole (NEW_TEST, DOCS_TEST, raw strings between BEGIN/END markers), refused unless
+  the base test file hashes to 9f8b0107... and the docs-bounds file does not exist yet.
+- The person-word is detected per file (publish.yml's republish banner reads "owner"; docs/REFERENCE.md's ladder line
+  reads "Overtoad"), and the writer refuses if any file names it more often than before: publish.yml 3 -> 2 (the template's
+  2), the others unchanged.
+
+git diff --stat (landing clone vs 5c329a39)
+ .github/workflows/publish.yml      | 179 ++++++---
+ CHANGELOG.md                       |  55 +++
+ docs/REFERENCE.md                  |  28 +-
+ tests/test_publish_docs_bounds.py  |  65 +++   (new)
+ tests/test_publish_one_artifact.py | 804 +++++++++++++++++++++++++++++++++----
+ 5 files changed, 983 insertions(+), 148 deletions(-)
+
+WHAT CHANGED
+- publish.yml: the new job verify-testpypi-install ("Verify the TestPyPI install"): needs testpypi, contents: read alone,
+  no environment; steps setup-python 3.12 (moved), a sparse checkout of pyproject.toml with persist-credentials: false,
+  and "Verify TestPyPI install" (moved). The install step: cd "${RUNNER_TEMP}" first; the version read from
+  ${GITHUB_WORKSPACE}/pyproject.toml; sleep 30; the template's 5-try loop and lag error; and R4-5's
+  find_spec('juniper_data_client') check failing through SystemExit. The TestPyPI job: id-token: write alone, no checkout,
+  no setup-python, ends at its JSON check. The PyPI job: needs [testpypi, verify-testpypi-install]. env: the template's
+  comment plus PUBLISH_TAG_PREFIX: v. The build guard's comment gains the template's rc*/hf* note (verified: data-client's
+  testpypi and pypi environments admit v*, rc*, hf*, juniper-*-v*/-rc*/-hf*, tags only). Header: the template's
+  description; the copies' account reworded (normalized pins; no person-word). Every template block and the republish
+  job: cascor's at f5ed3017 (3 blocks and the republish job differed: the upload comment's wording from #772, the PyPI
+  job's witness comment, the find step, the republish banner and comment).
+- tests/test_publish_one_artifact.py: replaced whole (118 cases, 69 before).
+- tests/test_publish_docs_bounds.py: new (1 case).
+- docs/REFERENCE.md: the publish.yml row; § Publishing and Recovery (the install job; the gate; PUBLISH_TAG_PREFIX; the
+  normalized pins; the ladder's new facts with this repo's `gh workflow run publish.yml --repo pcalnon/juniper-data-client
+  --ref v<version> -f republish_from_testpypi=true`; links to cascor's two MANUAL sections); Version 0.5.4 -> 0.5.5 and
+  Last Updated November 26, 2026, header and footer.
+- CHANGELOG.md: one entry at the end of [Unreleased] / ### Fixed.
+- AGENTS.md, README.md: do not describe the publish pipeline; unchanged (so no Last Updated edit).
+
+VERIFICATION (commands and results)
+1. Tests, conda env JuniperCascor1 (Python 3.14.7, pytest 9.0.3), on the landing clone:
+   python -m pytest tests/test_publish_one_artifact.py tests/test_publish_docs_bounds.py -p no:cacheprovider --timeout=60
+   -> 119 passed, 0 skipped, 0 failed (base: 69 passed).
+   Full suite, python -m pytest tests/ --timeout=120: 665 passed, 18 skipped, 67 subtests passed (base 615 passed, 18
+   skipped; the same skips: no local gitleaks binary, live-service benchmarks, the generator-parity case outside its
+   enforcing lane). Same files on PR head: 119 passed (base tree overlaid with the fetched files).
+2. actionlint 1.7.12 on .github/workflows/publish.yml: exit 0 (landing clone and fetched PR head; also 0 on the base).
+3. pre-commit: precommit_in_copy.py <landing clone> <dest> /opt/miniforge3/bin/pre-commit <the five files> -> exit=0,
+   "changed by hooks: none"; passed: YAML, end of files, trailing whitespace, merge conflicts, large files, case
+   conflicts, Python AST, debug statements, private keys, Black, isort, Flake8 (tests, relaxed), Bandit (tests, relaxed),
+   documentation links, yamllint (markdownlint skips docs/ and CHANGELOG.md by its config).
+4. Checker (sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35, verified before every run):
+   /opt/miniforge3/envs/JuniperCascor1/bin/python3 -I -B $W/util/ad-hoc/2026-11-23_publish_port_template_identity.py
+     --repo juniper-data-client --template $WT/tmp/ports/clones/juniper-cascor/.github/workflows/publish.yml
+     --pins MY/tmp/ports/juniper-data-client/pins.proposed.json <publish.yml>
+   Pins file used: pins.proposed.json, sha256 cb387ade7a6eae192314a7312a3aa9f94cf6717265a164eddea25d0d92f56678 (18 pins).
+   Landing clone: "PASS juniper-data-client/publish.yml  (PUBLISH_PACKAGE=juniper-data-client, PUBLISH_DIST_DIR=dist,
+   PUBLISH_TAG_PREFIX=v)", "1 of 1 pass", exit 0. Fetched PR head (pr-head/.github/workflows/publish.yml): "PASS
+   pr-head/publish.yml (...)", "1 of 1 pass", exit 0. With $W's seed pins (d539f05f...) the single failure is this step's
+   pin (comments + R4-5), as expected; every other check passed.
+5. Mutation proof: 38 of 38 mutations caught, 3 of 3 controls pass (mutations.tsv; table below). Second pass: the 12 rows
+   a digest or text pin catches first, re-run against the rehearsal class alone: 12 of 12 caught, 1 control passes
+   (mutations_behavior.tsv).
+6. Sequence-safety screens, data-client's own scope (its sequence-safety.yml), replayed with probe_screens_dc.py (a copy
+   of the shared probe_screens.py with that scope; the shared one uses cascor's src/**/*.py):
+   juniper-symbol-loss-check --scope 'juniper_data_client/**/*.py' --scope 'tests/**/*.py' (juniper-ci-tools 0.9.1):
+   exit 0, 2 findings, both WAIVED by the commit's paragraph. Without the waiver it reports exactly these two LOST:
+     method:TestFindReleaseRun.test_the_newest_release_run_that_still_holds_the_artifact_is_found
+     method:TestUnchanged.test_the_testpypi_job_keeps_its_setup_and_its_install_check
+   No WEAKENED or DUPLICATED finding. juniper-docs-additions-check: exit 0 (8 small-deletion WARNs in docs/REFERENCE.md).
+   On GitHub, PR #274's required "Sequence Safety" check passed.
+7. Pre-push gate: bash MY/util/ad-hoc/2026-11-15_pre_push_gate_run.bash MY/tmp/ports/juniper-data-client/gate
+   (payload by 2026-11-15_build_gate_payload.py: files/ = the five files, text/ = pr_body.md and the full commit
+   message, added/ = 991 added lines) -> exit 0, "gate: PASS".
+   - files scan: 1 finding, ACCEPTED via gate/accept.files.txt: docs/REFERENCE.md:640:69:juniper-env-credential:3ab6853de8
+     (b9 scan). Judged NOT a credential: a line this change does not touch (identical on the base), from data-client
+     #176 (e3a8ddb9, reference sections relocated out of AGENTS.md); masked, it is a table row of backticked
+     upper-case identifiers (environment-variable names), random-looking=0. The first gate run, before the accept, exited
+     1 on this finding alone. The cascor landing accepted its own pre-existing doc line the same way (AGENTS.md:148).
+   - text scan: 0 findings.
+   - masked read (--names over the added lines): 2 lines listed, each judged not a credential:
+     .github__workflows__publish.yml.added:20 (random-looking=1): the build guard's comment naming
+       notes/JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md (a document's file name).
+     tests__test_publish_one_artifact.py.added:553 (random-looking=0): assert all(headers.get("Authorization") ==
+       f"Bearer {FAKE_API_CREDENTIAL}" ...), the rehearsals' stand-in credential ("stand-in-credential"), from cascor's test.
+8. Landing: preupload_check.py (HEAD 5c329a39 == GitHub main; branch absent; the changed set == ARGS paths; each file ==
+   its gate-scanned copy; the texts == the scanned texts; trailer and PR-body endings exact) -> PASS. run_open_signed_pr.py
+   --dry-run exit 0, then the real run: "signed commit 8ef0c329e2b4 on pcalnon/juniper-data-client:fix/publish-one-artifact-sweep",
+   "PR: https://github.com/pcalnon/juniper-data-client/pull/274". Run from MY's root: MY's util/open_signed_pr.py,
+   run_open_signed_pr.py and readback_branch.py are sha256-identical to $WT's.
+9. Read-back (readback_branch.py ARGS.json): head 8ef0c329... verified=True reason=valid parents=['5c329a39']; message last
+   lines = the two trailers; all 5 blobs "same"; "commit touches 5 file(s); expected 5; extra=[] missing=[]"; exit 0.
+10. PR-head fetch (2026-11-15_fetch_pr_files.py --repo juniper-data-client --ref fix/publish-one-artifact-sweep --pr 274
+    --out pr-head): 5 files, each equal to the landing clone's; checker PASS 1 of 1 (above).
+11. R4-5 measured on juniper-data-client 0.6.0's own wheel (built from main with python -m build, installed --no-deps in a
+    fresh venv, run from an empty directory): installed, old and new checks exit 0 and the new one imports neither numpy
+    nor requests; package directory removed (metadata kept): old exits 0, new exits 1; empty namespace directory in its
+    place: old exits 0, new exits 1; the new one also exits 1 in both cases under PYTHONOPTIMIZE=1.
+
+MUTATION TABLE (each on a copy of the tree, alone; both publish modules with -x; D rows run the docs-bounds module alone)
+id   area                       mutation                                                                  result
+A1   install job                drop the install job's needs                                              fails
+A2   install job                give the install job id-token: write                                      fails
+A3   install job                give the install job environment: testpypi                                fails
+A4   TestPyPI job               put the checkout back in the TestPyPI job                                 fails
+A5   TestPyPI job               give the TestPyPI job contents: read again                                fails
+A6   PyPI job                   the PyPI job needs only the TestPyPI job                                  fails
+A7   install step               drop the cd "${RUNNER_TEMP}"                                              fails
+A8   install step               read the version from a relative pyproject.toml                           fails
+A9   install job                the sparse checkout keeps its credential                                  fails
+A10  install job                a full checkout in place of the sparse one                                fails
+B1   republish gate             one character inside the find step (success -> succes)                    fails
+B2   republish gate             the find step stops checking the TestPyPI jobs' conclusions               fails
+B3   republish gate             the find step reads filter=latest                                         fails
+B4   republish gate             the find step takes the oldest release run                                fails
+C1   PUBLISH_TAG_PREFIX         the prefix disagrees with the guard (juniper-data-client-v)               fails
+C2   PUBLISH_TAG_PREFIX         drop PUBLISH_TAG_PREFIX from the env                                      fails
+C3   PUBLISH_TAG_PREFIX         the find step accepts any tag after its first character                   fails
+E1   retention (item 4)         retention 90 -> 30                                                        fails
+E2   no switch-off (item 9)     continue-on-error: true on Verify TestPyPI still serves exactly these files fails
+E3   no switch-off (item 9)     if: always() on the PyPI job                                              fails
+E4   no switch-off (item 9)     if: on the TestPyPI JSON check                                            fails
+E5   exact steps (14, 19)       a step writes into dist/ before Record SHA256SUMS                         fails
+E6   workflow name (item 17)    the workflow renamed Publish                                              fails
+E7   install check on (19)      || true on the install's pip line                                         fails
+E8   install check on (19)      || true on the post-install check                                         fails
+E9   install check on (19)      continue-on-error: true on the install step                               fails
+E10  uploads (item 19)          skip_existing: true on the TestPyPI upload                                fails
+E11  uploads (item 19)          attestations: false on the PyPI upload                                    fails
+E12  reuse by name (item 5)     a build step trades the reuse condition for the push condition            fails
+E13  install retry              the install check makes 4 tries                                           fails
+E14  job keys                   a job-level env on the install job (PIP_EXTRA_INDEX_URL)                  fails
+R1   R4-5 find_spec             remove the find_spec (back to the metadata-only check)                    fails
+R2   R4-5 find_spec             the find_spec check as an assert                                          fails
+R3   R4-5 find_spec             accept a spec without an origin (a namespace directory)                   fails
+G1   one ref per action         a hand edit bumps one of the three download-artifact pins                 fails
+G2   normalized digests         a template comment edited (the upload's retention note)                   fails
+D1   docs bounds                the doc says 6 tries                                                      fails
+D2   docs bounds                the install check waits 20 s first, the doc unchanged                     fails
+H1   control                    a Dependabot bump of every download-artifact pin (item 23)                passes
+H2   control                    the doc's bounds sentence rewrapped over two lines                        passes
+H0   control                    no edit                                                                   passes
+(First failing case per row: mutations.tsv and the PR body. Behavior pass: B1-B4 and C3 fail TestFindReleaseRun alone
+(9, 10, 20, 2 and 6 cases); A7, A8, E7, E13 and R1-R3 fail TestInstallCheckScript alone (1, 4, 2, 1, 6, 5, 3 cases);
+R1-R3 among them fail the real find_spec rehearsal on a stand-in wheel, not only its text pin.)
+
+PROPOSED PIN DIFF (only data-client's pin changes; layout json.dumps(indent=2, separators=(",", ": "), ensure_ascii))
+key (juniper-data-client, publish.yml, Verify TestPyPI install): sha256 aa16d5b2... -> d7bbf1008096a91748e909b33bcb24c79a617f768b146f1070a51a1cb2459df0, 18 -> 30 lines
++ 4 comment lines at the top (why the cd), before cd "${RUNNER_TEMP}"
++ 4 comment lines after sleep 30 (the security note kept from #264, and the template's lag comment)
+- python -c "import importlib.metadata as m; print('TestPyPI OK: v' + m.version('juniper-data-client'))"
++ 4 comment lines (why the check does not import; find_spec; SystemExit, not assert)
++ python -c "import importlib.metadata as m, importlib.util as u; spec = u.find_spec('juniper_data_client'); origin = spec.origin if spec else None; print('TestPyPI OK: v' + m.version('juniper-data-client'), 'package at', origin); raise SystemExit(0 if origin else 'the installed wheel holds no juniper_data_client package')"
+source: "port: juniper-data-client's sweep port (2026-11-26), its final script for the port's review: the seed (round 2's
+port simulation, faithful) plus R4-5's failing importlib.util.find_spec('juniper_data_client') check in its python -c (an
+origin required, failing through SystemExit, which PYTHONOPTIMIZE keeps), and the step's own comments, kept from
+juniper-data-client#264's step and updated (why the cd, the security note, the lag loop, why the check does not import),
+which the checker compares too". The full diff is in the PR body; pins.proposed.json is the file to adopt.
+
+JUDGEMENT CALLS
+1. Isolation: my own worktree and fresh clones instead of $WT's (above); same template bytes, same helpers by sha256.
+2. Kept the install step's comments (the security note, why the cd, the lag loop, why no import). The checker compares
+   comments, so the proposed pin carries them; the alternative, a comment-free script equal to the seed + R4-5, drops the
+   "do NOT add a fallback index" warning.
+3. setup-python before the sparse checkout in the install job (the simulation's order).
+4. Wording: the template's blocks bring "Overtoad" twice into publish.yml (the template's text); the header's one line that
+   named the person ("the owner's recovery ladder") now reads "the recovery ladder (ruling of 2026-11-15)", the new text
+   names no person, docs/REFERENCE.md keeps its existing "the Overtoad's recovery ladder" line, and the test module keeps
+   its base docstring's two "owner" lines.
+5. test_publish_docs_bounds.py IS ported: data-client's docs stated no bounds before, but the ladder needs the lag
+   signature, so docs/REFERENCE.md now states the install check's tries, waits and lag error, and the module pins exactly
+   those. It pins none of the JSON checks' bounds, which the doc does not state.
+6. Renamed TestUnchanged.test_the_testpypi_job_keeps_its_setup_and_its_install_check ->
+   test_the_install_job_runs_the_setup_and_the_install_check_the_testpypi_job_ran (the old name is false now); hence the
+   second symbol in the Allow-Symbol-Loss paragraph.
+7. Kept data-client's own structure and names (TestExactly, UPLOAD_INPUTS, INSTALL_CHECK_RUN as the exact text): cascor's
+   new exact-step and if: checks are folded into TestExactly's two tests (steps as (name, action); if: via _allowed_if),
+   cascor's other new cases added under its names. No duplicate of a data-client test.
+8. NOT ported: cascor's relaxation of TestUnchanged's `"concurrency" not in wf` to `not _cancels(...)`. It would weaken an
+   existing assertion; the new key-set test admits a non-cancelling group as the template does, and TestUnchanged still
+   pins that this workflow sets none.
+9. Item G is a deliberate, ruled relaxation of the raw digest (an action's @ref no longer moves it), compensated by the
+   new one-ref-per-action case and the cross-repository check's exact SHAs; H1 (a full bump passes) and G1 (a partial bump
+   fails) show both sides.
+10. The reuse exemption by NAME (RELEASE_GATE) is ported for parity with the template's test, although data-client's build
+    job has no such step: it is dead here, and the exact step list forbids adding one.
+11. The 11-15 CHANGELOG entry above the new one is left as #264 wrote it (it describes that change; the new entry states
+    what moved). It holds no copy of the witness sentence #777 corrected in cascor's.
+12. A ## Requirements section with two verified ids (JR-DCL-SEC-001, JR-ML-OPS-007), as #264 had; data-client has no PR
+    template.
+13. TestInstallCheckScript's python stub runs the real interpreter for the version read (so the read of
+    ${GITHUB_WORKSPACE}/pyproject.toml is exercised, with a decoy in $RUNNER_TEMP), and the post-install check runs for
+    real (python -S -E, a stand-in site directory first on sys.path), so R4-5 is a behaviour, not only a text pin.
+
+COULD NOT DO
+- Write in $WT (harness isolation): the deliverables are in MY, listed above, for the orchestrator to copy.
+- The independent review and the merge are the orchestrator's; nothing else is outstanding on my side.
+
+CONTRADICTIONS WITH THE BRIEF
+- "You can Write/Edit only inside $WT" / "Run it from $WT" / "Your clone: $WT/tmp/ports/clones/<repo>": impossible under
+  this harness; adapted as above.
+- The writer takes --template besides --tree [--date] (a port's template must come from cascor's file); its default
+  matches the clones/ layout, so `--tree <clone>` alone works there.
+- probe_screens.py's scope is cascor's; data-client's screens were run with data-client's scope (as the brief allows).
+- No conflict with the template, the checker or the pins file: none was edited; no action-ref change was needed (the
+  checker found every uses: at the template's SHA).

@@ -1,0 +1,268 @@
+REPORT: juniper-canopy port of the one-artifact template sweep (juniper-cascor#777), variant faithful
+Written 2026-11-26 after 03:24Z (date -u) by the port executor; brief: $WT/tmp/ports/SWEEP_PORT_BRIEF.md
+$WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun
+Scratch (every log named below): $WT/tmp/ports/juniper-canopy/
+
+== PR
+PR #844  https://github.com/pcalnon/juniper-canopy/pull/844   (OPEN, not draft; mergeStateStatus BLOCKED at 03:24:25Z)
+Branch fix/publish-one-artifact-sweep; head dcc58bb5510874227dd04206b0b77a3f7df2916e, ONE commit, parent 2cec71fe,
+signed: readback verified=True reason=valid. Title = commit subject (the brief's, unshortened).
+Not merged, armed, approved or updated; no other PR touched. CI at 03:24:25Z (read-only, not waited on, not re-run):
+6 pass, 7 pending, 5 skipping, none failing.
+
+== Writer
+$WT/util/ad-hoc/2026-11-26_juniper-canopy_one_artifact_sweep_port.py
+  sha256 7e56cdfd4baccbef85f2a4e68a90253e57fc76fa83efab5030187ba90626a56a; its sources are archived in <scratch>/drafts-source/
+  (writer_src.py + the two drafted test modules, embedded by assemble.py, which checks they round-trip byte for byte).
+  --tree <fresh clone> [--template <cascor publish.yml>] [--date YYYY-MM-DD] [--changelog-cases N]
+  [--changelog-docs-cases D] [--changelog-mutations M]. Run as: --date 2026-11-26 --changelog-cases 113
+  --changelog-docs-cases 2 --changelog-mutations 55 (JuniperCascor1's python3 -I; it needs PyYAML for its
+  post-conditions and refuses without it).
+- Template: juniper-cascor publish.yml in $WT/tmp/ports/clones/juniper-cascor (main 5e3d9801), pinned TEMPLATE_SHA256
+  b6826ee6...; publish-cascor-model.yml beside it pinned a64c6359... (two install-job comments are cut from it). Every
+  template block and the whole republish job are cut out of the template and put in place (never retyped), then re-cut
+  from the result and compared; the header description, permissions comment, env comment, TestPyPI job head and the
+  install job's comment and head are taken from the template by anchors; the rc*/hf* guard sentences are checked
+  against the template's words.
+- publish.yml: exact-once anchors on the base. The test module is written whole (TEST_MODULE) and ONLY over the base
+  test file's sha256 (d36a35b2...); test_publish_docs_bounds.py is refused if it exists; the manual's runbook and the
+  reference's publish.yml section are replaced only if they hash to the base's (84afe569..., f58541f6...).
+- Replay proof (<scratch>/replay-proof.log): two fresh copies of the base (2cec71fe) give byte-identical output; a second
+  run on a ported tree exits 1 (anchor miss) and writes nothing (tree hash unchanged); the clone equals the replay file
+  for file.
+- Post-conditions: the YAML shape (jobs, env, guard, install job keys/steps/python/checkout/script, TestPyPI permissions
+  and steps, PyPI needs and permissions), the install lines equal the seed's commands exactly with comments alone
+  added (and the seed's commands hash to the seed pin), no tab or trailing whitespace in the workflow and test modules,
+  and no new doc line over markdownlint's 512 characters.
+- Wording: detected at run time ("owner" in the base publish.yml's copies note, "Overtoad" in the manual's ladder
+  sentence); the new text names no person.
+
+== Base
+Clone $WT/tmp/ports/clones/juniper-canopy. It was 60880efc (== GitHub main) at 02:24Z and 03:00Z; at 03:05Z GitHub main
+had moved to 2cec71fe (#843, merged 03:01:13Z, touching CHANGELOG.md among my seven files). I fetched and fast-forwarded
+the clone (git pull --ff-only), refreshed the pristine base copy (<scratch>/base-tree; the old one is
+<scratch>/base-tree-60880efc), confirmed every anchored file and both doc sections are byte-identical at 2cec71fe, and
+wrote the final tree onto 2cec71fe (== GitHub main at 03:06:25Z, the write; == main again at 03:22:55Z, just before the upload, whose base was main @ 2cec71fe).
+
+== git diff --stat (clone, before the upload)
+ .github/workflows/publish.yml               | 179 +++++---
+ CHANGELOG.md                                |  54 +++
+ docs/ci_cd/CICD_ENVIRONMENT_SETUP.md        |   7 +-
+ docs/ci_cd/CICD_MANUAL.md                   |  34 +-
+ docs/ci_cd/CICD_REFERENCE.md                |  21 +-
+ src/tests/unit/test_publish_one_artifact.py | 673 ++++++++++++++++++++++++----
+ 6 files changed, 816 insertions(+), 152 deletions(-)
+ plus the new src/tests/unit/test_publish_docs_bounds.py (84 lines; untracked, not ignored: check-ignore exit 1).
+Full diff: <scratch>/clone.diff
+
+== Verification (all on the clone = the pushed files, or a copy of it)
+1. Tests (JuniperCanopy1, Python 3.13.13, pytest 8.4.2, the repo's pyproject settings and conftest; <scratch>/run_pytest.bash):
+   - test_publish_one_artifact.py + test_publish_docs_bounds.py + test_wheel_import_smoke.py: 128 passed, 0 failed,
+     0 skipped (113 + 2 + 13; log <scratch>/pytest-clone.log). Base: test_publish_one_artifact.py 69 passed.
+   - CI's unit lane (ci.yml unit-tests selector and paths, --timeout=60 --maxfail=5, no coverage; <scratch>/unit_lane.bash):
+     final tree: 8546 passed, 17 skipped, 0 failed, exit 0 (<scratch>/unit-lane-final.log);
+     main 2cec71fe: 8500 passed, 17 skipped, 0 failed, exit 0 (<scratch>/unit-lane-base2.log); +46 = 113 + 2 - 69;
+     the 17 skips are the same list on both (cmp of the SKIPPED lines: 10 no gitleaks binary, 1 JUNIPER_DATA_SRC
+     unset, 1 FastAPI < 0.142, 1 Dash callback context). Run with LD_LIBRARY_PATH and LIBTORCH unset (see below);
+     counts read from the progress lines (<scratch>/count_progress.py), since the repo's addopts -q plus mine (-qq)
+     print no summary line. (The earlier lane on 60880efc: 8474 passed, 17 skipped, 0 failed.)
+   - Only one existing test module is touched; the other test that pins publish text, test_wheel_import_smoke.py (the
+     smoke step, unchanged), passes. No new skip anywhere.
+2. actionlint 1.7.12 on publish.yml: exit 0, no output (<scratch>/lint-clone.log).
+3. pre-commit (precommit_in_copy.py, /opt/miniforge3/bin/pre-commit, the 7 files): exit=0, "changed by hooks: none"
+   (<scratch>/precommit-clone.log). Earlier, on replay r2, markdownlint MD013 caught one 653-char line in
+   CICD_ENVIRONMENT_SETUP.md; the writer now splits it and refuses any new doc line over 512. flake8 7.3.0 with
+   bugbear 26.11.22 on the writer and my scratch scripts: clean (E501/B950/B907 ignored, as the repos' configs do).
+4. Checker, FINAL, sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35 verified before each run
+   (<scratch>/run_checker.bash), --repo juniper-canopy, --template the cascor clone's publish.yml (b6826ee6...),
+   --pins $WT/tmp/ports/juniper-canopy/pins.proposed.json (sha256 0fa60256e012388e19365fe8b6e04d16203131da6a359e50258f4115400b1365):
+     pins: ... (sha256 0fa60256..., 18 pins)
+     PASS juniper-canopy/publish.yml  (PUBLISH_PACKAGE=juniper-canopy, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)
+     1 of 1 pass   (exit 0; <scratch>/checker-clone.log)
+   On the FETCHED PR head: <scratch>/pr-head (2026-11-15_fetch_pr_files.py --pr 844: the 7 files, each equal to the clone's): PASS pr-head/publish.yml, 1 of 1 pass, exit 0 (<scratch>/checker-pr-head.log)
+   Control: the same workflow with $W's unmodified pins (d539f05f...) FAILS, 0 of 1, on the comment lines alone
+   (<scratch>/checker-r2-seed.log).
+5. Mutation proof (<scratch>/mutations.py; each on a COPY of the clone's publish.yml, the two publish modules run
+   there with --noconftest -x, every anchor asserted to its stated count; table <scratch>/mutations-final/table.md):
+   55 of 55 mutations caught; the unmutated workflow and both controls pass (H1: every download-artifact pin bumped
+   together, Dependabot-style; H2: an install-step comment reworded). Rehearsals alone (-k "TestFindReleaseRun or
+   TestFetchTestPyPIFiles or TestInstallCheckScript"): 17 of 17 caught (B1-B8, C4, C5, A7, A8, A12, A14, A17, A22, E20;
+   <scratch>/mutations-final-rehearsals/table.md).
+     A1 install job needs dropped | A2 install job id-token | A3 checkout back in the TestPyPI job | A4 PyPI needs
+     testpypi alone | A5 install job environment | A6 TestPyPI contents: read again | A7 cd "${RUNNER_TEMP}" removed |
+     A8 || true on pip | A9 persist-credentials true | A10 sparse checkout widened to src | A11 continue-on-error on the
+     install step | A12 version read relative to the cwd | A13 job env PIP_EXTRA_INDEX_URL | A14 4 tries | A15
+     self-hosted install job | A16 install job setup-python dropped | A17 pypi.org fallback | A18 shell: sh | A19 if:
+     always() on the install job | A20 set +e | A21 metadata-only check | A22 cd moved after the import |
+     B1 one char in the find step (<) | B2 min(ids) | B3 filter=latest | B4 skipped counted as passed | B5 no refusal
+     without a release run | B6 first page only | B7 case-sensitive testpypi | B8 a run with no TestPyPI job accepted |
+     C1 PREFIX disagrees with the guard | C2 PREFIX dropped | C3 guard prefix rc | C4 prefix check dropped | C5 ref-type
+     check dropped | E1 retention 30 | E2 skip_existing | E3 attestations false (PyPI) | E4 continue-on-error on a check
+     step | E5 job continue-on-error | E6 if: always() on PyPI | E7 workflow renamed | E8 extra step into dist/ | E9 reuse
+     condition traded for push | E10 one download-artifact copy re-pinned | E11 rebuild in the PyPI job | E12 self-hosted
+     TestPyPI job | E13 cancelling concurrency group | E14 timeout-minutes on republish | E15 workflow PIP_INDEX_URL |
+     E16 if-no-files-found warn | E17 TestPyPI attestations dropped | E18 smoke test without the reuse condition | E19
+     JSON attempts 20->25 in every copy (docs-bounds catches it) | E20 first wait 30->20: all caught.
+   Canopy's own 2026-11-15 negative control, run on the port (<scratch>/negctl-1115-on-port.log): baseline exit 0, 82 of
+   86 caught, 0 survived, 4 DID NOT APPLY (their anchors are gone: the pypi.org fallback on the one-line pip, the old
+   tag parsing, the cd just before the import, the TestPyPI job's setup-python); A17, C5, A22 and A16 cover them. It
+   exits 1 on the DID NOT APPLY lines; left unchanged as #823's record (as #777 left cascor's), and the CHANGELOG says so.
+6. Sequence-safety screens, local replay (probe_screens.py as is: canopy's sequence-safety.yml scopes the symbol screen
+   to 'src/**/*.py', the same as cascor's, and runs the docs screen universal; JuniperCascor1's juniper-ci-tools 0.9.1;
+   local unsigned probe commits, never pushed; <scratch>/screens-clone.log):
+   - juniper-symbol-loss-check: exit 0, findings=2 fail=0 {'WAIVED': 2}: TestFindReleaseRun.test_the_newest_release_run_that_still_holds_the_artifact_is_found
+     and TestUnchanged.test_the_testpypi_job_keeps_its_install_check_and_the_checkout_it_reads_the_version_from, one
+     Allow-Symbol-Loss: line each (the addendum's form; the screen's regex is per line). Without them: exit 1, both LOST
+     (<scratch>/screens-clone-nowaiver.log).
+   - juniper-docs-additions-check: exit 0, 13 small-deletion WARNs (the three CI/CD docs), fail=0.
+7. Pre-push gate (2026-11-15_pre_push_gate_run.bash <scratch>/gate; files/ = the 7 pushed files, text/ = PR body,
+   title, commit message; added/ = added lines; <scratch>/gate_run.log):
+   exit 0, gate: PASS (final payload: the body the PR carries, the title, the commit message; cmp-checked).
+   - files scan: 2 findings, both ACCEPTED after the masked read, for the files scan only (<scratch>/gate/accept.files.txt):
+     CHANGELOG.md:1744:11:juniper-env-credential:64b0c6e538 and CHANGELOG.md:1744:13:generic-api-key:64b0c6e538. Line
+     1744 is not changed by this PR: byte-identical to main's CHANGELOG.md line 1690, in 0.9.0's notes
+     (<scratch>/finding_lines.py); its masked shape is an upper-case identifier in prose, random-looking=0.
+   - text scan: 0 findings (canary 32 of 32 planted classes found).
+   - Masked read (--names), 2 added lines judged not credentials: publish.yml added line 20, the guard comment's
+     "notes/JUNIPER_2026-08-17_JUNIPER-ECOSYSTEM_PUBLISH-PATH-AUTHORIZATION-DESIGN.md" (a doc path; "AUTHORIZATION"
+     matched); test added line 430, `assert all(headers.get("Authorization") == f"Bearer {FAKE_API_CREDENTIAL}" ...)`
+     (the rehearsal's stand-in, ported from cascor's test). The pilot's probe showed the scan covers the payload's
+     dot-directory (a planted key in .github/workflows was reported); I did not repeat it.
+8. Landing: run_open_signed_pr.py ARGS.json --dry-run (base main @ 2cec71fe, the 7 files, the headline,
+   body and title; "(nothing written)", <scratch>/open_signed_pr_dryrun.log), then the real run at 03:23:44Z:
+   "signed commit dcc58bb55108 on pcalnon/juniper-canopy:fix/publish-one-artifact-sweep", "PR: .../pull/844"
+   (<scratch>/open_signed_pr.log). readback_branch.py: head dcc58bb5... verified=True reason=valid, parents
+   ['2cec71fe'], message last lines = the two trailers, all 7 blobs "same", extra=[] missing=[] (<scratch>/readback.log).
+
+== Proposed pin (pins.proposed.json; $W's file untouched)
+$WT/tmp/ports/juniper-canopy/pins.proposed.json, sha256 0fa60256e012388e19365fe8b6e04d16203131da6a359e50258f4115400b1365
+(= $W's d539f05f... re-dumped in its own layout, indent=2 + final newline, verified to re-dump to its own bytes; only the
+pin (juniper-canopy, publish.yml, "Verify TestPyPI install") changed: lines, sha256, source). <scratch>/make_pins.py.
+pin sha256 36d5694da5dee8079a52d994358b56ea15f36a3a3861ba0a52321f87b58d9b82 (seed, 18 lines)
+        -> ffc590714d80379c41cbdce3c022d0fe69078cdde9491b5ebbd3104edfc2462d (23 lines). The lines' diff
+(full diff: <scratch>/pins.proposed.diff.txt): every seed command kept, exactly and in order (the writer and
+make_pins.py assert it); 5 comment lines added, no content change:
+  + 3 lines before `cd "${RUNNER_TEMP}"`: the step's sys.path note, rewritten for the cd that now comes first
+    (juniper-cascor's wording, naming juniper_canopy/; "Every command runs from the runner's temporary directory,
+    outside the sparse checkout; the version is read from its pyproject.toml by its path.")
+  + after `sleep 30`: the template's lag line ("TestPyPI's simple index can lag behind its JSON: five tries, 10 s
+    apart, and then an error that says so.")
+  + before the import: "The import runs the installed wheel's juniper_canopy/__init__.py, so a wheel without the
+    package fails here."
+
+== Judgement calls
+1. Install job = setup-python (3.14, as the TestPyPI job had it), then a sparse checkout of pyproject.toml with
+   persist-credentials: false, then the step: the structural target's order and shape
+   ($W/tmp/sweep/checker-r12/port-sim/faithful/juniper-canopy/workflows/publish.yml). The version is read from
+   ${GITHUB_WORKSPACE}/pyproject.toml after the cd, as the seed pin writes it. Evidence that a single-file cone-mode
+   sparse checkout works with this checkout SHA: juniper-ml's publish-observability.yml at tag
+   juniper-observability-v0.4.3 sparse-checks-out juniper-observability/pyproject.toml, and in run 45739959764 (today,
+   02:04Z) that checkout and the install step after it succeeded. A root file is the same case (cone mode always takes
+   the root's own files and no directory). The two comments on that job (its permissions comment and the checkout's)
+   are cut from juniper-cascor's publish-cascor-model.yml, whose install job has the same checkout.
+2. The install script keeps every seed command exactly and adds 5 comment lines (the seed had none: the simulation
+   dropped every comment), so the pin is proposed (above). No content change: no R4-5 (the check is
+   `from juniper_canopy import __version__`, which runs the wheel's package __init__; confirmed in juniper_canopy/__init__.py).
+3. No digest pins: canopy's test pins no sha256 of template text, before or after (item G does not apply); comment-only
+   drift inside a single-copy template block stays the cross-repo checker's to catch, as before (the H2-style comment
+   edit passes canopy's tests by design).
+4. The reuse-condition exemption by NAME (item 5): canopy's test has exempted no build step since #823's review, by name
+   or by if: text; kept (stricter). _allowed_if documents that cascor's copy exempts its push-only gate by name, and E9
+   proves trading the reuse condition for the push condition fails.
+5. Kept canopy's stricter pins where #777 relaxed cascor's: "concurrency" not in the workflow (TestUnchanged), and no
+   optional key on the republish job (the checker compares that job whole; with one publisher nothing in canopy compares
+   it with another copy). The keys test admits OPTIONAL_WORKFLOW_KEYS as cascor's does; TestUnchanged still refuses a
+   concurrency group here (E13).
+6. test_publish_docs_bounds.py IS ported (canopy's docs state the JSON poll bounds, 20 and 15 s, and now the install's
+   30 s wait and 5 tries 10 s apart): it reads each bound from publish.yml and requires CICD_REFERENCE.md and
+   CICD_MANUAL.md to state it, whitespace aside. No bound was added to the docs just to pin it (the request timeout and
+   the worst-case minutes are not stated, so not pinned).
+7. Test names kept wherever still true; only two symbols removed, both waived. TestInstallCheckJob, TestInstallCheckScript
+   and the new TestWiring cases follow cascor's. Canopy-specific: test_its_setup_python_is_the_testpypi_jobs_python; the
+   install rehearsal's stand-in python runs the real interpreter for the version read (so the read of
+   ${GITHUB_WORKSPACE}/pyproject.toml is exercised: a pyproject.toml of another version in $RUNNER_TEMP proves the
+   absolute path, mutation A12), and the "tag as data" case becomes "the version as data" (canopy reads no tag).
+8. cascor's test comment citing "juniper-canopy run 43135960676" now describes that run accurately (a pull_request CI
+   run whose 2 attempts list all 19 jobs, the carried-over ones as copies; read-only GETs), not a publish run.
+9. CHANGELOG: one entry at the end of [Unreleased] / ### Fixed, after a blank line as the entry before it stands; it
+   notes that the 2026-11-15 negative control is left as #823's record, with its 82/86 result on the port. Docs bumped:
+   CICD_MANUAL.md 0.29.5 -> 0.29.6, CICD_REFERENCE.md 0.30.5 -> 0.30.6 (header and footer), CICD_ENVIRONMENT_SETUP.md
+   0.28.6 -> 0.28.7, each Last Updated 2026-11-26. publish.yml's header: Version 0.2.0 -> 0.3.0, Last Modified
+   2026-11-26. AGENTS.md unchanged: its workflow row stays true (no Last Updated race).
+10. Banners: the TestPyPI job's banner said "Publish and verify install"; it now says what the job does, and the new
+   install job has a banner in the file's style before the template's job comment.
+11. Wording: the base publish.yml says "owner" (copies note, Upload comment, republish banner); the template blocks now
+   bring "Overtoad" verbatim (Upload block comment, republish banner); the copies note I rewrote names no person ("the
+   recovery ladder (ruling of 2026-11-15)"); the manual keeps its existing "the Overtoad's ladder" sentence (detected);
+   the test docstring keeps its existing "owner".
+12. ## Requirements: canopy has no PR template; I kept #823's two References, both verified to exist in juniper-ml's
+   notes/requirements/ (JR-ML-OPS-007 at by-area/OPS.md:159, JR-CAN-TEST-015 at by-area/TEST.md:527).
+13. The mutation proof's harness copies the workflow, both publish modules, the two docs and pyproject.toml and runs
+   with --noconftest, as canopy's own negative control does (the conftest imports the app, which no publish case uses).
+
+== Could not do / deviations from the brief's mechanics
+- Write/Edit: I run isolated in my own worktree (.claude/worktrees/agent-ad4031a8dc1680419), as the addendum says; I
+  drafted there (tmp/canopy/) and installed every artifact into $WT with Bash cp. All deliverables (writer, pins,
+  ARGS.json, logs, scripts, this report) are in $WT; the sources are in <scratch>/drafts-source/.
+- git in the clone ran through <scratch>/run_vcs.py (subprocess, cwd=clone; refuses commit/tag/push/stash/reset/
+  checkout); the only git writes were `fetch` and `pull --ff-only` in the clone, and the screens' local unsigned probe
+  commits in scratch repos (as probe_screens.py makes). No commit, tag or push from any clone.
+- The full unit lane cannot collect on this host's shell as is: LD_LIBRARY_PATH and LIBTORCH point at a Rust project's
+  libtorch, whose libtorch_python.so the env's torch then loads (undefined symbol); base and final fail identically
+  (<scratch>/unit-lane-base-with-host-ld-library-path.log). I ran the lane with both unset (a CI runner has neither).
+- Not run: CI itself (the orchestrator's), and the 2026-11-15 negative control's mutations that no longer apply.
+
+== Contradictions with the brief
+- None blocking. The brief's table says "no content change beyond your final text"; the final text adds comments alone
+  (pin proposed, above). The prompt dated the clone 2026-11-26 01:25Z at 60880efc; main moved to 2cec71fe (#843) during
+  the port, and I pulled (as the brief says to). The brief's inventory names CICD_MANUAL.md and CICD_REFERENCE.md; the
+  sweep also made CICD_ENVIRONMENT_SETUP.md's publish.yml permissions line false, so it changed too.
+- The prompt says the test "pins publish text" around :494 of test_publish_one_artifact.py; that line (base) is the
+  smoke-test ordering case (TestUnchanged.test_the_import_smoke_test_checks_the_files_the_run_records_and_uploads),
+  kept unchanged; the publish text pins are throughout the module.
+
+== The coordinator's message: the lessons of #206's and #274's reviews, applied to PR #844 (nothing pushed for it)
+The message arrived after PR #844 opened (03:23:44Z), so, as it says, nothing is pushed for it; this is what #844
+satisfies and what it does not. Anchors are the pushed files (<scratch>/pr-head, equal to the clone).
+
+NOT SATISFIED (for the orchestrator's fix-up):
+1. (#274 MAJOR) docs/ci_cd/CICD_MANUAL.md:1055, the bullet "`Verify PyPI serves exactly these files` failed", sends
+   every failure of that step to the mismatch remedy ("Compare PyPI's JSON ... find which upload put the other file
+   there; only a new patch version ships tested files under a clean version"). It has no timeout case: PyPI's JSON not
+   listing the files within the bound is index lag, and the remedy is "Re-run failed jobs" on the release run, within
+   30 days (a fresh `pypi` approval, then the 5-minute timer), which uploads the same bytes again, accepted, and repeats
+   the check. The page never says "past the ladder". Related, not named by the review: the runbook's index-lag bullet
+   covers the TestPyPI job only, so the PyPI job's `Verify TestPyPI still serves exactly these files` giving up (before
+   the upload: nothing reached PyPI) is also uncovered; its remedy is the same re-run.
+2. (#206 R2) docs/ci_cd/CICD_MANUAL.md:1048, the lead-in "When rung 1 refuses, or a release run failed before PyPI:",
+   excludes its own last bullet (:1055), a failure AFTER the PyPI upload.
+3. (#206 R7) the writer's --changelog-cases, --changelog-docs-cases and --changelog-mutations (writer lines 2312-2314)
+   default to the placeholders "{cases}", "{docs_cases}" and "{mutations}" and are neither required nor refused when
+   left unreplaced: a run without them writes the literal placeholders into CHANGELOG.md. (#844's CHANGELOG has the real
+   numbers: the writer ran with all three; the writer file is unchanged since, so it stays the record of #844.)
+Proposed text for 1 and 2 (the fix-up's to take or change): lead-in "When rung 1 refuses, or a check of the release
+run failed:"; and in place of the :1055 bullet, two:
+  - "**`Verify PyPI serves exactly these files` gave up waiting** (PyPI's JSON did not list the files within its
+    bound): index lag. The files are already on PyPI, since the step runs after the upload. Within 30 days, "Re-run
+    failed jobs" on the release run: the PyPI job uploads the same bytes again, which PyPI accepts, and repeats the
+    check (a fresh `pypi` approval, then the 5-minute timer). `Verify TestPyPI still serves exactly these files` giving
+    up, before the upload, takes the same re-run; nothing reached PyPI."
+  - "**`Verify PyPI serves exactly these files` found a mismatch** (PyPI lists a file this run did not build, or another
+    sha256): the files are on PyPI. Compare PyPI's JSON for the version with TestPyPI's and find which upload put the
+    other file there; only a new patch version ships tested files under a clean version."
+  The CHANGELOG entry's Docs bullet and the PR body's runbook paragraph ("that a failed `Verify PyPI serves exactly these
+  files` comes after the upload") would then name both causes; and the writer's three arguments become required.
+
+SATISFIED:
+4. (#206 R1 / #274) no sentence true only of cascor: the CHANGELOG's "the package it imported ran with that job's OIDC
+   token-request variables in its environment" (CHANGELOG.md:228-229) is TRUE here: canopy's base check imported
+   `juniper_canopy` inside the TestPyPI job, which held `id-token: write`. "It runs the package TestPyPI serves"
+   (manual, reference, environment doc, CHANGELOG) is true too: the check imports the package, running the wheel's
+   `juniper_canopy/__init__.py`; it does not read metadata alone. cascor-only sentences were left out (the monitor's
+   900 s note, the sub-package and RELEASE_TAG details); the copied run citation (43135960676) was corrected.
+5. (#206 R3) the "never re-cut" bullet (CICD_MANUAL.md:1053) states ruling 1's consequence: the re-cut starts a new
+   release run, TestPyPI refuses its files, that failed run is the tag's newest, and rung 1 refuses the tag for good.
+6. (#206 R6) one `Allow-Symbol-Loss:` line per symbol: the commit body carries two, one each (screen: both WAIVED).
+7. (#206 R5 / #274) canopy's check prints "TestPyPI OK: v…" (publish.yml:370) only after the check has passed: the
+   print follows the import, which is the check, in one `python -c`; no R4-5 line here. Not changed.
+8. (#274) the docs never say "past the ladder".

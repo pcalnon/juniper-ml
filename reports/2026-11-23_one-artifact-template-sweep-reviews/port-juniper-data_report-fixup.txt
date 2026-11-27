@@ -1,0 +1,102 @@
+REPORT_FIXUP: juniper-data#553, the fix-up for its independent review (R-1, R-2, R-3, R-6)
+Written 2026-11-26 after 05:17Z (date -u). Review: $WT/tmp/ports/juniper-data/review/REVIEW.txt (BLOCKER 0, MAJOR 0,
+MINOR 1, NIT 5). $WT = /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/moonlit-percolating-sun;
+<scratch> = $WT/tmp/ports/juniper-data; $W = .../worktrees/ethereal-munching-peacock (read only; nothing there written).
+
+== The new head
+PR #553 https://github.com/pcalnon/juniper-data/pull/553 (OPEN; mergeStateStatus BLOCKED at 05:17Z, as before the
+fix-up). New head 9cf7158d52447396c50463caf0ee93cc6d37f74e: ONE signed fix-up commit on fix/publish-one-artifact-sweep,
+parent 62e0854a6fe608b2bb7e397d78a5541e9b1a8aef (the PR's commits: 62e0854a, 9cf7158d).
+- Before the push: GitHub main 8e08d2097c362f1d46d4dfaa1adc6f12e5974855 and PR head 62e0854a... both unmoved
+  (checked at 05:08Z and again at 05:14Z by <scratch>/preupload_fixup.bash, which stops if either moved).
+- run_push_signed_commit.py <scratch>/ARGS2.json --dry-run, then without (expected_head = the full sha above; paths =
+  juniper_data/tests/unit/test_publish_one_artifact.py and CHANGELOG.md only): "signed commit 9cf7158d...", "verified
+  signature (reason=valid)", "verified parent 62e0854a...", both blobs verified.
+- readback_branch.py <scratch>/ARGS2.json: "head 9cf7158d... verified=True reason=valid parents=['62e0854a']"; the
+  message's last lines are the two trailers; both files "same"; "commit touches 2 file(s); expected 2; extra=[] missing=[]".
+- Subject: "fix(publish): the review's fixes -- two test comments true only elsewhere, OTHER_DIST_NAME used, the base's
+  concurrency pin alone, and the CHANGELOG's reference". Body: <scratch>/fixup_commit_body.txt (each fix, R-4/R-5 left,
+  then the two trailer lines as the last paragraph and nothing after them).
+- Not merged, armed, approved or updated; no other PR touched.
+
+== Each finding's fix (as dispositioned)
+- R-1 (MINOR), test_publish_one_artifact.py: :618 "# The install check runs the package TestPyPI serves: ..." ->
+  "# The install check installs the package TestPyPI serves and inspects it: it may read the repository, and nothing
+  more."; :784 "... root holds juniper_cascor_client/:" -> "... root holds juniper_data/:". Both in the writer's
+  TEST_MODULE (the module is the draft, embedded whole). No other comment there names another repository or says
+  "runs the package" (grep).
+- R-2 (NIT): OTHER_DIST_NAME is now used in the two parametrizations that spelled out its value (:1256 and :1631 after
+  the fix-up): f"{OTHER_DIST_NAME}-9.9.9-py3-none-any.whl". Ids unchanged, so no case is renamed; its mention at :61 stays true.
+- R-3 (NIT): TestUnchanged keeps `assert "concurrency" not in wf` alone; `assert not _cancels(wf.get("concurrency"))`
+  and `_cancels` (its only caller) are dropped. Both were new in this PR.
+- R-6 (NIT), CHANGELOG.md:268-269: "... the one-artifact template's sweep, to the entry below, ..." -> "... to
+  juniper-data#543's entry below, template verbatim)." (rewrapped; 2 lines).
+- R-4 and R-5: left, as dispositioned (stated in the commit body and the PR body).
+The fix-up's diff against the PR head: 2 files changed, 6 insertions(+), 14 deletions(-). No workflow, doc, pin,
+digest or case count moved.
+
+== Writer
+$WT/util/ad-hoc/2026-11-26_juniper-data_one_artifact_sweep_port.py, sha256
+3327f4e6d1884c9637bacc7dd4516f142b936f1b8264737f3025c57b72f7ee8f (was f789b881... at the first commit). Rebuilt by
+<scratch>/drafts-source/assemble.py after <scratch>/drafts-source/edit_fixup.py applied the four fixes to the test
+draft and docs_src.py (CHANGELOG_ENTRY) and added a "Review follow-up" paragraph to the docstring; the first commit's
+sources are kept in drafts-source/commit1/.
+Replay (<scratch>/replay.bash -> replay_fixup.log), on a FRESH copy of main (the pristine snapshot base-tree of 8e08d209):
+exit 0, 10 of 10 files equal to the edited tree (work8) and to the clone; a second run refuses ("anchor matched 0
+times") and writes nothing; no counts exit 2; "{cases}" exit 1; trees unchanged. Same counts reproduce it:
+--date 2026-11-26 --changelog-cases 125 --changelog-mutations 51.
+
+== Re-verification (all in conda env JuniperData; on work8 = the writer's output for a fresh copy of main = the clone)
+- The four publish modules (-m "unit and not slow" --timeout=60): test_publish_one_artifact.py 125, test_testpypi_install_verify.py 6,
+  test_publish_docs_bounds.py 2, test_notify_consumers_dispatch.py 27: 160 passed, 0 failed, 0 skipped; no new skip
+  (the one conditional skip, sha256sum absent, is #543's and did not fire). Log: <scratch>/pytest-work8.log.
+- pre-commit on the files (precommit_in_copy.py; the two changed files and the other eight): exit 0, 16 Passed, 7
+  Skipped, "changed by hooks: none" (<scratch>/precommit-fixup.log).
+- FINAL checker (sha256 a452db3d285d70838adb3c6cfc9091c9cf0999996bf6e718c6ef5e49e05cee35 verified), notify-consumers.yml
+  (e17ddc9b3ac99d87600c99835b2c87bc16f252034f966645975c0b776ec8e078) beside the workflow, --pins <scratch>/pins.proposed.json
+  (sha256 9d38c76fac1cbdb36f2088a3d223baa697a7fdd01330711682ae0aa763481c30):
+    on the clone: "PASS juniper-data/publish.yml  (PUBLISH_PACKAGE=juniper-data, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)", "1 of 1 pass", exit 0;
+    on the RE-FETCHED head (fetch_pr_files.py --pr 553 + notify-consumers.yml; 11 of 11 files equal the clone's):
+      "PASS pr-head/publish.yml  (PUBLISH_PACKAGE=juniper-data, PUBLISH_DIST_DIR=dist, PUBLISH_TAG_PREFIX=v)", "1 of 1 pass", exit 0;
+    control, $W's canonical file (sha256 e3723222b23b4a8e5f4bf34e7beaa90a0b8c0195ece5894c8cdaca80804000ea): "0 of 1 pass", exit 1.
+  pins.proposed.json was regenerated (make_pins.py) because $W's canonical file moved since the first commit
+  (19d6acd3... -> e3723222..., which now holds juniper-canopy's reviewed pin); juniper-data's pin itself is unchanged
+  (31 lines, sha256 4a05dbb20ec3db65e5b6303a93261ad042dd76359a54c2f3d32d8d63a3003176), and it is still the only pin
+  that differs from the canonical file. The first commit's proposal is kept as pins.proposed.r1.json (c67ad8c6...).
+- Screens on the two-commit range (<scratch>/probe_screens_data2.py, the pilot's two-commit probe with data's scope
+  'juniper_data/**'; base-tree -> work7 (= the PR head, commit 1's message) -> work8 (the fix-up's message)):
+  juniper-symbol-loss-check exit 0, "files_screened=3 findings=6 fail=0 {'LOST': 1, 'WAIVED': 5}", the same six as
+  before (5 waived by commit 1's lines, const:INSTALL_CHECK at WARN); `_cancels` is not reported (it was never on
+  main), so no waiver line was added. juniper-docs-additions-check exit 0, "findings=34 fail=0" (small-deletion WARNs).
+- Mutation proof again on the fix-up tree (<scratch>/mutations.py -> mutations-fixup/table.md): 52 run; 51 of 51
+  caught; harmless control passes; every row's verdict (first failing case) identical to the first commit's run.
+- Pre-push gate (<scratch>/gate-fixup-final: files = the 2 changed files from the clone; added = the fix-up's added
+  lines against the PR head; text = the final PR body, the title, the fix-up commit message): exit 0, "gate: PASS".
+  Files scan: 1 finding, judged and accepted: juniper_data/tests/unit/test_publish_one_artifact.py:968:26
+  juniper-env-credential:bbdfcf2ba8, the notify-consumers case's `"secrets": {"CROSS_REPO_DISPATCH_TOKEN": "${{
+  secrets.CROSS_REPO_DISPATCH_TOKEN }}"}`, the same content hash and masked shape as the first commit's accepted :976
+  (moved up 8 lines by R-3), an expression naming a secret, not a value. Text scan: 0 findings. Masked read --names of
+  the added lines: 0 lines listed.
+
+== The PR body
+Updated with gh api --method PATCH repos/pcalnon/juniper-data/pulls/553 --input <scratch>/pr_body2_patch.json
+(returned "553 open head=9cf7158d..."). New section "## The fix-up commit (the independent review's findings)" after
+the Summary: the review's tally, each fix (R-1, R-2, R-3, R-6), R-4/R-5 left, and the re-verification above; the
+install-pin section now cites the canonical file e3723222... and the proposal 9d38c76f.... Read back: GitHub's body
+equals <scratch>/pr_body2.md (final newline aside) and ends with the two required lines. Built by
+drafts-source/build_pr_body2.py from drafts-source/pr_body_{head,fixup,mid,tail}.md.
+
+== Things to know
+- $W's canonical pins file keeps moving as other ports' pins are applied (1dd592c2 -> 824c50d9 -> 19d6acd3 -> e3723222
+  during this work); if it moves again before juniper-data's pin is applied, run <scratch>/make_pins.py again (only
+  juniper-data's entry differs).
+- The clone (tmp/ports/clones/juniper-data) holds the PR's final tree (both commits' content), uncommitted; its .git
+  was never written.
+- Files written for the fix-up (<scratch>): ARGS2.json, fixup_subject.txt, fixup_commit_body.txt, fixup_message_full.txt,
+  pr_body2.md, pr_body2_patch.json, body_readback.py (the GitHub read-back), pins.proposed.json (regenerated),
+  pins.proposed.r1.json, pins.proposed.diff.txt, accept.fixup.files.txt, iterate_fixup.bash, compare_fixup.bash,
+  screens_fixup.bash, preupload_fixup.bash, final_body.bash, probe_screens_data2.py, work8/, screens-fixup.log,
+  precommit-fixup.log, pytest-work8.log, mutations-fixup/, gate-fixup/, gate-fixup-final/, push_signed_commit_dryrun.log,
+  push_signed_commit.log, readback2.log, pr-head/ (re-fetched; the first head's fetch is pr-head-commit1/),
+  checker-clone-fixup.log, checker-clone-fixup-control.log, checker-pr-head.log, replay_fixup.log;
+  drafts-source/edit_fixup.py, build_pr_body2.py, pr_body_fixup.md, derive_probe2.py, commit1/.
