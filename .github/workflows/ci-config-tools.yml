@@ -89,7 +89,7 @@ jobs:
         id: enforce-per-file-coverage-gate-blocking
         continue-on-error: ${{ matrix.experimental == true }}
         run: |
-          pip install "juniper-ci-tools>=0.9.0,<0.10.0"
+          pip install "juniper-ci-tools>=0.9.0,<0.11.0"
           juniper-coverage-gap-map --coverage-json coverage.json --enforce
 
       - name: Report the informational Python 3.15 result
