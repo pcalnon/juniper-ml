@@ -355,6 +355,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     REFERENCE's sentence that a future seq "is trusted, not checked against `current_seq`" no longer holds and is
     replaced.
 
+- **The Cursor flood-4 disposition record closes the carriers' last follow-up.**
+  `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` still listed one docs-carrier link as
+  open (juniper-ml#2681).
+  - §8: "Still open", re-checked on 2026-11-27, drops it: the follow-up was two links, #2424's and #2432's, and both
+    are back (above, under Fixed). The other five items stand. Session 18's merge approval is recorded unnumbered.
+  - §9 names juniper-ml#2681 with its merge commit, and this update's PR; §7's handoffs run to session 17's, and the
+    header and §0 follow.
 - **The Cursor flood-4 disposition record lands ruling 49: juniper-canopy#846, its helpers and the gap the Overtoad
   accepted.** `notes/JUNIPER_2026-11-06_JUNIPER-ECOSYSTEM_CURSOR-FLOOD-4-DISPOSITION.md` had ruling 49's fix still in
   validation, with no pull request open (juniper-ml#2677).
@@ -405,6 +412,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `util/ad-hoc/2026-11-24_flood4_s11_val_doc_{checks,fixcheck}.py`.
 
 ### Fixed
+
+- **Two Test Suite Reference sentences in `docs/REFERENCE.md` (0.6.88) regain the links juniper-ml#2517 dropped**,
+  the last follow-up of the Cursor flood-4 carriers. #2517 (0.11.5, below) carried #2424's and #2432's sentences
+  "each without its link to a section only the docs carrier adds", and no later change restored them.
+  - `tests/test_run_suite.py`'s, from #2432, on when `aggregate` falls back to the recorded `metrics`, links
+    `#an-empty-statsjson-is-not-a-missing-file` again: the docs carrier, juniper-ml#2519, carried that section.
+  - `tests/test_host_state_check.py`'s, from #2424, on the state-2 `--getglobalstate` line, links
+    `#the-firewall-gate-reads-getblockall`, the section #2426 added: #2424's own section was never carried.
 
 - **`util/safe_merge.py`'s local merge lands the commit message an armed auto-merge net stores** (finding 37 of the
   backup recovery plan). juniper-ml#2548's operator re-armed the net with a curated message after the last commit. The
