@@ -1,6 +1,6 @@
 # README Normalization Plan — Juniper Application Suite
 
-**Date**: 2026-05-19 (last updated 2026-05-21 for `juniper-ml` 0.5.0 extras-surface expansion)
+**Date**: 2026-05-19 (last updated 2026-11-28: §9's constraints amended to match the approved Research Philosophy text, and British spellings changed to American; previously 2026-05-21 for `juniper-ml` 0.5.0 extras-surface expansion)
 **Author**: Paul Calnon
 **Status**: SUPERSEDED (partial) 2026-06-24 by [`JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md`](JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md) — see banner below
 **Applies to**: All ten application/library repositories in the Juniper ecosystem
@@ -270,11 +270,11 @@ Repositories without lockfiles omit the section. The plan does not introduce loc
 Required in every README. The section names the research artifacts the repository contains or supports, in declarative prose. For example:
 
 - `juniper-cascor`'s entry names the Cascade-Correlation implementation (Fahlman & Lebiere, 1990), the candidate-pool training protocol, and the WebSocket-based distributed worker.
-- `juniper-canopy`'s entry names the real-time training-dynamics visualisation, the dataset previewer, and the live network-topology renderer.
+- `juniper-canopy`'s entry names the real-time training-dynamics visualization, the dataset previewer, and the live network-topology renderer.
 - `juniper-data`'s entry names the ARC-AGI dataset family and the named-version dataset registry.
 - Client libraries cite the research components they expose rather than implement.
 - `juniper-observability`'s entry names the `register_or_reuse` family of idempotent collector helpers.
-- `juniper-ml`'s entry summarises the platform-level research components by reference.
+- `juniper-ml`'s entry summarizes the platform-level research components by reference.
 
 This section replaces the ad-hoc "About" and "Overview" paragraphs that appear in several existing READMEs.
 
@@ -339,24 +339,26 @@ Prerequisites lines that refer to a conda environment use the canonical names �
 
 ## 9. Research Philosophy — Ecosystem-Wide Rewrite Specification
 
+> **Amended 2026-11-28.** Constraints 2, 3, 5 and 6 below now match the canonical text the Overtoad approved on 2026-11-27, which §2 and §3.1 of [`JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md`](JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md) hold: three paragraphs instead of two, the Legendre Memory Unit recurrence extension added to the anchors, the capabilities and the near-term direction, and the longer-term direction restated. Constraints 1 and 4 are unchanged. Since the 2026-06-24 reconciliation (banner above), the section appears only in the `juniper-ml` root README, so these constraints govern that one copy.
+
 The current Research Philosophy text appears in only three READMEs and varies in framing. The plan adopts a single canonical paragraph, edited per repository only to reflect the component's particular research role. The canonical phrasing is to be drafted as part of the implementation work; the constraints on that draft are:
 
 1. **Tone.** Declarative; written for a post-doctoral audience. The reader is assumed to know what a feed-forward network is, what supervised learning is, what an HTTP service is. No glosses of standard terminology.
 
-2. **Length.** Two paragraphs. The first describes the *research direction*; the second describes the *current functionality and the direction of future work*.
+2. **Length.** Three paragraphs (two until the 2026-11-28 amendment). The first describes the *research direction*: the algorithms implemented from the primary literature, with Cascade-Correlation as the initial anchor and the Legendre Memory Unit as the recurrence extension. The second states the *inspectability commitment* (implementations remain inspectable at the level at which they were originally specified) and the comparative work it enables. The third describes the *current functionality and the direction of future work*.
 
 3. **Substantive content required.** The rewrite is not a re-skin of the existing "transparency over convenience" phrasing. It must reflect, accurately and without overstatement:
 
-   - The platform's commitment to first-principles, primary-literature implementations of dynamic-architecture algorithms (Cascade-Correlation as the present anchor).
-   - The platform's *current* capabilities: a CasCor backend exposing a REST + WebSocket interface, a dataset service with named-version registry support including ARC-AGI families, a real-time monitoring dashboard, and a distributed worker for candidate-pool training.
-   - The platform's *near-term direction*: extension to additional dynamic-architecture algorithms beyond CasCor, multi-network orchestration (per the existing Phase 6E design notes), and tighter integration of the dataset/training/monitoring loop into a reproducible research workbench.
-   - The platform's *longer-term direction*: framed as a research workbench for the systematic study of constructive and architecture-growing learning algorithms, with explicit empirical infrastructure for ablation and comparison across algorithms and datasets.
+   - The platform's commitment to first-principles, primary-literature implementations of dynamic-architecture algorithms (Cascade-Correlation, Fahlman & Lebiere 1990, as the present anchor), and its recurrence extension: the Legendre Memory Unit (Voelker, Kajić & Eliasmith, 2019), which the recurrence service implements for time-series regression over irregularly sampled data.
+   - The platform's *current* capabilities: a CasCor backend exposing a REST + WebSocket interface, a dataset service with named-version registry support including the ARC-AGI, MNIST (EMNIST) and Spiral Problem families, a real-time training dashboard for inspecting, guiding and monitoring network dynamics, a Legendre Memory Unit training service, and a distributed worker for candidate-unit training across hosts, operating systems and hardware architectures; the training service, the dashboard and the datasets have been extended to recurrent architectures.
+   - The platform's *near-term direction*: extension of the architectural-growth catalog beyond CasCor and the Legendre Memory Unit, multi-network orchestration (per the existing Phase 6E design notes), and tighter integration of the dataset/training/monitoring loop into a reproducible research workbench.
+   - The platform's *longer-term direction*: the systematic empirical study of constructive and architecture-growing learning algorithms, with the development, comparison, and replication that such research requires.
 
-4. **Forbidden constructions.** The rewrite avoids the words "powerful", "robust", "comprehensive", "cutting-edge", "next-generation", and "state-of-the-art". It does not address the reader in the second person. It does not contain bullet-point lists. It does not contain hedging modal verbs ("might", "may", "could") when describing current behaviour.
+4. **Forbidden constructions.** The rewrite avoids the words "powerful", "robust", "comprehensive", "cutting-edge", "next-generation", and "state-of-the-art". It does not address the reader in the second person. It does not contain bullet-point lists. It does not contain hedging modal verbs ("might", "may", "could") when describing current behavior.
 
-5. **Per-component variation.** The base two paragraphs are identical across all READMEs. A *third*, optional paragraph — one to three sentences — may follow, describing the component's specific role in the research direction (e.g. "Within this programme, `juniper-canopy` is the visualisation surface…"). This third paragraph is omitted where it would merely repeat the application description in §3.
+5. **Per-component variation.** The base three paragraphs are identical across all READMEs that carry the section. A *closing*, optional paragraph — one to three sentences — may follow, describing the component's specific role in the research direction (e.g. "Within this program, `juniper-canopy` is the visualization surface…"). This closing paragraph is omitted where it would merely repeat the application description in §3.
 
-6. **Source of truth.** The canonical two paragraphs are drafted once, reviewed under the dedicated planning issue, and then inlined into every README via the same pull request that updates the README. They are *not* extracted into a shared file that is `INCLUDE`d at render time — README rendering does not support that, and the duplication is intentional so each README remains standalone.
+6. **Source of truth.** The canonical paragraphs are drafted once, reviewed under the dedicated planning issue, and then inlined into every README via the same pull request that updates the README. They are *not* extracted into a shared file that is `INCLUDE`d at render time — README rendering does not support that, and the duplication is intentional so each README remains standalone.
 
 The drafting and review of the canonical paragraphs is the most opinion-load-bearing step in this plan. It is to be performed in a dedicated draft PR against `juniper-ml/notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-XX.md` before any README edits begin, so that ecosystem alignment is reached once and then mechanically applied.
 
@@ -372,9 +374,9 @@ Each repository's PR carries the same shape: preamble + application heading + Di
 - Application heading: `## Juniper ML`. Description: three-to-five sentences positioning the package as the **public face** of the platform — the single installable entry point that aggregates the **full Juniper PyPI surface** (servers, clients, worker, and shared tooling) into per-component extras, the meta-distribution that anchors version compatibility across components, and the canonical home for project-level documentation cross-references.
 - Distribution section uses the meta-package phrasing in §6.
 - Architecture: reproduce the parent-CLAUDE.md dependency graph; place at the top of the Architecture section.
-- Active Research Components: summarises the platform-level components by reference and links to each repository's README.
+- Active Research Components: summarizes the platform-level components by reference and links to each repository's README.
 - Quick Start: `pip install juniper-ml[all]`, followed by a single-line Python import smoke test of one client (`from juniper_data_client import JuniperDataClient`).
-- Research Philosophy: the canonical two paragraphs; the optional third paragraph frames `juniper-ml` as the integration surface for the platform.
+- Research Philosophy: the canonical paragraphs; the optional closing paragraph frames `juniper-ml` as the integration surface for the platform.
 - Documentation: link to `docs/DOCUMENTATION_OVERVIEW.md`, `docs/QUICK_START.md`, `docs/REFERENCE.md`, and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`. All four are verified by `util/check_doc_links.py`.
 
 ### 10.2 `juniper-canopy`
@@ -412,7 +414,7 @@ Each repository's PR carries the same shape: preamble + application heading + Di
 - Distribution section added.
 - Architecture: small `Caller → JuniperDataClient → JuniperData` diagram plus prose.
 - Quick Start: standard block with the existing client usage example as Verification.
-- Research Philosophy: replaced; the optional third paragraph notes the client's role as the canonical integration boundary between training and data services.
+- Research Philosophy: replaced; the optional closing paragraph notes the client's role as the canonical integration boundary between training and data services.
 
 ### 10.6 `juniper-cascor-client`
 
@@ -512,7 +514,7 @@ A README is considered normalized when **all** of the following hold:
 5. The sections in §4 appear in the prescribed order; conditional sections appear only where the per-repo notes in §10 require them; no other top-level sections appear.
 6. Ecosystem Compatibility, Architecture, Related Services, Service Configuration (where applicable), Docker Deployment (where applicable), Dependency Lockfile (where applicable), and Active Research Components are present and reflect the current state of the repository (no stale tables, no removed env-vars, no defunct ports).
 7. The Quick Start Guide follows the §8 structure.
-8. The Research Philosophy section contains the canonical two paragraphs, verbatim, with an optional third paragraph only where §10 sanctions one.
+8. The Research Philosophy section contains the canonical paragraphs (three since §9's 2026-11-28 amendment), verbatim, with an optional closing paragraph only where §10 sanctions one.
 9. The Documentation section has been audited per §11; all link checks pass.
 10. The README renders correctly on both GitHub and the PyPI project page (for repositories that publish to PyPI).
 
